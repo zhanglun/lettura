@@ -1,0 +1,47 @@
+name: Test
+
+on: [push, pull_request]
+
+jobs:
+  release:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest, ubuntu-latest]
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v1
+
+      - name: Install Node.js, NPM and Yarn
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14
+
+      - name: yarn install
+        run: |
+          yarn install --frozen-lockfile --network-timeout 300000
+
+      - name: yarn test
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          yarn package-ci
+          yarn lint
+          yarn tsc
+          yarn test
+          yarn build-e2e
+
+      - if: matrix.os == 'ubuntu-latest'
+        run: |
+          Xvfb :99 &
+          disown -ar
+          echo "::set-env name=DISPLAY:::99"
+
+      # TODO: Testcafe e2e are broken because of:
+      # https://github.com/DevExpress/testcafe/issues/4512
+      # Tests are currently broken on linux and macos
+      - if: matrix.os == 'windows-latest'
+        run: |
+          yarn test-e2e
