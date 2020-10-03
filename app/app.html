@@ -17,6 +17,12 @@
         }
       })();
     </script>
+    <style>
+      #root {
+        height: 100%;
+        min-height: 100%;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
@@ -40,7 +46,7 @@
         if (scripts.length) {
           document.write(
             scripts
-              .map(script => `<script defer src="${script}"><\/script>`)
+              .map((script) => `<script defer src="${script}"><\/script>`)
               .join('')
           );
         }
