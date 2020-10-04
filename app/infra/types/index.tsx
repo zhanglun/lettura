@@ -14,7 +14,7 @@ export interface Article {
   title: string;
   url: string;
   content: string;
-  pubTime: Date;
   isRead: number; // 1: 未读 2: 已读
   isLike: number; // 1: 默认。不收藏 2: 收藏
+  pubTime: string;
 }

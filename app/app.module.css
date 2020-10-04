@@ -6,14 +6,14 @@
 
 .channel {
   flex: 0 0 auto;
-  width: 280px;
+  width: var(--app-channel-width);
   background-color: #f6f7f8;
   border-right: 1px solid #efefef;
 }
 
 .articleList {
   flex: 0 0 auto;
-  width: 200px;
+  width: var(--app-article-width);
   border-right: 1px solid #dedede;
   background-color: #dedede;
 }

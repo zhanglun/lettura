@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './channel.module.css';
-import { Channel as IChannel } from '../../infra/types';
+import { Channel as IChannel } from '../../../infra/types';
 
 export interface Props {
   channels: IChannel[];

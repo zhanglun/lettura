@@ -68,6 +68,9 @@ const createWindow = async () => {
     show: false,
     width: 1024,
     height: 728,
+    // transparent: true,
+    // frame: false,
+    // titleBarStyle: 'hiddenInset',
     icon: getAssetPath('icon.png'),
     webPreferences:
       (process.env.NODE_ENV === 'development' ||
