@@ -1,8 +1,42 @@
 .container {
-  background-color: azure;
+  padding-bottom: 30px;
 }
 
 .list {
   margin: 0;
   padding: 0;
+}
+
+.header {
+  padding: 18px;
+}
+
+.title {
+  margin: 0;
+  padding: 0;
+  font-size: 24px;
+  color: #333;
+}
+
+.item {
+  height: 28px;
+  padding: 4px 0 4px 18px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.item:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.name {
+  font-size: 16px;
+  color: #333;
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
 }

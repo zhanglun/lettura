@@ -12,10 +12,16 @@ function Channel(props: Props): JSX.Element {
   function renderChannelList(list: IChannel[]): JSX.Element {
     return (
       <ul className={styles.list}>
-        {list.map((channel: IChannel) => {
+        {list.map((channel: IChannel, i: number) => {
           return (
-            <li className={styles.channelItem} key={channel.name}>
-              {channel.name}
+            // eslint-disable-next-line react/no-array-index-key
+            <li className={styles.item} key={channel.name + i}>
+              <img
+                src={channel.icon}
+                className={styles.icon}
+                alt={channel.name}
+              />
+              <span className={styles.name}>{channel.name}</span>
             </li>
           );
         })}
@@ -23,7 +29,14 @@ function Channel(props: Props): JSX.Element {
     );
   }
 
-  return <div className={styles.container}>{renderChannelList(channels)}</div>;
+  return (
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <h1 className={styles.title}>Feed</h1>
+      </div>
+      {renderChannelList(channels)}
+    </div>
+  );
 }
 
 export { Channel };

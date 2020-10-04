@@ -6,9 +6,9 @@
 
 .channel {
   flex: 0 0 auto;
-  width: 200px;
-  border-right: 1px solid #dedede;
-  background-color: #dedede;
+  width: 280px;
+  background-color: #f6f7f8;
+  border-right: 1px solid #efefef;
 }
 
 .articleList {
