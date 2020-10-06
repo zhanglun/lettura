@@ -4,7 +4,24 @@
   min-height: 100%;
 }
 
+.main {
+  height: 100%;
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  position: relative;
+}
+
+.mainInner {
+  height: calc(100% - var(--app-toolbar-height));
+  flex: 1;
+  display: flex;
+}
+
 .channel {
+  display: flex;
+  flex-direction: column;
   flex: 0 0 auto;
   width: var(--app-channel-width);
   background-color: #f6f7f8;

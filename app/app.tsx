@@ -1,8 +1,10 @@
 import React from 'react';
 import { Channel } from './interface/components/Channel';
 import { ArticleList } from './interface/components/ArticleList';
+import { GlobalToolbar } from './interface/components/GlobalToolbar';
 import { Channel as IChannel, Article as IArticle } from './infra/types/index';
 import styles from './app.module.css';
+
 import { channelList, articleList } from './infra/mock';
 
 function App() {
@@ -14,10 +16,15 @@ function App() {
       <div className={styles.channel}>
         <Channel channels={channels} />
       </div>
-      <div className={styles.articleList}>
-        <ArticleList articleList={articles} />
+      <div className={styles.main}>
+        <GlobalToolbar />
+        <div className={styles.mainInner}>
+          <div className={styles.articleList}>
+            <ArticleList articleList={articles} />
+          </div>
+          <div className={styles.reader} />
+        </div>
       </div>
-      <div className={styles.reader} />
     </div>
   );
 }

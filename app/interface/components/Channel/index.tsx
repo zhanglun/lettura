@@ -34,7 +34,7 @@ function Channel(props: Props): JSX.Element {
       <div className={styles.header}>
         <h1 className={styles.title}>Feed</h1>
       </div>
-      {renderChannelList(channels)}
+      <div className={styles.inner}>{renderChannelList(channels)}</div>
     </div>
   );
 }
