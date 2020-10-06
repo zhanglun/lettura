@@ -2,8 +2,9 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import App from './app';
 
-test('renders learn react link', () => {
+test('renders Feed Heading', () => {
   const { getByText } = render(<App />);
-  const linkElement = getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+  const linkElement = getByText(/Feed/i);
+
+  expect(linkElement).toBeDefined();
 });
