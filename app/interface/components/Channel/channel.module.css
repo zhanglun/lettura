@@ -1,12 +1,14 @@
 .container {
+  height: 100%;
   display: flex;
   flex-direction: column;
   flex: 1 0 auto;
-  padding-bottom: 30px;
 }
 
 .inner {
-  flex: 1 0 auto;
+  height: 100%;
+  overflow-y: auto;
+  padding: 10px 0 14px;
 }
 
 .list {
@@ -15,7 +17,22 @@
 }
 
 .header {
-  padding: 18px;
+  padding: 10px;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.toolbarItem {
+  width: 24px;
+  height: 24px;
+  margin: 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 }
 
 .title {
@@ -26,7 +43,7 @@
 }
 
 .item {
-  height: 28px;
+  height: 32px;
   padding: 4px 0 4px 18px;
   display: flex;
   align-items: center;
@@ -45,5 +62,20 @@
 .icon {
   width: 20px;
   height: 20px;
+  margin-right: 8px;
+}
+
+.official {
+  padding-bottom: 10px;
+  border-bottom: 1px solid #dedede;
+}
+
+.officialItem {
+  composes: item;
+  line-height: 21px;
+}
+
+.officialItemIcon {
+  font-size: 20px;
   margin-right: 8px;
 }

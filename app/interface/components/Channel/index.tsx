@@ -1,4 +1,5 @@
 import React from 'react';
+import { Icon } from '../Icon';
 import styles from './channel.module.css';
 import { Channel as IChannel } from '../../../infra/types';
 
@@ -32,7 +33,30 @@ function Channel(props: Props): JSX.Element {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h1 className={styles.title}>Feed</h1>
+        <div className={styles.toolbar}>
+          <span className={styles.toolbarItem}>
+            <Icon name="add" />
+          </span>
+          <span className={styles.toolbarItem}>
+            <Icon name="folder" />
+          </span>
+          <span className={styles.toolbarItem}>
+            <Icon name="settings" />
+          </span>
+        </div>
+      </div>
+      <div className={styles.official}>
+        <div className={styles.officialItem}>
+          <Icon
+            customClass={styles.officialItemIcon}
+            name="mark_email_unread"
+          />
+          所有未读
+        </div>
+        <div className={styles.officialItem}>
+          <Icon customClass={styles.officialItemIcon} name="calendar_today" />
+          今日未读
+        </div>
       </div>
       <div className={styles.inner}>{renderChannelList(channels)}</div>
     </div>
