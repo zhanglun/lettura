@@ -1,0 +1,15 @@
+.container {
+  width: 100%;
+  background-color: #fff;
+}
+
+.subTitle {
+  margin: 0;
+  font-size: 20px;
+  color: var(--title-color);
+  padding: var(--block-padding);
+}
+
+.panelContainer {
+  padding: var(--block-padding);
+}

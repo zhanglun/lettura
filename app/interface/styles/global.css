@@ -6,4 +6,8 @@
   --app-channel-width: 240px;
   --app-article-width: 300px;
   --app-toolbar-height: 40px;
+  --headline-color: #333;
+  --title-color: #666;
+  --text-color: #999;
+  --block-padding: 14px;
 }

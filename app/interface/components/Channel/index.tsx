@@ -1,4 +1,5 @@
 import React from 'react';
+import * as routesConfig from '../../../infra/constants/routes';
 import { Icon } from '../Icon';
 import styles from './channel.module.css';
 import { Channel as IChannel } from '../../../infra/types';
@@ -9,6 +10,10 @@ export interface Props {
 
 function Channel(props: Props): JSX.Element {
   const { channels } = props;
+
+  function linkToRoute(name: string) {
+    window.location.hash = name;
+  }
 
   function renderChannelList(list: IChannel[]): JSX.Element {
     return (
@@ -41,19 +46,40 @@ function Channel(props: Props): JSX.Element {
             <Icon name="folder" />
           </span>
           <span className={styles.toolbarItem}>
+            <Icon name="refresh" />
+          </span>
+          <span
+            className={styles.toolbarItem}
+            onClick={() => {
+              linkToRoute(routesConfig.SETTINGS);
+            }}
+            aria-hidden="true"
+          >
             <Icon name="settings" />
           </span>
         </div>
       </div>
       <div className={styles.official}>
-        <div className={styles.officialItem}>
+        <div
+          className={styles.officialItem}
+          onClick={() => {
+            linkToRoute(routesConfig.HOME);
+          }}
+          aria-hidden="true"
+        >
           <Icon
             customClass={styles.officialItemIcon}
             name="mark_email_unread"
           />
           所有未读
         </div>
-        <div className={styles.officialItem}>
+        <div
+          className={styles.officialItem}
+          onClick={() => {
+            linkToRoute(routesConfig.TODAY);
+          }}
+          aria-hidden
+        >
           <Icon customClass={styles.officialItemIcon} name="calendar_today" />
           今日未读
         </div>
