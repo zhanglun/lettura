@@ -80,8 +80,24 @@ function Channel(props: Props): JSX.Element {
           }}
           aria-hidden
         >
-          <Icon customClass={styles.officialItemIcon} name="calendar_today" />
+          <Icon
+            customClass={`${styles.officialItemIcon} ${styles.orange}`}
+            name="calendar_today"
+          />
           今日未读
+        </div>
+        <div
+          className={styles.officialItem}
+          onClick={() => {
+            linkToRoute(routesConfig.FAVORITE);
+          }}
+          aria-hidden
+        >
+          <Icon
+            customClass={`${styles.officialItemIcon} ${styles.red}`}
+            name="favorite-black"
+          />
+          我的收藏
         </div>
       </div>
       <div className={styles.inner}>{renderChannelList(channels)}</div>

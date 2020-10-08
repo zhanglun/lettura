@@ -1,12 +1,13 @@
 import React from 'react';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import { SettingSubscribe } from './Subscribe';
+import { ImportAndExport } from './ImportAndExport';
 import styles from './settingpanel.module.css';
 
 function SettingPanel() {
   return (
     <div className={styles.container}>
       <h1 className={styles.subTitle}>设置</h1>
-
       <div className={styles.panelContainer}>
         <Tabs>
           <TabList>
@@ -17,16 +18,16 @@ function SettingPanel() {
           </TabList>
 
           <TabPanel>
-            <h2>Any content 1</h2>
+            <SettingSubscribe />
           </TabPanel>
           <TabPanel>
-            <h2>Any content 2</h2>
+            <ImportAndExport />
           </TabPanel>
           <TabPanel>
-            <h2>Any content 3</h2>
+            <h2>TODO</h2>
           </TabPanel>
           <TabPanel>
-            <h2>Any content 4</h2>
+            <h2>TODO</h2>
           </TabPanel>
         </Tabs>
       </div>

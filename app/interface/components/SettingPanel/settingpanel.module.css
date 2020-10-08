@@ -13,3 +13,33 @@
 .panelContainer {
   padding: var(--block-padding);
 }
+
+.panelTitle {
+  padding-top: 24px;
+  padding-bottom: 8px;
+  font-size: 16px;
+  line-height: 14px;
+  font-weight: var(--font-bold-500);
+}
+
+.description {
+  font-size: 14px;
+  color: var(--text-color);
+}
+
+.section {
+  padding: 20px 0;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: row;
+}
+
+.options {
+  width: 160px;
+  min-width: 160px;
+  margin-right: 56px;
+  color: var(--headline-color);
+  font-size: 14px;
+  font-weight: var(--font-bold-500);
+  line-height: 16px;
+}

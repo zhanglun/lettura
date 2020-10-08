@@ -35,7 +35,6 @@ function App() {
           </Route>
           <Route path={routesConfig.SETTINGS}>
             <div className={styles.main}>
-              <GlobalToolbar />
               <div className={styles.mainInner}>
                 <SettingModule />
               </div>

@@ -1,8 +1,33 @@
 import React from 'react';
+import { Icon } from '../Icon';
 import styles from './toolbar.module.css';
 
-function GlobalToolbar() {
-  return <div className={styles.container}>GlobalBar</div>;
+export interface GlobalToolbarProps {
+  channelName: string;
+  channelId: number;
+  unReadCount: number;
+}
+
+function GlobalToolbar(props: GlobalToolbarProps) {
+  const { channelName } = props;
+
+  return (
+    <div className={styles.container}>
+      <div className={styles.channelName}>
+        {channelName || '原创频道》什么值得买'}
+      </div>
+      <div className={styles.menu}>
+        <div className={styles.menuItem}>
+          <Icon customClass={styles.menuIcon} name="done_all" />
+          全部标记为已读
+        </div>
+        <div className={styles.menuItem}>
+          <Icon customClass={styles.menuIcon} name="refresh" />
+          刷新
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export { GlobalToolbar };
