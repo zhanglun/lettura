@@ -1,12 +1,13 @@
 export interface Feed {
   id: number;
   name: string;
+  title: string;
   feedUrl: string;
   icon: string;
   category: string;
   tag: string;
-  groupName: string;
   createTime: string;
+  updateTime: string;
 }
 
 export interface Article {
