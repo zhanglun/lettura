@@ -2,22 +2,22 @@ import React from 'react';
 import { HashRouter as Router, Route, Switch } from 'react-router-dom';
 import * as routesConfig from './infra/constants/routes';
 import { SettingModule } from './interface/modules/Settings';
-import { Channel } from './interface/components/Channel';
+import { Feed } from './interface/components/Feed';
 import { ArticleList } from './interface/components/ArticleList';
 import { GlobalToolbar } from './interface/components/GlobalToolbar';
-import { Channel as IChannel, Article as IArticle } from './infra/types/index';
+import { Feed as IFeed, Article as IArticle } from './infra/types/index';
 import styles from './app.module.css';
 
-import { channelList, articleList } from './infra/mock';
+import { feedList, articleList } from './infra/mock';
 
 function App() {
-  const channels: IChannel[] = channelList;
+  const feeds: IFeed[] = feedList;
   const articles: IArticle[] = articleList;
 
   return (
     <div className={styles.container}>
-      <div className={styles.channel}>
-        <Channel channels={channels} />
+      <div className={styles.feed}>
+        <Feed feeds={feeds} />
       </div>
 
       <Router>

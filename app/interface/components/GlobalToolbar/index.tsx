@@ -3,18 +3,18 @@ import { Icon } from '../Icon';
 import styles from './toolbar.module.css';
 
 export interface GlobalToolbarProps {
-  channelName: string;
-  channelId: number;
+  feedName: string;
+  feedId: number;
   unReadCount: number;
 }
 
 function GlobalToolbar(props: GlobalToolbarProps) {
-  const { channelName } = props;
+  const { feedName } = props;
 
   return (
     <div className={styles.container}>
-      <div className={styles.channelName}>
-        {channelName || '原创频道》什么值得买'}
+      <div className={styles.feedName}>
+        {feedName || '原创频道》什么值得买'}
       </div>
       <div className={styles.menu}>
         <div className={styles.menuItem}>

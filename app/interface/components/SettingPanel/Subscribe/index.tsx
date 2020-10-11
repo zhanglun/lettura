@@ -11,7 +11,7 @@ export class SettingSubscribe extends Component<any, any> {
     };
   }
 
-  addFeedChannel() {
+  addFeedFeed() {
     const { feedUrl } = this.state;
     console.log(feedUrl);
   }
@@ -32,7 +32,7 @@ export class SettingSubscribe extends Component<any, any> {
               this.setState({ feedUrl: e.target.value });
             }}
           />
-          <button type="button" onClick={this.addFeedChannel.bind(this)}>
+          <button type="button" onClick={this.addFeedFeed.bind(this)}>
             添加
           </button>
         </div>

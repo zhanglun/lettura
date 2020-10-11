@@ -1,4 +1,4 @@
-export interface Channel {
+export interface Feed {
   id: number;
   name: string;
   feedUrl: string;
@@ -10,7 +10,7 @@ export interface Channel {
 }
 
 export interface Article {
-  channelId: number;
+  feedId: number;
   title: string;
   url: string;
   content: string;
