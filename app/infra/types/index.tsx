@@ -11,6 +11,16 @@ export interface RSSFeed {
   image?: string;
 }
 
+export interface RSSFeedItem {
+  title: string;
+  link: string;
+  description: string;
+  author: string;
+  category: string;
+  comments: string;
+  pubDate: DataCue;
+}
+
 export interface Channel extends RSSFeed {
   id: number;
   name: string;

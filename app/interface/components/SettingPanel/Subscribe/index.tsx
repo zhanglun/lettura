@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import styles from '../settingpanel.module.css';
+import { channelStore } from '../../../stores';
 
 const SettingSubscribe: () => React.ReactNode = () => {
   const [feedUrl, setFeedUrl] = useState('');
 
-  function addFeed() {}
+  function addFeed() {
+    channelStore.add(feedUrl);
+  }
 
   return (
     <div className={styles.panel}>

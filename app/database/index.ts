@@ -6,20 +6,20 @@ let dbInstance: Dexie;
 
 export type DBInstance = {
   version: (v: number) => Version;
-  feeds: Dexie.Table;
+  channels: Dexie.Table;
   categories: Dexie.Table;
 };
 
 class SalixDatabase extends Dexie {
-  feeds: Dexie.Table<Channel, number>;
+  channels: Dexie.Table<Channel, number>;
 
   constructor() {
     super('SalixDatabase');
     this.version(VERSION).stores({
-      feeds: '++feedUrl',
+      channels: '++feedUrl',
     });
 
-    this.feeds = this.table('feeds');
+    this.channels = this.table('channels');
   }
 }
 
