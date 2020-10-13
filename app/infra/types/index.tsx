@@ -1,9 +1,22 @@
-export interface Feed {
+// RSS2.0 规范约定字段
+export interface RSSFeed {
+  title: string;
+  link: string;
+  description: string;
+  language?: string;
+  copyright?: string;
+  pubDate?: Date;
+  lastBuildDate?: Date;
+  ttl?: number;
+  image?: string;
+}
+
+export interface Channel extends RSSFeed {
   id: number;
   name: string;
   title: string;
   feedUrl: string;
-  icon: string;
+  favicon: string;
   category: string;
   tag: string;
   createTime: string;

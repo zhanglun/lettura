@@ -1,8 +1,8 @@
 import Dexie, { Version } from 'dexie';
-import { Feed } from '../infra/types';
+import { Channel } from '../infra/types';
 
 const VERSION = 1;
-let dbInstance: any = null;
+let dbInstance: Dexie;
 
 export type DBInstance = {
   version: (v: number) => Version;
@@ -11,12 +11,12 @@ export type DBInstance = {
 };
 
 class SalixDatabase extends Dexie {
-  feeds: Dexie.Table<Feed, number>;
+  feeds: Dexie.Table<Channel, number>;
 
   constructor() {
     super('SalixDatabase');
     this.version(VERSION).stores({
-      feeds: '++id,name,feedUrl,icon,category,tag,createTime',
+      feeds: '++feedUrl',
     });
 
     this.feeds = this.table('feeds');

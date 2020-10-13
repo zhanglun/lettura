@@ -2,22 +2,21 @@ import React from 'react';
 import { HashRouter as Router, Route, Switch } from 'react-router-dom';
 import * as routesConfig from './infra/constants/routes';
 import { SettingModule } from './interface/modules/Settings';
-import { Feed } from './interface/components/Feed';
+import { ChannelList } from './interface/components/ChannelList';
 import { ArticleList } from './interface/components/ArticleList';
 import { GlobalToolbar } from './interface/components/GlobalToolbar';
-import { Feed as IFeed, Article as IArticle } from './infra/types/index';
+import { Article } from './infra/types/index';
 import styles from './app.module.css';
 
-import { feedList, articleList } from './infra/mock';
+import { articleList as mA } from './infra/mock';
 
 function App() {
-  const feeds: IFeed[] = feedList;
-  const articles: IArticle[] = articleList;
+  const articleList: Article[] = mA;
 
   return (
     <div className={styles.container}>
-      <div className={styles.feed}>
-        <Feed feeds={feeds} />
+      <div className={styles.channel}>
+        <ChannelList />
       </div>
 
       <Router>
@@ -27,7 +26,7 @@ function App() {
               <GlobalToolbar />
               <div className={styles.mainInner}>
                 <div className={styles.articleList}>
-                  <ArticleList articleList={articles} />
+                  <ArticleList articleList={articleList} />
                 </div>
                 <div className={styles.reader} />
               </div>

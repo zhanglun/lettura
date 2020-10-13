@@ -1,29 +1,29 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import * as routesConfig from '../../../infra/constants/routes';
 import { Icon } from '../Icon';
-import styles from './feed.module.css';
-import { Feed as IFeed } from '../../../infra/types';
+import styles from './channel.module.css';
+import { Channel } from '../../../infra/types';
 
-export interface Props {
-  feeds: IFeed[];
-}
-
-function Feed(props: Props): JSX.Element {
-  const { feeds } = props;
+function ChannelList(): JSX.Element {
+  const [feedList, setFeedList] = useState([]);
 
   function linkToRoute(name: string) {
     window.location.hash = name;
   }
 
-  function renderFeedList(list: IFeed[]): JSX.Element {
+  function renderFeedList(list: Channel[]): JSX.Element {
     return (
       <ul className={styles.list}>
-        {list.map((feed: IFeed, i: number) => {
+        {list.map((channel: Channel, i: number) => {
           return (
             // eslint-disable-next-line react/no-array-index-key
-            <li className={styles.item} key={feed.name + i}>
-              <img src={feed.icon} className={styles.icon} alt={feed.name} />
-              <span className={styles.name}>{feed.name}</span>
+            <li className={styles.item} key={channel.name + i}>
+              <img
+                src={channel.favicon}
+                className={styles.icon}
+                alt={channel.name}
+              />
+              <span className={styles.name}>{channel.name}</span>
             </li>
           );
         })}
@@ -97,10 +97,10 @@ function Feed(props: Props): JSX.Element {
             我的收藏
           </div>
         </div>
-        {renderFeedList(feeds)}
+        {renderFeedList(feedList)}
       </div>
     </div>
   );
 }
 
-export { Feed };
+export { ChannelList };

@@ -1613,13 +1613,6 @@
   resolved "https://registry.yarnpkg.com/@types/debug/-/debug-4.1.5.tgz#b14efa8852b7768d898906613c23f688713e02cd"
   integrity sha512-Q1y515GcOdTHgagaVFhHnIFQ38ygs/kmxdNpvpou+raI9UO3YZcHDngBSYKQklcKlvA7iuQlmIKbzvmxcOE9CQ==
 
-"@types/dexie@^1.3.1":
-  version "1.3.1"
-  resolved "https://registry.npm.taobao.org/@types/dexie/download/@types/dexie-1.3.1.tgz#accca262f9071f1ed963a40255fcf4bc7af67e15"
-  integrity sha1-rMyiYvkHHx7ZY6QCVfz0vHr2fhU=
-  dependencies:
-    dexie "*"
-
 "@types/enzyme-adapter-react-16@^1.0.6":
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/@types/enzyme-adapter-react-16/-/enzyme-adapter-react-16-1.0.6.tgz#8aca7ae2fd6c7137d869b6616e696d21bb8b0cec"
@@ -5207,7 +5200,7 @@ device-specs@^1.0.0:
   resolved "https://registry.yarnpkg.com/device-specs/-/device-specs-1.0.0.tgz#47b54577b9b159118bbb0a175177d0aa9c50a9c9"
   integrity sha512-fYXbFSeilT7bnKWFi4OERSPHdtaEoDGn4aUhV5Nly6/I+Tp6JZ/6Icmd7LVIF5euyodGpxz2e/bfUmDnIdSIDw==
 
-dexie@*, dexie@^3.0.2:
+dexie@^3.0.2:
   version "3.0.2"
   resolved "https://registry.npm.taobao.org/dexie/download/dexie-3.0.2.tgz#4b979904d739e0530b68352005f175a82633a075"
   integrity sha1-S5eZBNc54FMLaDUgBfF1qCYzoHU=
@@ -9464,6 +9457,18 @@ mkdirp@^1.0.3, mkdirp@^1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-1.0.4.tgz#3eb5ed62622756d79a5f0e2a221dfebad75c2f7e"
   integrity sha512-vVqVZQyf3WLx2Shd0qJ9xuvqgAyKPLAiqITEtqW0oIUjzo3PePDd6fW9iFz30ef7Ysp/oiWqbhszeGWW2T6Gzw==
+
+mobx-react-lite@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.npm.taobao.org/mobx-react-lite/download/mobx-react-lite-3.0.0.tgz#f39b1cb23262ce539829d47217551e04bf14a8b7"
+  integrity sha1-85scsjJizlOYKdRyF1UeBL8UqLc=
+
+mobx-react@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.npm.taobao.org/mobx-react/download/mobx-react-7.0.0.tgz#c2eb0c3f79ade93ffb07b1ffa07cbaeb5f04e9b6"
+  integrity sha1-wusMP3mt6T/7B7H/oHy6618E6bY=
+  dependencies:
+    mobx-react-lite "^3.0.0"
 
 mobx@^6.0.1:
   version "6.0.1"

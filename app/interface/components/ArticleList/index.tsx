@@ -17,7 +17,7 @@ function renderList(props: Props): JSX.Element {
           <li className={styles.item} key={article.title + i}>
             <div className={styles.title}>{article.title}</div>
             <div className={styles.meta}>
-              <span className={styles.feed}>订阅频道</span>
+              <span className={styles.channel}>订阅频道</span>
               <span className={styles.pubTime}>{article.pubTime}</span>
             </div>
           </li>

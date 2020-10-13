@@ -16,11 +16,11 @@
   display: flex;
 }
 
-.feed {
+.channel {
   display: flex;
   flex-direction: column;
   flex: 0 0 auto;
-  width: var(--app-feed-width);
+  width: var(--app-channel-width);
   background-color: #f6f7f8;
   border-right: 1px solid #efefef;
 }
