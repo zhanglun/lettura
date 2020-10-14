@@ -9,6 +9,7 @@ export interface RSSFeed {
   lastBuildDate?: Date;
   ttl?: number;
   image?: string;
+  items?: RSSFeedItem[];
 }
 
 export interface RSSFeedItem {
@@ -22,8 +23,7 @@ export interface RSSFeedItem {
 }
 
 export interface Channel extends RSSFeed {
-  id: number;
-  name: string;
+  id?: number;
   title: string;
   feedUrl: string;
   favicon: string;
