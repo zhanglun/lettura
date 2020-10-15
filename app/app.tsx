@@ -26,7 +26,7 @@ function App() {
               <GlobalToolbar />
               <div className={styles.mainInner}>
                 <div className={styles.articleList}>
-                  <ArticleList articleList={articleList} />
+                  <ArticleList />
                 </div>
                 <div className={styles.reader} />
               </div>

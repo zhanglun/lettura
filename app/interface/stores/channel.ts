@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 import { makeAutoObservable } from 'mobx';
 import RSSParser from 'rss-parser';
 import { dbInstance as db } from '../../database';
@@ -14,30 +15,79 @@ export class ChannelStore {
     makeAutoObservable(this);
   }
 
-  // async add(url: string) {
-  //   this.feedUrl = 'https://www.ugediao.com/feed';
-  //   const feed = await this.parseRSS();
+  async add(url: string): Promise<string> {
+    this.feedUrl = url;
 
-  //   delete feed.items;
-  //   // const result = await db.channels.put(feed);
+    const feed = await this.parseRSS();
+    const { items } = feed;
 
-  //   console.log(result);
-  // }
+    let result = '';
+
+    delete feed.items;
+
+    try {
+      result = await db.channels.put(feed);
+      await this.updateFeedItems(feed.feedUrl, feed.title, items);
+    } catch (err) {
+      console.log(err);
+    }
+    // const result = await db.channels.put(feed);
+
+    return result;
+  }
 
   setCurrentChannel(id: string) {
     this.currentChannel = id;
   }
 
-  // async parseRSS(): Promise<Partial<Channel>> {
-  //   const feed = await parser.parseURL(this.feedUrl);
-  //   console.log(feed);
+  async getList() {
+    return db.channels.toArray();
+  }
 
-  //   feed.category = '';
-  //   feed.favicon = `${feed.link}/favicon`;
-  //   feed.tag = '';
-  //   feed.createTime = new Date();
-  //   feed.updateTime = new Date();
+  async getArticleList(feedUrl: string) {
+    const list = await db.articles.toArray();
+    console.log(list);
+    return list;
+  }
 
-  //   return feed;
-  // }
+  async updateFeedItems(
+    feedUrl: string,
+    channelTitle: string,
+    items: RSSFeedItem[] = []
+  ) {
+    if (!items.length) {
+      return;
+    }
+
+    console.log(items);
+    const values = items.map((item) => {
+      return {
+        feedUrl,
+        channelTitle,
+        ...item,
+        isRead: 0,
+        isLike: 0,
+        createDate: new Date(),
+        updateDate: new Date(),
+      };
+    });
+
+    console.log(values);
+
+    await db.articles.bulkPut(values);
+  }
+
+  async parseRSS(): Promise<Omit<Channel, 'id'>> {
+    const feed = (await parser.parseURL(this.feedUrl)) as Omit<Channel, 'id'>;
+
+    console.log(feed);
+
+    feed.category = '';
+    feed.favicon = `${feed.link}/favicon.ico`;
+    feed.tag = '';
+    feed.createDate = new Date();
+    feed.createDate = new Date();
+
+    return feed;
+  }
 }

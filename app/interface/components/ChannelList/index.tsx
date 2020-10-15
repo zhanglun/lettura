@@ -8,12 +8,28 @@ import styles from './channel.module.css';
 
 const ChannelList = observer(
   (): JSX.Element => {
-    const [channelList, setChannelList] = useState([]);
+    const [channelList, setChannelList]: [Channel[], any] = useState([]);
 
     function linkToRoute(name: string) {
       channelStore.setCurrentChannel(name);
       window.location.hash = name;
     }
+
+    useEffect(() => {
+      channelStore
+        .getList()
+        .then((list) => {
+          return setChannelList(list);
+        })
+        .catch((e) => {});
+
+      // channelStore
+      //   .getArticleList()
+      //   .then((list) => {
+      //     console.log(list);
+      //   })
+      //   .catch((e) => {});
+    });
 
     function renderFeedList(list: Channel[]): JSX.Element {
       return (
@@ -21,13 +37,13 @@ const ChannelList = observer(
           {list.map((channel: Channel, i: number) => {
             return (
               // eslint-disable-next-line react/no-array-index-key
-              <li className={styles.item} key={channel.name + i}>
+              <li className={styles.item} key={channel.title + i}>
                 <img
                   src={channel.favicon}
                   className={styles.icon}
-                  alt={channel.name}
+                  alt={channel.title}
                 />
-                <span className={styles.name}>{channel.name}</span>
+                <span className={styles.name}>{channel.title}</span>
               </li>
             );
           })}

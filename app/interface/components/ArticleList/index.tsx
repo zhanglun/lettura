@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { observer } from 'mobx-react';
 import styles from './article.module.css';
 import { Article } from '../../../infra/types';
+import { channelStore } from '../../stores';
 
 export interface Props {
   articleList: Article[];
@@ -17,8 +19,8 @@ function renderList(props: Props): JSX.Element {
           <li className={styles.item} key={article.title + i}>
             <div className={styles.title}>{article.title}</div>
             <div className={styles.meta}>
-              <span className={styles.channel}>订阅频道</span>
-              <span className={styles.pubTime}>{article.pubTime}</span>
+              <span className={styles.channel}>{article.channelTitle}</span>
+              <span className={styles.pubTime}>{article.pubDate}</span>
             </div>
           </li>
         );
@@ -27,8 +29,23 @@ function renderList(props: Props): JSX.Element {
   );
 }
 
-function ArticleList(props: Props): JSX.Element {
-  return <div className={styles.container}>{renderList(props)}</div>;
-}
+export const ArticleList = observer(
+  (): JSX.Element => {
+    const [articleList, setArticleList]: [Article[], any] = useState([]);
 
-export { ArticleList };
+    useEffect(() => {
+      channelStore
+        .getArticleList('')
+        .then((list) => {
+          return setArticleList(list);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    });
+
+    return (
+      <div className={styles.container}>{renderList({ articleList })}</div>
+    );
+  }
+);

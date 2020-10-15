@@ -19,7 +19,7 @@ export interface RSSFeedItem {
   author: string;
   category: string;
   comments: string;
-  pubDate: DataCue;
+  pubDate: Date;
 }
 
 export interface Channel extends RSSFeed {
@@ -29,16 +29,16 @@ export interface Channel extends RSSFeed {
   favicon: string;
   category: string;
   tag: string;
-  createTime: string;
-  updateTime: string;
+  createDate: Date;
+  updateDate: Date;
 }
 
-export interface Article {
-  feedId: number;
-  title: string;
-  url: string;
-  content: string;
+export interface Article extends RSSFeedItem {
+  id?: number;
+  feedUrl: string;
+  channelTitle: string;
   isRead: number; // 1: 未读 2: 已读
   isLike: number; // 1: 默认。不收藏 2: 收藏
-  pubTime: string;
+  createDate: Date;
+  updateDate: Date;
 }
