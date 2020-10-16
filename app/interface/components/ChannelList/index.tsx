@@ -15,29 +15,29 @@ const ChannelList = observer(
       window.location.hash = name;
     }
 
-    useEffect(() => {
-      channelStore
-        .getList()
-        .then((list) => {
-          return setChannelList(list);
-        })
-        .catch((e) => {});
+    async function getChannelList() {
+      const list = await channelStore.getList();
+      setChannelList(list);
+    }
 
-      // channelStore
-      //   .getArticleList()
-      //   .then((list) => {
-      //     console.log(list);
-      //   })
-      //   .catch((e) => {});
-    });
+    useEffect(() => {
+      getChannelList();
+    }, []);
 
     function renderFeedList(list: Channel[]): JSX.Element {
       return (
         <ul className={styles.list}>
           {list.map((channel: Channel, i: number) => {
             return (
-              // eslint-disable-next-line react/no-array-index-key
-              <li className={styles.item} key={channel.title + i}>
+              <li
+                className={styles.item}
+                // eslint-disable-next-line react/no-array-index-key
+                key={channel.title + i}
+                onClick={() => {
+                  linkToRoute(channel.title);
+                }}
+                aria-hidden="true"
+              >
                 <img
                   src={channel.favicon}
                   className={styles.icon}

@@ -33,16 +33,13 @@ export const ArticleList = observer(
   (): JSX.Element => {
     const [articleList, setArticleList]: [Article[], any] = useState([]);
 
+    const getArticleList = async () => {
+      const list = await channelStore.getArticleList('');
+      return setArticleList(list);
+    };
     useEffect(() => {
-      channelStore
-        .getArticleList('')
-        .then((list) => {
-          return setArticleList(list);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    });
+      getArticleList();
+    }, []);
 
     return (
       <div className={styles.container}>{renderList({ articleList })}</div>

@@ -14,8 +14,8 @@ class SalixDatabase extends Dexie {
     super('SalixDatabase');
 
     this.version(VERSION).stores({
-      channels: '++feedUrl',
-      articles: '++id,link',
+      channels: '++id, &feedUrl, link, title',
+      articles: '++id, &link, feedUrl, title',
     });
 
     this.channels = this.table('channels');
