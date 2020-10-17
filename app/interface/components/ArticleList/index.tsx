@@ -8,6 +8,10 @@ export interface Props {
   articleList: Article[];
 }
 
+function viewDetail(article: Article) {
+  channelStore.setCurrentView(article);
+}
+
 function renderList(props: Props): JSX.Element {
   const { articleList } = props;
 
@@ -15,8 +19,13 @@ function renderList(props: Props): JSX.Element {
     <ul className={styles.list}>
       {articleList.map((article: Article, i: number) => {
         return (
-          // eslint-disable-next-line react/no-array-index-key
-          <li className={styles.item} key={article.title + i}>
+          <li
+            // eslint-disable-next-line react/no-array-index-key
+            key={article.title + i}
+            className={styles.item}
+            onClick={() => viewDetail(article)}
+            aria-hidden="true"
+          >
             <div className={styles.title}>{article.title}</div>
             <div className={styles.meta}>
               <span className={styles.channel}>{article.channelTitle}</span>

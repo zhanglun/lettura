@@ -4,6 +4,7 @@ import * as routesConfig from './infra/constants/routes';
 import { SettingModule } from './interface/modules/Settings';
 import { ChannelList } from './interface/components/ChannelList';
 import { ArticleList } from './interface/components/ArticleList';
+import { ArticleView } from './interface/components/ArticleView';
 import styles from './app.module.css';
 
 function App() {
@@ -21,7 +22,9 @@ function App() {
                 <div className={styles.articleList}>
                   <ArticleList />
                 </div>
-                <div className={styles.reader} />
+                <div className={styles.reader}>
+                  <ArticleView />
+                </div>
               </Route>
               <Route path={routesConfig.SETTINGS}>
                 <SettingModule />

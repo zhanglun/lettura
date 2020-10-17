@@ -11,7 +11,9 @@
 }
 
 .mainInner {
-  height: calc(100% - var(--app-toolbar-height));
+  height: 100%;
+
+  /* height: calc(100% - var(--app-toolbar-height)); */
   flex: 1;
   display: flex;
 }
@@ -33,6 +35,7 @@
 }
 
 .reader {
+  height: 100%;
   flex: 1;
   background-color: #3d3d3d;
 }

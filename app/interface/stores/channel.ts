@@ -3,7 +3,7 @@ import { makeAutoObservable } from 'mobx';
 import Dayjs from 'dayjs';
 import RSSParser from 'rss-parser';
 import { dbInstance as db } from '../../database';
-import { Channel, RSSFeedItem } from '../../infra/types';
+import { Article, Channel, RSSFeedItem } from '../../infra/types';
 import { ArticleReadStatus } from '../../infra/constants/status';
 
 const parser = new RSSParser();
@@ -12,6 +12,8 @@ export class ChannelStore {
   feedUrl = '';
 
   currentChannel = '';
+
+  currenArticle = {} as Article;
 
   channelList: Channel[] = [];
 
@@ -81,7 +83,7 @@ export class ChannelStore {
   async getUnreadArticleList(feedUrl?: string) {
     const query = {
       isRead: ArticleReadStatus.unRead,
-      ...{ feedUrl },
+      ...(feedUrl ? { feedUrl } : {}),
     };
 
     console.log('query', query);
@@ -125,5 +127,9 @@ export class ChannelStore {
     feed.createDate = new Date().toString();
 
     return feed;
+  }
+
+  setCurrentView(article: Article) {
+    this.currenArticle = article;
   }
 }
