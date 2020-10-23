@@ -18,7 +18,7 @@ function App() {
         <div className={styles.mainInner}>
           <Router>
             <Switch>
-              <Route exact path={routesConfig.HOME}>
+              <Route path="/">
                 <div className={styles.articleList}>
                   <ArticleList />
                 </div>

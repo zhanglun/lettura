@@ -11,7 +11,17 @@ const parser = new RSSParser();
 export class ChannelStore {
   feedUrl = '';
 
-  currentChannel = '';
+  currentChannel: Channel = {
+    title: '',
+    feedUrl: '',
+    favicon: '',
+    category: '',
+    tag: '',
+    createDate: '',
+    updateDate: '',
+    link: '',
+    description: '',
+  };
 
   currenArticle = {} as Article;
 
@@ -21,6 +31,10 @@ export class ChannelStore {
     makeAutoObservable(this);
   }
 
+  /**
+   * 添加 feed url
+   * @param {string} url feed url
+   */
   async add(url: string): Promise<string> {
     this.feedUrl = url;
 
@@ -41,8 +55,8 @@ export class ChannelStore {
     return result;
   }
 
-  setCurrentChannel(name: string) {
-    this.currentChannel = name;
+  async setCurrentChannel(channel: Channel) {
+    this.currentChannel = channel;
   }
 
   async getList() {

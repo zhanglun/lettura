@@ -41,9 +41,10 @@ function renderList(props: Props): JSX.Element {
 export const ArticleList = observer(
   (): JSX.Element => {
     const [articleList, setArticleList]: [Article[], any] = useState([]);
+    const { feedUrl } = channelStore.currentChannel;
 
     const getArticleList = async () => {
-      const list = await channelStore.getArticleList('');
+      const list = await channelStore.getArticleList(feedUrl);
       return setArticleList(list);
     };
     useEffect(() => {

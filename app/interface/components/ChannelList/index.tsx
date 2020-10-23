@@ -10,9 +10,9 @@ const ChannelList = observer(
   (): JSX.Element => {
     const [channelList, setChannelList]: [Channel[], any] = useState([]);
 
-    function linkToRoute(name: string) {
-      channelStore.setCurrentChannel(name);
-      window.location.hash = name;
+    function linkToRoute(channel: Channel) {
+      channelStore.setCurrentChannel(channel);
+      window.location.hash = channel.title;
     }
 
     async function getChannelList() {
@@ -34,7 +34,7 @@ const ChannelList = observer(
                 // eslint-disable-next-line react/no-array-index-key
                 key={channel.title + i}
                 onClick={() => {
-                  linkToRoute(channel.title);
+                  linkToRoute(channel);
                 }}
                 aria-hidden="true"
               >
@@ -54,7 +54,6 @@ const ChannelList = observer(
     return (
       <div className={styles.container}>
         <div className={styles.header}>
-          <span>{channelStore.currentChannel}</span>
           <div className={styles.toolbar}>
             <span className={styles.toolbarItem}>
               <Icon name="add" />
@@ -77,7 +76,7 @@ const ChannelList = observer(
           </div>
         </div>
         <div className={styles.inner}>
-          <div className={styles.official}>
+          {/* <div className={styles.official}>
             <div
               className={styles.officialItem}
               onClick={() => {
@@ -117,7 +116,7 @@ const ChannelList = observer(
               />
               我的收藏
             </div>
-          </div>
+          </div> */}
           {renderFeedList(channelList)}
         </div>
       </div>
