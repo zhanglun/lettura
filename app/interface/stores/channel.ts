@@ -55,7 +55,7 @@ export class ChannelStore {
     return result;
   }
 
-  async setCurrentChannel(channel: Channel) {
+  setCurrentChannel(channel: Channel) {
     this.currentChannel = channel;
   }
 

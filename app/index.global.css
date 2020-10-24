@@ -25,3 +25,12 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+a {
+  text-decoration: none;
+  color: var(--app-link-default-color);
+}
+
+a:hover {
+  color: var(--app-link-hover-color);
+}

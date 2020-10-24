@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { useHistory, useParams } from 'react-router-dom';
 import { observer } from 'mobx-react';
-import * as routesConfig from '../../../infra/constants/routes';
 import { Icon } from '../Icon';
 import { channelStore } from '../../stores';
 import { Channel } from '../../../infra/types';
@@ -8,11 +8,15 @@ import styles from './channel.module.css';
 
 const ChannelList = observer(
   (): JSX.Element => {
-    const [channelList, setChannelList]: [Channel[], any] = useState([]);
+    const [channelList, setChannelList] = useState<Channel[]>([]);
 
-    function linkToRoute(channel: Channel) {
+    function viewChannel(channel: Channel) {
       channelStore.setCurrentChannel(channel);
-      window.location.hash = channel.title;
+      window.location.hash = `/channels/${channel.title}`;
+    }
+
+    function goToSettingPanel() {
+      window.location.hash = 'settings';
     }
 
     async function getChannelList() {
@@ -34,7 +38,7 @@ const ChannelList = observer(
                 // eslint-disable-next-line react/no-array-index-key
                 key={channel.title + i}
                 onClick={() => {
-                  linkToRoute(channel);
+                  viewChannel(channel);
                 }}
                 aria-hidden="true"
               >
@@ -67,7 +71,7 @@ const ChannelList = observer(
             <span
               className={styles.toolbarItem}
               onClick={() => {
-                linkToRoute(routesConfig.SETTINGS);
+                goToSettingPanel();
               }}
               aria-hidden="true"
             >

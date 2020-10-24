@@ -26,16 +26,3 @@
   background-color: #f6f7f8;
   border-right: 1px solid #efefef;
 }
-
-.articleList {
-  flex: 0 0 auto;
-  width: var(--app-article-width);
-  border-right: 1px solid #dedede;
-  background-color: #dedede;
-}
-
-.reader {
-  height: 100%;
-  flex: 1;
-  background-color: #3d3d3d;
-}

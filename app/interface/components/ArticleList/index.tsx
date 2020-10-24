@@ -40,7 +40,7 @@ function renderList(props: Props): JSX.Element {
 
 export const ArticleList = observer(
   (): JSX.Element => {
-    const [articleList, setArticleList]: [Article[], any] = useState([]);
+    const [articleList, setArticleList] = useState<Article[]>([]);
     const { feedUrl } = channelStore.currentChannel;
 
     const getArticleList = async () => {
@@ -49,7 +49,7 @@ export const ArticleList = observer(
     };
     useEffect(() => {
       getArticleList();
-    }, []);
+    }, [feedUrl]);
 
     return (
       <div className={styles.container}>{renderList({ articleList })}</div>

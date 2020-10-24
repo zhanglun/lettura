@@ -2,9 +2,8 @@ import React from 'react';
 import { HashRouter as Router, Route, Switch } from 'react-router-dom';
 import * as routesConfig from './infra/constants/routes';
 import { SettingModule } from './interface/modules/Settings';
+import { ArticleModule } from './interface/modules/Articles';
 import { ChannelList } from './interface/components/ChannelList';
-import { ArticleList } from './interface/components/ArticleList';
-import { ArticleView } from './interface/components/ArticleView';
 import styles from './app.module.css';
 
 function App() {
@@ -18,16 +17,11 @@ function App() {
         <div className={styles.mainInner}>
           <Router>
             <Switch>
-              <Route path="/">
-                <div className={styles.articleList}>
-                  <ArticleList />
-                </div>
-                <div className={styles.reader}>
-                  <ArticleView />
-                </div>
-              </Route>
-              <Route path={routesConfig.SETTINGS}>
+              <Route exact path={routesConfig.SETTINGS}>
                 <SettingModule />
+              </Route>
+              <Route exact path="/channels/:name">
+                <ArticleModule />
               </Route>
             </Switch>
           </Router>
