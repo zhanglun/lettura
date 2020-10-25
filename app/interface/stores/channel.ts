@@ -23,7 +23,7 @@ export class ChannelStore {
     description: '',
   };
 
-  currenArticle = {} as Article;
+  currentArticle = {} as Article;
 
   channelList: Channel[] = [];
 
@@ -72,11 +72,9 @@ export class ChannelStore {
 
     list.forEach((item) => {
       item.pubDate = Dayjs(item.pubDate).format('YYYY-MM-DD HH:mm');
-      console.log(item);
       return item;
     });
 
-    console.log(list);
     return list;
   }
 
@@ -100,10 +98,8 @@ export class ChannelStore {
       ...(feedUrl ? { feedUrl } : {}),
     };
 
-    console.log('query', query);
-
     const list = await db.articles.where(query).toArray();
-    console.log('===>', list);
+
     return list;
   }
 
@@ -116,17 +112,19 @@ export class ChannelStore {
       return;
     }
 
-    const values = items.map((item) => {
-      return {
-        feedUrl,
-        channelTitle,
-        ...item,
-        isRead: 0,
-        isLike: 0,
-        createDate: new Date().toString(),
-        updateDate: new Date().toString(),
-      };
-    });
+    const values = items.map(
+      (item): Article => {
+        return {
+          feedUrl,
+          channelTitle,
+          ...item,
+          isRead: 0,
+          isLike: 0,
+          createDate: new Date().toString(),
+          updateDate: new Date().toString(),
+        };
+      }
+    );
 
     await db.articles.bulkPut(values);
   }
@@ -144,6 +142,6 @@ export class ChannelStore {
   }
 
   setCurrentView(article: Article) {
-    this.currenArticle = article;
+    this.currentArticle = article;
   }
 }

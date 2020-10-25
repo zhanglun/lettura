@@ -19,6 +19,7 @@ export interface RSSFeedItem {
   author: string;
   category: string;
   comments: string;
+  content: string;
   pubDate: string;
 }
 
@@ -37,7 +38,6 @@ export interface Article extends RSSFeedItem {
   id?: number;
   feedUrl: string;
   channelTitle: string;
-  content: string;
   isRead: number; // 1: 未读 2: 已读
   isLike: number; // 1: 默认。不收藏 2: 收藏
   createDate: string;

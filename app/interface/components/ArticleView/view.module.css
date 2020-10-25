@@ -2,6 +2,7 @@
 .frame {
   width: 100%;
   height: 100%;
+  overflow-y: auto;
 }
 
 .toolbar {
@@ -12,7 +13,7 @@
 
 .title {
   margin: 34px 0 10px;
-  font-size: 24px;
+  font-size: 28px;
   font-weight: var(--font-bold-500);
 }
 
@@ -20,12 +21,25 @@
   .main {
     width: 80%;
     margin: 0 auto;
+    max-width: 900px;
   }
+}
+
+.placeholder {
+  height: 100%;
+  background-image: url('../../styles/images/mountain.webp');
+  background-size: 60%;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 .content {
   font-size: 16px;
   line-height: 1.7;
+}
+
+.content img {
+  max-width: 100%;
 }
 
 .browserButton {
