@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
 import { observer } from 'mobx-react';
 import { Icon } from '../Icon';
 import { channelStore } from '../../stores';
@@ -9,6 +8,7 @@ import styles from './channel.module.css';
 const ChannelList = observer(
   (): JSX.Element => {
     const [channelList, setChannelList] = useState<Channel[]>([]);
+    const { currentChannel } = channelStore;
 
     function viewChannel(channel: Channel) {
       channelStore.setCurrentChannel(channel);
@@ -34,7 +34,11 @@ const ChannelList = observer(
           {list.map((channel: Channel, i: number) => {
             return (
               <li
-                className={styles.item}
+                className={`${styles.item} ${
+                  currentChannel &&
+                  currentChannel.title === channel.title &&
+                  styles.itemHighlight
+                }`}
                 // eslint-disable-next-line react/no-array-index-key
                 key={channel.title + i}
                 onClick={() => {

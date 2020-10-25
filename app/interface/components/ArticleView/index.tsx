@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { observer } from 'mobx-react';
-import { Icon } from '../Icon';
+import { openBrowser } from '../../../infra/utils';
 import { channelStore } from '../../stores';
 import styles from './view.module.css';
 
@@ -14,7 +14,7 @@ export const ArticleView = observer(
 
     const viewInBrowser = () => {
       const { link } = currentArticle;
-      console.log(link);
+      openBrowser(link);
     };
 
     return (
