@@ -143,5 +143,17 @@ export class ChannelStore {
 
   setCurrentView(article: Article) {
     this.currentArticle = article;
+
+    db.articles
+      .where('link')
+      .equals(article.link)
+      .modify({ isRead: 1 })
+      .then((a) => {
+        console.log('isRead', a);
+        return a;
+      })
+      .catch((e) => {
+        console.log(e);
+      });
   }
 }

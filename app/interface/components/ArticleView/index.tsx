@@ -58,16 +58,27 @@ export const ArticleView = observer(
       );
     }
 
+    function handleGlobalClick(e: any) {
+      if (e.target.nodeName.toLowerCase() === 'a' && e.target.href) {
+        openBrowser(e.target.href);
+        e.preventDefault();
+      }
+    }
+
     useEffect(() => {
       resetScrollTop();
     }, [currentArticle]);
 
     return (
-      <div className={styles.container} ref={containerRef}>
+      // eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions
+      <div
+        className={styles.container}
+        ref={containerRef}
+        onClick={handleGlobalClick}
+      >
         {currentArticle && currentArticle.id
           ? renderDetail()
           : renderPlaceholder()}
-
         {/* <iframe
           className={styles.frame}
           key="view"
