@@ -79,13 +79,13 @@ export const ArticleView = observer(
         {currentArticle && currentArticle.id
           ? renderDetail()
           : renderPlaceholder()}
-        {/* <iframe
-          className={styles.frame}
-          key="view"
-          title="iframe"
-          src={currentArticle.link}
-          frameBorder="0"
-        /> */}
+        {/* <iframe */}
+        {/*  className={styles.frame} */}
+        {/*  key="view" */}
+        {/*  title="iframe" */}
+        {/*  src={currentArticle.link} */}
+        {/*  frameBorder="0" */}
+        {/* /> */}
       </div>
     );
   }

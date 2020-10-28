@@ -22,10 +22,6 @@
   list-style-type: none;
 }
 
-.itemHighlight {
-  background-color: rgba(0, 0, 0, 0.05);
-}
-
 .item:hover {
   background-color: #dedede;
   cursor: pointer;
@@ -34,12 +30,20 @@
 .title {
   font-size: 14px;
   color: #444;
-  font-weight: bold;
+  font-weight: var(--font-weight-bold);
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+}
+
+.itemReaded {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.itemReaded .title {
+  font-weight: var(--font-weight-normal);
 }
 
 .meta {

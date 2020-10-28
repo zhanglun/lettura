@@ -19,7 +19,7 @@
   padding-bottom: 8px;
   font-size: 16px;
   line-height: 14px;
-  font-weight: var(--font-bold-500);
+  font-weight: var(--font-weight-bold);
 }
 
 .description {
@@ -40,6 +40,6 @@
   margin-right: 56px;
   color: var(--headline-color);
   font-size: 14px;
-  font-weight: var(--font-bold-500);
+  font-weight: var(--font-weight-bold);
   line-height: 16px;
 }

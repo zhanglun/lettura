@@ -37,7 +37,7 @@ const ChannelList = observer(
                 className={`${styles.item} ${
                   currentChannel &&
                   currentChannel.title === channel.title &&
-                  styles.itemHighlight
+                  styles.itemReaded
                 }`}
                 // eslint-disable-next-line react/no-array-index-key
                 key={channel.title + i}
@@ -63,9 +63,9 @@ const ChannelList = observer(
       <div className={styles.container}>
         <div className={styles.header}>
           <div className={styles.toolbar}>
-            <span className={styles.toolbarItem}>
-              <Icon name="add" />
-            </span>
+            {/* <span className={styles.toolbarItem}> */}
+            {/*  <Icon name="add" /> */}
+            {/* </span> */}
             <span className={styles.toolbarItem}>
               <Icon name="folder" />
             </span>

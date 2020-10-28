@@ -8,5 +8,6 @@
   --link-default-color: #296bcc;
   --link-hover-color: #296bcc;
   --block-padding: 14px;
-  --font-bold-500: 500;
+  --font-weight-bold: 500;
+  --font-weight-normal: 400;
 }
