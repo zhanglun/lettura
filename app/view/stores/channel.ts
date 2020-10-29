@@ -2,7 +2,7 @@
 import { makeAutoObservable } from 'mobx';
 import Dayjs from 'dayjs';
 import RSSParser from 'rss-parser';
-import { dbInstance as db } from '../../database';
+import { dbInstance as db } from '../../model';
 import { Article, Channel, RSSFeedItem } from '../../infra/types';
 import { ArticleReadStatus } from '../../infra/constants/status';
 

@@ -1,5 +1,5 @@
-@import 'interface/styles/global.css';
-@import '../node_modules/react-tabs/style/react-tabs.css';
+@import 'global.css';
+@import '../../../node_modules/react-tabs/style/react-tabs.css';
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',

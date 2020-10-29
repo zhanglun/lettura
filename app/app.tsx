@@ -1,9 +1,9 @@
 import React from 'react';
 import { HashRouter as Router, Route, Switch } from 'react-router-dom';
 import * as routesConfig from './infra/constants/routes';
-import { SettingModule } from './interface/modules/Settings';
-import { ArticleModule } from './interface/modules/Articles';
-import { ChannelList } from './interface/components/ChannelList';
+import { SettingModule } from './view/modules/Settings';
+import { ArticleModule } from './view/modules/Articles';
+import { ChannelList } from './view/components/ChannelList';
 import styles from './app.module.css';
 
 function App() {

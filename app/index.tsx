@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.global.css';
+import './view/styles/index.global.css';
 import App from './app';
 import * as serviceWorker from './serviceWorker';
-import './database';
+import './model';
 
 ReactDOM.render(<App />, document.getElementById('root'));
 
