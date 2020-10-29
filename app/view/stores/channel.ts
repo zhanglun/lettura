@@ -5,6 +5,8 @@ import RSSParser from 'rss-parser';
 import { dbInstance as db } from '../../model';
 import { Article, Channel, RSSFeedItem } from '../../infra/types';
 import { ArticleReadStatus } from '../../infra/constants/status';
+import { channelRepo } from '../../repository/channel';
+import { articleRepo } from '../../repository/article';
 
 const parser = new RSSParser();
 
@@ -45,12 +47,8 @@ export class ChannelStore {
 
     delete feed.items;
 
-    try {
-      result = await db.channels.put(feed);
-      await this.updateFeedItems(feed.feedUrl, feed.title, items);
-    } catch (err) {
-      console.log(err);
-    }
+    result = await channelRepo.addOne(feed);
+    await channelRepo.insertFeedItems(feed.feedUrl, feed.title, items);
 
     return result;
   }
@@ -60,73 +58,17 @@ export class ChannelStore {
   }
 
   async getList() {
-    const channelList = await db.channels.toArray();
+    const list = await channelRepo.getAll();
 
-    this.channelList = channelList;
+    this.channelList = list;
 
-    return channelList;
+    return list;
   }
 
   async getArticleList(feedUrl: string) {
-    const list = await this.getUnreadArticleList(feedUrl);
-
-    list.forEach((item) => {
-      item.pubDate = Dayjs(item.pubDate).format('YYYY-MM-DD HH:mm');
-      return item;
-    });
+    const list = await articleRepo.getAllUnreadInChannel(feedUrl);
 
     return list;
-  }
-
-  async getToadyArticleList() {
-    // const query = {
-    //   isRead: ArticleReadStatus.unRead,
-    // }
-    //
-    // const list = await db.articles
-    //   .where('isRead')
-    //   .equals(ArticleReadStatus.unRead)
-    //   .and((item) => {
-    //     new Date(item.pubDate) > dayjs().startOf('day')
-    //   })
-    // return list;
-  }
-
-  async getUnreadArticleList(feedUrl?: string) {
-    const query = {
-      isRead: ArticleReadStatus.unRead,
-      ...(feedUrl ? { feedUrl } : {}),
-    };
-
-    const list = await db.articles.where(query).toArray();
-
-    return list;
-  }
-
-  async updateFeedItems(
-    feedUrl: string,
-    channelTitle: string,
-    items: RSSFeedItem[] = []
-  ) {
-    if (!items.length) {
-      return;
-    }
-
-    const values = items.map(
-      (item): Article => {
-        return {
-          feedUrl,
-          channelTitle,
-          ...item,
-          isRead: 0,
-          isLike: 0,
-          createDate: new Date().toString(),
-          updateDate: new Date().toString(),
-        };
-      }
-    );
-
-    await db.articles.bulkPut(values);
   }
 
   async parseRSS(): Promise<Omit<Channel, 'id'>> {

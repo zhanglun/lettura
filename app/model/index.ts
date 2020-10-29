@@ -5,7 +5,7 @@ import { ArticleModel } from './article';
 
 const VERSION = 1;
 
-class SalixDatabase extends Dexie {
+export class SalixDatabase extends Dexie {
   public channels!: Dexie.Table<Channel, string>;
 
   public articles: Dexie.Table<Article, string>;
