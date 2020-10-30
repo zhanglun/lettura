@@ -67,7 +67,7 @@ const ChannelList = observer(
             {/*  <Icon name="add" /> */}
             {/* </span> */}
             <span className={styles.toolbarItem}>
-              <Icon name="folder" />
+              <Icon name="create-new-folder" />
             </span>
             <span className={styles.toolbarItem}>
               <Icon name="refresh" />

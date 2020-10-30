@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { observer } from 'mobx-react';
+import { Icon } from '../Icon';
 import { openBrowser } from '../../../infra/utils';
 import { channelStore } from '../../stores';
 import styles from './view.module.css';
@@ -31,7 +32,12 @@ export const ArticleView = observer(
     function renderDetail() {
       return (
         <React.Fragment key="detail">
-          <div className={`${styles.toolbar} ${styles.main}`} />
+          <div className={`${styles.toolbar} ${styles.main}`}>
+            <Icon name="done" />
+            <Icon name="bookmark-border" />
+            <Icon name="favorite" />
+            <Icon name="open-in-new" />
+          </div>
           <div className={styles.main}>
             <div className={styles.header}>
               <div className={styles.title}>{currentArticle.title}</div>

@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import styles from '../settingpanel.module.css';
+import { parseRSS } from '../../../../infra/utils';
 import { channelStore } from '../../../stores';
+import styles from '../settingpanel.module.css';
 
 const SettingSubscribe: () => React.ReactNode = () => {
   const [feedUrl, setFeedUrl] = useState('');
 
-  function addFeed() {
-    channelStore.add(feedUrl);
+  async function addFeed() {
+    const feed = await parseRSS(feedUrl);
+    channelStore.add(feed);
   }
 
   return (
@@ -21,7 +23,7 @@ const SettingSubscribe: () => React.ReactNode = () => {
           onChange={(e) => setFeedUrl(e.target.value)}
         />
         <button type="button" onClick={addFeed}>
-          添加
+          搜索
         </button>
       </div>
     </div>
