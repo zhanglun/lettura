@@ -1,14 +1,9 @@
 /* eslint-disable class-methods-use-this */
 import { makeAutoObservable } from 'mobx';
-import Dayjs from 'dayjs';
-import RSSParser from 'rss-parser';
 import { dbInstance as db } from '../../model';
-import { Article, Channel, RSSFeedItem } from '../../infra/types';
-import { ArticleReadStatus } from '../../infra/constants/status';
+import { Article, Channel } from '../../infra/types';
 import { channelRepo } from '../../repository/channel';
 import { articleRepo } from '../../repository/article';
-
-const parser = new RSSParser();
 
 export class ChannelStore {
   feedUrl = '';
@@ -34,13 +29,10 @@ export class ChannelStore {
   }
 
   /**
-   * 添加 feed url
-   * @param {string} url feed url
+   * 添加 feed
+   * @param {RSSFeed} feed 解析出来的内容
    */
-  async add(url: string): Promise<string> {
-    this.feedUrl = url;
-
-    const feed = await this.parseRSS();
+  async add(feed: Channel): Promise<string> {
     const { items } = feed;
 
     let result = '';
@@ -66,21 +58,9 @@ export class ChannelStore {
   }
 
   async getArticleList(feedUrl: string) {
-    const list = await articleRepo.getAllUnreadInChannel(feedUrl);
+    const list = await articleRepo.getAllInChannel(feedUrl);
 
     return list;
-  }
-
-  async parseRSS(): Promise<Omit<Channel, 'id'>> {
-    const feed = (await parser.parseURL(this.feedUrl)) as Omit<Channel, 'id'>;
-
-    feed.category = '';
-    feed.favicon = `${feed.link}/favicon.ico`;
-    feed.tag = '';
-    feed.createDate = new Date().toString();
-    feed.createDate = new Date().toString();
-
-    return feed;
   }
 
   setCurrentView(article: Article) {
