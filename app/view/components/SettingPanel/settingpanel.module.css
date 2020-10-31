@@ -75,6 +75,11 @@
   margin: 0 0 14px;
 }
 
+.previewFollowButton {
+  float: right;
+  cursor: pointer;
+}
+
 .previewLink {
   font-size: 14px;
   color: var(--text-color);

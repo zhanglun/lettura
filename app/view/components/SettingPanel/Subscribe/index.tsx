@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { parseRSS } from '../../../../infra/utils';
-// import { channelStore } from '../../../stores';
+import { channelStore } from '../../../stores';
 import { Channel } from '../../../../infra/types';
 import styles from '../settingpanel.module.css';
 
@@ -10,10 +10,10 @@ const SettingSubscribe: () => React.ReactNode = () => {
   const [loading, setLoading] = useState(false);
   const [requested, setRequested] = useState(false);
 
-  async function addFeed() {
+  async function searchFeed() {
     setLoading(true);
     setRequested(false);
-    setFeedUrl('https://www.ifanr.com/feed');
+    // setFeedUrl('https://www.ifanr.com/feed');
 
     try {
       const feed = await parseRSS(feedUrl);
@@ -24,8 +24,10 @@ const SettingSubscribe: () => React.ReactNode = () => {
 
     setLoading(false);
     setRequested(true);
+  }
 
-    // channelStore.add(feed);
+  function addFeed() {
+    channelStore.add(feedRes);
   }
 
   useEffect(() => {
@@ -39,6 +41,13 @@ const SettingSubscribe: () => React.ReactNode = () => {
           <img className={styles.previewIcon} src={feedRes.favicon} alt="" />
           <div className={styles.previewBody}>
             <div className={styles.previewHeader}>
+              <button
+                className={styles.previewFollowButton}
+                type="button"
+                onClick={() => addFeed()}
+              >
+                订阅
+              </button>
               <p className={styles.previewTitle}>{feedRes.title}</p>
               <p className={styles.previewLink}>{feedRes.link}</p>
             </div>
@@ -67,7 +76,7 @@ const SettingSubscribe: () => React.ReactNode = () => {
             value={feedUrl}
             onChange={(e) => setFeedUrl(e.target.value)}
           />
-          <button type="button" onClick={addFeed}>
+          <button type="button" onClick={searchFeed}>
             搜索
           </button>
         </div>
