@@ -1,14 +1,58 @@
 import React, { useState, useEffect } from 'react';
 import { parseRSS } from '../../../../infra/utils';
-import { channelStore } from '../../../stores';
+// import { channelStore } from '../../../stores';
+import { Channel } from '../../../../infra/types';
 import styles from '../settingpanel.module.css';
 
 const SettingSubscribe: () => React.ReactNode = () => {
   const [feedUrl, setFeedUrl] = useState('');
+  const [feedRes, setFeedRes] = useState({} as Channel);
+  const [loading, setLoading] = useState(false);
+  const [requested, setRequested] = useState(false);
 
   async function addFeed() {
-    const feed = await parseRSS(feedUrl);
-    channelStore.add(feed);
+    setLoading(true);
+    setRequested(false);
+    setFeedUrl('https://www.ifanr.com/feed');
+
+    try {
+      const feed = await parseRSS(feedUrl);
+      setFeedRes(feed);
+    } catch (e) {
+      console.log(e);
+    }
+
+    setLoading(false);
+    setRequested(true);
+
+    // channelStore.add(feed);
+  }
+
+  useEffect(() => {
+    // setFeedUrl('https://www.ifanr.com/feed');
+  });
+
+  function showFeedInfo(): JSX.Element | string {
+    if (!loading && requested) {
+      return (
+        <div className={styles.preview}>
+          <img className={styles.previewIcon} src={feedRes.favicon} alt="" />
+          <div className={styles.previewBody}>
+            <div className={styles.previewHeader}>
+              <p className={styles.previewTitle}>{feedRes.title}</p>
+              <p className={styles.previewLink}>{feedRes.link}</p>
+            </div>
+            <p className={styles.previewDescription}>{feedRes.description}</p>
+          </div>
+        </div>
+      );
+    }
+
+    if (loading) {
+      return <div className={styles.previewLoading}>搜索中...</div>;
+    }
+
+    return '';
   }
 
   return (
@@ -17,14 +61,17 @@ const SettingSubscribe: () => React.ReactNode = () => {
         <h1 className={styles.panelTitle}>添加 RSS 源</h1>
       </div>
       <div className={styles.panelBody}>
-        <input
-          type="text"
-          value={feedUrl}
-          onChange={(e) => setFeedUrl(e.target.value)}
-        />
-        <button type="button" onClick={addFeed}>
-          搜索
-        </button>
+        <div>
+          <input
+            type="text"
+            value={feedUrl}
+            onChange={(e) => setFeedUrl(e.target.value)}
+          />
+          <button type="button" onClick={addFeed}>
+            搜索
+          </button>
+        </div>
+        {showFeedInfo()}
       </div>
     </div>
   );
