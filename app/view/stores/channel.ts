@@ -1,6 +1,5 @@
 /* eslint-disable class-methods-use-this */
 import { makeAutoObservable } from 'mobx';
-import { dbInstance as db } from '../../model';
 import { Article, Channel } from '../../infra/types';
 import { channelRepo } from '../../repository/channel';
 import { articleRepo } from '../../repository/article';
@@ -61,21 +60,5 @@ export class ChannelStore {
     const list = await articleRepo.getAllInChannel(feedUrl);
 
     return list;
-  }
-
-  setCurrentView(article: Article) {
-    this.currentArticle = article;
-
-    db.articles
-      .where('link')
-      .equals(article.link)
-      .modify({ isRead: 1 })
-      .then((a) => {
-        console.log('isRead', a);
-        return a;
-      })
-      .catch((e) => {
-        console.log(e);
-      });
   }
 }

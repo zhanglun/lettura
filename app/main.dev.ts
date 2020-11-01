@@ -8,12 +8,14 @@
  * When running `yarn build` or `yarn build-main`, this file is compiled to
  * `./app/main.prod.js` using webpack. This gives us some performance wins.
  */
+import 'reflect-metadata';
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import path from 'path';
 import { app, BrowserWindow } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
+import { Connection, createConnection } from 'typeorm';
 import MenuBuilder from './menu';
 
 export default class AppUpdater {
@@ -25,6 +27,7 @@ export default class AppUpdater {
 }
 
 let mainWindow: BrowserWindow | null = null;
+let connect: Connection | null = null;
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -49,6 +52,20 @@ const installExtensions = async () => {
 };
 
 const createWindow = async () => {
+  if (!connect) {
+    try {
+      connect = await createConnection({
+        type: 'better-sqlite3',
+        database: `${__dirname}/public/salix.sqlite`,
+        entities: [`${__dirname}/entity/*.ts`],
+        synchronize: true,
+        logging: true,
+      });
+    } catch (err) {
+      log.error(err);
+    }
+  }
+
   if (
     process.env.NODE_ENV === 'development' ||
     process.env.DEBUG_PROD === 'true'

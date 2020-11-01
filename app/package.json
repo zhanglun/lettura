@@ -16,6 +16,11 @@
   "license": "MIT",
   "dependencies": {
     "better-sqlite3": "^7.1.1",
-    "bulma": "^0.9.1"
+    "bulma": "^0.9.1",
+    "reflect-metadata": "^0.1.13",
+    "typeorm": "^0.2.28"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^5.4.1"
   }
 }
