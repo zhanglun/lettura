@@ -55,6 +55,7 @@ const createWindow = async () => {
   if (!connect) {
     try {
       connect = await createConnection({
+        name: 'salix',
         type: 'better-sqlite3',
         database: `${__dirname}/public/salix.sqlite`,
         entities: [`${__dirname}/entity/*.ts`],

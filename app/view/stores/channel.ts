@@ -1,8 +1,10 @@
 /* eslint-disable class-methods-use-this */
 import { makeAutoObservable } from 'mobx';
+import { getCustomRepository } from 'typeorm';
 import { Article, Channel } from '../../infra/types';
-import { channelRepo } from '../../repository/channel';
-import { articleRepo } from '../../repository/article';
+import { ChannelRepository } from '../../repository/channel';
+
+const channelRepo = getCustomRepository(ChannelRepository);
 
 export class ChannelStore {
   feedUrl = '';
@@ -32,33 +34,24 @@ export class ChannelStore {
    * @param {RSSFeed} feed 解析出来的内容
    */
   async add(feed: Channel): Promise<string> {
-    const { items } = feed;
-
-    let result = '';
-
+    // const { items } = feed;
     delete feed.items;
 
-    result = await channelRepo.addOne(feed);
-    await channelRepo.insertFeedItems(feed.feedUrl, feed.title, items);
+    await channelRepo.addOne(feed);
+    // await channelRepo.insertFeedItems(feed.feedUrl, feed.title, items);
 
-    return result;
+    return '';
   }
 
   setCurrentChannel(channel: Channel) {
     this.currentChannel = channel;
   }
 
-  async getList() {
-    const list = await channelRepo.getAll();
-
-    this.channelList = list;
-
-    return list;
-  }
-
-  async getArticleList(feedUrl: string) {
-    const list = await articleRepo.getAllInChannel(feedUrl);
-
-    return list;
-  }
+  // async getList() {
+  //   const list = await channelRepo.getAll();
+  //
+  //   this.channelList = list;
+  //
+  //   return list;
+  // }
 }
