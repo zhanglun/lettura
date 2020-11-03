@@ -1,17 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { observer } from 'mobx-react';
+import { getCustomRepository } from 'typeorm';
 import { Icon } from '../Icon';
-import { channelStore } from '../../stores';
+// import { channelStore } from '../../stores';
 import { Channel } from '../../../infra/types';
+import { ChannelRepository } from '../../../repository/channel';
+
 import styles from './channel.module.css';
 
 const ChannelList = observer(
   (): JSX.Element => {
+    const channelRepo = getCustomRepository(ChannelRepository);
     const [channelList, setChannelList] = useState<Channel[]>([]);
-    const { currentChannel } = channelStore;
+    // const { currentChannel } = channelStore;
+    const currentChannel = {
+      title: '',
+    };
 
     function viewChannel(channel: Channel) {
-      channelStore.setCurrentChannel(channel);
+      // channelStore.setCurrentChannel(channel);
       window.location.hash = `/channels/${channel.title}`;
     }
 
@@ -20,7 +27,7 @@ const ChannelList = observer(
     }
 
     async function getChannelList() {
-      const list = await channelStore.getList();
+      const list = await channelRepo.getList();
       setChannelList(list);
     }
 

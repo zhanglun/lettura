@@ -4,8 +4,6 @@ import { getCustomRepository } from 'typeorm';
 import { Article, Channel } from '../../infra/types';
 import { ChannelRepository } from '../../repository/channel';
 
-const channelRepo = getCustomRepository(ChannelRepository);
-
 export class ChannelStore {
   feedUrl = '';
 
@@ -25,8 +23,12 @@ export class ChannelStore {
 
   channelList: Channel[] = [];
 
+  channelRepo = {} as ChannelRepository;
+
   constructor() {
     makeAutoObservable(this);
+
+    this.channelRepo = getCustomRepository(ChannelRepository);
   }
 
   /**
@@ -37,7 +39,7 @@ export class ChannelStore {
     // const { items } = feed;
     delete feed.items;
 
-    await channelRepo.addOne(feed);
+    // await channelRepo.addOne(feed);
     // await channelRepo.insertFeedItems(feed.feedUrl, feed.title, items);
 
     return '';

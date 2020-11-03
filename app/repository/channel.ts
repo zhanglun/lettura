@@ -19,6 +19,12 @@ export class ChannelRepository extends Repository<ChannelEntity> {
     }
   }
 
+  async getList(): Promise<any> {
+    const list = await this.find({});
+
+    return list;
+  }
+
   // async insertFeedItems(
   //   feedUrl: string,
   //   channelTitle: string,
