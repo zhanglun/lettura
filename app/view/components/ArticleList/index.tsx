@@ -1,19 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { observer } from 'mobx-react';
 import styles from './article.module.css';
 import { Article } from '../../../infra/types';
-import { channelStore } from '../../stores';
+import { Article as ArticleEntity } from '../../../entity/article';
+import { StoreContext, StoreType } from '../../stores';
 
 export interface Props {
   articleList: Article[];
 }
 export const ArticleList = observer(
   (): JSX.Element => {
-    const [articleList, setArticleList] = useState<Article[]>([]);
+    const [articleList, setArticleList] = useState<ArticleEntity[]>([]);
     const [currentLink, setCurrentLink] = useState<string>('');
+
+    const { channelStore } = useContext(StoreContext) as StoreType;
     const { feedUrl } = channelStore.currentChannel;
 
-    function viewDetail(article: Article) {
+    function viewDetail(article: ArticleEntity) {
       channelStore.setCurrentView(article);
       setCurrentLink(article.link);
     }
@@ -21,7 +24,7 @@ export const ArticleList = observer(
     function renderList(): JSX.Element {
       return (
         <ul className={styles.list}>
-          {articleList.map((article: Article, i: number) => {
+          {articleList.map((article: ArticleEntity, i: number) => {
             return (
               <li
                 // eslint-disable-next-line react/no-array-index-key
@@ -34,7 +37,7 @@ export const ArticleList = observer(
               >
                 <div className={styles.title}>{article.title}</div>
                 <div className={styles.meta}>
-                  <span className={styles.channel}>{article.channelTitle}</span>
+                  {/* <span className={styles.channel}>{article.channelTitle}</span> */}
                   <span className={styles.pubTime}>{article.pubDate}</span>
                 </div>
               </li>

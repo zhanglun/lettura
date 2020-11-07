@@ -3,9 +3,10 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import log from 'electron-log';
 import App from './app';
-import { Channel } from './entity/Channel';
+import { Channel } from './entity/channel';
 import * as serviceWorker from './serviceWorker';
 import './view/styles/index.global.css';
+import { StoreContext, ChannelStore } from './view/stores';
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
@@ -27,9 +28,16 @@ createConnection({
   logging: true,
 })
   .then((c: Connection) => {
-    console.log('C', c);
+    const stores = {
+      channelStore: new ChannelStore(),
+    };
 
-    ReactDOM.render(<App />, document.getElementById('root'));
+    ReactDOM.render(
+      <StoreContext.Provider value={stores}>
+        <App />
+      </StoreContext.Provider>,
+      document.getElementById('root')
+    );
 
     return c;
   })

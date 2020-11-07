@@ -3,26 +3,35 @@ import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 @Entity()
 export class Channel {
   @PrimaryGeneratedColumn()
-  id: number | undefined;
+  id: number;
+
+  @Column({ type: 'varchar', default: '' })
+  title: string;
+
+  @Column({ type: 'varchar', default: '' })
+  description: string;
 
   @Column({ type: 'varchar' })
-  title: string | undefined;
+  feedUrl: string;
 
   @Column({ type: 'varchar' })
-  feedUrl: string | undefined;
+  link: string;
+
+  @Column({ type: 'int', default: 1000 })
+  ttl: number;
 
   @Column({ type: 'varchar' })
-  favicon: string | undefined;
+  favicon: string;
 
   @Column({ type: 'varchar' })
-  category: string | undefined;
+  category: string;
 
   @Column({ type: 'varchar' })
-  tag: string | undefined;
+  tag: string;
 
   @Column({ type: 'varchar' })
-  createDate: string | undefined;
+  createDate: string;
 
   @Column({ type: 'varchar' })
-  updateDate: string | undefined;
+  updateDate: string;
 }

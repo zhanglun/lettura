@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { parseRSS } from '../../../../infra/utils';
-import { channelStore } from '../../../stores';
 import { Channel } from '../../../../infra/types';
+import { StoreType, StoreContext } from '../../../stores';
 import styles from '../settingpanel.module.css';
 
 const SettingSubscribe: () => React.ReactNode = () => {
@@ -9,6 +9,7 @@ const SettingSubscribe: () => React.ReactNode = () => {
   const [feedRes, setFeedRes] = useState({} as Channel);
   const [loading, setLoading] = useState(false);
   const [requested, setRequested] = useState(false);
+  const { channelStore } = useContext(StoreContext) as StoreType;
 
   async function searchFeed() {
     setLoading(true);
@@ -26,13 +27,13 @@ const SettingSubscribe: () => React.ReactNode = () => {
     setRequested(true);
   }
 
-  function addFeed() {
-    channelStore.add(feedRes);
+  async function addFeed() {
+    const r = await channelStore.add(feedRes);
   }
 
   useEffect(() => {
-    // setFeedUrl('https://www.ifanr.com/feed');
-  });
+    setFeedUrl('https://www.ifanr.com/feed');
+  }, []);
 
   function showFeedInfo(): JSX.Element | string {
     if (!loading && requested) {

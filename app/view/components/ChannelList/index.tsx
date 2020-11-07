@@ -1,24 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { observer } from 'mobx-react';
-import { getCustomRepository } from 'typeorm';
 import { Icon } from '../Icon';
-// import { channelStore } from '../../stores';
 import { Channel } from '../../../infra/types';
-import { ChannelRepository } from '../../../repository/channel';
+import { Channel as ChannelEntity } from '../../../entity/channel';
+import { StoreType, StoreContext } from '../../stores';
 
 import styles from './channel.module.css';
 
 const ChannelList = observer(
   (): JSX.Element => {
-    const channelRepo = getCustomRepository(ChannelRepository);
-    const [channelList, setChannelList] = useState<Channel[]>([]);
-    // const { currentChannel } = channelStore;
+    const { channelStore } = useContext(StoreContext) as StoreType;
+    const [channelList, setChannelList] = useState<ChannelEntity[]>([]);
     const currentChannel = {
       title: '',
     };
 
-    function viewChannel(channel: Channel) {
-      // channelStore.setCurrentChannel(channel);
+    function viewChannel(channel: ChannelEntity) {
+      channelStore.setCurrentChannel(channel);
       window.location.hash = `/channels/${channel.title}`;
     }
 
@@ -27,7 +25,7 @@ const ChannelList = observer(
     }
 
     async function getChannelList() {
-      const list = await channelRepo.getList();
+      const list = await channelStore.getList();
       setChannelList(list);
     }
 
@@ -35,10 +33,10 @@ const ChannelList = observer(
       getChannelList();
     }, []);
 
-    function renderFeedList(list: Channel[]): JSX.Element {
+    function renderFeedList(list: ChannelEntity[]): JSX.Element {
       return (
         <ul className={styles.list}>
-          {list.map((channel: Channel, i: number) => {
+          {list.map((channel: ChannelEntity, i: number) => {
             return (
               <li
                 className={`${styles.item} ${

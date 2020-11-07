@@ -1,8 +1,8 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import { observer } from 'mobx-react';
 import { Icon } from '../Icon';
 import { openBrowser } from '../../../infra/utils';
-import { channelStore } from '../../stores';
+import { StoreContext, StoreType } from '../../stores';
 import styles from './view.module.css';
 
 function createMarkup(html: string) {
@@ -11,6 +11,7 @@ function createMarkup(html: string) {
 
 export const ArticleView = observer(
   (): JSX.Element => {
+    const { channelStore } = useContext(StoreContext) as StoreType;
     const { currentArticle } = channelStore;
     const containerRef = useRef<HTMLDivElement>(null);
 

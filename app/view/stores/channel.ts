@@ -2,22 +2,14 @@
 import { makeAutoObservable } from 'mobx';
 import { getCustomRepository } from 'typeorm';
 import { Article, Channel } from '../../infra/types';
+import { Channel as ChannelEntity } from '../../entity/channel';
+import { Article as ArticleEntity } from '../../entity/article';
 import { ChannelRepository } from '../../repository/channel';
 
 export class ChannelStore {
   feedUrl = '';
 
-  currentChannel: Channel = {
-    title: '',
-    feedUrl: '',
-    favicon: '',
-    category: '',
-    tag: '',
-    createDate: '',
-    updateDate: '',
-    link: '',
-    description: '',
-  };
+  currentChannel: ChannelEntity = {} as ChannelEntity;
 
   currentArticle = {} as Article;
 
@@ -35,25 +27,37 @@ export class ChannelStore {
    * 添加 feed
    * @param {RSSFeed} feed 解析出来的内容
    */
-  async add(feed: Channel): Promise<string> {
+  async add(feed: Channel): Promise<ChannelEntity | string> {
     // const { items } = feed;
     delete feed.items;
 
-    // await channelRepo.addOne(feed);
-    // await channelRepo.insertFeedItems(feed.feedUrl, feed.title, items);
+    try {
+      const result = await this.channelRepo.addOne(feed);
+      // await this.channelRepo.insertFeedItems(feed.feedUrl, feed.title, items);
+
+      return result;
+    } catch (err) {
+      alert(err.message);
+    }
 
     return '';
   }
 
-  setCurrentChannel(channel: Channel) {
+  setCurrentChannel(channel: ChannelEntity) {
     this.currentChannel = channel;
   }
 
-  // async getList() {
-  //   const list = await channelRepo.getAll();
-  //
-  //   this.channelList = list;
-  //
-  //   return list;
-  // }
+  async getList(): Promise<ChannelEntity[]> {
+    const list = await this.channelRepo.getAll();
+
+    return list;
+  }
+
+  setCurrentView(article: ArticleEntity): number {
+    return 1;
+  }
+
+  async getArticleList(url: string): Promise<ArticleEntity[]> {
+    return [];
+  }
 }

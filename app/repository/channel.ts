@@ -1,5 +1,5 @@
 import { EntityRepository, Repository } from 'typeorm';
-import { Channel as ChannelEntity } from '../entity/Channel';
+import { Channel as ChannelEntity } from '../entity/channel';
 import { Channel } from '../infra/types';
 
 @EntityRepository(ChannelEntity)
@@ -11,6 +11,9 @@ export class ChannelRepository extends Repository<ChannelEntity> {
   }
 
   async addOne(feed: Channel): Promise<Channel> {
+    feed.createDate = new Date().toString();
+    feed.updateDate = new Date().toString();
+
     try {
       return await this.save(feed);
     } catch (err) {
