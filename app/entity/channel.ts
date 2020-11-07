@@ -11,7 +11,7 @@ export class Channel {
   @Column({ type: 'varchar', default: '' })
   description: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', unique: true })
   feedUrl: string;
 
   @Column({ type: 'varchar' })

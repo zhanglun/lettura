@@ -5,6 +5,9 @@ export class Article {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column({ type: 'number' })
+  channelId: number;
+
   @Column({ type: 'varchar', default: '' })
   title: string;
 

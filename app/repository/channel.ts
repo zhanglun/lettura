@@ -10,19 +10,14 @@ export class ChannelRepository extends Repository<ChannelEntity> {
     return list;
   }
 
-  async addOne(feed: Channel): Promise<Channel> {
+  async addOne(feed: Channel): Promise<ChannelEntity> {
     feed.createDate = new Date().toString();
     feed.updateDate = new Date().toString();
 
-    try {
-      return await this.save(feed);
-    } catch (err) {
-      console.log(err);
-      return err.message;
-    }
+    return this.save(feed);
   }
 
-  async getList(): Promise<any> {
+  async getList(): Promise<ChannelEntity[]> {
     const list = await this.find({});
 
     return list;
