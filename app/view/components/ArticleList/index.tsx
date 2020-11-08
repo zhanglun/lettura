@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { observer } from 'mobx-react';
 import styles from './article.module.css';
 import { Article } from '../../../infra/types';
-import { Article as ArticleEntity } from '../../../entity/article';
+import { ArticleEntity } from '../../../entity/article';
 import { StoreContext, StoreType } from '../../stores';
 
 export interface Props {
@@ -13,11 +13,13 @@ export const ArticleList = observer(
     const [articleList, setArticleList] = useState<ArticleEntity[]>([]);
     const [currentLink, setCurrentLink] = useState<string>('');
 
-    const { channelStore } = useContext(StoreContext) as StoreType;
-    const { feedUrl } = channelStore.currentChannel;
+    const { channelStore, articleStore } = useContext(
+      StoreContext
+    ) as StoreType;
+    const { currentChannel } = channelStore;
 
     function viewDetail(article: ArticleEntity) {
-      channelStore.setCurrentView(article);
+      articleStore.setCurrentView(article);
       setCurrentLink(article.link);
     }
 
@@ -48,12 +50,12 @@ export const ArticleList = observer(
     }
 
     const getArticleList = async () => {
-      const list = await channelStore.getArticleList(feedUrl);
+      const list = await articleStore.getAllList();
       return setArticleList(list);
     };
     useEffect(() => {
       getArticleList();
-    }, [feedUrl]);
+    }, [currentChannel]);
 
     return <div className={styles.container}>{renderList()}</div>;
   }

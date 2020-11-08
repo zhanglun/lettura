@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { observer } from 'mobx-react';
 import { Icon } from '../Icon';
-import { Channel } from '../../../infra/types';
-import { Channel as ChannelEntity } from '../../../entity/channel';
+import { ChannelEntity } from '../../../entity/channel';
 import { StoreType, StoreContext } from '../../stores';
 
 import styles from './channel.module.css';

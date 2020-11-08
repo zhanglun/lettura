@@ -3,10 +3,11 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import log from 'electron-log';
 import App from './app';
-import { Channel } from './entity/channel';
+import { ChannelEntity } from './entity/channel';
+import { ArticleEntity } from './entity/article';
 import * as serviceWorker from './serviceWorker';
 import './view/styles/index.global.css';
-import { StoreContext, ChannelStore } from './view/stores';
+import { StoreContext, ChannelStore, ArticleStore } from './view/stores';
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
@@ -16,7 +17,7 @@ serviceWorker.unregister();
 createConnection({
   type: 'better-sqlite3',
   database: './public/salix.sqlite',
-  entities: [Channel],
+  entities: [ChannelEntity, ArticleEntity],
   // entities: ['./entity/*.ts'],
   // database: `${__dirname}/public/salix.sqlite`,
   // 没搞明白为什么这里不能使用绝对路径，应该和webpack有关系
@@ -30,6 +31,7 @@ createConnection({
   .then((c: Connection) => {
     const stores = {
       channelStore: new ChannelStore(),
+      articleStore: new ArticleStore(),
     };
 
     ReactDOM.render(

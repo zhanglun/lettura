@@ -1,91 +1,73 @@
-// import Dayjs from 'dayjs';
-// import { dbInstance as db, SalixDatabase } from '../model';
-// import { Article, Channel, RSSFeedItem } from '../infra/types';
-// import { ArticleReadStatus } from '../infra/constants/status';
-//
-// class ArticleRepo {
-//   private db: SalixDatabase;
-//
-//   constructor() {
-//     this.db = db;
-//   }
-//
-//   async getAll() {
-//     const list = await this.db.articles.toArray();
-//
-//     return list;
-//   }
-//
-//   async getAllInChannel(feedUrl: string): Promise<Article[]> {
-//     const query = {
-//       feedUrl,
-//     };
-//
-//     const list = await this.db.articles.where(query).toArray();
-//
-//     return list;
-//   }
-//
-//   async getAllUnread(): Promise<Article[]> {
-//     const query = {
-//       isRead: ArticleReadStatus.unRead,
-//     };
-//
-//     const list = await this.db.articles.where(query).toArray();
-//
-//     return list;
-//   }
-//
-//   async getAllUnreadInChannel(feedUrl: string): Promise<Article[]> {
-//     const query = {
-//       isRead: ArticleReadStatus.unRead,
-//       feedUrl,
-//     };
-//
-//     const list = await this.db.articles.where(query).toArray();
-//
-//     list.forEach((item) => {
-//       item.pubDate = Dayjs(item.pubDate).format('YYYY-MM-DD HH:mm');
-//       return item;
-//     });
-//
-//     return list;
-//   }
-//
-//   async addOne(feed: Channel): Promise<string> {
-//     try {
-//       return await this.db.channels.put(feed);
-//     } catch (err) {
-//       console.log(err);
-//       return err.message;
-//     }
-//   }
-//
-//   async insertFeedItems(
-//     feedUrl: string,
-//     channelTitle: string,
-//     items: RSSFeedItem[] = []
-//   ) {
-//     if (!items.length) {
-//       return;
-//     }
-//
-//     const values = items.map(
-//       (item): Article => {
-//         return {
-//           feedUrl,
-//           channelTitle,
-//           ...item,
-//           isRead: 0,
-//           isLike: 0,
-//           createDate: new Date().toString(),
-//           updateDate: new Date().toString(),
-//         };
-//       }
-//     );
-//
-//     await this.db.articles.bulkPut(values);
-//   }
-// }
-//
-// export const articleRepo = new ArticleRepo();
+/* eslint-disable class-methods-use-this */
+import { EntityRepository, Repository } from 'typeorm';
+import Dayjs from 'dayjs';
+import { ArticleEntity } from '../entity/article';
+import { Article, Channel, RSSFeedItem } from '../infra/types';
+import { ArticleReadStatus } from '../infra/constants/status';
+import { ChannelEntity } from '../entity/channel';
+
+@EntityRepository(ArticleEntity)
+export class ArticleRepository extends Repository<ArticleEntity> {
+  async getAll(): Promise<ArticleEntity[]> {
+    const list = await this.find({});
+    return list;
+  }
+
+  async getListWithChannelId(channelId: string) {
+    const channel = new ChannelEntity();
+    channel.id = channelId;
+
+    const list = this.find({
+      where: {
+        channel,
+      },
+    });
+
+    console.log(list);
+
+    return list;
+  }
+
+  // async getUnreadListWithChannelId() {}
+  //
+  // async getReadListWithChannelId() {}
+
+  /**
+   * 添加文件
+   * @param {string} channelId uuid
+   * @param items
+   */
+  async insertArticles(channelId: string, items: RSSFeedItem[] = []) {
+    if (!items.length) {
+      return;
+    }
+
+    const channel = new ChannelEntity();
+
+    channel.id = channelId;
+
+    const values = items.map(
+      (item): ArticleEntity => {
+        const article = new ArticleEntity();
+
+        article.author = item.author;
+        article.category = 0;
+        article.channel = channel;
+        article.comments = item.comments;
+        article.content = item.content;
+        article.description = item.description;
+        article.link = item.link;
+        article.pubDate = item.pubDate;
+        article.title = item.title;
+        article.hasRead = 0;
+        article.isLike = 0;
+        article.createDate = new Date().toString();
+        article.updateDate = new Date().toString();
+
+        return article;
+      }
+    );
+
+    await this.save(values);
+  }
+}

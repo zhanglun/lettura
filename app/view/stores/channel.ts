@@ -1,26 +1,30 @@
 /* eslint-disable class-methods-use-this */
 import { makeAutoObservable } from 'mobx';
 import { getCustomRepository } from 'typeorm';
-import { Article, Channel } from '../../infra/types';
-import { Channel as ChannelEntity } from '../../entity/channel';
-import { Article as ArticleEntity } from '../../entity/article';
+import { Channel } from '../../infra/types';
+import { ChannelEntity } from '../../entity/channel';
+import { ArticleEntity } from '../../entity/article';
 import { ChannelRepository } from '../../repository/channel';
+import { ArticleRepository } from '../../repository/article';
 
 export class ChannelStore {
-  feedUrl = '';
+  feedUrl: string;
 
-  currentChannel: ChannelEntity = {} as ChannelEntity;
+  currentChannel: ChannelEntity;
 
-  currentArticle = {} as Article;
+  currentArticle: ArticleEntity;
 
-  channelList: Channel[] = [];
+  channelList: Channel[];
 
-  channelRepo = {} as ChannelRepository;
+  channelRepo: ChannelRepository;
+
+  articleRepo: ArticleRepository;
 
   constructor() {
     makeAutoObservable(this);
 
     this.channelRepo = getCustomRepository(ChannelRepository);
+    this.articleRepo = getCustomRepository(ArticleRepository);
   }
 
   /**
@@ -28,16 +32,16 @@ export class ChannelStore {
    * @param {RSSFeed} feed 解析出来的内容
    */
   async add(feed: Channel): Promise<ChannelEntity | string> {
-    // const { items } = feed;
+    const { items } = feed;
     delete feed.items;
 
     try {
       const result = await this.channelRepo.addOne(feed);
-      // await this.channelRepo.insertFeedItems(feed.feedUrl, feed.title, items);
+      await this.articleRepo.insertArticles(result.id, items);
 
       return result;
     } catch (err) {
-      alert(err.message);
+      console.error(err.message);
     }
 
     return '';
@@ -51,13 +55,5 @@ export class ChannelStore {
     const list = await this.channelRepo.getAll();
 
     return list;
-  }
-
-  setCurrentView(article: ArticleEntity): number {
-    return 1;
-  }
-
-  async getArticleList(url: string): Promise<ArticleEntity[]> {
-    return [];
   }
 }

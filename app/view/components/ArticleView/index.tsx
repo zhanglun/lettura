@@ -11,8 +11,8 @@ function createMarkup(html: string) {
 
 export const ArticleView = observer(
   (): JSX.Element => {
-    const { channelStore } = useContext(StoreContext) as StoreType;
-    const { currentArticle } = channelStore;
+    const { articleStore } = useContext(StoreContext) as StoreType;
+    const { currentArticle } = articleStore;
     const containerRef = useRef<HTMLDivElement>(null);
 
     const viewInBrowser = () => {

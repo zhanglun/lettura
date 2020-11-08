@@ -28,7 +28,7 @@ const SettingSubscribe: () => React.ReactNode = () => {
   }
 
   async function addFeed() {
-    const r = await channelStore.add(feedRes);
+    await channelStore.add(feedRes);
   }
 
   useEffect(() => {
