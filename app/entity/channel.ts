@@ -1,37 +1,42 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+// eslint-disable-next-line import/no-cycle
+import { ArticleEntity } from './article';
 
-@Entity()
-export class Channel {
-  @PrimaryGeneratedColumn()
-  id: number;
+@Entity('channel')
+export class ChannelEntity {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @Column({ type: 'varchar', default: '' })
+  @Column({ type: 'varchar', default: '', comment: '频道标题' })
   title: string;
 
-  @Column({ type: 'varchar', default: '' })
+  @Column({ type: 'varchar', default: '', comment: '描述' })
   description: string;
 
-  @Column({ type: 'varchar', unique: true })
+  @Column({ type: 'varchar', unique: true, comment: '订阅地址' })
   feedUrl: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', comment: '站点链接' })
   link: string;
 
-  @Column({ type: 'int', default: 1000 })
+  @Column({ type: 'int', default: 1000, comment: '刷新时间间隔' })
   ttl: number;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', comment: '站点icon' })
   favicon: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', comment: '分类' })
   category: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', comment: '标签' })
   tag: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', comment: '添加时间' })
   createDate: string;
 
   @Column({ type: 'varchar' })
   updateDate: string;
+
+  @OneToMany(() => ArticleEntity, (article) => article.channel)
+  articles: ArticleEntity;
 }
