@@ -20,6 +20,7 @@ export interface RSSFeedItem {
   category: string;
   comments: string;
   content: string;
+  contentEncoded?: string;
   pubDate: string;
 }
 

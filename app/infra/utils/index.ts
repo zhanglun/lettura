@@ -1,8 +1,12 @@
 import { shell } from 'electron';
 import RSSParser from 'rss-parser';
-import { Channel } from '../types';
+import { Channel, RSSFeedItem } from '../types';
 
-const parser = new RSSParser();
+const parser = new RSSParser({
+  customFields: {
+    item: [['content:encoded', 'contentEncoded']],
+  },
+});
 
 export function openBrowser(link: string) {
   shell.openExternal(link);
@@ -19,7 +23,15 @@ export async function parseRSS(feedUrl: string): Promise<Omit<Channel, 'id'>> {
   feed.favicon = `${new URL(feed.link).origin}/favicon.ico`;
   feed.tag = '';
   feed.createDate = new Date().toString();
-  feed.createDate = new Date().toString();
+  feed.updateDate = new Date().toString();
+
+  feed.items?.forEach((item: RSSFeedItem) => {
+    const { content, contentEncoded } = item;
+
+    item.content = contentEncoded || content;
+  });
+
+  console.log(feed);
 
   return feed;
 }
