@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
+import { useHistory } from 'react-router-dom';
 import { observer } from 'mobx-react';
 import { Icon } from '../Icon';
 import { ChannelEntity } from '../../../entity/channel';
@@ -10,13 +11,24 @@ const ChannelList = observer(
   (): JSX.Element => {
     const { channelStore } = useContext(StoreContext) as StoreType;
     const [channelList, setChannelList] = useState<ChannelEntity[]>([]);
-    const currentChannel = {
-      title: '',
-    };
+    const { currentChannel } = channelStore;
+    const history = useHistory();
+
+    console.log('currentChannel');
 
     function viewChannel(channel: ChannelEntity) {
       channelStore.setCurrentChannel(channel);
-      window.location.hash = `/channels/${channel.title}`;
+      history.push(`/channels/${channel.id}`);
+
+      console.log('currentChannel', currentChannel);
+    }
+
+    function viewAll() {
+      history.push('/all');
+    }
+
+    function viewFavorite() {
+      history.push('/favorite');
     }
 
     function goToSettingPanel() {
@@ -88,11 +100,11 @@ const ChannelList = observer(
           </div>
         </div>
         <div className={styles.inner}>
-          {/* <div className={styles.official}>
+          <div className={styles.official}>
             <div
               className={styles.officialItem}
               onClick={() => {
-                linkToRoute(routesConfig.HOME);
+                viewAll();
               }}
               aria-hidden="true"
             >
@@ -102,7 +114,7 @@ const ChannelList = observer(
               />
               所有未读
             </div>
-            <div
+            {/* <div
               className={styles.officialItem}
               onClick={() => {
                 linkToRoute(routesConfig.TODAY);
@@ -114,11 +126,11 @@ const ChannelList = observer(
                 name="calendar_today"
               />
               今日未读
-            </div>
+            </div> */}
             <div
               className={styles.officialItem}
               onClick={() => {
-                linkToRoute(routesConfig.FAVORITE);
+                viewFavorite();
               }}
               aria-hidden
             >
@@ -128,7 +140,7 @@ const ChannelList = observer(
               />
               我的收藏
             </div>
-          </div> */}
+          </div>
           {renderFeedList(channelList)}
         </div>
       </div>

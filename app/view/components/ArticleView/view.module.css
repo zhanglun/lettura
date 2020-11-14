@@ -40,6 +40,16 @@
 
 .content img {
   max-width: 100%;
+  height: auto;
+}
+
+.content blockquote {
+  color: #808080;
+  font-size: 14px;
+  border-left: 5px solid #eaeaea;
+  margin: 30px 5%;
+  padding-left: 3%;
+  line-height: 1.7em;
 }
 
 .browserButton {

@@ -1,5 +1,5 @@
 /* eslint-disable class-methods-use-this */
-import { makeAutoObservable } from 'mobx';
+import { makeAutoObservable, runInAction } from 'mobx';
 import { getCustomRepository } from 'typeorm';
 import { Channel } from '../../infra/types';
 import { ChannelEntity } from '../../entity/channel';
@@ -10,7 +10,7 @@ import { ArticleRepository } from '../../repository/article';
 export class ChannelStore {
   feedUrl: string;
 
-  currentChannel: ChannelEntity;
+  currentChannel: ChannelEntity = {} as ChannelEntity;
 
   currentArticle: ArticleEntity;
 
@@ -48,7 +48,9 @@ export class ChannelStore {
   }
 
   setCurrentChannel(channel: ChannelEntity) {
-    this.currentChannel = channel;
+    runInAction(() => {
+      this.currentChannel = channel;
+    });
   }
 
   async getList(): Promise<ChannelEntity[]> {

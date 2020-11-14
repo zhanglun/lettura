@@ -1,6 +1,5 @@
 /* eslint-disable class-methods-use-this */
 import { EntityRepository, Repository } from 'typeorm';
-import Dayjs from 'dayjs';
 import { ArticleEntity } from '../entity/article';
 import { Article, Channel, RSSFeedItem } from '../infra/types';
 import { ArticleReadStatus } from '../infra/constants/status';
@@ -14,16 +13,15 @@ export class ArticleRepository extends Repository<ArticleEntity> {
   }
 
   async getListWithChannelId(channelId: string) {
-    const channel = new ChannelEntity();
-    channel.id = channelId;
-
-    const list = this.find({
-      where: {
-        channel,
-      },
-    });
-
-    console.log(list);
+    const list = await this.createQueryBuilder('article')
+      .leftJoinAndSelect('article.channel', 'channel')
+      .where('article.channelId = :channelId', { channelId })
+      .select([
+        'article.*',
+        'channel.title as channelTitle',
+        'channel.favicon as channelFavicon',
+      ])
+      .execute();
 
     return list;
   }

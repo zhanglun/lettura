@@ -1,16 +1,19 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { observer } from 'mobx-react';
+import Dayjs from 'dayjs';
 import styles from './article.module.css';
-import { Article } from '../../../infra/types';
 import { ArticleEntity } from '../../../entity/article';
 import { StoreContext, StoreType } from '../../stores';
+import { Article } from '../../../infra/types';
 
-export interface Props {
-  articleList: Article[];
-}
+type Props = {
+  type: 'all' | 'favorite' | 'channel';
+};
+
 export const ArticleList = observer(
-  (): JSX.Element => {
-    const [articleList, setArticleList] = useState<ArticleEntity[]>([]);
+  (props: Props): JSX.Element => {
+    const { type } = props;
+    const [articleList, setArticleList] = useState<Article[]>([]);
     const [currentLink, setCurrentLink] = useState<string>('');
 
     const { channelStore, articleStore } = useContext(
@@ -26,7 +29,7 @@ export const ArticleList = observer(
     function renderList(): JSX.Element {
       return (
         <ul className={styles.list}>
-          {articleList.map((article: ArticleEntity, i: number) => {
+          {articleList.map((article: Article, i: number) => {
             return (
               <li
                 // eslint-disable-next-line react/no-array-index-key
@@ -39,8 +42,10 @@ export const ArticleList = observer(
               >
                 <div className={styles.title}>{article.title}</div>
                 <div className={styles.meta}>
-                  {/* <span className={styles.channel}>{article.channelTitle}</span> */}
-                  <span className={styles.pubTime}>{article.pubDate}</span>
+                  <span className={styles.channel}>{article.channelTitle}</span>
+                  <span className={styles.pubTime}>
+                    {Dayjs(article.pubDate).format('YYYY-MM-DD HH:mm')}
+                  </span>
                 </div>
               </li>
             );
@@ -50,12 +55,23 @@ export const ArticleList = observer(
     }
 
     const getArticleList = async () => {
-      const list = await articleStore.getAllList();
+      console.log('currentType', type);
+
+      if (type === 'all') {
+        const list = await articleStore.getAllList();
+        return setArticleList(list);
+      }
+
+      const list = await articleStore.getListWithChannelId(currentChannel.id);
+
+      console.log(list);
+
       return setArticleList(list);
     };
+
     useEffect(() => {
       getArticleList();
-    }, [currentChannel]);
+    }, [type, currentChannel]);
 
     return <div className={styles.container}>{renderList()}</div>;
   }

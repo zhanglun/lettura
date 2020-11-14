@@ -9,24 +9,27 @@ import styles from './app.module.css';
 function App() {
   return (
     <div className={styles.container}>
-      <div className={styles.channel}>
-        <ChannelList />
-      </div>
+      <Router>
+        <div className={styles.channel}>
+          <ChannelList />
+        </div>
 
-      <div className={styles.main}>
-        <div className={styles.mainInner}>
-          <Router>
+        <div className={styles.main}>
+          <div className={styles.mainInner}>
             <Switch>
               <Route exact path={routesConfig.SETTINGS}>
                 <SettingModule />
+              </Route>
+              <Route exact path="/all">
+                <ArticleModule />
               </Route>
               <Route exact path="/channels/:name">
                 <ArticleModule />
               </Route>
             </Switch>
-          </Router>
+          </div>
         </div>
-      </div>
+      </Router>
     </div>
   );
 }
