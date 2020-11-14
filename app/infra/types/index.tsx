@@ -1,4 +1,5 @@
 import { ArticleEntity } from '../../entity/article';
+import { ChannelEntity } from '../../entity/channel';
 
 // RSS2.0 规范约定字段
 export interface RSSFeed {
@@ -26,15 +27,8 @@ export interface RSSFeedItem {
   pubDate: string;
 }
 
-export interface Channel extends RSSFeed {
-  id?: number;
-  title: string;
-  feedUrl: string;
-  favicon: string;
-  category: string;
-  tag: string;
-  createDate: string;
-  updateDate: string;
+export interface Channel extends ChannelEntity {
+  articleCount?: number;
 }
 
 export type Article = ArticleEntity & {

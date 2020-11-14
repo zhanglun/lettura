@@ -43,6 +43,10 @@
   color: var(--title-color);
 }
 
+.read .title {
+  color: var(--title-color);
+}
+
 .meta {
   display: flex;
   justify-content: space-between;

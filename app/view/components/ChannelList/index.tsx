@@ -3,6 +3,7 @@ import { useHistory } from 'react-router-dom';
 import { observer } from 'mobx-react';
 import { Icon } from '../Icon';
 import { ChannelEntity } from '../../../entity/channel';
+import { Channel } from '../../../infra/types';
 import { ChannelType } from '../../../infra/constants/status';
 import { StoreType, StoreContext } from '../../stores';
 
@@ -18,9 +19,8 @@ const ChannelList = observer(
     function viewChannel(channel: ChannelEntity) {
       channelStore.setCurrentChannel(channel);
       channelStore.setCurrentType('channel');
-      history.push(`/channels/${channel.id}`);
 
-      console.log('currentChannel', currentChannel);
+      history.push(`/channels/${channel.id}`);
     }
 
     function viewAll() {
@@ -46,10 +46,10 @@ const ChannelList = observer(
       getChannelList();
     }, []);
 
-    function renderFeedList(list: ChannelEntity[]): JSX.Element {
+    function renderFeedList(list: Channel[]): JSX.Element {
       return (
         <ul className={styles.list}>
-          {list.map((channel: ChannelEntity, i: number) => {
+          {list.map((channel: Channel, i: number) => {
             return (
               <li
                 className={`${styles.item} ${
@@ -70,6 +70,7 @@ const ChannelList = observer(
                   alt={channel.title}
                 />
                 <span className={styles.name}>{channel.title}</span>
+                <span className={styles.count}>{channel.articleCount}</span>
               </li>
             );
           })}
@@ -84,21 +85,16 @@ const ChannelList = observer(
             {/* <span className={styles.toolbarItem}> */}
             {/*  <Icon name="add" /> */}
             {/* </span> */}
-            <span className={styles.toolbarItem}>
-              <Icon name="create-new-folder" />
-            </span>
-            <span className={styles.toolbarItem}>
-              <Icon name="refresh" />
-            </span>
-            <span
-              className={styles.toolbarItem}
+            <Icon name="create-new-folder" customClass={styles.toolbarItem} />
+            <Icon name="refresh" customClass={styles.toolbarItem} />
+            <Icon
+              name="settings"
+              customClass={styles.toolbarItem}
               onClick={() => {
                 goToSettingPanel();
               }}
               aria-hidden="true"
-            >
-              <Icon name="settings" />
-            </span>
+            />
           </div>
         </div>
         <div className={styles.inner}>
