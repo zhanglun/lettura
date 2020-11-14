@@ -1,18 +1,25 @@
 /* eslint-disable class-methods-use-this */
 import { EntityRepository, Repository } from 'typeorm';
 import { ArticleEntity } from '../entity/article';
-import { Article, Channel, RSSFeedItem } from '../infra/types';
-import { ArticleReadStatus } from '../infra/constants/status';
+import { Article, RSSFeedItem } from '../infra/types';
 import { ChannelEntity } from '../entity/channel';
 
 @EntityRepository(ArticleEntity)
 export class ArticleRepository extends Repository<ArticleEntity> {
-  async getAll(): Promise<ArticleEntity[]> {
-    const list = await this.find({});
+  async getAll(): Promise<Article[]> {
+    const list = await this.createQueryBuilder('article')
+      .leftJoinAndSelect('article.channel', 'channel')
+      .select([
+        'article.*',
+        'channel.title as channelTitle',
+        'channel.favicon as channelFavicon',
+      ])
+      .execute();
+
     return list;
   }
 
-  async getListWithChannelId(channelId: string) {
+  async getListWithChannelId(channelId: string): Promise<Article[]> {
     const list = await this.createQueryBuilder('article')
       .leftJoinAndSelect('article.channel', 'channel')
       .where('article.channelId = :channelId', { channelId })

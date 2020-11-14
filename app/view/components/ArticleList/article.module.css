@@ -1,7 +1,7 @@
 .container {
   height: 100%;
   min-height: 100%;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 .list {
@@ -14,8 +14,8 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 68px;
-  padding: 4px 14px;
+  height: 80px;
+  padding: 8px 12px;
   margin-top: -1px;
   border-top: 1px solid #dedede;
   border-bottom: 1px solid #dedede;
@@ -38,18 +38,27 @@
   -webkit-box-orient: vertical;
 }
 
-.itemReaded {
+.read {
   background-color: rgba(0, 0, 0, 0.05);
-}
-
-.itemReaded .title {
-  font-weight: var(--font-weight-normal);
+  color: var(--title-color);
 }
 
 .meta {
   display: flex;
   justify-content: space-between;
   font-size: 12px;
+}
+
+.channel {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.channel img {
+  width: 14px;
+  height: 14px;
 }
 
 .pubTime {

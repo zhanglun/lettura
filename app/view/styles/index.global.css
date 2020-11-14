@@ -28,9 +28,30 @@ code {
 
 a {
   text-decoration: none;
-  color: var(--app-link-default-color);
+  color: var(--link-default-color);
 }
 
 a:hover {
-  color: var(--app-link-hover-color);
+  color: var(--link-hover-color);
+}
+
+*::-webkit-scrollbar {
+  width: 0;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  border-radius: 20px;
+}
+
+*::-webkit-scrollbar-thumb:active {
+  background-color: #eaeaea;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: #999;
 }

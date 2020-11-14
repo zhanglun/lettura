@@ -35,7 +35,7 @@ export const ArticleList = observer(
                 // eslint-disable-next-line react/no-array-index-key
                 key={article.title + i}
                 className={`${styles.item} ${
-                  article.link === currentLink && styles.itemReaded
+                  article.link === currentLink && styles.read
                 }`}
                 onClick={() => viewDetail(article)}
                 aria-hidden="true"

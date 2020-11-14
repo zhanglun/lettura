@@ -1,7 +1,7 @@
 /* eslint-disable class-methods-use-this */
 import { makeAutoObservable } from 'mobx';
 import { getCustomRepository } from 'typeorm';
-// import { Channel, Article } from '../../infra/types';
+import { Article } from '../../infra/types';
 // import { ChannelEntity } from '../../entity/channel';
 import { ArticleEntity } from '../../entity/article';
 import { ArticleRepository } from '../../repository/article';
@@ -23,13 +23,13 @@ export class ArticleStore {
     this.currentArticle = article;
   }
 
-  async getAllList(): Promise<ArticleEntity[]> {
+  async getAllList(): Promise<Article[]> {
     const list = await this.articleRepo.getAll();
 
     return list;
   }
 
-  async getListWithChannelId(channelId: string): Promise<ArticleEntity[]> {
+  async getListWithChannelId(channelId: string): Promise<Article[]> {
     const list = await this.articleRepo.getListWithChannelId(channelId);
 
     return list;

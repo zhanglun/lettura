@@ -6,29 +6,72 @@
 }
 
 .toolbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.toolbarFixed {
+  box-shadow: 0 1px 6px 0 rgba(32, 33, 36, 0.28);
+}
+
+.toolbarInner {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
   height: var(--app-toolbar-height);
-  background-color: #fff;
   border-bottom: 1px solid #efefef;
+  background-color: #fff;
+}
+
+.toolbarIcon {
+  border-radius: 3px;
+  padding: 4px;
+  margin: 0 8px;
+  font-size: 22px;
+  color: var(--text-color);
+}
+
+.toolbarIcon:hover {
+  cursor: pointer;
+  color: var(--headline-color);
+  background-color: ;
 }
 
 .title {
-  margin: 34px 0 10px;
+  margin: 34px 0 20px;
   font-size: 28px;
   font-weight: var(--font-weight-bold);
 }
 
 @media screen and (min-width: 960px) {
   .main {
-    width: 80%;
+    padding-left: 20px;
+    padding-right: 20px;
     margin: 0 auto;
     max-width: 900px;
   }
 }
 
+/* .header { */
+
+/* } */
+
+/* .body { */
+
+/* } */
+
+/* .content { */
+
+/* } */
+
 .placeholder {
+  width: 50%;
   height: 100%;
+  margin: 0 auto;
   background-image: url('../../styles/images/mountain.webp');
-  background-size: auto 80%;
+  background-size: 80%;
   background-repeat: no-repeat;
   background-position: center;
 }
@@ -41,6 +84,10 @@
 .content img {
   max-width: 100%;
   height: auto;
+}
+
+.content p {
+  color: var(--title-color);
 }
 
 .content blockquote {

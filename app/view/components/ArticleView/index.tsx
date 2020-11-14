@@ -33,13 +33,19 @@ export const ArticleView = observer(
     function renderDetail() {
       return (
         <React.Fragment key="detail">
-          <div className={`${styles.toolbar} ${styles.main}`}>
-            <Icon name="done" />
-            <Icon name="bookmark-border" />
-            <Icon name="favorite" />
-            <Icon name="open-in-new" />
+          <div className={styles.toolbar}>
+            <div className={`${styles.toolbarInner} ${styles.main}`}>
+              <Icon name="done" customClass={styles.toolbarIcon} />
+              <Icon name="bookmark-border" customClass={styles.toolbarIcon} />
+              <Icon name="favorite" customClass={styles.toolbarIcon} />
+              <Icon
+                name="open-in-new"
+                customClass={styles.toolbarIcon}
+                onClick={() => viewInBrowser()}
+              />
+            </div>
           </div>
-          <div className={styles.main}>
+          <div className={`${styles.main} ${styles.main}`}>
             <div className={styles.header}>
               <div className={styles.title}>{currentArticle.title}</div>
             </div>

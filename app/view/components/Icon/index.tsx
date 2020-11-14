@@ -1,19 +1,24 @@
 import React from 'react';
 
-interface Props {
+type Props = {
   name: string;
-  // eslint-disable-next-line react/require-default-props
   customClass?: string;
-}
+  onClick?: () => void;
+};
 
-function Icon(props: Props) {
-  const { name, customClass } = props;
+export const Icon = (props: Props) => {
+  const { name, customClass, onClick } = props;
 
-  return <i className={`iconfont icon-${name} ${customClass}`} />;
-}
+  return (
+    <i
+      className={`iconfont icon-${name} ${customClass}`}
+      aria-hidden="true"
+      onClick={onClick}
+    />
+  );
+};
 
 Icon.defaultProps = {
   customClass: '',
+  onClick: () => {},
 };
-
-export { Icon };
