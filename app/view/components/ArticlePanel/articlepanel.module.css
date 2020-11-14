@@ -1,7 +1,6 @@
 .articleList {
   flex: 0 0 auto;
   width: var(--app-article-width);
-  border-right: 1px solid #dedede;
 }
 
 .reader {
