@@ -27,7 +27,7 @@
 
 .toolbarIcon {
   border-radius: 3px;
-  padding: 4px;
+  padding: 4px 6px;
   margin: 0 8px;
   font-size: 22px;
   color: var(--text-color);
@@ -36,7 +36,7 @@
 .toolbarIcon:hover {
   cursor: pointer;
   color: var(--headline-color);
-  background-color: ;
+  background-color: #f4f4f4;
 }
 
 .title {

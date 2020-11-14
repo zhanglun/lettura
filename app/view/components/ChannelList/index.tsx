@@ -3,6 +3,7 @@ import { useHistory } from 'react-router-dom';
 import { observer } from 'mobx-react';
 import { Icon } from '../Icon';
 import { ChannelEntity } from '../../../entity/channel';
+import { ChannelType } from '../../../infra/constants/status';
 import { StoreType, StoreContext } from '../../stores';
 
 import styles from './channel.module.css';
@@ -14,20 +15,21 @@ const ChannelList = observer(
     const { currentChannel } = channelStore;
     const history = useHistory();
 
-    console.log('currentChannel');
-
     function viewChannel(channel: ChannelEntity) {
       channelStore.setCurrentChannel(channel);
+      channelStore.setCurrentType('channel');
       history.push(`/channels/${channel.id}`);
 
       console.log('currentChannel', currentChannel);
     }
 
     function viewAll() {
+      channelStore.setCurrentType(ChannelType.all);
       history.push('/all');
     }
 
     function viewFavorite() {
+      channelStore.setCurrentType(ChannelType.favorite);
       history.push('/favorite');
     }
 

@@ -13,3 +13,9 @@ export enum ArticleLikeStatus {
   normal = 0,
   like = 1,
 }
+
+export enum ChannelType {
+  all = 'all',
+  favorite = 'favorite',
+  channel = 'channel',
+}

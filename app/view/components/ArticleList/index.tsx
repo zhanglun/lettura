@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import { observer } from 'mobx-react';
 import Dayjs from 'dayjs';
 import styles from './article.module.css';
@@ -6,25 +6,26 @@ import { ArticleEntity } from '../../../entity/article';
 import { StoreContext, StoreType } from '../../stores';
 import { Article } from '../../../infra/types';
 
-type Props = {
-  type: 'all' | 'favorite' | 'channel';
-};
-
 export const ArticleList = observer(
-  (props: Props): JSX.Element => {
-    const { type } = props;
+  (): JSX.Element => {
     const [articleList, setArticleList] = useState<Article[]>([]);
     const [currentLink, setCurrentLink] = useState<string>('');
-
+    const articleListRef = useRef<HTMLDivElement>(null);
     const { channelStore, articleStore } = useContext(
       StoreContext
     ) as StoreType;
-    const { currentChannel } = channelStore;
+    const { currentChannel, type } = channelStore;
 
     function viewDetail(article: ArticleEntity) {
       articleStore.setCurrentView(article);
       setCurrentLink(article.link);
     }
+
+    const resetScrollTop = () => {
+      if (articleListRef.current !== null) {
+        articleListRef.current.scroll(0, 0);
+      }
+    };
 
     function renderList(): JSX.Element {
       return (
@@ -55,8 +56,6 @@ export const ArticleList = observer(
     }
 
     const getArticleList = async () => {
-      console.log('currentType', type);
-
       if (type === 'all') {
         const list = await articleStore.getAllList();
         return setArticleList(list);
@@ -64,15 +63,18 @@ export const ArticleList = observer(
 
       const list = await articleStore.getListWithChannelId(currentChannel.id);
 
-      console.log(list);
-
       return setArticleList(list);
     };
 
     useEffect(() => {
       getArticleList();
+      resetScrollTop();
     }, [type, currentChannel]);
 
-    return <div className={styles.container}>{renderList()}</div>;
+    return (
+      <div className={styles.container} ref={articleListRef}>
+        {renderList()}
+      </div>
+    );
   }
 );

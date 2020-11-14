@@ -2,8 +2,8 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import { getCustomRepository } from 'typeorm';
 import { Channel } from '../../infra/types';
+import { ChannelType } from '../../infra/constants/status';
 import { ChannelEntity } from '../../entity/channel';
-import { ArticleEntity } from '../../entity/article';
 import { ChannelRepository } from '../../repository/channel';
 import { ArticleRepository } from '../../repository/article';
 
@@ -12,19 +12,20 @@ export class ChannelStore {
 
   currentChannel: ChannelEntity = {} as ChannelEntity;
 
-  currentArticle: ArticleEntity;
-
   channelList: Channel[];
 
   channelRepo: ChannelRepository;
 
   articleRepo: ArticleRepository;
 
+  type: string;
+
   constructor() {
     makeAutoObservable(this);
 
     this.channelRepo = getCustomRepository(ChannelRepository);
     this.articleRepo = getCustomRepository(ArticleRepository);
+    this.type = ChannelType.all;
   }
 
   /**
@@ -51,6 +52,10 @@ export class ChannelStore {
     runInAction(() => {
       this.currentChannel = channel;
     });
+  }
+
+  setCurrentType(type: string) {
+    this.type = type;
   }
 
   async getList(): Promise<ChannelEntity[]> {
