@@ -46,3 +46,12 @@ createConnection({
   .catch((err) => {
     log.error('err', err);
   });
+
+const worker = new Worker('./worker.ts');
+
+worker.onmessage = (e) => {
+  console.log(e);
+  console.log('Message received from worker');
+};
+
+worker.postMessage('ali');
