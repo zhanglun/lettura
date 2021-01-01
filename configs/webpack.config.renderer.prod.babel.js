@@ -29,7 +29,11 @@ export default merge(baseConfig, {
       'regenerator-runtime/runtime',
       path.join(__dirname, '..', 'app/index.tsx'),
     ],
-    worker: path.join(__dirname, '..', 'app/worker.ts'),
+    worker: [
+      'core-js',
+      'regenerator-runtime/runtime',
+      path.join(__dirname, '..', 'app/worker.ts'),
+    ],
   },
 
   output: {

@@ -41,7 +41,7 @@ createConnection({
       document.getElementById('root')
     );
 
-    if (window.SalixWorker) {
+    if (window && window.SalixWorker) {
       const worker = window.SalixWorker;
 
       worker.onmessage = (e) => {

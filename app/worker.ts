@@ -1,6 +1,6 @@
-// import { ChannelRepository } from './repository/channel';
+import { ChannelRepository } from './repository/channel';
 
-// const channelRepo = new ChannelRepository();
+const channelRepo = new ChannelRepository();
 
 console.log('load worker');
 

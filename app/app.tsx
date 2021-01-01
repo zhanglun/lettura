@@ -1,5 +1,10 @@
 import React from 'react';
-import { HashRouter as Router, Route, Switch } from 'react-router-dom';
+import {
+  HashRouter as Router,
+  Route,
+  Switch,
+  Redirect,
+} from 'react-router-dom';
 import * as routesConfig from './infra/constants/routes';
 import { SettingModule } from './view/modules/Settings';
 import { ArticleModule } from './view/modules/Articles';
@@ -17,6 +22,13 @@ function App() {
         <div className={styles.main}>
           <div className={styles.mainInner}>
             <Switch>
+              <Route
+                exact
+                path="/"
+                render={() => {
+                  return <Redirect to="/all" />;
+                }}
+              />
               <Route exact path={routesConfig.SETTINGS}>
                 <SettingModule />
               </Route>
