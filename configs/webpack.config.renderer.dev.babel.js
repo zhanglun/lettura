@@ -56,13 +56,13 @@ export default merge(baseConfig, {
       'webpack/hot/only-dev-server',
       require.resolve('../app/index.tsx'),
     ],
-    worker: [
+    'background.dev': [
       'core-js',
       'regenerator-runtime/runtime',
       ...(process.env.PLAIN_HMR ? [] : ['react-hot-loader/patch']),
       `webpack-dev-server/client?http://localhost:${port}/`,
       'webpack/hot/only-dev-server',
-      require.resolve('../app/worker.ts'),
+      require.resolve('../app/background.ts'),
     ],
   },
 

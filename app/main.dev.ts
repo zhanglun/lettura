@@ -15,6 +15,8 @@ import { app, BrowserWindow } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
+import './event/main';
+import { SYNC_UNREAD_WHEN_START } from './event/constant';
 
 export default class AppUpdater {
   constructor() {
@@ -25,6 +27,7 @@ export default class AppUpdater {
 }
 
 let mainWindow: BrowserWindow | null = null;
+let backgroundWindow: BrowserWindow | null = null;
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -85,12 +88,8 @@ const createWindow = async () => {
             preload: path.join(__dirname, 'dist/renderer.prod.js'),
           },
   });
-
   mainWindow.loadURL(`file://${__dirname}/app.html`);
-
-  // @TODO: Use 'ready-to-show' event
-  //        https://github.com/electron/electron/blob/master/docs/api/browser-window.md#using-ready-to-show-event
-  mainWindow.webContents.on('did-finish-load', () => {
+  mainWindow.webContents.once('did-finish-load', () => {
     if (!mainWindow) {
       throw new Error('"mainWindow" is not defined');
     }
@@ -104,6 +103,33 @@ const createWindow = async () => {
 
   mainWindow.on('closed', () => {
     mainWindow = null;
+  });
+
+  backgroundWindow = new BrowserWindow({
+    show: true,
+    width: 1024,
+    height: 728,
+    // transparent: true,
+    // frame: false,
+    // titleBarStyle: 'hiddenInset',
+    icon: getAssetPath('icon.png'),
+    webPreferences:
+      (process.env.NODE_ENV === 'development' ||
+        process.env.E2E_BUILD === 'true') &&
+      process.env.ERB_SECURE !== 'true'
+        ? {
+            nodeIntegration: true,
+            nativeWindowOpen: true,
+            nodeIntegrationInWorker: true,
+          }
+        : {
+            preload: path.join(__dirname, 'dist/renderer.prod.js'),
+          },
+  });
+  backgroundWindow.loadURL(`file://${__dirname}/background.html`);
+
+  backgroundWindow.on('ready-to-show', () => {
+    mainWindow?.webContents.send(SYNC_UNREAD_WHEN_START);
   });
 
   const menuBuilder = new MenuBuilder(mainWindow);

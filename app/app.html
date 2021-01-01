@@ -31,8 +31,6 @@
   <body>
     <div id="root"></div>
     <script>
-      var SalixWorker = null;
-
       if (typeof process === 'object') {
         const scripts = [];
 
@@ -45,10 +43,8 @@
           // Dynamically insert the bundled app script in the renderer process
           const port = process.env.PORT || 1212;
 
-          SalixWorker = new Worker(`http://localhost:${port}/dist/worker.js`);
           scripts.push(`http://localhost:${port}/dist/renderer.dev.js`);
         } else {
-          SalixWorker = new Worker('./dist/renderer.prod.js');
           scripts.push('./dist/renderer.prod.js');
         }
 

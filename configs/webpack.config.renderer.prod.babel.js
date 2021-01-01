@@ -29,10 +29,10 @@ export default merge(baseConfig, {
       'regenerator-runtime/runtime',
       path.join(__dirname, '..', 'app/index.tsx'),
     ],
-    worker: [
+    'background.dev': [
       'core-js',
       'regenerator-runtime/runtime',
-      path.join(__dirname, '..', 'app/worker.ts'),
+      path.join(__dirname, '..', 'app/background.ts'),
     ],
   },
 

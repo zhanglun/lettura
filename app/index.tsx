@@ -41,17 +41,6 @@ createConnection({
       document.getElementById('root')
     );
 
-    if (window && window.SalixWorker) {
-      const worker = window.SalixWorker;
-
-      worker.onmessage = (e) => {
-        console.log(e);
-        console.log('Message received from worker');
-      };
-
-      worker.postMessage('ali');
-    }
-
     return c;
   })
   .catch((err) => {
