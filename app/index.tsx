@@ -41,17 +41,19 @@ createConnection({
       document.getElementById('root')
     );
 
+    if (window.SalixWorker) {
+      const worker = window.SalixWorker;
+
+      worker.onmessage = (e) => {
+        console.log(e);
+        console.log('Message received from worker');
+      };
+
+      worker.postMessage('ali');
+    }
+
     return c;
   })
   .catch((err) => {
     log.error('err', err);
   });
-
-const worker = new Worker('./worker.ts');
-
-worker.onmessage = (e) => {
-  console.log(e);
-  console.log('Message received from worker');
-};
-
-worker.postMessage('ali');

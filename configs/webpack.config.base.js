@@ -28,6 +28,7 @@ export default {
     path: path.join(__dirname, '..', 'app'),
     // https://github.com/webpack/webpack/issues/1114
     libraryTarget: 'commonjs2',
+    globalObject: 'this',
   },
 
   /**
@@ -42,7 +43,5 @@ export default {
     new webpack.EnvironmentPlugin({
       NODE_ENV: 'production',
     }),
-
-    new webpack.NamedModulesPlugin(),
   ],
 };

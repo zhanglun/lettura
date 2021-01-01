@@ -34,9 +34,12 @@ export class ChannelEntity {
   @Column({ type: 'varchar', comment: '添加时间' })
   createDate: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', comment: '更新时间' })
   updateDate: string;
 
+  // @Column({ type: 'varchar', default: '', comment: '最后一次同步时间' })
+  // lastSyncDate: string;
+  //
   @OneToMany(() => ArticleEntity, (article) => article.channel)
   articles: ArticleEntity;
 }

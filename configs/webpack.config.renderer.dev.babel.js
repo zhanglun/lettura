@@ -56,12 +56,20 @@ export default merge(baseConfig, {
       'webpack/hot/only-dev-server',
       require.resolve('../app/index.tsx'),
     ],
-    worker: require.resolve('../app/worker.ts'),
+    worker: [
+      'core-js',
+      'regenerator-runtime/runtime',
+      ...(process.env.PLAIN_HMR ? [] : ['react-hot-loader/patch']),
+      `webpack-dev-server/client?http://localhost:${port}/`,
+      'webpack/hot/only-dev-server',
+      require.resolve('../app/worker.ts'),
+    ],
   },
 
   output: {
     publicPath: `http://localhost:${port}/dist/`,
     filename: '[name].js',
+    globalObject: 'this',
   },
 
   module: {
@@ -167,10 +175,6 @@ export default merge(baseConfig, {
           manifest: require(manifest),
           sourceType: 'var',
         }),
-
-    new webpack.HotModuleReplacementPlugin({
-      multiStep: true,
-    }),
 
     new webpack.NoEmitOnErrorsPlugin(),
 

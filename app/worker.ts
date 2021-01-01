@@ -1,7 +1,15 @@
-console.log('from worker');
+// import { ChannelRepository } from './repository/channel';
 
-postMessage("I'm working before postMessage('ali').", '*');
+// const channelRepo = new ChannelRepository();
 
-onmessage = (oEvent) => {
-  postMessage(`Hi ${oEvent.data}`, '*');
+console.log('load worker');
+
+onmessage = function (e) {
+  console.log('Message received from main script');
+
+  const workerResult = `Result: ${e}`;
+
+  console.log('Posting message back to main script');
+
+  postMessage(workerResult);
 };

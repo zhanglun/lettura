@@ -1,5 +1,4 @@
-import { countReset } from 'console';
-import { EntityRepository, Repository, getConnection, In } from 'typeorm';
+import { EntityRepository, Repository, getConnection } from 'typeorm';
 import { ArticleEntity } from '../entity/article';
 import { ChannelEntity } from '../entity/channel';
 import { ArticleReadStatus } from '../infra/constants/status';
