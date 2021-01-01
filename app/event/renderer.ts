@@ -1,17 +1,16 @@
 import { ipcRenderer, IpcRendererEvent } from 'electron';
-import { ChannelStore, ArticleStore } from '../view/stores';
-import { FINISH_INITIAL_SYNC, SYNC_UNREAD_WHEN_START } from './constant';
+import { ArticleStore } from '../view/stores';
+import { FINISH_INITIAL_SYNC, UPDATE_WINDOW_ID } from './constant';
+
+// let targetId = 0;
 
 export const initEvent = () => {
-  const channelStore = new ChannelStore();
+  const articleStore = new ArticleStore();
 
-  function syncUnreadWhenAPPStart() {
-    channelStore
-      .getList()
+  function handleFinishInitialSync() {
+    articleStore
+      .getAllList()
       .then((list) => {
-        console.log('--->', list);
-        ipcRenderer.sendSync(FINISH_INITIAL_SYNC, list);
-
         return list;
       })
       .catch((err) => {
@@ -19,7 +18,15 @@ export const initEvent = () => {
       });
   }
 
-  ipcRenderer.on(SYNC_UNREAD_WHEN_START, (event: IpcRendererEvent, arg) => {
-    syncUnreadWhenAPPStart();
+  ipcRenderer.on(FINISH_INITIAL_SYNC, () => {
+    handleFinishInitialSync();
   });
 };
+
+ipcRenderer.on(UPDATE_WINDOW_ID, (e: IpcRendererEvent, data) => {
+  console.log(e);
+  console.log(UPDATE_WINDOW_ID);
+  console.log(data);
+
+  // targetId = data.backgroundWindowId;
+});

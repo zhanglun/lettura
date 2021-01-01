@@ -15,8 +15,6 @@ import { app, BrowserWindow } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
-import './event/main';
-import { SYNC_UNREAD_WHEN_START } from './event/constant';
 
 export default class AppUpdater {
   constructor() {
@@ -74,6 +72,7 @@ const createWindow = async () => {
     // transparent: true,
     // frame: false,
     // titleBarStyle: 'hiddenInset',
+    // backgroundColor: '#2e2c29',
     icon: getAssetPath('icon.png'),
     webPreferences:
       (process.env.NODE_ENV === 'development' ||
@@ -128,12 +127,16 @@ const createWindow = async () => {
   });
   backgroundWindow.loadURL(`file://${__dirname}/background.html`);
 
-  backgroundWindow.on('ready-to-show', () => {
-    mainWindow?.webContents.send(SYNC_UNREAD_WHEN_START);
-  });
-
   const menuBuilder = new MenuBuilder(mainWindow);
   menuBuilder.buildMenu();
+
+  mainWindow.webContents.on('did-finish-load', () => {
+    global.mainWindowId = mainWindow?.webContents.id;
+  });
+
+  backgroundWindow.webContents.on('did-finish-load', () => {
+    global.backgroundWindow = backgroundWindow?.webContents.id;
+  });
 
   // Remove this if your app does not use auto updates
   // eslint-disable-next-line

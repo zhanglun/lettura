@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import { observer } from 'mobx-react';
 import { Icon } from '../Icon';
@@ -27,6 +27,10 @@ const ChannelList = observer(
       channelStore.setCurrentType(ChannelType.all);
       history.push('/all');
     }
+
+    const syncRemoteArticle = useCallback(() => {
+      console.log('sync');
+    }, []);
 
     function viewFavorite() {
       channelStore.setCurrentType(ChannelType.favorite);
@@ -86,7 +90,11 @@ const ChannelList = observer(
             {/*  <Icon name="add" /> */}
             {/* </span> */}
             <Icon name="create-new-folder" customClass={styles.toolbarItem} />
-            <Icon name="refresh" customClass={styles.toolbarItem} />
+            <Icon
+              name="refresh"
+              customClass={styles.toolbarItem}
+              onClick={syncRemoteArticle}
+            />
             <Icon
               name="settings"
               customClass={styles.toolbarItem}

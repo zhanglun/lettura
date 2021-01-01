@@ -8,6 +8,7 @@ import { ArticleEntity } from './entity/article';
 import * as serviceWorker from './serviceWorker';
 import './view/styles/index.global.css';
 import { StoreContext, ChannelStore, ArticleStore } from './view/stores';
+import { initEvent } from './event/renderer';
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
@@ -41,6 +42,7 @@ createConnection({
       document.getElementById('root')
     );
 
+    initEvent();
     return c;
   })
   .catch((err) => {
