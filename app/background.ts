@@ -2,7 +2,7 @@ import { createConnection } from 'typeorm';
 import log from 'electron-log';
 import { ChannelEntity } from './entity/channel';
 import { ArticleEntity } from './entity/article';
-import { initEvent } from './event/renderer';
+import { initEvent } from './event/background';
 
 async function init() {
   try {

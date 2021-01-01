@@ -15,6 +15,7 @@ import { app, BrowserWindow } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
+import { UPDATE_WINDOW_ID } from './event/constant';
 
 export default class AppUpdater {
   constructor() {
@@ -132,10 +133,16 @@ const createWindow = async () => {
 
   mainWindow.webContents.on('did-finish-load', () => {
     global.mainWindowId = mainWindow?.webContents.id;
+    mainWindow?.webContents.send(UPDATE_WINDOW_ID, {
+      backgroundWindowId: backgroundWindow?.webContents.id,
+    });
   });
 
   backgroundWindow.webContents.on('did-finish-load', () => {
     global.backgroundWindow = backgroundWindow?.webContents.id;
+    backgroundWindow?.webContents.send(UPDATE_WINDOW_ID, {
+      mainWindowId: mainWindow?.webContents.id,
+    });
   });
 
   // Remove this if your app does not use auto updates

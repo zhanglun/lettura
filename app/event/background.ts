@@ -3,7 +3,8 @@ import { ChannelStore } from '../view/stores';
 import {
   UPDATE_WINDOW_ID,
   FINISH_INITIAL_SYNC,
-  SYNC_UNREAD_WHEN_START,
+  MANUAL_SYNC_UNREAD,
+  FINISH_MANUAL_SYNC_UNREAD,
 } from './constant';
 
 let targetId = 0;
@@ -23,8 +24,13 @@ export const initEvent = () => {
       });
   }
 
-  ipcRenderer.on(SYNC_UNREAD_WHEN_START, () => {
-    syncUnreadWhenAPPStart();
+  function syncUnreadManually() {
+    console.log('手动同步，创建任务更新数据');
+    ipcRenderer.sendTo(targetId, FINISH_MANUAL_SYNC_UNREAD);
+  }
+
+  ipcRenderer.on(MANUAL_SYNC_UNREAD, () => {
+    syncUnreadManually();
   });
 
   syncUnreadWhenAPPStart();
@@ -33,6 +39,7 @@ export const initEvent = () => {
 ipcRenderer.on(UPDATE_WINDOW_ID, (e: IpcRendererEvent, data) => {
   console.log(e);
   console.log(UPDATE_WINDOW_ID);
+  console.log(data);
 
   targetId = data.mainWindowId;
 });

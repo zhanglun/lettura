@@ -1,3 +1,4 @@
+import { remote } from 'electron';
 import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import { observer } from 'mobx-react';
@@ -8,6 +9,7 @@ import { ChannelType } from '../../../infra/constants/status';
 import { StoreType, StoreContext } from '../../stores';
 
 import styles from './channel.module.css';
+import { MANUAL_SYNC_UNREAD } from '../../../event/constant';
 
 const ChannelList = observer(
   (): JSX.Element => {
@@ -30,6 +32,7 @@ const ChannelList = observer(
 
     const syncRemoteArticle = useCallback(() => {
       console.log('sync');
+      remote.getCurrentWebContents().send(MANUAL_SYNC_UNREAD);
     }, []);
 
     function viewFavorite() {
