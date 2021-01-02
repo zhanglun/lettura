@@ -13,9 +13,7 @@ function GlobalToolbar(props: GlobalToolbarProps) {
 
   return (
     <div className={styles.container}>
-      <div className={styles.feedName}>
-        {feedName || '原创频道》什么值得买'}
-      </div>
+      <div className={styles.feedName}>{feedName}</div>
       <div className={styles.menu}>
         <div className={styles.menuItem}>
           <Icon customClass={styles.menuIcon} name="done_all" />

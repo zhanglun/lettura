@@ -35,10 +35,10 @@ const ChannelList = observer(
       remote.getCurrentWebContents().send(MANUAL_SYNC_UNREAD);
     }, []);
 
-    function viewFavorite() {
-      channelStore.setCurrentType(ChannelType.favorite);
-      history.push('/favorite');
-    }
+    // function viewFavorite() {
+    //   channelStore.setCurrentType(ChannelType.favorite);
+    //   history.push('/favorite');
+    // }
 
     function goToSettingPanel() {
       window.location.hash = 'settings';
@@ -92,7 +92,7 @@ const ChannelList = observer(
             {/* <span className={styles.toolbarItem}> */}
             {/*  <Icon name="add" /> */}
             {/* </span> */}
-            <Icon name="create-new-folder" customClass={styles.toolbarItem} />
+            {/* <Icon name="create-new-folder" customClass={styles.toolbarItem} /> */}
             <Icon
               name="refresh"
               customClass={styles.toolbarItem}
@@ -123,32 +123,32 @@ const ChannelList = observer(
               />
               所有未读
             </div>
-            {/* <div
-              className={styles.officialItem}
-              onClick={() => {
-                linkToRoute(routesConfig.TODAY);
-              }}
-              aria-hidden
-            >
-              <Icon
-                customClass={`${styles.officialItemIcon} ${styles.orange}`}
-                name="calendar_today"
-              />
-              今日未读
-            </div> */}
-            <div
-              className={styles.officialItem}
-              onClick={() => {
-                viewFavorite();
-              }}
-              aria-hidden
-            >
-              <Icon
-                customClass={`${styles.officialItemIcon} ${styles.red}`}
-                name="favorite-black"
-              />
-              我的收藏
-            </div>
+            {/* <div */}
+            {/*  className={styles.officialItem} */}
+            {/*  onClick={() => { */}
+            {/*    linkToRoute(routesConfig.TODAY); */}
+            {/*  }} */}
+            {/*  aria-hidden */}
+            {/* > */}
+            {/*  <Icon */}
+            {/*    customClass={`${styles.officialItemIcon} ${styles.orange}`} */}
+            {/*    name="calendar_today" */}
+            {/*  /> */}
+            {/*  今日未读 */}
+            {/* </div> */}
+            {/* <div */}
+            {/*  className={styles.officialItem} */}
+            {/*  onClick={() => { */}
+            {/*    viewFavorite(); */}
+            {/*  }} */}
+            {/*  aria-hidden */}
+            {/* > */}
+            {/*  <Icon */}
+            {/*    customClass={`${styles.officialItemIcon} ${styles.red}`} */}
+            {/*    name="favorite-black" */}
+            {/*  /> */}
+            {/*  我的收藏 */}
+            {/* </div> */}
           </div>
           {renderFeedList(channelList)}
         </div>

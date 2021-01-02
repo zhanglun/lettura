@@ -1,17 +1,17 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { parseRSS } from '../../../../infra/utils';
-import { Channel } from '../../../../infra/types';
+import { ChannelRes } from '../../../../infra/types';
 import { StoreType, StoreContext } from '../../../stores';
 import styles from '../settingpanel.module.css';
 
-const SettingSubscribe: () => React.ReactNode = () => {
+export const SettingSubscribe: () => JSX.Element = () => {
   const [feedUrl, setFeedUrl] = useState('');
-  const [feedRes, setFeedRes] = useState({} as Channel);
+  const [feedRes, setFeedRes] = useState({} as ChannelRes);
   const [loading, setLoading] = useState(false);
   const [requested, setRequested] = useState(false);
   const { channelStore } = useContext(StoreContext) as StoreType;
 
-  async function searchFeed() {
+  const searchFeed = useCallback(async () => {
     setLoading(true);
     setRequested(false);
     // setFeedUrl('https://www.ifanr.com/feed');
@@ -25,7 +25,7 @@ const SettingSubscribe: () => React.ReactNode = () => {
 
     setLoading(false);
     setRequested(true);
-  }
+  }, [feedUrl]);
 
   async function addFeed() {
     await channelStore.add(feedRes);
@@ -86,5 +86,3 @@ const SettingSubscribe: () => React.ReactNode = () => {
     </div>
   );
 };
-
-export { SettingSubscribe };
