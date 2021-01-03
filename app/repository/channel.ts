@@ -52,7 +52,6 @@ export class ChannelRepository extends Repository<Channel> {
       throw new Error('已经订阅了');
     }
 
-    feed.createDate = new Date().toString();
     feed.updateDate = new Date().toString();
 
     const result = this.save(feed);

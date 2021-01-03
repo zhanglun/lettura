@@ -17,23 +17,22 @@ export function openBrowser(link: string) {
  * @param {string} feedUrl
  */
 export async function parseRSS(feedUrl: string): Promise<ChannelRes> {
-  const feed = (await parser.parseURL(feedUrl)) as ChannelRes;
+  const channelRes = (await parser.parseURL(feedUrl)) as ChannelRes;
   const now = new Date().toString();
 
-  feed.category = '';
-  feed.favicon = `${new URL(feed.link).origin}/favicon.ico`;
-  feed.tag = '';
-  feed.createDate = now;
-  feed.updateDate = now;
-  feed.lastSyncDate = now;
+  channelRes.category = '';
+  channelRes.favicon = `${new URL(channelRes.link).origin}/favicon.ico`;
+  channelRes.tag = '';
+  channelRes.createDate = now;
+  channelRes.lastSyncDate = now;
 
-  feed.items?.forEach((item: RSSFeedItem) => {
+  channelRes.items?.forEach((item: RSSFeedItem) => {
     const { content, contentEncoded } = item;
 
     item.content = contentEncoded || content;
   });
 
-  console.log(feed);
+  console.log(channelRes);
 
-  return feed;
+  return channelRes;
 }

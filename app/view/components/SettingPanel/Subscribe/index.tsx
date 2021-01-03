@@ -1,24 +1,29 @@
 import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { parseRSS } from '../../../../infra/utils';
-import { ChannelRes } from '../../../../infra/types';
+import { ChannelRes, Channel } from '../../../../infra/types';
 import { StoreType, StoreContext } from '../../../stores';
 import styles from '../settingpanel.module.css';
 
 export const SettingSubscribe: () => JSX.Element = () => {
   const [feedUrl, setFeedUrl] = useState('');
-  const [feedRes, setFeedRes] = useState({} as ChannelRes);
+  const [channelRes, setChannelRes] = useState({} as ChannelRes);
   const [loading, setLoading] = useState(false);
   const [requested, setRequested] = useState(false);
+  const [subscribed, setSubscribed] = useState(false);
   const { channelStore } = useContext(StoreContext) as StoreType;
 
+  const validateChannelStatus = useCallback(async () => {
+    const channel = await channelStore.findChannelByUrl(feedUrl);
+    setSubscribed(!!channel);
+  }, [feedUrl]);
   const searchFeed = useCallback(async () => {
     setLoading(true);
     setRequested(false);
-    // setFeedUrl('https://www.ifanr.com/feed');
 
     try {
+      await validateChannelStatus();
       const feed = await parseRSS(feedUrl);
-      setFeedRes(feed);
+      setChannelRes(feed);
     } catch (e) {
       console.log(e);
     }
@@ -26,33 +31,43 @@ export const SettingSubscribe: () => JSX.Element = () => {
     setLoading(false);
     setRequested(true);
   }, [feedUrl]);
+  const confirmSubscribe = useCallback(async () => {
+    const { items } = channelRes;
 
-  async function addFeed() {
-    await channelStore.add(feedRes);
-  }
+    await channelStore.subscribeChannel(channelRes as Channel, items || []);
+  }, [channelRes]);
 
   useEffect(() => {
     setFeedUrl('https://www.ifanr.com/feed');
   }, []);
 
-  function showFeedInfo(): JSX.Element | string {
+  const showFeedInfo = useCallback(() => {
     if (!loading && requested) {
+      const button = subscribed ? (
+        <button className={styles.previewFollowButton} type="button" disabled>
+          已订阅
+        </button>
+      ) : (
+        <button
+          className={styles.previewFollowButton}
+          type="button"
+          onClick={() => confirmSubscribe()}
+        >
+          订阅
+        </button>
+      );
       return (
         <div className={styles.preview}>
-          <img className={styles.previewIcon} src={feedRes.favicon} alt="" />
+          <img className={styles.previewIcon} src={channelRes.favicon} alt="" />
           <div className={styles.previewBody}>
             <div className={styles.previewHeader}>
-              <button
-                className={styles.previewFollowButton}
-                type="button"
-                onClick={() => addFeed()}
-              >
-                订阅
-              </button>
-              <p className={styles.previewTitle}>{feedRes.title}</p>
-              <p className={styles.previewLink}>{feedRes.link}</p>
+              {button}
+              <p className={styles.previewTitle}>{channelRes.title}</p>
+              <p className={styles.previewLink}>{channelRes.link}</p>
             </div>
-            <p className={styles.previewDescription}>{feedRes.description}</p>
+            <p className={styles.previewDescription}>
+              {channelRes.description}
+            </p>
           </div>
         </div>
       );
@@ -63,7 +78,7 @@ export const SettingSubscribe: () => JSX.Element = () => {
     }
 
     return '';
-  }
+  }, [channelRes, loading, requested]);
 
   return (
     <div className={styles.panel}>
