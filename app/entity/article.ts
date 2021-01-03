@@ -10,7 +10,7 @@ export class ArticleEntity {
   @Column({ type: 'varchar', default: '' })
   title: string;
 
-  @Column({ type: 'varchar', default: '' })
+  @Column({ type: 'varchar', unique: true, default: '' })
   link: string;
 
   @Column({ type: 'varchar', default: '' })

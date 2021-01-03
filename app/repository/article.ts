@@ -33,10 +33,6 @@ export class ArticleRepository extends Repository<ArticleEntity> {
     return list;
   }
 
-  // async getUnreadListWithChannelId() {}
-  //
-  // async getReadListWithChannelId() {}
-
   /**
    * 添加文件
    * @param {string} channelId uuid
