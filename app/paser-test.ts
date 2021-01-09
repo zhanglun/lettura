@@ -1,6 +1,8 @@
 import { parseRSS } from './infra/utils';
 
-const url = 'https://github.com/zhanglun';
+const url = process.argv[2];
+
+console.log('url', url);
 
 parseRSS(url)
   .then((...args) => {

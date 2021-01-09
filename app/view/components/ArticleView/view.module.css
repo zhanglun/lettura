@@ -89,9 +89,10 @@
 }
 
 .content img {
+  display: block;
   max-width: 100% !important;
   height: auto;
-  margin: 10px 0;
+  margin: 10px auto;
   padding: 5px;
   background-color: #fff;
   border: 1px solid #bbb;

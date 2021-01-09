@@ -1,10 +1,17 @@
-import React, { useState, useEffect, useContext, useRef } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  useRef,
+  useCallback,
+} from 'react';
 import { observer } from 'mobx-react';
 import Dayjs from 'dayjs';
 import styles from './article.module.css';
 import { ArticleEntity } from '../../../entity/article';
 import { StoreContext, StoreType } from '../../stores';
 import { Article } from '../../../infra/types';
+import { ArticleReadStatus } from '../../../infra/constants/status';
 
 export const ArticleList = observer(
   (): JSX.Element => {
@@ -16,10 +23,13 @@ export const ArticleList = observer(
     ) as StoreType;
     const { currentChannel, type } = channelStore;
 
-    function viewDetail(article: ArticleEntity) {
+    const viewDetail = useCallback(async (article: ArticleEntity) => {
+      await articleStore.markArticleAsRead(article.id);
+
       articleStore.setCurrentView(article);
       setCurrentLink(article.link);
-    }
+      article.hasRead = ArticleReadStatus.isRead;
+    }, []);
 
     const resetScrollTop = () => {
       if (articleListRef.current !== null) {
@@ -36,7 +46,9 @@ export const ArticleList = observer(
                 // eslint-disable-next-line react/no-array-index-key
                 key={article.title + i}
                 className={`${styles.item} ${
-                  article.link === currentLink && styles.read
+                  (article.hasRead === ArticleReadStatus.isRead ||
+                    article.link === currentLink) &&
+                  styles.read
                 }`}
                 onClick={() => viewDetail(article)}
                 aria-hidden="true"

@@ -12,8 +12,6 @@ import styles from './channel.module.css';
 import { MANUAL_SYNC_UNREAD } from '../../../event/constant';
 import defaultSiteIcon from './default.png';
 
-console.log('defaultSiteIcon', defaultSiteIcon);
-
 const ChannelList = observer(
   (): JSX.Element => {
     const { channelStore } = useContext(StoreContext) as StoreType;
@@ -77,7 +75,10 @@ const ChannelList = observer(
                 <img
                   src={channel.favicon}
                   onError={(e) => {
+                    // @ts-ignore
                     e.target.onerror = null;
+
+                    // @ts-ignore
                     e.target.src = defaultSiteIcon;
                   }}
                   className={styles.icon}

@@ -1,4 +1,10 @@
-import React, { useContext, useEffect, useRef } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useMemo,
+} from 'react';
 import { observer } from 'mobx-react';
 import { Icon } from '../Icon';
 import { openBrowser } from '../../../infra/utils';
@@ -12,13 +18,13 @@ function createMarkup(html: string) {
 export const ArticleView = observer(
   (): JSX.Element => {
     const { articleStore } = useContext(StoreContext) as StoreType;
-    const { currentArticle } = articleStore;
+    const { currentArticle } = useMemo(() => articleStore, []);
     const containerRef = useRef<HTMLDivElement>(null);
 
-    const viewInBrowser = () => {
+    const viewInBrowser = useCallback(() => {
       const { link } = currentArticle;
       openBrowser(link);
-    };
+    }, [currentArticle]);
 
     const resetScrollTop = () => {
       if (containerRef.current !== null) {
@@ -30,12 +36,22 @@ export const ArticleView = observer(
       return <div className={styles.placeholder} />;
     }
 
+    const markArticleAsRead = useCallback(async () => {
+      const result = await articleStore.markArticleAsRead(currentArticle.id);
+
+      console.log('result', result);
+    }, [currentArticle]);
+
     function renderDetail() {
       return (
         <React.Fragment key="detail">
           <div className={styles.toolbar}>
             <div className={`${styles.toolbarInner} ${styles.main}`}>
-              <Icon name="done" customClass={styles.toolbarIcon} />
+              <Icon
+                name="done"
+                customClass={styles.toolbarIcon}
+                onClick={markArticleAsRead}
+              />
               <Icon name="bookmark-border" customClass={styles.toolbarIcon} />
               <Icon name="favorite" customClass={styles.toolbarIcon} />
               <Icon
