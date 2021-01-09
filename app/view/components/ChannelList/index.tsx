@@ -10,6 +10,9 @@ import { StoreType, StoreContext } from '../../stores';
 
 import styles from './channel.module.css';
 import { MANUAL_SYNC_UNREAD } from '../../../event/constant';
+import defaultSiteIcon from './default.png';
+
+console.log('defaultSiteIcon', defaultSiteIcon);
 
 const ChannelList = observer(
   (): JSX.Element => {
@@ -73,6 +76,10 @@ const ChannelList = observer(
               >
                 <img
                   src={channel.favicon}
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = defaultSiteIcon;
+                  }}
                   className={styles.icon}
                   alt={channel.title}
                 />
