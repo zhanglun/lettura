@@ -44,10 +44,18 @@ export class ImportAndExport extends React.Component<any, any> {
                 this.setState({ file: e.target.value });
               }}
             />
-            <button type="button" onClick={this.uploadOPMLFile.bind(this)}>
+            <button
+              type="button"
+              className="button--secondary"
+              onClick={this.uploadOPMLFile.bind(this)}
+            >
               浏览
             </button>
-            <button type="button" onClick={this.importFromOPML.bind(this)}>
+            <button
+              type="button"
+              className="button--secondary"
+              onClick={this.importFromOPML.bind(this)}
+            >
               导入
             </button>
           </div>
@@ -61,7 +69,11 @@ export class ImportAndExport extends React.Component<any, any> {
         <div className={styles.panelBody}>
           <div className={styles.section}>
             <div className={styles.options}>OPML 导出</div>
-            <button type="button" onClick={this.exportToOPML.bind(this)}>
+            <button
+              type="button"
+              className="button--secondary"
+              onClick={this.exportToOPML.bind(this)}
+            >
               导出
             </button>
           </div>

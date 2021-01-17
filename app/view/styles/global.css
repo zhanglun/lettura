@@ -10,13 +10,22 @@
   --block-padding: 14px;
   --font-weight-bold: 600;
   --font-weight-normal: 400;
-  --primary-blue: #017aff;
-  --primary-90: #232526;
-  --primary-10: #e5e5e5;
-  --primary-3: #f4f4f4;
-  --primary-white: #fff;
+  --color-primary-blue: #017aff;
+  --color-primary-90: #232526;
+  --color-primary-10: #e5e5e5;
+  --color-primary-3: #f4f4f4;
+  --color-primary-white: #fff;
   --button-height-large: 28px;
   --button-height-normal: 28px;
   --button-height-small: 20px;
   --button-radius: 6px;
+  --input-height: 26px;
+  --input-border-radius: 4px;
+  --input-bg: rgba(245, 245, 245, 0.5);
+  --input-border-color: #d1d1d1;
+  --input-shadow-color: #87aef3;
+  --input-color: #232526;
+  --input-placeholder-color: rgba(121, 121, 121, 0.5);
+  --input-shadow: 0 0 0 2px var(--input-shadow-color);
+  --input-disabled-bg: rgba(0, 0, 0, 0.05);
 }

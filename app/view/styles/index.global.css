@@ -35,3 +35,62 @@ a {
 a:hover {
   color: var(--link-hover-color);
 }
+
+/* ================= */
+
+.flex {
+  display: flex;
+}
+
+.align-items-center {
+  align-items: center;
+}
+
+/* ================= */
+
+button {
+  padding: 0 10px;
+  height: var(--button-height-normal);
+  line-height: var(--button-height-normal);
+  font-size: 13px;
+  border-radius: var(--button-radius);
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
+
+button:disabled {
+  background-color: var(--input-disabled-bg);
+  cursor: not-allowed;
+}
+
+.button--primary {
+  color: var(--color-primary-white);
+  background-color: var(--color-primary-blue);
+}
+
+.button--secondary {
+  color: var(--color-primary-90);
+  background-color: var(--color-primary-white);
+  box-shadow: 0 0.5px 1px 0.5px rgba(0, 0, 0, 0.1);
+}
+
+input::placeholder {
+  color: var(--input-placeholder-color);
+}
+
+input:focus {
+  border-color: var(--input-shadow-color);
+  box-shadow: var(--input-shadow);
+}
+
+.input {
+  height: var(--input-height);
+  line-height: var(--input-height);
+  padding: 0 6px;
+  color: var(--input-color);
+  background-color: var(--input-bg);
+  border: 1px solid var(--input-border-color);
+  border-radius: var(--input-border-radius);
+  outline: none;
+}

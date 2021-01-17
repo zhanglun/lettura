@@ -15,7 +15,7 @@ export const SettingSubscribe: () => JSX.Element = () => {
   const validateChannelStatus = useCallback(async () => {
     const channel = await channelStore.findChannelByUrl(feedUrl);
     setSubscribed(!!channel);
-  }, [feedUrl]);
+  }, [feedUrl, channelStore]);
   const searchFeed = useCallback(async () => {
     setLoading(true);
     setRequested(false);
@@ -30,12 +30,12 @@ export const SettingSubscribe: () => JSX.Element = () => {
 
     setLoading(false);
     setRequested(true);
-  }, [feedUrl]);
+  }, [feedUrl, validateChannelStatus]);
   const confirmSubscribe = useCallback(async () => {
     const { items } = channelRes;
 
     await channelStore.subscribeChannel(channelRes as Channel, items || []);
-  }, [channelRes]);
+  }, [channelRes, channelStore]);
 
   useEffect(() => {
     setFeedUrl('https://www.ifanr.com/feed');
@@ -86,13 +86,19 @@ export const SettingSubscribe: () => JSX.Element = () => {
         <h1 className={styles.panelTitle}>添加 RSS 源</h1>
       </div>
       <div className={styles.panelBody}>
-        <div>
+        <div className="flex align-items-center">
           <input
             type="text"
+            className="input"
             value={feedUrl}
+            placeholder="请输入订阅源"
             onChange={(e) => setFeedUrl(e.target.value)}
           />
-          <button type="button" onClick={searchFeed}>
+          <button
+            type="button"
+            className="button button--primary"
+            onClick={searchFeed}
+          >
             搜索
           </button>
         </div>
