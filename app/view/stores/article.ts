@@ -7,6 +7,8 @@ import { ArticleRepository } from '../../repository/article';
 import { ArticleReadStatus } from '../../infra/constants/status';
 
 export class ArticleStore {
+  unreadAmount: number;
+
   currentArticle: ArticleEntity = {} as ArticleEntity;
 
   articleList: ArticleEntity[] = [];
@@ -24,15 +26,15 @@ export class ArticleStore {
   }
 
   async getAllList(): Promise<Article[]> {
-    const list = await this.articleRepo.getAll();
+    return this.articleRepo.getAllArticle();
+  }
 
-    return list;
+  async getAllUnread(): Promise<Article[]> {
+    return this.articleRepo.getAllUnread();
   }
 
   async getListWithChannelId(channelId: string): Promise<Article[]> {
-    const list = await this.articleRepo.getListWithChannelId(channelId);
-
-    return list;
+    return this.articleRepo.getListWithChannelId(channelId);
   }
 
   setCurrentView(article: ArticleEntity): void {

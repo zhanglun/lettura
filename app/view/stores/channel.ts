@@ -31,6 +31,7 @@ export class ChannelStore {
   /**
    * 添加 Channel
    * @param {RSSFeed} channel 解析出来的内容
+   * @param {RSSFeedItem[]} articles
    */
   async subscribeChannel(
     channel: Channel,
@@ -58,10 +59,8 @@ export class ChannelStore {
     this.type = type;
   }
 
-  async getList(): Promise<ChannelEntity[]> {
-    const list = await this.channelRepo.getAll();
-
-    return list;
+  async getList(): Promise<Channel[]> {
+    return this.channelRepo.getAll();
   }
 
   async findChannelByUrl(url: string): Promise<ChannelEntity> {

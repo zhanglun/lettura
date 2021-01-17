@@ -10,4 +10,13 @@
   --block-padding: 14px;
   --font-weight-bold: 600;
   --font-weight-normal: 400;
+  --primary-blue: #017aff;
+  --primary-90: #232526;
+  --primary-10: #e5e5e5;
+  --primary-3: #f4f4f4;
+  --primary-white: #fff;
+  --button-height-large: 28px;
+  --button-height-normal: 28px;
+  --button-height-small: 20px;
+  --button-radius: 6px;
 }

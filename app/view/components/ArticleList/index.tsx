@@ -69,7 +69,7 @@ export const ArticleList = observer(
 
     const getArticleList = async () => {
       if (type === 'all') {
-        const list = await articleStore.getAllList();
+        const list = await articleStore.getAllUnread();
         return setArticleList(list);
       }
 

@@ -16,6 +16,7 @@ const ChannelList = observer(
   (): JSX.Element => {
     const { channelStore } = useContext(StoreContext) as StoreType;
     const [channelList, setChannelList] = useState<ChannelEntity[]>([]);
+    const [unreadAmount, setUnreadAmount] = useState<number>(0);
     const { currentChannel } = channelStore;
     const history = useHistory();
 
@@ -36,18 +37,18 @@ const ChannelList = observer(
       remote.getCurrentWebContents().send(MANUAL_SYNC_UNREAD);
     }, []);
 
-    // function viewFavorite() {
-    //   channelStore.setCurrentType(ChannelType.favorite);
-    //   history.push('/favorite');
-    // }
-
     function goToSettingPanel() {
       window.location.hash = 'settings';
     }
 
     async function getChannelList() {
       const list = await channelStore.getList();
+      const amount = list.reduce((acu, cur) => {
+        return acu + (cur.articleCount || 0);
+      }, 0);
+
       setChannelList(list);
+      setUnreadAmount(amount);
     }
 
     useEffect(() => {
@@ -129,21 +130,9 @@ const ChannelList = observer(
                 customClass={styles.officialItemIcon}
                 name="mark_email_unread"
               />
-              所有未读
+              <span className={styles.name}>所有未读</span>
+              <span className={styles.count}>{unreadAmount}</span>
             </div>
-            {/* <div */}
-            {/*  className={styles.officialItem} */}
-            {/*  onClick={() => { */}
-            {/*    linkToRoute(routesConfig.TODAY); */}
-            {/*  }} */}
-            {/*  aria-hidden */}
-            {/* > */}
-            {/*  <Icon */}
-            {/*    customClass={`${styles.officialItemIcon} ${styles.orange}`} */}
-            {/*    name="calendar_today" */}
-            {/*  /> */}
-            {/*  今日未读 */}
-            {/* </div> */}
             {/* <div */}
             {/*  className={styles.officialItem} */}
             {/*  onClick={() => { */}

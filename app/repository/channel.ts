@@ -6,6 +6,9 @@ import { Channel } from '../infra/types';
 
 @EntityRepository(ChannelEntity)
 export class ChannelRepository extends Repository<Channel> {
+  /**
+   * 获取所有订阅和未读的文章数量
+   */
   async getAll() {
     const list: ChannelEntity[] = await this.find({});
     const channelIdList = list.reduce((acu, cur: ChannelEntity) => {
@@ -32,13 +35,11 @@ export class ChannelRepository extends Repository<Channel> {
       counterMap.set(item.channelId, item.total);
     });
 
-    const result: Channel[] = list.map(
+    return list.map(
       (item: ChannelEntity): Channel => {
         return { ...item, articleCount: counterMap.get(item.id) || 0 };
       }
     );
-
-    return result;
   }
 
   async addOne(feed: Channel): Promise<ChannelEntity> {
@@ -54,14 +55,10 @@ export class ChannelRepository extends Repository<Channel> {
 
     feed.updateDate = new Date().toString();
 
-    const result = this.save(feed);
-
-    return result;
+    return this.save(feed);
   }
 
   async getList(): Promise<ChannelEntity[]> {
-    const list = await this.find({});
-
-    return list;
+    return this.find({});
   }
 }

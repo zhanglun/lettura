@@ -3,11 +3,12 @@ import { EntityRepository, Repository } from 'typeorm';
 import { ArticleEntity } from '../entity/article';
 import { Article, RSSFeedItem } from '../infra/types';
 import { ChannelEntity } from '../entity/channel';
+import { ArticleReadStatus } from '../infra/constants/status';
 
 @EntityRepository(ArticleEntity)
 export class ArticleRepository extends Repository<ArticleEntity> {
-  async getAll(): Promise<Article[]> {
-    const list = await this.createQueryBuilder('article')
+  async getAllArticle(): Promise<Article[]> {
+    return this.createQueryBuilder('article')
       .leftJoinAndSelect('article.channel', 'channel')
       .select([
         'article.*',
@@ -15,26 +16,43 @@ export class ArticleRepository extends Repository<ArticleEntity> {
         'channel.favicon as channelFavicon',
       ])
       .execute();
-
-    return list;
   }
 
-  async getListWithChannelId(channelId: string): Promise<Article[]> {
-    const list = await this.createQueryBuilder('article')
+  async getAllUnread(): Promise<Article[]> {
+    return this.createQueryBuilder('article')
       .leftJoinAndSelect('article.channel', 'channel')
-      .where('article.channelId = :channelId', { channelId })
+      .where('article.hasRead = :readStatus', {
+        readStatus: ArticleReadStatus.unRead,
+      })
       .select([
         'article.*',
         'channel.title as channelTitle',
         'channel.favicon as channelFavicon',
       ])
       .execute();
-
-    return list;
   }
 
   /**
-   * 添加文件
+   * 获取单个订阅频道下的文章列表
+   * @param channelId
+   */
+  async getListWithChannelId(channelId: string): Promise<Article[]> {
+    return this.createQueryBuilder('article')
+      .leftJoinAndSelect('article.channel', 'channel')
+      .where('article.channelId = :channelId', { channelId })
+      .andWhere('article.hasRead = :readStatus', {
+        readStatus: ArticleReadStatus.unRead,
+      })
+      .select([
+        'article.*',
+        'channel.title as channelTitle',
+        'channel.favicon as channelFavicon',
+      ])
+      .execute();
+  }
+
+  /**
+   * 添加文章
    * @param {string} channelId uuid
    * @param items
    */
