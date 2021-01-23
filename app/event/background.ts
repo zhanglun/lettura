@@ -1,10 +1,13 @@
 import { ipcRenderer, IpcRendererEvent } from 'electron';
+import log from 'electron-log';
 import { ChannelStore, ArticleStore } from '../view/stores';
 import {
   UPDATE_WINDOW_ID,
   FINISH_INITIAL_SYNC,
   MANUAL_SYNC_UNREAD,
   FINISH_MANUAL_SYNC_UNREAD,
+  EXPORT_OPML,
+  FINISH_EXPORT_OPML,
 } from './constant';
 import { parseRSS } from '../infra/utils';
 
@@ -15,7 +18,7 @@ export const initEvent = () => {
   const articleStore = new ArticleStore();
 
   function singleFetch(
-    requestList: Promise<any>[],
+    requestList: Promise<void>[],
     idList: string[],
     index = 0
   ) {
@@ -23,7 +26,7 @@ export const initEvent = () => {
     let count = index;
 
     if (!requestList[index]) {
-      console.log('同步结束');
+      log.info('同步结束');
       return;
     }
 
@@ -34,8 +37,7 @@ export const initEvent = () => {
     timer = setTimeout(() => {
       requestList[count]
         .then((res) => {
-          console.log('请求完成', count);
-          console.log(res);
+          log.info('请求完成', count);
           count += 1;
           requestList.unshift();
           singleFetch(requestList, idList, count);
@@ -45,11 +47,14 @@ export const initEvent = () => {
         .catch((err) => {
           count += 1;
           requestList.unshift();
-          console.log(err);
+          log.info(err);
         });
     }, 1000);
   }
 
+  /**
+   * 批量同步文章
+   */
   async function batchSyncArticles() {
     const channelList = await channelStore.getList();
     const channelIdList: string[] = [];
@@ -77,23 +82,41 @@ export const initEvent = () => {
       });
   }
 
+  /**
+   * 手动更新
+   */
   async function syncUnreadManually() {
-    console.log('手动同步，创建任务更新数据');
+    log.info('手动同步，创建任务更新数据');
     await batchSyncArticles();
     ipcRenderer.sendTo(targetId, FINISH_MANUAL_SYNC_UNREAD);
   }
 
+  async function exportOPMLFile() {
+    log.info('开始导出OPML');
+  }
+
+  /**
+   * 手动同步未读文章
+   */
   ipcRenderer.on(MANUAL_SYNC_UNREAD, async () => {
     await syncUnreadManually();
+  });
+
+  /**
+   * 导出 OPML
+   */
+  ipcRenderer.on(EXPORT_OPML, async () => {
+    await exportOPMLFile();
+    ipcRenderer.sendTo(targetId, FINISH_EXPORT_OPML);
   });
 
   syncUnreadWhenAPPStart();
 };
 
 ipcRenderer.on(UPDATE_WINDOW_ID, (e: IpcRendererEvent, data) => {
-  console.log(e);
-  console.log(UPDATE_WINDOW_ID);
-  console.log(data);
+  log.info(e);
+  log.info(UPDATE_WINDOW_ID);
+  log.info(data);
 
   targetId = data.mainWindowId;
 });
