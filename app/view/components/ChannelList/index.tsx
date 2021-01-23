@@ -33,7 +33,6 @@ const ChannelList = observer(
     }
 
     const syncRemoteArticle = useCallback(() => {
-      console.log('sync');
       remote.getCurrentWebContents().send(MANUAL_SYNC_UNREAD);
     }, []);
 

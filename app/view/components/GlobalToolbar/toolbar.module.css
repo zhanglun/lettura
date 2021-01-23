@@ -1,7 +1,7 @@
 .container {
   width: 100%;
   height: var(--app-toolbar-height);
-  border-bottom: 1px solid #dedede;
+  border-bottom: 1px solid var(--line-color);
   display: flex;
   align-items: center;
   justify-content: space-between;

@@ -27,16 +27,14 @@
 }
 
 .toolbarItem {
-  width: 24px;
+  width: 30px;
   height: 24px;
-  font-size: 18px;
-  padding: 4px;
-  margin: 0 6px;
+  border-radius: 4px;
+  font-size: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: var(--title-color);
 }
 
 .toolbarItem:hover {

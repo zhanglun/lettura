@@ -6,6 +6,7 @@ import React, {
   useMemo,
 } from 'react';
 import { observer } from 'mobx-react';
+import Dayjs from 'dayjs';
 import { Icon } from '../Icon';
 import { openBrowser } from '../../../infra/utils';
 import { StoreContext, StoreType } from '../../stores';
@@ -32,15 +33,15 @@ export const ArticleView = observer(
       }
     };
 
-    function renderPlaceholder() {
+    const renderPlaceholder = useCallback(() => {
       return <div className={styles.placeholder} />;
-    }
+    }, []);
 
     const markArticleAsRead = useCallback(async () => {
       const result = await articleStore.markArticleAsRead(currentArticle.id);
 
       console.log('result', result);
-    }, [currentArticle]);
+    }, [currentArticle, articleStore]);
 
     function renderDetail() {
       return (
@@ -64,6 +65,10 @@ export const ArticleView = observer(
           <div className={`${styles.main} ${styles.main}`}>
             <div className={styles.header}>
               <div className={styles.title}>{currentArticle.title}</div>
+              <div>
+                {Dayjs(currentArticle.pubDate).format('YYYY-MM-DD HH:mm')}
+                {currentArticle.author}
+              </div>
             </div>
             <div className={styles.body}>
               <div

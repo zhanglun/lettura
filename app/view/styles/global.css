@@ -28,4 +28,6 @@
   --input-placeholder-color: rgba(121, 121, 121, 0.5);
   --input-shadow: 0 0 0 2px var(--input-shadow-color);
   --input-disabled-bg: rgba(0, 0, 0, 0.05);
+  --line-color: rgba(0, 0, 0, 0.05);
+  --icon-focused-bg: rgba(0, 0, 0, 0.05);
 }

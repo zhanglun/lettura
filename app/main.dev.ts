@@ -72,7 +72,7 @@ const createWindow = async () => {
     height: 728,
     // transparent: true,
     // frame: false,
-    // titleBarStyle: 'hiddenInset',
+    titleBarStyle: 'hiddenInset',
     // backgroundColor: '#2e2c29',
     icon: getAssetPath('icon.png'),
     webPreferences:

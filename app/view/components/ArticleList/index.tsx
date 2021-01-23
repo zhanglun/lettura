@@ -7,11 +7,13 @@ import React, {
 } from 'react';
 import { observer } from 'mobx-react';
 import Dayjs from 'dayjs';
-import styles from './article.module.css';
 import { ArticleEntity } from '../../../entity/article';
 import { StoreContext, StoreType } from '../../stores';
 import { Article } from '../../../infra/types';
 import { ArticleReadStatus } from '../../../infra/constants/status';
+import { Toolbar } from './Toolbar';
+
+import styles from './article.module.css';
 
 export const ArticleList = observer(
   (): JSX.Element => {
@@ -23,13 +25,16 @@ export const ArticleList = observer(
     ) as StoreType;
     const { currentChannel, type } = channelStore;
 
-    const viewDetail = useCallback(async (article: ArticleEntity) => {
-      await articleStore.markArticleAsRead(article.id);
+    const viewDetail = useCallback(
+      async (article: ArticleEntity) => {
+        await articleStore.markArticleAsRead(article.id);
 
-      articleStore.setCurrentView(article);
-      setCurrentLink(article.link);
-      article.hasRead = ArticleReadStatus.isRead;
-    }, []);
+        articleStore.setCurrentView(article);
+        setCurrentLink(article.link);
+        article.hasRead = ArticleReadStatus.isRead;
+      },
+      [articleStore]
+    );
 
     const resetScrollTop = () => {
       if (articleListRef.current !== null) {
@@ -37,7 +42,7 @@ export const ArticleList = observer(
       }
     };
 
-    function renderList(): JSX.Element {
+    const renderList = useCallback((): JSX.Element => {
       return (
         <ul className={styles.list}>
           {articleList.map((article: Article, i: number) => {
@@ -65,26 +70,33 @@ export const ArticleList = observer(
           })}
         </ul>
       );
-    }
-
-    const getArticleList = async () => {
-      if (type === 'all') {
-        const list = await articleStore.getAllUnread();
-        return setArticleList(list);
-      }
-
-      const list = await articleStore.getListWithChannelId(currentChannel.id);
-
-      return setArticleList(list);
-    };
+    }, [articleList, currentLink, viewDetail]);
 
     useEffect(() => {
-      getArticleList();
+      let promise = null;
+
+      if (type === 'all') {
+        promise = articleStore.getAllUnread();
+      } else {
+        promise = articleStore.getListWithChannelId(currentChannel.id);
+      }
+
+      promise
+        .then((list) => {
+          setArticleList(list);
+
+          return list;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+
       resetScrollTop();
-    }, [type, currentChannel]);
+    }, [type, currentChannel, articleStore]);
 
     return (
       <div className={styles.container} ref={articleListRef}>
+        {currentChannel.title && <Toolbar channelName={currentChannel.title} />}
         {renderList()}
       </div>
     );
