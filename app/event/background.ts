@@ -10,6 +10,7 @@ import {
   FINISH_EXPORT_OPML,
 } from './constant';
 import { parseRSS } from '../infra/utils';
+import { RSSFeedItem } from '../infra/types';
 
 let targetId = 0;
 
@@ -18,7 +19,7 @@ export const initEvent = () => {
   const articleStore = new ArticleStore();
 
   function singleFetch(
-    requestList: Promise<void>[],
+    requestList: Promise<{ items: RSSFeedItem[] }>[],
     idList: string[],
     index = 0
   ) {

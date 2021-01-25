@@ -1,18 +1,33 @@
 import { remote } from 'electron';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { EXPORT_OPML } from '../../../../event/constant';
 import styles from '../settingpanel.module.css';
 
 export const ImportAndExport = (props: any) => {
-  const [file, setFile] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [file, setFile] = useState<File>();
 
-  const uploadOPMLFile = () => {
-    console.log(file);
-  };
+  const uploadOPMLFile = useCallback(() => {
+    if (fileInputRef && fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  }, [fileInputRef]);
 
-  const importFromOPML = () => {
+  const importFromOPML = useCallback(() => {
     console.log(file);
-  };
+  }, [file]);
+
+  const handleFileChange = useCallback((e) => {
+    setFile(e.target.files[0]);
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      console.log(reader.result);
+    };
+
+    reader.readAsText(e.target.files[0]);
+  }, []);
 
   const exportToOPML = useCallback(() => {
     remote.getCurrentWebContents().send(EXPORT_OPML);
@@ -27,11 +42,14 @@ export const ImportAndExport = (props: any) => {
       <div className={styles.panelBody}>
         <div className={styles.section}>
           <div className={styles.options}>OPML 导入</div>
+          <span>{file && file.name}</span>
           <input
+            className={styles.hideFileInput}
+            ref={fileInputRef}
             type="file"
-            value={file}
+            accept=".opml"
             onChange={(e) => {
-              setFile(e.target.value);
+              handleFileChange(e);
             }}
           />
           <button

@@ -90,3 +90,9 @@
   font-size: 14px;
   color: var(--title-color);
 }
+
+.hideFileInput {
+  display: none;
+  width: 0;
+  height: 0;
+}
