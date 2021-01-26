@@ -49,7 +49,7 @@ export const SettingSubscribe: () => JSX.Element = () => {
         </button>
       ) : (
         <button
-          className={styles.previewFollowButton}
+          className={`${styles.previewFollowButton} button--primary`}
           type="button"
           onClick={() => confirmSubscribe()}
         >

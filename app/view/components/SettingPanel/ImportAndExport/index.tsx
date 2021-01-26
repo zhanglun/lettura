@@ -1,4 +1,5 @@
 import { remote } from 'electron';
+import { read } from 'fs';
 import React, { useCallback, useRef, useState } from 'react';
 import { EXPORT_OPML } from '../../../../event/constant';
 import styles from '../settingpanel.module.css';
@@ -13,6 +14,23 @@ export const ImportAndExport = (props: any) => {
     }
   }, [fileInputRef]);
 
+  const parserOPML = useCallback((source: string): {
+    title: string;
+    feedUrl: string;
+  }[] => {
+    const parser = new DOMParser();
+    const resultDOM = parser.parseFromString(source, 'application/xml');
+    const $outlines = resultDOM.querySelectorAll('outline[xmlUrl]');
+    return Array.from($outlines)
+      .map(($item: Element) => {
+        return {
+          title: $item.getAttribute('title') || '',
+          feedUrl: $item.getAttribute('xmlUrl') || '',
+        };
+      })
+      .filter((item) => item.title && item.feedUrl);
+  }, []);
+
   const importFromOPML = useCallback(() => {
     console.log(file);
   }, [file]);
@@ -23,7 +41,10 @@ export const ImportAndExport = (props: any) => {
     const reader = new FileReader();
 
     reader.onload = () => {
-      console.log(reader.result);
+      const xmlString = reader.result as string;
+      const list = parserOPML(xmlString);
+
+      console.log('list', list);
     };
 
     reader.readAsText(e.target.files[0]);
