@@ -8,11 +8,15 @@ import {
   FINISH_MANUAL_SYNC_UNREAD,
   EXPORT_OPML,
   FINISH_EXPORT_OPML,
+  IMPORT_OPML,
+  FINISH_IMPORT_OPML,
 } from './constant';
 import { parseRSS } from '../infra/utils';
-import { RSSFeedItem } from '../infra/types';
+import { Channel, RSSFeedItem } from '../infra/types';
 
 let targetId = 0;
+
+type OPMLItem = { title: string; feedUrl: string };
 
 export const initEvent = () => {
   const channelStore = new ChannelStore();
@@ -110,6 +114,63 @@ export const initEvent = () => {
     await exportOPMLFile();
     ipcRenderer.sendTo(targetId, FINISH_EXPORT_OPML);
   });
+
+  /**
+   * 导入 OPML
+   */
+
+  async function importFeed(item: OPMLItem) {
+    const { feedUrl } = item;
+    console.log('开始加载 ->', feedUrl);
+    const channel = await channelStore.findChannelByUrl(feedUrl);
+
+    if (channel) {
+      return false;
+    }
+
+    try {
+      const channelRes = await parseRSS(feedUrl);
+      const { items } = channelRes;
+      await channelStore.subscribeChannel(channelRes as Channel, items || []);
+
+      console.log('加载成功 -<', feedUrl);
+
+      return true;
+    } catch (err) {
+      console.error('Err', err);
+      console.log('加载失败 -<', feedUrl);
+
+      return false;
+    }
+  }
+
+  async function batchImportFeeds(items: OPMLItem[]) {
+    // const queue = async (list: OPMLItem[], idx: number) => {
+    //   if (idx >= 0 && idx < list.length) {
+    //     const item = list[idx];
+    //     await importFeed(item);
+    //     await queue(items, idx + 1);
+    //   }
+    // };
+
+    // queue(items, 0);
+    const requestList = items.map((item) => {
+      return importFeed(item);
+    });
+
+    Promise.allSettled(requestList)
+      .then((a) => a)
+      .catch(() => {});
+  }
+
+  ipcRenderer.on(
+    IMPORT_OPML,
+    async (_event, { list }: { list: OPMLItem[] }) => {
+      log.info('后台开始批量导入订阅');
+      await batchImportFeeds(list);
+      ipcRenderer.sendTo(targetId, FINISH_IMPORT_OPML);
+    }
+  );
 
   syncUnreadWhenAPPStart();
 };

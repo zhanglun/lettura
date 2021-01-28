@@ -8,6 +8,8 @@ import {
   UPDATE_WINDOW_ID,
   EXPORT_OPML,
   FINISH_EXPORT_OPML,
+  IMPORT_OPML,
+  FINISH_IMPORT_OPML,
 } from './constant';
 
 let targetId = 0;
@@ -47,6 +49,16 @@ export const initEvent = () => {
 
   ipcRenderer.on(FINISH_EXPORT_OPML, () => {
     log.info('OPML导出完成');
+  });
+
+  /** 导入 */
+  ipcRenderer.on(IMPORT_OPML, (_e, list) => {
+    log.info('收到导入操作，转发给background');
+    ipcRenderer.sendTo(targetId, IMPORT_OPML, { list });
+  });
+
+  ipcRenderer.on(FINISH_IMPORT_OPML, () => {
+    log.info('OPML导入完成');
   });
 };
 

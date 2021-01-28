@@ -6,3 +6,6 @@ export const UPDATE_WINDOW_ID = 'UPDATE_WINDOW_ID';
 
 export const EXPORT_OPML = 'EXPORT_OPML';
 export const FINISH_EXPORT_OPML = 'FINISH_EXPORT_OPML';
+
+export const IMPORT_OPML = 'IMPORT_OPML';
+export const FINISH_IMPORT_OPML = 'FINISH_IMPORT_OPML';

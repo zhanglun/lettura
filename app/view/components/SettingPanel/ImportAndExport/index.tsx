@@ -1,12 +1,14 @@
 import { remote } from 'electron';
-import { read } from 'fs';
 import React, { useCallback, useRef, useState } from 'react';
-import { EXPORT_OPML } from '../../../../event/constant';
+import { IMPORT_OPML, EXPORT_OPML } from '../../../../event/constant';
 import styles from '../settingpanel.module.css';
+
+type ImportItem = { title: string; feedUrl: string };
 
 export const ImportAndExport = (props: any) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File>();
+  const [importedList, setImportedList] = useState<ImportItem[]>([]);
 
   const uploadOPMLFile = useCallback(() => {
     if (fileInputRef && fileInputRef.current) {
@@ -32,8 +34,8 @@ export const ImportAndExport = (props: any) => {
   }, []);
 
   const importFromOPML = useCallback(() => {
-    console.log(file);
-  }, [file]);
+    remote.getCurrentWebContents().send(IMPORT_OPML, importedList);
+  }, [importedList]);
 
   const handleFileChange = useCallback((e) => {
     setFile(e.target.files[0]);
@@ -42,9 +44,9 @@ export const ImportAndExport = (props: any) => {
 
     reader.onload = () => {
       const xmlString = reader.result as string;
-      const list = parserOPML(xmlString);
+      const list: ImportItem[] = parserOPML(xmlString);
 
-      console.log('list', list);
+      setImportedList(list);
     };
 
     reader.readAsText(e.target.files[0]);
