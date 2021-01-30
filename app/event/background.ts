@@ -1,4 +1,6 @@
-import { ipcRenderer, IpcRendererEvent } from 'electron';
+import fs from 'fs';
+import path from 'path';
+import { ipcRenderer, IpcRendererEvent, remote } from 'electron';
 import log from 'electron-log';
 import { ChannelStore, ArticleStore } from '../view/stores';
 import {
@@ -97,7 +99,31 @@ export const initEvent = () => {
   }
 
   async function exportOPMLFile() {
-    log.info('开始导出OPML');
+    const channels = await channelStore.getList();
+    const $xml = document.createElement('xml');
+    const $opml = document.createElement('opml');
+
+    $opml.setAttribute('version', '1.0');
+
+    channels.forEach((channel) => {
+      $opml.innerHTML += `<outline type="rss" text="${channel.title}" title="${channel.title}" xmlUrl="${channel.feedUrl}" htmlUrl="${channel.link}"/>`;
+    });
+
+    $xml.innerHTML = $opml.outerHTML;
+
+    const XMLParer = new XMLSerializer();
+    const xmlString = XMLParer.serializeToString($xml);
+    const downloadPath = remote.app.getPath('downloads');
+    let filename = path.resolve(downloadPath, 'salix.opml');
+    filename =
+      remote.dialog.showSaveDialogSync({
+        title: 'Export OPML',
+        defaultPath: filename,
+      }) || filename;
+
+    log.info('开始导出OPML', filename);
+
+    fs.writeFileSync(filename, xmlString);
   }
 
   /**
@@ -145,15 +171,6 @@ export const initEvent = () => {
   }
 
   async function batchImportFeeds(items: OPMLItem[]) {
-    // const queue = async (list: OPMLItem[], idx: number) => {
-    //   if (idx >= 0 && idx < list.length) {
-    //     const item = list[idx];
-    //     await importFeed(item);
-    //     await queue(items, idx + 1);
-    //   }
-    // };
-
-    // queue(items, 0);
     const requestList = items.map((item) => {
       return importFeed(item);
     });

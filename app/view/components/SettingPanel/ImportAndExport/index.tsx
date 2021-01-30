@@ -37,20 +37,23 @@ export const ImportAndExport = (props: any) => {
     remote.getCurrentWebContents().send(IMPORT_OPML, importedList);
   }, [importedList]);
 
-  const handleFileChange = useCallback((e) => {
-    setFile(e.target.files[0]);
+  const handleFileChange = useCallback(
+    (e) => {
+      setFile(e.target.files[0]);
 
-    const reader = new FileReader();
+      const reader = new FileReader();
 
-    reader.onload = () => {
-      const xmlString = reader.result as string;
-      const list: ImportItem[] = parserOPML(xmlString);
+      reader.onload = () => {
+        const xmlString = reader.result as string;
+        const list: ImportItem[] = parserOPML(xmlString);
 
-      setImportedList(list);
-    };
+        setImportedList(list);
+      };
 
-    reader.readAsText(e.target.files[0]);
-  }, []);
+      reader.readAsText(e.target.files[0]);
+    },
+    [parserOPML]
+  );
 
   const exportToOPML = useCallback(() => {
     remote.getCurrentWebContents().send(EXPORT_OPML);
