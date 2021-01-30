@@ -100,19 +100,16 @@ export const initEvent = () => {
 
   async function exportOPMLFile() {
     const channels = await channelStore.getList();
-    const $xml = document.createElement('xml');
-    const $opml = document.createElement('opml');
-
-    $opml.setAttribute('version', '1.0');
+    let $xml = '<xml xmlns="http://www.w3.org/1999/xhtml">';
+    let $opml = '<opml version="1.0">';
 
     channels.forEach((channel) => {
-      $opml.innerHTML += `<outline type="rss" text="${channel.title}" title="${channel.title}" xmlUrl="${channel.feedUrl}" htmlUrl="${channel.link}"/>`;
+      $opml += `\n    <outline type="rss" text="${channel.title}" title="${channel.title}" xmlUrl="${channel.feedUrl}" htmlUrl="${channel.link}"/>\n`;
     });
 
-    $xml.innerHTML = $opml.outerHTML;
+    $xml += $opml;
+    $xml += '</opml></xml>';
 
-    const XMLParer = new XMLSerializer();
-    const xmlString = XMLParer.serializeToString($xml);
     const downloadPath = remote.app.getPath('downloads');
     let filename = path.resolve(downloadPath, 'salix.opml');
     filename =
@@ -123,7 +120,7 @@ export const initEvent = () => {
 
     log.info('开始导出OPML', filename);
 
-    fs.writeFileSync(filename, xmlString);
+    fs.writeFileSync(filename, $xml);
   }
 
   /**
