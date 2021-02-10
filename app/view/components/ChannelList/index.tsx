@@ -1,5 +1,5 @@
 import { remote } from 'electron';
-import React, { useState, useEffect, useContext, useCallback } from 'react';
+import React, { useContext, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import { observer } from 'mobx-react';
 import { Icon } from '../Icon';
@@ -15,22 +15,23 @@ import defaultSiteIcon from './default.png';
 const ChannelList = observer(
   (): JSX.Element => {
     const { channelStore } = useContext(StoreContext) as StoreType;
-    const [channelList, setChannelList] = useState<ChannelEntity[]>([]);
-    const [unreadAmount, setUnreadAmount] = useState<number>(0);
-    const { currentChannel } = channelStore;
+    const { currentChannel, channelList, counterMap } = channelStore;
     const history = useHistory();
 
-    function viewChannel(channel: ChannelEntity) {
-      channelStore.setCurrentChannel(channel);
-      channelStore.setCurrentType('channel');
+    const viewChannel = useCallback(
+      (channel: ChannelEntity) => {
+        channelStore.setCurrentChannel(channel);
+        channelStore.setCurrentType('channel');
 
-      history.push(`/channels/${channel.id}`);
-    }
+        history.push(`/channels/${channel.id}`);
+      },
+      [channelStore, history]
+    );
 
-    function viewAll() {
+    const viewAll = useCallback(() => {
       channelStore.setCurrentType(ChannelType.all);
       history.push('/all');
-    }
+    }, [channelStore, history]);
 
     const syncRemoteArticle = useCallback(() => {
       remote.getCurrentWebContents().send(MANUAL_SYNC_UNREAD);
@@ -40,58 +41,51 @@ const ChannelList = observer(
       window.location.hash = 'settings';
     }
 
-    async function getChannelList() {
-      const list = await channelStore.getList();
-      const amount = list.reduce((acu, cur) => {
-        return acu + (cur.articleCount || 0);
-      }, 0);
-
-      setChannelList(list);
-      setUnreadAmount(amount);
-    }
-
-    useEffect(() => {
-      getChannelList();
-    }, []);
-
-    function renderFeedList(list: Channel[]): JSX.Element {
-      return (
-        <ul className={styles.list}>
-          {list.map((channel: Channel, i: number) => {
-            return (
-              <li
-                className={`${styles.item} ${
-                  currentChannel &&
-                  currentChannel.title === channel.title &&
-                  styles.read
-                }`}
-                // eslint-disable-next-line react/no-array-index-key
-                key={channel.title + i}
-                onClick={() => {
-                  viewChannel(channel);
-                }}
-                aria-hidden="true"
-              >
-                <img
-                  src={channel.favicon}
-                  onError={(e) => {
-                    // @ts-ignore
-                    e.target.onerror = null;
-
-                    // @ts-ignore
-                    e.target.src = defaultSiteIcon;
+    const renderFeedList = useCallback(
+      (list: Channel[]): JSX.Element => {
+        return (
+          <ul className={styles.list}>
+            {list.map((channel: Channel, i: number) => {
+              return (
+                <li
+                  className={`${styles.item} ${
+                    currentChannel &&
+                    currentChannel.title === channel.title &&
+                    styles.read
+                  }`}
+                  // eslint-disable-next-line react/no-array-index-key
+                  key={channel.title + i}
+                  onClick={() => {
+                    viewChannel(channel);
                   }}
-                  className={styles.icon}
-                  alt={channel.title}
-                />
-                <span className={styles.name}>{channel.title}</span>
-                <span className={styles.count}>{channel.articleCount}</span>
-              </li>
-            );
-          })}
-        </ul>
-      );
-    }
+                  aria-hidden="true"
+                >
+                  <img
+                    src={channel.favicon}
+                    onError={(e) => {
+                      // @ts-ignore
+                      e.target.onerror = null;
+
+                      // @ts-ignore
+                      e.target.src = defaultSiteIcon;
+                    }}
+                    className={styles.icon}
+                    alt={channel.title}
+                  />
+                  <span className={styles.name}>{channel.title}</span>
+                  <span className={styles.count}>
+                    {counterMap[channel.id] || 0}
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        );
+      },
+      [counterMap, currentChannel, viewChannel]
+    );
+
+    console.log('counterMap', counterMap);
 
     return (
       <div className={styles.container}>
@@ -130,7 +124,7 @@ const ChannelList = observer(
                 name="mark_email_unread"
               />
               <span className={styles.name}>所有未读</span>
-              <span className={styles.count}>{unreadAmount}</span>
+              <span className={styles.count}>{counterMap.total}</span>
             </div>
             {/* <div */}
             {/*  className={styles.officialItem} */}

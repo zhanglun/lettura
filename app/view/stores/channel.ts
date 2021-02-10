@@ -8,17 +8,19 @@ import { ChannelRepository } from '../../repository/channel';
 import { ArticleRepository } from '../../repository/article';
 
 export class ChannelStore {
-  feedUrl: string;
+  feedUrl = '';
+
+  type = '';
 
   currentChannel: ChannelEntity = {} as ChannelEntity;
 
-  channelList: Channel[];
+  channelList: Channel[] = [];
 
   channelRepo: ChannelRepository;
 
   articleRepo: ArticleRepository;
 
-  type: string;
+  counterMap: { [key: string]: number } = {};
 
   constructor() {
     makeAutoObservable(this);
@@ -26,6 +28,9 @@ export class ChannelStore {
     this.channelRepo = getCustomRepository(ChannelRepository);
     this.articleRepo = getCustomRepository(ArticleRepository);
     this.type = ChannelType.all;
+
+    // eslint-disable-next-line promise/valid-params
+    this.getList().then().catch();
   }
 
   /**
@@ -60,7 +65,19 @@ export class ChannelStore {
   }
 
   async getList(): Promise<Channel[]> {
-    return this.channelRepo.getAll();
+    this.channelList = await this.channelRepo.getAll();
+
+    const counterMap: { [key: string]: number } = {};
+    const amount = this.channelList.reduce((acu, cur) => {
+      counterMap[cur.id] = cur.articleCount || 0;
+      return acu + (cur.articleCount || 0);
+    }, 0);
+
+    counterMap.amount = amount;
+
+    this.counterMap = counterMap;
+
+    return this.channelList;
   }
 
   async findChannelByUrl(url: string): Promise<ChannelEntity> {
@@ -72,4 +89,24 @@ export class ChannelStore {
 
     return channel[0];
   }
+
+  decreaseUnreadCountInChannel(channelId: string, number: number) {
+    let current = this.counterMap[channelId] || 0;
+
+    if (current) {
+      current = Math.max(current - number, 0);
+    }
+
+    this.counterMap = {
+      ...this.counterMap,
+      [channelId]: current,
+    };
+  }
+  // async getUnreadTotal(): Promise<any> {
+
+  // }
+
+  // async getUnreadTotalByChannel(channelId: string): Promise<any> {
+
+  // }
 }

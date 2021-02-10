@@ -10,11 +10,6 @@
   --block-padding: 14px;
   --font-weight-bold: 600;
   --font-weight-normal: 400;
-  --color-primary-blue: #017aff;
-  --color-primary-90: #232526;
-  --color-primary-10: #e5e5e5;
-  --color-primary-3: #f4f4f4;
-  --color-primary-white: #fff;
   --button-height-large: 28px;
   --button-height-normal: 28px;
   --button-height-small: 20px;
@@ -30,4 +25,16 @@
   --input-disabled-bg: rgba(0, 0, 0, 0.05);
   --line-color: rgba(0, 0, 0, 0.05);
   --icon-focused-bg: rgba(0, 0, 0, 0.05);
+  --color-primary-blue: #017aff;
+  --color-primary-90: #232526;
+  --color-primary-10: #e5e5e5;
+  --color-primary-3: #f4f4f4;
+  --color-primary-white: #fff;
+  --color-01: #f96057;
+  --color-02: #f8a34d;
+  --color-03: #f8ce52;
+  --color-04: #5fcf65;
+  --color-05: #488ef7;
+  --color-06: #b470d4;
+  --color-07: #9d9ca0;
 }
