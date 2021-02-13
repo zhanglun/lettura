@@ -28,6 +28,7 @@
 .toolbarIcon {
   width: 30px;
   height: 24px;
+  line-height: 24px;
   border-radius: 4px;
   font-size: 16px;
   display: flex;
@@ -95,7 +96,7 @@
   margin: 10px auto;
   padding: 5px;
   background-color: #fff;
-  border: 1px solid #bbb;
+  border: 1px solid #efefef;
   box-shadow: 1px 1px 3px #d4d4d4;
 }
 

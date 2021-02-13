@@ -85,8 +85,6 @@ const ChannelList = observer(
       [counterMap, currentChannel, viewChannel]
     );
 
-    console.log('counterMap', counterMap);
-
     return (
       <div className={styles.container}>
         <div className={styles.header}>
@@ -124,7 +122,7 @@ const ChannelList = observer(
                 name="mark_email_unread"
               />
               <span className={styles.name}>所有未读</span>
-              <span className={styles.count}>{counterMap.total}</span>
+              <span className={styles.count}>{counterMap.amount || 0}</span>
             </div>
             {/* <div */}
             {/*  className={styles.officialItem} */}

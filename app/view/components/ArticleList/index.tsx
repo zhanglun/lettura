@@ -26,16 +26,16 @@ export const ArticleList = observer(
     const { currentChannel, type } = channelStore;
 
     const viewDetail = useCallback(
-      async (article: ArticleEntity) => {
+      async (article: Article) => {
         await articleStore.markArticleAsRead(article.id);
         articleStore.setCurrentView(article);
 
-        channelStore.decreaseUnreadCountInChannel(currentChannel.id, 1);
+        channelStore.decreaseUnreadCountInChannel(article.channelId, 1);
 
         setCurrentLink(article.link);
         article.hasRead = ArticleReadStatus.isRead;
       },
-      [articleStore, channelStore, currentChannel]
+      [articleStore, channelStore]
     );
 
     const resetScrollTop = () => {

@@ -42,5 +42,6 @@ export type ChannelRes = RSSFeed & {
 
 export type Article = ArticleEntity & {
   channelTitle: string;
+  channelId: string;
   channelFavicon: string;
 };

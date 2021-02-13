@@ -92,21 +92,17 @@ export class ChannelStore {
 
   decreaseUnreadCountInChannel(channelId: string, number: number) {
     let current = this.counterMap[channelId] || 0;
+    let amount = this.counterMap.amount || 0;
 
     if (current) {
       current = Math.max(current - number, 0);
+      amount = Math.max(amount - number, 0);
     }
 
     this.counterMap = {
       ...this.counterMap,
       [channelId]: current,
+      amount,
     };
   }
-  // async getUnreadTotal(): Promise<any> {
-
-  // }
-
-  // async getUnreadTotalByChannel(channelId: string): Promise<any> {
-
-  // }
 }
