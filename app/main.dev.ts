@@ -50,6 +50,31 @@ const installExtensions = async () => {
   ).catch(console.log);
 };
 
+const createBackgroundWindow = (getAssetPath: (v: string) => string) => {
+  backgroundWindow = new BrowserWindow({
+    show: true,
+    width: 1024,
+    height: 728,
+    // transparent: true,
+    // frame: false,
+    // titleBarStyle: 'hiddenInset',
+    icon: getAssetPath('icon.png'),
+    webPreferences:
+      (process.env.NODE_ENV === 'development' ||
+        process.env.E2E_BUILD === 'true') &&
+      process.env.ERB_SECURE !== 'true'
+        ? {
+            nodeIntegration: true,
+            nativeWindowOpen: true,
+            nodeIntegrationInWorker: true,
+          }
+        : {
+            preload: path.join(__dirname, 'dist/renderer.prod.js'),
+          },
+  });
+  backgroundWindow.loadURL(`file://${__dirname}/background.html`);
+};
+
 const createWindow = async () => {
   if (
     process.env.NODE_ENV === 'development' ||
@@ -100,38 +125,16 @@ const createWindow = async () => {
       mainWindow.focus();
     }
   });
-
   mainWindow.on('closed', () => {
     mainWindow = null;
   });
-
-  backgroundWindow = new BrowserWindow({
-    show: true,
-    width: 1024,
-    height: 728,
-    // transparent: true,
-    // frame: false,
-    // titleBarStyle: 'hiddenInset',
-    icon: getAssetPath('icon.png'),
-    webPreferences:
-      (process.env.NODE_ENV === 'development' ||
-        process.env.E2E_BUILD === 'true') &&
-      process.env.ERB_SECURE !== 'true'
-        ? {
-            nodeIntegration: true,
-            nativeWindowOpen: true,
-            nodeIntegrationInWorker: true,
-          }
-        : {
-            preload: path.join(__dirname, 'dist/renderer.prod.js'),
-          },
-  });
-  backgroundWindow.loadURL(`file://${__dirname}/background.html`);
 
   const menuBuilder = new MenuBuilder(mainWindow);
   menuBuilder.buildMenu();
 
   mainWindow.webContents.on('did-finish-load', () => {
+    createBackgroundWindow(getAssetPath);
+
     global.mainWindowId = mainWindow?.webContents.id;
     mainWindow?.webContents.send(UPDATE_WINDOW_ID, {
       backgroundWindowId: backgroundWindow?.webContents.id,
