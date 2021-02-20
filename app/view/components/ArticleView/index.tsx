@@ -19,7 +19,7 @@ function createMarkup(html: string) {
 export const ArticleView = observer(
   (): JSX.Element => {
     const { articleStore } = useContext(StoreContext) as StoreType;
-    const { currentArticle } = useMemo(() => articleStore, []);
+    const { currentArticle } = useMemo(() => articleStore, [articleStore]);
     const containerRef = useRef<HTMLDivElement>(null);
 
     const viewInBrowser = useCallback(() => {
@@ -38,12 +38,10 @@ export const ArticleView = observer(
     }, []);
 
     const markArticleAsRead = useCallback(async () => {
-      const result = await articleStore.markArticleAsRead(currentArticle.id);
-
-      console.log('result', result);
+      await articleStore.markArticleAsRead(currentArticle.id);
     }, [currentArticle, articleStore]);
 
-    function renderDetail() {
+    const renderDetail = useCallback(() => {
       return (
         <React.Fragment key="detail">
           <div className={styles.toolbar}>
@@ -62,35 +60,44 @@ export const ArticleView = observer(
               />
             </div>
           </div>
-          <div className={`${styles.main} ${styles.main}`}>
-            <div className={styles.header}>
-              <div className={styles.title}>{currentArticle.title}</div>
-              <div>
-                {Dayjs(currentArticle.pubDate).format('YYYY-MM-DD HH:mm')}
-                {currentArticle.author}
+          {true ? (
+            <webview
+              className={styles.frame}
+              key="view"
+              title="iframe"
+              src={currentArticle.link}
+            />
+          ) : (
+            <div className={`${styles.main} ${styles.main}`}>
+              <div className={styles.header}>
+                <div className={styles.title}>{currentArticle.title}</div>
+                <div>
+                  {Dayjs(currentArticle.pubDate).format('YYYY-MM-DD HH:mm')}
+                  {currentArticle.author}
+                </div>
+              </div>
+              <div className={styles.body}>
+                <div
+                  className={styles.content}
+                  // eslint-disable-next-line react/no-danger
+                  dangerouslySetInnerHTML={createMarkup(currentArticle.content)}
+                />
+                <button
+                  type="button"
+                  className={styles.browserButton}
+                  onClick={() => {
+                    viewInBrowser();
+                  }}
+                  aria-hidden="true"
+                >
+                  查看网站
+                </button>
               </div>
             </div>
-            <div className={styles.body}>
-              <div
-                className={styles.content}
-                // eslint-disable-next-line react/no-danger
-                dangerouslySetInnerHTML={createMarkup(currentArticle.content)}
-              />
-              <button
-                type="button"
-                className={styles.browserButton}
-                onClick={() => {
-                  viewInBrowser();
-                }}
-                aria-hidden="true"
-              >
-                查看网站
-              </button>
-            </div>
-          </div>
+          )}
         </React.Fragment>
       );
-    }
+    }, [currentArticle, markArticleAsRead, viewInBrowser]);
 
     function handleGlobalClick(e: any) {
       if (e.target.nodeName.toLowerCase() === 'a' && e.target.href) {
@@ -113,13 +120,6 @@ export const ArticleView = observer(
         {currentArticle && currentArticle.id
           ? renderDetail()
           : renderPlaceholder()}
-        {/* <iframe */}
-        {/*  className={styles.frame} */}
-        {/*  key="view" */}
-        {/*  title="iframe" */}
-        {/*  src={currentArticle.link} */}
-        {/*  frameBorder="0" */}
-        {/* /> */}
       </div>
     );
   }

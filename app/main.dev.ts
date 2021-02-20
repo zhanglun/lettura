@@ -72,7 +72,14 @@ const createBackgroundWindow = (getAssetPath: (v: string) => string) => {
             preload: path.join(__dirname, 'dist/renderer.prod.js'),
           },
   });
+
   backgroundWindow.loadURL(`file://${__dirname}/background.html`);
+  backgroundWindow.webContents.on('did-finish-load', () => {
+    global.backgroundWindow = backgroundWindow?.webContents.id;
+    backgroundWindow?.webContents.send(UPDATE_WINDOW_ID, {
+      mainWindowId: mainWindow?.webContents.id,
+    });
+  });
 };
 
 const createWindow = async () => {
@@ -100,8 +107,8 @@ const createWindow = async () => {
     titleBarStyle: 'hiddenInset',
     // backgroundColor: '#2e2c29',
     icon: getAssetPath('icon.png'),
-    webPreferences:
-      (process.env.NODE_ENV === 'development' ||
+    webPreferences: {
+      ...((process.env.NODE_ENV === 'development' ||
         process.env.E2E_BUILD === 'true') &&
       process.env.ERB_SECURE !== 'true'
         ? {
@@ -111,7 +118,9 @@ const createWindow = async () => {
           }
         : {
             preload: path.join(__dirname, 'dist/renderer.prod.js'),
-          },
+          }),
+      webviewTag: true,
+    },
   });
   mainWindow.loadURL(`file://${__dirname}/app.html`);
   mainWindow.webContents.once('did-finish-load', () => {
@@ -133,18 +142,13 @@ const createWindow = async () => {
   menuBuilder.buildMenu();
 
   mainWindow.webContents.on('did-finish-load', () => {
-    createBackgroundWindow(getAssetPath);
+    if (!backgroundWindow) {
+      createBackgroundWindow(getAssetPath);
+    }
 
     global.mainWindowId = mainWindow?.webContents.id;
     mainWindow?.webContents.send(UPDATE_WINDOW_ID, {
       backgroundWindowId: backgroundWindow?.webContents.id,
-    });
-  });
-
-  backgroundWindow.webContents.on('did-finish-load', () => {
-    global.backgroundWindow = backgroundWindow?.webContents.id;
-    backgroundWindow?.webContents.send(UPDATE_WINDOW_ID, {
-      mainWindowId: mainWindow?.webContents.id,
     });
   });
 
