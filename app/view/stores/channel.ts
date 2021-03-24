@@ -12,6 +12,8 @@ export class ChannelStore {
 
   type = '';
 
+  secondsPassed = 0;
+
   currentChannel: ChannelEntity = {} as ChannelEntity;
 
   channelList: Channel[] = [];
@@ -30,7 +32,11 @@ export class ChannelStore {
     this.type = ChannelType.all;
 
     // eslint-disable-next-line promise/valid-params
-    this.getList().then().catch();
+    // this.getList().then().catch();
+  }
+
+  increaseTimer() {
+    this.secondsPassed += 1;
   }
 
   /**
@@ -65,7 +71,7 @@ export class ChannelStore {
   }
 
   async getList(): Promise<Channel[]> {
-    this.channelList = await this.channelRepo.getAll();
+    const channelList = await this.channelRepo.getAll();
 
     const counterMap: { [key: string]: number } = {};
     const amount = this.channelList.reduce((acu, cur) => {
@@ -75,7 +81,10 @@ export class ChannelStore {
 
     counterMap.amount = amount;
 
-    this.counterMap = counterMap;
+    runInAction(() => {
+      this.counterMap = counterMap;
+      this.channelList = channelList;
+    });
 
     return this.channelList;
   }

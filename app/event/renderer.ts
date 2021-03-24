@@ -1,6 +1,6 @@
 import { ipcRenderer, IpcRendererEvent } from 'electron';
 import log from 'electron-log';
-import { ArticleStore } from '../view/stores';
+import { ArticleStore, ChannelStore } from '../view/stores';
 import {
   FINISH_INITIAL_SYNC,
   FINISH_MANUAL_SYNC_UNREAD,
@@ -16,6 +16,7 @@ let targetId = 0;
 
 export const initEvent = () => {
   const articleStore = new ArticleStore();
+  const channelStore = new ChannelStore();
 
   function handleFinishInitialSync() {
     articleStore
@@ -31,8 +32,9 @@ export const initEvent = () => {
   ipcRenderer.on(FINISH_INITIAL_SYNC, () => {
     handleFinishInitialSync();
   });
-  ipcRenderer.on(FINISH_MANUAL_SYNC_UNREAD, () => {
+  ipcRenderer.on(FINISH_MANUAL_SYNC_UNREAD, async () => {
     log.info('手动同步完成，重新查询数据');
+    await channelStore.getList();
   });
 
   // 发送给background

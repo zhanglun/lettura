@@ -1,5 +1,5 @@
 import { remote } from 'electron';
-import React, { useContext, useCallback } from 'react';
+import React, { useContext, useCallback, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { observer } from 'mobx-react';
 import { Icon } from '../Icon';
@@ -34,6 +34,7 @@ const ChannelList = observer(
     }, [channelStore, history]);
 
     const syncRemoteArticle = useCallback(() => {
+      channelStore.increaseTimer();
       remote.getCurrentWebContents().send(MANUAL_SYNC_UNREAD);
     }, []);
 
@@ -87,6 +88,10 @@ const ChannelList = observer(
 
     return (
       <div className={styles.container}>
+        <span>
+          Seconds passed:
+          {channelStore.secondsPassed}
+        </span>
         <div className={styles.header}>
           <div className={styles.toolbar}>
             {/* <span className={styles.toolbarItem}> */}
