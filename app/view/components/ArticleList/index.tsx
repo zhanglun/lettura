@@ -7,7 +7,6 @@ import React, {
 } from 'react';
 import { observer } from 'mobx-react';
 import Dayjs from 'dayjs';
-import { ArticleEntity } from '../../../entity/article';
 import { StoreContext, StoreType } from '../../stores';
 import { Article } from '../../../infra/types';
 import { ArticleReadStatus } from '../../../infra/constants/status';
@@ -53,10 +52,8 @@ export const ArticleList = observer(
                 // eslint-disable-next-line react/no-array-index-key
                 key={article.title + i}
                 className={`${styles.item} ${
-                  (article.hasRead === ArticleReadStatus.isRead ||
-                    article.link === currentLink) &&
-                  styles.read
-                }`}
+                  article.hasRead === ArticleReadStatus.isRead && styles.read
+                } ${article.link === currentLink && styles.current}`}
                 onClick={() => viewDetail(article)}
                 aria-hidden="true"
               >

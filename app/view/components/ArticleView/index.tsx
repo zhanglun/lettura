@@ -60,7 +60,7 @@ export const ArticleView = observer(
               />
             </div>
           </div>
-          {true ? (
+          {false ? (
             <webview
               className={styles.frame}
               key="view"

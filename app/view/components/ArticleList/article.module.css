@@ -47,6 +47,11 @@
   -webkit-box-orient: vertical;
 }
 
+.pubTime {
+  font-size: 12px;
+  color: #999;
+}
+
 .read {
   background-color: rgba(0, 0, 0, 0.05);
   color: var(--title-color);
@@ -56,9 +61,20 @@
   color: var(--title-color);
 }
 
+.current {
+  background-color: var(--color-primary-blue);
+  color: var(--color-primary-white);
+}
+
+.current .title,
+.current .pubTime {
+  color: var(--color-primary-white);
+}
+
 .meta {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   font-size: 12px;
 }
 
@@ -72,11 +88,6 @@
 .channel img {
   width: 14px;
   height: 14px;
-}
-
-.pubTime {
-  font-size: 12px;
-  color: #999;
 }
 
 .toolbar {
