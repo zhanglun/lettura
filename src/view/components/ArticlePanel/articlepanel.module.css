@@ -1,0 +1,11 @@
+.articleList {
+  flex: 0 0 auto;
+  width: var(--app-article-width);
+}
+
+.reader {
+  height: 100%;
+  flex: 1;
+  position: relative;
+  padding-top: var(--app-toolbar-height);
+}

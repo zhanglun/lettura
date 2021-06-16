@@ -1,0 +1,37 @@
+.container {
+  width: 100%;
+  height: var(--app-toolbar-height);
+  border-bottom: 1px solid var(--line-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.feedName {
+  padding: 0 var(--block-padding);
+  font-size: 16px;
+  color: var(--headline-color);
+}
+
+.menu {
+  display: flex;
+  padding: 0 var(--block-padding);
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  margin: 0 10px;
+  font-size: 14px;
+  color: var(--title-color);
+}
+
+.menuItem:hover {
+  color: var(--headline-color);
+  cursor: pointer;
+}
+
+.menuIcon {
+  font-size: 18px;
+  margin-right: 4px;
+}
