@@ -1,4 +1,4 @@
-import { remote } from 'electron';
+import { ipcRenderer } from 'electron';
 import React, { useCallback, useRef, useState } from 'react';
 import { IMPORT_OPML, EXPORT_OPML } from '../../../../event/constant';
 import styles from '../settingpanel.module.css';
@@ -34,7 +34,7 @@ export const ImportAndExport = (props: any) => {
   }, []);
 
   const importFromOPML = useCallback(() => {
-    remote.getCurrentWebContents().send(IMPORT_OPML, importedList);
+    ipcRenderer.send(IMPORT_OPML, importedList);
   }, [importedList]);
 
   const handleFileChange = useCallback(
@@ -56,7 +56,7 @@ export const ImportAndExport = (props: any) => {
   );
 
   const exportToOPML = useCallback(() => {
-    remote.getCurrentWebContents().send(EXPORT_OPML);
+    ipcRenderer.send(EXPORT_OPML);
   }, []);
 
   return (

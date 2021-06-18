@@ -60,7 +60,7 @@ export default merge(baseConfig, {
                     loader: require.resolve('babel-loader'),
                     options: {
                         plugins: [
-                            require.resolve('react-refresh/babel'),
+                            // require.resolve('react-refresh/babel'),
                         ].filter(Boolean),
                     },
                 }, ],

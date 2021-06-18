@@ -1,8 +1,11 @@
 import React from 'react';
-import { ArticlePanel } from '../../components/ArticlePanel';
+import styles from './index.module.css';
+import { ArticleList } from '../../components/ArticleList';
 
-function ArticleModule() {
-  return <ArticlePanel />;
-}
-
-export { ArticleModule };
+export const ArticleModule = (): JSX.Element => {
+  return (
+    <div className={styles.articleList}>
+      <ArticleList />
+    </div>
+  );
+};

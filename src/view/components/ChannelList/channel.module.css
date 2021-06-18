@@ -9,7 +9,7 @@
 .inner {
   height: 100%;
   overflow-y: auto;
-  padding: 10px 0 14px;
+  padding: 10px 25px 14px;
 }
 
 .list {
@@ -50,15 +50,17 @@
 }
 
 .item {
-  height: 40px;
+  height: 44px;
   padding: 4px 12px 4px 12px;
   display: flex;
   align-items: center;
   cursor: pointer;
+  border-radius: 10px;
+  background-color: rgba(238, 239, 240, 0.5);
 }
 
 .item:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: rgba(238, 239, 240, 0.5);
 }
 
 .read {

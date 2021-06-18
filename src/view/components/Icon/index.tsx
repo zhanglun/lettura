@@ -11,10 +11,12 @@ export const Icon = (props: Props) => {
 
   return (
     <i
-      className={`iconfont icon-${name} ${customClass}`}
+      className={`material-icons ${customClass}`}
       aria-hidden="true"
       onClick={onClick}
-    />
+    >
+      {name}
+    </i>
   );
 };
 

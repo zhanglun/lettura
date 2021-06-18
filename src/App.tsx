@@ -8,16 +8,14 @@ import {
 import * as routesConfig from './infra/constants/routes';
 import { SettingModule } from './view/modules/Settings';
 import { ArticleModule } from './view/modules/Articles';
-import { ChannelList } from './view/components/ChannelList';
+import { ChannelModule } from './view/modules/Channels';
 import styles from './App.module.css';
 
 function App() {
   return (
     <div className={styles.container}>
       <Router>
-        <div className={styles.channel}>
-          <ChannelList />
-        </div>
+        <ChannelModule />
 
         <div className={styles.main}>
           <div className={styles.mainInner}>

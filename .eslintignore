@@ -51,6 +51,6 @@ __snapshots__
 # Package.json
 package.json
 .travis.yml
-*.css.d.ts
+*.typing.d.ts
 *.sass.d.ts
 *.scss.d.ts

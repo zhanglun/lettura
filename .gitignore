@@ -45,6 +45,8 @@ main.js.map
 
 .idea
 npm-debug.log.*
-*.css.d.ts
+*.typing.d.ts
 *.sass.d.ts
 *.scss.d.ts
+
+public/**/*
