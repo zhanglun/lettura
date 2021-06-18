@@ -1,44 +1,18 @@
-import { Connection, createConnection } from 'typeorm';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import log from 'electron-log';
+import { ipcRenderer } from 'electron';
 import App from './app';
-import { ChannelEntity } from './entity/channel';
-import { ArticleEntity } from './entity/article';
+
 import './view/styles/index.global.css';
-import { StoreContext, ChannelStore, ArticleStore } from './view/stores';
-import { initEvent } from './event/renderer';
 
-createConnection({
-  type: 'better-sqlite3',
-  database: './public/salix.sqlite',
-  entities: [ChannelEntity, ArticleEntity],
-  // entities: ['./entity/*.ts'],
-  // database: `${__dirname}/public/salix.sqlite`,
-  // 没搞明白为什么这里不能使用绝对路径，应该和webpack有关系
-  // 在 typeORM的源码中找到了自动加的逻辑
-  // https://github.com/typeorm/typeorm/blob/3c3ec34f26e7df72e5f5cfcc25791fae55f8c960/src/util/DirectoryExportedClassesLoader.ts#L40:20
-  // https://github.com/typeorm/typeorm/blob/3c3ec34f26e7df72e5f5cfcc25791fae55f8c960/src/platform/PlatformTools.ts#L131
-  // entities: [`${__dirname}/entity/*.ts`],
-  synchronize: true,
-  logging: true,
-})
-  .then((c: Connection) => {
-    const stores = {
-      channelStore: new ChannelStore(),
-      articleStore: new ArticleStore(),
-    };
+ReactDOM.render(<App />, document.getElementById('root'));
 
-    ReactDOM.render(
-      <StoreContext.Provider value={stores}>
-        <App />
-      </StoreContext.Provider>,
-      document.getElementById('root')
-    );
+// setTimeout(() => {
+//   ipcRenderer.send('start');
+// }, 2000);
 
-    initEvent();
-    return c;
-  })
-  .catch((err) => {
-    log.error('err', err);
-  });
+// ipcRenderer.on('start', (_e, stores) => {
+//   console.log('stores', stores);
+
+//   ReactDOM.render(<App />, document.getElementById('root'));
+// });

@@ -1,10 +1,9 @@
 import fs from 'fs';
 import path from 'path';
-import { ipcRenderer, IpcRendererEvent, remote } from 'electron';
+import { ipcMain, ipcRenderer, remote } from 'electron';
 import log from 'electron-log';
 import { ChannelStore, ArticleStore } from '../view/stores';
 import {
-  UPDATE_WINDOW_ID,
   FINISH_INITIAL_SYNC,
   MANUAL_SYNC_UNREAD,
   FINISH_MANUAL_SYNC_UNREAD,
@@ -15,8 +14,6 @@ import {
 } from './constant';
 import { parseRSS } from '../infra/utils';
 import { Channel, RSSFeedItem } from '../infra/types';
-
-let targetId = 0;
 
 type OPMLItem = { title: string; feedUrl: string };
 
@@ -81,7 +78,7 @@ export const initEvent = () => {
     channelStore
       .getList()
       .then((list) => {
-        ipcRenderer.sendTo(targetId, FINISH_INITIAL_SYNC, list);
+        ipcRenderer.send(FINISH_INITIAL_SYNC, list);
         return list;
       })
       .catch((err) => {
@@ -95,7 +92,7 @@ export const initEvent = () => {
   async function syncUnreadManually() {
     log.info('手动同步，创建任务更新数据');
     await batchSyncArticles();
-    ipcRenderer.sendTo(targetId, FINISH_MANUAL_SYNC_UNREAD);
+    ipcRenderer.send(FINISH_MANUAL_SYNC_UNREAD);
   }
 
   async function exportOPMLFile() {
@@ -122,21 +119,6 @@ export const initEvent = () => {
 
     fs.writeFileSync(filename, $xml);
   }
-
-  /**
-   * 手动同步未读文章
-   */
-  ipcRenderer.on(MANUAL_SYNC_UNREAD, async () => {
-    await syncUnreadManually();
-  });
-
-  /**
-   * 导出 OPML
-   */
-  ipcRenderer.on(EXPORT_OPML, async () => {
-    await exportOPMLFile();
-    ipcRenderer.sendTo(targetId, FINISH_EXPORT_OPML);
-  });
 
   /**
    * 导入 OPML
@@ -177,22 +159,27 @@ export const initEvent = () => {
       .catch(() => {});
   }
 
-  ipcRenderer.on(
-    IMPORT_OPML,
-    async (_event, { list }: { list: OPMLItem[] }) => {
-      log.info('后台开始批量导入订阅');
-      await batchImportFeeds(list);
-      ipcRenderer.sendTo(targetId, FINISH_IMPORT_OPML);
-    }
-  );
+  /**
+   * 手动同步未读文章
+   */
+  ipcMain.on(MANUAL_SYNC_UNREAD, async () => {
+    console.log('----> MANUAL_SYNC_UNREAD');
+    await syncUnreadManually();
+  });
+
+  /**
+   * 导出 OPML
+   */
+  ipcMain.on(EXPORT_OPML, async (event) => {
+    await exportOPMLFile();
+    event.reply(FINISH_EXPORT_OPML);
+  });
+
+  ipcMain.on(IMPORT_OPML, async (event, { list }: { list: OPMLItem[] }) => {
+    log.info('后台开始批量导入订阅', list);
+    await batchImportFeeds(list);
+    event.reply(FINISH_IMPORT_OPML);
+  });
 
   syncUnreadWhenAPPStart();
 };
-
-ipcRenderer.on(UPDATE_WINDOW_ID, (e: IpcRendererEvent, data) => {
-  log.info(e);
-  log.info(UPDATE_WINDOW_ID);
-  log.info(data);
-
-  targetId = data.mainWindowId;
-});

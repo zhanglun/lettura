@@ -1,4 +1,4 @@
-import { ipcRenderer, IpcRendererEvent } from 'electron';
+import { ipcRenderer, ipcMain, IpcRendererEvent } from 'electron';
 import log from 'electron-log';
 import { ArticleStore, ChannelStore } from '../view/stores';
 import {
@@ -53,10 +53,9 @@ export const initEvent = () => {
     log.info('OPML导出完成');
   });
 
-  /** 导入 */
   ipcRenderer.on(IMPORT_OPML, (_e, list) => {
-    log.info('收到导入操作，转发给background');
-    ipcRenderer.sendTo(targetId, IMPORT_OPML, { list });
+    log.info('收到导入操作，转发给background ipcRenderer');
+    // ipcRenderer.sendTo(targetId, IMPORT_OPML, { list });
   });
 
   ipcRenderer.on(FINISH_IMPORT_OPML, () => {
