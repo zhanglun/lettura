@@ -11,23 +11,20 @@
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import path from 'path';
-import { app, BrowserWindow, ipcMain, shell } from 'electron';
+import { app, BrowserWindow, shell } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { initEvent } from './event/main';
 import { connection } from './connection';
 
-ipcMain.on('start', (e) => {
-  connection()
-    .then((c) => {
-      e.reply('start', c);
-      return initEvent();
-    })
-    .catch((err) => {
-      log.error(err);
-    });
-});
+connection()
+  .then((c) => {
+    return initEvent();
+  })
+  .catch((err) => {
+    log.error(err);
+  });
 
 export default class AppUpdater {
   constructor() {

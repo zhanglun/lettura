@@ -30,8 +30,8 @@ export const SettingSubscribe: () => JSX.Element = () => {
     const { items } = channelRes;
 
     console.log(items);
-    eventPubEmit.subscribe(items);
-  }, [channelRes]);
+    eventPubEmit.subscribe(channelRes);
+  }, [channelRes, eventPubEmit]);
 
   useEffect(() => {
     setFeedUrl('https://www.ifanr.com/feed');

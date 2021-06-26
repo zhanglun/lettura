@@ -2,8 +2,12 @@ import fs from 'fs';
 import path from 'path';
 import { ipcMain, ipcRenderer, remote } from 'electron';
 import log from 'electron-log';
-import { ChannelStore, ArticleStore } from '../view/stores';
+import { getCustomRepository } from 'typeorm';
+import { ChannelEntity } from '../entity/channel';
+import { ChannelRepository } from '../repository/channel';
+import { ArticleRepository } from '../repository/article';
 import {
+  SUBSCRIBE,
   FINISH_INITIAL_SYNC,
   MANUAL_SYNC_UNREAD,
   FINISH_MANUAL_SYNC_UNREAD,
@@ -18,8 +22,8 @@ import { Channel, RSSFeedItem } from '../infra/types';
 type OPMLItem = { title: string; feedUrl: string };
 
 export const initEvent = () => {
-  const channelStore = new ChannelStore();
-  const articleStore = new ArticleStore();
+  const channelRepo: ChannelRepository = getCustomRepository(ChannelRepository);
+  const articleRepo: ArticleRepository = getCustomRepository(ArticleRepository);
 
   function singleFetch(
     requestList: Promise<{ items: RSSFeedItem[] }>[],
@@ -45,8 +49,7 @@ export const initEvent = () => {
           count += 1;
           requestList.unshift();
           singleFetch(requestList, idList, count);
-
-          return articleStore.insertArticles(idList[index], res.items);
+          return articleRepo.insertArticles(idList[index], res.items);
         })
         .catch((err) => {
           count += 1;
@@ -60,30 +63,27 @@ export const initEvent = () => {
    * 批量同步文章
    */
   async function batchSyncArticles() {
-    const channelList = await channelStore.getList();
-    const channelIdList: string[] = [];
-    const requestList: Promise<any>[] = [];
-
-    channelList.forEach((channel) => {
-      const { feedUrl, id } = channel;
-
-      requestList.push(parseRSS(feedUrl));
-      channelIdList.push(id);
-    });
-
-    singleFetch(requestList, channelIdList, 0);
+    // const channelList = await channelStore.getList();
+    // const channelIdList: string[] = [];
+    // const requestList: Promise<any>[] = [];
+    // channelList.forEach((channel) => {
+    //   const { feedUrl, id } = channel;
+    //   requestList.push(parseRSS(feedUrl));
+    //   channelIdList.push(id);
+    // });
+    // singleFetch(requestList, channelIdList, 0);
   }
 
   function syncUnreadWhenAPPStart() {
-    channelStore
-      .getList()
-      .then((list) => {
-        ipcRenderer.send(FINISH_INITIAL_SYNC, list);
-        return list;
-      })
-      .catch((err) => {
-        return err;
-      });
+    // channelStore
+    //   .getList()
+    //   .then((list) => {
+    //     ipcRenderer.send(FINISH_INITIAL_SYNC, list);
+    //     return list;
+    //   })
+    //   .catch((err) => {
+    //     return err;
+    //   });
   }
 
   /**
@@ -96,57 +96,46 @@ export const initEvent = () => {
   }
 
   async function exportOPMLFile() {
-    const channels = await channelStore.getList();
-    let $xml = '<xml xmlns="http://www.w3.org/1999/xhtml">';
-    let $opml = '<opml version="1.0">';
-
-    channels.forEach((channel) => {
-      $opml += `\n    <outline type="rss" text="${channel.title}" title="${channel.title}" xmlUrl="${channel.feedUrl}" htmlUrl="${channel.link}"/>\n`;
-    });
-
-    $xml += $opml;
-    $xml += '</opml></xml>';
-
-    const downloadPath = remote.app.getPath('downloads');
-    let filename = path.resolve(downloadPath, 'salix.opml');
-    filename =
-      remote.dialog.showSaveDialogSync({
-        title: 'Export OPML',
-        defaultPath: filename,
-      }) || filename;
-
-    log.info('开始导出OPML', filename);
-
-    fs.writeFileSync(filename, $xml);
+    // const channels = await channelStore.getList();
+    // let $xml = '<xml xmlns="http://www.w3.org/1999/xhtml">';
+    // let $opml = '<opml version="1.0">';
+    // channels.forEach((channel) => {
+    //   $opml += `\n    <outline type="rss" text="${channel.title}" title="${channel.title}" xmlUrl="${channel.feedUrl}" htmlUrl="${channel.link}"/>\n`;
+    // });
+    // $xml += $opml;
+    // $xml += '</opml></xml>';
+    // const downloadPath = remote.app.getPath('downloads');
+    // let filename = path.resolve(downloadPath, 'salix.opml');
+    // filename =
+    //   remote.dialog.showSaveDialogSync({
+    //     title: 'Export OPML',
+    //     defaultPath: filename,
+    //   }) || filename;
+    // log.info('开始导出OPML', filename);
+    // fs.writeFileSync(filename, $xml);
   }
 
   /**
    * 导入 OPML
    */
-
   async function importFeed(item: OPMLItem) {
-    const { feedUrl } = item;
-    console.log('开始加载 ->', feedUrl);
-    const channel = await channelStore.findChannelByUrl(feedUrl);
-
-    if (channel) {
-      return false;
-    }
-
-    try {
-      const channelRes = await parseRSS(feedUrl);
-      const { items } = channelRes;
-      await channelStore.subscribeChannel(channelRes as Channel, items || []);
-
-      console.log('加载成功 -<', feedUrl);
-
-      return true;
-    } catch (err) {
-      console.error('Err', err);
-      console.log('加载失败 -<', feedUrl);
-
-      return false;
-    }
+    // const { feedUrl } = item;
+    // console.log('开始加载 ->', feedUrl);
+    // const channel = await channelStore.findChannelByUrl(feedUrl);
+    // if (channel) {
+    //   return false;
+    // }
+    // try {
+    //   const channelRes = await parseRSS(feedUrl);
+    //   const { items } = channelRes;
+    //   await channelStore.subscribeChannel(channelRes as Channel, items || []);
+    //   console.log('加载成功 -<', feedUrl);
+    //   return true;
+    // } catch (err) {
+    //   console.error('Err', err);
+    //   console.log('加载失败 -<', feedUrl);
+    //   return false;
+    // }
   }
 
   async function batchImportFeeds(items: OPMLItem[]) {
@@ -179,6 +168,24 @@ export const initEvent = () => {
     log.info('后台开始批量导入订阅', list);
     await batchImportFeeds(list);
     event.reply(FINISH_IMPORT_OPML);
+  });
+
+  ipcMain.on(SUBSCRIBE, async (event, data) => {
+    try {
+      const { items = [] } = data;
+      const result = await channelRepo.addOne(data as Channel);
+      await articleRepo.insertArticles(result.id, items);
+
+      event.reply(SUBSCRIBE, {
+        status: 'success',
+      });
+    } catch (err) {
+      event.reply(SUBSCRIBE, {
+        status: 'error',
+        message: err.message,
+        err,
+      });
+    }
   });
 
   syncUnreadWhenAPPStart();
