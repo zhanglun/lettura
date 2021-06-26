@@ -5,9 +5,7 @@ import React, {
   useRef,
   useCallback,
 } from 'react';
-import { observer } from 'mobx-react';
 import Dayjs from 'dayjs';
-import { StoreContext, StoreType } from '../../stores';
 import { Article } from '../../../infra/types';
 import { ArticleReadStatus } from '../../../infra/constants/status';
 import { Toolbar } from './Toolbar';

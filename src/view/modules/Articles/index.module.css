@@ -1,4 +1,4 @@
-.articleList {
+.article {
   flex: 0 0 auto;
-  width: var(--app-article-width);
+  /*width: var(--app-article-width);*/
 }

@@ -1,0 +1,8 @@
+.container {
+  padding: var(--block-padding) calc(var(--block-padding) + 4px);
+}
+
+.title {
+  font-size: 24px;
+  font-weight: var(--font-weight-bold);
+}

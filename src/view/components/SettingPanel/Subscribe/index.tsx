@@ -1,27 +1,22 @@
 import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { parseRSS } from '../../../../infra/utils';
 import { ChannelRes, Channel } from '../../../../infra/types';
-import { StoreType, StoreContext } from '../../../stores';
+import { useEventPub } from '../../../hooks/useEventPub';
 import styles from '../settingpanel.module.css';
 
 export const SettingSubscribe: () => JSX.Element = () => {
+  const { eventPubEmit } = useEventPub();
   const [feedUrl, setFeedUrl] = useState('');
   const [channelRes, setChannelRes] = useState({} as ChannelRes);
   const [loading, setLoading] = useState(false);
   const [requested, setRequested] = useState(false);
   const [subscribed, setSubscribed] = useState(false);
-  const { channelStore } = useContext(StoreContext) as StoreType;
 
-  const validateChannelStatus = useCallback(async () => {
-    const channel = await channelStore.findChannelByUrl(feedUrl);
-    setSubscribed(!!channel);
-  }, [feedUrl, channelStore]);
   const searchFeed = useCallback(async () => {
     setLoading(true);
     setRequested(false);
 
     try {
-      await validateChannelStatus();
       const feed = await parseRSS(feedUrl);
       setChannelRes(feed);
     } catch (e) {
@@ -30,12 +25,13 @@ export const SettingSubscribe: () => JSX.Element = () => {
 
     setLoading(false);
     setRequested(true);
-  }, [feedUrl, validateChannelStatus]);
+  }, [feedUrl]);
   const confirmSubscribe = useCallback(async () => {
     const { items } = channelRes;
 
-    await channelStore.subscribeChannel(channelRes as Channel, items || []);
-  }, [channelRes, channelStore]);
+    console.log(items);
+    eventPubEmit.subscribe(items);
+  }, [channelRes]);
 
   useEffect(() => {
     setFeedUrl('https://www.ifanr.com/feed');
@@ -56,6 +52,7 @@ export const SettingSubscribe: () => JSX.Element = () => {
           订阅
         </button>
       );
+
       return (
         <div className={styles.preview}>
           <img className={styles.previewIcon} src={channelRes.favicon} alt="" />

@@ -4,7 +4,7 @@ import { ArticleList } from '../../components/ArticleList';
 
 export const ArticleModule = (): JSX.Element => {
   return (
-    <div className={styles.articleList}>
+    <div className={styles.article}>
       <ArticleList />
     </div>
   );

@@ -9,3 +9,5 @@ export const FINISH_EXPORT_OPML = 'FINISH_EXPORT_OPML';
 
 export const IMPORT_OPML = 'IMPORT_OPML';
 export const FINISH_IMPORT_OPML = 'FINISH_IMPORT_OPML';
+
+export const SUBSCRIBE = 'SUBSCRIBE';

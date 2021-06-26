@@ -1,11 +1,17 @@
 import React, { useCallback } from 'react';
-import { Icon } from '../Icon';
+import { useHistory } from 'react-router-dom';
 import { Channel } from '../../../infra/types';
-
+import * as Routes from '../../../infra/constants/routes';
+import { Icon } from '../Icon';
 import styles from './channel.module.css';
 import defaultSiteIcon from './default.png';
 
 const ChannelList = (): JSX.Element => {
+  const history = useHistory();
+  const goToSetting = () => {
+    history.push(Routes.SETTINGS);
+  };
+
   const renderFeedList = useCallback((list: Channel[]): JSX.Element => {
     return (
       <ul className={styles.list}>
@@ -49,6 +55,7 @@ const ChannelList = (): JSX.Element => {
           <Icon
             name="settings"
             customClass={styles.toolbarItem}
+            onClick={goToSetting}
             aria-hidden="true"
           />
         </div>
