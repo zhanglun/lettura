@@ -11,8 +11,11 @@ import { ArticleReadStatus } from '../../../infra/constants/status';
 import { Toolbar } from './Toolbar';
 
 import styles from './article.module.css';
+import { useEventPub } from '../../hooks/useEventPub';
+import { useDataProxy } from '../../hooks/useDataProxy';
 
 export const ArticleList = (): JSX.Element => {
+  const dataProxy = useDataProxy();
   const [articleList, setArticleList] = useState<Article[]>([]);
   const [currentLink, setCurrentLink] = useState<string>('');
   const articleListRef = useRef<HTMLDivElement>(null);
@@ -55,6 +58,18 @@ export const ArticleList = (): JSX.Element => {
       </ul>
     );
   }, [articleList, currentLink, viewDetail]);
+
+  useEffect(() => {
+    dataProxy
+      .getArticleList()
+      .then((result) => {
+        setArticleList(result);
+        return result;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
 
   return (
     <div className={styles.container} ref={articleListRef}>

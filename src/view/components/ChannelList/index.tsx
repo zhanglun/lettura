@@ -1,28 +1,38 @@
-import React, { useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Channel } from '../../../infra/types';
 import * as Routes from '../../../infra/constants/routes';
 import { Icon } from '../Icon';
 import styles from './channel.module.css';
 import defaultSiteIcon from './default.png';
+import { useDataProxy } from '../../hooks/useDataProxy';
 
 const ChannelList = (): JSX.Element => {
   const history = useHistory();
+  const dataProxy = useDataProxy();
+  const [channelList, setChannelList] = useState([]);
+
   const goToSetting = () => {
     history.push(Routes.SETTINGS);
   };
 
-  const renderFeedList = useCallback((list: Channel[]): JSX.Element => {
+  const viewArticles = useCallback(
+    (channel: Channel) => {
+      history.push(Routes.CHANNEL.replace(/:name/, channel.title));
+    },
+    [history]
+  );
+
+  const renderFeedList = useCallback((): JSX.Element => {
     return (
       <ul className={styles.list}>
-        {list.map((channel: Channel, i: number) => {
+        {channelList.map((channel: Channel, i: number) => {
           return (
             <li
-              className={`${styles.item} &&
-                  styles.read
-                }`}
+              className={`${styles.item}`}
               // eslint-disable-next-line react/no-array-index-key
               key={channel.title + i}
+              onClick={() => viewArticles(channel)}
               aria-hidden="true"
             >
               <img
@@ -43,7 +53,19 @@ const ChannelList = (): JSX.Element => {
         })}
       </ul>
     );
-  }, []);
+  }, [channelList, viewArticles]);
+
+  useEffect(() => {
+    dataProxy
+      .getChannelList()
+      .then((result) => {
+        setChannelList(result);
+        return result;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [setChannelList]);
 
   return (
     <div className={styles.container}>
@@ -84,7 +106,7 @@ const ChannelList = (): JSX.Element => {
           {/*  我的收藏 */}
           {/* </div> */}
         </div>
-        {renderFeedList([])}
+        {renderFeedList()}
       </div>
     </div>
   );

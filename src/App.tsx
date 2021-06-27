@@ -33,7 +33,7 @@ function App() {
               <Route exact path="/all">
                 <ArticleModule />
               </Route>
-              <Route exact path="/channels/:name">
+              <Route exact path={routesConfig.CHANNEL}>
                 <ArticleModule />
               </Route>
             </Switch>

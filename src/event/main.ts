@@ -15,6 +15,8 @@ import {
   FINISH_EXPORT_OPML,
   IMPORT_OPML,
   FINISH_IMPORT_OPML,
+  PROXY_GET_CHANNEL_LIST,
+  PROXY_GET_ARTICLE_LSIT,
 } from './constant';
 import { parseRSS } from '../infra/utils';
 import { Channel, RSSFeedItem } from '../infra/types';
@@ -186,6 +188,18 @@ export const initEvent = () => {
         err,
       });
     }
+  });
+
+  ipcMain.on(PROXY_GET_CHANNEL_LIST, async (event) => {
+    const result = await channelRepo.getAll();
+
+    event.reply(PROXY_GET_CHANNEL_LIST, result);
+  });
+
+  ipcMain.on(PROXY_GET_ARTICLE_LSIT, async (event) => {
+    const result = await articleRepo.getAllArticle();
+
+    event.reply(PROXY_GET_ARTICLE_LSIT, result);
   });
 
   syncUnreadWhenAPPStart();

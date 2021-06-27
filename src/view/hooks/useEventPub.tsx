@@ -22,5 +22,5 @@ export const useEventPub = () => {
     };
   }, []);
 
-  return { eventPubEmit };
+  return { eventPubEmit, emit, on };
 };
