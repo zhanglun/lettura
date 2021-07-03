@@ -1,19 +1,18 @@
 import React from 'react';
 import { Icon } from '../Icon';
-import styles from './toolbar.module.css';
+import styles from './globaltoolbar.css';
 
 export interface GlobalToolbarProps {
-  feedName: string;
-  feedId: number;
-  unReadCount: number;
+  title: string;
+  id: string;
 }
 
 function GlobalToolbar(props: GlobalToolbarProps) {
-  const { feedName } = props;
+  const { title } = props;
 
   return (
     <div className={styles.container}>
-      <div className={styles.feedName}>{feedName}</div>
+      <div className={styles.title}>{title}</div>
       <div className={styles.menu}>
         <div className={styles.menuItem}>
           <Icon customClass={styles.menuIcon} name="done_all" />

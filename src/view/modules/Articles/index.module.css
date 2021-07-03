@@ -1,4 +1,4 @@
 .article {
-  flex: 0 0 auto;
+  flex: 1;
   /*width: var(--app-article-width);*/
 }

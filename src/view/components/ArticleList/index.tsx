@@ -5,14 +5,12 @@ import React, {
   useRef,
   useCallback,
 } from 'react';
-import Dayjs from 'dayjs';
 import { Article } from '../../../infra/types';
 import { ArticleReadStatus } from '../../../infra/constants/status';
-import { Toolbar } from './Toolbar';
-
-import styles from './article.module.css';
 import { useEventPub } from '../../hooks/useEventPub';
 import { useDataProxy } from '../../hooks/useDataProxy';
+import { ArticleItem } from '../ArticleItem';
+import styles from './articlelist.css';
 
 export const ArticleList = (): JSX.Element => {
   const dataProxy = useDataProxy();
@@ -31,32 +29,10 @@ export const ArticleList = (): JSX.Element => {
     }
   };
 
-  const renderList = useCallback((): JSX.Element => {
-    return (
-      <ul className={styles.list}>
-        {articleList.map((article: Article, i: number) => {
-          return (
-            <li
-              // eslint-disable-next-line react/no-array-index-key
-              key={article.title + i}
-              className={`${styles.item} ${
-                article.hasRead === ArticleReadStatus.isRead && styles.read
-              } ${article.link === currentLink && styles.current}`}
-              onClick={() => viewDetail(article)}
-              aria-hidden="true"
-            >
-              <div className={styles.title}>{article.title}</div>
-              <div className={styles.meta}>
-                <span className={styles.channel}>{article.channelTitle}</span>
-                <span className={styles.pubTime}>
-                  {Dayjs(article.pubDate).format('YYYY-MM-DD HH:mm')}
-                </span>
-              </div>
-            </li>
-          );
-        })}
-      </ul>
-    );
+  const renderList = useCallback((): JSX.Element[] => {
+    return articleList.map((article: Article, i: number) => {
+      return <ArticleItem article={article} key={article.id} />;
+    });
   }, [articleList, currentLink, viewDetail]);
 
   useEffect(() => {
@@ -73,7 +49,7 @@ export const ArticleList = (): JSX.Element => {
 
   return (
     <div className={styles.container} ref={articleListRef}>
-      {renderList()}
+      <ul className={styles.list}>{renderList()}</ul>
     </div>
   );
 };

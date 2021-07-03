@@ -5,17 +5,9 @@
 }
 
 .main {
-  height: 100%;
-  flex: 1;
   position: relative;
-}
-
-.mainInner {
+  background-color: #fafafa;
+  overflow-y: scroll;
   height: 100%;
-  /* height: calc(100% - var(--app-toolbar-height)); */
   flex: 1;
-  display: flex;
-}
-
-.channel {
 }
