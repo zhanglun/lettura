@@ -16,8 +16,7 @@ function App() {
     <div className={styles.container}>
       <Router>
         <ChannelModule />
-
-        <div className={styles.main}>
+        <div className={styles.main} id="appMain">
           <div className={styles.mainInner}>
             <Switch>
               <Route

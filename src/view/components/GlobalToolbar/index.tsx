@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+
 import { Icon } from '../Icon';
 import styles from './globaltoolbar.css';
 
@@ -9,9 +10,25 @@ export interface GlobalToolbarProps {
 
 function GlobalToolbar(props: GlobalToolbarProps) {
   const { title } = props;
+  const [fixed, setFixed] = useState(false);
+  useEffect(() => {
+    const $container = document.querySelector('#appMain');
+
+    $container?.addEventListener(
+      'scroll',
+      () => {
+        if ($container.scrollTop > 0) {
+          setFixed(true);
+        } else {
+          setFixed(false);
+        }
+      },
+      true
+    );
+  }, []);
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} ${fixed && styles.fixed}`}>
       <div className={styles.title}>{title}</div>
       <div className={styles.menu}>
         <div className={styles.menuItem}>
