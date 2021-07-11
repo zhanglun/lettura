@@ -65,27 +65,27 @@ export const initEvent = () => {
    * 批量同步文章
    */
   async function batchSyncArticles() {
-    // const channelList = await channelStore.getList();
-    // const channelIdList: string[] = [];
-    // const requestList: Promise<any>[] = [];
-    // channelList.forEach((channel) => {
-    //   const { feedUrl, id } = channel;
-    //   requestList.push(parseRSS(feedUrl));
-    //   channelIdList.push(id);
-    // });
-    // singleFetch(requestList, channelIdList, 0);
+    const channelList = await channelRepo.getList();
+    const channelIdList: string[] = [];
+    const requestList: Promise<any>[] = [];
+    channelList.forEach((channel) => {
+      const { feedUrl, id } = channel;
+      requestList.push(parseRSS(feedUrl));
+      channelIdList.push(id);
+    });
+    singleFetch(requestList, channelIdList, 0);
   }
 
   function syncUnreadWhenAPPStart() {
-    // channelStore
-    //   .getList()
-    //   .then((list) => {
-    //     ipcRenderer.send(FINISH_INITIAL_SYNC, list);
-    //     return list;
-    //   })
-    //   .catch((err) => {
-    //     return err;
-    //   });
+    channelRepo
+      .getList()
+      .then((list) => {
+        ipcRenderer.send(FINISH_INITIAL_SYNC, list);
+        return list;
+      })
+      .catch((err) => {
+        return err;
+      });
   }
 
   /**
@@ -121,23 +121,30 @@ export const initEvent = () => {
    * 导入 OPML
    */
   async function importFeed(item: OPMLItem) {
-    // const { feedUrl } = item;
-    // console.log('开始加载 ->', feedUrl);
-    // const channel = await channelStore.findChannelByUrl(feedUrl);
-    // if (channel) {
-    //   return false;
-    // }
-    // try {
-    //   const channelRes = await parseRSS(feedUrl);
-    //   const { items } = channelRes;
-    //   await channelStore.subscribeChannel(channelRes as Channel, items || []);
-    //   console.log('加载成功 -<', feedUrl);
-    //   return true;
-    // } catch (err) {
-    //   console.error('Err', err);
-    //   console.log('加载失败 -<', feedUrl);
-    //   return false;
-    // }
+    const { feedUrl } = item;
+
+    console.log('开始加载 ->', feedUrl);
+
+    const channel = await channelRepo.getOneByUrl(feedUrl);
+
+    if (channel) {
+      return false;
+    }
+
+    try {
+      const channelRes = await parseRSS(feedUrl);
+      const { items } = channelRes;
+      await channelRepo.subscribeChannel(channelRes as Channel);
+
+      // TODO: 插入文章
+
+      console.log('加载成功 -<', feedUrl);
+      return true;
+    } catch (err) {
+      console.error('Err', err);
+      console.log('加载失败 -<', feedUrl);
+      return false;
+    }
   }
 
   async function batchImportFeeds(items: OPMLItem[]) {
@@ -166,10 +173,20 @@ export const initEvent = () => {
     event.reply(FINISH_EXPORT_OPML);
   });
 
-  ipcMain.on(IMPORT_OPML, async (event, { list }: { list: OPMLItem[] }) => {
-    log.info('后台开始批量导入订阅', list);
-    await batchImportFeeds(list);
-    event.reply(FINISH_IMPORT_OPML);
+  ipcMain.on(IMPORT_OPML, async (event, list: OPMLItem[]) => {
+    try {
+      log.info('后台开始批量导入订阅', list);
+      await batchImportFeeds(list);
+      event.reply(IMPORT_OPML, {
+        status: 'success',
+      });
+    } catch (err) {
+      event.reply(IMPORT_OPML, {
+        status: 'error',
+        message: err.message,
+        err,
+      });
+    }
   });
 
   ipcMain.on(SUBSCRIBE, async (event, data) => {

@@ -1,7 +1,6 @@
 .item {
   position: relative;
-  min-height: 48px;
-  padding: 8px 16px;
+  padding: 8px 14px;
   list-style-type: none;
   border-radius: 10px;
   box-shadow: 0 0 12px -6px rgba(0, 0, 0, 0.2);
@@ -12,6 +11,16 @@
   cursor: pointer;
 }
 
+.header {
+  display: grid;
+  grid-template-columns: 1fr 100px;
+  grid-column-gap: 10px;
+}
+
+.header:hover .actions {
+  display: grid;
+}
+
 .title {
   font-size: 16px;
   color: #444;
@@ -19,6 +28,17 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.actions {
+  display: none;
+  grid-template-columns: repeat(4, 1fr);
+  align-items: center;
+}
+
+.icon {
+  font-size: 20px;
+  margin: 0 2px;
 }
 
 .pubTime {
