@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  HashRouter as Router,
+  BrowserRouter as Router,
   Route,
   Switch,
   Redirect,
@@ -29,9 +29,9 @@ function App() {
               <Route exact path={routesConfig.SETTINGS}>
                 <SettingModule />
               </Route>
-              <Route exact path="/all">
+              {/* <Route exact path="/all">
                 <ArticleModule />
-              </Route>
+              </Route> */}
               <Route exact path={routesConfig.CHANNEL}>
                 <ArticleModule />
               </Route>

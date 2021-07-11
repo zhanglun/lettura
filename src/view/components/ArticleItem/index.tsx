@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import Dayjs from 'dayjs';
+import { Icon } from '../Icon';
 import { ArticleReadStatus } from '../../../infra/constants/status';
 import { Article } from '../../../infra/types';
 import styles from './articleitem.css';
@@ -23,7 +23,15 @@ export const ArticleItem = (props: ArticleItemProps) => {
       onClick={handleClick}
       aria-hidden="true"
     >
-      <div className={styles.title}>{article.title}</div>
+      <div className={styles.header}>
+        <div className={styles.title}>{article.title}</div>
+        <div className={styles.actions}>
+          <Icon customClass={styles.icon} name="bookmark_add" />
+          <Icon customClass={styles.icon} name="favorite_border" />
+          <Icon customClass={styles.icon} name="done" />
+          <Icon customClass={styles.icon} name="launch" />
+        </div>
+      </div>
       <div
         className={styles.content}
         dangerouslySetInnerHTML={{ __html: article.content }}

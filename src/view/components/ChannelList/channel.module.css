@@ -51,12 +51,12 @@
 
 .item {
   height: 44px;
-  padding: 4px 12px 4px 12px;
+  padding: 4px 25px;
   display: flex;
   align-items: center;
   cursor: pointer;
   border-radius: 10px;
-  background-color: rgba(238, 239, 240, 0.5);
+  /*background-color: rgba(238, 239, 240, 0.5);*/
 }
 
 .item:hover {
@@ -77,9 +77,10 @@
 }
 
 .icon {
-  width: 20px;
-  height: 20px;
-  margin-right: 8px;
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  margin-right: 25px;
 }
 
 .count {

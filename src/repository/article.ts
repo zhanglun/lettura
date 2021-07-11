@@ -18,6 +18,36 @@ export class ArticleRepository extends Repository<ArticleEntity> {
       .execute();
   }
 
+  /**
+   * 通过channelId查找文章
+   * @param params 参数
+   * @returns ArticleEntity[]
+   */
+  async getArticleListInChannel(params: {
+    channelId: string;
+    readStatus?: number;
+  }): Promise<Article[]> {
+    const builder = this.createQueryBuilder('article')
+      .leftJoinAndSelect('article.channel', 'channel')
+      .where('article.channelId = :channelId', {
+        channelId: params.channelId,
+      });
+
+    if (params.readStatus) {
+      builder.where('article.hasRead = :readStatus', {
+        readStatus: ArticleReadStatus.unRead,
+      });
+    }
+
+    builder.select([
+      'article.*',
+      'channel.title as channelTitle',
+      'channel.favicon as channelFavicon',
+    ]);
+
+    return builder.execute();
+  }
+
   async getAllUnread(): Promise<Article[]> {
     return this.createQueryBuilder('article')
       .leftJoinAndSelect('article.channel', 'channel')

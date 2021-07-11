@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Channel } from '../../../infra/types';
 import * as Routes from '../../../infra/constants/routes';
@@ -16,14 +16,15 @@ const ChannelList = (): JSX.Element => {
     history.push(Routes.SETTINGS);
   };
 
-  const viewArticles = useCallback(
-    (channel: Channel) => {
-      history.push(Routes.CHANNEL.replace(/:name/, channel.title));
-    },
-    [history]
-  );
+  const viewArticles = (channel: Channel) => {
+    history.push(
+      `${Routes.CHANNEL.replace(/:name/, channel.title)}?channelId=${
+        channel.id
+      }`
+    );
+  };
 
-  const renderFeedList = useCallback((): JSX.Element => {
+  const renderFeedList = (): JSX.Element => {
     return (
       <ul className={styles.list}>
         {channelList.map((channel: Channel, i: number) => {
@@ -53,7 +54,7 @@ const ChannelList = (): JSX.Element => {
         })}
       </ul>
     );
-  }, [channelList, viewArticles]);
+  };
 
   useEffect(() => {
     dataProxy

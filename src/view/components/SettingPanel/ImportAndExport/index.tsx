@@ -1,11 +1,13 @@
 import { ipcRenderer } from 'electron';
 import React, { useCallback, useRef, useState } from 'react';
-import { IMPORT_OPML, EXPORT_OPML } from '../../../../event/constant';
+import { EXPORT_OPML } from '../../../../event/constant';
+import { useEventPub } from '../../../hooks/useEventPub';
 import styles from '../settingpanel.module.css';
 
 type ImportItem = { title: string; feedUrl: string };
 
 export const ImportAndExport = (props: any) => {
+  const { eventPubEmit } = useEventPub();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File>();
   const [importedList, setImportedList] = useState<ImportItem[]>([]);
@@ -23,6 +25,7 @@ export const ImportAndExport = (props: any) => {
     const parser = new DOMParser();
     const resultDOM = parser.parseFromString(source, 'application/xml');
     const $outlines = resultDOM.querySelectorAll('outline[xmlUrl]');
+
     return Array.from($outlines)
       .map(($item: Element) => {
         return {
@@ -34,7 +37,7 @@ export const ImportAndExport = (props: any) => {
   }, []);
 
   const importFromOPML = useCallback(() => {
-    ipcRenderer.send(IMPORT_OPML, importedList);
+    eventPubEmit.importOPML(importedList);
   }, [importedList]);
 
   const handleFileChange = useCallback(
@@ -55,9 +58,9 @@ export const ImportAndExport = (props: any) => {
     [parserOPML]
   );
 
-  const exportToOPML = useCallback(() => {
-    ipcRenderer.send(EXPORT_OPML);
-  }, []);
+  const exportToOPML = () => {
+    eventPubEmit.exportOPML();
+  };
 
   return (
     <div className={styles.panel}>
@@ -73,7 +76,7 @@ export const ImportAndExport = (props: any) => {
             className={styles.hideFileInput}
             ref={fileInputRef}
             type="file"
-            accept=".opml"
+            accept=".opml/.xml"
             onChange={(e) => {
               handleFileChange(e);
             }}

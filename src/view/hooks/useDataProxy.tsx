@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import {
   PROXY_GET_ARTICLE_LSIT,
   PROXY_GET_CHANNEL_LIST,
+  PROXY_GET_ARTICLE_LIST_IN_CHANNEL,
 } from '../../event/constant';
 import { useEventPub } from './useEventPub';
 
@@ -27,8 +28,13 @@ export const useDataProxy = () => {
     return proxy(PROXY_GET_ARTICLE_LSIT);
   }
 
+  function getArticleListInChannel(params: any): Promise<any> {
+    return proxy(PROXY_GET_ARTICLE_LIST_IN_CHANNEL, params);
+  }
+
   return {
     getChannelList,
     getArticleList,
+    getArticleListInChannel,
   };
 };

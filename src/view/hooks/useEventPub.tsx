@@ -4,7 +4,9 @@ import * as EventDict from '../../event/constant';
 
 type ListenerFn = (...args: any[]) => void;
 type EventPubEmit = {
-  [key: string]: (args: any) => void;
+  subscribe: ListenerFn;
+  importOPML: ListenerFn;
+  exportOPML: ListenerFn;
 };
 
 export const useEventPub = () => {
@@ -19,6 +21,8 @@ export const useEventPub = () => {
   const eventPubEmit: EventPubEmit = useMemo(() => {
     return {
       subscribe: (args: any) => emit(EventDict.SUBSCRIBE, args),
+      importOPML: (args: any) => emit(EventDict.IMPORT_OPML, args),
+      exportOPML: (args: any) => emit(EventDict.EXPORT_OPML, args),
     };
   }, []);
 

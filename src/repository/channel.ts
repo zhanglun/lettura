@@ -61,4 +61,31 @@ export class ChannelRepository extends Repository<Channel> {
   async getList(): Promise<ChannelEntity[]> {
     return this.find({});
   }
+
+  async getOneByUrl(url: string): Promise<ChannelEntity> {
+    const channel = await this.find({
+      where: {
+        feedUrl: url,
+      },
+    });
+
+    return channel[0];
+  }
+
+  /**
+   * 添加 Channel
+   * @param {RSSFeed} channel 解析出来的内容
+   * @param {RSSFeedItem[]} articles
+   */
+  async subscribeChannel(channel: Channel): Promise<ChannelEntity | string> {
+    try {
+      const result = this.addOne(channel);
+
+      return result;
+    } catch (err) {
+      console.error(err.message);
+    }
+
+    return '';
+  }
 }

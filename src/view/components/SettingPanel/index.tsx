@@ -1,6 +1,6 @@
 import React from 'react';
 import { SettingSubscribe } from './Subscribe';
-// import { ImportAndExport } from './ImportAndExport';
+import { ImportAndExport } from './ImportAndExport';
 import { MainHeader } from '../MainHeader';
 import styles from './settingpanel.module.css';
 
@@ -10,7 +10,7 @@ function SettingPanel() {
       <MainHeader title="设置" />
       <div className={styles.panelContainer}>
         <SettingSubscribe />
-        {/* <ImportAndExport /> */}
+        <ImportAndExport />
       </div>
     </div>
   );
