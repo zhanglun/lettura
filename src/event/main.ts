@@ -10,6 +10,7 @@ import {
   SUBSCRIBE,
   FINISH_INITIAL_SYNC,
   MANUAL_SYNC_UNREAD,
+  MANUAL_SYNC_UNREAD_WITH_CHANNEL_ID,
   FINISH_MANUAL_SYNC_UNREAD,
   EXPORT_OPML,
   FINISH_EXPORT_OPML,
@@ -77,6 +78,27 @@ export const initEvent = () => {
     singleFetch(requestList, channelIdList, 0);
   }
 
+  /**
+   * 同步单个频道的文章
+   */
+  async function syncArticlesWithChannelId(channelId: string) {
+    const channelList = await channelRepo.getList();
+    const channel: ChannelEntity = channelList.filter(
+      (c) => c.id === channelId
+    )[0];
+
+    console.log('channel ===> ', channel);
+
+    if (channel && channel.feedUrl) {
+      const { feedUrl, id } = channel;
+      const result = await parseRSS(feedUrl);
+      console.log(result);
+      return articleRepo.insertArticles(id, result.items || []);
+    }
+
+    return [];
+  }
+
   function syncUnreadWhenAPPStart() {
     channelRepo
       .getList()
@@ -96,6 +118,11 @@ export const initEvent = () => {
     log.info('手动同步，创建任务更新数据');
     await batchSyncArticles();
     ipcRenderer.send(FINISH_MANUAL_SYNC_UNREAD);
+  }
+
+  async function syncUnreadManuallyWithChannelId(channelId: string) {
+    log.info(`手动同步，${channelId}的文章`);
+    await syncArticlesWithChannelId(channelId);
   }
 
   async function exportOPMLFile() {
@@ -158,12 +185,24 @@ export const initEvent = () => {
       .catch(() => {});
   }
 
+  // /**
+  //  * 手动同步未读文章
+  //  */
+  // ipcMain.on(MANUAL_SYNC_UNREAD, async () => {
+  //   console.log('----> MANUAL_SYNC_UNREAD');
+  //   await syncUnreadManually();
+  // });
+
   /**
-   * 手动同步未读文章
+   * 同步当前频道的文章
    */
-  ipcMain.on(MANUAL_SYNC_UNREAD, async () => {
-    console.log('----> MANUAL_SYNC_UNREAD');
-    await syncUnreadManually();
+  ipcMain.on(MANUAL_SYNC_UNREAD_WITH_CHANNEL_ID, async (event, params) => {
+    console.log('----> MANUAL_SYNC_UNREAD_WITH_CHANNEL_ID');
+    const { channelId } = params;
+
+    await syncUnreadManuallyWithChannelId(channelId);
+
+    event.reply(MANUAL_SYNC_UNREAD_WITH_CHANNEL_ID);
   });
 
   /**

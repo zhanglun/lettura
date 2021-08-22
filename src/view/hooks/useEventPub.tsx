@@ -7,6 +7,7 @@ type EventPubEmit = {
   subscribe: ListenerFn;
   importOPML: ListenerFn;
   exportOPML: ListenerFn;
+  syncArticlesInCurrentChannel: ListenerFn;
 };
 
 export const useEventPub = () => {
@@ -23,6 +24,8 @@ export const useEventPub = () => {
       subscribe: (args: any) => emit(EventDict.SUBSCRIBE, args),
       importOPML: (args: any) => emit(EventDict.IMPORT_OPML, args),
       exportOPML: (args: any) => emit(EventDict.EXPORT_OPML, args),
+      syncArticlesInCurrentChannel: (args: any) =>
+        emit(EventDict.MANUAL_SYNC_UNREAD_WITH_CHANNEL_ID, args),
     };
   }, []);
 

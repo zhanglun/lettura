@@ -19,7 +19,7 @@ export const ArticleModule = (props: ArticleModuleProps): JSX.Element => {
 
   return (
     <div className={styles.article}>
-      <GlobalToolbar title={title || params.name} id="123" />
+      <GlobalToolbar title={title || params.name} id={query.get('channelId')} />
       <ArticleList channelId={query.get('channelId')} />
     </div>
   );
