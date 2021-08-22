@@ -3,7 +3,7 @@ import {
   PROXY_GET_ARTICLE_LSIT,
   PROXY_GET_CHANNEL_LIST,
   PROXY_GET_ARTICLE_LIST_IN_CHANNEL,
-  MANUAL_SYNC_UNREAD,
+  MANUAL_SYNC_UNREAD_WITH_CHANNEL_ID,
 } from '../../event/constant';
 import { useEventPub } from './useEventPub';
 
@@ -33,8 +33,10 @@ export const useDataProxy = () => {
     return proxy(PROXY_GET_ARTICLE_LIST_IN_CHANNEL, params);
   }
 
-  function syncArticleList(params: { channelId: string }): Promise<any> {
-    return proxy(MANUAL_SYNC_UNREAD);
+  function syncArticlesInCurrentChannel(params: {
+    channelId: string;
+  }): Promise<any> {
+    return proxy(MANUAL_SYNC_UNREAD_WITH_CHANNEL_ID, params);
   }
 
   return {
@@ -42,6 +44,6 @@ export const useDataProxy = () => {
     getArticleList,
     getArticleListInChannel,
 
-    syncArticleList,
+    syncArticlesInCurrentChannel,
   };
 };

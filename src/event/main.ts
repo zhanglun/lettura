@@ -194,15 +194,15 @@ export const initEvent = () => {
   // });
 
   /**
-   * 同步当前频道的文章
+   * 同步当前频道的文章，并返回频道中所有的未读文章
    */
   ipcMain.on(MANUAL_SYNC_UNREAD_WITH_CHANNEL_ID, async (event, params) => {
-    console.log('----> MANUAL_SYNC_UNREAD_WITH_CHANNEL_ID');
     const { channelId } = params;
 
     await syncUnreadManuallyWithChannelId(channelId);
+    const result = await articleRepo.getArticleListInChannel({ channelId });
 
-    event.reply(MANUAL_SYNC_UNREAD_WITH_CHANNEL_ID);
+    event.reply(MANUAL_SYNC_UNREAD_WITH_CHANNEL_ID, result);
   });
 
   /**
@@ -253,12 +253,18 @@ export const initEvent = () => {
     event.reply(PROXY_GET_CHANNEL_LIST, result);
   });
 
+  /**
+   * 获取所有的文章
+   */
   ipcMain.on(PROXY_GET_ARTICLE_LSIT, async (event) => {
     const result = await articleRepo.getAllArticle();
 
     event.reply(PROXY_GET_ARTICLE_LSIT, result);
   });
 
+  /**
+   * 获取频道中所有的文章
+   */
   ipcMain.on(PROXY_GET_ARTICLE_LIST_IN_CHANNEL, async (event, params) => {
     const result = await articleRepo.getArticleListInChannel(params);
 
