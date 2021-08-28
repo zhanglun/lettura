@@ -18,7 +18,6 @@ type ArticleListProps = {
 };
 
 export const ArticleList = (props: ArticleListProps): JSX.Element => {
-  console.log(props);
   const dataProxy = useDataProxy();
   const { eventPubEmit } = useEventPub();
   const [articleList, setArticleList] = useState<Article[]>([]);

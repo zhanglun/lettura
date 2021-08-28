@@ -92,8 +92,9 @@ export const initEvent = () => {
     if (channel && channel.feedUrl) {
       const { feedUrl, id } = channel;
       const result = await parseRSS(feedUrl);
-      console.log(result);
-      return articleRepo.insertArticles(id, result.items || []);
+
+      return result.items;
+      // return articleRepo.insertArticles(id, result.items || []);
     }
 
     return [];

@@ -3,7 +3,7 @@ import React from 'react';
 type Props = {
   name: string;
   customClass?: string;
-  onClick?: () => void;
+  onClick?: any;
 };
 
 export const Icon = (props: Props) => {

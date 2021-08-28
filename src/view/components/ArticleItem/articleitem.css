@@ -2,9 +2,10 @@
   position: relative;
   padding: 8px 14px;
   list-style-type: none;
-  border-radius: 10px;
-  box-shadow: 0 0 12px -6px rgba(0, 0, 0, 0.2);
   margin: 10px 0;
+  background: #ffffff;
+  box-shadow: 0 0 12px -6px rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
 }
 
 .item:hover {
@@ -51,6 +52,9 @@
   overflow: hidden;
   max-width: 960px;
   margin: 0 auto;
+  color: #9e9e9e;
+  font-size: 13px;
+  padding-top: 10px;
 }
 
 .content img {

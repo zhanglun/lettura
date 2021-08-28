@@ -2,6 +2,7 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { Icon } from '../Icon';
 import { ArticleReadStatus } from '../../../infra/constants/status';
 import { Article } from '../../../infra/types';
+import { openBrowser } from '../../../infra/utils';
 import styles from './articleitem.css';
 
 type ArticleItemProps = {
@@ -14,6 +15,23 @@ export const ArticleItem = (props: ArticleItemProps) => {
   const handleClick = useCallback(() => {
     setExpand(!expand);
   }, [expand]);
+
+  const content = useMemo(() => {
+    const str = article.content.replace(/(<([^>]+)>)/gi, '');
+    if (str.length > 250) {
+      return `${str.slice(0, 250)}...`;
+    }
+
+    return str;
+  }, [article]);
+
+  const openWebPage = useCallback(
+    (e) => {
+      openBrowser(article.link);
+      e.stopPropagation();
+    },
+    [article]
+  );
 
   return (
     <li
@@ -29,19 +47,10 @@ export const ArticleItem = (props: ArticleItemProps) => {
           <Icon customClass={styles.icon} name="bookmark_add" />
           <Icon customClass={styles.icon} name="favorite_border" />
           <Icon customClass={styles.icon} name="done" />
-          <Icon customClass={styles.icon} name="launch" />
+          <Icon customClass={styles.icon} name="launch" onClick={openWebPage} />
         </div>
       </div>
-      <div
-        className={styles.content}
-        dangerouslySetInnerHTML={{ __html: article.content }}
-      />
-      {/* <div className={styles.meta}>
-        <span className={styles.channel}>{article.channelTitle}</span>
-        <span className={styles.pubTime}>
-          {Dayjs(article.pubDate).format('YYYY-MM-DD HH:mm')}
-        </span>
-      </div> */}
+      {expand && <div className={styles.content}>{content}</div>}
     </li>
   );
 };
