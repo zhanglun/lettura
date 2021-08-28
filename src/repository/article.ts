@@ -33,9 +33,9 @@ export class ArticleRepository extends Repository<ArticleEntity> {
         channelId: params.channelId,
       });
 
-    if (params.readStatus) {
-      builder.where('article.hasRead = :readStatus', {
-        readStatus: ArticleReadStatus.unRead,
+    if (params.readStatus !== null) {
+      builder.andWhere('article.hasRead = :readStatus', {
+        readStatus: params.readStatus,
       });
     }
 
@@ -46,6 +46,16 @@ export class ArticleRepository extends Repository<ArticleEntity> {
     ]);
 
     return builder.execute();
+  }
+
+  async markArticleAsRead(article: ArticleEntity): Promise<boolean> {
+    try {
+      await this.update(article.id, { hasRead: ArticleReadStatus.isRead });
+      return true;
+    } catch (err) {
+      console.log(err);
+      return false;
+    }
   }
 
   async getAllUnread(): Promise<Article[]> {

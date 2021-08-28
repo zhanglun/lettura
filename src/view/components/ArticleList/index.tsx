@@ -44,7 +44,10 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
   useEffect(() => {
     if (props.channelId) {
       dataProxy
-        .syncArticlesInCurrentChannel({ channelId: props.channelId })
+        .syncArticlesInCurrentChannel({
+          channelId: props.channelId,
+          readStatus: ArticleReadStatus.unRead,
+        })
         .then((result) => {
           setArticleList(result);
           return result;

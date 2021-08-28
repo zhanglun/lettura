@@ -11,6 +11,7 @@ import {
   FINISH_INITIAL_SYNC,
   MANUAL_SYNC_UNREAD,
   MANUAL_SYNC_UNREAD_WITH_CHANNEL_ID,
+  MARK_ARTICLE_READ,
   FINISH_MANUAL_SYNC_UNREAD,
   EXPORT_OPML,
   FINISH_EXPORT_OPML,
@@ -86,8 +87,6 @@ export const initEvent = () => {
     const channel: ChannelEntity = channelList.filter(
       (c) => c.id === channelId
     )[0];
-
-    console.log('channel ===> ', channel);
 
     if (channel && channel.feedUrl) {
       const { feedUrl, id } = channel;
@@ -198,10 +197,16 @@ export const initEvent = () => {
    * 同步当前频道的文章，并返回频道中所有的未读文章
    */
   ipcMain.on(MANUAL_SYNC_UNREAD_WITH_CHANNEL_ID, async (event, params) => {
-    const { channelId } = params;
+    const { channelId, readStatus } = params;
+
+    console.log('channleId', channelId);
+    console.log('readStatus', readStatus);
 
     await syncUnreadManuallyWithChannelId(channelId);
-    const result = await articleRepo.getArticleListInChannel({ channelId });
+    const result = await articleRepo.getArticleListInChannel({
+      channelId,
+      readStatus,
+    });
 
     event.reply(MANUAL_SYNC_UNREAD_WITH_CHANNEL_ID, result);
   });
@@ -270,6 +275,12 @@ export const initEvent = () => {
     const result = await articleRepo.getArticleListInChannel(params);
 
     event.reply(PROXY_GET_ARTICLE_LIST_IN_CHANNEL, result);
+  });
+
+  ipcMain.on(MARK_ARTICLE_READ, async (event, article) => {
+    const result = await articleRepo.markArticleAsRead(article);
+
+    event.reply(MARK_ARTICLE_READ, result);
   });
 
   syncUnreadWhenAPPStart();
