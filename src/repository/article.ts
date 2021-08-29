@@ -7,15 +7,25 @@ import { ArticleReadStatus } from '../infra/constants/status';
 
 @EntityRepository(ArticleEntity)
 export class ArticleRepository extends Repository<ArticleEntity> {
-  async getAllArticle(): Promise<Article[]> {
-    return this.createQueryBuilder('article')
-      .leftJoinAndSelect('article.channel', 'channel')
-      .select([
-        'article.*',
-        'channel.title as channelTitle',
-        'channel.favicon as channelFavicon',
-      ])
-      .execute();
+  async getAllArticle(params: any): Promise<Article[]> {
+    const builder = this.createQueryBuilder('article').leftJoinAndSelect(
+      'article.channel',
+      'channel'
+    );
+
+    if (params.readStatus !== null) {
+      builder.andWhere('article.hasRead = :readStatus', {
+        readStatus: params.readStatus,
+      });
+    }
+
+    builder.select([
+      'article.*',
+      'channel.title as channelTitle',
+      'channel.favicon as channelFavicon',
+    ]);
+
+    return builder.execute();
   }
 
   /**

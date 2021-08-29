@@ -1,13 +1,13 @@
 :root {
   --app-channel-width: 300px;
   --app-article-width: 300px;
-  --app-toolbar-height: 52px;
+  --app-toolbar-height: 68px;
   --headline-color: #333;
   --title-color: #666;
   --text-color: #363636;
   --link-default-color: #296bcc;
   --link-hover-color: #296bcc;
-  --block-padding: 14px;
+  --block-padding: 16px;
   --font-weight-bold: 600;
   --font-weight-normal: 400;
   --button-height-large: 28px;

@@ -199,9 +199,6 @@ export const initEvent = () => {
   ipcMain.on(MANUAL_SYNC_UNREAD_WITH_CHANNEL_ID, async (event, params) => {
     const { channelId, readStatus } = params;
 
-    console.log('channleId', channelId);
-    console.log('readStatus', readStatus);
-
     await syncUnreadManuallyWithChannelId(channelId);
     const result = await articleRepo.getArticleListInChannel({
       channelId,
@@ -262,8 +259,8 @@ export const initEvent = () => {
   /**
    * 获取所有的文章
    */
-  ipcMain.on(PROXY_GET_ARTICLE_LSIT, async (event) => {
-    const result = await articleRepo.getAllArticle();
+  ipcMain.on(PROXY_GET_ARTICLE_LSIT, async (event, params) => {
+    const result = await articleRepo.getAllArticle(params);
 
     event.reply(PROXY_GET_ARTICLE_LSIT, result);
   });

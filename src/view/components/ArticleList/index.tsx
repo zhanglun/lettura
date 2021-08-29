@@ -43,11 +43,19 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
 
   useEffect(() => {
     if (props.channelId) {
-      dataProxy
-        .syncArticlesInCurrentChannel({
+      let promise = Promise.resolve();
+
+      if (props.channelId === 'inbox') {
+        promise = dataProxy.getArticleList({
+          readStatus: ArticleReadStatus.unRead,
+        });
+      } else {
+        promise = dataProxy.syncArticlesInCurrentChannel({
           channelId: props.channelId,
           readStatus: ArticleReadStatus.unRead,
-        })
+        });
+      }
+      promise
         .then((result) => {
           setArticleList(result);
           return result;

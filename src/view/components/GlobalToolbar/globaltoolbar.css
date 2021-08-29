@@ -15,8 +15,9 @@
 
 .title {
   padding: 0 var(--block-padding);
-  font-size: 16px;
   color: var(--headline-color);
+  font-size: 24px;
+  font-weight: var(--font-weight-bold);
 }
 
 .menu {

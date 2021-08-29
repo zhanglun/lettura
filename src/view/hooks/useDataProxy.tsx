@@ -28,8 +28,8 @@ export const useDataProxy = () => {
     return proxy(PROXY_GET_CHANNEL_LIST);
   }
 
-  function getArticleList(): Promise<any> {
-    return proxy(PROXY_GET_ARTICLE_LSIT);
+  function getArticleList(params: any): Promise<any> {
+    return proxy(PROXY_GET_ARTICLE_LSIT, params);
   }
 
   function getArticleListInChannel(params: any): Promise<any> {

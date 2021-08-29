@@ -24,6 +24,10 @@ const ChannelList = (): JSX.Element => {
     );
   };
 
+  const viewInbox = () => {
+    history.push(`${Routes.CHANNEL.replace(/:name/, 'Inbox')}?channelId=inbox`);
+  };
+
   const renderFeedList = (): JSX.Element => {
     return (
       <ul className={styles.list}>
@@ -85,7 +89,11 @@ const ChannelList = (): JSX.Element => {
       </div>
       <div className={styles.inner}>
         <div className={styles.official}>
-          <div className={styles.officialItem} aria-hidden="true">
+          <div
+            className={styles.officialItem}
+            aria-hidden="true"
+            onClick={() => viewInbox()}
+          >
             <Icon
               customClass={styles.officialItemIcon}
               name="mark_email_unread"
