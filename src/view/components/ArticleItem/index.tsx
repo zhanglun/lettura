@@ -10,6 +10,10 @@ type ArticleItemProps = {
   article: Article;
 };
 
+function createMarkup(html: string) {
+  return { __html: html };
+}
+
 export const ArticleItem = (props: ArticleItemProps) => {
   const dataProxy = useDataProxy();
   const { article } = props;
@@ -17,12 +21,20 @@ export const ArticleItem = (props: ArticleItemProps) => {
   const [readStatus, setReadStatus] = useState(false);
 
   const content = useMemo(() => {
-    const str = article.content.replace(/(<([^>]+)>)/gi, '');
-    if (str.length > 250) {
-      return `${str.slice(0, 250)}...`;
-    }
-
-    return str;
+    return (
+      <div
+        className={styles.content}
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={createMarkup(article.content)}
+      />
+    );
+    // const str = article.content.replace(/(<([^>]+)>)/gi, '');
+    //
+    // if (str.length > 250) {
+    //   return `${str.slice(0, 250)}...`;
+    // }
+    //
+    // return str;
   }, [article]);
 
   const handleClick = useCallback(() => {

@@ -2,7 +2,6 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { useState, useEffect, useCallback } from 'react';
 import { useEventPub } from '../../hooks/useEventPub';
-
 import { Icon } from '../Icon';
 import styles from './globaltoolbar.css';
 

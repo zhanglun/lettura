@@ -92,23 +92,22 @@ export const initEvent = () => {
       const { feedUrl, id } = channel;
       const result = await parseRSS(feedUrl);
 
-      return result.items;
-      // return articleRepo.insertArticles(id, result.items || []);
+      return articleRepo.insertArticles(id, result.items || []);
     }
 
     return [];
   }
 
   function syncUnreadWhenAPPStart() {
-    channelRepo
-      .getList()
-      .then((list) => {
-        ipcRenderer.send(FINISH_INITIAL_SYNC, list);
-        return list;
-      })
-      .catch((err) => {
-        return err;
-      });
+    // channelRepo
+    //   .getList()
+    //   .then((list) => {
+    //     ipcRenderer.send(FINISH_INITIAL_SYNC, list);
+    //     return list;
+    //   })
+    //   .catch((err) => {
+    //     return err;
+    //   });
   }
 
   /**
@@ -185,21 +184,24 @@ export const initEvent = () => {
       .catch(() => {});
   }
 
-  // /**
-  //  * 手动同步未读文章
-  //  */
-  // ipcMain.on(MANUAL_SYNC_UNREAD, async () => {
-  //   console.log('----> MANUAL_SYNC_UNREAD');
-  //   await syncUnreadManually();
-  // });
-
   /**
    * 同步当前频道的文章，并返回频道中所有的未读文章
    */
   ipcMain.on(MANUAL_SYNC_UNREAD_WITH_CHANNEL_ID, async (event, params) => {
     const { channelId, readStatus } = params;
+    const channel = await channelRepo.getOneById(channelId);
 
-    await syncUnreadManuallyWithChannelId(channelId);
+    if (
+      new Date(channel.lastSyncDate).getTime() <
+      new Date().getTime() - 1000 * 10
+    ) {
+      log.info('同步时间过期，开始同步');
+      await syncUnreadManuallyWithChannelId(channelId);
+
+      // 更新最后同步时间
+      await channelRepo.updateLastSyncDate(channelId);
+    }
+
     const result = await articleRepo.getArticleListInChannel({
       channelId,
       readStatus,
@@ -209,7 +211,7 @@ export const initEvent = () => {
   });
 
   /**
-   * 导出 OPML
+   * 导出订阅关系
    */
   ipcMain.on(EXPORT_OPML, async (event) => {
     await exportOPMLFile();

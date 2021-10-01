@@ -137,6 +137,11 @@ export class ArticleRepository extends Repository<ArticleEntity> {
       }
     );
 
-    await this.save(values);
+    await this.createQueryBuilder()
+      .insert()
+      .into(ArticleEntity)
+      .values(values)
+      .onConflict(`("link") DO NOTHING`)
+      .execute();
   }
 }

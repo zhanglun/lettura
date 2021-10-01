@@ -34,6 +34,7 @@ export interface Channel extends ChannelEntity {
 export type ChannelRes = RSSFeed & {
   category?: string;
   favicon?: string;
+  feedUrl?: string;
   tag?: '';
   createDate?: string;
   updateDate?: string;

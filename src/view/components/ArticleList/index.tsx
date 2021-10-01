@@ -10,6 +10,7 @@ import { Article } from '../../../infra/types';
 import { ArticleReadStatus } from '../../../infra/constants/status';
 import { useDataProxy } from '../../hooks/useDataProxy';
 import { ArticleItem } from '../ArticleItem';
+// import { Loading } from '../Loading';
 import styles from './articlelist.css';
 import { useEventPub } from '../../hooks/useEventPub';
 
@@ -20,6 +21,7 @@ type ArticleListProps = {
 export const ArticleList = (props: ArticleListProps): JSX.Element => {
   const dataProxy = useDataProxy();
   const { eventPubEmit } = useEventPub();
+  // const [loading, setLoading] = useState(true);
   const [articleList, setArticleList] = useState<Article[]>([]);
   const [currentLink, setCurrentLink] = useState<string>('');
   const articleListRef = useRef<HTMLDivElement>(null);
@@ -43,6 +45,8 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
 
   useEffect(() => {
     if (props.channelId) {
+      setLoading(true);
+
       let promise = Promise.resolve();
 
       if (props.channelId === 'inbox') {
@@ -56,7 +60,7 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
         });
       }
       promise
-        .then((result) => {
+        .then((result: any) => {
           setArticleList(result);
           return result;
         })

@@ -54,12 +54,23 @@ export class ChannelRepository extends Repository<Channel> {
     }
 
     feed.updateDate = new Date().toString();
+    feed.lastSyncDate = new Date().toString();
 
     return this.save(feed);
   }
 
   async getList(): Promise<ChannelEntity[]> {
     return this.find({});
+  }
+
+  async getOneById(id: string): Promise<ChannelEntity> {
+    const channel = await this.find({
+      where: {
+        id,
+      },
+    });
+
+    return channel[0];
   }
 
   async getOneByUrl(url: string): Promise<ChannelEntity> {
@@ -70,6 +81,23 @@ export class ChannelRepository extends Repository<Channel> {
     });
 
     return channel[0];
+  }
+
+  async updateLastSyncDate(id: string): Promise<any> {
+    const channel = await this.findOne({
+      where: {
+        id,
+      },
+    });
+
+    if (channel) {
+      channel.updateDate = new Date().toString();
+      channel.lastSyncDate = new Date().toString();
+
+      return this.save(channel);
+    }
+
+    return null;
   }
 
   /**

@@ -54,7 +54,6 @@
   margin: 0 auto;
   color: #9e9e9e;
   font-size: 13px;
-  padding-top: 10px;
 }
 
 .content img {
@@ -64,6 +63,10 @@
 
 .item.expand .content {
   height: auto;
+}
+
+item.expand .header {
+  padding-bottom: 10px;
 }
 
 .read {
