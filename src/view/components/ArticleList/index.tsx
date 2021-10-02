@@ -44,9 +44,9 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
   }, [articleList]);
 
   useEffect(() => {
-    if (props.channelId) {
-      setLoading(true);
+    resetScrollTop();
 
+    if (props.channelId) {
       let promise = Promise.resolve();
 
       if (props.channelId === 'inbox') {

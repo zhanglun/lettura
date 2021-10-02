@@ -9,7 +9,7 @@
 .inner {
   height: 100%;
   overflow-y: auto;
-  padding: 10px 25px 14px;
+  padding: 10px 14px 14px;
 }
 
 .list {
@@ -50,13 +50,16 @@
 }
 
 .item {
-  height: 44px;
-  padding: 4px 25px;
+  height: 34px;
+  padding: 4px 20px;
   display: flex;
   align-items: center;
   cursor: pointer;
   border-radius: 10px;
-  /*background-color: rgba(238, 239, 240, 0.5);*/
+}
+
+.itemActive {
+  background-color: rgba(238, 239, 240, 0.5);
 }
 
 .item:hover {
@@ -85,8 +88,14 @@
 
 .count {
   float: right;
-  font-size: 12px;
+  width: 16px;
+  height: 16px;
+  line-height: 16px;
+  text-align: center;
+  font-size: 10px;
   color: var(--title-color);
+  border-radius: 6px;
+  background-color: #f1f3f4;
 }
 
 .official {

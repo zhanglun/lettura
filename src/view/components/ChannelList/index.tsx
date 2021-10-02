@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Channel } from '../../../infra/types';
 import * as Routes from '../../../infra/constants/routes';
@@ -11,12 +11,31 @@ const ChannelList = (): JSX.Element => {
   const history = useHistory();
   const dataProxy = useDataProxy();
   const [channelList, setChannelList] = useState([]);
+  const [currentId, setCurrentId] = useState('');
+
+  const initial = () => {
+    dataProxy
+      .getChannelList()
+      .then((result) => {
+        setChannelList(result);
+        return result;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
   const goToSetting = () => {
     history.push(Routes.SETTINGS);
   };
 
+  const refreshList = () => {
+    initial();
+  };
+
   const viewArticles = (channel: Channel) => {
+    setCurrentId(channel.id);
+
     history.push(
       `${Routes.CHANNEL.replace(/:name/, channel.title)}?channelId=${
         channel.id
@@ -28,13 +47,15 @@ const ChannelList = (): JSX.Element => {
     history.push(`${Routes.CHANNEL.replace(/:name/, 'Inbox')}?channelId=inbox`);
   };
 
-  const renderFeedList = (): JSX.Element => {
+  const renderFeedList = useCallback((): JSX.Element => {
     return (
       <ul className={styles.list}>
         {channelList.map((channel: Channel, i: number) => {
           return (
             <li
-              className={`${styles.item}`}
+              className={`${styles.item} ${
+                currentId === channel.id ? styles.itemActive : ''
+              }`}
               // eslint-disable-next-line react/no-array-index-key
               key={channel.title + i}
               onClick={() => viewArticles(channel)}
@@ -53,24 +74,21 @@ const ChannelList = (): JSX.Element => {
                 alt={channel.title}
               />
               <span className={styles.name}>{channel.title}</span>
+              <span className={styles.count}>{channel.articleCount}</span>
             </li>
           );
         })}
       </ul>
     );
-  };
+  }, [currentId]);
 
   useEffect(() => {
-    dataProxy
-      .getChannelList()
-      .then((result) => {
-        setChannelList(result);
-        return result;
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    initial();
   }, [setChannelList]);
+
+  useEffect(() => {
+    setCurrentId(channelList[0]);
+  }, [channelList]);
 
   return (
     <div className={styles.container}>
@@ -78,7 +96,11 @@ const ChannelList = (): JSX.Element => {
         <div className={styles.toolbar}>
           <Icon name="add" customClass={styles.toolbarItem} />
           <Icon name="folder" customClass={styles.toolbarItem} />
-          <Icon name="refresh" customClass={styles.toolbarItem} />
+          <Icon
+            name="refresh"
+            customClass={styles.toolbarItem}
+            onClick={refreshList}
+          />
           <Icon
             name="settings"
             customClass={styles.toolbarItem}
