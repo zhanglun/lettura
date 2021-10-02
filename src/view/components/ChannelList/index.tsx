@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
+import { useEventPub } from '../../hooks/useEventPub';
 import { Channel } from '../../../infra/types';
+import * as EventDict from '../../../event/constant';
 import * as Routes from '../../../infra/constants/routes';
 import { Icon } from '../Icon';
 import styles from './channel.module.css';
@@ -10,6 +12,7 @@ import { useDataProxy } from '../../hooks/useDataProxy';
 const ChannelList = (): JSX.Element => {
   const history = useHistory();
   const dataProxy = useDataProxy();
+  const { on: eventOn } = useEventPub();
   const [channelList, setChannelList] = useState([]);
   const [currentId, setCurrentId] = useState('');
 
@@ -84,7 +87,11 @@ const ChannelList = (): JSX.Element => {
 
   useEffect(() => {
     initial();
-  }, [setChannelList]);
+
+    eventOn(EventDict.SUBSCRIBE, () => {
+      initial();
+    });
+  }, []);
 
   useEffect(() => {
     setCurrentId(channelList[0]);
