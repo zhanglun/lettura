@@ -20,23 +20,6 @@ export const ArticleItem = (props: ArticleItemProps) => {
   const [expand, setExpand] = useState(false);
   const [readStatus, setReadStatus] = useState(false);
 
-  const content = useMemo(() => {
-    return (
-      <div
-        className={styles.content}
-        // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={createMarkup(article.content)}
-      />
-    );
-    // const str = article.content.replace(/(<([^>]+)>)/gi, '');
-    //
-    // if (str.length > 250) {
-    //   return `${str.slice(0, 250)}...`;
-    // }
-    //
-    // return str;
-  }, [article]);
-
   const handleClick = useCallback(() => {
     setExpand(!expand);
   }, [expand]);
@@ -71,13 +54,18 @@ export const ArticleItem = (props: ArticleItemProps) => {
 
   return (
     <li
-      className={`${styles.item} ${readStatus && styles.read} ${
-        expand && styles.expand
-      }`}
+      className={`${styles.item} ${readStatus && styles.read}`}
       onClick={handleClick}
       aria-hidden="true"
     >
       <div className={styles.header}>
+        <div
+          className={styles.image}
+          style={{
+            backgroundImage:
+              'url("https://img.iplaysoft.com/wp-content/uploads/2021/p/coloros12-wallpapers/coloros12.jpg")',
+          }}
+        />
         <div className={styles.title}>{article.title}</div>
         <div className={styles.actions}>
           <Icon customClass={styles.icon} name="bookmark_add" />
@@ -86,7 +74,6 @@ export const ArticleItem = (props: ArticleItemProps) => {
           <Icon customClass={styles.icon} name="launch" onClick={openWebPage} />
         </div>
       </div>
-      {expand && <div className={styles.content}>{content}</div>}
     </li>
   );
 };

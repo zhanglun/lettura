@@ -54,3 +54,4 @@ package.json
 *.typing.d.ts
 *.sass.d.ts
 *.scss.d.ts
+test/**

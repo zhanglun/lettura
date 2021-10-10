@@ -1,11 +1,10 @@
 .item {
   position: relative;
   padding: 8px 14px;
+  height: 90px;
   list-style-type: none;
-  margin: 10px 0;
   background: #ffffff;
-  box-shadow: 0 0 12px -6px rgba(0, 0, 0, 0.2);
-  border-radius: 12px;
+  border-bottom: 1px solid #e6e6e6;
 }
 
 .item:hover {
@@ -14,7 +13,7 @@
 
 .header {
   display: grid;
-  grid-template-columns: 1fr 100px;
+  grid-template-columns: 75px 1fr 100px;
   grid-column-gap: 10px;
 }
 
@@ -22,8 +21,14 @@
   display: grid;
 }
 
+.image {
+  width: 75px;
+  height: 75px;
+  background-size: cover;
+}
+
 .title {
-  font-size: 16px;
+  font-size: 14px;
   color: #444;
   font-weight: var(--font-weight-bold);
   overflow: hidden;
@@ -65,7 +70,7 @@
   height: auto;
 }
 
-item.expand .header {
+.item.expand .header {
   padding-bottom: 10px;
 }
 

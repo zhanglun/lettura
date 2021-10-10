@@ -4,6 +4,7 @@
   flex-direction: column;
   flex: 1 0 auto;
   user-select: none;
+  background-color: #f7f7f7;
 }
 
 .inner {

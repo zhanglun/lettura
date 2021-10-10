@@ -191,6 +191,7 @@ export const initEvent = () => {
     const { channelId, readStatus } = params;
     const channel = await channelRepo.getOneById(channelId);
 
+    // TODO: 同步间隔配置化
     if (
       new Date(channel.lastSyncDate).getTime() <
       new Date().getTime() - 1000 * 10
