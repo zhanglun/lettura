@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import Dayjs from 'dayjs';
 import { Icon } from '../Icon';
 import { ArticleReadStatus } from '../../../infra/constants/status';
 import { Article } from '../../../infra/types';
@@ -17,20 +18,7 @@ function createMarkup(html: string) {
 export const ArticleItem = (props: ArticleItemProps) => {
   const dataProxy = useDataProxy();
   const { article } = props;
-  const [expand, setExpand] = useState(false);
   const [readStatus, setReadStatus] = useState(false);
-
-  const handleClick = useCallback(() => {
-    setExpand(!expand);
-  }, [expand]);
-
-  const openWebPage = useCallback(
-    (e) => {
-      openBrowser(article.link);
-      e.stopPropagation();
-    },
-    [article]
-  );
 
   const markAsRead = useCallback(
     (e) => {
@@ -46,6 +34,18 @@ export const ArticleItem = (props: ArticleItemProps) => {
         });
     },
     [dataProxy, article]
+  );
+
+  const handleClick = useCallback((e) => {
+    markAsRead(e);
+  }, []);
+
+  const openWebPage = useCallback(
+    (e) => {
+      openBrowser(article.link);
+      e.stopPropagation();
+    },
+    [article]
   );
 
   useEffect(() => {
@@ -66,12 +66,17 @@ export const ArticleItem = (props: ArticleItemProps) => {
               'url("https://img.iplaysoft.com/wp-content/uploads/2021/p/coloros12-wallpapers/coloros12.jpg")',
           }}
         />
-        <div className={styles.title}>{article.title}</div>
-        <div className={styles.actions}>
-          <Icon customClass={styles.icon} name="bookmark_add" />
-          <Icon customClass={styles.icon} name="favorite_border" />
-          <Icon customClass={styles.icon} name="done" onClick={markAsRead} />
-          <Icon customClass={styles.icon} name="launch" onClick={openWebPage} />
+        <div className={styles.title}>
+          <div className={styles.titleText}>{article.title}</div>
+        </div>
+        {/* <div className={styles.actions}> */}
+        {/*  <Icon customClass={styles.icon} name="bookmark_add" /> */}
+        {/*  <Icon customClass={styles.icon} name="favorite_border" /> */}
+        {/*  <Icon customClass={styles.icon} name="done" onClick={markAsRead} /> */}
+        {/*  <Icon customClass={styles.icon} name="launch" onClick={openWebPage} /> */}
+        {/* </div> */}
+        <div className={styles.date}>
+          {Dayjs(article.pubDate).format('MM/DD HH:mm')}
         </div>
       </div>
     </li>

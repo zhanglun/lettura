@@ -15,11 +15,17 @@ const ChannelList = (): JSX.Element => {
   const { on: eventOn } = useEventPub();
   const [channelList, setChannelList] = useState([]);
   const [currentId, setCurrentId] = useState('');
+  const [sum, setSum] = useState(0);
 
   const initial = () => {
     dataProxy
       .getChannelList()
       .then((result) => {
+        console.log(result);
+        const total = result.reduce((acu: number, cur: Channel) => {
+          return acu + (cur.articleCount || 0);
+        }, 0);
+        setSum(total);
         setChannelList(result);
         return result;
       })
@@ -128,7 +134,7 @@ const ChannelList = (): JSX.Element => {
               name="mark_email_unread"
             />
             <span className={styles.name}>Inbox</span>
-            <span className={styles.count}>{0}</span>
+            <span className={styles.count}>{sum}</span>
           </div>
           {/* <div */}
           {/*  className={styles.officialItem} */}
