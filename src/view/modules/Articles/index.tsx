@@ -1,8 +1,10 @@
-import React from 'react';
-import { useHistory, useLocation, useParams } from 'react-router-dom';
+import React, { useCallback, useState } from 'react';
+import { useLocation, useParams } from 'react-router-dom';
 import { ArticleList } from '../../components/ArticleList';
+import { ArticleView } from '../../components/ArticleView';
 import { GlobalToolbar } from '../../components/GlobalToolbar';
 import styles from './index.module.css';
+import { Article } from '../../../infra/types';
 
 type ArticleModuleProps = {
   title: string;
@@ -16,6 +18,11 @@ export const ArticleModule = (props: ArticleModuleProps): JSX.Element => {
   const { title } = props;
   const params: { name: string } = useParams();
   const query = useQuery();
+  const [current, setCurrent] = useState<Article>(null);
+
+  const handleArticleSelect = useCallback((article: Article) => {
+    setCurrent(article);
+  }, []);
 
   return (
     <div className={styles.article}>
@@ -23,7 +30,13 @@ export const ArticleModule = (props: ArticleModuleProps): JSX.Element => {
         title={title || params.name}
         id={query.get('channelId') as string}
       />
-      <ArticleList channelId={query.get('channelId')} />
+      <div className={styles.mainView}>
+        <ArticleList
+          channelId={query.get('channelId')}
+          onArticleSelect={handleArticleSelect}
+        />
+        <ArticleView article={current} />
+      </div>
     </div>
   );
 };

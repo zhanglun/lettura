@@ -1,4 +1,9 @@
 .article {
-  flex: 1;
-  /* padding-top: var(--app-toolbar-height); */
+  height: 100%;
+}
+
+.mainView {
+  height: calc(100% - var(--app-toolbar-height));
+  display: grid;
+  grid-template-columns: 400px 1fr;
 }

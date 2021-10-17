@@ -1,8 +1,7 @@
 .container {
-  width: 388px;
   height: 100%;
-  min-height: 100%;
   user-select: none;
+  overflow-y: scroll;
 }
 
 .list {

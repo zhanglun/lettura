@@ -1,19 +1,16 @@
-import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import Dayjs from 'dayjs';
-import { Icon } from '../Icon';
+// import { Icon } from '../Icon';
 import { ArticleReadStatus } from '../../../infra/constants/status';
 import { Article } from '../../../infra/types';
-import { openBrowser } from '../../../infra/utils';
+// import { openBrowser } from '../../../infra/utils';
 import styles from './articleitem.css';
 import { useDataProxy } from '../../hooks/useDataProxy';
 
 type ArticleItemProps = {
   article: Article;
+  onSelect: (article: Article) => any;
 };
-
-function createMarkup(html: string) {
-  return { __html: html };
-}
 
 export const ArticleItem = (props: ArticleItemProps) => {
   const dataProxy = useDataProxy();
@@ -38,15 +35,11 @@ export const ArticleItem = (props: ArticleItemProps) => {
 
   const handleClick = useCallback((e) => {
     markAsRead(e);
-  }, []);
 
-  const openWebPage = useCallback(
-    (e) => {
-      openBrowser(article.link);
-      e.stopPropagation();
-    },
-    [article]
-  );
+    if (props.onSelect) {
+      props.onSelect(article);
+    }
+  }, []);
 
   useEffect(() => {
     setReadStatus(article.hasRead === ArticleReadStatus.isRead);

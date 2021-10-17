@@ -13,7 +13,7 @@ import { useEventPub } from './useEventPub';
 export const useDataProxy = () => {
   const { emit, on } = useEventPub();
   const proxy = (name: string, data?: any): any => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       on(name, (_event, result) => {
         return resolve(result);
       });

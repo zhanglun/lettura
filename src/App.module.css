@@ -7,7 +7,10 @@
 .main {
   position: relative;
   background-color: #fafafa;
-  overflow-y: scroll;
+  overflow: hidden;
   height: 100%;
   flex: 1;
+}
+
+.mainInner {
 }
