@@ -19,7 +19,9 @@
 }
 
 .header {
-  padding: 10px;
+  height: var(--app-toolbar-height);
+  border-bottom: 1px solid var(--line-color);
+  padding: 13px;
 }
 
 .toolbar {

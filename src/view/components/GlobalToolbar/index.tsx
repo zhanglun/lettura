@@ -14,6 +14,7 @@ function GlobalToolbar(props: GlobalToolbarProps) {
   const { title, id } = props;
   const { eventPubEmit } = useEventPub();
   const [fixed, setFixed] = useState(false);
+
   useEffect(() => {
     const $container = document.querySelector('#appMain');
 
