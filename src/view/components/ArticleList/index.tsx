@@ -12,6 +12,7 @@ type ArticleListProps = {
 
 export const ArticleList = (props: ArticleListProps): JSX.Element => {
   const dataProxy = useDataProxy();
+  const { channelId } = props;
   const [articleList, setArticleList] = useState<Article[]>([]);
   const articleListRef = useRef<HTMLDivElement>(null);
 
@@ -44,16 +45,16 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
   useEffect(() => {
     resetScrollTop();
 
-    if (props.channelId) {
+    if (channelId) {
       let promise = Promise.resolve();
 
-      if (props.channelId === 'inbox') {
+      if (channelId === 'inbox') {
         promise = dataProxy.getArticleList({
           readStatus: ArticleReadStatus.unRead,
         });
       } else {
         promise = dataProxy.syncArticlesInCurrentChannel({
-          channelId: props.channelId,
+          channelId,
           readStatus: ArticleReadStatus.unRead,
         });
       }
@@ -66,7 +67,7 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
           console.log(err);
         });
     }
-  }, [props]);
+  }, [channelId]);
 
   return (
     <div className={styles.container} ref={articleListRef}>

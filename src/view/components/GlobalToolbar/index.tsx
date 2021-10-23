@@ -42,6 +42,14 @@ function GlobalToolbar(props: GlobalToolbarProps) {
           <Icon customClass={styles.menuIcon} name="done_all" />
           全部标记为已读
         </div>
+        <div className={styles.menuItem}>
+          <Icon customClass={styles.menuIcon} name="done_all" />
+          未读文章
+        </div>
+        <div className={styles.menuItem}>
+          <Icon customClass={styles.menuIcon} name="done_all" />
+          全部文章
+        </div>
         <div className={styles.menuItem} onClick={handleRefresh}>
           <Icon customClass={styles.menuIcon} name="refresh" />
           刷新
