@@ -16,6 +16,7 @@ export const ArticleItem = (props: ArticleItemProps) => {
   const dataProxy = useDataProxy();
   const { article } = props;
   const [readStatus, setReadStatus] = useState(false);
+  const [bannerImage, setBannerImage] = useState('');
 
   const markAsRead = useCallback(
     (e) => {
@@ -33,16 +34,33 @@ export const ArticleItem = (props: ArticleItemProps) => {
     [dataProxy, article]
   );
 
-  const handleClick = useCallback((e) => {
-    markAsRead(e);
+  const handleClick = useCallback(
+    (e: any) => {
+      markAsRead(e);
 
-    if (props.onSelect) {
-      props.onSelect(article);
+      if (props.onSelect) {
+        props.onSelect(article);
+      }
+    },
+    [props]
+  );
+
+  const parseBannerImage = (content: string): string => {
+    const banner =
+      'https://img.iplaysoft.com/wp-content/uploads/2021/p/coloros12-wallpapers/coloros12.jpg';
+
+    if (!content) {
+      return banner;
     }
-  }, []);
+
+    const matchs = content.match(/<img[^>]+src="(\S*)"/);
+
+    return (matchs && matchs[1]) || banner;
+  };
 
   useEffect(() => {
     setReadStatus(article.hasRead === ArticleReadStatus.isRead);
+    setBannerImage(parseBannerImage(article.content));
   }, [article]);
 
   return (
@@ -54,10 +72,7 @@ export const ArticleItem = (props: ArticleItemProps) => {
       <div className={styles.header}>
         <div
           className={styles.image}
-          style={{
-            backgroundImage:
-              'url("https://img.iplaysoft.com/wp-content/uploads/2021/p/coloros12-wallpapers/coloros12.jpg")',
-          }}
+          style={{ backgroundImage: `url("${bannerImage}")` }}
         />
         <div className={styles.title}>
           <div className={styles.titleText}>{article.title}</div>

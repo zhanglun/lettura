@@ -18,7 +18,7 @@ export const ArticleModule = (props: ArticleModuleProps): JSX.Element => {
   const { title } = props;
   const params: { name: string } = useParams();
   const query = useQuery();
-  const [current, setCurrent] = useState<Article>(null);
+  const [current, setCurrent] = useState<Article | null>(null);
 
   const handleArticleSelect = useCallback((article: Article) => {
     setCurrent(article);

@@ -28,6 +28,7 @@
   background-size: cover;
   grid-row-start: 1;
   grid-row-end: 2;
+  background-color: var(--color-primary-3);
 }
 
 .title {

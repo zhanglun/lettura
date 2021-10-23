@@ -6,7 +6,7 @@ import { openBrowser } from '../../../infra/utils';
 import styles from './view.module.css';
 
 type ArticleViewProps = {
-  article: Article;
+  article: Article | null;
 };
 
 function createMarkup(html: string) {
@@ -24,7 +24,7 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
   };
 
   const openInBrowser = useCallback(() => {
-    openBrowser(article.link);
+    if (article) openBrowser(article.link);
   }, [article]);
 
   const renderPlaceholder = useCallback(() => {
@@ -36,9 +36,15 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
       <div className={`${styles.main} ${styles.main}`}>
         <div className={styles.header}>
           <div className={styles.title}>{article.title}</div>
-          <div>
-            {Dayjs().format('YYYY-MM-DD HH:mm')}
-            {article.author}
+          <div className={styles.meta}>
+            <span className={styles.time}>
+              {Dayjs().format('YYYY-MM-DD HH:mm')}
+            </span>
+            <span className={styles.author}>{article.author}</span>
+            <span className={styles.channelInfo}>
+              <img src={article.channelFavicon} alt="" />
+              {article.channelTitle}
+            </span>
           </div>
         </div>
         <div className={styles.body}>
