@@ -28,14 +28,22 @@
 .menuItem {
   display: flex;
   align-items: center;
-  margin: 0 10px;
+  margin: 0 6px;
+  padding: 6px 14px;
   font-size: 14px;
   color: var(--title-color);
+  border-radius: var(--button-radius);
+  cursor: pointer;
 }
 
 .menuItem:hover {
   color: var(--headline-color);
-  cursor: pointer;
+  background-color: var(--color-gray-200);
+}
+
+.active {
+  color: var(--color-primary-blue);
+  background-color: var(--color-gray-200);
 }
 
 .menuIcon {

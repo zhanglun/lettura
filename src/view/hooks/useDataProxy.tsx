@@ -38,7 +38,7 @@ export const useDataProxy = () => {
 
   function syncArticlesInCurrentChannel(params: {
     channelId: string;
-    readStatus: ArticleReadStatus;
+    readStatus?: ArticleReadStatus;
   }): Promise<any> {
     return proxy(MANUAL_SYNC_UNREAD_WITH_CHANNEL_ID, params);
   }

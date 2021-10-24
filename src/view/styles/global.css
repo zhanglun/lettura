@@ -37,4 +37,16 @@
   --color-05: #488ef7;
   --color-06: #b470d4;
   --color-07: #9d9ca0;
+  --color-gray-100: #f9f9f9;
+  --color-gray-100-rgb: 249, 249, 249;
+  --color-gray-200: #f4f4f5;
+  --color-gray-200-rgb: 244, 244, 245;
+  --color-gray-300: #eaeaec;
+  --color-gray-300-rgb: 234, 234, 236;
+  --color-gray-400: #cdcdd0;
+  --color-gray-400-rgb: 205, 205, 208;
+  --color-gray-500: #8c8c97;
+  --color-gray-500-rgb: 140, 140, 151;
+  --color-gray-600: #524e56;
+  --color-gray-600-rgb: 82, 78, 86;
 }

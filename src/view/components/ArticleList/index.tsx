@@ -1,18 +1,20 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Article } from '../../../infra/types';
 import { ArticleReadStatus } from '../../../infra/constants/status';
 import { useDataProxy } from '../../hooks/useDataProxy';
 import { ArticleItem } from '../ArticleItem';
 import styles from './articlelist.css';
+import { ListFilter } from '../GlobalToolbar';
 
 type ArticleListProps = {
   channelId: string | null;
   onArticleSelect: (article: Article) => void;
+  listFilter: ListFilter;
 };
 
 export const ArticleList = (props: ArticleListProps): JSX.Element => {
   const dataProxy = useDataProxy();
-  const { channelId } = props;
+  const { channelId, listFilter } = props;
   const [articleList, setArticleList] = useState<Article[]>([]);
   const articleListRef = useRef<HTMLDivElement>(null);
 
@@ -21,8 +23,6 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
       articleListRef.current.scroll(0, 0);
     }
   };
-
-  console.log('redenr--->');
 
   const handleArticleSelect = (article: Article) => {
     if (props.onArticleSelect) {
@@ -42,32 +42,46 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
     });
   }, [articleList]);
 
+  const initial = useCallback(() => {
+    if (!channelId) {
+      return;
+    }
+
+    let promise = Promise.resolve();
+    const params: { readStatus?: ArticleReadStatus; channelId?: string } = {};
+
+    if (listFilter.unread) {
+      params.readStatus = ArticleReadStatus.unRead;
+    }
+
+    if (listFilter.read) {
+      params.readStatus = ArticleReadStatus.isRead;
+    }
+
+    console.log(params);
+
+    if (channelId === 'inbox') {
+      promise = dataProxy.getArticleList(params);
+    } else {
+      promise = dataProxy.syncArticlesInCurrentChannel({
+        channelId,
+        ...params,
+      });
+    }
+    promise
+      .then((result: any) => {
+        setArticleList(result);
+        return result;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [channelId, listFilter]);
+
   useEffect(() => {
     resetScrollTop();
-
-    if (channelId) {
-      let promise = Promise.resolve();
-
-      if (channelId === 'inbox') {
-        promise = dataProxy.getArticleList({
-          readStatus: ArticleReadStatus.unRead,
-        });
-      } else {
-        promise = dataProxy.syncArticlesInCurrentChannel({
-          channelId,
-          readStatus: ArticleReadStatus.unRead,
-        });
-      }
-      promise
-        .then((result: any) => {
-          setArticleList(result);
-          return result;
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    }
-  }, [channelId]);
+    initial();
+  }, [channelId, listFilter]);
 
   return (
     <div className={styles.container} ref={articleListRef}>

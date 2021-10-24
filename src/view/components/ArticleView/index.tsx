@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import Dayjs from 'dayjs';
-import { Icon } from '../Icon';
 import { Article } from '../../../infra/types';
 import { openBrowser } from '../../../infra/utils';
 import styles from './view.module.css';

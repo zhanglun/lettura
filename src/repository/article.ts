@@ -43,7 +43,7 @@ export class ArticleRepository extends Repository<ArticleEntity> {
         channelId: params.channelId,
       });
 
-    if (params.readStatus !== null) {
+    if (params.readStatus !== undefined && params.readStatus !== null) {
       builder.andWhere('article.hasRead = :readStatus', {
         readStatus: params.readStatus,
       });

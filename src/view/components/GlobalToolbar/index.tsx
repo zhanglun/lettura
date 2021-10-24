@@ -5,15 +5,25 @@ import { useEventPub } from '../../hooks/useEventPub';
 import { Icon } from '../Icon';
 import styles from './globaltoolbar.css';
 
+export type ListFilter = {
+  all?: boolean;
+  unread?: boolean;
+  read?: boolean;
+};
+
 export interface GlobalToolbarProps {
   title: string;
   id: string;
+  onFilterList: (filter: ListFilter) => void;
 }
 
 function GlobalToolbar(props: GlobalToolbarProps) {
-  const { title, id } = props;
+  const { title, id, onFilterList } = props;
   const { eventPubEmit } = useEventPub();
   const [fixed, setFixed] = useState(false);
+  const [listFilter, setListFilter] = useState<ListFilter>({
+    unread: true,
+  });
 
   useEffect(() => {
     const $container = document.querySelector('#appMain');
@@ -35,21 +45,47 @@ function GlobalToolbar(props: GlobalToolbarProps) {
     eventPubEmit.syncArticlesInCurrentChannel({ channelId: id });
   }, [id]);
 
+  const showAll = useCallback(() => {
+    const filter = {
+      all: true,
+      unread: false,
+    };
+
+    setListFilter(filter);
+    onFilterList(filter);
+  }, [onFilterList]);
+
+  const showUnread = useCallback(() => {
+    const filter = {
+      all: false,
+      unread: true,
+    };
+
+    setListFilter(filter);
+    onFilterList(filter);
+  }, [onFilterList]);
+
   return (
     <div className={`${styles.container} ${fixed && styles.fixed}`}>
       <div className={styles.title}>{title}</div>
       <div className={styles.menu}>
-        <div className={styles.menuItem}>
-          <Icon customClass={styles.menuIcon} name="done_all" />
-          全部标记为已读
-        </div>
-        <div className={styles.menuItem}>
+        <div
+          className={`${styles.menuItem} ${listFilter.unread && styles.active}`}
+          onClick={showUnread}
+        >
           <Icon customClass={styles.menuIcon} name="done_all" />
           未读文章
         </div>
-        <div className={styles.menuItem}>
+        <div
+          className={`${styles.menuItem} ${listFilter.all && styles.active}`}
+          onClick={showAll}
+        >
           <Icon customClass={styles.menuIcon} name="done_all" />
           全部文章
+        </div>
+        <div className={styles.menuItem}>
+          <Icon customClass={styles.menuIcon} name="done_all" />
+          全部标记为已读
         </div>
         <div className={styles.menuItem} onClick={handleRefresh}>
           <Icon customClass={styles.menuIcon} name="refresh" />

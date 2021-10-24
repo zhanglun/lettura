@@ -62,11 +62,15 @@
 }
 
 .itemActive {
-  background-color: rgba(238, 239, 240, 0.5);
+  background-color: rgba(230, 230, 230, 0.5);
+}
+
+.itemActive .name {
+  color: var(--color-primary-blue);
 }
 
 .item:hover {
-  background-color: rgba(238, 239, 240, 0.5);
+  background-color: rgba(230, 230, 230, 0.5);
 }
 
 .read {
