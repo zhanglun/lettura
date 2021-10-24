@@ -1,7 +1,8 @@
 .item {
+  box-sizing: border-box;
   position: relative;
-  padding: 8px 4px 8px 10px;
-  height: 90px;
+  padding: 8px 4px 8px 8px;
+  height: 76px;
   list-style-type: none;
   background: #ffffff;
   border-bottom: 1px solid #e6e6e6;
@@ -13,9 +14,9 @@
 
 .header {
   display: grid;
-  grid-template-columns: 75px 1fr 0;
-  grid-template-rows: 55px 20px;
-  grid-column-gap: 10px;
+  grid-template-columns: 105px 1fr 0;
+  grid-template-rows: 46px 14px;
+  grid-column-gap: 5px;
 }
 
 .header:hover .actions {
@@ -23,8 +24,8 @@
 }
 
 .image {
-  width: 75px;
-  height: 75px;
+  width: 100px;
+  height: 60px;
   background-size: cover;
   grid-row-start: 1;
   grid-row-end: 2;
