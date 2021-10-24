@@ -11,7 +11,9 @@ import {
   IMPORT_OPML,
   FINISH_IMPORT_OPML,
   SUBSCRIBE,
+  MANUAL_SYNC_UNREAD_WITH_CHANNEL_ID,
 } from './constant';
+import { Toast } from '../view/components/Toast';
 
 export const initEvent = () => {
   //   const articleStore = new ArticleStore();
@@ -72,5 +74,14 @@ export const initEvent = () => {
 
   ipcRenderer.on(SUBSCRIBE, (_e, data) => {
     console.log(data);
+  });
+
+  ipcRenderer.on(MANUAL_SYNC_UNREAD_WITH_CHANNEL_ID, (_e, data) => {
+    Toast.show({
+      id: 'my-id',
+      title: '同步完成',
+      content: '同步完成content',
+      // duration: 10000,
+    });
   });
 };

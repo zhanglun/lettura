@@ -1,0 +1,56 @@
+#main {
+  position: fixed;
+  bottom: 50px;
+  right: 50px;
+  z-index: 9999999;
+  display: flex;
+  flex-direction: column;
+  width: 250px;
+}
+
+.box {
+  background-color: rgba(0, 0, 0, 0.15);
+  color: white;
+  width: 100%;
+  margin-bottom: 10px;
+  min-height: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 12px;
+  animation: slide-in 0.2s;
+  transition: all 0.3s ease;
+}
+
+.header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateX(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0px);
+    opacity: 1;
+  }
+}
+
+button {
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-weight: 900;
+  outline: none;
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 4px 8px;
+}
+
+button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
