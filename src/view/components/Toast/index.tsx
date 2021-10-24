@@ -2,16 +2,18 @@ import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import styles from './index.css';
 
+type ThemeType = 'success' | 'info' | 'error';
 export interface ToastProps {
   id: string;
+  type?: ThemeType;
   destroy: () => void;
   title: string;
-  content: string;
+  content?: string;
   duration?: number;
 }
 
 const ToastIntance = (props: ToastProps) => {
-  const { destroy, content, title, duration = 0, id } = props;
+  const { destroy, content, title, duration = 1500, type = 'success' } = props;
 
   useEffect(() => {
     if (!duration) return;
@@ -27,11 +29,9 @@ const ToastIntance = (props: ToastProps) => {
   }, [destroy, duration]);
 
   return (
-    <div className={styles.box}>
+    <div className={`${styles.box} ${styles[type]}`}>
       <div className={styles.header}>
-        <div>
-          {title} {id}
-        </div>
+        <div>{title}</div>
         {/* <button onClick={destroy}>X</button> */}
       </div>
       <div className={styles.body}>{content}</div>
@@ -41,8 +41,9 @@ const ToastIntance = (props: ToastProps) => {
 
 interface ToastOptions {
   id?: string;
+  type?: ThemeType;
   title: string;
-  content: string;
+  content?: string;
   duration?: number;
 }
 

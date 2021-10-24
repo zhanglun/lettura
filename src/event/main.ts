@@ -239,6 +239,7 @@ export const initEvent = () => {
     try {
       const { items = [] } = data;
       const result = await channelRepo.addOne(data as Channel);
+
       await articleRepo.insertArticles(result.id, items);
 
       event.reply(SUBSCRIBE, {

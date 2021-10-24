@@ -72,16 +72,23 @@ export const initEvent = () => {
   //   targetId = data.backgroundWindowId;
   // });
 
-  ipcRenderer.on(SUBSCRIBE, (_e, data) => {
-    console.log(data);
-  });
+  ipcRenderer.on(
+    SUBSCRIBE,
+    (
+      _e,
+      data: {
+        status: string | any;
+        message: string;
+        err: Error;
+      }
+    ) => {
+      console.log(data);
+      const { message, status } = data;
 
-  ipcRenderer.on(MANUAL_SYNC_UNREAD_WITH_CHANNEL_ID, (_e, data) => {
-    Toast.show({
-      id: 'my-id',
-      title: '同步完成',
-      content: '同步完成content',
-      // duration: 10000,
-    });
-  });
+      Toast.show({
+        type: status,
+        title: message,
+      });
+    }
+  );
 };

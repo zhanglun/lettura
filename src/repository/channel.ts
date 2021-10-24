@@ -50,7 +50,7 @@ export class ChannelRepository extends Repository<Channel> {
     });
 
     if (channel) {
-      throw new Error('已经订阅了');
+      throw new Error(`您已经订阅了该频道：${channel.title}`);
     }
 
     feed.updateDate = new Date().toString();

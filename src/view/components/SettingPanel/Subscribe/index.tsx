@@ -3,6 +3,7 @@ import { parseRSS } from '../../../../infra/utils';
 import { ChannelRes, Channel } from '../../../../infra/types';
 import { useEventPub } from '../../../hooks/useEventPub';
 import styles from '../settingpanel.module.css';
+import { Toast } from '../../Toast';
 
 export const SettingSubscribe: () => JSX.Element = () => {
   const { eventPubEmit } = useEventPub();
@@ -19,17 +20,18 @@ export const SettingSubscribe: () => JSX.Element = () => {
     try {
       const feed = await parseRSS(feedUrl);
       setChannelRes(feed);
-    } catch (e) {
-      console.log(e);
+    } catch (err) {
+      Toast.show({
+        type: 'error',
+        title: err.message,
+      });
     }
 
     setLoading(false);
     setRequested(true);
   }, [feedUrl]);
-  const confirmSubscribe = useCallback(async () => {
-    const { items } = channelRes;
 
-    console.log(items);
+  const confirmSubscribe = useCallback(async () => {
     eventPubEmit.subscribe(channelRes);
   }, [channelRes, eventPubEmit]);
 

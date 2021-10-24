@@ -20,6 +20,22 @@
   padding: 12px;
   animation: slide-in 0.2s;
   transition: all 0.3s ease;
+  border-radius: var(--button-radius);
+}
+
+.success {
+  border-color: var(--color-04);
+  background-color: var(--color-04);
+}
+
+.info {
+  border-color: var(--color-05);
+  background-color: var(--color-05);
+}
+
+.error {
+  border-color: var(--color-01);
+  background-color: var(--color-01);
 }
 
 .header {
@@ -38,19 +54,4 @@
     transform: translateX(0px);
     opacity: 1;
   }
-}
-
-button {
-  background: none;
-  border: none;
-  color: #ffffff;
-  font-weight: 900;
-  outline: none;
-  cursor: pointer;
-  border-radius: 8px;
-  padding: 4px 8px;
-}
-
-button:hover {
-  background-color: rgba(255, 255, 255, 0.1);
 }
