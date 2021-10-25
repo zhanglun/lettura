@@ -3,6 +3,7 @@ import { Article } from '../../../infra/types';
 import { ArticleReadStatus } from '../../../infra/constants/status';
 import { useDataProxy } from '../../hooks/useDataProxy';
 import { ArticleItem } from '../ArticleItem';
+import { Loading } from '../Loading';
 import styles from './articlelist.css';
 import { ListFilter } from '../GlobalToolbar';
 
@@ -15,6 +16,7 @@ type ArticleListProps = {
 export const ArticleList = (props: ArticleListProps): JSX.Element => {
   const dataProxy = useDataProxy();
   const { channelId, listFilter } = props;
+  const [loading, setLoading] = useState(true);
   const [articleList, setArticleList] = useState<Article[]>([]);
   const articleListRef = useRef<HTMLDivElement>(null);
 
@@ -47,6 +49,8 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
       return;
     }
 
+    setLoading(true);
+
     let promise = Promise.resolve();
     const params: { readStatus?: ArticleReadStatus; channelId?: string } = {};
 
@@ -71,10 +75,12 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
     promise
       .then((result: any) => {
         setArticleList(result);
+        setLoading(false);
         return result;
       })
       .catch((err) => {
         console.log(err);
+        setLoading(false);
       });
   }, [channelId, listFilter]);
 
@@ -85,7 +91,7 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
 
   return (
     <div className={styles.container} ref={articleListRef}>
-      <ul className={styles.list}>{renderList()}</ul>
+      {loading ? <Loading /> : <ul className={styles.list}>{renderList()}</ul>}
     </div>
   );
 };
