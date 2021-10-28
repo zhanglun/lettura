@@ -26,11 +26,7 @@ export async function parseRSS(feedUrl: string): Promise<ChannelRes> {
   channelRes.createDate = now;
   channelRes.lastSyncDate = now;
 
-  if (!channelRes.feedUrl && channelRes.link) {
-    channelRes.feedUrl = channelRes.link;
-
-    // delete channelRes.link;
-  }
+  channelRes.feedUrl = feedUrl;
 
   channelRes.items?.forEach((item: RSSFeedItem) => {
     const { content, contentEncoded } = item;
