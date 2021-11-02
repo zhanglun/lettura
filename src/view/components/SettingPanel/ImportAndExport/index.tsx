@@ -1,5 +1,5 @@
-import { ipcRenderer } from 'electron';
 import React, { useCallback, useRef, useState } from 'react';
+import { Input, Button } from '@douyinfe/semi-ui';
 import { EXPORT_OPML } from '../../../../event/constant';
 import { useEventPub } from '../../../hooks/useEventPub';
 import styles from '../settingpanel.module.css';
@@ -76,25 +76,15 @@ export const ImportAndExport = (props: any) => {
             className={styles.hideFileInput}
             ref={fileInputRef}
             type="file"
-            accept=".opml/.xml"
+            accept=".opml,.xml"
             onChange={(e) => {
               handleFileChange(e);
             }}
           />
-          <button
-            type="button"
-            className="button--secondary"
-            onClick={uploadOPMLFile}
-          >
-            浏览
-          </button>
-          <button
-            type="button"
-            className="button--secondary"
-            onClick={importFromOPML}
-          >
+          <Button onClick={uploadOPMLFile}>浏览</Button>
+          <Button theme="solid" type="primary" onClick={importFromOPML}>
             导入
-          </button>
+          </Button>
         </div>
       </div>
       <div className={styles.panelHeader}>
@@ -106,13 +96,9 @@ export const ImportAndExport = (props: any) => {
       <div className={styles.panelBody}>
         <div className={styles.section}>
           <div className={styles.options}>OPML 导出</div>
-          <button
-            type="button"
-            className="button--secondary"
-            onClick={exportToOPML}
-          >
+          <Button theme="solid" type="primary" onClick={exportToOPML}>
             导出
-          </button>
+          </Button>
         </div>
       </div>
     </div>

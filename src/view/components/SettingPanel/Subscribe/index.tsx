@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext, useCallback } from 'react';
+import { Input, Button } from '@douyinfe/semi-ui';
 import { parseRSS } from '../../../../infra/utils';
 import { ChannelRes, Channel } from '../../../../infra/types';
 import { useEventPub } from '../../../hooks/useEventPub';
@@ -42,17 +43,13 @@ export const SettingSubscribe: () => JSX.Element = () => {
   const showFeedInfo = useCallback(() => {
     if (!loading && requested) {
       const button = subscribed ? (
-        <button className={styles.previewFollowButton} type="button" disabled>
+        <Button disabled theme="solid" type="warning">
           已订阅
-        </button>
+        </Button>
       ) : (
-        <button
-          className={`${styles.previewFollowButton} button--primary`}
-          type="button"
-          onClick={() => confirmSubscribe()}
-        >
+        <Button theme="solid" type="primary" onClick={() => confirmSubscribe()}>
           订阅
-        </button>
+        </Button>
       );
 
       return (
@@ -86,20 +83,16 @@ export const SettingSubscribe: () => JSX.Element = () => {
       </div>
       <div className={styles.panelBody}>
         <div className="flex align-items-center">
-          <input
+          <Input
             type="text"
             className="input"
             value={feedUrl}
             placeholder="请输入订阅源"
             onChange={(e) => setFeedUrl(e.target.value)}
           />
-          <button
-            type="button"
-            className="button button--primary"
-            onClick={searchFeed}
-          >
+          <Button theme="solid" type="primary" onClick={searchFeed}>
             搜索
-          </button>
+          </Button>
         </div>
         {showFeedInfo()}
       </div>
