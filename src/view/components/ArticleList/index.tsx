@@ -62,8 +62,6 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
       params.readStatus = ArticleReadStatus.isRead;
     }
 
-    console.log(params);
-
     if (channelId === 'inbox') {
       promise = dataProxy.getArticleList(params);
     } else {
@@ -79,7 +77,6 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
         return result;
       })
       .catch((err) => {
-        console.log(err);
         setLoading(false);
       });
   }, [channelId, listFilter]);

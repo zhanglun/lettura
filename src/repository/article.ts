@@ -19,11 +19,13 @@ export class ArticleRepository extends Repository<ArticleEntity> {
       });
     }
 
-    builder.select([
-      'article.*',
-      'channel.title as channelTitle',
-      'channel.favicon as channelFavicon',
-    ]);
+    builder
+      .select([
+        'article.*',
+        'channel.title as channelTitle',
+        'channel.favicon as channelFavicon',
+      ])
+      .orderBy('pubDate', 'DESC');
 
     return builder.execute();
   }
@@ -49,11 +51,13 @@ export class ArticleRepository extends Repository<ArticleEntity> {
       });
     }
 
-    builder.select([
-      'article.*',
-      'channel.title as channelTitle',
-      'channel.favicon as channelFavicon',
-    ]);
+    builder
+      .select([
+        'article.*',
+        'channel.title as channelTitle',
+        'channel.favicon as channelFavicon',
+      ])
+      .orderBy('pubDate', 'DESC');
 
     return builder.execute();
   }
@@ -79,6 +83,7 @@ export class ArticleRepository extends Repository<ArticleEntity> {
         'channel.title as channelTitle',
         'channel.favicon as channelFavicon',
       ])
+      .orderBy('pubDate', 'DESC')
       .execute();
   }
 
@@ -98,6 +103,7 @@ export class ArticleRepository extends Repository<ArticleEntity> {
         'channel.title as channelTitle',
         'channel.favicon as channelFavicon',
       ])
+      .orderBy('pubDate', 'DESC')
       .execute();
   }
 
