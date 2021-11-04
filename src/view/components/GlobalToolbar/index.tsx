@@ -65,6 +65,17 @@ function GlobalToolbar(props: GlobalToolbarProps) {
     onFilterList(filter);
   }, [onFilterList]);
 
+  const markAllRead = useCallback(() => {
+    const filter = {
+      all: false,
+      unread: true,
+    };
+
+    setListFilter(filter);
+    onFilterList(filter);
+    eventPubEmit.MARK_ARTICLE_READ_BY_CHANNEL({ channelId: id });
+  }, []);
+
   return (
     <div className={`${styles.container} ${fixed && styles.fixed}`}>
       <div className={styles.title}>{title}</div>
@@ -83,7 +94,7 @@ function GlobalToolbar(props: GlobalToolbarProps) {
           <Icon customClass={styles.menuIcon} name="done_all" />
           全部文章
         </div>
-        <div className={styles.menuItem}>
+        <div className={styles.menuItem} onClick={markAllRead}>
           <Icon customClass={styles.menuIcon} name="done_all" />
           全部标记为已读
         </div>

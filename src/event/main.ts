@@ -12,6 +12,7 @@ import {
   MANUAL_SYNC_UNREAD,
   MANUAL_SYNC_UNREAD_WITH_CHANNEL_ID,
   MARK_ARTICLE_READ,
+  MARK_ARTICLE_READ_BY_CHANNEL,
   FINISH_MANUAL_SYNC_UNREAD,
   EXPORT_OPML,
   FINISH_EXPORT_OPML,
@@ -282,6 +283,12 @@ export const initEvent = () => {
     const result = await articleRepo.markArticleAsRead(article);
 
     event.reply(MARK_ARTICLE_READ, result);
+  });
+
+  ipcMain.on(MARK_ARTICLE_READ_BY_CHANNEL, async (event, article) => {
+    const result = await articleRepo.markArticleAsRead(article);
+
+    event.reply(MARK_ARTICLE_READ_BY_CHANNEL, result);
   });
 
   syncUnreadWhenAPPStart();

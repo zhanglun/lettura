@@ -2,12 +2,15 @@ import { ipcRenderer } from 'electron';
 import { useMemo } from 'react';
 import * as EventDict from '../../event/constant';
 
+// type a = keyof typeof EventDict;
 type ListenerFn = (...args: any[]) => void;
 type EventPubEmit = {
   subscribe: ListenerFn;
   importOPML: ListenerFn;
   exportOPML: ListenerFn;
   syncArticlesInCurrentChannel: ListenerFn;
+  MARK_ARTICLE_READ_BY_CHANNEL: ListenerFn;
+  // [key in a]: ListenerFn;
 };
 
 export const useEventPub = () => {
@@ -26,6 +29,8 @@ export const useEventPub = () => {
       exportOPML: (args: any) => emit(EventDict.EXPORT_OPML, args),
       syncArticlesInCurrentChannel: (args: any) =>
         emit(EventDict.MANUAL_SYNC_UNREAD_WITH_CHANNEL_ID, args),
+      MARK_ARTICLE_READ_BY_CHANNEL: (args: any) =>
+        emit(EventDict.MARK_ARTICLE_READ_BY_CHANNEL, args),
     };
   }, []);
 
