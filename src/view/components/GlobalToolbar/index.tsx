@@ -19,7 +19,7 @@ export interface GlobalToolbarProps {
 
 function GlobalToolbar(props: GlobalToolbarProps) {
   const { title, id, onFilterList } = props;
-  const { eventPubEmit } = useEventPub();
+  const { eventPubEmit, eventPubOn } = useEventPub();
   const [fixed, setFixed] = useState(false);
   const [listFilter, setListFilter] = useState<ListFilter>({
     unread: true,
@@ -42,7 +42,7 @@ function GlobalToolbar(props: GlobalToolbarProps) {
   }, []);
 
   const handleRefresh = useCallback(() => {
-    eventPubEmit.syncArticlesInCurrentChannel({ channelId: id });
+    eventPubEmit.MANUAL_SYNC_UNREAD_WITH_CHANNEL_ID({ channelId: id });
   }, [id]);
 
   const showAll = useCallback(() => {
@@ -74,6 +74,12 @@ function GlobalToolbar(props: GlobalToolbarProps) {
     setListFilter(filter);
     onFilterList(filter);
     eventPubEmit.MARK_ARTICLE_READ_BY_CHANNEL({ channelId: id });
+  }, []);
+
+  useEffect(() => {
+    eventPubOn.MARK_ARTICLE_READ_BY_CHANNEL(() => {
+      handleRefresh();
+    });
   }, []);
 
   return (

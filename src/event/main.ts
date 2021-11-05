@@ -285,8 +285,8 @@ export const initEvent = () => {
     event.reply(MARK_ARTICLE_READ, result);
   });
 
-  ipcMain.on(MARK_ARTICLE_READ_BY_CHANNEL, async (event, article) => {
-    const result = await articleRepo.markArticleAsRead(article);
+  ipcMain.on(MARK_ARTICLE_READ_BY_CHANNEL, async (event, { channelId }) => {
+    const result = await articleRepo.markArticleAsReadByChannelId(channelId);
 
     event.reply(MARK_ARTICLE_READ_BY_CHANNEL, result);
   });

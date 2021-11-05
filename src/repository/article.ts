@@ -14,8 +14,8 @@ export class ArticleRepository extends Repository<ArticleEntity> {
     );
 
     if (params.readStatus !== null) {
-      builder.andWhere('article.hasRead = :readStatus', {
-        readStatus: params.readStatus,
+      builder.andWhere('article.hasRead = :hasRead', {
+        hasRead: params.readStatus,
       });
     }
 
@@ -46,8 +46,8 @@ export class ArticleRepository extends Repository<ArticleEntity> {
       });
 
     if (params.readStatus !== undefined && params.readStatus !== null) {
-      builder.andWhere('article.hasRead = :readStatus', {
-        readStatus: params.readStatus,
+      builder.andWhere('article.hasRead = :hasRead', {
+        hasRead: params.readStatus,
       });
     }
 
@@ -75,8 +75,8 @@ export class ArticleRepository extends Repository<ArticleEntity> {
   async getAllUnread(): Promise<Article[]> {
     return this.createQueryBuilder('article')
       .leftJoinAndSelect('article.channel', 'channel')
-      .where('article.hasRead = :readStatus', {
-        readStatus: ArticleReadStatus.unRead,
+      .where('article.hasRead = :hasRead', {
+        hasRead: ArticleReadStatus.unRead,
       })
       .select([
         'article.*',
@@ -88,6 +88,24 @@ export class ArticleRepository extends Repository<ArticleEntity> {
   }
 
   /**
+   * 将频道下的文章标记为已读
+   * @param channelId 频道 id
+   * @returns
+   */
+  async markArticleAsReadByChannelId(channelId: string): Promise<any> {
+    console.log('全部已读', channelId);
+
+    return this.createQueryBuilder('article')
+      .leftJoinAndSelect('article.channel', 'channel')
+      .where('article.channelId = :channelId', { channelId })
+      .update(ArticleEntity)
+      .set({
+        hasRead: ArticleReadStatus.isRead,
+      })
+      .execute();
+  }
+
+  /**
    * 获取单个订阅频道下的文章列表
    * @param channelId
    */
@@ -95,8 +113,8 @@ export class ArticleRepository extends Repository<ArticleEntity> {
     return this.createQueryBuilder('article')
       .leftJoinAndSelect('article.channel', 'channel')
       .where('article.channelId = :channelId', { channelId })
-      .andWhere('article.hasRead = :readStatus', {
-        readStatus: ArticleReadStatus.unRead,
+      .andWhere('article.hasRead = :hasRead', {
+        hasRead: ArticleReadStatus.unRead,
       })
       .select([
         'article.*',
