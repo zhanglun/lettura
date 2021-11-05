@@ -11,13 +11,17 @@
 
 .panelContainer {
   padding: var(--block-padding);
+  height: calc(100% - var(--app-toolbar-height));
+  display: grid;
+}
+
+.panelHeader {
+  padding: 24px 0 10px;
 }
 
 .panelTitle {
   margin: 0;
-  padding: 24px 0 10px;
   font-size: 18px;
-  line-height: 14px;
   font-weight: var(--font-weight-bold);
 }
 

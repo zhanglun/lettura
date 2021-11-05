@@ -4,7 +4,6 @@
   flex-direction: column;
   flex: 1 0 auto;
   user-select: none;
-  background-color: #f7f7f7;
 }
 
 .inner {
@@ -98,7 +97,7 @@
 
 .count {
   float: right;
-  width: 16px;
+  min-width: 16px;
   height: 16px;
   line-height: 16px;
   text-align: center;
