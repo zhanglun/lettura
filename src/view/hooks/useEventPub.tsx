@@ -2,16 +2,9 @@ import { ipcRenderer } from 'electron';
 import { useMemo } from 'react';
 import * as EventDict from '../../event/constant';
 
-// type a = keyof typeof EventDict;
+type EventName = keyof typeof EventDict;
 type ListenerFn = (...args: any[]) => void;
-type EventPubMap = {
-  // subscribe: ListenerFn;
-  // importOPML: ListenerFn;
-  // exportOPML: ListenerFn;
-  // MANUAL_SYNC_UNREAD_WITH_CHANNEL_ID: ListenerFn;
-  // MARK_ARTICLE_READ_BY_CHANNEL: ListenerFn;
-  [key: string]: ListenerFn;
-};
+type EventPubMap = Record<EventName, ListenerFn>;
 
 export const useEventPub = () => {
   const emit = (name: string, params: any) => {
@@ -22,27 +15,18 @@ export const useEventPub = () => {
     ipcRenderer.on(name, listener);
   };
 
-  const eventPubEmit: EventPubMap = useMemo(() => {
-    // return {
-    //   subscribe: (args: any) => emit(EventDict.SUBSCRIBE, args),
-    //   importOPML: (args: any) => emit(EventDict.IMPORT_OPML, args),
-    //   exportOPML: (args: any) => emit(EventDict.EXPORT_OPML, args),
-    //   MANUAL_SYNC_UNREAD_WITH_CHANNEL_ID: (args: any) =>
-    //     emit(EventDict.MANUAL_SYNC_UNREAD_WITH_CHANNEL_ID, args),
-    //   MARK_ARTICLE_READ_BY_CHANNEL: (args: any) =>
-    //     emit(EventDict.MARK_ARTICLE_READ_BY_CHANNEL, args),
-    // };
-    return Object.keys(EventDict).reduce((acu: EventPubMap, cur) => {
-      acu[cur] = (args: any) => emit(cur, args);
+  const eventPubEmit = useMemo((): EventPubMap => {
+    return Object.keys(EventDict).reduce((acu, cur) => {
+      acu[cur as EventName] = (args: any) => emit(cur, args);
       return acu;
-    }, {});
+    }, {} as EventPubMap);
   }, []);
 
   const eventPubOn = useMemo(() => {
-    return Object.keys(EventDict).reduce((acu: EventPubMap, cur) => {
-      acu[cur] = (args: any) => on(cur, args);
+    return Object.keys(EventDict).reduce((acu, cur) => {
+      acu[cur as EventName] = (args: any) => on(cur, args);
       return acu;
-    }, {});
+    }, {} as EventPubMap);
   }, []);
 
   return { eventPubEmit, eventPubOn, emit, on };

@@ -62,7 +62,7 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
       params.readStatus = ArticleReadStatus.isRead;
     }
 
-    if (channelId === 'inbox') {
+    if (channelId === 'inbox' || channelId === 'today') {
       promise = dataProxy.getArticleList(params);
     } else {
       promise = dataProxy.syncArticlesInCurrentChannel({

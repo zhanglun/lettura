@@ -1,6 +1,5 @@
 import React, { useCallback, useRef, useState } from 'react';
 import { Input, Button } from '@douyinfe/semi-ui';
-import { EXPORT_OPML } from '../../../../event/constant';
 import { useEventPub } from '../../../hooks/useEventPub';
 import styles from '../settingpanel.module.css';
 
@@ -37,7 +36,7 @@ export const ImportAndExport = (props: any) => {
   }, []);
 
   const importFromOPML = useCallback(() => {
-    eventPubEmit.importOPML(importedList);
+    eventPubEmit.IMPORT_OPML(importedList);
   }, [importedList]);
 
   const handleFileChange = useCallback(
@@ -59,7 +58,7 @@ export const ImportAndExport = (props: any) => {
   );
 
   const exportToOPML = () => {
-    eventPubEmit.exportOPML();
+    eventPubEmit.EXPORT_OPML();
   };
 
   return (
