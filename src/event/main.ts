@@ -20,6 +20,7 @@ import {
   FINISH_IMPORT_OPML,
   PROXY_GET_CHANNEL_LIST,
   PROXY_GET_ARTICLE_LSIT,
+  PROXY_GET_UNREAD_TOTAL,
   PROXY_GET_ARTICLE_LIST_IN_CHANNEL,
 } from './constant';
 import { parseRSS } from '../infra/utils';
@@ -277,6 +278,15 @@ export const initEvent = () => {
     const result = await articleRepo.getArticleListInChannel(params);
 
     event.reply(PROXY_GET_ARTICLE_LIST_IN_CHANNEL, result);
+  });
+
+  /**
+   * 获取未读计数总数
+   */
+  ipcMain.on(PROXY_GET_UNREAD_TOTAL, async (event) => {
+    const result = await articleRepo.getUnreadTotal();
+
+    event.reply(PROXY_GET_UNREAD_TOTAL, result);
   });
 
   ipcMain.on(MARK_ARTICLE_READ, async (event, article) => {

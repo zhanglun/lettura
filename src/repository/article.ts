@@ -1,5 +1,6 @@
 /* eslint-disable class-methods-use-this */
 import { EntityRepository, Repository } from 'typeorm';
+import Dayjs from 'dayjs';
 import { ArticleEntity } from '../entity/article';
 import { Article, RSSFeedItem } from '../infra/types';
 import { ChannelEntity } from '../entity/channel';
@@ -7,13 +8,13 @@ import { ArticleReadStatus } from '../infra/constants/status';
 
 @EntityRepository(ArticleEntity)
 export class ArticleRepository extends Repository<ArticleEntity> {
-  async getAllArticle(params: any): Promise<Article[]> {
+  async getAllArticle(params?: any): Promise<Article[]> {
     const builder = this.createQueryBuilder('article').leftJoinAndSelect(
       'article.channel',
       'channel'
     );
 
-    if (params.readStatus !== null) {
+    if (params && params.readStatus !== null) {
       builder.andWhere('article.hasRead = :hasRead', {
         hasRead: params.readStatus,
       });
@@ -167,5 +168,62 @@ export class ArticleRepository extends Repository<ArticleEntity> {
       .values(values)
       .onConflict(`("link") DO NOTHING`)
       .execute();
+  }
+
+  async getUnreadTotal() {
+    // const counterMap = new Map();
+    // const counter: {
+    //   channelId: string;
+    //   total: number;
+    // }[] = await this.createQueryBuilder('article')
+    //   .groupBy('article.channelId')
+    //   .andWhere('article.hasRead = :hasRead', {
+    //     hasRead: ArticleReadStatus.unRead,
+    //   })
+    //   .select(['article.channelId as channelId', 'count(article.id) as total'])
+    //   .execute();
+
+    // counter.forEach((item) => {
+    //   counterMap.set(item.channelId, item.total);
+    // });
+
+    const counter = [];
+
+    // 获取未读总数
+    const totalUnread = await this.createQueryBuilder('article')
+      .where('article.hasRead = :hasRead', {
+        hasRead: ArticleReadStatus.unRead,
+      })
+      .select(['count(article.id) as total'])
+      .execute();
+
+    const todayUnread = await this.createQueryBuilder('article')
+      .where('article.hasRead = :hasRead', {
+        hasRead: ArticleReadStatus.unRead,
+      })
+      .andWhere('article.updateDate > :start', {
+        start: Dayjs().startOf('day').format('YYYY-MM-DD HH:mm:ss'),
+      })
+      .andWhere('article.updateDate < :end', {
+        end: Dayjs().endOf('day').format('YYYY-MM-DD HH:mm:ss'),
+      })
+      .select(['count(article.id) as total'])
+      .execute();
+
+    if (totalUnread[0]) {
+      counter.push({
+        channelId: 'inbox',
+        total: totalUnread[0].total,
+      });
+    }
+
+    if (todayUnread[0]) {
+      counter.push({
+        channelId: 'today',
+        total: todayUnread[0].total,
+      });
+    }
+
+    return counter;
   }
 }

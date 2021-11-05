@@ -8,7 +8,7 @@ export interface RSSFeed {
   description: string;
   language?: string;
   copyright?: string;
-  pubDate?: Date;
+  pubDate?: string;
   lastBuildDate?: Date;
   ttl?: number;
   image?: string;

@@ -33,7 +33,7 @@ export const SettingSubscribe: () => JSX.Element = () => {
   }, [feedUrl]);
 
   const confirmSubscribe = useCallback(async () => {
-    eventPubEmit.subscribe(channelRes);
+    eventPubEmit.SUBSCRIBE(channelRes);
   }, [channelRes, eventPubEmit]);
 
   useEffect(() => {

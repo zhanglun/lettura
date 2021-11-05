@@ -31,13 +31,13 @@ export class ChannelEntity {
   @Column({ type: 'varchar', comment: '标签' })
   tag: string;
 
-  @Column({ type: 'varchar', comment: '添加时间' })
+  @Column({ type: 'datetime', comment: '添加时间' })
   createDate: string;
 
-  @Column({ type: 'varchar', comment: '更新时间' })
+  @Column({ type: 'datetime', comment: '更新时间' })
   updateDate: string;
 
-  @Column({ type: 'varchar', default: '', comment: '最后一次同步时间' })
+  @Column({ type: 'datetime', default: '', comment: '最后一次同步时间' })
   lastSyncDate: string;
 
   @OneToMany(() => ArticleEntity, (article) => article.channel)

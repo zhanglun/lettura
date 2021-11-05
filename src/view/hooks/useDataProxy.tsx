@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import {
   PROXY_GET_ARTICLE_LSIT,
   PROXY_GET_CHANNEL_LIST,
+  PROXY_GET_UNREAD_TOTAL,
   PROXY_GET_ARTICLE_LIST_IN_CHANNEL,
   MANUAL_SYNC_UNREAD_WITH_CHANNEL_ID,
   MARK_ARTICLE_READ,
@@ -54,5 +55,6 @@ export const useDataProxy = () => {
 
     syncArticlesInCurrentChannel,
     markAsRead,
+    PROXY_GET_UNREAD_TOTAL: (): Promise<any> => proxy(PROXY_GET_UNREAD_TOTAL),
   };
 };

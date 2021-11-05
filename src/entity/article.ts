@@ -28,13 +28,13 @@ export class ArticleEntity {
   @Column({ type: 'varchar', default: '' })
   comments: string;
 
-  @Column({ type: 'varchar', comment: '文章发布时间' })
+  @Column({ type: 'datetime', comment: '文章发布时间' })
   pubDate: string;
 
-  @Column({ type: 'varchar', comment: '创建时间' })
+  @Column({ type: 'datetime', comment: '创建时间' })
   createDate: string;
 
-  @Column({ type: 'varchar', comment: '更新时间' })
+  @Column({ type: 'datetime', comment: '更新时间' })
   updateDate: string;
 
   @Column({ type: 'int', default: 0, comment: '已读状态。0：未读 1：已读' })

@@ -16,17 +16,36 @@ const ChannelList = (): JSX.Element => {
   const [channelList, setChannelList] = useState([]);
   const [currentId, setCurrentId] = useState('');
   const [sum, setSum] = useState(0);
+  const [todayUnread, setTodayUnread] = useState(0);
 
   const initial = () => {
     dataProxy
       .getChannelList()
       .then((result) => {
-        console.log(result);
         const total = result.reduce((acu: number, cur: Channel) => {
           return acu + (cur.articleCount || 0);
         }, 0);
         setSum(total);
         setChannelList(result);
+        return result;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
+    dataProxy
+      .PROXY_GET_UNREAD_TOTAL()
+      .then((result) => {
+        result.forEach((item: { channelId: string; total: number }) => {
+          if (item.channelId === 'today') {
+            setTodayUnread(item.total);
+          }
+
+          if (item.channelId === 'inbox') {
+            setSum(item.total);
+          }
+        });
+
         return result;
       })
       .catch((err) => {
@@ -53,7 +72,15 @@ const ChannelList = (): JSX.Element => {
   };
 
   const viewInbox = () => {
-    history.push(`${Routes.CHANNEL.replace(/:name/, 'Inbox')}?channelId=inbox`);
+    history.push(
+      `${Routes.CHANNEL.replace(/:name/, '所有文章')}?channelId=inbox`
+    );
+  };
+
+  const viewToday = () => {
+    history.push(
+      `${Routes.CHANNEL.replace(/:name/, '今日未读')}?channelId=today`
+    );
   };
 
   const renderFeedList = useCallback((): JSX.Element => {
@@ -133,8 +160,20 @@ const ChannelList = (): JSX.Element => {
               customClass={styles.officialItemIcon}
               name="mark_email_unread"
             />
-            <span className={styles.name}>Inbox</span>
+            <span className={styles.name}>所有文章</span>
             <span className={styles.count}>{sum}</span>
+          </div>
+          <div
+            className={styles.officialItem}
+            aria-hidden="true"
+            onClick={() => viewToday()}
+          >
+            <Icon
+              customClass={styles.officialItemIcon}
+              name="mark_email_unread"
+            />
+            <span className={styles.name}>今日未读</span>
+            <span className={styles.count}>{todayUnread}</span>
           </div>
           {/* <div */}
           {/*  className={styles.officialItem} */}
