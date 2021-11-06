@@ -1,54 +1,50 @@
 .container {
-  height: var(--app-toolbar-height);
-  border-bottom: 1px solid var(--line-color);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background-color: #fff;
-  z-index: 1;
+    height: var(--app-toolbar-height);
+    border-bottom: 1px solid var(--line-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #fff;
+    z-index: 1;
 }
 
 .container.fixed {
-  position: sticky;
-  top: 0;
+    position: sticky;
+    top: 0;
 }
 
 .title {
-  padding: 0 var(--block-padding);
-  color: var(--headline-color);
-  font-size: 24px;
-  font-weight: var(--font-weight-bold);
+    padding: 0 var(--block-padding);
+    color: var(--headline-color);
+    font-size: 24px;
+    font-weight: var(--font-weight-bold);
 }
 
 .menu {
-  display: flex;
-  padding: 0 var(--block-padding);
-}
-
-.menuItem {
-  display: flex;
-  align-items: center;
-  margin: 0 6px;
-  padding: 6px 14px;
-  height: 34px;
-  line-height: 34px;
-  font-size: 14px;
-  color: var(--title-color);
-  border-radius: var(--button-radius);
-  cursor: pointer;
-}
-
-.menuItem:hover {
-  color: var(--headline-color);
-  background-color: var(--color-gray-200);
+    display: flex;
+    padding: 0 var(--block-padding);
 }
 
 .active {
-  color: var(--color-primary-blue);
-  background-color: var(--color-gray-200);
+    color: var(--color-primary-blue);
+    background-color: var(--color-gray-200);
 }
 
 .menuIcon {
-  font-size: 18px;
-  margin-right: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 6px;
+    width: 34px;
+    height: 34px;
+    line-height: 34px;
+    font-size: 18px;
+    color: var(--title-color);
+    border-radius: var(--button-radius);
+    cursor: pointer;
+}
+
+.menuIcon:hover {
+    color: var(--headline-color);
+    background-color: var(--color-gray-200);
 }

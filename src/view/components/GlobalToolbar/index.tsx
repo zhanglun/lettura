@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { useState, useEffect, useCallback } from 'react';
+import { Dropdown } from '@douyinfe/semi-ui';
 import { useEventPub } from '../../hooks/useEventPub';
 import { Icon } from '../Icon';
 import styles from './globaltoolbar.css';
@@ -84,30 +85,32 @@ function GlobalToolbar(props: GlobalToolbarProps) {
 
   return (
     <div className={`${styles.container} ${fixed && styles.fixed}`}>
-      <div className={styles.title}>{title}</div>
+      <div>
+        <div className={styles.title}>{title}</div>
+      </div>
       <div className={styles.menu}>
-        <div
-          className={`${styles.menuItem} ${listFilter.unread && styles.active}`}
+        <Icon
+          customClass={`${styles.menuIcon} ${
+            listFilter.unread && styles.active
+          }`}
+          name="done_all"
           onClick={showUnread}
-        >
-          <Icon customClass={styles.menuIcon} name="done_all" />
-          未读文章
-        </div>
-        <div
-          className={`${styles.menuItem} ${listFilter.all && styles.active}`}
+        />
+        <Icon
+          customClass={`${styles.menuIcon} ${listFilter.all && styles.active}`}
+          name="done_all"
           onClick={showAll}
-        >
-          <Icon customClass={styles.menuIcon} name="done_all" />
-          全部文章
-        </div>
-        <div className={styles.menuItem} onClick={markAllRead}>
-          <Icon customClass={styles.menuIcon} name="done_all" />
-          全部标记为已读
-        </div>
-        <div className={styles.menuItem} onClick={handleRefresh}>
-          <Icon customClass={styles.menuIcon} name="refresh" />
-          刷新
-        </div>
+        />
+        <Icon
+          customClass={styles.menuIcon}
+          name="done_all"
+          onClick={markAllRead}
+        />
+        <Icon
+          customClass={styles.menuIcon}
+          name="refresh"
+          onClick={handleRefresh}
+        />
       </div>
     </div>
   );

@@ -84,6 +84,9 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
       onClick={handleGlobalClick}
     >
       {article ? renderDetail() : renderPlaceholder()}
+      <div>
+        asdfasdf
+      </div>
     </div>
   );
 };

@@ -27,6 +27,10 @@ export const SettingSubscribe: () => JSX.Element = () => {
         title: err.message,
       });
     }
+    // fetch(feedUrl).then((res) => res.text())
+    // .then((res) => {
+    //   console.log(res);
+    // })
 
     setLoading(false);
     setRequested(true);
@@ -88,7 +92,7 @@ export const SettingSubscribe: () => JSX.Element = () => {
             className="input"
             value={feedUrl}
             placeholder="请输入订阅源"
-            onChange={(e) => setFeedUrl(e.target.value)}
+            onChange={(value) => setFeedUrl(value)}
           />
           <Button theme="solid" type="primary" onClick={searchFeed}>
             搜索

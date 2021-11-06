@@ -1,9 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import Dayjs from 'dayjs';
-// import { Icon } from '../Icon';
 import { ArticleReadStatus } from '../../../infra/constants/status';
 import { Article } from '../../../infra/types';
-// import { openBrowser } from '../../../infra/utils';
 import styles from './articleitem.css';
 import { useDataProxy } from '../../hooks/useDataProxy';
 
@@ -84,7 +82,7 @@ export const ArticleItem = (props: ArticleItemProps) => {
         {/*  <Icon customClass={styles.icon} name="launch" onClick={openWebPage} /> */}
         {/* </div> */}
         <div className={styles.date}>
-          {Dayjs(article.pubDate).format('MM/DD HH:mm')}
+          {Dayjs(article.pubDate).format('YYYY-MM-DD HH:mm')}
         </div>
       </div>
     </li>

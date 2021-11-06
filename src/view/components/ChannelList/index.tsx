@@ -157,7 +157,7 @@ const ChannelList = (): JSX.Element => {
             onClick={() => viewInbox()}
           >
             <Icon
-              customClass={styles.officialItemIcon}
+              customClass={`${styles.officialItemIcon} ${styles.iconUnread}`}
               name="mark_email_unread"
             />
             <span className={styles.name}>所有文章</span>
@@ -169,8 +169,8 @@ const ChannelList = (): JSX.Element => {
             onClick={() => viewToday()}
           >
             <Icon
-              customClass={styles.officialItemIcon}
-              name="mark_email_unread"
+              customClass={`${styles.officialItemIcon} ${styles.iconToday}`}
+              name="calendar_today"
             />
             <span className={styles.name}>今日未读</span>
             <span className={styles.count}>{todayUnread}</span>

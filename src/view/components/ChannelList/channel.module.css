@@ -108,7 +108,7 @@
 }
 
 .official {
-  padding-bottom: 14px;
+  padding-bottom: 28px;
 }
 
 .officialItem {
@@ -119,6 +119,14 @@
 .officialItemIcon {
   font-size: 14px;
   margin-right: 25px;
+}
+
+.iconToday {
+  color: red;
+}
+
+.iconUnread {
+  color: var(--color-primary-blue);
 }
 
 .red {
