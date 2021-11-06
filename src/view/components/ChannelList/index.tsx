@@ -158,7 +158,7 @@ const ChannelList = (): JSX.Element => {
           >
             <Icon
               customClass={`${styles.officialItemIcon} ${styles.iconUnread}`}
-              name="mark_email_unread"
+              name="inbox"
             />
             <span className={styles.name}>所有文章</span>
             <span className={styles.count}>{sum}</span>

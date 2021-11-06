@@ -12,7 +12,7 @@ type ArticleItemProps = {
 
 export const ArticleItem = (props: ArticleItemProps) => {
   const dataProxy = useDataProxy();
-  const { article } = props;
+  const { article, onSelect } = props;
   const [readStatus, setReadStatus] = useState(false);
   const [bannerImage, setBannerImage] = useState('');
 
@@ -32,16 +32,13 @@ export const ArticleItem = (props: ArticleItemProps) => {
     [dataProxy, article]
   );
 
-  const handleClick = useCallback(
-    (e: any) => {
-      markAsRead(e);
+  const handleClick = (e: any) => {
+    markAsRead(e);
 
-      if (props.onSelect) {
-        props.onSelect(article);
-      }
-    },
-    [props]
-  );
+    if (onSelect) {
+      onSelect(article);
+    }
+  };
 
   const parseBannerImage = (content: string): string => {
     const banner =

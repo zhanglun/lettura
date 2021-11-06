@@ -63,14 +63,18 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
         </div>
       </div>
     );
-  }, [article]);
+  }, [article, openInBrowser]);
 
   function handleGlobalClick(e: any) {
-    if (e.target.nodeName.toLowerCase() === 'a' && e.target.href) {
-      openBrowser(e.target.href);
+    const { nodeName, href } = e.target;
+
+    if (nodeName.toLowerCase() === 'a' && href) {
+      openBrowser(href);
       e.preventDefault();
     }
   }
+
+  function favoriteIt() {}
 
   useEffect(() => {
     resetScrollTop();
@@ -84,9 +88,8 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
       onClick={handleGlobalClick}
     >
       {article ? renderDetail() : renderPlaceholder()}
-      <div>
-        asdfasdf
-      </div>
+      {/* <div className={styles.helpBar}>
+      </div> */}
     </div>
   );
 };
