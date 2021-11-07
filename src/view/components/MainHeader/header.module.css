@@ -1,16 +1,16 @@
 .container {
-    height: var(--app-toolbar-height);
-    border-bottom: 1px solid var(--line-color);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: #fff;
-    z-index: 1;
+  height: var(--app-toolbar-height);
+  border-bottom: 1px solid var(--line-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #fff;
+  z-index: 1;
 }
 
 .title {
-    padding: 0 var(--block-padding);
-    color: var(--headline-color);
-    font-size: 24px;
-    font-weight: var(--font-weight-bold);
+  padding: 0 var(--block-padding);
+  color: var(--headline-color);
+  font-size: 24px;
+  font-weight: var(--font-weight-bold);
 }

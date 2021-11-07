@@ -1,5 +1,6 @@
 .container {
   width: 100%;
+  height: 100%;
 }
 
 .subTitle {
@@ -10,9 +11,10 @@
 }
 
 .panelContainer {
+  display: grid;
   padding: var(--block-padding);
   height: calc(100% - var(--app-toolbar-height));
-  display: grid;
+  overflow-y: scroll;
 }
 
 .panelHeader {
