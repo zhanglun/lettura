@@ -63,13 +63,14 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
     }
 
     if (channelId === 'inbox' || channelId === 'today') {
-      promise = dataProxy.getArticleList(params);
+      promise = dataProxy.PROXY_GET_ARTICLE_LSIT(params);
     } else {
-      promise = dataProxy.syncArticlesInCurrentChannel({
+      promise = dataProxy.MANUAL_SYNC_UNREAD_WITH_CHANNEL_ID({
         channelId,
         ...params,
       });
     }
+
     promise
       .then((result: any) => {
         setArticleList(result);

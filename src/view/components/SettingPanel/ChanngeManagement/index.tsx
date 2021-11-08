@@ -77,7 +77,7 @@ export const ChannelManagement = () => {
 
   const initial = () => {
     dataProxy
-      .getChannelList()
+      .PROXY_GET_CHANNEL_LIST()
       .then((result) => {
         setList(result);
         console.log(result);

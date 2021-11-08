@@ -19,7 +19,7 @@ const ChannelList = (): JSX.Element => {
 
   const initial = () => {
     dataProxy
-      .getChannelList()
+      .PROXY_GET_CHANNEL_LIST()
       .then((result) => {
         const total = result.reduce((acu: number, cur: Channel) => {
           return acu + (cur.articleCount || 0);
