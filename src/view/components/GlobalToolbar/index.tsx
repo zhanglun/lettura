@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { useState, useEffect, useCallback } from 'react';
-import { Tooltip } from '@douyinfe/semi-ui';
+import { Tooltip, Dropdown } from '@douyinfe/semi-ui';
 import { useEventPub } from '../../hooks/useEventPub';
 import { Icon } from '../Icon';
 import styles from './globaltoolbar.css';
@@ -66,6 +66,17 @@ function GlobalToolbar(props: GlobalToolbarProps) {
     onFilterList(filter);
   }, [onFilterList]);
 
+  const showRead = useCallback(() => {
+    const filter = {
+      all: false,
+      unread: false,
+      read: true,
+    };
+
+    setListFilter(filter);
+    onFilterList(filter);
+  }, [onFilterList]);
+
   const markAllRead = useCallback(() => {
     const filter = {
       all: false,
@@ -87,8 +98,57 @@ function GlobalToolbar(props: GlobalToolbarProps) {
 
   return (
     <div className={`${styles.container} ${fixed && styles.fixed}`}>
-      <div>
+      <div className={styles.header}>
         <div className={styles.title}>{title}</div>
+        <div className={styles.menu}>
+          <Icon
+            customClass={styles.menuIcon}
+            name="checklist"
+            onClick={markAllRead}
+          />
+          <Icon
+            customClass={styles.menuIcon}
+            name="refresh"
+            onClick={handleRefresh}
+          />
+          <Dropdown
+            clickToHide
+            trigger="click"
+            position="bottomRight"
+            render={
+              <Dropdown.Menu>
+                <Dropdown.Item active={listFilter.unread}>
+                  <span
+                    className={`${listFilter.unread && styles.active}`}
+                    onClick={showUnread}
+                  >
+                    未读文章
+                  </span>
+                </Dropdown.Item>
+                <Dropdown.Item active={listFilter.read}>
+                  <span
+                    className={`${listFilter.read && styles.active}`}
+                    onClick={showRead}
+                  >
+                    已读文章
+                  </span>
+                </Dropdown.Item>
+                <Dropdown.Item active={listFilter.all}>
+                  <span
+                    className={`${listFilter.all && styles.active}`}
+                    onClick={showAll}
+                  >
+                    全部文章
+                  </span>
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            }
+          >
+            <span>
+              <Icon customClass={styles.menuIcon} name="filter_alt" />
+            </span>
+          </Dropdown>
+        </div>
       </div>
       <div className={styles.menu}>
         <Tooltip content="标记已读">
@@ -120,30 +180,6 @@ function GlobalToolbar(props: GlobalToolbarProps) {
             onClick={handleRefresh}
           />
         </Tooltip>
-      </div>
-      <div className={styles.menu}>
-        <Icon
-          customClass={`${styles.menuIcon} ${
-            listFilter.unread && styles.active
-          }`}
-          name="mail"
-          onClick={showUnread}
-        />
-        <Icon
-          customClass={`${styles.menuIcon} ${listFilter.all && styles.active}`}
-          name="all_inbox"
-          onClick={showAll}
-        />
-        <Icon
-          customClass={styles.menuIcon}
-          name="checklist"
-          onClick={markAllRead}
-        />
-        <Icon
-          customClass={styles.menuIcon}
-          name="refresh"
-          onClick={handleRefresh}
-        />
       </div>
     </div>
   );

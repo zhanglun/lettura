@@ -20,7 +20,7 @@ export const ArticleItem = (props: ArticleItemProps) => {
     (e) => {
       e.stopPropagation();
       dataProxy
-        .markAsRead(article)
+        .MARK_ARTICLE_READ(article)
         .then((result: boolean) => {
           setReadStatus(result);
           return result;

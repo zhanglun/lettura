@@ -23,6 +23,7 @@
   justify-content: flex-end;
   height: var(--app-toolbar-height);
   border-bottom: 1px solid var(--line-color);
+  border-right: 1px solid var(--line-color);
   padding: 0 14px;
 }
 
