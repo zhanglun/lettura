@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-shadow */
+/* eslint-disable @typescript-eslint/naming-convention */
 import { useMemo } from 'react';
 import {
-  PROXY_GET_ARTICLE_LSIT,
   PROXY_GET_CHANNEL_LIST,
   PROXY_GET_UNREAD_TOTAL,
   PROXY_GET_ARTICLE_LIST_IN_CHANNEL,
@@ -31,6 +32,12 @@ export const useDataProxy = () => {
   // function getChannelList(): Promise<any> {
   //   return proxy(PROXY_GET_CHANNEL_LIST);
   // }
+  function PROXY_GET_ARTICLE_LIST_IN_CHANNEL(params: {
+    readStatus?: ArticleReadStatus;
+    channelId: string;
+  }) {
+    return proxy(EventDict.PROXY_GET_ARTICLE_LIST_IN_CHANNEL, params);
+  }
 
   // function getArticleList(params: any): Promise<any> {
   //   return proxy(PROXY_GET_ARTICLE_LSIT, params);
@@ -58,7 +65,10 @@ export const useDataProxy = () => {
     }, {} as EventPubMap);
   }, []);
 
-  return dataProxy;
+  return {
+    ...dataProxy,
+    PROXY_GET_ARTICLE_LIST_IN_CHANNEL,
+  };
 
   // return {
   //   getChannelList,
