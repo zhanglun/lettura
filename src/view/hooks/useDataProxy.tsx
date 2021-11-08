@@ -23,8 +23,6 @@ export const useDataProxy = () => {
     });
   };
 
-  useEffect(() => {});
-
   function getChannelList(): Promise<any> {
     return proxy(PROXY_GET_CHANNEL_LIST);
   }

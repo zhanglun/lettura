@@ -1,4 +1,5 @@
-import React from 'react';
+/* eslint-disable react/display-name */
+import React, { forwardRef } from 'react';
 
 type Props = {
   name: string;
@@ -6,7 +7,7 @@ type Props = {
   onClick?: any;
 };
 
-export const Icon = (props: Props) => {
+export const Icon = forwardRef((props: Props, ref) => {
   const { name, customClass, onClick } = props;
 
   return (
@@ -18,7 +19,7 @@ export const Icon = (props: Props) => {
       {name}
     </i>
   );
-};
+});
 
 Icon.defaultProps = {
   customClass: '',

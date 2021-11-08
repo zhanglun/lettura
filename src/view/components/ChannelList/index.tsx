@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useEventPub } from '../../hooks/useEventPub';
 import { Channel } from '../../../infra/types';
-import * as EventDict from '../../../event/constant';
 import * as Routes from '../../../infra/constants/routes';
 import { Icon } from '../Icon';
 import styles from './channel.module.css';
@@ -12,7 +11,7 @@ import { useDataProxy } from '../../hooks/useDataProxy';
 const ChannelList = (): JSX.Element => {
   const history = useHistory();
   const dataProxy = useDataProxy();
-  const { on: eventOn } = useEventPub();
+  const { eventPubOn } = useEventPub();
   const [channelList, setChannelList] = useState([]);
   const [currentId, setCurrentId] = useState('');
   const [sum, setSum] = useState(0);
@@ -61,15 +60,18 @@ const ChannelList = (): JSX.Element => {
     initial();
   };
 
-  const viewArticles = (channel: Channel) => {
-    setCurrentId(channel.id);
+  const viewArticles = useCallback(
+    (channel: Channel) => {
+      setCurrentId(channel.id);
 
-    history.push(
-      `${Routes.CHANNEL.replace(/:name/, channel.title)}?channelId=${
-        channel.id
-      }`
-    );
-  };
+      history.push(
+        `${Routes.CHANNEL.replace(/:name/, channel.title)}?channelId=${
+          channel.id
+        }`
+      );
+    },
+    [history]
+  );
 
   const viewInbox = () => {
     history.push(
@@ -86,44 +88,52 @@ const ChannelList = (): JSX.Element => {
   const renderFeedList = useCallback((): JSX.Element => {
     return (
       <ul className={styles.list}>
-        {channelList.map((channel: Channel, i: number) => {
-          return (
-            <li
-              className={`${styles.item} ${
-                currentId === channel.id ? styles.itemActive : ''
-              }`}
-              // eslint-disable-next-line react/no-array-index-key
-              key={channel.title + i}
-              onClick={() => viewArticles(channel)}
-              aria-hidden="true"
-            >
-              <img
-                src={channel.favicon}
-                onError={(e) => {
-                  // @ts-ignore
-                  e.target.onerror = null;
+        {channelList.map(
+          (channel: Channel & { articlaCount: number }, i: number) => {
+            const { articleCount = 0 } = channel;
 
-                  // @ts-ignore
-                  e.target.src = defaultSiteIcon;
-                }}
-                className={styles.icon}
-                alt={channel.title}
-              />
-              <span className={styles.name}>{channel.title}</span>
-              <span className={styles.count}>{channel.articleCount}</span>
-            </li>
-          );
-        })}
+            return (
+              <li
+                className={`${styles.item} ${
+                  currentId === channel.id ? styles.itemActive : ''
+                }`}
+                // eslint-disable-next-line react/no-array-index-key
+                key={channel.title + i}
+                onClick={() => viewArticles(channel)}
+                aria-hidden="true"
+              >
+                <img
+                  src={channel.favicon}
+                  onError={(e) => {
+                    // @ts-ignore
+                    e.target.onerror = null;
+
+                    // @ts-ignore
+                    e.target.src = defaultSiteIcon;
+                  }}
+                  className={styles.icon}
+                  alt={channel.title}
+                />
+                <span className={styles.name}>{channel.title}</span>
+                {articleCount > 0 && (
+                  <span className={styles.count}>{articleCount}</span>
+                )}
+              </li>
+            );
+          }
+        )}
       </ul>
     );
-  }, [currentId]);
+  }, [currentId, channelList, viewArticles]);
 
   useEffect(() => {
     initial();
 
-    eventOn(EventDict.SUBSCRIBE, () => {
+    eventPubOn.SUBSCRIBE(() => {
       initial();
     });
+
+    eventPubOn.MANUAL_SYNC_UNREAD_WITH_CHANNEL_ID(() => {});
   }, []);
 
   useEffect(() => {

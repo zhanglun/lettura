@@ -1124,38 +1124,38 @@
     ajv "^6.12.0"
     ajv-keywords "^3.4.1"
 
-"@douyinfe/semi-animation-react@2.0.0":
-  version "2.0.0"
-  resolved "https://registry.npmmirror.com/@douyinfe/semi-animation-react/download/@douyinfe/semi-animation-react-2.0.0.tgz#27357b7a7d72809c892f2272da395dfdb5cd3f19"
-  integrity sha1-JzV7en1ygJyJLyJy2jld/bXNPxk=
+"@douyinfe/semi-animation-react@2.0.3":
+  version "2.0.3"
+  resolved "https://registry.npmmirror.com/@douyinfe/semi-animation-react/download/@douyinfe/semi-animation-react-2.0.3.tgz#f93fb944f919ad042f331b444d663b869ea9fa3a"
+  integrity sha1-+T+5RPkZrQQvMxtETWY7hp6p+jo=
   dependencies:
     "@babel/runtime-corejs3" "^7.15.4"
-    "@douyinfe/semi-animation" "2.0.0"
-    "@douyinfe/semi-animation-styled" "2.0.0"
+    "@douyinfe/semi-animation" "2.0.3"
+    "@douyinfe/semi-animation-styled" "2.0.3"
     classnames "^2.2.6"
 
-"@douyinfe/semi-animation-styled@2.0.0":
-  version "2.0.0"
-  resolved "https://registry.npmmirror.com/@douyinfe/semi-animation-styled/download/@douyinfe/semi-animation-styled-2.0.0.tgz#1f1c8064e2d7ec95be18affae39dba58f4fbf21e"
-  integrity sha1-HxyAZOLX7JW+GK/64526WPT78h4=
+"@douyinfe/semi-animation-styled@2.0.3":
+  version "2.0.3"
+  resolved "https://registry.npmmirror.com/@douyinfe/semi-animation-styled/download/@douyinfe/semi-animation-styled-2.0.3.tgz#456caf6722e97081399c4f22164c13f590951db0"
+  integrity sha1-RWyvZyLpcIE5nE8iFkwT9ZCVHbA=
   dependencies:
     "@babel/runtime-corejs3" "^7.15.4"
 
-"@douyinfe/semi-animation@2.0.0":
-  version "2.0.0"
-  resolved "https://registry.npmmirror.com/@douyinfe/semi-animation/download/@douyinfe/semi-animation-2.0.0.tgz#e6881a6ecf04b098e4c79e6e71ebc0302697187b"
-  integrity sha1-5ogabs8EsJjkx55ucevAMCaXGHs=
+"@douyinfe/semi-animation@2.0.3":
+  version "2.0.3"
+  resolved "https://registry.npmmirror.com/@douyinfe/semi-animation/download/@douyinfe/semi-animation-2.0.3.tgz#a4695d1002f469a828bff032a3dd30cf3a85d1a8"
+  integrity sha1-pGldEAL0aagov/Ayo90wzzqF0ag=
   dependencies:
     "@babel/runtime-corejs3" "^7.15.4"
     bezier-easing "^2.1.0"
 
-"@douyinfe/semi-foundation@2.0.0":
-  version "2.0.0"
-  resolved "https://registry.npmmirror.com/@douyinfe/semi-foundation/download/@douyinfe/semi-foundation-2.0.0.tgz#f173aed0f37b9251c78c5d7751aab56e36004a7b"
-  integrity sha1-8XOu0PN7klHHjF13Uaq1bjYASns=
+"@douyinfe/semi-foundation@2.0.3":
+  version "2.0.3"
+  resolved "https://registry.npmmirror.com/@douyinfe/semi-foundation/download/@douyinfe/semi-foundation-2.0.3.tgz#b51b79cc54a38ed0afc312ee21dbfb0db0decd8c"
+  integrity sha1-tRt5zFSjjtCvwxLuIdv7DbDezYw=
   dependencies:
     "@babel/runtime-corejs3" "^7.15.4"
-    "@douyinfe/semi-animation" "2.0.0"
+    "@douyinfe/semi-animation" "2.0.3"
     async-validator "^3.5.0"
     classnames "^2.2.6"
     date-fns "^2.9.0"
@@ -1164,38 +1164,38 @@
     memoize-one "^5.2.1"
     scroll-into-view-if-needed "^2.2.24"
 
-"@douyinfe/semi-icons@2.0.0":
-  version "2.0.0"
-  resolved "https://registry.npmmirror.com/@douyinfe/semi-icons/download/@douyinfe/semi-icons-2.0.0.tgz#64d48f532e5f744203e6970dcfcc9a0738f33b61"
-  integrity sha1-ZNSPUy5fdEID5pcNz8yaBzjzO2E=
+"@douyinfe/semi-icons@2.0.3":
+  version "2.0.3"
+  resolved "https://registry.npmmirror.com/@douyinfe/semi-icons/download/@douyinfe/semi-icons-2.0.3.tgz#66b286812a1af3d4ff17ad49784058ac2c3c20a4"
+  integrity sha1-ZrKGgSoa89T/F61JeEBYrCw8IKQ=
   dependencies:
     "@babel/runtime-corejs3" "^7.15.4"
 
-"@douyinfe/semi-illustrations@2.0.0":
-  version "2.0.0"
-  resolved "https://registry.npmmirror.com/@douyinfe/semi-illustrations/download/@douyinfe/semi-illustrations-2.0.0.tgz#62e0608af71ea054a2c35a4d58ba6f60c1d5af7b"
-  integrity sha1-YuBgivceoFSiw1pNWLpvYMHVr3s=
+"@douyinfe/semi-illustrations@2.0.3":
+  version "2.0.3"
+  resolved "https://registry.npmmirror.com/@douyinfe/semi-illustrations/download/@douyinfe/semi-illustrations-2.0.3.tgz#4357dc6926b57e0e62ac235eb66e3c0445c505bc"
+  integrity sha1-Q1fcaSa1fg5irCNetm48BEXFBbw=
   dependencies:
     "@babel/runtime-corejs3" "^7.15.4"
 
-"@douyinfe/semi-theme-default@2.0.0":
-  version "2.0.0"
-  resolved "https://registry.npmmirror.com/@douyinfe/semi-theme-default/download/@douyinfe/semi-theme-default-2.0.0.tgz#fc83664b4c3249cb98ae195f014b0ff9b91ee6be"
-  integrity sha1-/INmS0wyScuYrhlfAUsP+bke5r4=
+"@douyinfe/semi-theme-default@2.0.3":
+  version "2.0.3"
+  resolved "https://registry.npmmirror.com/@douyinfe/semi-theme-default/download/@douyinfe/semi-theme-default-2.0.3.tgz#77d93c2fd7a8d9be4485c175c6ff170fd077b835"
+  integrity sha1-d9k8L9eo2b5EhcF1xv8XD9B3uDU=
   dependencies:
     glob "^7.1.6"
 
-"@douyinfe/semi-ui@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.npmmirror.com/@douyinfe/semi-ui/download/@douyinfe/semi-ui-2.0.0.tgz#f04848ea1a75fdfe0eb354faee9e7f9b0bcc9127"
-  integrity sha1-8EhI6hp1/f4Os1T67p5/mwvMkSc=
+"@douyinfe/semi-ui@^2.0.3":
+  version "2.0.3"
+  resolved "https://registry.npmmirror.com/@douyinfe/semi-ui/download/@douyinfe/semi-ui-2.0.3.tgz#72dcaf0d93901dc32b96377f1c9b8ac76c3faca8"
+  integrity sha1-ctyvDZOQHcMrljd/HJuKx2w/rKg=
   dependencies:
     "@babel/runtime-corejs3" "^7.15.4"
-    "@douyinfe/semi-animation-react" "2.0.0"
-    "@douyinfe/semi-foundation" "2.0.0"
-    "@douyinfe/semi-icons" "2.0.0"
-    "@douyinfe/semi-illustrations" "2.0.0"
-    "@douyinfe/semi-theme-default" "2.0.0"
+    "@douyinfe/semi-animation-react" "2.0.3"
+    "@douyinfe/semi-foundation" "2.0.3"
+    "@douyinfe/semi-icons" "2.0.3"
+    "@douyinfe/semi-illustrations" "2.0.3"
+    "@douyinfe/semi-theme-default" "2.0.3"
     async-validator "^3.5.0"
     classnames "^2.2.6"
     copy-text-to-clipboard "^2.1.1"
@@ -7636,11 +7636,6 @@ kleur@^3.0.3:
   resolved "https://registry.yarnpkg.com/kleur/-/kleur-3.0.3.tgz#a79c9ecc86ee1ce3fa6206d1216c501f147fc07e"
   integrity sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==
 
-klona@^2.0.4:
-  version "2.0.4"
-  resolved "https://registry.yarnpkg.com/klona/-/klona-2.0.4.tgz#7bb1e3affb0cb8624547ef7e8f6708ea2e39dfc0"
-  integrity sha512-ZRbnvdg/NxqzC7L9Uyqzf4psi1OM4Cuc+sJAkQPjO6XkQIJTNbfK2Rsmbw8fx1p2mkZdp2FZYo2+LwXYY/uwIA==
-
 language-subtag-registry@~0.3.2:
   version "0.3.21"
   resolved "https://registry.yarnpkg.com/language-subtag-registry/-/language-subtag-registry-0.3.21.tgz#04ac218bea46f04cb039084602c6da9e788dd45a"
@@ -10342,17 +10337,6 @@ sanitize-filename@^1.6.2, sanitize-filename@^1.6.3:
   integrity sha512-y/52Mcy7aw3gRm7IrcGDFx/bCk4AhRh2eI9luHOQM86nZsqwiRkkq2GekHXBBD+SmPidc8i2PqtYZl+pWJ8Oeg==
   dependencies:
     truncate-utf8-bytes "^1.0.0"
-
-sass-loader@^10.1.0:
-  version "10.1.0"
-  resolved "https://registry.yarnpkg.com/sass-loader/-/sass-loader-10.1.0.tgz#1727fcc0c32ab3eb197cda61d78adf4e9174a4b3"
-  integrity sha512-ZCKAlczLBbFd3aGAhowpYEy69Te3Z68cg8bnHHl6WnSCvnKpbM6pQrz957HWMa8LKVuhnD9uMplmMAHwGQtHeg==
-  dependencies:
-    klona "^2.0.4"
-    loader-utils "^2.0.0"
-    neo-async "^2.6.2"
-    schema-utils "^3.0.0"
-    semver "^7.3.2"
 
 sax@>=0.6.0, sax@^1.2.4, sax@~1.2.4:
   version "1.2.4"

@@ -1,5 +1,5 @@
 import React, { useCallback, useRef, useState } from 'react';
-import { Input, Button } from '@douyinfe/semi-ui';
+import { Button } from '@douyinfe/semi-ui';
 import { useEventPub } from '../../../hooks/useEventPub';
 import styles from '../settingpanel.module.css';
 
