@@ -4,7 +4,8 @@
 }
 
 .mainView {
-  height: calc(100% - var(--app-toolbar-height));
+  height: 100%;
   display: grid;
   grid-template-columns: var(--app-article-width) 1fr;
+  grid-template-rows: 100%;
 }

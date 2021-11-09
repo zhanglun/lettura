@@ -17,6 +17,7 @@
   width: var(--app-article-width);
   display: grid;
   grid-template-columns: 1fr 134px;
+  border-right: 1px solid var(--line-color);
 }
 
 .title {

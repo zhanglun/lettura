@@ -25,6 +25,10 @@ export const SettingSubscribe: () => JSX.Element = () => {
     setLoading(true);
     setRequested(false);
 
+    const result = await fetch(feedUrl);
+
+    console.log(result);
+
     try {
       const feed = await parseRSS(feedUrl);
       setChannelRes(feed);
