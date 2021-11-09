@@ -149,6 +149,10 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
   }, [channelId, listFilter]);
 
   useEffect(() => {
+    resetScrollTop();
+  }, []);
+
+  useEffect(() => {
     eventPubOn.MARK_ARTICLE_READ_BY_CHANNEL(() => {
       handleRefresh();
     });

@@ -103,6 +103,12 @@ const createWindow = async () => {
     }
   });
 
+  mainWindow.once('ready-to-show', () => {
+    if (mainWindow) {
+      mainWindow.show();
+    }
+  });
+
   mainWindow.on('closed', () => {
     mainWindow = null;
   });

@@ -100,18 +100,6 @@ export const initEvent = () => {
     return [];
   }
 
-  function syncUnreadWhenAPPStart() {
-    // channelRepo
-    //   .getList()
-    //   .then((list) => {
-    //     ipcRenderer.send(FINISH_INITIAL_SYNC, list);
-    //     return list;
-    //   })
-    //   .catch((err) => {
-    //     return err;
-    //   });
-  }
-
   /**
    * 手动更新
    */
@@ -300,6 +288,4 @@ export const initEvent = () => {
 
     event.reply(MARK_ARTICLE_READ_BY_CHANNEL, result);
   });
-
-  syncUnreadWhenAPPStart();
 };

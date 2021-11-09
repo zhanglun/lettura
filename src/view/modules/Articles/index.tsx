@@ -1,20 +1,15 @@
 import React, { useCallback, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
-import { ArticleList, ListFilter } from '../../components/ArticleList';
+import { ArticleList } from '../../components/ArticleList';
 import { ArticleView } from '../../components/ArticleView';
 import styles from './index.module.css';
 import { Article } from '../../../infra/types';
-
-type ArticleModuleProps = {
-  title: string;
-};
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
 
-export const ArticleModule = (props: ArticleModuleProps): JSX.Element => {
-  const { title } = props;
+export const ArticleModule = (): JSX.Element => {
   const params: { name: string } = useParams();
   const query = useQuery();
   const [current, setCurrent] = useState<Article | null>(null);
@@ -28,7 +23,7 @@ export const ArticleModule = (props: ArticleModuleProps): JSX.Element => {
       {/* <GlobalToolbar /> */}
       <div className={styles.mainView}>
         <ArticleList
-          title={title || params.name}
+          title={params.name}
           channelId={query.get('channelId')}
           onArticleSelect={handleArticleSelect}
         />

@@ -28,9 +28,6 @@ function App() {
             <Route exact path={routesConfig.SETTINGS}>
               <SettingModule />
             </Route>
-            {/* <Route exact path="/all">
-                <ArticleModule />
-              </Route> */}
             <Route exact path={routesConfig.CHANNEL}>
               <ArticleModule />
             </Route>
