@@ -29,31 +29,3 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-
-.menu {
-  display: flex;
-  padding: 0 var(--block-padding);
-}
-
-.active {
-  color: var(--color-primary-blue);
-}
-
-.menuIcon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 6px;
-  width: 34px;
-  height: 34px;
-  line-height: 34px;
-  font-size: 18px;
-  color: var(--title-color);
-  border-radius: var(--button-radius);
-  cursor: pointer;
-}
-
-.menuIcon:hover {
-  color: var(--headline-color);
-  background-color: var(--color-gray-200);
-}

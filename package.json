@@ -31,8 +31,8 @@
         ]
     },
     "build": {
-        "productName": "ElectronReact",
-        "appId": "org.erb.ElectronReact",
+        "productName": "Salix",
+        "appId": "org.erb.Salix",
         "files": [
             "dist/",
             "node_modules/",
@@ -102,15 +102,11 @@
     },
     "license": "MIT",
     "keywords": [
-        "electron",
-        "boilerplate",
         "react",
         "typescript",
         "ts",
-        "sass",
-        "webpack",
-        "hot",
-        "reload"
+        "RSS",
+        "reader"
     ],
     "homepage": "https://github.com/electron-react-boilerplate/electron-react-boilerplate#readme",
     "jest": {

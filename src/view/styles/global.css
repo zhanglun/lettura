@@ -1,7 +1,10 @@
 :root {
-  --app-channel-width: 300px;
-  --app-article-width: 400px;
+  --app-channel-width: 240px;
+  --app-article-width: 360px;
   --app-toolbar-height: 50px;
+
+  --view-helpbar-width: 50px;
+
   --headline-color: #333;
   --title-color: #363636;
   --text-color: #666;
@@ -25,6 +28,7 @@
   --input-disabled-bg: rgba(0, 0, 0, 0.05);
   --line-color: rgba(0, 0, 0, 0.05);
   --icon-focused-bg: rgba(0, 0, 0, 0.05);
+
   --color-primary-blue: #017aff;
   --color-primary-90: #232526;
   --color-primary-10: #e5e5e5;

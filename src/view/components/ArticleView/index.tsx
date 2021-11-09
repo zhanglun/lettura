@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import Dayjs from 'dayjs';
+import { Tooltip } from '@douyinfe/semi-ui';
+import { Icon } from '../Icon';
 import { Article } from '../../../infra/types';
 import { openBrowser } from '../../../infra/utils';
 import styles from './view.module.css';
@@ -26,6 +28,8 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
     if (article) openBrowser(article.link);
   }, [article]);
 
+  function favoriteIt() {}
+
   const renderPlaceholder = useCallback(() => {
     return <div className={styles.placeholder} />;
   }, []);
@@ -33,6 +37,39 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
   const renderDetail = useCallback(() => {
     return !article ? null : (
       <div className={`${styles.main} ${styles.main}`}>
+        <div className={styles.helpBar}>
+          <div className={styles.menu}>
+            <Tooltip content="标记已读">
+              <Icon
+                customClass={`${styles.menuIcon}`}
+                name="done"
+                onClick={favoriteIt}
+              />
+            </Tooltip>
+            <Tooltip content="标记未读">
+              <Icon
+                customClass={`${styles.menuIcon}`}
+                name="radio_button_unchecked"
+                onClick={favoriteIt}
+              />
+            </Tooltip>
+            <Tooltip content="收藏">
+              <Icon
+                customClass={`${styles.menuIcon}`}
+                name="favorite"
+                onClick={favoriteIt}
+              />
+            </Tooltip>
+
+            <Tooltip content="在浏览器中打开">
+              <Icon
+                customClass={`${styles.menuIcon}`}
+                name="link"
+                onClick={favoriteIt}
+              />
+            </Tooltip>
+          </div>
+        </div>
         <div className={styles.header}>
           <div className={styles.title}>{article.title}</div>
           <div className={styles.meta}>
@@ -74,8 +111,6 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
     }
   }
 
-  function favoriteIt() {}
-
   useEffect(() => {
     resetScrollTop();
   }, [article]);
@@ -88,8 +123,6 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
       onClick={handleGlobalClick}
     >
       {article ? renderDetail() : renderPlaceholder()}
-      {/* <div className={styles.helpBar}>
-      </div> */}
     </div>
   );
 };

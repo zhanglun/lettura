@@ -4,6 +4,7 @@
   flex-direction: column;
   flex: 1 0 auto;
   user-select: none;
+  border-right: 1px solid var(--line-color);
 }
 
 .inner {
@@ -23,7 +24,6 @@
   justify-content: flex-end;
   height: var(--app-toolbar-height);
   border-bottom: 1px solid var(--line-color);
-  border-right: 1px solid var(--line-color);
   padding: 0 14px;
 }
 
@@ -57,7 +57,7 @@
 
 .item {
   height: 34px;
-  padding: 4px 20px;
+  padding: 4px 16px;
   display: flex;
   align-items: center;
   cursor: pointer;
@@ -81,7 +81,7 @@
 }
 
 .name {
-  font-size: 14px;
+  font-size: 13px;
   color: #333;
   flex: 1;
   overflow: hidden;
@@ -93,7 +93,7 @@
   width: 14px;
   height: 14px;
   border-radius: 4px;
-  margin-right: 25px;
+  margin-right: 18px;
 }
 
 .count {

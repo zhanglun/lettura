@@ -3,7 +3,7 @@
   height: 100%;
   overflow-y: auto;
   display: grid;
-  grid-template-columns: 1fr 100px;
+  /* grid-template-columns: 1fr var(--view-helpbar-width); */
 }
 
 .toolbar {
@@ -155,6 +155,41 @@
 
 .helpBar {
   position: sticky;
-  border-left: 1px solid var(--line-color);
-  width: 50px;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: var(--app-toolbar-height);
+  border-bottom: 1px solid var(--line-color);
+}
+
+.menu {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  height: 100%;
+  background-color: #fff;
+}
+
+.active {
+  color: var(--color-primary-blue);
+}
+
+.menuIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 6px;
+  width: 34px;
+  height: 34px;
+  line-height: 34px;
+  font-size: 18px;
+  color: var(--title-color);
+  border-radius: var(--button-radius);
+  cursor: pointer;
+}
+
+.menuIcon:hover {
+  color: var(--headline-color);
+  background-color: var(--color-gray-200);
 }
