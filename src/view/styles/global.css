@@ -1,4 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;300;400;500&family=Noto+Sans&family=Noto+Sans+SC:wght@100;300;400;500&family=Noto+Sans+TC:wght@100;300;400;500&family=Noto+Serif&family=Noto+Serif+SC:wght@100;300;400;500&family=Noto+Serif+TC:wght@100;300;400;500&display=swap');
+
 :root {
+  --sans-font: 'Noto Sans', 'Noto Sans TC', 'Noto Sans SC', sans-serif !important;
+  --serif-font: 'Noto Serif', 'Noto Serif TC', 'Noto Sans TC', serif !important;
+  --inline-code-font: monospace !important;
+  --mono-font: 'JetBrains Mono', monospace !important;
+  --content-font-size: 18px;
+
   --app-channel-width: 240px;
   --app-article-width: 360px;
   --app-toolbar-height: 50px;
