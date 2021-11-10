@@ -1,17 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Input, Button } from '@douyinfe/semi-ui';
-import RSSParser from 'rss-parser';
-import { parseRSS } from '../../../../infra/utils';
+import { getRSSByFetch } from '../../../../infra/utils';
 import { ChannelRes } from '../../../../infra/types';
 import { useEventPub } from '../../../hooks/useEventPub';
 import styles from '../settingpanel.module.css';
 import { Toast } from '../../Toast';
-
-const parser = new RSSParser({
-  customFields: {
-    item: [['content:encoded', 'contentEncoded']],
-  },
-});
 
 export const SettingSubscribe: () => JSX.Element = () => {
   const { eventPubEmit } = useEventPub();
@@ -25,12 +18,9 @@ export const SettingSubscribe: () => JSX.Element = () => {
     setLoading(true);
     setRequested(false);
 
-    const result = await fetch(feedUrl);
-
-    console.log(result);
-
     try {
-      const feed = await parseRSS(feedUrl);
+      const feed = await getRSSByFetch(feedUrl);
+
       setChannelRes(feed);
     } catch (err) {
       Toast.show({

@@ -34,7 +34,27 @@ export async function parseRSS(feedUrl: string): Promise<ChannelRes> {
     item.content = contentEncoded || content;
   });
 
-  console.log(channelRes);
+  return channelRes;
+}
+
+export async function getRSSByFetch(feedUrl: string): Promise<any> {
+  const res = await fetch(feedUrl);
+  const channelRes = (await parser.parseString(await res.text())) as ChannelRes;
+  const now = new Date().toString();
+
+  channelRes.category = '';
+  channelRes.favicon = `${new URL(channelRes.link).origin}/favicon.ico`;
+  channelRes.tag = '';
+  channelRes.createDate = now;
+  channelRes.lastSyncDate = now;
+
+  channelRes.feedUrl = feedUrl;
+
+  channelRes.items?.forEach((item: RSSFeedItem) => {
+    const { content, contentEncoded } = item;
+
+    item.content = contentEncoded || content;
+  });
 
   return channelRes;
 }
