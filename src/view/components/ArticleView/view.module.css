@@ -144,10 +144,7 @@
   max-width: 100% !important;
   height: auto;
   margin: 10px auto;
-  padding: 5px;
-  background-color: #fff;
-  border: 1px solid #efefef;
-  box-shadow: 1px 1px 3px #d4d4d4;
+  background-color: #fafafa;
 }
 
 /* 文章样式 */

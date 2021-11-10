@@ -1,5 +1,6 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Dayjs from 'dayjs';
+import Mercury from '@postlight/mercury-parser';
 import { Tooltip } from '@douyinfe/semi-ui';
 import { Icon } from '../Icon';
 import { Article } from '../../../infra/types';
@@ -17,6 +18,7 @@ function createMarkup(html: string) {
 export const ArticleView = (props: ArticleViewProps): JSX.Element => {
   const containerRef = useRef<HTMLDivElement>(null);
   const { article } = props;
+  const [pageContent, setPageContent] = useState('');
 
   const resetScrollTop = () => {
     if (containerRef.current !== null) {
@@ -65,7 +67,7 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
               <Icon
                 customClass={`${styles.menuIcon}`}
                 name="link"
-                onClick={favoriteIt}
+                onClick={openInBrowser}
               />
             </Tooltip>
           </div>
@@ -87,7 +89,7 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
           <div
             className={styles.content}
             // eslint-disable-next-line react/no-danger
-            dangerouslySetInnerHTML={createMarkup(article.content)}
+            dangerouslySetInnerHTML={createMarkup(pageContent)}
           />
           <button
             type="button"
@@ -100,7 +102,7 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
         </div>
       </div>
     );
-  }, [article, openInBrowser]);
+  }, [article, openInBrowser, pageContent]);
 
   function handleGlobalClick(e: any) {
     const { nodeName, href } = e.target;
@@ -113,6 +115,19 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
 
   useEffect(() => {
     resetScrollTop();
+
+    if (article) {
+      Mercury.parse(article.link)
+        .then((page: any) => {
+          console.log(page);
+          setPageContent(page.content || article.content);
+
+          return page;
+        })
+        .catch(() => {
+          setPageContent(article.content);
+        });
+    }
   }, [article]);
 
   return (
