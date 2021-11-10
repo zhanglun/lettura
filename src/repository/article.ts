@@ -140,8 +140,10 @@ export class ArticleRepository extends Repository<ArticleEntity> {
 
     channel.id = channelId;
 
+    console.log('article', items);
+
     const values = items.map(
-      (item): ArticleEntity => {
+      (item: RSSFeedItem): ArticleEntity => {
         const article = new ArticleEntity();
 
         article.author = item.author;
@@ -151,7 +153,7 @@ export class ArticleRepository extends Repository<ArticleEntity> {
         article.content = item.content;
         article.description = item.description;
         article.link = item.link;
-        article.pubDate = item.pubDate;
+        article.pubDate = item.pubDate || item.date || item.isoDate;
         article.title = item.title;
         article.hasRead = 0;
         article.isLike = 0;

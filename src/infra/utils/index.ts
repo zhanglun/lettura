@@ -2,11 +2,7 @@ import { shell } from 'electron';
 import RSSParser from 'rss-parser';
 import { ChannelRes, RSSFeedItem } from '../types';
 
-const parser = new RSSParser({
-  customFields: {
-    item: [['content:encoded', 'contentEncoded']],
-  },
-});
+const parser = new RSSParser();
 
 export function openBrowser(link: string) {
   shell.openExternal(link);

@@ -97,7 +97,7 @@ export const ChannelManagement = () => {
       size="small"
       columns={columns}
       dataSource={list}
-      pagination={{ pageSize: list.length }}
+      pagination={false}
     />
   );
 };

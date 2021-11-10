@@ -8,14 +8,15 @@ export interface RSSFeed {
   description: string;
   language?: string;
   copyright?: string;
-  pubDate?: string;
+  date: string;
+  isoDate: string;
   lastBuildDate?: Date;
   ttl?: number;
   image?: string;
   items?: RSSFeedItem[];
 }
 
-export interface RSSFeedItem {
+export interface RSSFeedItem extends RSSFeed {
   title: string;
   link: string;
   description: string;

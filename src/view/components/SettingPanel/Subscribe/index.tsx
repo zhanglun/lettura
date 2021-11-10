@@ -25,7 +25,7 @@ export const SettingSubscribe: () => JSX.Element = () => {
     } catch (err) {
       Toast.show({
         type: 'error',
-        title: err.message,
+        title: '搜索失败',
       });
     }
 
