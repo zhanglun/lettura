@@ -15,7 +15,7 @@
     },
     "license": "MIT",
     "dependencies": {
-        "better-sqlite3": "^7.1.1",
+        "better-sqlite3": "^7.4.4",
         "bulma": "^0.9.1",
         "dayjs": "^1.10.5",
         "reflect-metadata": "^0.1.13",

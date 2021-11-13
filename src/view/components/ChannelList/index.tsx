@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useEventPub } from '../../hooks/useEventPub';
+import { useDataProxy } from '../../hooks/useDataProxy';
 import { Channel } from '../../../infra/types';
 import * as Routes from '../../../infra/constants/routes';
 import { Icon } from '../Icon';
 import styles from './channel.module.css';
 import defaultSiteIcon from './default.png';
-import { useDataProxy } from '../../hooks/useDataProxy';
 
 const ChannelList = (): JSX.Element => {
   const history = useHistory();
@@ -185,19 +185,6 @@ const ChannelList = (): JSX.Element => {
             <span className={styles.name}>今日未读</span>
             <span className={styles.count}>{todayUnread}</span>
           </div>
-          {/* <div */}
-          {/*  className={styles.officialItem} */}
-          {/*  onClick={() => { */}
-          {/*    viewFavorite(); */}
-          {/*  }} */}
-          {/*  aria-hidden */}
-          {/* > */}
-          {/*  <Icon */}
-          {/*    customClass={`${styles.officialItemIcon} ${styles.red}`} */}
-          {/*    name="favorite-black" */}
-          {/*  /> */}
-          {/*  我的收藏 */}
-          {/* </div> */}
         </div>
         {renderFeedList()}
       </div>

@@ -1,16 +1,8 @@
 /* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable @typescript-eslint/naming-convention */
 import { useMemo } from 'react';
-import {
-  PROXY_GET_CHANNEL_LIST,
-  PROXY_GET_UNREAD_TOTAL,
-  PROXY_GET_ARTICLE_LIST_IN_CHANNEL,
-  MANUAL_SYNC_UNREAD_WITH_CHANNEL_ID,
-  MARK_ARTICLE_READ,
-} from '../../event/constant';
 import * as EventDict from '../../event/constant';
 import { ArticleReadStatus } from '../../infra/constants/status';
-import { Article } from '../../infra/types';
 import { useEventPub } from './useEventPub';
 
 type EventName = keyof typeof EventDict;

@@ -1,6 +1,4 @@
-import fs from 'fs';
-import path from 'path';
-import { ipcMain, ipcRenderer, remote } from 'electron';
+import { ipcMain, ipcRenderer } from 'electron';
 import log from 'electron-log';
 import { getCustomRepository } from 'typeorm';
 import { ChannelEntity } from '../entity/channel';
@@ -10,7 +8,6 @@ import {
   SUBSCRIBE,
   FINISH_INITIAL_SYNC,
   MANUAL_SYNC_UNREAD,
-  MANUAL_SYNC_UNREAD_WITH_CHANNEL_ID,
   MARK_ARTICLE_READ,
   MARK_ARTICLE_READ_BY_CHANNEL,
   FINISH_MANUAL_SYNC_UNREAD,
@@ -23,8 +20,11 @@ import {
   PROXY_GET_UNREAD_TOTAL,
   PROXY_GET_ARTICLE_LIST_IN_CHANNEL,
 } from './constant';
+import * as EventDict from './constant';
 import { parseRSS } from '../infra/utils';
-import { Channel, RSSFeedItem } from '../infra/types';
+import { Article, Channel, RSSFeedItem } from '../infra/types';
+import { ArticleEntity } from '../entity/article';
+import { ArticleReadStatus } from '../infra/constants/status';
 
 type OPMLItem = { title: string; feedUrl: string };
 
@@ -177,29 +177,32 @@ export const initEvent = () => {
   /**
    * 同步当前频道的文章，并返回频道中所有的未读文章
    */
-  ipcMain.on(MANUAL_SYNC_UNREAD_WITH_CHANNEL_ID, async (event, params) => {
-    const { channelId, readStatus } = params;
-    const channel = await channelRepo.getOneById(channelId);
+  ipcMain.on(
+    EventDict.MANUAL_SYNC_UNREAD_WITH_CHANNEL_ID,
+    async (event, params) => {
+      const { channelId, readStatus } = params;
+      const channel = await channelRepo.getOneById(channelId);
 
-    // TODO: 同步间隔配置化
-    if (
-      new Date(channel.lastSyncDate).getTime() <
-      new Date().getTime() - 1000 * 10
-    ) {
-      log.info('同步时间过期，开始同步');
-      await syncUnreadManuallyWithChannelId(channelId);
+      // TODO: 同步间隔配置化
+      if (
+        new Date(channel.lastSyncDate).getTime() <
+        new Date().getTime() - 1000 * 10
+      ) {
+        log.info('同步时间过期，开始同步');
+        await syncUnreadManuallyWithChannelId(channelId);
 
-      // 更新最后同步时间
-      await channelRepo.updateLastSyncDate(channelId);
+        // 更新最后同步时间
+        await channelRepo.updateLastSyncDate(channelId);
+      }
+
+      const result = await articleRepo.getArticleListInChannel({
+        channelId,
+        readStatus,
+      });
+
+      event.reply(EventDict.MANUAL_SYNC_UNREAD_WITH_CHANNEL_ID, result);
     }
-
-    const result = await articleRepo.getArticleListInChannel({
-      channelId,
-      readStatus,
-    });
-
-    event.reply(MANUAL_SYNC_UNREAD_WITH_CHANNEL_ID, result);
-  });
+  );
 
   /**
    * 导出订阅关系
@@ -287,5 +290,39 @@ export const initEvent = () => {
     const result = await articleRepo.markArticleAsReadByChannelId(channelId);
 
     event.reply(MARK_ARTICLE_READ_BY_CHANNEL, result);
+  });
+
+  ipcMain.on(EventDict.PROXY_SYNC_ARTICLE_BY_CHANNEL, async (event, params) => {
+    const { channelId } = params;
+    const channel = await channelRepo.getOneById(channelId);
+
+    let result: ArticleEntity[] = [];
+    let synced = false;
+
+    // TODO: 同步间隔配置化
+    if (
+      channel &&
+      new Date(channel.lastSyncDate).getTime() <
+        new Date().getTime() - 1000 * 10
+    ) {
+      log.info('同步时间过期，开始同步');
+
+      // 更新最后同步时间
+      await channelRepo.updateLastSyncDate(channelId);
+
+      const res = await parseRSS(channel.feedUrl);
+
+      if (res && res.items) {
+        // TODO: 这里返回的是此次同步时拿到的数据，可能已经入库，所以返回无意义
+        result = (await articleRepo.insertArticles(channelId, res.items)) || [];
+      }
+
+      synced = true;
+    }
+
+    event.reply(EventDict.PROXY_SYNC_ARTICLE_BY_CHANNEL, {
+      synced,
+      result,
+    });
   });
 };

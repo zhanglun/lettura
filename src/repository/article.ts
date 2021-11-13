@@ -131,16 +131,17 @@ export class ArticleRepository extends Repository<ArticleEntity> {
    * @param {string} channelId uuid
    * @param items
    */
-  async insertArticles(channelId: string, items: RSSFeedItem[] = []) {
+  async insertArticles(
+    channelId: string,
+    items: RSSFeedItem[] = []
+  ): Promise<ArticleEntity[]> {
     if (!items.length) {
-      return;
+      return Promise.resolve([]);
     }
 
     const channel = new ChannelEntity();
 
     channel.id = channelId;
-
-    console.log('article', items);
 
     const values = items.map(
       (item: RSSFeedItem): ArticleEntity => {
@@ -170,6 +171,8 @@ export class ArticleRepository extends Repository<ArticleEntity> {
       .values(values)
       .onConflict(`("link") DO NOTHING`)
       .execute();
+
+    return values;
   }
 
   async getUnreadTotal() {

@@ -59,8 +59,67 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
     });
   }, [articleList]);
 
+  const initial = useCallback((): Promise<any> => {
+    if (!channelId) {
+      return Promise.reject(new Error('-1'));
+    }
+
+    setLoading(true);
+
+    let promise = Promise.resolve();
+    const params: { readStatus?: ArticleReadStatus; channelId?: string } = {};
+
+    if (listFilter.unread) {
+      params.readStatus = ArticleReadStatus.unRead;
+    }
+
+    if (listFilter.read) {
+      params.readStatus = ArticleReadStatus.isRead;
+    }
+
+    if (channelId === 'inbox' || channelId === 'today') {
+      promise = dataProxy.PROXY_GET_ARTICLE_LSIT(params);
+    } else {
+      promise = dataProxy.PROXY_GET_ARTICLE_LIST_IN_CHANNEL({
+        channelId,
+        ...params,
+      });
+    }
+
+    return promise
+      .then((result: any) => {
+        setArticleList(result);
+        setLoading(false);
+
+        return result;
+      })
+      .catch(() => {
+        setLoading(false);
+      });
+  }, [channelId, listFilter]);
+
+  const syncArticles = useCallback(() => {
+    dataProxy
+      .PROXY_SYNC_ARTICLE_BY_CHANNEL({
+        channelId,
+      })
+      .then((res) => {
+        console.log(res);
+
+        if (res.synced) {
+          initial();
+        }
+        // setArticleList((list) => {
+        //   return res.result.concat(list);
+        // });
+
+        return res;
+      })
+      .catch(() => {});
+  }, [channelId, articleList]);
+
   const handleRefresh = useCallback(() => {
-    eventPubEmit.MANUAL_SYNC_UNREAD_WITH_CHANNEL_ID({ channelId });
+    syncArticles();
   }, [channelId, eventPubEmit]);
 
   const showAll = useCallback(() => {
@@ -101,51 +160,13 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
     eventPubEmit.MARK_ARTICLE_READ_BY_CHANNEL({ channelId });
   }, [channelId, eventPubEmit]);
 
-  const initial = useCallback(() => {
-    if (!channelId) {
-      return;
-    }
-
-    setLoading(true);
-
-    let promise = Promise.resolve();
-    const params: { readStatus?: ArticleReadStatus; channelId?: string } = {};
-
-    if (listFilter.unread) {
-      params.readStatus = ArticleReadStatus.unRead;
-    }
-
-    if (listFilter.read) {
-      params.readStatus = ArticleReadStatus.isRead;
-    }
-
-    if (channelId === 'inbox' || channelId === 'today') {
-      promise = dataProxy.PROXY_GET_ARTICLE_LSIT(params);
-    } else {
-      promise = dataProxy.PROXY_GET_ARTICLE_LIST_IN_CHANNEL({
-        channelId,
-        ...params,
-      });
-      // promise = dataProxy.MANUAL_SYNC_UNREAD_WITH_CHANNEL_ID({
-      //   channelId,
-      //   ...params,
-      // });
-    }
-
-    promise
-      .then((result: any) => {
-        setArticleList(result);
-        setLoading(false);
-        return result;
-      })
-      .catch((err) => {
-        setLoading(false);
-      });
-  }, [channelId, listFilter]);
-
   useEffect(() => {
     resetScrollTop();
-    initial();
+
+    // TODO: 更好的方案是：判断当前channel的最后更新时间，决定是否要开始更新
+    initial()
+      .then(syncArticles)
+      .catch(() => {});
   }, [channelId, listFilter]);
 
   useEffect(() => {

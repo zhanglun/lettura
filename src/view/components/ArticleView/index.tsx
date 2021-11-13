@@ -16,8 +16,8 @@ function createMarkup(html: string) {
 }
 
 export const ArticleView = (props: ArticleViewProps): JSX.Element => {
-  const containerRef = useRef<HTMLDivElement>(null);
   const { article } = props;
+  const containerRef = useRef<HTMLDivElement>(null);
   const [pageContent, setPageContent] = useState('');
 
   const resetScrollTop = () => {
