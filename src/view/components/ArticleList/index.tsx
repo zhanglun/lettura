@@ -1,14 +1,21 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { Dropdown } from '@douyinfe/semi-ui';
 import { Icon } from '../Icon';
 import { ArticleItem } from '../ArticleItem';
 import { Loading } from '../Loading';
-import { Article } from '../../../infra/types';
+import { Article, Channel } from '../../../infra/types';
 import { ArticleReadStatus } from '../../../infra/constants/status';
 import { useDataProxy } from '../../hooks/useDataProxy';
 import { useEventPub } from '../../hooks/useEventPub';
+import { GlobalContext } from '../../hooks/context';
 
 import styles from './articlelist.css';
 
@@ -27,6 +34,8 @@ type ArticleListProps = {
 export const ArticleList = (props: ArticleListProps): JSX.Element => {
   const { channelId, title } = props;
   const dataProxy = useDataProxy();
+  const context = useContext(GlobalContext);
+  const { currentChannel } = context;
   const { eventPubEmit, eventPubOn } = useEventPub();
   const [loading, setLoading] = useState(true);
   const [articleList, setArticleList] = useState<Article[]>([]);
@@ -98,6 +107,24 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
       });
   }, [channelId, listFilter]);
 
+  /**
+   * 判断是否需要同步
+   * @param channel 频道信息
+   */
+  const checkSyncStatus = (channel: Channel | null) => {
+    if (
+      channel &&
+      new Date(channel.lastSyncDate).getTime() <
+        new Date().getTime() - 1000 * 10
+    ) {
+      console.log('===> 需要同步');
+      return true;
+    }
+
+    console.log('===> 不需要同步');
+    return false;
+  };
+
   const syncArticles = useCallback(() => {
     dataProxy
       .PROXY_SYNC_ARTICLE_BY_CHANNEL({
@@ -115,7 +142,7 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
         return res;
       })
       .catch(() => {});
-  }, [channelId, articleList]);
+  }, [currentChannel, channelId, articleList]);
 
   const handleRefresh = useCallback(() => {
     syncArticles();
@@ -161,16 +188,27 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
 
   useEffect(() => {
     resetScrollTop();
-
-    // TODO: 更好的方案是：判断当前channel的最后更新时间，决定是否要开始更新
-    initial()
-      .then(syncArticles)
-      .catch(() => {});
-  }, [channelId, listFilter]);
+  }, []);
 
   useEffect(() => {
     resetScrollTop();
-  }, []);
+
+    initial()
+      .then(() => {
+        if (checkSyncStatus(currentChannel)) {
+          syncArticles();
+        }
+
+        return true;
+      })
+      .catch(() => {});
+  }, [currentChannel, channelId]);
+
+  // 筛选时只重新加载列表，不同步最新数据
+  useEffect(() => {
+    resetScrollTop();
+    initial();
+  }, [listFilter]);
 
   useEffect(() => {
     eventPubOn.MARK_ARTICLE_READ_BY_CHANNEL(() => {

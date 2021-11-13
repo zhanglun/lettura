@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useEventPub } from '../../hooks/useEventPub';
 import { useDataProxy } from '../../hooks/useDataProxy';
+import { GlobalContext } from '../../hooks/context';
 import { Channel } from '../../../infra/types';
 import * as Routes from '../../../infra/constants/routes';
 import { Icon } from '../Icon';
@@ -11,6 +12,7 @@ import defaultSiteIcon from './default.png';
 const ChannelList = (): JSX.Element => {
   const history = useHistory();
   const dataProxy = useDataProxy();
+  const context = useContext(GlobalContext);
   const { eventPubOn } = useEventPub();
   const [channelList, setChannelList] = useState([]);
   const [currentId, setCurrentId] = useState('');
@@ -63,6 +65,9 @@ const ChannelList = (): JSX.Element => {
   const viewArticles = useCallback(
     (channel: Channel) => {
       setCurrentId(channel.id);
+
+      context.currentChannelId = channel.id;
+      context.currentChannel = channel;
 
       history.push(
         `${Routes.CHANNEL.replace(/:name/, channel.title)}?channelId=${
