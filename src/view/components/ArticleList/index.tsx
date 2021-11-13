@@ -43,6 +43,7 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
   const [listFilter, setListFilter] = useState<ListFilter>({
     unread: true,
   });
+  const [syncing, setSyncing] = useState(false);
 
   const resetScrollTop = () => {
     if (articleListRef.current !== null) {
@@ -126,6 +127,8 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
   };
 
   const syncArticles = useCallback(() => {
+    setSyncing(true);
+
     dataProxy
       .PROXY_SYNC_ARTICLE_BY_CHANNEL({
         channelId,
@@ -139,9 +142,13 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
           });
         }
 
+        setSyncing(false);
+
         return res;
       })
-      .catch(() => {});
+      .catch(() => {
+        setSyncing(false);
+      });
   }, [currentChannel, channelId, articleList]);
 
   const handleRefresh = useCallback(() => {
@@ -271,6 +278,7 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
         </div>
       </div>
       <div className={styles.inner}>
+        {syncing && <div className={styles.syncingBar}>同步中</div>}
         {loading ? (
           <Loading />
         ) : (

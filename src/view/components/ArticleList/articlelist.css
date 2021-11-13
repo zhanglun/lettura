@@ -64,3 +64,11 @@
   color: var(--headline-color);
   background-color: var(--color-gray-200);
 }
+
+.syncingBar {
+  text-align: center;
+  font-size: 12px;
+  padding: 8px;
+  background-color: var(--color-05);
+  color: #fff;
+}

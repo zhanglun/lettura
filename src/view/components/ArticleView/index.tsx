@@ -120,7 +120,16 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
       Mercury.parse(article.link)
         .then((page: any) => {
           console.log(page);
-          setPageContent(page.content || article.content);
+
+          // 有时候page.content没有文本内容，此时需要用article.content代替；
+          const content =
+            page.content.replace(/<[^>]+>/g, '').trim().length >
+            article.content.length
+              ? page.content
+              : article.content;
+          setPageContent(content);
+
+          console.log(article.content);
 
           return page;
         })
