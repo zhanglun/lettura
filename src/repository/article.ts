@@ -165,14 +165,23 @@ export class ArticleRepository extends Repository<ArticleEntity> {
       }
     );
 
-    await this.createQueryBuilder()
+    const inserted = await this.createQueryBuilder()
       .insert()
       .into(ArticleEntity)
       .values(values)
       .onConflict(`("link") DO NOTHING`)
       .execute();
 
-    return values;
+    const { generatedMaps } = inserted;
+
+    // 返回的generatedMaps 是一个对象数组，如果已经存在，数组元素是一个只有id的对象，如果是新数据，会包含其他字段
+    if (generatedMaps && generatedMaps.length) {
+      return generatedMaps.filter((item) => {
+        return Object.keys(item).length > 1;
+      }) as ArticleEntity[];
+    }
+
+    return [];
   }
 
   async getUnreadTotal() {

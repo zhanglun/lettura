@@ -107,11 +107,10 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
         console.log(res);
 
         if (res.synced) {
-          initial();
+          setArticleList((list) => {
+            return res.result.concat(list);
+          });
         }
-        // setArticleList((list) => {
-        //   return res.result.concat(list);
-        // });
 
         return res;
       })
