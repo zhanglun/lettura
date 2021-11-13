@@ -1,6 +1,6 @@
 /* eslint-disable react/display-name */
 import React, { useState, useEffect } from 'react';
-import { Table } from '@douyinfe/semi-ui';
+import { Modal, Table } from '@douyinfe/semi-ui';
 import Dayjs from 'dayjs';
 import { Icon } from '../../Icon';
 import { useDataProxy } from '../../../hooks/useDataProxy';
@@ -15,18 +15,67 @@ export const ChannelManagement = () => {
   const { eventPubEmit } = useEventPub();
   const [list, setList] = useState([]);
 
-  const onTitleClick = (e: any, link: string) => {
+  const initial = () => {
+    dataProxy
+      .PROXY_GET_CHANNEL_LIST()
+      .then((result) => {
+        setList(result);
+        console.log(result);
+        return result;
+      })
+      .catch((err: any) => {
+        console.log(err);
+      });
+  };
+
+  const onLinkClick = (e: any, link: string) => {
     openBrowser(link);
     e.preventDefault();
   };
 
   const syncChannel = (channelId: string) => {
-    console.log(channelId);
     Toast.show({
       type: 'info',
       title: '开始同步',
     });
     eventPubEmit.MANUAL_SYNC_UNREAD_WITH_CHANNEL_ID({ channelId });
+  };
+
+  const cancelSubscribe = (channel: ChannelEntity) => {
+    Modal.confirm({
+      title: '取消订阅',
+      content: (
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          确定要取消订阅
+          <span
+            onClick={(e) => onLinkClick(e, channel.link)}
+            role="presentation"
+            style={{ display: 'flex', alignItems: 'center', margin: '0 6px' }}
+          >
+            <img src={channel.favicon} alt="" className={styles.favicon} />
+            <a href={channel.link}>{channel.title}</a>
+          </span>
+          吗？
+        </div>
+      ),
+      onOk() {
+        dataProxy
+          .PROXY_CANCEL_SUBSCRIBE({ channelId: channel.id })
+          .then((res) => {
+            console.log(res);
+
+            if (res.status === 'success') {
+              initial();
+            }
+
+            return res;
+          })
+          .catch(() => {});
+      },
+      onCancel() {
+        alert(2);
+      },
+    });
   };
 
   const columns = [
@@ -36,7 +85,7 @@ export const ChannelManagement = () => {
       render: (text: string, row: ChannelEntity) => (
         <span
           className={styles.tableNameText}
-          onClick={(e) => onTitleClick(e, row.link)}
+          onClick={(e) => onLinkClick(e, row.link)}
           role="presentation"
         >
           <img src={row.favicon} alt="" className={styles.favicon} />
@@ -47,7 +96,15 @@ export const ChannelManagement = () => {
     {
       title: 'RSS',
       dataIndex: 'feedUrl',
-      render: (text: string) => <a href={text}>{text}</a>,
+      render: (text: string) => (
+        <span
+          className={styles.tableNameText}
+          onClick={(e) => onLinkClick(e, text)}
+          role="presentation"
+        >
+          <a href={text}>{text}</a>
+        </span>
+      ),
     },
     {
       title: '最后同步时间',
@@ -68,25 +125,16 @@ export const ChannelManagement = () => {
               name="refresh"
               onClick={() => syncChannel(row.id)}
             />
-            <Icon customClass={styles.tableIcon} name="delete" />
+            <Icon
+              customClass={styles.tableIcon}
+              name="delete"
+              onClick={() => cancelSubscribe(row)}
+            />
           </div>
         );
       },
     },
   ];
-
-  const initial = () => {
-    dataProxy
-      .PROXY_GET_CHANNEL_LIST()
-      .then((result) => {
-        setList(result);
-        console.log(result);
-        return result;
-      })
-      .catch((err: any) => {
-        console.log(err);
-      });
-  };
 
   useEffect(() => {
     initial();

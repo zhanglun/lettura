@@ -313,7 +313,6 @@ export const initEvent = () => {
       const res = await parseRSS(channel.feedUrl);
 
       if (res && res.items) {
-        // TODO: 这里返回的是此次同步时拿到的数据，可能已经入库，所以返回无意义
         result = (await articleRepo.insertArticles(channelId, res.items)) || [];
       }
 
@@ -324,5 +323,16 @@ export const initEvent = () => {
       synced,
       result,
     });
+  });
+
+  /**
+   * 取消订阅
+   */
+  ipcMain.on(EventDict.PROXY_CANCEL_SUBSCRIBE, async (event, params) => {
+    const { channelId } = params;
+
+    const res = await channelRepo.cancelSubscribe(channelId);
+
+    event.reply(EventDict.PROXY_CANCEL_SUBSCRIBE, res);
   });
 };

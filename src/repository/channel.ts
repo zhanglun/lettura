@@ -4,6 +4,11 @@ import { ChannelEntity } from '../entity/channel';
 import { ArticleReadStatus } from '../infra/constants/status';
 import { Channel } from '../infra/types';
 
+type Response = {
+  status: 'success' | 'fail';
+  message: string;
+};
+
 @EntityRepository(ChannelEntity)
 export class ChannelRepository extends Repository<Channel> {
   /**
@@ -115,5 +120,28 @@ export class ChannelRepository extends Repository<Channel> {
     }
 
     return '';
+  }
+
+  /**
+   * 取消订阅
+   * @param channelId 订阅id
+   */
+  async cancelSubscribe(channelId: string): Promise<Response> {
+    const channel = await this.getOneById(channelId);
+
+    if (!channel) {
+      return {
+        status: 'fail',
+        message: '未订阅该频道',
+      };
+    }
+
+    return {
+      status: 'success',
+      message: '成功',
+    };
+
+    // TODO: delete article
+    // TODO: delete channel
   }
 }
