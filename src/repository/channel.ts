@@ -7,6 +7,7 @@ import { Channel } from '../infra/types';
 type Response = {
   status: 'success' | 'fail';
   message: string;
+  data?: any;
 };
 
 @EntityRepository(ChannelEntity)
@@ -126,7 +127,11 @@ export class ChannelRepository extends Repository<Channel> {
    * 取消订阅
    * @param channelId 订阅id
    */
-  async cancelSubscribe(channelId: string): Promise<Response> {
+  async cancelSubscribe(
+    channelId: string
+  ): Promise<
+    Response | { data: { articleChanges: number; channelChanges: number } }
+  > {
     const channel = await this.getOneById(channelId);
 
     if (!channel) {
@@ -136,12 +141,25 @@ export class ChannelRepository extends Repository<Channel> {
       };
     }
 
+    const { raw: articleRaw } = await getConnection()
+      .getRepository(ArticleEntity)
+      .createQueryBuilder('article')
+      .delete()
+      .where('channelId=:channelId', { channelId })
+      .execute();
+
+    const { raw: channelRaw } = await this.createQueryBuilder('channel')
+      .delete()
+      .where('id=:channelId', { channelId })
+      .execute();
+
     return {
       status: 'success',
-      message: '成功',
+      message: '',
+      data: {
+        articleChanges: articleRaw.changes || 0,
+        channelChanges: channelRaw.changes || 0,
+      },
     };
-
-    // TODO: delete article
-    // TODO: delete channel
   }
 }

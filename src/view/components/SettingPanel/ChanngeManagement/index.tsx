@@ -45,14 +45,19 @@ export const ChannelManagement = () => {
     Modal.confirm({
       title: '取消订阅',
       content: (
-        <div style={{ display: 'flex', alignItems: 'center' }}>
+        <div>
           确定要取消订阅
           <span
             onClick={(e) => onLinkClick(e, channel.link)}
             role="presentation"
-            style={{ display: 'flex', alignItems: 'center', margin: '0 6px' }}
+            style={{ margin: '0 6px' }}
           >
-            <img src={channel.favicon} alt="" className={styles.favicon} />
+            <img
+              src={channel.favicon}
+              alt=""
+              className={styles.favicon}
+              style={{ verticalAlign: 'bottom' }}
+            />
             <a href={channel.link}>{channel.title}</a>
           </span>
           吗？
