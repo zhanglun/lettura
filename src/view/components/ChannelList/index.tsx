@@ -13,6 +13,7 @@ const ChannelList = (): JSX.Element => {
   const history = useHistory();
   const dataProxy = useDataProxy();
   const context = useContext(GlobalContext);
+  const { syncingChannelUnreadCount } = context;
   const { eventPubOn } = useEventPub();
   const [channelList, setChannelList] = useState([]);
   const [currentId, setCurrentId] = useState('');
@@ -153,6 +154,13 @@ const ChannelList = (): JSX.Element => {
   useEffect(() => {
     setCurrentId(channelList[0]);
   }, [channelList]);
+  useEffect(() => {
+    if (syncingChannelUnreadCount) {
+      console.log('asdfasdf');
+      refreshList();
+      context.syncingChannelUnreadCount = false;
+    }
+  }, [syncingChannelUnreadCount]);
 
   return (
     <div className={styles.container}>

@@ -4,11 +4,13 @@ import { Channel } from '../../infra/types';
 export type ContextType = {
   currentChannel: Channel | null;
   currentChannelId: string;
+  syncingChannelUnreadCount: boolean;
 };
 
-const context: ContextType = {
+export const defaultContext: ContextType = {
   currentChannelId: '',
   currentChannel: null,
+  syncingChannelUnreadCount: false,
 };
 
-export const GlobalContext = React.createContext(context);
+export const GlobalContext = React.createContext(defaultContext);
