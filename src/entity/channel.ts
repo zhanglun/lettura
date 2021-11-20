@@ -1,6 +1,15 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  JoinTable,
+  OneToMany,
+  ManyToMany,
+} from 'typeorm';
 // eslint-disable-next-line import/no-cycle
 import { ArticleEntity } from './article';
+// eslint-disable-next-line import/no-cycle
+import { FolderEntity } from './folder';
 
 @Entity('channel')
 export class ChannelEntity {
@@ -42,4 +51,8 @@ export class ChannelEntity {
 
   @OneToMany(() => ArticleEntity, (article) => article.channel)
   articles: ArticleEntity;
+
+  @ManyToMany(() => FolderEntity)
+  @JoinTable()
+  folders: FolderEntity[];
 }

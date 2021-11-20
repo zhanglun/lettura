@@ -2,6 +2,7 @@ import { Connection, createConnection } from 'typeorm';
 import log from 'electron-log';
 import { ChannelEntity } from './entity/channel';
 import { ArticleEntity } from './entity/article';
+import { FolderEntity } from './entity/folder';
 
 let connect: Connection;
 
@@ -13,7 +14,7 @@ export const connection = () => {
   return createConnection({
     type: 'better-sqlite3',
     database: './public/salix.sqlite',
-    entities: [ChannelEntity, ArticleEntity],
+    entities: [ChannelEntity, ArticleEntity, FolderEntity],
     // entities: ['./entity/*.ts'],
     // database: `${__dirname}/public/salix.sqlite`,
     // 没搞明白为什么这里不能使用绝对路径，应该和webpack有关系
