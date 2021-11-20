@@ -88,7 +88,7 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
     }
 
     if (channelId === 'inbox' || channelId === 'today') {
-      promise = dataProxy.PROXY_GET_ARTICLE_LSIT(params);
+      promise = dataProxy.PROXY_GET_ARTICLE_LIST(params);
     } else {
       promise = dataProxy.PROXY_GET_ARTICLE_LIST_IN_CHANNEL({
         channelId,

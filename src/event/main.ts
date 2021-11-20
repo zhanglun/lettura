@@ -10,21 +10,19 @@ import {
   MANUAL_SYNC_UNREAD,
   MARK_ARTICLE_READ,
   MARK_ARTICLE_READ_BY_CHANNEL,
-  FINISH_MANUAL_SYNC_UNREAD,
   EXPORT_OPML,
   FINISH_EXPORT_OPML,
   IMPORT_OPML,
   FINISH_IMPORT_OPML,
   PROXY_GET_CHANNEL_LIST,
-  PROXY_GET_ARTICLE_LSIT,
+  PROXY_GET_ARTICLE_LIST,
   PROXY_GET_UNREAD_TOTAL,
   PROXY_GET_ARTICLE_LIST_IN_CHANNEL,
 } from './constant';
 import * as EventDict from './constant';
 import { parseRSS } from '../infra/utils';
-import { Article, Channel, RSSFeedItem } from '../infra/types';
+import { Channel, RSSFeedItem } from '../infra/types';
 import { ArticleEntity } from '../entity/article';
-import { ArticleReadStatus } from '../infra/constants/status';
 
 type OPMLItem = { title: string; feedUrl: string };
 
@@ -32,38 +30,30 @@ export const initEvent = () => {
   const channelRepo: ChannelRepository = getCustomRepository(ChannelRepository);
   const articleRepo: ArticleRepository = getCustomRepository(ArticleRepository);
 
-  function singleFetch(
+  function fetchQueue(
     requestList: Promise<{ items: RSSFeedItem[] }>[],
-    idList: string[],
-    index = 0
+    idList: string[]
   ) {
-    let timer: any = null;
-    let count = index;
+    let p: Promise<any> = Promise.resolve();
+    const result: any = {};
 
-    if (!requestList[index]) {
-      log.info('同步结束');
-      return;
-    }
+    requestList.forEach((req, i) => {
+      p = req
+        .then(async (res) => {
+          log.info('请求完成', res);
+          const list = await articleRepo.insertArticles(idList[i], res.items);
 
-    if (timer) {
-      clearTimeout(timer);
-    }
+          log.info('新增', list.length);
 
-    timer = setTimeout(() => {
-      requestList[count]
-        .then((res) => {
-          log.info('请求完成', count);
-          count += 1;
-          requestList.unshift();
-          singleFetch(requestList, idList, count);
-          return articleRepo.insertArticles(idList[index], res.items);
+          result[idList[i]] = list;
+          return result;
         })
-        .catch((err) => {
-          count += 1;
-          requestList.unshift();
-          log.info(err);
+        .finally(() => {
+          return result;
         });
-    }, 1000);
+    });
+
+    return p;
   }
 
   /**
@@ -73,12 +63,14 @@ export const initEvent = () => {
     const channelList = await channelRepo.getList();
     const channelIdList: string[] = [];
     const requestList: Promise<any>[] = [];
+
     channelList.forEach((channel) => {
       const { feedUrl, id } = channel;
       requestList.push(parseRSS(feedUrl));
       channelIdList.push(id);
     });
-    singleFetch(requestList, channelIdList, 0);
+
+    return fetchQueue(requestList, channelIdList);
   }
 
   /**
@@ -98,15 +90,6 @@ export const initEvent = () => {
     }
 
     return [];
-  }
-
-  /**
-   * 手动更新
-   */
-  async function syncUnreadManually() {
-    log.info('手动同步，创建任务更新数据');
-    await batchSyncArticles();
-    ipcRenderer.send(FINISH_MANUAL_SYNC_UNREAD);
   }
 
   async function syncUnreadManuallyWithChannelId(channelId: string) {
@@ -256,10 +239,10 @@ export const initEvent = () => {
   /**
    * 获取所有的文章
    */
-  ipcMain.on(PROXY_GET_ARTICLE_LSIT, async (event, params) => {
+  ipcMain.on(PROXY_GET_ARTICLE_LIST, async (event, params) => {
     const result = await articleRepo.getAllArticle(params);
 
-    event.reply(PROXY_GET_ARTICLE_LSIT, result);
+    event.reply(PROXY_GET_ARTICLE_LIST, result);
   });
 
   /**
@@ -334,5 +317,11 @@ export const initEvent = () => {
     const res = await channelRepo.cancelSubscribe(channelId);
 
     event.reply(EventDict.PROXY_CANCEL_SUBSCRIBE, res);
+  });
+
+  ipcMain.on(EventDict.PROXY_SYNC_CHANNEL, async (event) => {
+    const result = await batchSyncArticles();
+
+    event.reply(EventDict.PROXY_SYNC_CHANNEL, result);
   });
 };

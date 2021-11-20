@@ -6,6 +6,7 @@ import { Icon } from '../Icon';
 import { Article } from '../../../infra/types';
 import { openBrowser } from '../../../infra/utils';
 import styles from './view.module.css';
+import { Loading } from '../Loading';
 
 type ArticleViewProps = {
   article: Article | null;
@@ -17,6 +18,7 @@ function createMarkup(html: string) {
 
 export const ArticleView = (props: ArticleViewProps): JSX.Element => {
   const { article } = props;
+  const [loading, setLoading] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
   const [pageContent, setPageContent] = useState('');
 
@@ -33,7 +35,8 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
   function favoriteIt() {}
 
   const renderPlaceholder = useCallback(() => {
-    return <div className={styles.placeholder} />;
+    // return <div className={styles.placeholder} />;
+    return '';
   }, []);
 
   const renderDetail = useCallback(() => {
@@ -115,6 +118,7 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
 
   useEffect(() => {
     resetScrollTop();
+    setLoading(true);
 
     if (article) {
       Mercury.parse(article.link)
@@ -130,11 +134,13 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
           setPageContent(content);
 
           console.log(article.content);
+          setLoading(false);
 
           return page;
         })
         .catch(() => {
           setPageContent(article.content);
+          setLoading(false);
         });
     }
   }, [article]);
@@ -146,6 +152,7 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
       ref={containerRef}
       onClick={handleGlobalClick}
     >
+      {/* {loading && <Loading />} */}
       {article ? renderDetail() : renderPlaceholder()}
     </div>
   );

@@ -58,9 +58,18 @@ const ChannelList = (): JSX.Element => {
     history.push(Routes.SETTINGS);
   };
 
-  const refreshList = () => {
-    initial();
-  };
+  const refreshList = useCallback(() => {
+    // 遍历所有订阅，更新未读数字
+    dataProxy
+      .PROXY_SYNC_CHANNEL()
+      .then((res) => {
+        initial();
+        return res;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
 
   const viewArticles = useCallback(
     (channel: Channel) => {
@@ -94,7 +103,7 @@ const ChannelList = (): JSX.Element => {
     return (
       <ul className={styles.list}>
         {channelList.map(
-          (channel: Channel & { articlaCount: number }, i: number) => {
+          (channel: Channel & { articleCount: number }, i: number) => {
             const { articleCount = 0 } = channel;
 
             return (
