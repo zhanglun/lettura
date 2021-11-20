@@ -162,4 +162,31 @@ export class ChannelRepository extends Repository<Channel> {
       },
     };
   }
+
+  /**
+   * 更新频道信息
+   * @param channelId
+   * @param body Partial<ChannelEntity>
+   */
+  async updateInfo(
+    channelId: string,
+    body: Partial<ChannelEntity>
+  ): Promise<any> {
+    const channel = await this.getOneById(channelId);
+
+    if (!channel) {
+      return {
+        status: 'fail',
+        message: '未订阅该频道',
+      };
+    }
+
+    return this.update(channelId, {
+      title: body.title,
+      description: body.description,
+      feedUrl: body.feedUrl,
+      link: body.link,
+      favicon: body.favicon,
+    });
+  }
 }

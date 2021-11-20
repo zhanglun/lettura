@@ -4,6 +4,13 @@
   cursor: pointer;
 }
 
+.tableNameText a {
+  width: 300px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
 .favicon {
   width: 16px;
   height: 16px;

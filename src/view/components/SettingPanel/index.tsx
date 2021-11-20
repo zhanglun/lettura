@@ -1,6 +1,6 @@
 import React from 'react';
 import { Tabs, TabPane } from '@douyinfe/semi-ui';
-import { ChannelManagement } from './ChanngeManagement';
+import { ChannelManagement } from './ChannelManagement';
 import { SettingSubscribe } from './Subscribe';
 import { ImportAndExport } from './ImportAndExport';
 import { MainHeader } from '../MainHeader';

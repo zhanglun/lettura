@@ -1132,38 +1132,38 @@
     ajv "^6.12.0"
     ajv-keywords "^3.4.1"
 
-"@douyinfe/semi-animation-react@2.0.3":
-  version "2.0.3"
-  resolved "https://registry.npmmirror.com/@douyinfe/semi-animation-react/download/@douyinfe/semi-animation-react-2.0.3.tgz"
-  integrity sha1-+T+5RPkZrQQvMxtETWY7hp6p+jo=
+"@douyinfe/semi-animation-react@2.1.0-beta.0":
+  version "2.1.0-beta.0"
+  resolved "https://registry.npmmirror.com/@douyinfe/semi-animation-react/download/@douyinfe/semi-animation-react-2.1.0-beta.0.tgz#e0d4d5ed83c689472a2c68c9f365b4adecebf5b6"
+  integrity sha512-33tRLgbhVbpuQ1Gte5veptiFqjmUAv6VoeX34K2+XVJah2PMEfr6t1BGqvTUIqoJ/xoHQIk7Kq8ro6YMYpwHpw==
   dependencies:
     "@babel/runtime-corejs3" "^7.15.4"
-    "@douyinfe/semi-animation" "2.0.3"
-    "@douyinfe/semi-animation-styled" "2.0.3"
+    "@douyinfe/semi-animation" "2.1.0-beta.0"
+    "@douyinfe/semi-animation-styled" "2.1.0-beta.0"
     classnames "^2.2.6"
 
-"@douyinfe/semi-animation-styled@2.0.3":
-  version "2.0.3"
-  resolved "https://registry.npmmirror.com/@douyinfe/semi-animation-styled/download/@douyinfe/semi-animation-styled-2.0.3.tgz"
-  integrity sha1-RWyvZyLpcIE5nE8iFkwT9ZCVHbA=
+"@douyinfe/semi-animation-styled@2.1.0-beta.0":
+  version "2.1.0-beta.0"
+  resolved "https://registry.npmmirror.com/@douyinfe/semi-animation-styled/download/@douyinfe/semi-animation-styled-2.1.0-beta.0.tgz#1c0cb8353ec8a1139d71b66ec1bd7a82a3dbb1a2"
+  integrity sha512-ehA54TR3F9J7J7UQ/No2yUIPFYAJvlsK0BLcENQraNQFFJmbYwYfIPTFsqY+hAQ6Ta6w+/DGNs0Wo41Ewf5QIQ==
   dependencies:
     "@babel/runtime-corejs3" "^7.15.4"
 
-"@douyinfe/semi-animation@2.0.3":
-  version "2.0.3"
-  resolved "https://registry.npmmirror.com/@douyinfe/semi-animation/download/@douyinfe/semi-animation-2.0.3.tgz"
-  integrity sha1-pGldEAL0aagov/Ayo90wzzqF0ag=
+"@douyinfe/semi-animation@2.1.0-beta.0":
+  version "2.1.0-beta.0"
+  resolved "https://registry.npmmirror.com/@douyinfe/semi-animation/download/@douyinfe/semi-animation-2.1.0-beta.0.tgz#747f4118306d570e3940e462bd6a1bda7f501b5b"
+  integrity sha512-eEDRNztiiDS/NyhvFvbj6JwqYstSoQDpQ/PUN29o71H/sTTETtn9SBEspx+z8hElYRtEuIE3ZFKJH6/pFmKDdg==
   dependencies:
     "@babel/runtime-corejs3" "^7.15.4"
     bezier-easing "^2.1.0"
 
-"@douyinfe/semi-foundation@2.0.3":
-  version "2.0.3"
-  resolved "https://registry.npmmirror.com/@douyinfe/semi-foundation/download/@douyinfe/semi-foundation-2.0.3.tgz"
-  integrity sha1-tRt5zFSjjtCvwxLuIdv7DbDezYw=
+"@douyinfe/semi-foundation@2.1.0-beta.0":
+  version "2.1.0-beta.0"
+  resolved "https://registry.npmmirror.com/@douyinfe/semi-foundation/download/@douyinfe/semi-foundation-2.1.0-beta.0.tgz#5bf7234d36516186348ad6a524d9af79c0fed810"
+  integrity sha512-/gJRLuoPcimydCah6L3mJij0rS+Hvn5hvsvtbJjz+JOIwpwlPvjqxJPkaAhHYip0Lb7EesYZrrDZm458JUlNAw==
   dependencies:
     "@babel/runtime-corejs3" "^7.15.4"
-    "@douyinfe/semi-animation" "2.0.3"
+    "@douyinfe/semi-animation" "2.1.0-beta.0"
     async-validator "^3.5.0"
     classnames "^2.2.6"
     date-fns "^2.9.0"
@@ -1172,38 +1172,39 @@
     memoize-one "^5.2.1"
     scroll-into-view-if-needed "^2.2.24"
 
-"@douyinfe/semi-icons@2.0.3":
-  version "2.0.3"
-  resolved "https://registry.npmmirror.com/@douyinfe/semi-icons/download/@douyinfe/semi-icons-2.0.3.tgz"
-  integrity sha1-ZrKGgSoa89T/F61JeEBYrCw8IKQ=
+"@douyinfe/semi-icons@2.1.0-beta.0":
+  version "2.1.0-beta.0"
+  resolved "https://registry.npmmirror.com/@douyinfe/semi-icons/download/@douyinfe/semi-icons-2.1.0-beta.0.tgz#27b156abeae0d326b778c3f664fbb1138717fe48"
+  integrity sha512-FwMwOfo0RHbHhPhFVrb4rBP3E8gU6nylwveNgWKmzvNTjUNNRItq4xZXNJJ1TkQCXnXgwfvjo3T4ctvznlwH2w==
+  dependencies:
+    "@babel/runtime-corejs3" "^7.15.4"
+    classnames "^2.2.6"
+
+"@douyinfe/semi-illustrations@2.1.0-beta.0":
+  version "2.1.0-beta.0"
+  resolved "https://registry.npmmirror.com/@douyinfe/semi-illustrations/download/@douyinfe/semi-illustrations-2.1.0-beta.0.tgz#333005140fdb1b6ea34c907cefabe199ad2fe977"
+  integrity sha512-KffvTjGjoP9MY13f+bZbXjXPwQ/0HRWT3UnwqXPLDwZAVZeaxz8x8mK12+Y0or3eYY8ykCN3JH61EaemRTdMIw==
   dependencies:
     "@babel/runtime-corejs3" "^7.15.4"
 
-"@douyinfe/semi-illustrations@2.0.3":
-  version "2.0.3"
-  resolved "https://registry.npmmirror.com/@douyinfe/semi-illustrations/download/@douyinfe/semi-illustrations-2.0.3.tgz"
-  integrity sha1-Q1fcaSa1fg5irCNetm48BEXFBbw=
-  dependencies:
-    "@babel/runtime-corejs3" "^7.15.4"
-
-"@douyinfe/semi-theme-default@2.0.3":
-  version "2.0.3"
-  resolved "https://registry.npmmirror.com/@douyinfe/semi-theme-default/download/@douyinfe/semi-theme-default-2.0.3.tgz"
-  integrity sha1-d9k8L9eo2b5EhcF1xv8XD9B3uDU=
+"@douyinfe/semi-theme-default@2.1.0-beta.0":
+  version "2.1.0-beta.0"
+  resolved "https://registry.npmmirror.com/@douyinfe/semi-theme-default/download/@douyinfe/semi-theme-default-2.1.0-beta.0.tgz#0e5ef43d6d16c092c9f493658a4575f4313dd103"
+  integrity sha512-pD4kaKp0wmarwlurfDAUHWr5ZWNNJCJxA35r2KLJqXpfm40aWYZ0l6shyc44t54Yvwag75YT0CoyCmUh9Sdt+A==
   dependencies:
     glob "^7.1.6"
 
-"@douyinfe/semi-ui@^2.0.3":
-  version "2.0.3"
-  resolved "https://registry.npmmirror.com/@douyinfe/semi-ui/download/@douyinfe/semi-ui-2.0.3.tgz"
-  integrity sha1-ctyvDZOQHcMrljd/HJuKx2w/rKg=
+"@douyinfe/semi-ui@^2.1.0-beta.0":
+  version "2.1.0-beta.0"
+  resolved "https://registry.npmmirror.com/@douyinfe/semi-ui/download/@douyinfe/semi-ui-2.1.0-beta.0.tgz#ef2c26cd0be388ab9901445a476f2dc4b951a37e"
+  integrity sha512-kS0cgWT+320UGpDOgRaYQQzF7jHjzgfIRiqYHXMbO4UKZtzwrVaYESGMLLlBN4WiKcWFFPnyoR7G3l1y19GMow==
   dependencies:
     "@babel/runtime-corejs3" "^7.15.4"
-    "@douyinfe/semi-animation-react" "2.0.3"
-    "@douyinfe/semi-foundation" "2.0.3"
-    "@douyinfe/semi-icons" "2.0.3"
-    "@douyinfe/semi-illustrations" "2.0.3"
-    "@douyinfe/semi-theme-default" "2.0.3"
+    "@douyinfe/semi-animation-react" "2.1.0-beta.0"
+    "@douyinfe/semi-foundation" "2.1.0-beta.0"
+    "@douyinfe/semi-icons" "2.1.0-beta.0"
+    "@douyinfe/semi-illustrations" "2.1.0-beta.0"
+    "@douyinfe/semi-theme-default" "2.1.0-beta.0"
     async-validator "^3.5.0"
     classnames "^2.2.6"
     copy-text-to-clipboard "^2.1.1"

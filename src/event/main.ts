@@ -324,4 +324,19 @@ export const initEvent = () => {
 
     event.reply(EventDict.PROXY_SYNC_CHANNEL, result);
   });
+
+  ipcMain.on(
+    EventDict.PROXY_UPDATE_CHANNEL_INFO,
+    async (
+      event,
+      params: { channelId: string; body: Partial<ChannelEntity> }
+    ) => {
+      const result = await channelRepo.updateInfo(
+        params.channelId,
+        params.body
+      );
+
+      event.reply(EventDict.PROXY_UPDATE_CHANNEL_INFO, result);
+    }
+  );
 };
