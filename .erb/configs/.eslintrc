@@ -3,6 +3,6 @@
     "no-console": "off",
     "global-require": "off",
     "import/no-dynamic-require": "off",
-    "react/display-name": [false, { "ignoreTranspilerName": true }]
+    "react/display-name": ["off", { "ignoreTranspilerName": false }]
   }
 }
