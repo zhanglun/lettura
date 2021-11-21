@@ -1,14 +1,6 @@
 /* eslint-disable react/display-name */
 import React, { useState, useEffect, useCallback } from 'react';
-import {
-  Modal,
-  Form,
-  Table,
-  Avatar,
-  Row,
-  Col,
-  useFormApi,
-} from '@douyinfe/semi-ui';
+import { Modal, Form, Table, Avatar, Row, Col } from '@douyinfe/semi-ui';
 import Dayjs from 'dayjs';
 import { Icon } from '../../Icon';
 import { useDataProxy } from '../../../hooks/useDataProxy';
@@ -24,7 +16,7 @@ export const ChannelManagement = () => {
   const [formAPI, setFormAPI] = useState<any>();
   const [list, setList] = useState([]);
   const [editModalStatus, setEditModalStatus] = useState(false);
-  const [record, setRecord] = useState<ChannelEntity | unknown>({});
+  const [record, setRecord] = useState<Partial<ChannelEntity>>({});
 
   const initial = () => {
     dataProxy
@@ -74,7 +66,7 @@ export const ChannelManagement = () => {
       reader.readAsDataURL(file.fileInstance);
       reader.onload = function () {
         formAPI.setValue('favicon', [reader.result]);
-        setRecord({ ...record, favicon: reader.result });
+        setRecord({ ...record, favicon: reader.result as string });
       };
       reader.onerror = function (error) {
         console.log('Error: ', error);

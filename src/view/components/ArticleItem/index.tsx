@@ -5,6 +5,20 @@ import { Article } from '../../../infra/types';
 import styles from './articleitem.css';
 import { useDataProxy } from '../../hooks/useDataProxy';
 
+import bannerImage1 from './images/pattern-1.png';
+import bannerImage2 from './images/pattern-2.png';
+import bannerImage3 from './images/pattern-3.png';
+import bannerImage4 from './images/pattern-4.png';
+import bannerImage5 from './images/pattern-5.png';
+
+const bannerImageList = [
+  bannerImage1,
+  bannerImage2,
+  bannerImage3,
+  bannerImage4,
+  bannerImage5,
+];
+
 type ArticleItemProps = {
   article: Article;
   onSelect: (article: Article) => any;
@@ -41,8 +55,7 @@ export const ArticleItem = (props: ArticleItemProps) => {
   };
 
   const parseBannerImage = (content: string): string => {
-    const banner =
-      'https://img.iplaysoft.com/wp-content/uploads/2021/p/coloros12-wallpapers/coloros12.jpg';
+    const banner = bannerImageList[Math.ceil(Math.random() * 4)];
 
     if (!content) {
       return banner;
