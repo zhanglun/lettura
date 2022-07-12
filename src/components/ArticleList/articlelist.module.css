@@ -1,0 +1,31 @@
+.container {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: calc(
+      100% - var(--app-toolbar-height)
+    );
+  height: 100%;
+  border-right: 1px solid var(--line-color);
+  user-select: none;
+}
+
+.inner {
+  overflow-y: auto;
+}
+
+.list {
+  margin: 0;
+  padding: 12px;
+}
+
+.active {
+  color: var(--color-primary-blue);
+}
+
+.syncingBar {
+  text-align: center;
+  font-size: 12px;
+  padding: 8px;
+  background-color: var(--color-05);
+  color: #fff;
+}

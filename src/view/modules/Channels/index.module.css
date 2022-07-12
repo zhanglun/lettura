@@ -1,8 +1,0 @@
-.channel {
-  display: flex;
-  flex-direction: column;
-  flex: 0 0 auto;
-  width: var(--app-channel-width);
-  background-color: #fff;
-  box-shadow: 0 0 12px -6px rgba(0, 0, 0, 0.2);
-}

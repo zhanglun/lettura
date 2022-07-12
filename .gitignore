@@ -50,3 +50,4 @@ npm-debug.log.*
 *.scss.d.ts
 
 public/**/*
+src-tauri/target

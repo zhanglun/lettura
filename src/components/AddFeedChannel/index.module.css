@@ -1,0 +1,21 @@
+.box {
+  width: 460px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.label {
+  width: 100px;
+  margin-right: 20px;
+}
+
+.formItem input {
+}
+
+.action {
+  margin-left: 20px;
+}

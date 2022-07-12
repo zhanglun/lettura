@@ -1,0 +1,99 @@
+@import 'global.css';
+
+/* @import '../../../node_modules/react-tabs/style/react-tabs.css'; */
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans GB',
+    'MicroSoft YaHei', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
+    'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #333;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  max-height: 100%;
+}
+
+body {
+  overflow: hidden;
+}
+
+#root {
+  height: 100%;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+a {
+  text-decoration: none;
+  color: var(--link-default-color);
+}
+
+a:hover {
+  color: var(--link-hover-color);
+}
+
+/* ================= */
+
+.flex {
+  display: flex;
+}
+
+.align-items-center {
+  align-items: center;
+}
+
+/* ================= */
+
+button {
+  padding: 0 10px;
+  height: var(--button-height-normal);
+  line-height: var(--button-height-normal);
+  font-size: 13px;
+  border-radius: var(--button-radius);
+  border: none;
+  outline: none;
+
+  cursor: pointer;
+}
+
+button:disabled {
+  background-color: var(--input-disabled-bg);
+  cursor: not-allowed;
+}
+
+.button--primary {
+  color: var(--color-primary-white);
+  background-color: var(--color-primary-blue);
+}
+
+.button--secondary {
+  color: var(--color-primary-90);
+  background-color: var(--color-primary-white);
+  box-shadow: 0 0.5px 1px 0.5px rgba(0, 0, 0, 0.1);
+}
+
+input::placeholder {
+  color: var(--input-placeholder-color);
+}
+
+input:focus {
+  border-color: var(--input-shadow-color);
+  box-shadow: var(--input-shadow);
+}
+
+.no-electron-drag {
+  -webkit-app-region: no-drag;
+}
