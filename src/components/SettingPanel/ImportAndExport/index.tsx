@@ -1,4 +1,5 @@
 import React, { useRef, useState } from "react";
+import { Input, Button, Radio, RadioGroup, TextArea } from "@douyinfe/semi-ui";
 import styles from "../setting.module.css";
 import { db, Channel as ChannelModel } from "../../../db";
 
@@ -28,7 +29,7 @@ export const ImportAndExport = (props: any) => {
         return {
           title,
           link,
-          feedUrl,
+          feedUrl
         };
       })
       .filter((item) => item.title && item.feedUrl && item.link);
@@ -56,7 +57,8 @@ export const ImportAndExport = (props: any) => {
     reader.readAsText(e.target.files[0]);
   };
 
-  const handleChangeSourceType = (type: string) => {
+  const handleChangeSourceType = (e: any) => {
+    const type = e.target.value;
     setSourceType(type);
   };
 
@@ -70,7 +72,8 @@ export const ImportAndExport = (props: any) => {
     }
   };
 
-  const exportToOPML = () => {};
+  const exportToOPML = () => {
+  };
 
   return (
     <div className={styles.panel}>
@@ -82,30 +85,16 @@ export const ImportAndExport = (props: any) => {
         <div className={styles.section}>
           <p className={styles.options}>OPML 导入</p>
           <p>
-            <label htmlFor="source-file">
-              <input
-                type="radio"
-                id="source-file"
-                checked={sourceType === "file"}
-                onChange={() => handleChangeSourceType("file")}
-              />
-              File
-            </label>
-            <label htmlFor="source-text">
-              <input
-                type="radio"
-                id="source-text"
-                checked={sourceType === "text"}
-                onChange={() => handleChangeSourceType("text")}
-              />
-              Text
-            </label>
+            <RadioGroup onChange={(e) => handleChangeSourceType(e)} value={sourceType} aria-label="单选组合示例"
+                        name="radio-group">
+              <Radio value={"file"}>File</Radio>
+              <Radio value={"text"}>Text</Radio>
+            </RadioGroup>
           </p>
           {sourceType === "file" && (
             <div>
               <span>{file && file.name}</span>
-              <input
-                className={styles.fileInput}
+              <Input
                 ref={fileInputRef}
                 type="file"
                 accept=".opml,.xml"
@@ -118,15 +107,10 @@ export const ImportAndExport = (props: any) => {
           )}
           {sourceType === "text" && (
             <div>
-              <textarea
-                name="input"
-                cols={30}
-                rows={10}
-                onChange={handleTextSourceChange}
-              ></textarea>
+              <TextArea autosize onChange={handleTextSourceChange} />
             </div>
           )}
-          <button onClick={importFromOPML}>导入</button>
+          <Button theme="solid" type="primary" onClick={importFromOPML}>导入</Button>
         </div>
       </div>
       <div className={styles.panelHeader}>
@@ -138,7 +122,7 @@ export const ImportAndExport = (props: any) => {
       <div className={styles.panelBody}>
         <div className={styles.section}>
           <div className={styles.options}>OPML 导出</div>
-          <button onClick={exportToOPML}>导出</button>
+          <Button theme="solid" type="primary" onClick={exportToOPML}>导出</Button>
         </div>
       </div>
     </div>
