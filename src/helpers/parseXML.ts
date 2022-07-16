@@ -47,8 +47,8 @@ export const parseFeedXML = (
   };
 
   const parseItems = (doc: any) => {
-    const items = doc.querySelectorAll("item, entry");
-    console.log('items --->', items)
+    const items = doc.querySelectorAll("item, article");
+    console.log("items --->", items);
     const res = [];
 
     for (let item of items) {
@@ -101,17 +101,17 @@ export const parseFeedXML = (
 
   if (dom.querySelector("channel, feed")) {
     channel = {
-      ...parseChannel(dom.querySelector("channel, feed")),
+      ...parseChannel(dom.querySelector("channel, feed"))
     };
   }
 
-  if (dom.querySelector("item, entry")) {
+  if (dom.querySelector("item, article")) {
     items = parseItems(dom);
   }
 
   return {
     channel,
-    items,
+    items
   };
 };
 
@@ -122,7 +122,7 @@ export const extendFeedItems = (
   return items.map((item) => {
     return {
       ...item,
-      ...data,
+      ...data
     };
   });
 };
@@ -133,7 +133,7 @@ export const extendChannel = (
 ) => {
   return {
     ...channel,
-    ...data,
+    ...data
   };
 };
 
@@ -141,27 +141,87 @@ export const requestFeed = (
   url: string
 ): Promise<{ channel: ChannelModel; items: ArticleModel[] } | any> => {
   return fetch(url, {
-      method: "GET",
-      responseType: 2,
-    })
-    .then(({ status, data }: any) => {
+    method: "GET",
+    responseType: 2
+  })
+    .then(({ status, data }: any): Promise<any> => {
       if (status === 200) {
         const { channel, items } = parseFeedXML(data);
-
-        return {
-          channel: extendChannel(channel, { feedUrl: url }),
-          items: extendFeedItems(items, { feedUrl: url, unread: 1 }),
-        };
+        return getBestImages(extendFeedItems(items, { feedUrl: url, unread: 1 })).then((res) => {
+          return {
+            channel: extendChannel(channel, { feedUrl: url }),
+            items: res
+          };
+        }).catch(() => {
+          return {
+            channel: extendChannel(channel, { feedUrl: url }),
+            items: extendFeedItems(items, { feedUrl: url, unread: 1 })
+          };
+        });
       } else {
         console.log("-=--> http request Error", status, data);
-        return {
+        return Promise.resolve({
           status,
-          data,
-        }
+          data
+        });
       }
+    }).then((result) => {
+      return result;
     });
 };
 
+export const getBestImages = (articles: ArticleModel[]): Promise<ArticleModel[]> => {
+  return Promise.all(articles.map((article: ArticleModel) => {
+    console.log('article', article)
+
+    if (article.image && /^https?:\/\/[^\/]+\/vi\/[-_A-Za-z0-9]+\/[^\/]*default\.jpg$/.test(article.image)) {
+      const maxResUrl_1 = article.image.replace(/^(https?:\/\/[^\/]+\/vi\/[-_A-Za-z0-9]+\/)[^\/]*(default\.jpg)$/, "$1maxres$2");
+      return fetch(maxResUrl_1, { method: "HEAD" }).then(function(response) {
+        if (response.status === 200) {
+          article.image = maxResUrl_1;
+        }
+        return article;
+      }).catch(function() {
+        return article;
+      });
+    } else if (article.link && !article.image) {
+      return fetch(article.link, {
+        method: "GET",
+        responseType: 2
+      }).then((response: any) => {
+        const { status, data } = response;
+
+        if (status === 200) {
+          const dom = (new DOMParser()).parseFromString(data, "text/html");
+          const metaImage = dom.querySelector("head meta[property=\"og:image\"]");
+
+          if (metaImage) {
+            let base = dom.querySelector("head base");
+
+            if (!base) {
+              base = dom.createElement("base");
+              base.setAttribute("href", response.url);
+              dom.getElementsByTagName("head")[0].appendChild(base);
+            }
+
+            const a: HTMLAnchorElement = dom.createElement("a");
+
+            a.href = metaImage.getAttribute("content") || "";
+            article.image = a.href;
+          }
+
+          return article;
+        }
+
+        return article;
+      }).catch(function(err) {
+        console.error(err)
+        return article;
+      });
+    }
+    return article;
+  }));
+};
 export const getFavico = (url: string) => {
   const hostname = url ? new URL(url).hostname : "";
 

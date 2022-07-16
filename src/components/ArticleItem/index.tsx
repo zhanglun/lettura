@@ -54,7 +54,7 @@ export const ArticleItem = React.memo((props: any) => {
       <div className={styles.header}>
         <div
           className={styles.image}
-          style={{ backgroundImage: `url("${bannerImage}")` }}
+          style={{ backgroundImage: `url("${article.image}")` }}
         />
         <div className={styles.title}>
           <div className={styles.titleText}>{article.title}</div>

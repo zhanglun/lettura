@@ -2,6 +2,7 @@ import React from "react";
 import { Icon } from "../Icon";
 import { requestFeed } from "../../helpers/parseXML";
 import { Toast } from "../Toast";
+import { Notification } from "@douyinfe/semi-ui";
 import styles from "./header.module.css";
 import * as dataAgent from "../../helpers/dataAgent";
 
@@ -16,29 +17,37 @@ export const MainHeader = (props: MainHeaderProps) => {
 
   const syncArticles = () => {
     feedUrl &&
-      requestFeed(feedUrl).then((res) => {
-        if (res.channel && res.items) {
-          const { items } = res;
-          console.log(';=-====>2222', items)
-          dataAgent.bulkAddArticle(items)
-            .then(() => {
-              return dataAgent.updateCountWithChannel(feedUrl)
-            })
-            .then(() => {
-            Toast.show({
-              title: "success",
-              content: "Sync Success!",
-            });
+    requestFeed(feedUrl).then((res) => {
+      if (res.channel && res.items) {
+        const { items } = res;
+
+        console.log('items ===>',items)
+
+        dataAgent.bulkAddArticle(items)
+          .then(() => {
+            return dataAgent.updateCountWithChannel(feedUrl);
           })
-        }
-      });
+          .then(() => {
+            Notification.success(
+              {
+                duration: 2,
+                position: "top",
+                showClose: false,
+                title: "Sync Success",
+                content: "Sync the feed",
+              }
+            );
+          });
+      }
+    });
   };
 
   const handleRefresh = () => {
     syncArticles();
   };
 
-  const markAllRead = () => {};
+  const markAllRead = () => {
+  };
 
   return (
     <div className={styles.container}>

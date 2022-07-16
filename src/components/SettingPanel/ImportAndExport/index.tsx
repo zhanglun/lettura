@@ -62,9 +62,7 @@ export const ImportAndExport = (props: any) => {
     setSourceType(type);
   };
 
-  const handleTextSourceChange = (e: any) => {
-    const text = e.target.value;
-
+  const handleTextSourceChange = (text:string) => {
     if (text) {
       const list = parserOPML(text);
       console.log(list);

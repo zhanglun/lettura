@@ -1,8 +1,8 @@
 .item {
   box-sizing: border-box;
   position: relative;
-  padding: 12px 8px 12px 12px;
-  margin: 8px 0;
+  padding: 10px 8px 10px 10px;
+  margin: 6px 0;
   list-style-type: none;
   background: #ffffff;
   border-radius: 4px;

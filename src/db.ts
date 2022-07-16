@@ -13,6 +13,7 @@ export interface Article {
   id?: number;
   title: string;
   link: string;
+  image: string;
   feedUrl: string;
   description?: string;
   content?: string;
@@ -26,9 +27,9 @@ export class MySubClassedDexie extends Dexie {
 
   constructor() {
     super('salix');
-    this.version(1).stores({
+    this.version(1.1).stores({
       channels: '++id, title, link, &feedUrl, description, pubDate, unread',
-      articles: '++id, title, &link, feedUrl, author, description, content, pubDate, unread',
+      articles: '++id, title, &link, image, feedUrl, author, description, content, pubDate, unread',
     });
   }
 }
