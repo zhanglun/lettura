@@ -21,8 +21,9 @@
 }
 
 .main {
-  width: 900px;
-  padding: 0 120px;
+  width: 100%;
+  max-width: 900px;
+  padding: 0 90px;
   margin: 0 auto;
   position: relative;
 }
@@ -92,7 +93,7 @@
 .helpBar {
   position: fixed;
   top: 160px;
-  margin-left: -80px;
+  margin-left: -60px;
 }
 
 .menu {
@@ -126,7 +127,7 @@
   background-color: var(--color-gray-200);
 }
 
-.content img {
+.content img, .content video {
   display: block;
   max-width: 100% !important;
   height: auto;

@@ -3,7 +3,7 @@
   "build": {
     "beforeBuildCommand": "yarn build",
     "beforeDevCommand": "yarn start",
-    "devPath": "http://localhost:3000",
+    "devPath": "http://localhost:3000/",
     "distDir": "../build"
   },
   "package": {
@@ -59,7 +59,7 @@
         "height": 600,
         "resizable": true,
         "title": "Salix",
-        "width": 800
+        "width": 1200
       }
     ]
   }

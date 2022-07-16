@@ -1,4 +1,4 @@
-import { http } from "@tauri-apps/api";
+import { fetch } from "@tauri-apps/api/http";
 import { Channel as ChannelModel, Article as ArticleModel } from "../db";
 
 type ChannelRes = Omit<ChannelModel, "feedUrl">;
@@ -140,8 +140,7 @@ export const extendChannel = (
 export const requestFeed = (
   url: string
 ): Promise<{ channel: ChannelModel; items: ArticleModel[] } | any> => {
-  return http
-    .fetch(url, {
+  return fetch(url, {
       method: "GET",
       responseType: 2,
     })

@@ -13,7 +13,7 @@
 .inner {
   height: calc(100% - var(--app-toolbar-height));
   overflow-y: auto;
-  padding: 10px 14px 14px;
+  padding: 10px;
 }
 
 .list {
@@ -60,7 +60,7 @@
 
 .item {
   height: 34px;
-  padding: 4px 16px;
+  padding: 4px 14px;
   display: flex;
   align-items: center;
   cursor: pointer;
@@ -73,6 +73,7 @@
 
 .itemActive .name {
   color: var(--color-primary-blue);
+  font-weight: bold;
 }
 
 .item:hover {
@@ -93,10 +94,10 @@
 }
 
 .icon {
-  width: 14px;
-  height: 14px;
+  width: 16px;
+  height: 16px;
   border-radius: 4px;
-  margin-right: 18px;
+  margin-right: 14px;
 }
 
 .count {

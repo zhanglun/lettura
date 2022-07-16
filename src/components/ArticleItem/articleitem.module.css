@@ -14,7 +14,7 @@
 
 .header {
   display: grid;
-  grid-template-columns: 105px 1fr 0;
+  grid-template-columns: 64px 1fr 0;
   grid-template-rows: 46px 14px;
   grid-column-gap: 5px;
 }
@@ -24,7 +24,7 @@
 }
 
 .image {
-  width: 100px;
+  width: 60px;
   height: 60px;
   background-size: cover;
   grid-row-start: 1;
