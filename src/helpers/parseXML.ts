@@ -4,6 +4,33 @@ import { Channel as ChannelModel, Article as ArticleModel } from "../db";
 type ChannelRes = Omit<ChannelModel, "feedUrl">;
 type ArticleRes = Omit<ArticleModel, "feedUrl" | "unread">;
 
+export const parseRssFeed = (url: string, content: any) => {
+  console.log('parseRssFeed', url, content)
+}
+
+export const parseAtomFeed = (url:string, content: any) => {
+  console.log('parseAtomFeed', content)
+}
+
+export const parseFeed = (url: string, content: any) => {
+  if (typeof content === 'string') {
+    content = (new DOMParser()).parseFromString(content, 'text/xml');
+  }
+  if (content.children.length !== 1) {
+    throw new Error('Unknown document type: should be contains one child element');
+  }
+
+  const rootTagName = content.children[0].tagName;
+
+  if (rootTagName === 'rss') {
+    return parseRssFeed(url, content);
+  } else if (rootTagName === 'feed') {
+    return parseAtomFeed(url, content);
+  }
+
+  throw new Error('Unknown document type: root element should be one of [rss, feed]');
+}
+
 export const parseFeedXML = (
   xml: string
 ): {
@@ -146,6 +173,10 @@ export const requestFeed = (
   })
     .then(({ status, data }: any): Promise<any> => {
       if (status === 200) {
+        console.log('----> data', data)
+
+        parseFeed(url, data);
+
         const { channel, items } = parseFeedXML(data);
         return getBestImages(extendFeedItems(items, { feedUrl: url, unread: 1 })).then((res) => {
           return {
