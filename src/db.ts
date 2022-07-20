@@ -17,7 +17,7 @@ export interface Article {
   feedUrl: string;
   description?: string;
   content?: string;
-  pudDate?: Date;
+  pubDate?: Date;
   unread: number;
 }
 
