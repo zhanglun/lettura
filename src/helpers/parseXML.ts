@@ -192,7 +192,6 @@ export const parseRssFeed = (
 } => {
   const parseItems = (doc: any) => {
     const items = doc.querySelectorAll("item, article");
-    console.log("items --->", items);
     const res = [];
 
     for (let item of items) {
@@ -326,8 +325,10 @@ export const getBestImages = (articles: ArticleModel[]): Promise<ArticleModel[]>
         if (response.status === 200) {
           article.image = maxResUrl_1;
         }
+
         return article;
       }).catch(function() {
+        console.log('---->', maxResUrl_1)
         return article;
       });
     } else if (article.link && !article.image) {
