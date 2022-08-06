@@ -1,10 +1,8 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Dayjs from "dayjs";
-// @ts-ignore
-import Mercury from "@postlight/mercury-parser";
 import { Icon } from "../Icon";
 import styles from "./view.module.css";
-import { getFavico } from "../../helpers/parseXML";
+import { getChannelFavicon } from "../../helpers/parseXML";
 
 type ArticleViewProps = {
   article: any | null;
@@ -40,7 +38,7 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
     }
 
     const { feedUrl, link } = article;
-    const ico = getFavico(feedUrl);
+    const ico = getChannelFavicon(feedUrl);
 
     return (
       <div className={styles.inner} ref={containerRef}>

@@ -141,7 +141,7 @@ export const parseAtomFeed = (url: string, doc: any): {
     entry.feedUrl = url;
 
     return entry;
-  }) as ArticleModel[]
+  }) as ArticleModel[];
 
   items = items.sort((a: ArticleModel, b: ArticleModel) => {
     // @ts-ignore
@@ -157,7 +157,7 @@ export const parseAtomFeed = (url: string, doc: any): {
 
   return {
     channel,
-    items,
+    items
   };
 };
 
@@ -294,12 +294,18 @@ export const requestFeed = (
 
         return getBestImages(extendFeedItems(items, { feedUrl: url, unread: 1 })).then((res) => {
           return {
-            channel: extendChannel(channel, { feedUrl: url }),
+            channel: extendChannel(channel, {
+              feedUrl: url,
+              favicon: getChannelFavicon(url)
+            }),
             items: res
           };
         }).catch(() => {
           return {
-            channel: extendChannel(channel, { feedUrl: url }),
+            channel: extendChannel(channel, {
+              feedUrl: url,
+              favicon: getChannelFavicon(url)
+            }),
             items: extendFeedItems(items, { feedUrl: url, unread: 1 })
           };
         });
@@ -328,7 +334,7 @@ export const getBestImages = (articles: ArticleModel[]): Promise<ArticleModel[]>
 
         return article;
       }).catch(function() {
-        console.log('---->', maxResUrl_1)
+        console.log("---->", maxResUrl_1);
         return article;
       });
     } else if (article.link && !article.image) {
@@ -369,7 +375,7 @@ export const getBestImages = (articles: ArticleModel[]): Promise<ArticleModel[]>
     return article;
   }));
 };
-export const getFavico = (url: string) => {
+export const getChannelFavicon = (url: string) => {
   const hostname = url ? new URL(url).hostname : "";
 
   return "https://icons.duckduckgo.com/ip3/" + hostname + ".ico";

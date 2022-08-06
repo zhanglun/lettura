@@ -1,10 +1,10 @@
 import React from "react";
-import { Icon } from "../Icon";
-import { requestFeed } from "../../helpers/parseXML";
-import { Toast } from "../Toast";
 import { Notification } from "@douyinfe/semi-ui";
+import { Icon } from "../Icon";
 import styles from "./header.module.css";
+import { requestFeed, getChannelFavicon } from "../../helpers/parseXML";
 import * as dataAgent from "../../helpers/dataAgent";
+import { useStore } from "../../hooks/useStore";
 
 type MainHeaderProps = {
   channelId: string | null;
@@ -13,15 +13,16 @@ type MainHeaderProps = {
 };
 
 export const MainHeader = (props: MainHeaderProps) => {
-  const { feedUrl, title } = props;
+  const { feedUrl } = props;
+  const { channel: channelInStore } = useStore();
+
+  console.log("channelInStore", channelInStore);
 
   const syncArticles = () => {
     feedUrl &&
     requestFeed(feedUrl).then((res) => {
       if (res.channel && res.items) {
         const { items } = res;
-
-        console.log('items ===>',items)
 
         dataAgent.bulkAddArticle(items)
           .then(() => {
@@ -34,7 +35,7 @@ export const MainHeader = (props: MainHeaderProps) => {
                 position: "top",
                 showClose: false,
                 title: "Sync Success",
-                content: "Sync the feed",
+                content: "Sync the feed"
               }
             );
           });
@@ -52,7 +53,10 @@ export const MainHeader = (props: MainHeaderProps) => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <div className={styles.title}>{title}</div>
+        <div className={styles.title}>
+          <img className={styles.ico} src={feedUrl ? getChannelFavicon(feedUrl) : ""} alt="" />
+          {channelInStore ? channelInStore.title : ""}
+        </div>
         <div className={styles.menu}>
           <Icon
             customClass={styles.menuIcon}

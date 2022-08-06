@@ -29,6 +29,12 @@
   white-space: nowrap;
 }
 
+.ico {
+  width: 28px;
+  height: 28px;
+  margin-right: 10px;
+}
+
 .menu {
   display: flex;
   align-items: center;

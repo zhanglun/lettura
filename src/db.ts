@@ -27,8 +27,8 @@ export class MySubClassedDexie extends Dexie {
 
   constructor() {
     super('salix');
-    this.version(1.1).stores({
-      channels: '++id, title, link, &feedUrl, description, pubDate, unread',
+    this.version(1.2).stores({
+      channels: '++id, title, link, &feedUrl, description, pubDate, unread, favicon',
       articles: '++id, title, &link, image, feedUrl, author, description, content, pubDate, unread',
     });
   }

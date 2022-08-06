@@ -8,17 +8,19 @@ import { RouteConfig } from "./config";
 import { ArticleContainer } from "./containers/Article";
 import { SettingContainer } from "./containers/Setting";
 
-import { General } from './components/SettingPanel/General';
-import { Appearance } from './components/SettingPanel/Appearance';
-import { Notification } from './components/SettingPanel/Notification';
-import { FeedManager } from './components/SettingPanel/FeedManager';
-import { ImportAndExport } from './components/SettingPanel/ImportAndExport';
+import { General } from "./components/SettingPanel/General";
+import { Appearance } from "./components/SettingPanel/Appearance";
+import { Notification } from "./components/SettingPanel/Notification";
+import { FeedManager } from "./components/SettingPanel/FeedManager";
+import { ImportAndExport } from "./components/SettingPanel/ImportAndExport";
+import { WelcomePage } from "./components/WelcomePage";
 
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
       <Routes>
         <Route path={"/"} element={<App />}>
+          <Route path={"/"} element={<WelcomePage />}></Route>
           <Route
             path={RouteConfig.CHANNEL}
             element={<ArticleContainer />}
