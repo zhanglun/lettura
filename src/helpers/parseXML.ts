@@ -190,8 +190,7 @@ export const parseRssFeed = (
   channel: ChannelRes;
   items: ArticleRes[];
 } => {
-  const parseItems = (doc: any) => {
-    const items = doc.querySelectorAll("item, article");
+  const parseItems = (items: any) => {
     const res = [];
 
     for (let item of items) {
@@ -248,8 +247,8 @@ export const parseRssFeed = (
     };
   }
 
-  if (content.querySelector("item, article")) {
-    items = parseItems(content.querySelector("item, article"));
+  if (content.querySelectorAll("item, article")) {
+    items = parseItems(content.querySelectorAll("item, article"));
   }
 
   return {
