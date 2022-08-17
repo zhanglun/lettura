@@ -6,5 +6,7 @@ export const useStore = () => {
   return {
     channel: store.channel,
     article: store.article,
+    currentFilter: store.currentFilter,
+    filterList: store.filterList,
   }
 };

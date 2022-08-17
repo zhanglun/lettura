@@ -1,5 +1,5 @@
-import React from "react";
-import { Notification } from "@douyinfe/semi-ui";
+import React, { useState } from "react";
+import { Button, Dropdown, Notification } from "@douyinfe/semi-ui";
 import { Icon } from "../Icon";
 import styles from "./header.module.css";
 import { requestFeed, getChannelFavicon } from "../../helpers/parseXML";
@@ -14,9 +14,11 @@ type MainHeaderProps = {
 
 export const MainHeader = (props: MainHeaderProps) => {
   const { feedUrl } = props;
-  const { channel: channelInStore } = useStore();
+  const store = useStore();
 
-  console.log("channelInStore", channelInStore);
+  const [filter, setFilter] = useState({...store.currentFilter});
+
+  console.log(store)
 
   const syncArticles = () => {
     feedUrl &&
@@ -24,7 +26,7 @@ export const MainHeader = (props: MainHeaderProps) => {
       if (res.channel && res.items) {
         const { items } = res;
 
-        console.log(items)
+        console.log(items);
 
         dataAgent.bulkAddArticle(items)
           .then(() => {
@@ -49,22 +51,44 @@ export const MainHeader = (props: MainHeaderProps) => {
     syncArticles();
   };
 
-  const markAllRead = () => {
-  };
+  // const markAllRead = () => {
+  // };
+
+  const changeFilter = (filter : any) => {
+    console.log(filter)
+    setFilter(filter)
+    store.currentFilter = filter
+    console.log(store.currentFilter)
+  }
 
   return (
     <div className={styles.container}>
       <div className={styles.header}>
         <div className={styles.title}>
           <img className={styles.ico} src={feedUrl ? getChannelFavicon(feedUrl) : ""} alt="" />
-          {channelInStore ? channelInStore.title : ""}
+          {store.channel ? store.channel.title : ""}
         </div>
         <div className={styles.menu}>
-          <Icon
-            customClass={styles.menuIcon}
-            name="checklist"
-            onClick={markAllRead}
-          />
+          <Dropdown trigger="click"
+                    position="bottomLeft"
+                    clickToHide={true}
+                    visible
+                    render={
+                      <Dropdown.Menu>
+                        {store.filterList.map((item) => {
+                          return <Dropdown.Item onClick={() => changeFilter(item)}
+                                                {...item.id === store.currentFilter.id ? { type: "primary" } : {}}>{item.title}</Dropdown.Item>;
+                        })}
+                      </Dropdown.Menu>
+                    }
+          >
+            <Button>{filter.title}</Button>
+          </Dropdown>
+          {/*<Icon*/}
+          {/*  customClass={styles.menuIcon}*/}
+          {/*  name="checklist"*/}
+          {/*  onClick={markAllRead}*/}
+          {/*/>*/}
           <Icon
             customClass={styles.menuIcon}
             name="refresh"

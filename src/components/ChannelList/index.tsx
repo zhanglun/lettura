@@ -13,8 +13,8 @@ import * as dataAgent from "../../helpers/dataAgent";
 import { StoreContext } from "../../context";
 
 const ChannelList = (props: any): JSX.Element => {
-  const channelList = useLiveQuery(() => db.channels.toArray(), []);
   const store = useContext(StoreContext);
+  const channelList = useLiveQuery(() => db.channels.toArray(), []);
   const navigate = useNavigate();
   const addFeedButtonRef = useRef(null);
 

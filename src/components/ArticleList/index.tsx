@@ -7,6 +7,7 @@ import { Loading } from "../Loading";
 import { db } from "../../db";
 
 import styles from "./articlelist.module.css";
+import { useStore } from "../../hooks/useStore";
 
 type ListFilter = {
   all?: boolean;
@@ -23,8 +24,9 @@ type ArticleListProps = {
 
 export const ArticleList = (props: ArticleListProps): JSX.Element => {
   const { channelId, feedUrl } = props;
+  const store = useStore()
   const articleList =
-    useLiveQuery(
+    (useLiveQuery(
       () =>
         db.articles
           .where("feedUrl")
@@ -33,7 +35,21 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
           .reverse()
           .sortBy("id"),
       [feedUrl]
-    ) || [];
+    ) || []).filter((c) => {
+      console.log(c)
+      console.log(store.currentFilter)
+      if (store.currentFilter.id === "1") {
+        return true;
+      }
+
+      if (store.currentFilter.id === "2") {
+        return c.unread === 1;
+      }
+
+      if (store.currentFilter.id === "3") {
+        return c.unread === 0;
+      }
+    });
 
   const [loading, setLoading] = useState(false);
   const articleListRef = useRef<HTMLDivElement>(null);
