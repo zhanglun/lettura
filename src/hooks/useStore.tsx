@@ -8,5 +8,6 @@ export const useStore = () => {
     article: store.article,
     currentFilter: store.currentFilter,
     filterList: store.filterList,
+    setFilter: store.setFilter,
   }
 };

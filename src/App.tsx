@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import {
   Outlet
 } from "react-router-dom";
@@ -11,13 +11,15 @@ import { useStore } from "./hooks/useStore";
 
 function App() {
   const store = useStore();
+  const [filter, setFilter] = useState({...store.currentFilter});
 
   return (
     <StoreContext.Provider value={{
       channel: store.channel,
       article: store.article,
       filterList: store.filterList,
-      currentFilter: store.currentFilter,
+      currentFilter: filter,
+      setFilter,
     }}>
       <div className={styles.container}>
         <ChannelList />

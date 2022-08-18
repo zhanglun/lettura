@@ -5,7 +5,8 @@ interface PContext {
   channel: Channel | null,
   article: Article | null,
   currentFilter: { id: string, title: string },
-  filterList: { id: string, title: string }[]
+  filterList: { id: string, title: string }[],
+  setFilter: any
 }
 
 export const StoreContext = React.createContext({

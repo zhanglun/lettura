@@ -16,8 +16,6 @@ export const MainHeader = (props: MainHeaderProps) => {
   const { feedUrl } = props;
   const store = useStore();
 
-  const [filter, setFilter] = useState({...store.currentFilter});
-
   console.log(store)
 
   const syncArticles = () => {
@@ -55,9 +53,8 @@ export const MainHeader = (props: MainHeaderProps) => {
   // };
 
   const changeFilter = (filter : any) => {
-    console.log(filter)
-    setFilter(filter)
-    store.currentFilter = filter
+    console.log(store.setFilter)
+    store.setFilter(filter)
     console.log(store.currentFilter)
   }
 
@@ -82,7 +79,7 @@ export const MainHeader = (props: MainHeaderProps) => {
                       </Dropdown.Menu>
                     }
           >
-            <Button>{filter.title}</Button>
+            <Button>{store.currentFilter.title}</Button>
           </Dropdown>
           {/*<Icon*/}
           {/*  customClass={styles.menuIcon}*/}
