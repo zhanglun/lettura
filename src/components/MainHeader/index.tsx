@@ -53,9 +53,7 @@ export const MainHeader = (props: MainHeaderProps) => {
   // };
 
   const changeFilter = (filter : any) => {
-    console.log(store.setFilter)
     store.setFilter(filter)
-    console.log(store.currentFilter)
   }
 
   return (
@@ -69,7 +67,6 @@ export const MainHeader = (props: MainHeaderProps) => {
           <Dropdown trigger="click"
                     position="bottomLeft"
                     clickToHide={true}
-                    visible
                     render={
                       <Dropdown.Menu>
                         {store.filterList.map((item) => {
