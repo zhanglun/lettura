@@ -40,8 +40,8 @@ export const AddFeedChannel = (props: any) => {
     setTitle(e.target.value);
   };
 
-  const handleInputChange = (e: any) => {
-    setFeedUrl(e.target.value);
+  const handleInputChange = (value: string) => {
+    setFeedUrl(value);
   };
 
   const handleCancel = () => {

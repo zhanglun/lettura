@@ -59,25 +59,29 @@
 }
 
 .item {
-  height: 34px;
-  padding: 4px 14px;
+  height: 30px;
+  padding: 4px 10px;
   display: flex;
   align-items: center;
   cursor: pointer;
-  border-radius: 10px;
+  border-radius: 6px;
+
+  &:hover {
+    background-color: var(--semi-color-tertiary-light-hover);
+  }
 }
 
 .itemActive {
-  background-color: rgba(230, 230, 230, 0.5);
-}
+  background-color: var(--semi-color-primary);
 
-.itemActive .name {
-  color: var(--color-primary-blue);
-  font-weight: bold;
-}
+  &:hover {
+    background-color: var(--semi-color-primary);
+  }
 
-.item:hover {
-  background-color: rgba(230, 230, 230, 0.5);
+  .name {
+    color: #FFF;
+    font-weight: bold;
+  }
 }
 
 .read {
@@ -108,9 +112,9 @@
   line-height: 16px;
   text-align: center;
   font-size: 10px;
-  color: var(--title-color);
-  border-radius: 6px;
-  background-color: #f1f3f4;
+  color: #fff;
+  border-radius: 8px;
+  background-color: var( --semi-color-text-2);
 }
 
 .official {

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useContext } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useLiveQuery } from "dexie-react-hooks";
 import { Icon } from "../Icon";
-import styles from "./channel.module.css";
+import styles from "./channel.module.scss";
 import defaultSiteIcon from "./default.png";
 import { RouteConfig } from "../../config";
 import { db } from "../../db";
