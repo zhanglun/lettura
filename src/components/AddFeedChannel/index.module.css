@@ -1,5 +1,5 @@
 .box {
-  width: 460px;
+  width: 640px;
 }
 
 .item {
@@ -9,7 +9,7 @@
 }
 
 .label {
-  width: 100px;
+  width: 80px;
   margin-right: 20px;
 }
 

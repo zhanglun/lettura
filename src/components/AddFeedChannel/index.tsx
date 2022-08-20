@@ -61,6 +61,7 @@ export const AddFeedChannel = (props: any) => {
     <Modal
       visible={showStatus}
       title="添加 RSS 订阅"
+      size="medium"
       onOk={handleSave}
       onCancel={handleCancel}
     >
@@ -68,7 +69,7 @@ export const AddFeedChannel = (props: any) => {
         <div className={styles.item}>
           <div className={styles.label}>Feed URL</div>
           <div className={styles.formItem}>
-            <Input type="text" value={feedUrl} onChange={handleInputChange} />
+            <Input type="text" style={{ width: "300px" }} value={feedUrl} onChange={handleInputChange} />
           </div>
           <div className={styles.action}>
             <Button type={"primary"} onClick={handleLoad}>Load</Button>
@@ -78,7 +79,7 @@ export const AddFeedChannel = (props: any) => {
         <div className={styles.item}>
           <div className={styles.label}>Title</div>
           <div className={styles.formItem}>
-            <Input type="text" value={title} onChange={handleTitleChange} />
+            <Input type="text" style={{ width: "300px" }} value={title} onChange={handleTitleChange} />
           </div>
         </div>
       </div>

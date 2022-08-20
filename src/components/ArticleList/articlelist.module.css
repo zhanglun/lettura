@@ -16,6 +16,8 @@
 .list {
   margin: 0;
   padding: 8px;
+  display: grid;
+  grid-gap: 6px;
 }
 
 .active {
