@@ -21,7 +21,7 @@
   align-items: center;
   padding: 0 var(--block-padding);
   color: var(--headline-color);
-  font-size: 20px;
+  font-size: 18px;
   font-weight: var(--font-weight-bold);
   width: 100%;
   overflow: hidden;
@@ -30,8 +30,8 @@
 }
 
 .ico {
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   margin-right: 10px;
 }
 
