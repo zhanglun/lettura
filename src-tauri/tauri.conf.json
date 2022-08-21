@@ -7,7 +7,7 @@
     "distDir": "../build"
   },
   "package": {
-    "productName": "salix",
+    "productName": "Lettura",
     "version": "0.1.0"
   },
   "tauri": {
@@ -66,7 +66,7 @@
         "fullscreen": false,
         "height": 600,
         "resizable": true,
-        "title": "Salix",
+        "title": "Lettura",
         "width": 1200
       }
     ]
