@@ -1,14 +1,9 @@
 # SaliX
 
-Another RSS reader
+Another free and open-source feed reader for macOS, maybe for Window in someday.
+
+It supports RSS, Atom, JSON Feed.
+
+And this project is under construction.
 
 To be continued...
-
-## TODO
-
-- [ ] Support import OPML
-- [ ] Support Node server
-- [ ] Sync data
-- [ ] and more...
-
-Thank's [electron-react-boilerplate](https://github.com/electron-react-boilerplate/electron-react-boilerplate)
