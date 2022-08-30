@@ -52,7 +52,7 @@ export const MainHeader = (props: MainHeaderProps) => {
   // const markAllRead = () => {
   // };
 
-  const changeFilter = (filter : any) => {
+  const changeFilter = (filter: any) => {
     store.setFilter(filter)
   }
 
@@ -60,7 +60,7 @@ export const MainHeader = (props: MainHeaderProps) => {
     <div className={styles.container}>
       <div className={styles.header}>
         <div className={styles.title}>
-          <img className={styles.ico} src={feedUrl ? getChannelFavicon(feedUrl) : ""} alt="" />
+          <img className={styles.ico} src={feedUrl ? getChannelFavicon(feedUrl) : ""} alt=""/>
           {store.channel ? store.channel.title : ""}
         </div>
         <div className={styles.menu}>

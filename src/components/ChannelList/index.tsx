@@ -11,15 +11,16 @@ import { Toast } from "../Toast";
 import { getChannelFavicon, requestFeed } from "../../helpers/parseXML";
 import * as dataAgent from "../../helpers/dataAgent";
 import { StoreContext } from "../../context";
+import { Progress } from "@douyinfe/semi-ui";
 
 const ChannelList = (props: any): JSX.Element => {
   const store = useContext(StoreContext);
-  const channelList = useLiveQuery(() => db.channels.toArray(), []);
+  const channelList = useLiveQuery(() => db.channels.toArray(), []) || [];
   const navigate = useNavigate();
   const addFeedButtonRef = useRef(null);
+  const [refreshing, setRefreshing] = useState(false)
+  const [done, setDone] = useState(0)
 
-  const initial = () => {
-  };
   const loadAndUpdate = (url: string) => {
     return requestFeed(url).then(async (res) => {
       if (res.channel && res.items) {
@@ -33,10 +34,14 @@ const ChannelList = (props: any): JSX.Element => {
       }
 
       return res;
+    }).finally(() => {
+      setDone(done => done + 1)
     });
   };
 
   const refreshList = () => {
+    setRefreshing(true)
+
     Toast.show({
       type: "success",
       title: "正在同步",
@@ -80,6 +85,10 @@ const ChannelList = (props: any): JSX.Element => {
     enQueue().then(() => {
       return Promise.all(res);
     }).then(() => {
+      window.setTimeout(() => {
+        setRefreshing(false)
+        setDone(0)
+      }, 500)
       Toast.show({
         type: "success",
         title: "同步完成"
@@ -141,17 +150,13 @@ const ChannelList = (props: any): JSX.Element => {
     }
   };
 
-  useEffect(() => {
-    initial();
-  }, []);
-
   return (
     <div className={styles.container}>
       <div className={styles.header}>
         <div className={styles.toolbar}>
-          <AddFeedChannel Aref={addFeedButtonRef} />
-          <Icon name="add" customClass={styles.toolbarItem} onClick={addFeed} />
-          <Icon name="folder" customClass={styles.toolbarItem} />
+          <AddFeedChannel Aref={addFeedButtonRef}/>
+          <Icon name="add" customClass={styles.toolbarItem} onClick={addFeed}/>
+          <Icon name="folder" customClass={styles.toolbarItem}/>
           <Icon
             name="refresh"
             customClass={styles.toolbarItem}
@@ -168,6 +173,13 @@ const ChannelList = (props: any): JSX.Element => {
       <div className={styles.inner}>
         {renderFeedList()}
       </div>
+      {refreshing &&
+        <div className={styles.footer}>
+          <span>
+            <Progress percent={Math.ceil(done / channelList.length * 100)}/>
+          </span><span>{done}/{channelList.length}</span>
+        </div>
+      }
     </div>
   );
 };
