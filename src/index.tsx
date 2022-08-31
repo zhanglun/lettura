@@ -9,8 +9,6 @@ import { ArticleContainer } from "./containers/Article";
 import { SettingContainer } from "./containers/Setting";
 
 import { General } from "./components/SettingPanel/General";
-import { Appearance } from "./components/SettingPanel/Appearance";
-import { Notification } from "./components/SettingPanel/Notification";
 import { FeedManager } from "./components/SettingPanel/FeedManager";
 import { ImportAndExport } from "./components/SettingPanel/ImportAndExport";
 import { WelcomePage } from "./components/WelcomePage";
@@ -30,8 +28,6 @@ ReactDOM.render(
             element={<SettingContainer />}
           >
             <Route path={RouteConfig.SETTINGS_GENERAL} element={<General />}></Route>
-            <Route path={RouteConfig.SETTINGS_APPEARANCE} element={<Appearance />}></Route>
-            <Route path={RouteConfig.SETTINGS_NOTIFICATION} element={<Notification />}></Route>
             <Route path={RouteConfig.SETTINGS_FEED_MANAGER} element={<FeedManager />}></Route>
             <Route path={RouteConfig.SETTINGS_IMPORT} element={<ImportAndExport />}></Route>
           </Route>
