@@ -173,13 +173,12 @@ const ChannelList = (props: any): JSX.Element => {
       <div className={styles.inner}>
         {renderFeedList()}
       </div>
-      {refreshing &&
-        <div className={styles.footer}>
+      {refreshing && <div className={styles.footer}>
           <span>
             <Progress percent={Math.ceil(done / channelList.length * 100)}/>
-          </span><span>{done}/{channelList.length}</span>
-        </div>
-      }
+          </span>
+        <span className={styles.footerCount}>{done}/{channelList.length}</span>
+      </div>}
     </div>
   );
 };

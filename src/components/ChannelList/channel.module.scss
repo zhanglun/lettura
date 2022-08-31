@@ -1,9 +1,10 @@
 .container {
-  height: 100%;
+  position: relative;
   display: flex;
   flex-direction: column;
   flex: 0 0 auto;
   width: var(--app-channel-width);
+  height: 100%;
   background-color: #F4F6F9;
   box-shadow: 0 0 12px -6px rgba(0, 0, 0, 0.2);
   user-select: none;
@@ -145,4 +146,22 @@
 
 .orange {
   color: orange;
+}
+
+
+.footer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: grid;
+  grid-auto-flow: column;
+  align-items: center;
+  grid-gap: 10px;
+  background-color: #fff;
+  padding: 10px;
+}
+
+.footerCount {
+  font-size: 13px;
 }
