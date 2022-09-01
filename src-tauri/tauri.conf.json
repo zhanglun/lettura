@@ -64,10 +64,12 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 900,
+        "height": 800,
+        "transparent": true,
+        "decorations": false,
         "resizable": true,
         "title": "Lettura",
-        "width": 1200
+        "width": 1300
       }
     ]
   }

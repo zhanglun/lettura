@@ -1,0 +1,183 @@
+@import 'global.css';
+
+/* @import '../../../node_modules/react-tabs/style/react-tabs.css'; */
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans GB',
+    'MicroSoft YaHei', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
+    'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #333;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  max-height: 100%;
+}
+
+body {
+  overflow: hidden;
+}
+
+#root {
+  height: 100%;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+a {
+  text-decoration: none;
+  color: var(--link-default-color);
+}
+
+a:hover {
+  color: var(--link-hover-color);
+}
+
+/* ================= */
+
+.flex {
+  display: flex;
+}
+
+.align-items-center {
+  align-items: center;
+}
+
+/* ================= */
+.titlebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  height: 30px;
+  user-select: none;
+  display: flex;
+  justify-content: flex-start;
+}
+
+$close-red: #ff6159;
+$close-red-active: #bf4942;
+$close-red-icon: #740000bf;
+$close-red-icon-active: #190000;
+
+$minimize-yellow: #ffbd2e;
+$minimize-yellow-active: #bf8e22;
+$minimize-yellow-icon: #995700;
+$minimize-yellow-icon-active: #592800;
+
+$maximize-green: #28c941;
+$maximize-green-active: #1d9730;
+$maximize-green-icon: #006500;
+$maximize-green-icon-active: #003200;
+
+$disabled-gray: #ddd;
+
+.traffic-lights {
+  position: relative;
+  top: 6px;
+  left: 12px;
+
+  &.focus,
+  &:hover,
+  &:active {
+    > .traffic-light-close {
+      background-color: $close-red;
+
+      &:active:hover {
+        background-color: $close-red-active;
+      }
+    }
+    > .traffic-light-minimize {
+      background-color: $minimize-yellow;
+
+      &:active:hover {
+        background-color: $minimize-yellow-active;
+      }
+    }
+    > .traffic-light-maximize {
+      background-color: $maximize-green;
+
+      &:active:hover {
+        background-color: $maximize-green-active;
+      }
+    }
+  }
+
+  &:hover,
+  &:active {
+    > .traffic-light {
+      &:before,
+      &:after,
+      svg {
+        visibility: visible;
+      }
+    }
+  }
+}
+
+.traffic-light {
+  border-radius: 100%;
+  padding: 0;
+  height: 12px;
+  width: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-sizing: border-box;
+  margin-top: 8px;
+  margin-right: 5px;
+  background-color: $disabled-gray;
+  position: relative;
+  outline: none;
+
+  > svg {
+    position: absolute;
+    transform: translate(-50%,-50%);
+    top: 50%;
+    left: 50%;
+    visibility: hidden;
+  }
+
+  &-close {
+    svg path {
+      stroke: $close-red-icon;
+    }
+
+    &:active:hover svg path {
+      stroke: $close-red-icon-active;
+    }
+  }
+
+  &-minimize {
+    svg {
+      transform: translate(-50%,-30%);
+      > path {
+        stroke: $close-red-icon;
+      }
+    }
+
+    &:active:hover svg path {
+      stroke: $close-red-icon-active;
+    }
+  }
+
+  &-maximize {
+    svg path {
+      stroke: $maximize-green-icon;
+    }
+    &:active:hover svg path {
+      stroke: $maximize-green-icon-active;
+    }
+  }
+}
