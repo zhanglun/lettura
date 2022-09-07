@@ -17,6 +17,7 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
   const containerRef = useRef<HTMLDivElement>(null);
   const helpBarRef = useRef<HTMLDivElement>(null);
   const [pageContent, setPageContent] = useState("");
+  const [showBanner, setShowBanner] = useState(false);
 
   const resetScrollTop = () => {
     if (containerRef.current !== null) {
@@ -24,9 +25,11 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
     }
   };
 
-  const openInBrowser = () => {};
+  const openInBrowser = () => {
+  };
 
-  function favoriteIt() {}
+  function favoriteIt() {
+  }
 
   const renderPlaceholder = () => {
     return "";
@@ -77,12 +80,13 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
               </span>
               <span className={styles.author}>{article.author}</span>
               <span className={styles.channelInfo}>
-                <img src={ico} alt="" />
+                <img src={ico} alt=""/>
                 {article.channelTitle}
               </span>
             </div>
           </div>
           <div className={styles.body}>
+            {showBanner &&  <div className={styles.banner}><img src={article.image} alt=""/></div>}
             <div
               className={styles.content}
               // eslint-disable-next-line react/no-danger
@@ -108,6 +112,12 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
           return a;
         }
       );
+
+      if (article.image && content.includes(article.image.split('/').slice(-1)[0])){
+        setShowBanner(false)
+      } else {
+        setShowBanner(true)
+      }
 
       setPageContent(content);
     }
