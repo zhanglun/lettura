@@ -38,6 +38,21 @@ export const upsertChannel = async (channel: Channel) => {
   }
 }
 
+/**
+ * 删除频道
+ * @param {Number} channelId channel 的 id
+ */
+export const deleteChannel = async (channelId: number) => {
+  const channel = await db.channels.get({ id: channelId })
+
+  if (channel) {
+    await db.channels.where('id').equals(channelId).delete();
+    const a = db.articles.where('feedUrl').equals(channel.feedUrl);
+    console.log('a ====> ',  a)
+    await db.articles.where('feedUrl').equals(channel.feedUrl).delete()
+  }
+}
+
 export const updateCountWithChannel = async (feedUrl: string): Promise<any> => {
   const c = await db.channels.get({ feedUrl })
 

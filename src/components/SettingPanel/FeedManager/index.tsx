@@ -1,10 +1,23 @@
 import React, { useEffect } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
-import { Table } from "@douyinfe/semi-ui"
+import { Modal, Table } from "@douyinfe/semi-ui"
 import { Channel, db } from "../../../db";
+import * as dataAgent from '../../../helpers/dataAgent';
 
 export const FeedManager = () => {
   const channelList = useLiveQuery(() => db.channels.toArray(), []);
+
+  const handleDeleteFeed = (feed: Channel) => {
+    if (feed && feed.id) {
+      Modal.confirm({
+        title: '你确定要删除这个订阅吗？',
+        content: feed.title,
+        onOk: () => {
+          feed.id && dataAgent.deleteChannel(feed.id)
+        },
+      })
+    }
+  }
 
   const columns = [
     {
@@ -27,8 +40,11 @@ export const FeedManager = () => {
     {
       title: 'Action',
       dataIndex: 'opt',
+      width: 100,
       render(text: string, record: Channel): JSX.Element {
-        return <div></div>
+        return <div>
+          <span onClick={() => handleDeleteFeed(record)}>删除</span>
+        </div>
       }
     }
   ];

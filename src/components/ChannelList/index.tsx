@@ -175,6 +175,7 @@ const ChannelList = (props: any): JSX.Element => {
       </div>
       {refreshing && <div className={styles.footer}>
           <span>
+            {/* @ts-ignore */}
             <Progress percent={Math.ceil(done / channelList.length * 100)}/>
           </span>
         <span className={styles.footerCount}>{done}/{channelList.length}</span>
