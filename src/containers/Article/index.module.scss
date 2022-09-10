@@ -9,6 +9,7 @@
 .header {
   position: sticky;
   top: 0;
+  z-index: 3;
   height: var(--app-toolbar-height);
   background-color: var(--color-gray-100);
   display: grid;
@@ -16,18 +17,21 @@
   align-items: center;
   justify-content: space-between;
 }
-// 滚动时
-//{
-//  background: rgba(255, 255, 255, 0.92);
-//  box-shadow: rgb(0 0 0 / 12%) 0px 1px 3px;
-//}
+
+:global(.is-scroll) {
+  .header, .viewHeader {
+    backdrop-filter: saturate(180%) blur(20px);
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: rgb(0 0 0 / 12%) 0px 1px 3px;
+  }
+}
 
 .title {
   display: flex;
   align-items: center;
   padding: 0 var(--block-padding);
   color: var(--headline-color);
-  font-size: 18px;
+  font-size: 14px;
   font-weight: var(--font-weight-bold);
   width: 100%;
   overflow: hidden;
@@ -76,6 +80,7 @@
 
 .mainView {
   height: 100%;
+  overflow-y: auto;
   display: grid;
   grid-auto-flow: row;
   grid-template-rows: 50px 1fr;
@@ -84,12 +89,13 @@
 }
 
 .viewHeader {
-    position: sticky;
-    top: 0;
-    height: var(--app-toolbar-height);
-    background-color: var(--color-gray-100);
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    align-items: center;
-    justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  height: var(--app-toolbar-height);
+  background-color: #fff;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  justify-content: space-between;
 }

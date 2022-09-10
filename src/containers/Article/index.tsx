@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { ArticleList } from "../../components/ArticleList";
 import { ArticleView } from "../../components/ArticleView";
@@ -18,9 +18,50 @@ export const ArticleContainer = (): JSX.Element => {
   const params: { name: string } = useParams();
   const store = useStore();
   const query = useQuery();
-  const feedUrl = query.get("feedUrl")
-  const channelId = query.get("channelId")
+  const feedUrl = query.get("feedUrl");
+  const channelId = query.get("channelId");
   const [current, setCurrent] = useState<any>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+  const viewRef = useRef<HTMLDivElement>(null);
+
+  const handleListScroll = useCallback(() => {
+    if (listRef.current) {
+      const scrollTop = listRef.current.scrollTop;
+      console.log("scrolling", scrollTop);
+
+      if (scrollTop > 0) {
+        listRef.current.classList.add("is-scroll");
+      } else {
+        listRef.current.classList.remove("is-scroll");
+      }
+    }
+  }, [listRef.current]);
+
+  const handleViewScroll = useCallback(() => {
+    if (viewRef.current) {
+      const scrollTop = viewRef.current.scrollTop;
+      console.log("scrolling", scrollTop);
+
+      if (scrollTop > 0) {
+        viewRef.current.classList.add("is-scroll");
+      } else {
+        viewRef.current.classList.remove("is-scroll");
+      }
+    }
+  }, [viewRef.current]);
+
+  useEffect(() => {
+    if (listRef.current) {
+      const $list = listRef.current as HTMLDivElement;
+      $list.addEventListener("scroll", handleListScroll);
+    }
+
+    if (viewRef.current) {
+      const $list = viewRef.current as HTMLDivElement;
+      $list.addEventListener("scroll", handleViewScroll);
+    }
+
+  }, []);
 
   const handleArticleSelect = useCallback((article: any) => {
     setCurrent(article);
@@ -61,29 +102,29 @@ export const ArticleContainer = (): JSX.Element => {
   };
 
   const changeFilter = (filter: any) => {
-    store.setFilter(filter)
-  }
+    store.setFilter(filter);
+  };
 
   return (
     <div className={styles.article}>
-      <div className={styles.list}>
+      <div className={styles.list} ref={listRef}>
         <div className={styles.header}>
           <div className={styles.title}>
-            <img className={styles.ico} src={feedUrl ? getChannelFavicon(feedUrl) : ""} alt=""/>
             {store.channel ? store.channel.title : ""}
           </div>
           <div className={styles.menu}>
-            <Dropdown trigger="click"
-                      position="bottomLeft"
-                      clickToHide={true}
-                      render={
-                        <Dropdown.Menu>
-                          {store.filterList.map((item) => {
-                            return <Dropdown.Item onClick={() => changeFilter(item)}
-                                                  {...item.id === store.currentFilter.id ? { type: "primary" } : {}}>{item.title}</Dropdown.Item>;
-                          })}
-                        </Dropdown.Menu>
-                      }
+            <Dropdown
+              trigger="click"
+              position="bottomLeft"
+              clickToHide={true}
+              render={
+                <Dropdown.Menu>
+                  {store.filterList.map((item) => {
+                    return <Dropdown.Item onClick={() => changeFilter(item)}
+                                          {...item.id === store.currentFilter.id ? { type: "primary" } : {}}>{item.title}</Dropdown.Item>;
+                  })}
+                </Dropdown.Menu>
+              }
             >
               <Button>{store.currentFilter.title}</Button>
             </Dropdown>
@@ -106,7 +147,7 @@ export const ArticleContainer = (): JSX.Element => {
           onArticleSelect={handleArticleSelect}
         />
       </div>
-      <div className={styles.mainView}>
+      <div className={styles.mainView} ref={viewRef}>
         <div className={styles.viewHeader}></div>
         <ArticleView article={current} />
       </div>
