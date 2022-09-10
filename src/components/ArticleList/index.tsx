@@ -4,7 +4,7 @@ import React, { useCallback, useContext, useEffect, useRef, useState } from "rea
 import { useLiveQuery } from "dexie-react-hooks";
 import { ArticleItem } from "../ArticleItem";
 import { Loading } from "../Loading";
-import { db } from "../../db";
+import { Article, db } from "../../db";
 
 import styles from "./articlelist.module.css";
 import { useStore } from "../../hooks/useStore";
@@ -71,6 +71,9 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
       props.onArticleSelect(article);
     }
   };
+
+  useEffect(() => {
+  })
 
   const renderList = (): JSX.Element[] => {
     console.log('articleList', articleList)

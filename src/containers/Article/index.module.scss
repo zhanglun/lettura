@@ -1,0 +1,95 @@
+.article {
+  flex: 1;
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  background-color: #fff;
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  height: var(--app-toolbar-height);
+  background-color: var(--color-gray-100);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  justify-content: space-between;
+}
+// 滚动时
+//{
+//  background: rgba(255, 255, 255, 0.92);
+//  box-shadow: rgb(0 0 0 / 12%) 0px 1px 3px;
+//}
+
+.title {
+  display: flex;
+  align-items: center;
+  padding: 0 var(--block-padding);
+  color: var(--headline-color);
+  font-size: 18px;
+  font-weight: var(--font-weight-bold);
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ico {
+  width: 24px;
+  height: 24px;
+  margin-right: 10px;
+}
+
+.menu {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 14px;
+}
+
+.menuIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  line-height: 34px;
+  font-size: 20px;
+  color: var(--title-color);
+  border-radius: var(--button-radius);
+  cursor: pointer;
+  margin-left: 4px;
+}
+
+.menuIcon:hover {
+  color: var(--headline-color);
+  background-color: var(--color-gray-200);
+}
+
+.list {
+  height: 100%;
+  overflow-y: auto;
+  border-right: 1px solid var(--line-color);
+  background-color: var(--color-gray-100);
+}
+
+.mainView {
+  height: 100%;
+  display: grid;
+  grid-auto-flow: row;
+  grid-template-rows: 50px 1fr;
+  background: linear-gradient(90deg, #f9fafb 15px, transparent 1%) 50%, linear-gradient(#f9fafb 15px, transparent 1%) 50%, rgba(0, 0, 0, .24);
+  background-size: 16px 16px;
+}
+
+.viewHeader {
+    position: sticky;
+    top: 0;
+    height: var(--app-toolbar-height);
+    background-color: var(--color-gray-100);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    justify-content: space-between;
+}

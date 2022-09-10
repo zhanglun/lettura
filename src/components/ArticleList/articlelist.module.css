@@ -4,13 +4,7 @@
   grid-template-rows: calc(
       100% - var(--app-toolbar-height)
     );
-  height: 100%;
-  border-right: 1px solid var(--line-color);
   user-select: none;
-}
-
-.inner {
-  overflow-y: auto;
 }
 
 .list {

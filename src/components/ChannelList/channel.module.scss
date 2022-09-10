@@ -5,10 +5,9 @@
   flex: 0 0 auto;
   width: var(--app-channel-width);
   height: 100%;
-  background-color: #F4F6F9;
-  box-shadow: 0 0 12px -6px rgba(0, 0, 0, 0.2);
+  background-color: var(--color-gray-100);
   user-select: none;
-  border-right: 1px solid var(--line-color);
+  border-right: 1px solid var(--color-gray-300);
 }
 
 .inner {
@@ -21,6 +20,9 @@
   margin: 0;
   padding: 0;
   list-style-type: none;
+  li {
+    margin: 4px 0;
+  }
 }
 
 .header {
@@ -60,7 +62,7 @@
 }
 
 .item {
-  height: 28px;
+  height: 32px;
   padding: 8px 10px;
   display: flex;
   align-items: center;

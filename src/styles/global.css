@@ -9,9 +9,8 @@
 
   --app-channel-width: 240px;
   --app-article-width: 340px;
-  --app-toolbar-height: 46px;
+  --app-toolbar-height: 50px;
   --app-setting-sidebar-width: 220px;
-
   --view-helpbar-width: 50px;
 
   --headline-color: #333;
@@ -19,6 +18,8 @@
   --text-color: #666;
   --link-default-color: #296bcc;
   --link-hover-color: #296bcc;
+  --background-color: #fafafa;
+
   --block-padding: 16px;
   --font-weight-bold: 600;
   --font-weight-normal: 400;
@@ -51,15 +52,15 @@
   --color-06: #b470d4;
   --color-07: #9d9ca0;
   --color-gray-100: #f9f9f9;
-  --color-gray-100-rgb: 249, 249, 249;
+  --color-gray-100-rgb: rgb(249, 249, 249);
   --color-gray-200: #f4f4f5;
-  --color-gray-200-rgb: 244, 244, 245;
+  --color-gray-200-rgb: rgb(244, 244, 245);
   --color-gray-300: #eaeaec;
-  --color-gray-300-rgb: 234, 234, 236;
+  --color-gray-300-rgb: rgb(234, 234, 236);
   --color-gray-400: #cdcdd0;
-  --color-gray-400-rgb: 205, 205, 208;
+  --color-gray-400-rgb: rgb(205, 205, 208);
   --color-gray-500: #8c8c97;
-  --color-gray-500-rgb: 140, 140, 151;
+  --color-gray-500-rgb: rgb(140, 140, 151);
   --color-gray-600: #524e56;
-  --color-gray-600-rgb: 82, 78, 86;
+  --color-gray-600-rgb: rgb(82, 78, 86);
 }

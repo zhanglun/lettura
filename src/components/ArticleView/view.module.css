@@ -17,6 +17,7 @@
 
 .inner {
   overflow: auto;
+  background-color: #fff;
 }
 
 .banner {
@@ -250,4 +251,10 @@ blockquote {
 
 .footer {
   display: none;
+}
+
+
+.bgDot {
+  /*background: linear-gradient(90deg, #f9fafb 15px, transparent 1%) 50%, linear-gradient(#f9fafb 15px, transparent 1%) 50%, rgba(0, 0, 0, .24);*/
+  /*background-size: 16px 16px;*/
 }

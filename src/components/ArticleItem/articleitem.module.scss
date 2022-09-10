@@ -3,11 +3,18 @@
   border-radius: 4px;
   padding: 8px 8px 8px 30px;
   display: grid;
-  grid-gap: 2px;
+  grid-gap: 5px;
 }
 
 .item:hover {
   cursor: pointer;
+
+}
+
+.item:not(.read) {
+  &:hover {
+    background-color: var(--semi-color-tertiary-light-hover);
+  }
 }
 
 .titleText {
