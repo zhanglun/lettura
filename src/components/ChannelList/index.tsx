@@ -18,8 +18,8 @@ const ChannelList = (props: any): JSX.Element => {
   const channelList = useLiveQuery(() => db.channels.toArray(), []) || [];
   const navigate = useNavigate();
   const addFeedButtonRef = useRef(null);
-  const [refreshing, setRefreshing] = useState(false)
-  const [done, setDone] = useState(0)
+  const [refreshing, setRefreshing] = useState(false);
+  const [done, setDone] = useState(0);
 
   const loadAndUpdate = (url: string) => {
     return requestFeed(url).then(async (res) => {
@@ -34,19 +34,15 @@ const ChannelList = (props: any): JSX.Element => {
       }
 
       return res;
+    }).catch(() => {
+      return Promise.resolve();
     }).finally(() => {
-      setDone(done => done + 1)
+      setDone(done => done + 1);
     });
   };
 
   const refreshList = () => {
-    setRefreshing(true)
-
-    Toast.show({
-      type: "success",
-      title: "正在同步",
-      content: "同步所有订阅，可能会花一小段时间，请稍候"
-    });
+    setRefreshing(true);
 
     const urlList = (channelList || []).map((channel) => {
       return channel.feedUrl;
@@ -72,7 +68,7 @@ const ChannelList = (props: any): JSX.Element => {
       let r = Promise.resolve();
 
       if (limit <= urlList.length) {
-        const e: Promise<any> = p.finally(() => tasks.splice(tasks.indexOf(e), 1));
+        const e: Promise<any> = p.then(() => tasks.splice(tasks.indexOf(e), 1));
         tasks.push(e);
         if (tasks.length >= limit) {
           r = Promise.race(tasks);
@@ -86,9 +82,9 @@ const ChannelList = (props: any): JSX.Element => {
       return Promise.allSettled(res);
     }).then(() => {
       window.setTimeout(() => {
-        setRefreshing(false)
-        setDone(0)
-      }, 500)
+        setRefreshing(false);
+        setDone(0);
+      }, 500);
       Toast.show({
         type: "success",
         title: "同步完成"
@@ -154,9 +150,9 @@ const ChannelList = (props: any): JSX.Element => {
     <div className={styles.container}>
       <div className={styles.header}>
         <div className={styles.toolbar}>
-          <AddFeedChannel Aref={addFeedButtonRef}/>
-          <Icon name="add" customClass={styles.toolbarItem} onClick={addFeed}/>
-          <Icon name="folder" customClass={styles.toolbarItem}/>
+          <AddFeedChannel Aref={addFeedButtonRef} />
+          <Icon name="add" customClass={styles.toolbarItem} onClick={addFeed} />
+          <Icon name="folder" customClass={styles.toolbarItem} />
           <Icon
             name="refresh"
             customClass={styles.toolbarItem}
@@ -176,7 +172,7 @@ const ChannelList = (props: any): JSX.Element => {
       {refreshing && <div className={styles.footer}>
           <span>
             {/* @ts-ignore */}
-            <Progress percent={Math.ceil(done / channelList.length * 100)}/>
+            <Progress percent={Math.ceil(done / channelList.length * 100)} />
           </span>
         <span className={styles.footerCount}>{done}/{channelList.length}</span>
       </div>}
