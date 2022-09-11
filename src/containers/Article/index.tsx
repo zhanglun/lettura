@@ -108,7 +108,7 @@ export const ArticleContainer = (): JSX.Element => {
   return (
     <div className={styles.article}>
       <div className={styles.list} ref={listRef}>
-        <div className={styles.header}>
+        <div className={`sticky-header ${styles.header}`}>
           <div className={styles.title}>
             {store.channel ? store.channel.title : ""}
           </div>
@@ -148,7 +148,7 @@ export const ArticleContainer = (): JSX.Element => {
         />
       </div>
       <div className={styles.mainView} ref={viewRef}>
-        <div className={styles.viewHeader}></div>
+        <div className={`sticky-header ${styles.viewHeader}`}></div>
         <ArticleView article={current} />
       </div>
     </div>

@@ -72,7 +72,7 @@ const ChannelList = (props: any): JSX.Element => {
       let r = Promise.resolve();
 
       if (limit <= urlList.length) {
-        const e: Promise<any> = p.then(() => tasks.splice(tasks.indexOf(e), 1));
+        const e: Promise<any> = p.finally(() => tasks.splice(tasks.indexOf(e), 1));
         tasks.push(e);
         if (tasks.length >= limit) {
           r = Promise.race(tasks);
@@ -83,7 +83,7 @@ const ChannelList = (props: any): JSX.Element => {
     };
 
     enQueue().then(() => {
-      return Promise.all(res);
+      return Promise.allSettled(res);
     }).then(() => {
       window.setTimeout(() => {
         setRefreshing(false)
