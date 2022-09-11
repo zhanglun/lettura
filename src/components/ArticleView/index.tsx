@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Dayjs from "dayjs";
 import { Icon } from "../Icon";
-import styles from "./view.module.css";
+import styles from "./view.module.scss";
 import { getChannelFavicon } from "../../helpers/parseXML";
 
 type ArticleViewProps = {

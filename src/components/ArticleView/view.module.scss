@@ -1,12 +1,10 @@
 .container {
-  width: 100%;
-  height: 100%;
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: calc(
-  100% - var(--app-toolbar-height)
-  );
-  /* grid-template-columns: 1fr var(--view-helpbar-width); */
+  padding: 0 70px;
+  background-color: #FFFFFF;
+}
+
+.header {
+  padding: 1px;
 }
 
 .title {
@@ -29,11 +27,6 @@
 }
 
 .main {
-  width: 100%;
-  max-width: 900px;
-  padding: 0 90px;
-  margin: 0 auto;
-  position: relative;
 }
 
 .meta {
@@ -67,6 +60,10 @@
 .content {
   margin-top: 18px;
   line-height: 1.8;
+  
+  pre {
+    white-space: break-spaces;
+  }
 }
 
 .placeholder {
