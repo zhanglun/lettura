@@ -4,9 +4,6 @@ import styles from "./articleitem.module.scss";
 
 export const ArticleItem = React.memo((props: any) => {
   const { article, onSelect } = props;
-
-  console.log(article);
-
   const [readStatus, setReadStatus] = useState(false);
   const [check, setCheck] = useState(false);
 

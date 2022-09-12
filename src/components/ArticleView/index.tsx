@@ -19,12 +19,6 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
   const [pageContent, setPageContent] = useState("");
   const [showBanner, setShowBanner] = useState(false);
 
-  const resetScrollTop = () => {
-    if (containerRef.current !== null) {
-      containerRef.current.scroll(0, 0);
-    }
-  };
-
   const openInBrowser = () => {
   };
 
@@ -99,8 +93,6 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
   };
 
   useEffect(() => {
-    resetScrollTop();
-
     if (article) {
       const content = (article.content || article.description || "").replace(
         /<a[^>]+>/gi,
@@ -146,8 +138,6 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
       }
     };
   }, []);
-
-  console.log(styles)
 
   return (
     // eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions

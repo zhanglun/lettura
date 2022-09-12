@@ -36,7 +36,6 @@ export const ImportAndExport = (props: any) => {
   };
 
   const importFromOPML = () => {
-    console.log(importedList);
     db.channels.bulkAdd(importedList).then((lastkey) => {
       console.log("lastKey: ", lastkey);
     });
@@ -65,7 +64,6 @@ export const ImportAndExport = (props: any) => {
   const handleTextSourceChange = (text:string) => {
     if (text) {
       const list = parserOPML(text);
-      console.log(list);
       setImportedList(list);
     }
   };

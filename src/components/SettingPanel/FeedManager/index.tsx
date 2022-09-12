@@ -3,6 +3,7 @@ import { useLiveQuery } from "dexie-react-hooks";
 import { Modal, Table } from "@douyinfe/semi-ui"
 import { Channel, db } from "../../../db";
 import * as dataAgent from '../../../helpers/dataAgent';
+import styles from './feedManage.module.scss';
 
 export const FeedManager = () => {
   const channelList = useLiveQuery(() => db.channels.toArray(), []);
@@ -43,15 +44,11 @@ export const FeedManager = () => {
       width: 100,
       render(text: string, record: Channel): JSX.Element {
         return <div>
-          <span onClick={() => handleDeleteFeed(record)}>删除</span>
+          <span className={styles.delBtn} onClick={() => handleDeleteFeed(record)}>删除</span>
         </div>
       }
     }
   ];
-
-  useEffect(() => {
-    console.log(channelList);
-  }, [channelList]);
 
   return <div>
     <div>

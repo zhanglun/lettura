@@ -73,8 +73,6 @@ export const ArticleContainer = (): JSX.Element => {
       if (res.channel && res.items) {
         const { items } = res;
 
-        console.log(items);
-
         dataAgent.bulkAddArticle(items)
           .then(() => {
             return dataAgent.updateCountWithChannel(feedUrl);
@@ -105,6 +103,18 @@ export const ArticleContainer = (): JSX.Element => {
     store.setFilter(filter);
   };
 
+  useEffect(() => {
+    if (viewRef.current !== null) {
+      viewRef.current.scroll(0, 0);
+    }
+  }, [current]);
+
+  useEffect(() => {
+    if (listRef.current !== null) {
+      listRef.current.scroll(0, 0);
+    }
+  }, [channelId]);
+
   return (
     <div className={styles.article}>
       <div className={styles.list} ref={listRef}>
@@ -120,7 +130,7 @@ export const ArticleContainer = (): JSX.Element => {
               render={
                 <Dropdown.Menu>
                   {store.filterList.map((item) => {
-                    return <Dropdown.Item onClick={() => changeFilter(item)}
+                    return <Dropdown.Item key={item.id} onClick={() => changeFilter(item)}
                                           {...item.id === store.currentFilter.id ? { type: "primary" } : {}}>{item.title}</Dropdown.Item>;
                   })}
                 </Dropdown.Menu>
@@ -142,8 +152,8 @@ export const ArticleContainer = (): JSX.Element => {
         </div>
         <ArticleList
           title={params.name}
-          channelId={query.get("channelId")}
-          feedUrl={query.get("feedUrl")}
+          channelId={channelId}
+          feedUrl={feedUrl}
           onArticleSelect={handleArticleSelect}
         />
       </div>

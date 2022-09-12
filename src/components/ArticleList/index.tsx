@@ -36,8 +36,6 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
           .sortBy("id"),
       [feedUrl]
     ) || []).filter((c) => {
-      console.log(c)
-      console.log(store.currentFilter)
       if (store.currentFilter.id === "1") {
         return true;
       }
@@ -62,7 +60,6 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
   };
 
   const handleArticleSelect = (article: any) => {
-    console.log(article);
     db.articles.update(article.id, {
       unread: 0,
     });
@@ -76,7 +73,6 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
   })
 
   const renderList = (): JSX.Element[] => {
-    console.log('articleList', articleList)
     return articleList.map((article: any, idx: number) => {
       return (
         <ArticleItem

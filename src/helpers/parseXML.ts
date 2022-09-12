@@ -59,8 +59,6 @@ export const parseAtomFeed = (url: string, doc: any): {
 
   const domEntries = doc.querySelectorAll("feed > entry");
 
-  console.log(domEntries);
-
   let items = [].map.call(domEntries, (entryNode: any) => {
     const entry = {} as ArticleModel;
     const entryTitleNode = entryNode.querySelector("entry > title");
@@ -322,8 +320,6 @@ export const requestFeed = (
 
 export const getBestImages = (articles: ArticleModel[]): Promise<ArticleModel[]> => {
   return Promise.all(articles.map((article: ArticleModel) => {
-    console.log("article", article);
-
     if (article.image && /^https?:\/\/[^\/]+\/vi\/[-_A-Za-z0-9]+\/[^\/]*default\.jpg$/.test(article.image)) {
       const maxResUrl_1 = article.image.replace(/^(https?:\/\/[^\/]+\/vi\/[-_A-Za-z0-9]+\/)[^\/]*(default\.jpg)$/, "$1maxres$2");
       return fetch(maxResUrl_1, { method: "HEAD" }).then(function(response) {
