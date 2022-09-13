@@ -24,7 +24,8 @@ type ArticleListProps = {
 
 export const ArticleList = (props: ArticleListProps): JSX.Element => {
   const { channelId, feedUrl } = props;
-  const store = useStore()
+  const store = useStore();
+  const [highlightItem, setHighlightItem] = useState<Article>();
   const articleList =
     (useLiveQuery(
       () =>
@@ -61,22 +62,25 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
 
   const handleArticleSelect = (article: any) => {
     db.articles.update(article.id, {
-      unread: 0,
+      unread: 0
     });
 
     if (props.onArticleSelect) {
       props.onArticleSelect(article);
+      console.log(article)
+      setHighlightItem(article);
     }
   };
 
   useEffect(() => {
-  })
+  });
 
   const renderList = (): JSX.Element[] => {
     return articleList.map((article: any, idx: number) => {
       return (
         <ArticleItem
           article={article}
+          highlight={true}
           key={article.id}
           onSelect={handleArticleSelect}
         />
@@ -88,15 +92,20 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
    * 判断是否需要同步
    * @param channel 频道信息
    */
-  const checkSyncStatus = (channel: any | null) => {};
+  const checkSyncStatus = (channel: any | null) => {
+  };
 
-  const showAll = () => {};
+  const showAll = () => {
+  };
 
-  const showUnread = () => {};
+  const showUnread = () => {
+  };
 
-  const showRead = () => {};
+  const showRead = () => {
+  };
 
-  const markAllRead = () => {};
+  const markAllRead = () => {
+  };
 
   useEffect(() => {
     resetScrollTop();

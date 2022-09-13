@@ -27,7 +27,6 @@ export const ArticleContainer = (): JSX.Element => {
   const handleListScroll = useCallback(() => {
     if (listRef.current) {
       const scrollTop = listRef.current.scrollTop;
-      console.log("scrolling", scrollTop);
 
       if (scrollTop > 0) {
         listRef.current.classList.add("is-scroll");
