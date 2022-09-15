@@ -52,6 +52,19 @@
   padding: 0 12px;
 }
 
+.syncingBar {
+  position: sticky;
+  top: var(--app-toolbar-height);
+  left: 0;
+  right: 0;
+  z-index: 1;
+  text-align: center;
+  font-size: 12px;
+  padding: 8px;
+  background-color: var(--color-primary-blue);
+  color: #fff;
+}
+
 .menuIcon {
   display: flex;
   align-items: center;

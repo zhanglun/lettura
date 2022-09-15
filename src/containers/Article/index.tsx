@@ -21,6 +21,7 @@ export const ArticleContainer = (): JSX.Element => {
   const feedUrl = query.get("feedUrl");
   const channelId = query.get("channelId");
   const [current, setCurrent] = useState<any>(null);
+  const [syncing, setSyncing] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<HTMLDivElement>(null);
 
@@ -67,28 +68,21 @@ export const ArticleContainer = (): JSX.Element => {
   }, []);
 
   const syncArticles = () => {
-    feedUrl &&
-    requestFeed(feedUrl).then((res) => {
-      if (res.channel && res.items) {
-        const { items } = res;
+    if (feedUrl) {
+      setSyncing(true)
+      requestFeed(feedUrl).then((res) => {
+        if (res.channel && res.items) {
+          const { items } = res;
 
-        dataAgent.bulkAddArticle(items)
-          .then(() => {
-            return dataAgent.updateCountWithChannel(feedUrl);
-          })
-          .then(() => {
-            Notification.success(
-              {
-                duration: 2,
-                position: "top",
-                showClose: false,
-                title: "Sync Success",
-                content: "Sync the feed"
-              }
-            );
-          });
-      }
-    });
+          return dataAgent.bulkAddArticle(items)
+            .then(() => {
+              return dataAgent.updateCountWithChannel(feedUrl);
+            })
+        }
+      }).finally(() => {
+        setSyncing(false)
+      });
+    }
   };
 
   const handleRefresh = () => {
@@ -149,6 +143,7 @@ export const ArticleContainer = (): JSX.Element => {
             />
           </div>
         </div>
+        {syncing && <div className={styles.syncingBar}>同步中</div>}
         <ArticleList
           title={params.name}
           channelId={channelId}
@@ -158,7 +153,7 @@ export const ArticleContainer = (): JSX.Element => {
       </div>
       <div className={styles.mainView} ref={viewRef}>
         <div className={`sticky-header ${styles.viewHeader}`}></div>
-        <ArticleView article={current} />
+        <ArticleView article={current}/>
       </div>
     </div>
   );

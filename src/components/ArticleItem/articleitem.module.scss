@@ -14,7 +14,7 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background-color: var(--color-primary-blue);
+  background-color: var(--semi-color-primary);
 }
 
 .item:hover {
@@ -92,15 +92,16 @@
   color: var(--text-color);
 }
 
-//.current {
-//  background-color: var(--color-primary-blue);
-//  color: var(--color-primary-white);
-//}
-//
-//.current .title,
-//.current .pubTime {
-//  color: var(--color-primary-white);
-//}
+.current {
+  background-color: var(--semi-color-primary);
+  color: var(--color-primary-white);
+}
+
+.current .titleText,
+.current .description,
+.current .meta {
+  color: var(--color-primary-white);
+}
 
 .meta {
   display: flex;

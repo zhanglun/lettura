@@ -5,14 +5,11 @@ import styles from "./articleitem.module.scss";
 export const ArticleItem = React.memo((props: any) => {
   const { article, onSelect, highlight } = props;
   const [readStatus, setReadStatus] = useState(false);
-  const [check, setCheck] = useState(false);
 
   const handleClick = (e: any) => {
     if (onSelect) {
       onSelect(article);
     }
-    
-    setCheck(true);
   };
 
   useEffect(() => {
@@ -21,11 +18,11 @@ export const ArticleItem = React.memo((props: any) => {
 
   return (
     <li
-      className={`${styles.item} ${readStatus && styles.read} ${highlight && styles.current}`}
+      className={`${styles.item} ${readStatus ? styles.read : ''} ${highlight ? styles.current : ''}`}
       onClick={handleClick}
       aria-hidden="true"
     >
-      {!readStatus && <div className={styles.dot}></div>}
+      {!readStatus && <div className={styles.dot} />}
       <div className={styles.title}>
         <div className={styles.titleText}>{highlight} {article.title}</div>
       </div>

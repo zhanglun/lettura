@@ -52,7 +52,6 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
 
   const [loading, setLoading] = useState(false);
   const articleListRef = useRef<HTMLDivElement>(null);
-  const [syncing, setSyncing] = useState(false);
 
   const resetScrollTop = () => {
     if (articleListRef.current !== null) {
@@ -67,7 +66,6 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
 
     if (props.onArticleSelect) {
       props.onArticleSelect(article);
-      console.log(article)
       setHighlightItem(article);
     }
   };
@@ -80,7 +78,7 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
       return (
         <ArticleItem
           article={article}
-          highlight={true}
+          highlight={highlightItem?.id === article.id}
           key={article.id}
           onSelect={handleArticleSelect}
         />
@@ -118,9 +116,8 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
   return (
     <div className={styles.container}>
       <div className={styles.inner} ref={articleListRef}>
-        {syncing && <div className={styles.syncingBar}>同步中</div>}
         {loading ? (
-          <Loading />
+          <Loading/>
         ) : (
           <ul className={styles.list}>{renderList()}</ul>
         )}
