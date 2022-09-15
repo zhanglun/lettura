@@ -40,32 +40,6 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
     return (
       <div className={styles.inner} ref={containerRef}>
         <div className={styles.main}>
-          <div className={styles.helpBar} ref={helpBarRef}>
-            <div className={styles.menu}>
-              <Icon
-                customClass={`${styles.menuIcon}`}
-                name="done"
-                onClick={favoriteIt}
-              />
-              <Icon
-                customClass={`${styles.menuIcon}`}
-                name="radio_button_unchecked"
-                onClick={favoriteIt}
-              />
-              <Icon
-                customClass={`${styles.menuIcon}`}
-                name="favorite"
-                onClick={favoriteIt}
-              />
-              <a target="_blank" rel="noreferrer" href={link}>
-                <Icon
-                  customClass={`${styles.menuIcon}`}
-                  name="link"
-                  onClick={openInBrowser}
-                />
-              </a>
-            </div>
-          </div>
           <div className={styles.header}>
             <div className={styles.title}>{article.title}</div>
             <div className={styles.meta}>

@@ -96,6 +96,12 @@ export const ArticleContainer = (): JSX.Element => {
     store.setFilter(filter);
   };
 
+  function favoriteIt() {
+  }
+
+  const openInBrowser = () => {
+  };
+
   useEffect(() => {
     if (viewRef.current !== null) {
       viewRef.current.scroll(0, 0);
@@ -152,7 +158,32 @@ export const ArticleContainer = (): JSX.Element => {
         />
       </div>
       <div className={styles.mainView} ref={viewRef}>
-        <div className={`sticky-header ${styles.viewHeader}`}></div>
+        <div className={`sticky-header ${styles.viewHeader}`}>
+          <div className={styles.viewMenu}>
+            <Icon
+              customClass={`${styles.menuIcon}`}
+              name="done"
+              onClick={favoriteIt}
+            />
+            {/*<Icon*/}
+            {/*  customClass={`${styles.menuIcon}`}*/}
+            {/*  name="radio_button_unchecked"*/}
+            {/*  onClick={favoriteIt}*/}
+            {/*/>*/}
+            {/*<Icon*/}
+            {/*  customClass={`${styles.menuIcon}`}*/}
+            {/*  name="favorite"*/}
+            {/*  onClick={favoriteIt}*/}
+            {/*/>*/}
+            <a target="_blank" rel="noreferrer" href={current && current.link}>
+              <Icon
+                customClass={`${styles.menuIcon}`}
+                name="link"
+                onClick={openInBrowser}
+              />
+            </a>
+          </div>
+        </div>
         <ArticleView article={current}/>
       </div>
     </div>

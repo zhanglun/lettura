@@ -9,12 +9,6 @@ import { Article, db } from "../../db";
 import styles from "./articlelist.module.css";
 import { useStore } from "../../hooks/useStore";
 
-type ListFilter = {
-  all?: boolean;
-  unread?: boolean;
-  read?: boolean;
-};
-
 type ArticleListProps = {
   channelId: string | null;
   feedUrl: string | null;
@@ -49,6 +43,8 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
         return c.unread === 0;
       }
     });
+
+  console.log(articleList)
 
   const [loading, setLoading] = useState(false);
   const articleListRef = useRef<HTMLDivElement>(null);

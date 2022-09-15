@@ -14,6 +14,10 @@ export const bulkAddArticle = (articles: ArticleModel[]) => {
       if (exists.length < articles.length) {
         const remotes = articles.filter((item: Article) => {
           return !exists.some((exist) => exist.link === item.link);
+        }).map((item) => {
+          item.pubDate = new Date()
+
+          return { ...item}
         });
 
         if (remotes.length) {

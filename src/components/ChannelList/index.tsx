@@ -85,10 +85,6 @@ const ChannelList = (props: any): JSX.Element => {
         setRefreshing(false);
         setDone(0);
       }, 500);
-      Toast.show({
-        type: "success",
-        title: "同步完成"
-      });
     });
   };
 

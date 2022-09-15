@@ -22,7 +22,7 @@ export const ArticleItem = React.memo((props: any) => {
       onClick={handleClick}
       aria-hidden="true"
     >
-      {!readStatus && <div className={styles.dot} />}
+      {!readStatus && <div className={styles.dot}/>}
       <div className={styles.title}>
         <div className={styles.titleText}>{highlight} {article.title}</div>
       </div>
