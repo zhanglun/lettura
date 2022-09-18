@@ -1,15 +1,20 @@
 import React, { useState, useEffect } from "react";
 import Dayjs from "dayjs";
+import { useStore } from "../../hooks/useStore";
 import styles from "./articleitem.module.scss";
 
 export const ArticleItem = React.memo((props: any) => {
   const { article, onSelect, highlight } = props;
+  const store = useStore();
   const [readStatus, setReadStatus] = useState(false);
 
   const handleClick = (e: any) => {
     if (onSelect) {
       onSelect(article);
     }
+
+    store.updateChannelCount(article, 'sub', 1)
+    store.setArticle(article)
   };
 
   useEffect(() => {

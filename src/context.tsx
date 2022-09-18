@@ -4,6 +4,8 @@ import { Article, Channel } from "./db";
 interface PContext {
   channel: Channel | null,
   article: Article | null,
+  setArticle: (article: Article) => void,
+  updateChannelCount: (article: Article, action: string, count: number) => void,
   currentFilter: { id: string, title: string },
   filterList: { id: string, title: string }[],
   setFilter: any

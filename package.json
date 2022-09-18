@@ -4,7 +4,6 @@
   "private": true,
   "dependencies": {
     "@douyinfe/semi-ui": "^2.14.0",
-    "@postlight/mercury-parser": "^2.2.1",
     "@tauri-apps/api": "^1.0.0-beta.8",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^12.0.0",
