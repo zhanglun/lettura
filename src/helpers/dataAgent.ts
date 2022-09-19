@@ -42,6 +42,13 @@ export const upsertChannel = async (channel: Channel) => {
   }
 }
 
+export const makeAllRead = async(feedUrl: string) => {
+  if (await db.channels.get({ feedUrl })) {
+    await db.articles.where('feedUrl').equals(feedUrl).modify({ unread: 1 })
+    await db.channels.where('feedUrl').equals(feedUrl).modify({ unread: 0 });
+  }
+}
+
 /**
  * 删除频道
  * @param {Number} channelId channel 的 id

@@ -8,6 +8,7 @@ import { Icon } from "../../components/Icon";
 import * as dataAgent from "../../helpers/dataAgent";
 import { useStore } from "../../hooks/useStore";
 import styles from "./index.module.scss";
+import { makeAllRead } from "../../helpers/dataAgent";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -90,14 +91,19 @@ export const ArticleContainer = (): JSX.Element => {
   };
 
   const markAllRead = () => {
+    if (feedUrl) {
+      return dataAgent.makeAllRead(feedUrl).then(() => {})
+    }
+
+    return Promise.resolve()
   };
 
   const changeFilter = (filter: any) => {
     store.setFilter(filter);
   };
 
-  function favoriteIt() {
-  }
+  // function favoriteIt() {
+  // }
 
   const openInBrowser = () => {
   };
@@ -160,11 +166,11 @@ export const ArticleContainer = (): JSX.Element => {
       <div className={styles.mainView} ref={viewRef}>
         <div className={`sticky-header ${styles.viewHeader}`}>
           <div className={styles.viewMenu}>
-            <Icon
-              customClass={`${styles.menuIcon}`}
-              name="done"
-              onClick={favoriteIt}
-            />
+            {/*<Icon*/}
+            {/*  customClass={`${styles.menuIcon}`}*/}
+            {/*  name="done"*/}
+            {/*  onClick={favoriteIt}*/}
+            {/*/>*/}
             {/*<Icon*/}
             {/*  customClass={`${styles.menuIcon}`}*/}
             {/*  name="radio_button_unchecked"*/}
