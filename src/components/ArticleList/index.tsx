@@ -5,9 +5,11 @@ import { useLiveQuery } from "dexie-react-hooks";
 import { ArticleItem } from "../ArticleItem";
 import { Loading } from "../Loading";
 import { Article, db } from "../../db";
+import * as dataAgent from "../../helpers/dataAgent";
 
 import styles from "./articlelist.module.css";
 import { useStore } from "../../hooks/useStore";
+import { getAllArticleListByChannel } from "../../helpers/dataAgent";
 
 type ArticleListProps = {
   channelId: string | null;
@@ -17,35 +19,34 @@ type ArticleListProps = {
 };
 
 export const ArticleList = (props: ArticleListProps): JSX.Element => {
-  const { channelId, feedUrl } = props;
+  const { channelId, feedUrl = "" } = props;
   const store = useStore();
   const [highlightItem, setHighlightItem] = useState<Article>();
-  const articleList =
-    (useLiveQuery(
-      () =>
-        db.articles
-          .where("feedUrl")
-          .equalsIgnoreCase(feedUrl as string)
-          // .and((a) => a.unread === 1)
-          .reverse()
-          .sortBy("id"),
-      [feedUrl]
-    ) || []).filter((c) => {
-      if (store.currentFilter.id === "1") {
-        return true;
-      }
+  // const articleList =
+  //   (useLiveQuery(
+  //     () =>
+  //       db.articles
+  //         .where("feedUrl")
+  //         .equalsIgnoreCase(feedUrl as string)
+  //         // .and((a) => a.unread === 1)
+  //         .reverse()
+  //         .sortBy("id"),
+  //     [feedUrl]
+  //   ) || []).filter((c) => {
+  //     if (store.currentFilter.id === "1") {
+  //       return true;
+  //     }
+  //
+  //     if (store.currentFilter.id === "2") {
+  //       return c.unread === 1;
+  //     }
+  //
+  //     if (store.currentFilter.id === "3") {
+  //       return c.unread === 0;
+  //     }
+  //   });
 
-      if (store.currentFilter.id === "2") {
-        return c.unread === 1;
-      }
-
-      if (store.currentFilter.id === "3") {
-        return c.unread === 0;
-      }
-    });
-
-  console.log(articleList)
-
+  const [articleList, setArticleList] = useState<Article[]>([]);
   const [loading, setLoading] = useState(false);
   const articleListRef = useRef<HTMLDivElement>(null);
 
@@ -67,7 +68,24 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
   };
 
   useEffect(() => {
-  });
+    dataAgent.getAllArticleListByChannel(feedUrl || "").then((res) => {
+      const list = res.filter((c) => {
+        if (store.currentFilter.id === "1") {
+          return true;
+        }
+
+        if (store.currentFilter.id === "2") {
+          return c.unread === 1;
+        }
+
+        if (store.currentFilter.id === "3") {
+          return c.unread === 0;
+        }
+      });
+
+      setArticleList(list);
+    });
+  }, [feedUrl, store.currentFilter]);
 
   const renderList = (): JSX.Element[] => {
     return articleList.map((article: any, idx: number) => {
@@ -107,13 +125,13 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
 
   useEffect(() => {
     resetScrollTop();
-  }, [channelId]);
+  }, [channelId, articleList]);
 
   return (
     <div className={styles.container}>
       <div className={styles.inner} ref={articleListRef}>
         {loading ? (
-          <Loading/>
+          <Loading />
         ) : (
           <ul className={styles.list}>{renderList()}</ul>
         )}
