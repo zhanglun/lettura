@@ -47,7 +47,11 @@ export const upsertChannel = async (channel: Channel) => {
 
 export const makeAllRead = async (feedUrl: string) => {
   if (await db.channels.get({ feedUrl })) {
-    await db.articles.where("feedUrl").equals(feedUrl).modify({ unread: 1 });
+    const res = await db.articles.where({
+      feedUrl,
+      unread: 1,
+    }).modify({ unread: 0 });
+
     await db.channels.where("feedUrl").equals(feedUrl).modify({ unread: 0 });
   }
 };
