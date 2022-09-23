@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useLiveQuery } from "dexie-react-hooks";
-import { Icon } from "../Icon";
 import styles from "./channel.module.scss";
 import defaultSiteIcon from "./default.png";
 import { RouteConfig } from "../../config";
@@ -11,6 +10,7 @@ import { getChannelFavicon, requestFeed } from "../../helpers/parseXML";
 import * as dataAgent from "../../helpers/dataAgent";
 import { StoreContext } from "../../context";
 import { Progress } from "@douyinfe/semi-ui";
+import { Cog6ToothIcon, FolderIcon, PlusIcon } from "@heroicons/react/24/outline";
 
 const ChannelList = (props: any): JSX.Element => {
   const store = useContext(StoreContext);
@@ -145,20 +145,21 @@ const ChannelList = (props: any): JSX.Element => {
     <div className={styles.container}>
       <div className={styles.header}>
         <div className={styles.toolbar}>
-          <AddFeedChannel Aref={addFeedButtonRef} />
-          <Icon name="add" customClass={styles.toolbarItem} onClick={addFeed} />
-          <Icon name="folder" customClass={styles.toolbarItem} />
-          <Icon
-            name="refresh"
-            customClass={styles.toolbarItem}
-            onClick={refreshList}
-          />
-          <Icon
-            name="settings"
-            customClass={styles.toolbarItem}
+          <AddFeedChannel Aref={addFeedButtonRef}/>
+          <span className={styles.toolbarItem} onClick={addFeed}>
+            <PlusIcon className={"h-4 w-4"}/>
+          </span>
+          <span
+            className={styles.toolbarItem}
+          >
+           <FolderIcon className={'h-4 w-4'}/>
+          </span>
+          <span
+            className={styles.toolbarItem}
             onClick={goToSetting}
-            aria-hidden="true"
-          />
+          >
+            <Cog6ToothIcon className={'h-4 w-4'}/>
+          </span>
         </div>
       </div>
       <div className={styles.inner}>
@@ -167,7 +168,7 @@ const ChannelList = (props: any): JSX.Element => {
       {refreshing && <div className={styles.footer}>
           <span>
             {/* @ts-ignore */}
-            <Progress percent={Math.ceil(done / channelList.length * 100)} />
+            <Progress percent={Math.ceil(done / channelList.length * 100)}/>
           </span>
         <span className={styles.footerCount}>{done}/{channelList.length}</span>
       </div>}

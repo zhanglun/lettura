@@ -4,10 +4,10 @@ import { ArticleList } from "../../components/ArticleList";
 import { ArticleView } from "../../components/ArticleView";
 import { getChannelFavicon, requestFeed } from "../../helpers/parseXML";
 import { Button, Dropdown, Notification } from "@douyinfe/semi-ui";
-import { Icon } from "../../components/Icon";
 import * as dataAgent from "../../helpers/dataAgent";
 import { useStore } from "../../hooks/useStore";
 import styles from "./index.module.scss";
+import { ArrowPathIcon, LinkIcon, WalletIcon } from '@heroicons/react/24/outline'
 import { makeAllRead } from "../../helpers/dataAgent";
 
 function useQuery() {
@@ -104,12 +104,6 @@ export const ArticleContainer = (): JSX.Element => {
     store.setFilter(filter);
   };
 
-  // function favoriteIt() {
-  // }
-
-  const openInBrowser = () => {
-  };
-
   useEffect(() => {
     if (viewRef.current !== null) {
       viewRef.current.scroll(0, 0);
@@ -145,16 +139,22 @@ export const ArticleContainer = (): JSX.Element => {
             >
               <Button>{store.currentFilter.title}</Button>
             </Dropdown>
-            <Icon
-              customClass={styles.menuIcon}
-              name="checklist"
+            <span
+              className={styles.menuIcon}
               onClick={markAllRead}
+            >
+            <WalletIcon
+              className={"h-4 2-4"}
             />
-            <Icon
-              customClass={styles.menuIcon}
-              name="refresh"
+            </span>
+            <span
+              className={styles.menuIcon}
               onClick={handleRefresh}
+            >
+            <ArrowPathIcon
+              className={"h-4 2-4"}
             />
+            </span>
           </div>
         </div>
         {syncing && <div className={styles.syncingBar}>同步中</div>}
@@ -168,27 +168,10 @@ export const ArticleContainer = (): JSX.Element => {
       <div className={styles.mainView} ref={viewRef}>
         <div className={`sticky-header ${styles.viewHeader}`}>
           <div className={styles.viewMenu}>
-            {/*<Icon*/}
-            {/*  customClass={`${styles.menuIcon}`}*/}
-            {/*  name="done"*/}
-            {/*  onClick={favoriteIt}*/}
-            {/*/>*/}
-            {/*<Icon*/}
-            {/*  customClass={`${styles.menuIcon}`}*/}
-            {/*  name="radio_button_unchecked"*/}
-            {/*  onClick={favoriteIt}*/}
-            {/*/>*/}
-            {/*<Icon*/}
-            {/*  customClass={`${styles.menuIcon}`}*/}
-            {/*  name="favorite"*/}
-            {/*  onClick={favoriteIt}*/}
-            {/*/>*/}
-            <a target="_blank" rel="noreferrer" href={current && current.link}>
-              <Icon
-                customClass={`${styles.menuIcon}`}
-                name="link"
-                onClick={openInBrowser}
-              />
+            <a
+              className={styles.menuIcon}
+              target="_blank" rel="noreferrer" href={current && current.link}>
+              <LinkIcon className={'h-4 2-4'}/>
             </a>
           </div>
         </div>

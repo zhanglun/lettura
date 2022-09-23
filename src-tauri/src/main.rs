@@ -60,11 +60,13 @@ pub fn get_menu() -> Menu {
 }
 
 fn main() {
+  let context = tauri::generate_context!();
   tauri::Builder::default()
-    .menu(get_menu())
+//     .menu(get_menu())
+    .menu(tauri::Menu::os_default(&context.package_info().name))
     .invoke_handler(tauri::generate_handler![
       fetch_feed,
     ])
-    .run(tauri::generate_context!())
+    .run(context)
     .expect("error while running tauri  Application");
 }
