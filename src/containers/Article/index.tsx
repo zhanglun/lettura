@@ -64,10 +64,6 @@ export const ArticleContainer = (): JSX.Element => {
 
   }, []);
 
-  const handleArticleSelect = useCallback((article: any) => {
-    console.log('store', store)
-    setCurrent(article);
-  }, []);
 
   const syncArticles = () => {
     if (feedUrl) {
@@ -163,7 +159,6 @@ export const ArticleContainer = (): JSX.Element => {
           title={params.name}
           channelId={channelId}
           feedUrl={feedUrl}
-          onArticleSelect={handleArticleSelect}
         />
       </div>
       <div className={styles.mainView} ref={viewRef}>
@@ -176,7 +171,7 @@ export const ArticleContainer = (): JSX.Element => {
             </a>
           </div>
         </div>
-        <ArticleView article={current}/>
+        <ArticleView article={store.article}/>
       </div>
     </div>
   );

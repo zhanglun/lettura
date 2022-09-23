@@ -15,7 +15,6 @@ type ArticleListProps = {
   channelId: string | null;
   feedUrl: string | null;
   title: string | null;
-  onArticleSelect: (article: any) => void;
 };
 
 export const ArticleList = (props: ArticleListProps): JSX.Element => {
@@ -61,10 +60,7 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
       unread: 0
     });
 
-    if (props.onArticleSelect) {
-      props.onArticleSelect(article);
-      setHighlightItem(article);
-    }
+    setHighlightItem(article);
   };
 
   useEffect(() => {
