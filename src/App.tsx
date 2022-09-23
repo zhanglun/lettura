@@ -14,12 +14,10 @@ function App() {
   const store = useStore();
   const [filter, setFilter] = useState({...store.currentFilter});
   const [article, setArticle] = useState(store.article);
+  const [channel, setChannel] = useState(store.channel);
 
   const updateChannelCount = useCallback(async (article: Article, action: string, count: number) => {
-    // console.log('update channel count', article.feedUrl)
-    // setTimeout(async () => {
-      await dataAgent.updateCountWithChannel(article.feedUrl);
-    // }, 10)
+    await dataAgent.updateCountWithChannel(article.feedUrl);
   }, []);
 
   useEffect(() => {
@@ -35,7 +33,8 @@ function App() {
   })
   return (
     <StoreContext.Provider value={{
-      channel: store.channel,
+      channel: channel,
+      setChannel,
       article: article,
       setArticle,
       updateChannelCount,

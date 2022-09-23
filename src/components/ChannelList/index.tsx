@@ -10,7 +10,7 @@ import { getChannelFavicon, requestFeed } from "../../helpers/parseXML";
 import * as dataAgent from "../../helpers/dataAgent";
 import { StoreContext } from "../../context";
 import { Progress } from "@douyinfe/semi-ui";
-import { Cog6ToothIcon, FolderIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { ArrowPathIcon, Cog6ToothIcon, FolderIcon, PlusIcon } from "@heroicons/react/24/outline";
 
 const ChannelList = (props: any): JSX.Element => {
   const store = useContext(StoreContext);
@@ -101,7 +101,7 @@ const ChannelList = (props: any): JSX.Element => {
           return (
             <li
               key={channel.title + i}
-              onClick={() => store.channel = channel}
+              onClick={() => store.setChannel(channel)}
               aria-hidden="true"
             >
               <NavLink
@@ -153,6 +153,12 @@ const ChannelList = (props: any): JSX.Element => {
             className={styles.toolbarItem}
           >
            <FolderIcon className={'h-4 w-4'}/>
+          </span>
+          <span
+            className={styles.toolbarItem}
+            onClick={refreshList}
+          >
+            <ArrowPathIcon className={'h-4 w-4'}/>
           </span>
           <span
             className={styles.toolbarItem}

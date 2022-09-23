@@ -3,6 +3,7 @@ import { Article, Channel } from "./db";
 
 interface PContext {
   channel: Channel | null,
+  setChannel: (channel: Channel) => void,
   article: Article | null,
   setArticle: (article: Article) => void,
   updateChannelCount: (article: Article, action: string, count: number) => void,

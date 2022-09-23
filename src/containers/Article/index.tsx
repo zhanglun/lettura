@@ -65,6 +65,7 @@ export const ArticleContainer = (): JSX.Element => {
   }, []);
 
   const handleArticleSelect = useCallback((article: any) => {
+    console.log('store', store)
     setCurrent(article);
   }, []);
 
