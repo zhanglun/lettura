@@ -25,6 +25,7 @@ export const ArticleContainer = (): JSX.Element => {
   const [syncing, setSyncing] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<HTMLDivElement>(null);
+  const articleListRef = useRef<React.ReactNode>(null)
 
   const handleListScroll = useCallback(() => {
     if (listRef.current) {
@@ -64,6 +65,12 @@ export const ArticleContainer = (): JSX.Element => {
 
   }, []);
 
+  const getArticleList = () => {
+    if (articleListRef && articleListRef.current) {
+      // @ts-ignore
+      articleListRef.current.getList()
+    }
+  }
 
   const syncArticles = () => {
     if (feedUrl) {
@@ -74,6 +81,8 @@ export const ArticleContainer = (): JSX.Element => {
 
           return dataAgent.bulkAddArticle(items)
             .then(() => {
+              getArticleList()
+
               return dataAgent.updateCountWithChannel(feedUrl);
             })
         }
@@ -90,7 +99,7 @@ export const ArticleContainer = (): JSX.Element => {
   const markAllRead = () => {
     if (feedUrl) {
       return dataAgent.makeAllRead(feedUrl).then(() => {
-        // TODO: reload articleList
+        getArticleList()
       })
     }
 
@@ -156,9 +165,10 @@ export const ArticleContainer = (): JSX.Element => {
         </div>
         {syncing && <div className={styles.syncingBar}>同步中</div>}
         <ArticleList
+          ref={articleListRef}
           title={params.name}
           channelId={channelId}
-          feedUrl={feedUrl}
+          feedUrl={feedUrl || ''}
         />
       </div>
       <div className={styles.mainView} ref={viewRef}>

@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
+import React, { useEffect, useState, forwardRef, useRef, useImperativeHandle } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import { ArticleItem } from "../ArticleItem";
 import { Loading } from "../Loading";
@@ -9,7 +9,6 @@ import * as dataAgent from "../../helpers/dataAgent";
 
 import styles from "./articlelist.module.css";
 import { useStore } from "../../hooks/useStore";
-import { getAllArticleListByChannel } from "../../helpers/dataAgent";
 
 type ArticleListProps = {
   channelId: string | null;
@@ -17,34 +16,10 @@ type ArticleListProps = {
   title: string | null;
 };
 
-export const ArticleList = (props: ArticleListProps): JSX.Element => {
+export const ArticleList = forwardRef((props: ArticleListProps, ref): JSX.Element => {
   const { channelId, feedUrl = "" } = props;
   const store = useStore();
   const [highlightItem, setHighlightItem] = useState<Article>();
-  // const articleList =
-  //   (useLiveQuery(
-  //     () =>
-  //       db.articles
-  //         .where("feedUrl")
-  //         .equalsIgnoreCase(feedUrl as string)
-  //         // .and((a) => a.unread === 1)
-  //         .reverse()
-  //         .sortBy("id"),
-  //     [feedUrl]
-  //   ) || []).filter((c) => {
-  //     if (store.currentFilter.id === "1") {
-  //       return true;
-  //     }
-  //
-  //     if (store.currentFilter.id === "2") {
-  //       return c.unread === 1;
-  //     }
-  //
-  //     if (store.currentFilter.id === "3") {
-  //       return c.unread === 0;
-  //     }
-  //   });
-
   const [articleList, setArticleList] = useState<Article[]>([]);
   const [loading, setLoading] = useState(false);
   const articleListRef = useRef<HTMLDivElement>(null);
@@ -63,13 +38,17 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
     setHighlightItem(article);
   };
 
-  useEffect(() => {
+  useImperativeHandle(ref, () => {
+    return {
+      getList() {
+        getList(feedUrl || '')
+      }
+    }
+  })
+
+  const getList = (feedUrl: string) => {
     dataAgent.getAllArticleListByChannel(feedUrl || "").then((res) => {
       const list = res.filter((c) => {
-        if (store.currentFilter.id === "1") {
-          return true;
-        }
-
         if (store.currentFilter.id === "2") {
           return c.unread === 1;
         }
@@ -77,10 +56,16 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
         if (store.currentFilter.id === "3") {
           return c.unread === 0;
         }
+
+        return true
       });
 
       setArticleList(list);
     });
+  }
+
+  useEffect(() => {
+    getList(feedUrl || '')
   }, [feedUrl, store.currentFilter]);
 
   const renderList = (): JSX.Element[] => {
@@ -127,11 +112,11 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
     <div className={styles.container}>
       <div className={styles.inner} ref={articleListRef}>
         {loading ? (
-          <Loading />
+          <Loading/>
         ) : (
           <ul className={styles.list}>{renderList()}</ul>
         )}
       </div>
     </div>
   );
-};
+});
