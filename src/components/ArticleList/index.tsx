@@ -1,7 +1,6 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import React, { useEffect, useState, forwardRef, useRef, useImperativeHandle } from "react";
-import { useLiveQuery } from "dexie-react-hooks";
+import React, { useEffect, useState, forwardRef, useRef, useImperativeHandle, ForwardedRef } from "react";
 import { ArticleItem } from "../ArticleItem";
 import { Loading } from "../Loading";
 import { Article, db } from "../../db";
@@ -10,13 +9,17 @@ import * as dataAgent from "../../helpers/dataAgent";
 import styles from "./articlelist.module.css";
 import { useStore } from "../../hooks/useStore";
 
-type ArticleListProps = {
+export type ArticleListProps = {
   channelId: string | null;
   feedUrl: string | null;
   title: string | null;
 };
 
-export const ArticleList = forwardRef((props: ArticleListProps, ref): JSX.Element => {
+export interface ArticleListRefType {
+  getList: () => void
+}
+
+export const ArticleList = forwardRef((props: ArticleListProps, ref: ForwardedRef<ArticleListRefType>): JSX.Element => {
   const { channelId, feedUrl = "" } = props;
   const store = useStore();
   const [highlightItem, setHighlightItem] = useState<Article>();
@@ -47,20 +50,18 @@ export const ArticleList = forwardRef((props: ArticleListProps, ref): JSX.Elemen
   })
 
   const getList = (feedUrl: string) => {
-    dataAgent.getAllArticleListByChannel(feedUrl || "").then((res) => {
-      const list = res.filter((c) => {
-        if (store.currentFilter.id === "2") {
-          return c.unread === 1;
-        }
+    const filter = { unread: 1 }
 
-        if (store.currentFilter.id === "3") {
-          return c.unread === 0;
-        }
+    if (store.currentFilter.id === "2") {
+      filter.unread = 1;
+    }
 
-        return true
-      });
+    if (store.currentFilter.id === "3") {
+      filter.unread = 0;
+    }
 
-      setArticleList(list);
+    dataAgent.getAllArticleListByChannel(feedUrl || "", filter).then((res) => {
+      setArticleList(res);
     });
   }
 

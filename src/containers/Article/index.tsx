@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
-import { ArticleList } from "../../components/ArticleList";
+import { ArticleList, ArticleListRefType } from "../../components/ArticleList";
 import { ArticleView } from "../../components/ArticleView";
 import { getChannelFavicon, requestFeed } from "../../helpers/parseXML";
 import { Button, Dropdown, Notification } from "@douyinfe/semi-ui";
@@ -25,7 +25,7 @@ export const ArticleContainer = (): JSX.Element => {
   const [syncing, setSyncing] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<HTMLDivElement>(null);
-  const articleListRef = useRef<React.ReactNode>(null)
+  const articleListRef = useRef<ArticleListRefType>(null)
 
   const handleListScroll = useCallback(() => {
     if (listRef.current) {
@@ -66,8 +66,7 @@ export const ArticleContainer = (): JSX.Element => {
   }, []);
 
   const getArticleList = () => {
-    if (articleListRef && articleListRef.current) {
-      // @ts-ignore
+    if (articleListRef.current) {
       articleListRef.current.getList()
     }
   }

@@ -93,11 +93,16 @@ export const updateCountWithChannel = async (feedUrl: string): Promise<any> => {
 };
 
 export const getAllArticleListByChannel = async (
-  feedUrl: string
+  feedUrl: string,
+  filter: {
+    unread: number
+  },
 ): Promise<Article[]> => {
   return db.articles
-    .where("feedUrl")
-    .equals(feedUrl)
+    .where({
+      feedUrl,
+      ...filter
+    })
     .reverse()
     .sortBy("pubDate");
 };

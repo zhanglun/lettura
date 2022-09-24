@@ -4,6 +4,7 @@ import { Modal, Table } from "@douyinfe/semi-ui"
 import { Channel, db } from "../../../db";
 import * as dataAgent from '../../../helpers/dataAgent';
 import styles from './feedManage.module.scss';
+import { TrashIcon } from "@heroicons/react/24/outline";
 
 export const FeedManager = () => {
   const channelList = useLiveQuery(() => db.channels.toArray(), []);
@@ -44,7 +45,9 @@ export const FeedManager = () => {
       width: 100,
       render(text: string, record: Channel): JSX.Element {
         return <div>
-          <span className={styles.delBtn} onClick={() => handleDeleteFeed(record)}>删除</span>
+          <span className={styles.delBtn} onClick={() => handleDeleteFeed(record)}>
+            <TrashIcon className={"h4 w-4"}/>
+          </span>
         </div>
       }
     }

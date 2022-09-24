@@ -61,7 +61,7 @@ export const ImportAndExport = (props: any) => {
     setSourceType(type);
   };
 
-  const handleTextSourceChange = (text:string) => {
+  const handleTextSourceChange = (text: string) => {
     if (text) {
       const list = parserOPML(text);
       setImportedList(list);
@@ -73,22 +73,23 @@ export const ImportAndExport = (props: any) => {
 
   return (
     <div className={styles.panel}>
-      <div className={styles.panelHeader}>
-        <h1 className={styles.panelTitle}>导入</h1>
-        <p className={styles.description}>从别处导入您的订阅源</p>
-      </div>
+      <h1 className={styles.panelTitle}>导入
+        <span className={styles.description}>从别处导入您的订阅源</span>
+      </h1>
       <div className={styles.panelBody}>
         <div className={styles.section}>
           <p className={styles.options}>OPML 导入</p>
-          <p>
-            <RadioGroup onChange={(e) => handleChangeSourceType(e)} value={sourceType} aria-label="单选组合示例"
-                        name="radio-group">
+          <div className={styles.radios}>
+            <RadioGroup
+              onChange={(e) => handleChangeSourceType(e)}
+              value={sourceType} aria-label="单选组合示例"
+              name="radio-group">
               <Radio value={"file"}>File</Radio>
               <Radio value={"text"}>Text</Radio>
             </RadioGroup>
-          </p>
+          </div>
           {sourceType === "file" && (
-            <div>
+            <div className={styles.inputField}>
               <span>{file && file.name}</span>
               <Input
                 ref={fileInputRef}
@@ -102,19 +103,18 @@ export const ImportAndExport = (props: any) => {
             </div>
           )}
           {sourceType === "text" && (
-            <div>
-              <TextArea autosize onChange={handleTextSourceChange} />
+            <div className={styles.inputField}>
+              <TextArea autosize onChange={handleTextSourceChange}/>
             </div>
           )}
           <Button theme="solid" type="primary" onClick={importFromOPML}>导入</Button>
         </div>
       </div>
-      <div className={styles.panelHeader}>
-        <h1 className={styles.panelTitle}>导出</h1>
-        <p className={styles.description}>
+      <h1 className={styles.panelTitle}>导出
+        <span className={styles.description}>
           你可以导出订阅源以便在其他阅读器中使用
-        </p>
-      </div>
+        </span>
+      </h1>
       <div className={styles.panelBody}>
         <div className={styles.section}>
           <div className={styles.options}>OPML 导出</div>

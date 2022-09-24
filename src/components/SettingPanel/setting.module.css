@@ -27,6 +27,21 @@
   height: 100%;
   border-right: 1px solid var(--line-color);
   grid-column: 1;
+  padding: 8px 10px;
+}
+
+.menuItem {
+  display: grid;
+  grid-auto-flow: column;
+  align-items: center;
+  justify-content: start;
+  grid-gap: 10px;
+  margin: 4px 0;
+  height: 32px;
+  line-height: 32px;
+  padding: 0 8px;
+  font-size: 14px;
+  color: var(--text-color);
 }
 
 .subTitle {
@@ -43,33 +58,38 @@
   overflow-y: scroll;
 }
 
-.panelHeader {
-  padding: 24px 0 10px;
-}
-
 .panelTitle {
   margin: 0;
+  padding: 20px 0 10px;
   font-size: 18px;
   font-weight: var(--font-weight-bold);
 }
 
+.panelBody {
+  margin-bottom: 30px;
+}
+
 .description {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--text-color);
+  font-weight: normal;
+  margin-left: 14px;
+}
+
+.inputField {
+  margin: 12px 0;
 }
 
 .section {
-  padding: 20px 0;
+  padding: 0 0;
 }
 
 .options {
-  width: 160px;
-  min-width: 160px;
-  margin-right: 56px;
   color: var(--headline-color);
   font-size: 14px;
   font-weight: var(--font-weight-bold);
   line-height: 16px;
+  margin: 12px 0;
 }
 
 .preview {
@@ -123,6 +143,7 @@
 }
 
 .main {
+  padding: 12px;
   height: 100vh;
   overflow-y: auto;
 }
