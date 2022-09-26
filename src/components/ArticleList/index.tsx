@@ -50,7 +50,7 @@ export const ArticleList = forwardRef((props: ArticleListProps, ref: ForwardedRe
   })
 
   const getList = (feedUrl: string) => {
-    const filter = { unread: 1 }
+    const filter: {unread?: 1 | 0 } = { }
 
     if (store.currentFilter.id === "2") {
       filter.unread = 1;
@@ -60,7 +60,7 @@ export const ArticleList = forwardRef((props: ArticleListProps, ref: ForwardedRe
       filter.unread = 0;
     }
 
-    dataAgent.getAllArticleListByChannel(feedUrl || "", filter).then((res) => {
+    dataAgent.getAllArticleListByChannel(feedUrl || "", filter || null).then((res) => {
       setArticleList(res);
     });
   }
