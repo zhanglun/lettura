@@ -158,7 +158,7 @@ const ChannelList = (props: any): JSX.Element => {
             className={styles.toolbarItem}
             onClick={refreshList}
           >
-            <ArrowPathIcon className={'h-4 w-4'}/>
+            <ArrowPathIcon className={`h-4 w-4 ${refreshing ? 'spinning' : ''}`}/>
           </span>
           <span
             className={styles.toolbarItem}

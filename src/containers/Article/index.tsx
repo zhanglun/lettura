@@ -149,7 +149,7 @@ export const ArticleContainer = (): JSX.Element => {
               onClick={markAllRead}
             >
             <WalletIcon
-              className={"h-4 2-4"}
+              className={"h-4 w-4"}
             />
             </span>
             <span
@@ -157,7 +157,7 @@ export const ArticleContainer = (): JSX.Element => {
               onClick={handleRefresh}
             >
             <ArrowPathIcon
-              className={"h-4 2-4"}
+              className={`h-4 w-4 ${syncing ? 'spinning' : ''}`}
             />
             </span>
           </div>
@@ -176,7 +176,7 @@ export const ArticleContainer = (): JSX.Element => {
             <a
               className={styles.menuIcon}
               target="_blank" rel="noreferrer" href={current && current.link}>
-              <LinkIcon className={'h-4 2-4'}/>
+              <LinkIcon className={'h-4 w-4'}/>
             </a>
           </div>
         </div>
