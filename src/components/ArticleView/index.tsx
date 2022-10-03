@@ -53,7 +53,7 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
             </div>
           </div>
           <div className={styles.body}>
-            {showBanner &&  <div className={styles.banner}><img src={article.image} alt=""/></div>}
+            {showBanner && article.image &&  <div className={styles.banner}><img src={article.image} alt=""/></div>}
             <div
               className={styles.content}
               // eslint-disable-next-line react/no-danger

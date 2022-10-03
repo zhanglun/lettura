@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import { Input, Button, Radio, RadioGroup, TextArea } from "@douyinfe/semi-ui";
-import styles from "../setting.module.css";
+import styles from "../setting.module.scss";
 import { db, Channel as ChannelModel } from "../../../db";
 
 export const ImportAndExport = (props: any) => {

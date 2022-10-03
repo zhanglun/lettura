@@ -88,7 +88,7 @@ const ChannelList = (props: any): JSX.Element => {
   };
 
   const goToSetting = () => {
-    navigate(RouteConfig.SETTINGS);
+    navigate(RouteConfig.SETTINGS_GENERAL);
   };
 
   const renderFeedList = (): JSX.Element => {

@@ -44,6 +44,11 @@
   color: var(--text-color);
 }
 
+.menuItemActive {
+  @extend .menuItem;
+  color: var(--color-primary-blue);
+}
+
 .subTitle {
   margin: 0;
   font-size: 20px;

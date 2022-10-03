@@ -133,6 +133,13 @@
   background-color: var(--color-gray-200);
 }
 
+.content {
+  line-height: 1.7;
+  font-weight: 400;
+  font-family: var(--sans-font);
+  font-size: var(--content-font-size);
+}
+
 .content img, .content video {
   display: block;
   max-width: 100% !important;
@@ -144,11 +151,14 @@
 blockquote {
   font-weight: 400;
   color: #999;
+  margin: 2.4rem 0;
+  padding-left: 1rem;
+  border-left: 6px solid #666;
 }
 
 .title {
-  /*font-family: var(--sans-font);*/
-  font-size: calc(var(--content-font-size) * 1.8);
+  //font-family: var(--sans-font);
+  font-size: calc(var(--content-font-size) * 1.5);
 }
 
 .desc {
@@ -156,14 +166,22 @@ blockquote {
   font-size: calc(var(--content-font-size) * 1.2);
 }
 
-/*.content *,*/
-/*.content p,*/
-/*.content div {*/
-/*    line-height: 1.5;*/
-/*    font-weight: 400;*/
-/*    font-family: var(--sans-font);*/
-/*    font-size: var(--content-font-size);*/
-/*}*/
+.content p {
+  line-height: 1.7;
+  font-weight: 400;
+  font-family: var(--sans-font);
+  font-size: var(--content-font-size);
+  margin-bottom: 2.4rem;
+}
+
+.content hr {
+  margin: 2.4rem 0;
+}
+
+figcaption {
+  text-align: center;
+  color: var(--color-gray-200);
+}
 
 /*.content code {*/
 /*    line-height: inherit;*/

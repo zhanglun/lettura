@@ -1,8 +1,8 @@
 import React from "react";
-import { Link, Outlet } from "react-router-dom";
+import { NavLink, Outlet } from "react-router-dom";
 import { CircleStackIcon, HomeIcon, RssIcon } from "@heroicons/react/24/outline";
 import { RouteConfig } from "../../config";
-import styles from "./setting.module.css";
+import styles from "./setting.module.scss";
 
 function SettingPanel() {
   return (
@@ -13,26 +13,35 @@ function SettingPanel() {
       <div className={styles.sidebar}>
         <ul>
           <li>
-            <Link to={RouteConfig.SETTINGS_GENERAL} className={styles.menuItem}>
-              <HomeIcon className={"h-4 w-4"}/>General
-            </Link>
+            <NavLink
+              to={RouteConfig.SETTINGS_GENERAL}
+              className={({ isActive }) => isActive ? styles.menuItemActive : styles.menuItem}
+            >
+              <HomeIcon className={"h-4 w-4"} />General
+            </NavLink>
           </li>
           <li>
-            <Link to={RouteConfig.SETTINGS_FEED_MANAGER} className={styles.menuItem}>
-              <CircleStackIcon className={"h-4 w-4"}/>
+            <NavLink
+              to={RouteConfig.SETTINGS_FEED_MANAGER}
+              className={({ isActive }) => isActive ? styles.menuItemActive : styles.menuItem}
+            >
+              <CircleStackIcon className={"h-4 w-4"} />
               Feed Manager
-            </Link>
+            </NavLink>
           </li>
           <li>
-            <Link to={RouteConfig.SETTINGS_IMPORT} className={styles.menuItem}>
+            <NavLink
+              to={RouteConfig.SETTINGS_IMPORT}
+              className={({ isActive }) => isActive ? styles.menuItemActive : styles.menuItem}
+            >
               <RssIcon className={"h-4 w-4"} />
               Import/Export
-            </Link>
+            </NavLink>
           </li>
         </ul>
       </div>
       <div className={styles.main}>
-        <Outlet/>
+        <Outlet />
       </div>
     </div>
   );
