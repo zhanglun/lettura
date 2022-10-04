@@ -17,7 +17,7 @@ tauri-build = { version = "1.0.0-beta.4", features = [] }
 [dependencies]
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
-tauri = { version = "1.0.4", features = ["api-all"] }
+tauri = { version = "1.0.4", features = ["http-all", "shell-open"] }
 reqwest = { version = "0.11", features = ["json"] }
 rss = { version="2.0", features = ["serde"] }
 
