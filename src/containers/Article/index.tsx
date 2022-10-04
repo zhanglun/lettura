@@ -21,7 +21,6 @@ export const ArticleContainer = (): JSX.Element => {
   const query = useQuery();
   const feedUrl = query.get("feedUrl");
   const channelId = query.get("channelId");
-  const [current, setCurrent] = useState<any>(null);
   const [syncing, setSyncing] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<HTMLDivElement>(null);
@@ -183,7 +182,9 @@ export const ArticleContainer = (): JSX.Element => {
           <div className={styles.viewMenu}>
             <a
               className={styles.menuIcon}
-              target="_blank" rel="noreferrer" href={current && current.link}>
+              target="_blank" rel="noreferrer" 
+              href={(store.article && store.article.link) as string}
+            >
               <LinkIcon className={'h-4 w-4'}/>
             </a>
           </div>

@@ -1,3 +1,4 @@
+import {v4 as uuidv4} from 'uuid';
 import { Article, Article as ArticleModel, Channel, db } from "../db";
 
 /**
@@ -19,6 +20,7 @@ export const bulkAddArticle = (articles: ArticleModel[]) => {
           })
           .map((item) => {
             item.pubDate = new Date();
+            item.uuid = uuidv4();
 
             return { ...item };
           });
@@ -41,7 +43,7 @@ export const upsertChannel = async (channel: Channel) => {
   if (await db.channels.get({ feedUrl: channel.feedUrl })) {
     return db.channels.where("feedUrl").equals(channel.feedUrl).modify(channel);
   } else {
-    return db.channels.put(channel);
+    return db.channels.put({...channel, uuid: uuidv4()});
   }
 };
 

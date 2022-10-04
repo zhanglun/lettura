@@ -1,4 +1,5 @@
 import React, { useRef, useState } from "react";
+import { v4 as uuidv4} from 'uuid';
 import { Input, Button, Radio, RadioGroup, TextArea } from "@douyinfe/semi-ui";
 import styles from "../setting.module.scss";
 import { db, Channel as ChannelModel } from "../../../db";
@@ -29,7 +30,8 @@ export const ImportAndExport = (props: any) => {
         return {
           title,
           link,
-          feedUrl
+          feedUrl,
+          uuid: uuidv4(),
         };
       })
       .filter((item) => item.title && item.feedUrl && item.link);

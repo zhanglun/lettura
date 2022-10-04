@@ -69,6 +69,7 @@ export const AddFeedChannel = (props: any) => {
     db.transaction("rw", db.channels, db.articles, async () => {
       await dataAgent.upsertChannel({ ...channel, unread: 0 });
       await dataAgent.bulkAddArticle(articles);
+      await dataAgent.updateCountWithChannel(channel.feedUrl);
     }).then(() => {
       handleCancel();
     });
