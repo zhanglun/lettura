@@ -50,5 +50,5 @@ npm-debug.log.*
 *.scss.d.ts
 
 src-tauri/target
-
 build
+.vs

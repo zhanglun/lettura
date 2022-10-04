@@ -109,11 +109,19 @@ export const ArticleContainer = (): JSX.Element => {
     store.setFilter(filter);
   };
 
-  useEffect(() => {
+  const resetScrollTop = () => {
     if (viewRef.current !== null) {
       viewRef.current.scroll(0, 0);
     }
-  }, [current]);
+  };
+
+  useEffect(() => {
+    resetScrollTop();
+  }, [store.article]);
+
+  useEffect(() => {
+    resetScrollTop();
+  }, []);
 
   useEffect(() => {
     if (listRef.current !== null) {
