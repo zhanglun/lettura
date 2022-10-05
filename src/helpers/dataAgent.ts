@@ -73,6 +73,15 @@ export const deleteChannel = async (channelId: number) => {
   }
 };
 
+export const queryChannelWithKeywords = async(word: string) => {
+  return db.channels.filter((channel) => {
+    if (channel.title.indexOf(word) > -1) {
+      return true
+    }
+    return false
+  }).toArray();
+}
+
 export const updateCountWithChannel = async (feedUrl: string): Promise<any> => {
   const c = await db.channels.get({ feedUrl });
 
@@ -105,7 +114,7 @@ export const getAllArticleListByChannel = async (
       feedUrl,
     })
 
-  if (filter && filter.unread) {
+  if (filter && typeof filter.unread === 'number') {
     table = table.filter((i) => {
       return i.unread === filter.unread
     })

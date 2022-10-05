@@ -2,6 +2,7 @@
   flex: 1;
   display: grid;
   grid-template-columns: var(--app-setting-sidebar-width) 1fr;
+  grid-template-rows: var(--app-toolbar-height) 1fr;
   background-color: #fff;
 }
 
@@ -25,7 +26,6 @@
 
 .sidebar {
   width: var(--app-setting-sidebar-width);
-  height: 100%;
   border-right: 1px solid var(--line-color);
   grid-column: 1;
   padding: 8px 10px;
@@ -150,6 +150,5 @@
 
 .main {
   padding: 12px;
-  height: 100vh;
   overflow-y: auto;
 }

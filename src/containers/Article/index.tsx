@@ -2,8 +2,8 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { ArticleList, ArticleListRefType } from "../../components/ArticleList";
 import { ArticleView } from "../../components/ArticleView";
-import { getChannelFavicon, requestFeed } from "../../helpers/parseXML";
-import { Button, Dropdown, Notification } from "@douyinfe/semi-ui";
+import { requestFeed } from "../../helpers/parseXML";
+import { Button, Dropdown } from "@douyinfe/semi-ui";
 import * as dataAgent from "../../helpers/dataAgent";
 import { useStore } from "../../hooks/useStore";
 import styles from "./index.module.scss";
@@ -36,9 +36,9 @@ export const ArticleContainer = (): JSX.Element => {
         listRef.current.classList.remove("is-scroll");
       }
     }
-  }, [listRef.current]);
+  }, []);
 
-  const handleViewScroll = useCallback(() => {
+  const handleViewScroll = () => {
     if (viewRef.current) {
       const scrollTop = viewRef.current.scrollTop;
       console.log("scrolling", scrollTop);
@@ -49,7 +49,7 @@ export const ArticleContainer = (): JSX.Element => {
         viewRef.current.classList.remove("is-scroll");
       }
     }
-  }, [viewRef.current]);
+  };
 
   useEffect(() => {
     if (listRef.current) {
@@ -182,7 +182,7 @@ export const ArticleContainer = (): JSX.Element => {
           <div className={styles.viewMenu}>
             <a
               className={styles.menuIcon}
-              target="_blank" rel="noreferrer" 
+              target="_blank" rel="noreferrer"
               href={(store.article && store.article.link) as string}
             >
               <LinkIcon className={'h-4 w-4'}/>
