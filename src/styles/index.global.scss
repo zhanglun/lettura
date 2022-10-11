@@ -1,16 +1,14 @@
 @import 'global.css';
 
-/* @import '../../../node_modules/react-tabs/style/react-tabs.css'; */
-
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans GB',
-    'MicroSoft YaHei', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
-    'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  'MicroSoft YaHei', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
+  'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #333;
   overflow: hidden;
-  background-color: rgba(255,255,255);
+  background-color: rgba(255, 255, 255);
 }
 
 * {
@@ -31,7 +29,7 @@ body {
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  monospace;
 }
 
 a {
@@ -98,6 +96,7 @@ $disabled-gray: #ddd;
         background-color: $close-red-active;
       }
     }
+
     > .traffic-light-minimize {
       background-color: $minimize-yellow;
 
@@ -105,6 +104,7 @@ $disabled-gray: #ddd;
         background-color: $minimize-yellow-active;
       }
     }
+
     > .traffic-light-maximize {
       background-color: $maximize-green;
 
@@ -141,7 +141,7 @@ $disabled-gray: #ddd;
 
   > svg {
     position: absolute;
-    transform: translate(-50%,-50%);
+    transform: translate(-50%, -50%);
     top: 50%;
     left: 50%;
     visibility: hidden;
@@ -159,7 +159,8 @@ $disabled-gray: #ddd;
 
   &-minimize {
     svg {
-      transform: translate(-50%,-30%);
+      transform: translate(-50%, -30%);
+
       > path {
         stroke: $close-red-icon;
       }
@@ -174,6 +175,7 @@ $disabled-gray: #ddd;
     svg path {
       stroke: $maximize-green-icon;
     }
+
     &:active:hover svg path {
       stroke: $maximize-green-icon-active;
     }
@@ -189,9 +191,9 @@ $disabled-gray: #ddd;
 
 @keyframes spin {
   from {
-    transform:rotate(0deg);
+    transform: rotate(0deg);
   }
   to {
-    transform:rotate(360deg);
+    transform: rotate(360deg);
   }
 }

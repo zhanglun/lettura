@@ -63,13 +63,11 @@
       {
         "fullscreen": false,
         "height": 800,
-        "transparent": true,
         "decorations": true,
         "resizable": true,
         "title": "Lettura, Your RSS reader",
         "width": 1300
       }
-    ],
-    "macOSPrivateApi": true
+    ]
   }
 }

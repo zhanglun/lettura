@@ -1,5 +1,5 @@
 use chrono::{DateTime};
-use rusqlite::{Coonnection};
+use super::schema::feeds;
 
 #[derive(Queryable)]
 pub struct Feed {
@@ -32,3 +32,19 @@ pub struct Article {
   pub content: String,
   pub pub_date: DateTime,
 }
+
+
+#[derive(Insertable)]
+#[diesel(table_name = feeds)]
+pub struct NewFeed<'a> {
+  pub id: &'a Int,
+  pub uuid: &'a String,
+  pub title: &'a String,
+  pub link: &'a String,
+  pub image: &'a String,
+  pub feed_url: &'a String,
+  pub description: &'a String,
+  pub pub_date: &'a DateTime,
+}
+
+pub fn test () -> Void

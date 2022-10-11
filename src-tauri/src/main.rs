@@ -3,9 +3,6 @@ all(not(debug_assertions), target_os = "windows"),
 windows_subsystem = "windows"
 )]
 
-extern crate diesel;
-extern crate dotenv;
-
 use tauri::{CustomMenuItem, Menu, MenuItem, Submenu};
 
 mod db;
