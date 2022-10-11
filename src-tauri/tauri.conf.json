@@ -66,9 +66,10 @@
         "transparent": true,
         "decorations": true,
         "resizable": true,
-        "title": "Lettura",
+        "title": "Lettura, Your RSS reader",
         "width": 1300
       }
-    ]
+    ],
+    "macOSPrivateApi": true
   }
 }

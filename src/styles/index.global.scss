@@ -9,6 +9,8 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #333;
+  overflow: hidden;
+  background-color: rgba(255,255,255);
 }
 
 * {
@@ -21,10 +23,6 @@ body {
   padding: 0;
   height: 100%;
   max-height: 100%;
-}
-
-body {
-  overflow: hidden;
 }
 
 #root {

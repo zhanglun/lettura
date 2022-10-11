@@ -1,30 +1,22 @@
 #![cfg_attr(
-  all(not(debug_assertions), target_os = "windows"),
-  windows_subsystem = "windows"
+all(not(debug_assertions), target_os = "windows"),
+windows_subsystem = "windows"
 )]
 
-extern crate app;
+extern crate diesel;
+extern crate dotenv;
 
-use self::app::*;
 use tauri::{CustomMenuItem, Menu, MenuItem, Submenu};
 
-#[tauri::command]
-async fn fetch_feed(url: String) -> String {
-  let res = fetch_rss_item(&url).await;
-  let res = match res {
-    Ok(data) => data,
-    Err(error) => error.to_string(),
-  };
-
-  res
-}
+mod db;
+mod cmd;
 
 pub fn get_menu() -> Menu {
   #[allow(unused_mut)]
-  let mut disable_item =
+    let mut disable_item =
     CustomMenuItem::new("disable-menu", "Disable menu").accelerator("CmdOrControl+D");
   #[allow(unused_mut)]
-  let mut test_item = CustomMenuItem::new("test", "Test").accelerator("CmdOrControl+T");
+    let mut test_item = CustomMenuItem::new("test", "Test").accelerator("CmdOrControl+T");
   #[cfg(target_os = "macos")]
   {
     disable_item = disable_item.native_image(tauri::NativeImage::MenuOnState);
@@ -61,11 +53,12 @@ pub fn get_menu() -> Menu {
 
 fn main() {
   let context = tauri::generate_context!();
+  db::establish_connection();
   tauri::Builder::default()
 //     .menu(get_menu())
     .menu(tauri::Menu::os_default(&context.package_info().name))
     .invoke_handler(tauri::generate_handler![
-      fetch_feed,
+      cmd::fetch_feed,
     ])
     .run(context)
     .expect("error while running tauri  Application");

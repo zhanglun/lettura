@@ -30,7 +30,7 @@ export const StoreContext = React.createContext({
     }
   ],
   currentFilter: {
-    id: "1",
-    title: "所有文章"
+    id: "2",
+    title: "未读文章"
   },
 } as PContext);

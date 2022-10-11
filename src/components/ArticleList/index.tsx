@@ -60,8 +60,11 @@ export const ArticleList = forwardRef((props: ArticleListProps, ref: ForwardedRe
       filter.unread = 0;
     }
 
+    console.time('111111')
+
     dataAgent.getAllArticleListByChannel(feedUrl || "", filter || null).then((res) => {
       setArticleList(res);
+      console.timeEnd('111111')
     });
   }
 
