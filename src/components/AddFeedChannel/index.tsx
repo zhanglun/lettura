@@ -5,6 +5,7 @@ import { db, Channel as ChannelModel, Article as ArticleModel, Article } from ".
 import { requestFeed } from "../../helpers/parseXML";
 import * as dataAgent from "../../helpers/dataAgent";
 import styles from "./index.module.css";
+import { invoke } from '@tauri-apps/api/tauri';
 
 export const AddFeedChannel = (props: any) => {
   const { showStatus, showModal, hideModal, toggleModal } = useModal();
@@ -23,8 +24,11 @@ export const AddFeedChannel = (props: any) => {
     };
   });
 
-  const handleLoad = () => {
+  const handleLoad = async () => {
     setLoading(true);
+    const res = await invoke('fetch_feed', { url: feedUrl })
+    console.log('res', JSON.parse(res as string))
+
     requestFeed(feedUrl).then((res) => {
       console.log("res", res);
       if (res.status && res.status !== 200) {
