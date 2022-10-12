@@ -1,8 +1,12 @@
+use std::env;
+use std::error::Error;
+
 use diesel::prelude::*;
 use diesel::sqlite::SqliteConnection;
-use self::models*;
 use dotenv::dotenv;
-use std::env;
+
+use crate::models as models;
+use crate::schema as schema;
 
 pub fn establish_connection() -> SqliteConnection {
   dotenv().ok();
@@ -13,13 +17,13 @@ pub fn establish_connection() -> SqliteConnection {
     .expect(&format!("Error connecting to {}", database_url))
 }
 
-pub fn get_feeds() -> Result<Vec<Feed>> {
+pub fn get_feeds() -> Result<Vec<models::Feed>, dyn Error> {
   let connection = establish_connection();
-  let results = feeds.limit(20).load::<Feed>(&connection);
+  let results = schema::feeds::dsl::feeds.limit(20).load::<models::Feed>(&connection);
 
-  OK(results)
+  Ok(results)
 }
 
-pub fn add_feed(conn: &mut SqliteConnection, feed: &mut models::NewPost) -> usize {
-
+pub fn add_feed(conn: &mut SqliteConnection, feed: &mut models::NewFeed) -> usize {
+  1
 }

@@ -3,10 +3,16 @@ all(not(debug_assertions), target_os = "windows"),
 windows_subsystem = "windows"
 )]
 
+#[macro_use]
+extern crate diesel;
+extern crate dotenv;
+
 use tauri::{CustomMenuItem, Menu, MenuItem, Submenu};
 
-mod db;
-mod cmd;
+pub mod db;
+pub mod cmd;
+pub mod models;
+pub mod schema;
 
 pub fn get_menu() -> Menu {
   #[allow(unused_mut)]
