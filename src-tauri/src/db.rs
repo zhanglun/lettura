@@ -17,11 +17,15 @@ pub fn establish_connection() -> SqliteConnection {
     .expect(&format!("Error connecting to {}", database_url))
 }
 
-pub fn get_feeds() -> Result<Vec<models::Feed>, dyn Error> {
+pub fn get_feeds() -> String {
   let connection = establish_connection();
-  let results = schema::feeds::dsl::feeds.limit(20).load::<models::Feed>(&connection);
+  let results = schema::feeds::dsl::feeds
+    .limit(20)
+    .load::<models::Feed>(&connection)
+    .expect("Expect loading posts");
 
-  Ok(results)
+  let serialized = serde_json::to_string(&results).unwrap();
+  serialized
 }
 
 pub fn add_feed(conn: &mut SqliteConnection, feed: &mut models::NewFeed) -> usize {

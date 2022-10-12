@@ -1,6 +1,8 @@
-use chrono::{DateTime, Utc};
+use chrono::{NaiveDateTime};
+use serde::{Serialize, Deserialize};
+use super::schema::feeds;
 
-#[derive(Queryable)]
+#[derive(Queryable, Serialize)]
 pub struct Feed {
   pub id: i32,
   pub uuid: String,
@@ -9,17 +11,17 @@ pub struct Feed {
   pub image: String,
   pub feed_url: String,
   pub description: String,
-  pub pub_date: DateTime<Utc>,
+  pub pub_date: NaiveDateTime,
 }
 
-#[derive(Queryable)]
+#[derive(Queryable, Serialize)]
 pub struct FeedArticleRelation {
   pub id: String,
   pub feed_uuid: String,
   pub article_uuid: String,
 }
 
-#[derive(Queryable)]
+#[derive(Queryable, Serialize)]
 pub struct Article {
   pub id: String,
   pub uuid: String,
@@ -29,11 +31,11 @@ pub struct Article {
   pub feed_url: String,
   pub description: String,
   pub content: String,
-  pub pub_date: DateTime<Utc>,
+  pub pub_date: NaiveDateTime,
 }
 
 #[derive(Insertable)]
-#[diesel(table_name = feeds)]
+#[table_name = "feeds"]
 pub struct NewFeed<'a> {
   pub id: i32,
   pub uuid: &'a String,
@@ -42,5 +44,5 @@ pub struct NewFeed<'a> {
   pub image: &'a String,
   pub feed_url: &'a String,
   pub description: &'a String,
-  pub pub_date: DateTime<Utc>,
+  pub pub_date: NaiveDateTime,
 }

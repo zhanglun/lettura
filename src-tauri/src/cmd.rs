@@ -1,6 +1,8 @@
 use reqwest;
 use std::error::Error;
 use tauri::{command};
+use crate::models as models;
+use crate::db;
 
 pub async fn fetch_rss_item(url: &str) -> Result<String, Box<dyn Error>> {
   let content = reqwest::get(url).await?.bytes().await?;
@@ -19,4 +21,12 @@ pub async fn fetch_feed(url: String) -> String {
   };
 
   res
+}
+
+
+#[command]
+pub async fn get_feeds() -> String {
+  let results = db::get_feeds();
+
+  return results
 }
