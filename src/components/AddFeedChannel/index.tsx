@@ -27,7 +27,8 @@ export const AddFeedChannel = (props: any) => {
   const handleLoad = async () => {
     setLoading(true);
     const res = await invoke('fetch_feed', { url: feedUrl })
-    console.log('res', JSON.parse(res as string))
+
+    console.log(res)
 
     requestFeed(feedUrl).then((res) => {
       console.log("res", res);

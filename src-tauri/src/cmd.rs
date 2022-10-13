@@ -7,39 +7,31 @@ use crate::{db, models::Feed};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct FeedRes {
-  channel: String,
-  items: String,
+  channel: rss::Channel,
+  items: Vec<rss::Item>,
 }
 
-pub async fn fetch_rss_item(url: &str) -> Result<FeedRes, Box<dyn Error>> {
+pub async fn fetch_rss_item(url: &str) -> Result<rss::Channel, Box<dyn Error>> {
   let response = reqwest::get(url).await?;
 
   println!("{}", &response.status());
 
-  if response.status().is_success() {
-    let content = response.bytes().await?;
-    let channel = rss::Channel::read_from(&content[..])?;
-    let items = serde_json::to_string(&channel.items)?;
-    let res = FeedRes {
-      channel: channel.to_string(),
-      items,
-    };
+  let content = response.bytes().await?;
+  let channel = rss::Channel::read_from(&content[..])?;
 
-    return Ok(res);
-  } else {
-    return Ok(FeedRes{ channel: "".to_string(), items: "[]".to_string()});
-  }
+  Ok(channel)
 }
 
 #[command]
-pub async fn fetch_feed(url: String) -> String {
+pub async fn fetch_feed(url: String) -> rss::Channel {
   let res = fetch_rss_item(&url).await;
-  let res = match res {
-    Ok(data) => serde_json::to_string(&data),
-    Err(error) => error.to_string(),
-  };
 
-  res
+  // let res = match res {
+  //   Ok(res) => res,
+  //   Err(error) => "No result".into(),
+  // };
+
+ res.unwrap()
 }
 
 
