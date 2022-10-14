@@ -29,5 +29,6 @@ pub fn get_feeds() -> String {
 }
 
 pub fn add_feed(conn: &mut SqliteConnection, feed: &mut models::NewFeed) -> usize {
+  println!("11111");
   1
 }

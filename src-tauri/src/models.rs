@@ -37,8 +37,6 @@ pub struct Article {
 #[derive(Insertable)]
 #[table_name = "feeds"]
 pub struct NewFeed<'a> {
-  pub id: i32,
-  pub uuid: &'a String,
   pub title: &'a String,
   pub link: &'a String,
   pub image: &'a String,

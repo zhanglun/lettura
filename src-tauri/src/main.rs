@@ -58,10 +58,10 @@ fn main() {
   let context = tauri::generate_context!();
   db::establish_connection();
   tauri::Builder::default()
-//     .menu(get_menu())
     .menu(tauri::Menu::os_default(&context.package_info().name))
     .invoke_handler(tauri::generate_handler![
       cmd::fetch_feed,
+      cmd::add_channel,
     ])
     .run(context)
     .expect("error while running tauri  Application");

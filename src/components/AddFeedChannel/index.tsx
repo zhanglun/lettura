@@ -1,7 +1,7 @@
 import React, { useImperativeHandle, useState } from "react";
 import { useModal } from "../Modal/useModal";
 import { Input, Modal, Button, Toast } from "@douyinfe/semi-ui";
-import { db, Channel as ChannelModel, Article as ArticleModel, Article } from "../../db";
+import { db, Channel as ChannelModel, Article as ArticleModel, Article, Channel } from "../../db";
 import { requestFeed } from "../../helpers/parseXML";
 import * as dataAgent from "../../helpers/dataAgent";
 import styles from "./index.module.css";
@@ -26,33 +26,19 @@ export const AddFeedChannel = (props: any) => {
 
   const handleLoad = async () => {
     setLoading(true);
-    const res = await invoke('fetch_feed', { url: feedUrl })
+    const res: Channel & { items: Article[] } = await invoke('fetch_feed', { url: feedUrl })
 
     console.log(res)
 
-    requestFeed(feedUrl).then((res) => {
-      console.log("res", res);
-      if (res.status && res.status !== 200) {
-        Toast.error({
-          content: `Request Error: ${res.status}`,
-          duration: 2,
-          theme: "light"
-        });
-        return;
-      }
+    const { items } = res;
 
-      if (res.channel && res.items) {
-        const { channel, items } = res;
+    items.forEach((item: Article) => item.unread = 1);
 
-        items.forEach((item: Article) => item.unread = 1);
+    setTitle(res.title);
+    setChannel(res);
+    setArticles(items);
 
-        setTitle(channel.title);
-        setChannel(channel);
-        setArticles(items);
-      }
-    }).finally(() => {
-      setLoading(false);
-    });
+    setLoading(false)
   };
 
   const handleTitleChange = (e: any) => {
@@ -70,14 +56,15 @@ export const AddFeedChannel = (props: any) => {
     toggleModal();
   };
 
-  const handleSave = () => {
-    db.transaction("rw", db.channels, db.articles, async () => {
-      await dataAgent.upsertChannel({ ...channel, unread: 0 });
-      await dataAgent.bulkAddArticle(articles);
-      await dataAgent.updateCountWithChannel(channel.feedUrl);
-    }).then(() => {
-      handleCancel();
-    });
+  const handleSave = async () => {
+    await invoke('add_channel')
+    // db.transaction("rw", db.channels, db.articles, async () => {
+    //   await dataAgent.upsertChannel({ ...channel, unread: 0 });
+    //   await dataAgent.bulkAddArticle(articles);
+    //   await dataAgent.updateCountWithChannel(channel.feedUrl);
+    // }).then(() => {
+    //   handleCancel();
+    // });
   };
 
   return (
@@ -93,7 +80,7 @@ export const AddFeedChannel = (props: any) => {
           <div className={styles.label}>Feed URL</div>
           <div className={styles.formItem}>
             <Input type="text" style={{ width: "300px" }} disabled={loading} value={feedUrl}
-                   onChange={handleInputChange} />
+                   onChange={handleInputChange}/>
           </div>
           <div className={styles.action}>
             <Button type={"primary"} loading={loading} onClick={handleLoad}>Load</Button>
@@ -103,7 +90,7 @@ export const AddFeedChannel = (props: any) => {
         <div className={styles.item}>
           <div className={styles.label}>Title</div>
           <div className={styles.formItem}>
-            <Input type="text" style={{ width: "300px" }} value={title} onChange={handleTitleChange} />
+            <Input type="text" style={{ width: "300px" }} value={title} onChange={handleTitleChange}/>
           </div>
         </div>
       </div>
