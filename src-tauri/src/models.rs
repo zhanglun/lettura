@@ -1,5 +1,5 @@
 use chrono::{NaiveDateTime};
-use serde::{Serialize, Deserialize};
+use serde::{Serialize};
 use super::schema::feeds;
 
 #[derive(Queryable, Serialize)]
@@ -11,7 +11,7 @@ pub struct Feed {
   pub image: String,
   pub feed_url: String,
   pub description: String,
-  pub pub_date: NaiveDateTime,
+  pub pub_date: String,
 }
 
 #[derive(Queryable, Serialize)]
@@ -34,13 +34,14 @@ pub struct Article {
   pub pub_date: NaiveDateTime,
 }
 
-#[derive(Insertable)]
+#[derive(Debug, Insertable)]
 #[table_name = "feeds"]
 pub struct NewFeed<'a> {
+  pub uuid: &'a String,
   pub title: &'a String,
   pub link: &'a String,
   pub image: &'a String,
   pub feed_url: &'a String,
   pub description: &'a String,
-  pub pub_date: NaiveDateTime,
+  pub pub_date: &'a String,
 }

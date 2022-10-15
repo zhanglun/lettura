@@ -1,6 +1,7 @@
+use std::error::Error;
 use reqwest;
 use serde::{Serialize, Deserialize};
-use std::error::Error;
+use uuid::Uuid;
 use tauri::{command};
 
 use crate::db;
@@ -47,16 +48,27 @@ pub async fn get_feeds() -> String {
 pub async fn add_channel(url: String) -> String {
   let mut connection = db::establish_connection();
   let res = fetch_rss_item(&url).await.unwrap();
+  let image = match res.image {
+    Some(t) => t.url,
+    None => "".to_string(),
+  };
+  let date = match res.pub_date {
+    Some(t) => t,
+    None => "".to_string(),
+  };
   let feed = NewFeed {
+    uuid: &Uuid::new_v4().hyphenated().to_string(),
     title: &res.title,
     link: &res.link,
-    image: &res.image.unwrap().url,
+    image: &image,
     feed_url: &url,
     description: &res.description,
-    pub_date: &res.pub_date
+    pub_date: &date,
   };
 
-  let res = db::add_feed(&mut connection, res).await;
+  println!("{:?}", feed);
+
+  let res = db::add_feed(&mut connection, &feed).await;
 
   return "gg".to_string();
 }

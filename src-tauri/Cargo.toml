@@ -21,8 +21,10 @@ tauri = { version = "1.0.4", features = ["http-request", "shell-open"] }
 reqwest = { version = "0.11", features = ["json"] }
 rss = { version="2.0", features = ["serde"] }
 chrono = { version="0.4", features = ["serde"] }
-diesel = { version = "1.4.4", features = ["sqlite", "chrono"] }
+diesel = { version = "1.4.4", features = ["sqlite", "chrono", "uuidv07"] }
 dotenv = "0.15.0"
+libsqlite3-sys = { version = "^0", features = ["bundled"] }
+uuid = { version = "1.2.1", features = [ "v4", "fast-rng", "macro-diagnostics" ] }
 
 [features]
 default = [ "custom-protocol" ]

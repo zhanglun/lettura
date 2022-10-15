@@ -1,6 +1,7 @@
 use std::env;
 use std::error::Error;
 
+use diesel::insert_into;
 use diesel::prelude::*;
 use diesel::sqlite::SqliteConnection;
 use dotenv::dotenv;
@@ -28,7 +29,13 @@ pub fn get_feeds() -> String {
   serialized
 }
 
-pub fn add_feed(conn: &mut SqliteConnection, feed: &mut models::NewFeed) -> usize {
+pub async fn add_feed<'a>(conn: &mut SqliteConnection, feed: &'a models::NewFeed<'_>) -> usize {
+  //TODO: save to Db
+  let result = insert_into(schema::feeds::dsl::feeds)
+    .values(feed)
+    .execute(conn)
+    .expect("error");
+  println!(" new result {:?}", result);
   println!("11111");
   1
 }
