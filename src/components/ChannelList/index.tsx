@@ -11,6 +11,7 @@ import * as dataAgent from "../../helpers/dataAgent";
 import { StoreContext } from "../../context";
 import { Progress } from "@douyinfe/semi-ui";
 import { ArrowPathIcon, Cog6ToothIcon, FolderIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { invoke } from "@tauri-apps/api";
 
 const ChannelList = (props: any): JSX.Element => {
   const store = useContext(StoreContext);
@@ -18,6 +19,7 @@ const ChannelList = (props: any): JSX.Element => {
   const navigate = useNavigate();
   const addFeedButtonRef = useRef(null);
   const [refreshing, setRefreshing] = useState(false);
+  // const [channelList, setChannelList] = useState([]);
   const [done, setDone] = useState(0);
 
   const loadAndUpdate = (url: string) => {
@@ -40,11 +42,21 @@ const ChannelList = (props: any): JSX.Element => {
     });
   };
 
+  useEffect(() => {
+    const getList = async () => {
+      let channel = await invoke('get_channels') as [];
+      console.log('data from sqlite', channel)
+      // setChannelList(channel)
+    }
+
+    getList();
+  }, [])
+
   const refreshList = () => {
     setRefreshing(true);
 
-    const urlList = (channelList || []).map((channel) => {
-      return channel.feedUrl;
+    const urlList = (channelList || []).map((channel: any) => {
+      return channel.feed_url;
     });
 
     const limit = 5;

@@ -62,6 +62,7 @@ fn main() {
     .invoke_handler(tauri::generate_handler![
       cmd::fetch_feed,
       cmd::add_channel,
+      cmd::get_channels,
     ])
     .run(context)
     .expect("error while running tauri  Application");

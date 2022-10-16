@@ -3,9 +3,8 @@ use reqwest;
 use serde::{Serialize, Deserialize};
 use uuid::Uuid;
 use tauri::{command};
-
 use crate::db;
-use crate::models::{Feed, NewFeed};
+use crate::models;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CommandResponse<T> {
@@ -38,8 +37,8 @@ pub async fn fetch_feed(url: String) -> rss::Channel {
 }
 
 #[command]
-pub async fn get_feeds() -> String {
-  let results = db::get_feeds();
+pub async fn get_channels() -> Vec<models::Feed> {
+  let results = db::get_channels();
 
   return results;
 }
@@ -56,7 +55,7 @@ pub async fn add_channel(url: String) -> String {
     Some(t) => t,
     None => "".to_string(),
   };
-  let feed = NewFeed {
+  let feed = models::NewFeed {
     uuid: &Uuid::new_v4().hyphenated().to_string(),
     title: &res.title,
     link: &res.link,
@@ -68,7 +67,7 @@ pub async fn add_channel(url: String) -> String {
 
   println!("{:?}", feed);
 
-  let res = db::add_feed(&mut connection, &feed).await;
+  let res = db::add_channel(&mut connection, &feed).await;
 
   return "gg".to_string();
 }

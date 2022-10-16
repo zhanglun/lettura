@@ -5,7 +5,9 @@
         <title>Lun subscriptions in feedly Cloud</title>
     </head>
     <body>
-        <outline text="a" title="a"/>
+        <outline text="a" title="a">
+          <outline type="rss" text="设计" title="设计" xmlUrl="https://anyway.fm/news/rss.xml" htmlUrl="http://anyway.fm/news"/>
+        </outline>
         <outline text="前端" title="前端"/>
         <outline text="ideal" title="ideal">
             <outline type="rss" text="好奇心日报" title="好奇心日报" xmlUrl="http://www.qdaily.com/feed.xml" htmlUrl="http://www.qdaily.com"/>

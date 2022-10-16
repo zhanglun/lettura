@@ -18,18 +18,17 @@ pub fn establish_connection() -> SqliteConnection {
     .expect(&format!("Error connecting to {}", database_url))
 }
 
-pub fn get_feeds() -> String {
+pub fn get_channels() -> Vec<models::Feed> {
   let connection = establish_connection();
   let results = schema::feeds::dsl::feeds
     .limit(20)
     .load::<models::Feed>(&connection)
     .expect("Expect loading posts");
 
-  let serialized = serde_json::to_string(&results).unwrap();
-  serialized
+  results
 }
 
-pub async fn add_feed<'a>(conn: &mut SqliteConnection, feed: &'a models::NewFeed<'_>) -> usize {
+pub async fn add_channel<'a>(conn: &mut SqliteConnection, feed: &'a models::NewFeed<'_>,) -> usize {
   //TODO: save to Db
   let result = insert_into(schema::feeds::dsl::feeds)
     .values(feed)
@@ -37,5 +36,13 @@ pub async fn add_feed<'a>(conn: &mut SqliteConnection, feed: &'a models::NewFeed
     .expect("error");
   println!(" new result {:?}", result);
   println!("11111");
+  1
+}
+
+pub async fn remove_channel(conn: &mut SqliteConnection, uuid: String) -> usize {
+  1
+}
+
+pub async fn add_articles(conn: &mut SqliteConnection, articles: Vec<models::Article>) -> usize {
   1
 }

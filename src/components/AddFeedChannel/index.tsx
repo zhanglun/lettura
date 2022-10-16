@@ -28,17 +28,30 @@ export const AddFeedChannel = (props: any) => {
     setLoading(true);
     const res: Channel & { items: Article[] } = await invoke('fetch_feed', { url: feedUrl })
 
-    console.log(res)
+    console.log("res from rust", res);
 
-    const { items } = res;
+    requestFeed(feedUrl).then((res) => {
+      console.log("res", res);
 
-    items.forEach((item: Article) => item.unread = 1);
+      if (res.status && res.status !== 200) {
+        Toast.error({
+          content: `Request Error: ${res.status}`,
+          duration: 2,
+          theme: "light"
+        });
+        return;
+      }
 
-    setTitle(res.title);
-    setChannel(res);
-    setArticles(items);
+      const { items, channel } = res;
 
-    setLoading(false)
+      items.forEach((item: Article) => item.unread = 1);
+
+      setTitle(channel.title);
+      setChannel(channel);
+      setArticles(items);
+    }).finally(() => {
+      setLoading(false)
+    })
   };
 
   const handleTitleChange = (e: any) => {
@@ -57,14 +70,14 @@ export const AddFeedChannel = (props: any) => {
   };
 
   const handleSave = async () => {
-    await invoke('add_channel', { url: feedUrl})
-    // db.transaction("rw", db.channels, db.articles, async () => {
-    //   await dataAgent.upsertChannel({ ...channel, unread: 0 });
-    //   await dataAgent.bulkAddArticle(articles);
-    //   await dataAgent.updateCountWithChannel(channel.feedUrl);
-    // }).then(() => {
-    //   handleCancel();
-    // });
+    // await invoke('add_channel', { url: feedUrl})
+    db.transaction("rw", db.channels, db.articles, async () => {
+      await dataAgent.upsertChannel({ ...channel, unread: 0 });
+      await dataAgent.bulkAddArticle(articles);
+      await dataAgent.updateCountWithChannel(channel.feedUrl);
+    }).then(() => {
+      handleCancel();
+    });
   };
 
   return (
