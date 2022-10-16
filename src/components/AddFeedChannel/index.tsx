@@ -70,7 +70,8 @@ export const AddFeedChannel = (props: any) => {
   };
 
   const handleSave = async () => {
-    // await invoke('add_channel', { url: feedUrl})
+    const saveRes = await invoke('add_channel', { url: feedUrl})
+    console.log(saveRes)
     db.transaction("rw", db.channels, db.articles, async () => {
       await dataAgent.upsertChannel({ ...channel, unread: 0 });
       await dataAgent.bulkAddArticle(articles);

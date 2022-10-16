@@ -4,6 +4,7 @@ diesel::table! {
     articles (id) {
         id -> Integer,
         uuid -> Text,
+        channel_uuid -> Text,
         title -> Text,
         link -> Text,
         feed_url -> Text,
@@ -15,15 +16,7 @@ diesel::table! {
 }
 
 diesel::table! {
-    feed_article_relation (id) {
-        id -> Integer,
-        feed_uuid -> Text,
-        article_uuid -> Text,
-    }
-}
-
-diesel::table! {
-    feeds (id) {
+    channels (id) {
         id -> Integer,
         uuid -> Text,
         title -> Text,
@@ -37,6 +30,5 @@ diesel::table! {
 
 diesel::allow_tables_to_appear_in_same_query!(
     articles,
-    feed_article_relation,
-    feeds,
+    channels,
 );
