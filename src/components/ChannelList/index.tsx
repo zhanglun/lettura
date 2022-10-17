@@ -5,7 +5,7 @@ import styles from "./channel.module.scss";
 import defaultSiteIcon from "./default.png";
 import { RouteConfig } from "../../config";
 import { db } from "../../db";
-import { AddFeedChannel } from "../AddFeedChannel";
+import { AddFeedChannel } from "../AddChannel";
 import { getChannelFavicon, requestFeed } from "../../helpers/parseXML";
 import * as dataAgent from "../../helpers/dataAgent";
 import { StoreContext } from "../../context";
