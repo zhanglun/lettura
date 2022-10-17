@@ -27,15 +27,15 @@ pub fn get_channels() -> Vec<models::Channel> {
 }
 
 pub fn add_channel<'a>(
-  conn: &SqliteConnection,
   channel: &'a models::NewFeed<'_>,
   articles: Vec<models::NewArticle>,
 ) -> String {
+  let connection = establish_connection();
   let result = insert_into(schema::channels::dsl::channels)
     .values(channel)
-    .execute(conn);
+    .execute(&connection);
   let result = match result {
-    Ok(r) => "OK".to_string(),
+    Ok(r) => r.to_string(),
     Err(e) => e.to_string(),
   };
 
@@ -46,7 +46,7 @@ pub fn add_channel<'a>(
 
     let articles = insert_into(schema::articles::dsl::articles)
       .values(articles)
-      .execute(conn);
+      .execute(&connection);
 
       println!("articles {:?}", articles);
   }
@@ -54,10 +54,19 @@ pub fn add_channel<'a>(
   result
 }
 
-pub async fn remove_channel(conn: &mut SqliteConnection, uuid: String) -> usize {
+pub fn remove_channel(uuid: String) -> usize {
   1
 }
 
-pub async fn add_articles(conn: &mut SqliteConnection, articles: Vec<models::Article>) -> usize {
+pub fn add_articles(articles: Vec<models::Article>) -> usize {
   1
+}
+
+pub fn get_article() -> Vec<models::Article> {
+  let connection = establish_connection();
+  let results = schema::articles::dsl::articles
+    .load::<models::Article>(&connection)
+    .expect("Expect loading articles");
+
+  results
 }

@@ -40,10 +40,10 @@ pub async fn fetch_rss_item(url: &str) -> Option<rss::Channel> {
 }
 
 #[command]
-pub async fn fetch_feed(url: String) -> rss::Channel {
+pub async fn fetch_feed(url: String) -> Option<rss::Channel> {
   let res = fetch_rss_item(&url).await;
 
- res.unwrap()
+  res
 }
 
 #[command]
@@ -56,7 +56,6 @@ pub async fn get_channels() -> Vec<models::Channel> {
 
 #[command]
 pub async fn add_channel(url: String) -> String {
-  let connection = db::establish_connection();
   let res = fetch_rss_item(&url).await.unwrap();
   let image = match &res.image {
     Some(t) => String::from(&t.url),
@@ -101,7 +100,15 @@ pub async fn add_channel(url: String) -> String {
   }
 
 
-  let res = db::add_channel(&connection, &channel, articles);
+  let res = db::add_channel(&channel, articles);
 
   res.into()
+}
+
+
+#[command]
+pub fn get_articles() -> Vec<models::Article> {
+  println!("get articles from rust");
+  let res = db::get_article();
+  res
 }

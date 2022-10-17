@@ -63,6 +63,7 @@ fn main() {
       cmd::fetch_feed,
       cmd::add_channel,
       cmd::get_channels,
+      cmd::get_articles,
     ])
     .run(context)
     .expect("error while running tauri  Application");

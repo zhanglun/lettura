@@ -1,4 +1,3 @@
-use chrono::{NaiveDateTime};
 use serde::{Serialize};
 use super::schema::{channels, articles};
 
@@ -24,16 +23,15 @@ pub struct Channel {
 #[derive(Queryable, Serialize, Associations)]
 #[diesel(belongs_to(Channel))]
 pub struct Article {
-  pub id: String,
+  pub id: i32,
   pub uuid: String,
   pub channel_uuid: String,
   pub title: String,
   pub link: String,
-  pub image: String,
   pub feed_url: String,
   pub description: String,
   pub content: String,
-  pub pub_date: NaiveDateTime,
+  pub pub_date: String,
 }
 
 #[derive(Debug, Insertable)]

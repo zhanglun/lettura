@@ -9,7 +9,7 @@ import { invoke } from '@tauri-apps/api/tauri';
 
 export const AddFeedChannel = (props: any) => {
   const { showStatus, showModal, hideModal, toggleModal } = useModal();
-  const [feedUrl, setFeedUrl] = useState("");
+  const [feedUrl, setFeedUrl] = useState("https://feeds.appinn.com/appinns/");
   const [title, setTitle] = useState("");
   const [channel, setChannel] = useState({} as ChannelModel);
   const [articles, setArticles] = useState([] as ArticleModel[]);
@@ -71,7 +71,9 @@ export const AddFeedChannel = (props: any) => {
 
   const handleSave = async () => {
     const saveRes = await invoke('add_channel', { url: feedUrl})
-    console.log(saveRes)
+
+    console.log('saveRes ===>', saveRes)
+
     db.transaction("rw", db.channels, db.articles, async () => {
       await dataAgent.upsertChannel({ ...channel, unread: 0 });
       await dataAgent.bulkAddArticle(articles);

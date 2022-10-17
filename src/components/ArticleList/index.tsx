@@ -8,6 +8,7 @@ import * as dataAgent from "../../helpers/dataAgent";
 
 import styles from "./articlelist.module.css";
 import { useStore } from "../../hooks/useStore";
+import { invoke } from "@tauri-apps/api";
 
 export type ArticleListProps = {
   channelId: string | null;
@@ -66,6 +67,12 @@ export const ArticleList = forwardRef((props: ArticleListProps, ref: ForwardedRe
       setArticleList(res);
       console.timeEnd('111111')
     });
+
+    console.time('2')
+
+    invoke('get_articles', {}).then((res) => {
+      console.timeEnd('2')
+    })
   }
 
   useEffect(() => {
