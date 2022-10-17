@@ -89,20 +89,19 @@ pub async fn add_channel(url: String) -> String {
     let s = models::NewArticle {
       uuid: article_uuid,
       channel_uuid: channel_uuid.to_string(),
-      title: title,
-      link: link,
-      content: content,
+      title,
+      link,
+      content,
       feed_url: url.to_string(),
-      description: description,
+      description,
       pub_date: date,
     };
 
     articles.push(s);
   }
 
-  // println!("{:?}", channel);
 
   let res = db::add_channel(&connection, &channel, articles);
 
-  return "gg".to_string();
+  res.into()
 }
