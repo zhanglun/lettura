@@ -26,10 +26,10 @@ pub fn get_channels() -> Vec<models::Channel> {
   results
 }
 
-pub async fn add_channel<'a>(
-  conn: &mut SqliteConnection,
+pub fn add_channel<'a>(
+  conn: &SqliteConnection,
   channel: &'a models::NewFeed<'_>,
-  articles: &'a Vec<models::NewArticle<'_>>,
+  articles: Vec<models::NewArticle>,
 ) -> String {
   let result = insert_into(schema::channels::dsl::channels)
     .values(channel)
@@ -38,12 +38,17 @@ pub async fn add_channel<'a>(
     Ok(r) => "OK".to_string(),
     Err(e) => e.to_string(),
   };
+
   println!(" new result {:?}", result);
 
   if result == "OK" {
+    println!("start insert articles");
+
     let articles = insert_into(schema::articles::dsl::articles)
       .values(articles)
       .execute(conn);
+
+      println!("articles {:?}", articles);
   }
 
   result

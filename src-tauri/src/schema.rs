@@ -8,7 +8,6 @@ diesel::table! {
         title -> Text,
         link -> Text,
         feed_url -> Text,
-        image -> Text,
         description -> Text,
         content -> Text,
         pub_date -> Timestamp,

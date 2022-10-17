@@ -50,13 +50,13 @@ pub struct NewFeed<'a> {
 
 #[derive(Debug, Insertable, Clone)]
 #[table_name = "articles"]
-pub struct NewArticle<'a> {
-  pub uuid: &'a String,
-  pub channel_uuid: &'a String,
-  pub title: &'a String,
-  pub link: &'a String,
-  pub feed_url: &'a String,
-  pub description: &'a String,
-  pub content: &'a String,
-  pub pub_date: &'a String,
+pub struct NewArticle {
+  pub uuid: String,
+  pub channel_uuid: String,
+  pub title: String,
+  pub link: String,
+  pub feed_url: String,
+  pub description: String,
+  pub content: String,
+  pub pub_date: String,
 }

@@ -19,15 +19,24 @@ pub struct FeedRes {
   items: Vec<rss::Item>,
 }
 
-pub async fn fetch_rss_item(url: &str) -> Result<rss::Channel, Box<dyn Error>> {
-  let response = reqwest::get(url).await?;
+pub async fn fetch_rss_item(url: &str) -> Option<rss::Channel> {
+  let response = reqwest::get(url).await.unwrap();
 
   println!("{}", &response.status());
 
-  let content = response.bytes().await?;
-  let channel = rss::Channel::read_from(&content[..])?;
+  match response.status() {
+    reqwest::StatusCode::OK => {
+      let content = response.bytes().await.unwrap();
+      let channel = rss::Channel::read_from(&content[..]).unwrap();
 
-  Ok(channel)
+      Some(channel)
+    },
+    _ => {
+      println!("ddddd");
+      None
+    },
+  }
+
 }
 
 #[command]
@@ -43,6 +52,7 @@ pub async fn get_channels() -> Vec<models::Channel> {
 
   return results;
 }
+
 
 #[command]
 pub async fn add_channel(url: String) -> String {
@@ -66,25 +76,25 @@ pub async fn add_channel(url: String) -> String {
     description: &res.description,
     pub_date: &date,
   };
-  let items = res.items();
   let mut articles:Vec<models::NewArticle>= Vec::new();
 
-  for item in items {
+  for item in res.items() {
     let article_uuid = Uuid::new_v4().hyphenated().to_string();
     let title = item.title.clone().unwrap_or(String::from("no title"));
     let link = item.link.clone().unwrap_or(String::from("no link"));
     let content = item.content.clone().unwrap_or(String::from("no content"));
+    let description = item.description.clone().unwrap_or(String::from("no description"));
     let date = String::from(item.pub_date().clone().unwrap());
 
     let s = models::NewArticle {
-      uuid: &article_uuid,
-      channel_uuid: &channel_uuid,
-      title: &title,
-      link: &link,
-      content: &String::from(content),
-      feed_url: &url,
-      description: &res.description,
-      pub_date: &date,
+      uuid: article_uuid,
+      channel_uuid: channel_uuid.to_string(),
+      title: title,
+      link: link,
+      content: content,
+      feed_url: url.to_string(),
+      description: description,
+      pub_date: date,
     };
 
     articles.push(s);
@@ -92,7 +102,7 @@ pub async fn add_channel(url: String) -> String {
 
   // println!("{:?}", channel);
 
-  // let res = db::add_channel(&mut connection, &channel, &articles).await;
+  let res = db::add_channel(&connection, &channel, articles);
 
   return "gg".to_string();
 }
