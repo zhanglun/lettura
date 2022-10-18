@@ -18,30 +18,77 @@ pub fn establish_connection() -> SqliteConnection {
 
 pub fn get_channels() -> Vec<models::Channel> {
   let connection = establish_connection();
-  let results = schema::feeds::dsl::feeds
-    .limit(20)
-    .load::<models::Feed>(&connection)
+  let results = schema::channels::dsl::channels
+    .load::<models::Channel>(&connection)
     .expect("Expect loading posts");
 
   results
 }
 
-pub async fn add_channel<'a>(conn: &mut SqliteConnection, feed: &'a models::NewFeed<'_>,) -> usize {
-  //TODO: save to Db
-  let result = insert_into(schema::feeds::dsl::feeds)
-    .values(feed)
-    .execute(conn)
-    .expect("error");
+pub fn add_channel<'a>(
+  channel: &'a models::NewChannel<'_>,
+  articles: Vec<models::NewArticle>,
+) -> usize {
+  let connection = establish_connection();
+  let result = diesel::insert_into(schema::channels::dsl::channels)
+    .values(channel)
+    .execute(&connection);
+  let result = match result {
+    Ok(r) => r,
+    Err(_) => 0,
+  };
+
   println!(" new result {:?}", result);
-  println!("11111");
-  1
+
+  if result == 1 {
+    println!("start insert articles");
+
+    let articles = diesel::insert_into(schema::articles::dsl::articles)
+      .values(articles)
+      .execute(&connection);
+
+    println!("articles {:?}", articles);
+  }
+
+  result
 }
 
-pub fn add_articles(articles: Vec<models::Article>) -> usize {
-  1
+pub fn delete_channel(uuid: String) -> usize {
+  let connection = establish_connection();
+  let channel = schema::channels::dsl::channels
+    .filter(schema::channels::uuid.eq(&uuid))
+    .load::<models::Channel>(&connection)
+    .expect("Expect find channel");
+
+  if channel.len() == 1 {
+    let result =
+      diesel::delete(schema::channels::dsl::channels.filter(schema::channels::uuid.eq(&uuid)))
+        .execute(&connection)
+        .expect("Expect delete channel");
+
+    // TODO: delete articles when channel deleted
+
+    return result;
+  } else {
+    return 0;
+  }
 }
 
-pub async fn add_articles(conn: &mut SqliteConnection, articles: Vec<models::Article>) -> usize {
+pub fn get_channel_by_uuid(channel_uuid: String) -> Option<models::Channel> {
+  let connection = establish_connection();
+  let mut channel = schema::channels::dsl::channels
+    .filter(schema::channels::uuid.eq(&channel_uuid))
+    .load::<models::Channel>(&connection)
+    .expect("Expect find channel");
+
+  if channel.len() == 1 {
+    return channel.pop();
+  } else {
+    return None;
+  }
+}
+
+pub fn add_articles(channel_uuid: String, articles: Vec<models::NewArticle>) -> usize {
   1
 }
 
@@ -87,5 +134,4 @@ pub fn get_article(filter: ArticleFilter) -> ArticleQueryResult {
       ArticleQueryResult { list: results }
     }
   }
->>>>>>> sqlite
 }
