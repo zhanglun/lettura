@@ -3,7 +3,7 @@ use std::env;
 use diesel::prelude::*;
 use diesel::sqlite::SqliteConnection;
 use dotenv::dotenv;
-use serde::{Serialize};
+use serde::Serialize;
 
 use crate::models;
 use crate::schema;
@@ -66,13 +66,29 @@ pub fn delete_channel(uuid: String) -> usize {
         .execute(&connection)
         .expect("Expect delete channel");
 
+    // TODO: delete articles when channel deleted
+
     return result;
   } else {
     return 0;
   }
 }
 
-pub fn add_articles(articles: Vec<models::Article>) -> usize {
+pub fn get_channel_by_uuid(channel_uuid: String) -> Option<models::Channel> {
+  let connection = establish_connection();
+  let mut channel = schema::channels::dsl::channels
+    .filter(schema::channels::uuid.eq(&channel_uuid))
+    .load::<models::Channel>(&connection)
+    .expect("Expect find channel");
+
+  if channel.len() == 1 {
+    return channel.pop();
+  } else {
+    return None;
+  }
+}
+
+pub fn add_articles(channel_uuid: String, articles: Vec<models::NewArticle>) -> usize {
   1
 }
 
@@ -115,9 +131,7 @@ pub fn get_article(filter: ArticleFilter) -> ArticleQueryResult {
       //   .optional()
       //   .expect("Expect articles count");
 
-      ArticleQueryResult {
-        list: results,
-      }
+      ArticleQueryResult { list: results }
     }
   }
 }

@@ -1,5 +1,6 @@
 -- Your SQL goes here
-DROP table channels;
+DROP table feeds;
+DROP table feed_article_relation;
 DROP table articles;
 
 CREATE TABLE channels (
