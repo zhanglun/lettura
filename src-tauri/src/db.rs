@@ -1,9 +1,9 @@
 use std::env;
 
-use diesel::insert_into;
 use diesel::prelude::*;
 use diesel::sqlite::SqliteConnection;
 use dotenv::dotenv;
+use serde::{Serialize};
 
 use crate::models;
 use crate::schema;
@@ -19,7 +19,6 @@ pub fn establish_connection() -> SqliteConnection {
 pub fn get_channels() -> Vec<models::Channel> {
   let connection = establish_connection();
   let results = schema::channels::dsl::channels
-    .limit(20)
     .load::<models::Channel>(&connection)
     .expect("Expect loading posts");
 
@@ -27,46 +26,98 @@ pub fn get_channels() -> Vec<models::Channel> {
 }
 
 pub fn add_channel<'a>(
-  channel: &'a models::NewFeed<'_>,
+  channel: &'a models::NewChannel<'_>,
   articles: Vec<models::NewArticle>,
-) -> String {
+) -> usize {
   let connection = establish_connection();
-  let result = insert_into(schema::channels::dsl::channels)
+  let result = diesel::insert_into(schema::channels::dsl::channels)
     .values(channel)
     .execute(&connection);
   let result = match result {
-    Ok(r) => r.to_string(),
-    Err(e) => e.to_string(),
+    Ok(r) => r,
+    Err(_) => 0,
   };
 
   println!(" new result {:?}", result);
 
-  if result == "OK" {
+  if result == 1 {
     println!("start insert articles");
 
-    let articles = insert_into(schema::articles::dsl::articles)
+    let articles = diesel::insert_into(schema::articles::dsl::articles)
       .values(articles)
       .execute(&connection);
 
-      println!("articles {:?}", articles);
+    println!("articles {:?}", articles);
   }
 
   result
 }
 
-pub fn remove_channel(uuid: String) -> usize {
-  1
+pub fn delete_channel(uuid: String) -> usize {
+  let connection = establish_connection();
+  let channel = schema::channels::dsl::channels
+    .filter(schema::channels::uuid.eq(&uuid))
+    .load::<models::Channel>(&connection)
+    .expect("Expect find channel");
+
+  if channel.len() == 1 {
+    let result =
+      diesel::delete(schema::channels::dsl::channels.filter(schema::channels::uuid.eq(&uuid)))
+        .execute(&connection)
+        .expect("Expect delete channel");
+
+    return result;
+  } else {
+    return 0;
+  }
 }
 
 pub fn add_articles(articles: Vec<models::Article>) -> usize {
   1
 }
 
-pub fn get_article() -> Vec<models::Article> {
-  let connection = establish_connection();
-  let results = schema::articles::dsl::articles
-    .load::<models::Article>(&connection)
-    .expect("Expect loading articles");
+pub struct ArticleFilter {
+  pub channel_uuid: Option<String>,
+}
 
-  results
+#[derive(Debug, Serialize)]
+pub struct ArticleQueryResult {
+  pub list: Vec<models::Article>,
+  // pub count: i32,
+}
+
+pub fn get_article(filter: ArticleFilter) -> ArticleQueryResult {
+  let connection = establish_connection();
+  match filter.channel_uuid {
+    Some(uuid) => {
+      let results = schema::articles::dsl::articles
+        .filter(schema::articles::channel_uuid.eq(uuid))
+        .load::<models::Article>(&connection)
+        .expect("Expect loading articles");
+      // let count = schema::channels::dsl::channels
+      //   .filter(schema::articles::channel_uuid.eq(uuid))
+      //   .count()
+      //   .get_result(&connection)
+      //   .expect("Expect articles count");
+
+      ArticleQueryResult {
+        list: results,
+        // count,
+      }
+    }
+    None => {
+      let results = schema::articles::dsl::articles
+        .load::<models::Article>(&connection)
+        .expect("Expect loading articles");
+      // let count = schema::channels::dsl::channels
+      //   .count()
+      //   .get_result(&connection)
+      //   .optional()
+      //   .expect("Expect articles count");
+
+      ArticleQueryResult {
+        list: results,
+      }
+    }
+  }
 }

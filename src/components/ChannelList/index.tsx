@@ -24,6 +24,8 @@ const ChannelList = (props: any): JSX.Element => {
 
   const loadAndUpdate = (url: string) => {
     return requestFeed(url).then(async (res) => {
+      console.log("%c Line:27 🍑 res", "color:#fca650", res);
+
       if (res.channel && res.items) {
         const { channel, items } = res;
 
@@ -56,7 +58,7 @@ const ChannelList = (props: any): JSX.Element => {
     setRefreshing(true);
 
     const urlList = (channelList || []).map((channel: any) => {
-      return channel.feed_url;
+      return channel.feed_url || channel.feedUrl;
     });
 
     const limit = 5;

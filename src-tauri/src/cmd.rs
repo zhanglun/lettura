@@ -1,8 +1,8 @@
-use std::error::Error;
 use reqwest;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
+use std::error::Error;
+use tauri::command;
 use uuid::Uuid;
-use tauri::{command};
 
 use crate::db;
 use crate::models;
@@ -10,7 +10,7 @@ use crate::models;
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CommandResponse<T> {
   status: i32,
-  data: T
+  data: T,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -30,13 +30,12 @@ pub async fn fetch_rss_item(url: &str) -> Option<rss::Channel> {
       let channel = rss::Channel::read_from(&content[..]).unwrap();
 
       Some(channel)
-    },
+    }
     _ => {
       println!("ddddd");
       None
-    },
+    }
   }
-
 }
 
 #[command]
@@ -53,9 +52,8 @@ pub async fn get_channels() -> Vec<models::Channel> {
   return results;
 }
 
-
 #[command]
-pub async fn add_channel(url: String) -> String {
+pub async fn add_channel(url: String) -> usize {
   let res = fetch_rss_item(&url).await.unwrap();
   let image = match &res.image {
     Some(t) => String::from(&t.url),
@@ -66,7 +64,7 @@ pub async fn add_channel(url: String) -> String {
     None => String::from(""),
   };
   let channel_uuid = Uuid::new_v4().hyphenated().to_string();
-  let channel = models::NewFeed {
+  let channel = models::NewChannel {
     uuid: &channel_uuid,
     title: &res.title,
     link: &res.link,
@@ -75,14 +73,17 @@ pub async fn add_channel(url: String) -> String {
     description: &res.description,
     pub_date: &date,
   };
-  let mut articles:Vec<models::NewArticle>= Vec::new();
+  let mut articles: Vec<models::NewArticle> = Vec::new();
 
   for item in res.items() {
     let article_uuid = Uuid::new_v4().hyphenated().to_string();
     let title = item.title.clone().unwrap_or(String::from("no title"));
     let link = item.link.clone().unwrap_or(String::from("no link"));
     let content = item.content.clone().unwrap_or(String::from("no content"));
-    let description = item.description.clone().unwrap_or(String::from("no description"));
+    let description = item
+      .description
+      .clone()
+      .unwrap_or(String::from("no description"));
     let date = String::from(item.pub_date().clone().unwrap());
 
     let s = models::NewArticle {
@@ -99,16 +100,42 @@ pub async fn add_channel(url: String) -> String {
     articles.push(s);
   }
 
-
   let res = db::add_channel(&channel, articles);
 
-  res.into()
+  res
 }
 
+#[command]
+pub fn get_articles(channel_uuid: String) -> db::ArticleQueryResult {
+  println!("get articles from rust");
+  let res = db::get_article(db::ArticleFilter {
+    channel_uuid: Some(channel_uuid),
+  });
+
+  println!("{:?}", &res);
+  res
+}
 
 #[command]
-pub fn get_articles() -> Vec<models::Article> {
-  println!("get articles from rust");
-  let res = db::get_article();
-  res
+pub fn delete_channel(uuid: String) -> usize {
+  let result = db::delete_channel(uuid);
+
+  result
+}
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  #[test]
+  fn test_get_articles() {
+    let uuid = String::from("030617e3-6869-4869-9842-aadba2078e89");
+    get_articles(uuid);
+  }
+
+  #[test]
+  fn test_delete_channel() {
+    let url = "8bb9d06d-e621-4433-9e68-4bdceb36cd4d";
+    delete_channel(String::from(url));
+  }
 }

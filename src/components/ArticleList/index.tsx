@@ -71,6 +71,7 @@ export const ArticleList = forwardRef((props: ArticleListProps, ref: ForwardedRe
     console.time('2')
 
     invoke('get_articles', {}).then((res) => {
+      console.log("%c Line:74 🍰 res", "color:#ea7e5c", res);
       console.timeEnd('2')
     })
   }

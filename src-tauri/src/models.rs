@@ -1,7 +1,7 @@
 use serde::{Serialize};
 use super::schema::{channels, articles};
 
-#[derive(Queryable, Serialize)]
+#[derive(Debug, Queryable, Serialize)]
 pub struct Channel {
   pub id: i32,
   pub uuid: String,
@@ -20,7 +20,7 @@ pub struct Channel {
 //   pub article_uuid: String,
 // }
 
-#[derive(Queryable, Serialize, Associations)]
+#[derive(Debug, Queryable, Serialize, Associations)]
 #[diesel(belongs_to(Channel))]
 pub struct Article {
   pub id: i32,
@@ -36,7 +36,7 @@ pub struct Article {
 
 #[derive(Debug, Insertable)]
 #[table_name = "channels"]
-pub struct NewFeed<'a> {
+pub struct NewChannel<'a> {
   pub uuid: &'a String,
   pub title: &'a String,
   pub link: &'a String,
