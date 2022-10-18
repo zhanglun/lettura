@@ -1,9 +1,9 @@
 use std::env;
 
-use diesel::insert_into;
 use diesel::prelude::*;
 use diesel::sqlite::SqliteConnection;
 use dotenv::dotenv;
+use serde::Serialize;
 
 use crate::models;
 use crate::schema;
@@ -18,43 +18,22 @@ pub fn establish_connection() -> SqliteConnection {
 
 pub fn get_channels() -> Vec<models::Channel> {
   let connection = establish_connection();
-  let results = schema::channels::dsl::channels
+  let results = schema::feeds::dsl::feeds
     .limit(20)
-    .load::<models::Channel>(&connection)
+    .load::<models::Feed>(&connection)
     .expect("Expect loading posts");
 
   results
 }
 
-pub fn add_channel<'a>(
-  channel: &'a models::NewFeed<'_>,
-  articles: Vec<models::NewArticle>,
-) -> String {
-  let connection = establish_connection();
-  let result = insert_into(schema::channels::dsl::channels)
-    .values(channel)
-    .execute(&connection);
-  let result = match result {
-    Ok(r) => r.to_string(),
-    Err(e) => e.to_string(),
-  };
-
+pub async fn add_channel<'a>(conn: &mut SqliteConnection, feed: &'a models::NewFeed<'_>,) -> usize {
+  //TODO: save to Db
+  let result = insert_into(schema::feeds::dsl::feeds)
+    .values(feed)
+    .execute(conn)
+    .expect("error");
   println!(" new result {:?}", result);
-
-  if result == "OK" {
-    println!("start insert articles");
-
-    let articles = insert_into(schema::articles::dsl::articles)
-      .values(articles)
-      .execute(&connection);
-
-      println!("articles {:?}", articles);
-  }
-
-  result
-}
-
-pub fn remove_channel(uuid: String) -> usize {
+  println!("11111");
   1
 }
 
@@ -62,11 +41,51 @@ pub fn add_articles(articles: Vec<models::Article>) -> usize {
   1
 }
 
-pub fn get_article() -> Vec<models::Article> {
-  let connection = establish_connection();
-  let results = schema::articles::dsl::articles
-    .load::<models::Article>(&connection)
-    .expect("Expect loading articles");
+pub async fn add_articles(conn: &mut SqliteConnection, articles: Vec<models::Article>) -> usize {
+  1
+}
 
-  results
+pub struct ArticleFilter {
+  pub channel_uuid: Option<String>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct ArticleQueryResult {
+  pub list: Vec<models::Article>,
+  // pub count: i32,
+}
+
+pub fn get_article(filter: ArticleFilter) -> ArticleQueryResult {
+  let connection = establish_connection();
+  match filter.channel_uuid {
+    Some(uuid) => {
+      let results = schema::articles::dsl::articles
+        .filter(schema::articles::channel_uuid.eq(uuid))
+        .load::<models::Article>(&connection)
+        .expect("Expect loading articles");
+      // let count = schema::channels::dsl::channels
+      //   .filter(schema::articles::channel_uuid.eq(uuid))
+      //   .count()
+      //   .get_result(&connection)
+      //   .expect("Expect articles count");
+
+      ArticleQueryResult {
+        list: results,
+        // count,
+      }
+    }
+    None => {
+      let results = schema::articles::dsl::articles
+        .load::<models::Article>(&connection)
+        .expect("Expect loading articles");
+      // let count = schema::channels::dsl::channels
+      //   .count()
+      //   .get_result(&connection)
+      //   .optional()
+      //   .expect("Expect articles count");
+
+      ArticleQueryResult { list: results }
+    }
+  }
+>>>>>>> sqlite
 }

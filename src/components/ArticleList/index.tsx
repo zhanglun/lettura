@@ -67,12 +67,6 @@ export const ArticleList = forwardRef((props: ArticleListProps, ref: ForwardedRe
       setArticleList(res);
       console.timeEnd('111111')
     });
-
-    console.time('2')
-
-    invoke('get_articles', {}).then((res) => {
-      console.timeEnd('2')
-    })
   }
 
   useEffect(() => {
