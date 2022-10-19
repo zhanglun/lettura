@@ -15,11 +15,10 @@ import { invoke } from "@tauri-apps/api";
 
 const ChannelList = (props: any): JSX.Element => {
   const store = useContext(StoreContext);
-  const channelList = useLiveQuery(() => db.channels.toArray(), []) || [];
   const navigate = useNavigate();
   const addFeedButtonRef = useRef(null);
   const [refreshing, setRefreshing] = useState(false);
-  // const [channelList, setChannelList] = useState([]);
+  const [channelList, setChannelList] = useState([]);
   const [done, setDone] = useState(0);
 
   const loadAndUpdate = (url: string) => {
@@ -48,7 +47,7 @@ const ChannelList = (props: any): JSX.Element => {
     const getList = async () => {
       let channel = await invoke('get_channels') as [];
       console.log('data from sqlite', channel)
-      // setChannelList(channel)
+      setChannelList(channel)
     }
 
     getList();
@@ -58,7 +57,7 @@ const ChannelList = (props: any): JSX.Element => {
     setRefreshing(true);
 
     const urlList = (channelList || []).map((channel: any) => {
-      return channel.feed_url || channel.feedUrl;
+      return channel.feed_url;
     });
 
     const limit = 5;
@@ -122,9 +121,9 @@ const ChannelList = (props: any): JSX.Element => {
                 className={({ isActive }) => `${styles.item} ${
                   isActive ? styles.itemActive : ""
                 }`}
-                to={`${RouteConfig.CHANNEL.replace(/:name/, encodeURI(channel.title))}?channelId=${
-                  channel.id
-                }&feedUrl=${channel.feedUrl}`}>
+                to={`${RouteConfig.CHANNEL.replace(/:name/, encodeURI(channel.title))}?channelUuid=${
+                  channel.uuid
+                }&feedUrl=${channel.feed_url}`}>
                 <img
                   src={ico}
                   onError={(e) => {

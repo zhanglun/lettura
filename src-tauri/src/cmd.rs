@@ -55,6 +55,7 @@ pub async fn get_channels() -> Vec<models::Channel> {
 #[command]
 pub async fn add_channel(url: String) -> usize {
   let res = fetch_rss_item(&url).await.unwrap();
+
   let image = match &res.image {
     Some(t) => String::from(&t.url),
     None => String::from(""),
@@ -106,13 +107,12 @@ pub async fn add_channel(url: String) -> usize {
 }
 
 #[command]
-pub fn get_articles(channel_uuid: String) -> db::ArticleQueryResult {
+pub fn get_articles(uuid: String) -> db::ArticleQueryResult {
   println!("get articles from rust");
   let res = db::get_article(db::ArticleFilter {
-    channel_uuid: Some(channel_uuid),
+    channel_uuid: Some(uuid),
   });
 
-  println!("{:?}", &res);
   res
 }
 
@@ -171,13 +171,13 @@ mod tests {
 
   #[test]
   fn test_get_articles() {
-    let uuid = String::from("030617e3-6869-4869-9842-aadba2078e89");
+    let uuid = String::from("9a6ca3f0-41f2-4486-a50a-1a41f1e80b56");
     get_articles(uuid);
   }
 
   #[test]
   fn test_delete_channel() {
-    let url = "8bb9d06d-e621-4433-9e68-4bdceb36cd4d";
+    let url = "9a6ca3f0-41f2-4486-a50a-1a41f1e80b56";
     delete_channel(String::from(url));
   }
 }

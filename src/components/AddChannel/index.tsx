@@ -70,7 +70,7 @@ export const AddFeedChannel = (props: any) => {
   };
 
   const handleSave = async () => {
-    const saveRes = await invoke('add_channel', { url: feedUrl})
+    const saveRes = await invoke('add_channel', { url: feedUrl })
 
     console.log('saveRes ===>', saveRes)
 

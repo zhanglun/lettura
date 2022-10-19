@@ -8,7 +8,7 @@ import * as dataAgent from "../../helpers/dataAgent";
 import { useStore } from "../../hooks/useStore";
 import styles from "./index.module.scss";
 import { ArrowPathIcon, LinkIcon, WalletIcon } from '@heroicons/react/24/outline'
-import { makeAllRead } from "../../helpers/dataAgent";
+import { invoke } from "@tauri-apps/api";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -20,7 +20,7 @@ export const ArticleContainer = (): JSX.Element => {
   const store = useStore();
   const query = useQuery();
   const feedUrl = query.get("feedUrl");
-  const channelId = query.get("channelId");
+  const channelUuid = query.get("channelUuid");
   const [syncing, setSyncing] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<HTMLDivElement>(null);
@@ -61,7 +61,6 @@ export const ArticleContainer = (): JSX.Element => {
       const $list = viewRef.current as HTMLDivElement;
       $list.addEventListener("scroll", handleViewScroll);
     }
-
   }, []);
 
   const getArticleList = () => {
@@ -73,20 +72,22 @@ export const ArticleContainer = (): JSX.Element => {
   const syncArticles = () => {
     if (feedUrl) {
       setSyncing(true)
-      requestFeed(feedUrl).then((res) => {
-        if (res.channel && res.items) {
-          const { items } = res;
-
-          return dataAgent.bulkAddArticle(items)
-            .then(() => {
-              getArticleList()
-
-              return dataAgent.updateCountWithChannel(feedUrl);
-            })
-        }
-      }).finally(() => {
-        setSyncing(false)
-      });
+      const res = invoke('sync_articles_with_channel_uuid', { uuid: channelUuid })
+      console.log("%c Line:77 🥛 res", "color:#ea7e5c", res);
+      // requestFeed(feedUrl).then((res) => {
+      //   if (res.channel && res.items) {
+      //     const { items } = res;
+      //
+      //     return dataAgent.bulkAddArticle(items)
+      //       .then(() => {
+      //         getArticleList()
+      //
+      //         return dataAgent.updateCountWithChannel(feedUrl);
+      //       })
+      //   }
+      // }).finally(() => {
+      //   setSyncing(false)
+      // });
     }
   };
 
@@ -126,7 +127,7 @@ export const ArticleContainer = (): JSX.Element => {
     if (listRef.current !== null) {
       listRef.current.scroll(0, 0);
     }
-  }, [channelId]);
+  }, [channelUuid]);
 
   return (
     <div className={styles.article}>
@@ -173,7 +174,7 @@ export const ArticleContainer = (): JSX.Element => {
         <ArticleList
           ref={articleListRef}
           title={params.name}
-          channelId={channelId}
+          channelUuid={channelUuid}
           feedUrl={feedUrl || ''}
         />
       </div>

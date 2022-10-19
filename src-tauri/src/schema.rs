@@ -1,4 +1,6 @@
-table! {
+// @generated automatically by Diesel CLI.
+
+diesel::table! {
     articles (id) {
         id -> Integer,
         uuid -> Text,
@@ -9,10 +11,11 @@ table! {
         description -> Text,
         content -> Text,
         pub_date -> Timestamp,
+        read_status -> Integer,
     }
 }
 
-table! {
+diesel::table! {
     channels (id) {
         id -> Integer,
         uuid -> Text,
@@ -25,7 +28,7 @@ table! {
     }
 }
 
-allow_tables_to_appear_in_same_query!(
+diesel::allow_tables_to_appear_in_same_query!(
     articles,
     channels,
 );

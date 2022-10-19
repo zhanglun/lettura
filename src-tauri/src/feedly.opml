@@ -32,7 +32,7 @@
         <outline type="rss" text="小众软件" title="小众软件" xmlUrl="http://feed.appinn.com" htmlUrl="https://www.appinn.com"/>
         <outline type="rss" text="少数派" title="少数派" xmlUrl="https://sspai.com/feed" htmlUrl="https://sspai.com"/>
         <outline type="rss" text="有格调" title="有格调" xmlUrl="https://www.ugediao.com/feed" htmlUrl="https://www.ugediao.com"/>
-        <outline type="rss" text="原创频道&gt;&gt;什么值得买" title="原创频道&gt;&gt;什么值得买" xmlUrl="http://post.smzdm.com/feed" htmlUrl="https://post.smzdm.com/"/>
+        <outline type="rss" text="原创频道&gt;&gt;什么值得买" title="原创频道&gt;&gt;什么值得买" xmlUrl="https://post.smzdm.com/feed" htmlUrl="https://post.smzdm.com/"/>
         <outline type="rss" text="Codrops » Collective" title="Codrops » Collective" xmlUrl="http://www.tympanus.net/codrops/collective/feed" htmlUrl="https://tympanus.net/codrops"/>
         <outline type="rss" text="Node.js Blog" title="Node.js Blog" xmlUrl="http://blog.nodejs.org/feed/" htmlUrl="https://nodejs.org/en/"/>
         <outline type="rss" text="CSS Drive News" title="CSS Drive News" xmlUrl="http://www.cssdrive.com/index.php/news/rss_2.0" htmlUrl="http://www.cssdrive.com/index.php/news/item/"/>

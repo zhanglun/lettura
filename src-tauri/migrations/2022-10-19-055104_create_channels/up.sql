@@ -1,4 +1,5 @@
 -- Your SQL goes here
+DROP TABLE IF EXISTS channels;
 
 CREATE TABLE channels (
   id INTEGER NOT NULL PRIMARY KEY,
@@ -12,8 +13,7 @@ CREATE TABLE channels (
   UNIQUE(uuid)
 );
 
-DROP table feeds;
-DROP table feed_article_relation;
+DROP TABLE IF EXISTS articles;
 
 CREATE TABLE articles (
   id INTEGER NOT NULL PRIMARY KEY,
@@ -22,9 +22,9 @@ CREATE TABLE articles (
   title VARCHAR NOT NULL,
   link VARCHAR NOT NULL,
   feed_url VARCHAR NOT NULL,
-  image VARCHAR NOT NULL,
   description VARCHAR NOT NULL,
   content VARCHAR NOT NULL,
   pub_date DATETIME NOT NULL,
+  read_status INTEGER NOT NULL DEFAULT 1, -- 1: 未读 2: 已读
   UNIQUE(uuid)
 );

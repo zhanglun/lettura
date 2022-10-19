@@ -5,6 +5,7 @@ windows_subsystem = "windows"
 
 #[macro_use]
 extern crate diesel;
+
 extern crate dotenv;
 
 use tauri::{CustomMenuItem, Menu, MenuItem, Submenu};
@@ -64,7 +65,8 @@ fn main() {
       cmd::add_channel,
       cmd::get_channels,
       cmd::get_articles,
+      cmd::sync_articles_with_channel_uuid,
     ])
     .run(context)
-    .expect("error while running tauri  Application");
+    .expect("error while running tauri Application");
 }

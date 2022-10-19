@@ -11,7 +11,7 @@ import { useStore } from "../../hooks/useStore";
 import { invoke } from "@tauri-apps/api";
 
 export type ArticleListProps = {
-  channelId: string | null;
+  channelUuid: string | null;
   feedUrl: string | null;
   title: string | null;
 };
@@ -21,7 +21,7 @@ export interface ArticleListRefType {
 }
 
 export const ArticleList = forwardRef((props: ArticleListProps, ref: ForwardedRef<ArticleListRefType>): JSX.Element => {
-  const { channelId, feedUrl = "" } = props;
+  const { channelUuid, feedUrl = "" } = props;
   const store = useStore();
   const [highlightItem, setHighlightItem] = useState<Article>();
   const [articleList, setArticleList] = useState<Article[]>([]);
@@ -45,12 +45,13 @@ export const ArticleList = forwardRef((props: ArticleListProps, ref: ForwardedRe
   useImperativeHandle(ref, () => {
     return {
       getList() {
-        getList(feedUrl || '')
+        getList(channelUuid || '')
       }
     }
   })
 
-  const getList = (feedUrl: string) => {
+  const getList = (channelUuid: string) => {
+    console.log("%c Line:54 🍉 channelUuid", "color:#ea7e5c", channelUuid);
     const filter: {unread?: 1 | 0 } = { }
 
     if (store.currentFilter.id === "2") {
@@ -61,17 +62,18 @@ export const ArticleList = forwardRef((props: ArticleListProps, ref: ForwardedRe
       filter.unread = 0;
     }
 
-    console.time('111111')
-
-    dataAgent.getAllArticleListByChannel(feedUrl || "", filter || null).then((res) => {
-      setArticleList(res);
-      console.timeEnd('111111')
-    });
+    invoke('get_articles', { uuid: channelUuid }).then((res) => {
+      const { list } = res as { list: Article[] };
+      console.log("%c Line:67 🌭 list", "color:#465975", list);
+      setArticleList(list);
+    }).catch((err) => {
+      console.log("%c Line:71 🍎 err", "color:#ffdd4d", err);
+    })
   }
 
   useEffect(() => {
-    getList(feedUrl || '')
-  }, [feedUrl, store.currentFilter]);
+    getList(channelUuid || '')
+  }, [channelUuid, store.currentFilter]);
 
   const renderList = (): JSX.Element[] => {
     return articleList.map((article: any, idx: number) => {
@@ -111,7 +113,7 @@ export const ArticleList = forwardRef((props: ArticleListProps, ref: ForwardedRe
 
   useEffect(() => {
     resetScrollTop();
-  }, [channelId, articleList]);
+  }, [channelUuid, articleList]);
 
   return (
     <div className={styles.container}>

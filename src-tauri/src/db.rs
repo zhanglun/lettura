@@ -66,7 +66,9 @@ pub fn delete_channel(uuid: String) -> usize {
         .execute(&connection)
         .expect("Expect delete channel");
 
-    // TODO: delete articles when channel deleted
+      diesel::delete(schema::articles::dsl::articles.filter(schema::articles::channel_uuid.eq(&uuid)))
+        .execute(&connection)
+        .expect("Expect delete channel");
 
     return result;
   } else {
@@ -89,7 +91,22 @@ pub fn get_channel_by_uuid(channel_uuid: String) -> Option<models::Channel> {
 }
 
 pub fn add_articles(channel_uuid: String, articles: Vec<models::NewArticle>) -> usize {
-  1
+  let connection = establish_connection();
+  let channel = schema::channels::dsl::channels
+    .filter(schema::channels::uuid.eq(&channel_uuid))
+    .load::<models::Channel>(&connection)
+    .expect("Expect find channel");
+
+  if channel.len() == 1 {
+    let result = diesel::insert_into(schema::articles::dsl::articles)
+      .values(articles)
+      .execute(&connection)
+      .expect("Expect add articles");
+
+    return result;
+  } else {
+    return 0;
+  }
 }
 
 pub struct ArticleFilter {

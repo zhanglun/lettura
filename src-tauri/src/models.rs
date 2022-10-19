@@ -7,8 +7,8 @@ pub struct Channel {
   pub uuid: String,
   pub title: String,
   pub link: String,
-  pub image: String,
   pub feed_url: String,
+  pub image: String,
   pub description: String,
   pub pub_date: String,
 }
@@ -25,6 +25,7 @@ pub struct Article {
   pub description: String,
   pub content: String,
   pub pub_date: String,
+  pub read_status: i32,
 }
 
 #[derive(Debug, Insertable)]

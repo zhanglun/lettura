@@ -52,4 +52,4 @@ npm-debug.log.*
 src-tauri/target
 build
 .vs
-public/*.db
+*.db
