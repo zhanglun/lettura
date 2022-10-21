@@ -18,19 +18,19 @@ export const StoreContext = React.createContext({
   filterList: [
     {
       id: "1",
-      title: "所有文章"
+      title: "All"
     },
     {
       id: "2",
-      title: "未读文章"
+      title: "Unread"
     },
     {
       id: "3",
-      title: "已读文章"
+      title: "Read"
     }
   ],
   currentFilter: {
     id: "2",
-    title: "未读文章"
+    title: "Unread"
   },
 } as PContext);

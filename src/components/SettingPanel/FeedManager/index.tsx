@@ -1,23 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { useLiveQuery } from "dexie-react-hooks";
-import { Modal, Table, Input, Button } from "@douyinfe/semi-ui";
-import { Channel, db } from "../../../db";
+import { Modal, Table, Input } from "@douyinfe/semi-ui";
+import { Channel } from "../../../db";
 import * as dataAgent from "../../../helpers/dataAgent";
 import styles from "./feedManage.module.scss";
 import { TrashIcon } from "@heroicons/react/24/outline";
 
 export const FeedManager = () => {
-  const channelList = useLiveQuery(() => db.channels.toArray(), []);
   const [list, setList] = useState<Channel[]>([]);
   const [searchText, setSearchText] = useState<string>("");
 
-  const handleDeleteFeed = (feed: Channel) => {
-    if (feed && feed.id) {
+  const handleDeleteFeed = (channel: Channel) => {
+    if (channel && channel.uuid) {
       Modal.confirm({
         title: "你确定要删除这个订阅吗？",
-        content: feed.title,
-        onOk: () => {
-          feed.id && dataAgent.deleteChannel(feed.id);
+        content: channel.title,
+        onOk: async() => {
+          await dataAgent.deleteChannel(channel.uuid)
         },
       });
     }
@@ -38,7 +36,7 @@ export const FeedManager = () => {
     },
     {
       title: "Feed url",
-      dataIndex: "feedUrl",
+      dataIndex: "feed_url",
       render(text: string, record: Channel): JSX.Element {
         return <div>{text}</div>;
       },
@@ -70,9 +68,15 @@ export const FeedManager = () => {
     })
   };
 
-  useEffect(() => {
-    setList(channelList as [])
-  }, [channelList]);
+  const getList = async () => {
+    const res = await dataAgent.getChannels() as Channel[];
+
+    setList(res)
+  }
+
+  useEffect( () => {
+    getList()
+  }, []);
 
   return (
     <div>

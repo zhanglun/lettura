@@ -1,24 +1,22 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { useLiveQuery } from "dexie-react-hooks";
 import styles from "./channel.module.scss";
 import defaultSiteIcon from "./default.png";
 import { RouteConfig } from "../../config";
-import { db } from "../../db";
+import { Channel, db } from "../../db";
 import { AddFeedChannel } from "../AddChannel";
 import { getChannelFavicon, requestFeed } from "../../helpers/parseXML";
 import * as dataAgent from "../../helpers/dataAgent";
 import { StoreContext } from "../../context";
 import { Progress } from "@douyinfe/semi-ui";
 import { ArrowPathIcon, Cog6ToothIcon, FolderIcon, PlusIcon } from "@heroicons/react/24/outline";
-import { invoke } from "@tauri-apps/api";
 
 const ChannelList = (props: any): JSX.Element => {
   const store = useContext(StoreContext);
   const navigate = useNavigate();
   const addFeedButtonRef = useRef(null);
   const [refreshing, setRefreshing] = useState(false);
-  const [channelList, setChannelList] = useState([]);
+  const [channelList, setChannelList] = useState<Channel[]>([]);
   const [done, setDone] = useState(0);
 
   const loadAndUpdate = (url: string) => {
@@ -45,7 +43,7 @@ const ChannelList = (props: any): JSX.Element => {
 
   useEffect(() => {
     const getList = async () => {
-      let channel = await invoke('get_channels') as [];
+      let channel = await dataAgent.getChannels() as Channel[];
       console.log('data from sqlite', channel)
       setChannelList(channel)
     }

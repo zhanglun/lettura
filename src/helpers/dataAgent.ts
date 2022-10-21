@@ -1,5 +1,6 @@
 import {v4 as uuidv4} from 'uuid';
 import { Article, Article as ArticleModel, Channel, db } from "../db";
+import { invoke } from "@tauri-apps/api";
 
 /**
  * 批量插入Article。检查是否存在，不存在则插入。
@@ -58,19 +59,16 @@ export const makeAllRead = async (feedUrl: string) => {
   }
 };
 
+export const getChannels = async () => {
+  return invoke('get_channels')
+}
+
 /**
  * 删除频道
- * @param {Number} channelId channel 的 id
+ * @param {String} uuid  channel 的 uuid
  */
-export const deleteChannel = async (channelId: number) => {
-  const channel = await db.channels.get({ id: channelId });
-
-  if (channel) {
-    await db.channels.where("id").equals(channelId).delete();
-    const a = db.articles.where("feedUrl").equals(channel.feedUrl);
-    console.log("a ====> ", a);
-    await db.articles.where("feedUrl").equals(channel.feedUrl).delete();
-  }
+export const deleteChannel = async (uuid: string) => {
+  return invoke('delete_channel', { uuid })
 };
 
 export const queryChannelWithKeywords = async(word: string) => {

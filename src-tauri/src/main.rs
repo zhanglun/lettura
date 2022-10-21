@@ -54,7 +54,6 @@ pub fn get_menu() -> Menu {
 
   // add all our childs to the menu (order is how they'll appear)
   Menu::new()
-    // .add_submenu(Submenu::new("My app", my_app_menu))
     .add_submenu(Submenu::new("Other menu 2", test_menu))
     .add_submenu(Submenu::new("Edit", edit_menu))
     .add_submenu(Submenu::new("Window", window_menu))
@@ -71,6 +70,7 @@ fn main() {
     .invoke_handler(tauri::generate_handler![
       cmd::fetch_feed,
       cmd::add_channel,
+      cmd::delete_channel,
       cmd::get_channels,
       cmd::get_articles,
       cmd::sync_articles_with_channel_uuid,
