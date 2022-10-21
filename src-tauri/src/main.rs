@@ -3,17 +3,17 @@ all(not(debug_assertions), target_os = "windows"),
 windows_subsystem = "windows"
 )]
 
-use diesel_migrations::{embed_migrations};
-
 #[macro_use]
 extern crate diesel;
 #[macro_use]
 extern crate diesel_migrations;
-embed_migrations!("./migrations/");
 
 extern crate dotenv;
 
 use tauri::{CustomMenuItem, Menu, MenuItem, Submenu};
+use diesel_migrations::{embed_migrations};
+
+embed_migrations!("./migrations");
 
 pub mod db;
 pub mod cmd;
@@ -64,7 +64,8 @@ fn main() {
   let context = tauri::generate_context!();
   let connection = db::establish_connection();
 
-  diesel_migrations::run_pending_migrations(&connection).expect("Error migrating");
+  embedded_migrations::run(&connection).expect("Error migrating");
+
   tauri::Builder::default()
     .menu(tauri::Menu::os_default(&context.package_info().name))
     .invoke_handler(tauri::generate_handler![
