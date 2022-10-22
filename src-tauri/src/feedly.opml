@@ -19,9 +19,6 @@
         <outline text="摄影" title="摄影">
             <outline type="rss" text="必应今日美图" title="必应今日美图" xmlUrl="https://feedx.net/rss/bingwallpaper.xml" htmlUrl="http://bing.com"/>
         </outline>
-        <outline text="博客" title="博客">
-            <outline type="rss" text="博客园_首页" title="博客园_首页" xmlUrl="http://www.cnblogs.com/rss" htmlUrl="http://www.cnblogs.com/"/>
-        </outline>
         <outline text="ddd" title="ddd"/>
         <outline text="默认" title="默认">
             <outline type="rss" text="Web前端 腾讯AlloyTeam  Blog" title="Web前端 腾讯AlloyTeam  Blog" xmlUrl="http://www.alloyteam.com/feed/" htmlUrl="http://www.alloyteam.com"/>

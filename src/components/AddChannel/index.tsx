@@ -27,9 +27,6 @@ export const AddFeedChannel = (props: any) => {
 
   const handleLoad = async () => {
     setLoading(true);
-    const res: Channel & { items: Article[] } = await invoke('fetch_feed', { url: feedUrl })
-
-    console.log("res from rust", res);
 
     requestFeed(feedUrl).then((res) => {
       console.log("res", res);
@@ -53,6 +50,18 @@ export const AddFeedChannel = (props: any) => {
     }).finally(() => {
       setLoading(false)
     })
+
+    const res: Channel & { items: Article[] } = await invoke('fetch_feed', { url: feedUrl })
+
+    console.log("res from rust", res);
+
+    if (!res) {
+        Toast.error({
+          content: 'Cant find any feed, plese check url',
+          duration: 2,
+          theme: "light"
+        });
+    }
   };
 
   const handleTitleChange = (e: any) => {

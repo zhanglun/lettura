@@ -19,21 +19,25 @@ pub struct FeedRes {
 }
 
 pub async fn fetch_rss_item(url: &str) -> Option<rss::Channel> {
-  let response = reqwest::get(url).await.unwrap();
+  let response = reqwest::get(url).await;
 
-  println!("{}", &response.status());
+  match response {
+    Ok(response) => match response.status() {
+      reqwest::StatusCode::OK => {
+        let content = response.bytes().await.unwrap();
 
-  match response.status() {
-    reqwest::StatusCode::OK => {
-      let content = response.bytes().await.unwrap();
-      let channel = rss::Channel::read_from(&content[..]).unwrap();
-
-      Some(channel)
-    }
-    _ => {
-      println!("ddddd");
-      None
-    }
+        match rss::Channel::read_from(&content[..]).map(|channel| channel) {
+          Ok(channel) => Some(channel),
+          Err(_) => None,
+        }
+      }
+      _ => {
+        println!("{}", &response.status());
+        println!("ddddd");
+        None
+      }
+    },
+    Err(_) => None,
   }
 }
 
@@ -73,7 +77,11 @@ pub fn create_channel_model(uuid: &String, url: &String, res: &rss::Channel) -> 
   return channel;
 }
 
-pub fn create_article_models(channel_uuid: &String, feed_url: &String, res: &rss::Channel) -> Vec<models::NewArticle> {
+pub fn create_article_models(
+  channel_uuid: &String,
+  feed_url: &String,
+  res: &rss::Channel,
+) -> Vec<models::NewArticle> {
   let mut articles: Vec<models::NewArticle> = Vec::new();
 
   for item in res.items() {
@@ -85,7 +93,7 @@ pub fn create_article_models(channel_uuid: &String, feed_url: &String, res: &rss
       .description
       .clone()
       .unwrap_or(String::from("no description"));
-    let date = String::from(item.pub_date().clone().unwrap());
+    let date = String::from(item.pub_date().clone().unwrap_or("no pub_date"));
 
     let s = models::NewArticle {
       uuid: article_uuid,
@@ -108,16 +116,19 @@ pub fn create_article_models(channel_uuid: &String, feed_url: &String, res: &rss
 pub async fn add_channel(url: String) -> usize {
   println!("request channel {}", &url);
 
-  let res = fetch_rss_item(&url).await.unwrap();
-  let channel_uuid = Uuid::new_v4().hyphenated().to_string();
+  let res = fetch_rss_item(&url).await;
 
-  println!("request channel {:?}", &res);
+  match res {
+    Some(res) => {
+      let channel_uuid = Uuid::new_v4().hyphenated().to_string();
+      let channel = create_channel_model(&channel_uuid, &url, &res);
+      let articles = create_article_models(&channel_uuid, &url, &res);
+      let res = db::add_channel(channel, articles);
 
-  let channel = create_channel_model(&channel_uuid, &url, &res);
-  let articles = create_article_models(&channel_uuid, &url, &res);
-  let res = db::add_channel(channel, articles);
-
-  res
+      res
+    }
+    None => 0,
+  }
 }
 
 #[command]
@@ -179,9 +190,8 @@ pub async fn sync_articles_with_channel_uuid(uuid: String) -> usize {
   }
 }
 
-
 #[command]
-pub async fn import_channels(list: Vec<String> ) -> usize {
+pub async fn import_channels(list: Vec<String>) -> usize {
   println!("{:?}", &list);
   for url in &list {
     add_channel(url.to_string()).await;
