@@ -1,31 +1,28 @@
 #![cfg_attr(
-all(not(debug_assertions), target_os = "windows"),
-windows_subsystem = "windows"
+  all(not(debug_assertions), target_os = "windows"),
+  windows_subsystem = "windows"
 )]
 
 #[macro_use]
 extern crate diesel;
-#[macro_use]
 extern crate diesel_migrations;
 
 extern crate dotenv;
 
+use diesel_migrations::{embed_migrations, MigrationHarness, EmbeddedMigrations};
 use tauri::{CustomMenuItem, Menu, MenuItem, Submenu};
-use diesel_migrations::{embed_migrations};
 
-embed_migrations!("./migrations");
-
-pub mod db;
 pub mod cmd;
+pub mod db;
 pub mod models;
 pub mod schema;
 
 pub fn get_menu() -> Menu {
   #[allow(unused_mut)]
-    let mut disable_item =
+  let mut disable_item =
     CustomMenuItem::new("disable-menu", "Disable menu").accelerator("CmdOrControl+D");
   #[allow(unused_mut)]
-    let mut test_item = CustomMenuItem::new("test", "Test").accelerator("CmdOrControl+T");
+  let mut test_item = CustomMenuItem::new("test", "Test").accelerator("CmdOrControl+T");
   #[cfg(target_os = "macos")]
   {
     disable_item = disable_item.native_image(tauri::NativeImage::MenuOnState);
@@ -49,8 +46,7 @@ pub fn get_menu() -> Menu {
     .add_native_item(MenuItem::Separator)
     .add_native_item(MenuItem::EnterFullScreen);
 
-  let window_menu = Menu::new()
-    .add_native_item(MenuItem::Hide);
+  let window_menu = Menu::new().add_native_item(MenuItem::Hide);
 
   // add all our childs to the menu (order is how they'll appear)
   Menu::new()
@@ -59,11 +55,13 @@ pub fn get_menu() -> Menu {
     .add_submenu(Submenu::new("Window", window_menu))
 }
 
+pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!("./migrations");
+
 fn main() {
   let context = tauri::generate_context!();
-  let connection = db::establish_connection();
+  let mut connection = db::establish_connection();
 
-  embedded_migrations::run(&connection).expect("Error migrating");
+  connection.run_pending_migrations(MIGRATIONS).expect("Error migrating");
 
   tauri::Builder::default()
     .menu(tauri::Menu::os_default(&context.package_info().name))

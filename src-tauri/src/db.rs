@@ -15,9 +15,9 @@ pub fn establish_connection() -> SqliteConnection {
 }
 
 pub fn get_channels() -> Vec<models::Channel> {
-  let connection = establish_connection();
+  let mut connection = establish_connection();
   let results = schema::channels::dsl::channels
-    .load::<models::Channel>(&connection)
+    .load::<models::Channel>(&mut connection)
     .expect("Expect loading posts");
 
   results
@@ -27,10 +27,10 @@ pub fn add_channel<'a>(
   channel: models::NewChannel,
   articles: Vec<models::NewArticle>,
 ) -> usize {
-  let connection = establish_connection();
+  let mut connection = establish_connection();
   let result = diesel::insert_into(schema::channels::dsl::channels)
     .values(channel)
-    .execute(&connection);
+    .execute(&mut connection);
   let result = match result {
     Ok(r) => r,
     Err(_) => 0,
@@ -43,7 +43,7 @@ pub fn add_channel<'a>(
 
     let articles = diesel::insert_into(schema::articles::dsl::articles)
       .values(articles)
-      .execute(&connection);
+      .execute(&mut connection);
 
     println!("articles {:?}", articles);
   }
@@ -52,20 +52,20 @@ pub fn add_channel<'a>(
 }
 
 pub fn delete_channel(uuid: String) -> usize {
-  let connection = establish_connection();
+  let mut connection = establish_connection();
   let channel = schema::channels::dsl::channels
     .filter(schema::channels::uuid.eq(&uuid))
-    .load::<models::Channel>(&connection)
+    .load::<models::Channel>(&mut connection)
     .expect("Expect find channel");
 
   if channel.len() == 1 {
     let result =
       diesel::delete(schema::channels::dsl::channels.filter(schema::channels::uuid.eq(&uuid)))
-        .execute(&connection)
+        .execute(&mut connection)
         .expect("Expect delete channel");
 
       diesel::delete(schema::articles::dsl::articles.filter(schema::articles::channel_uuid.eq(&uuid)))
-        .execute(&connection)
+        .execute(&mut connection)
         .expect("Expect delete channel");
 
     return result;
@@ -75,10 +75,10 @@ pub fn delete_channel(uuid: String) -> usize {
 }
 
 pub fn get_channel_by_uuid(channel_uuid: String) -> Option<models::Channel> {
-  let connection = establish_connection();
+  let mut connection = establish_connection();
   let mut channel = schema::channels::dsl::channels
     .filter(schema::channels::uuid.eq(&channel_uuid))
-    .load::<models::Channel>(&connection)
+    .load::<models::Channel>(&mut connection)
     .expect("Expect find channel");
 
   if channel.len() == 1 {
@@ -89,16 +89,16 @@ pub fn get_channel_by_uuid(channel_uuid: String) -> Option<models::Channel> {
 }
 
 pub fn add_articles(channel_uuid: String, articles: Vec<models::NewArticle>) -> usize {
-  let connection = establish_connection();
+  let mut connection = establish_connection();
   let channel = schema::channels::dsl::channels
     .filter(schema::channels::uuid.eq(&channel_uuid))
-    .load::<models::Channel>(&connection)
+    .load::<models::Channel>(&mut connection)
     .expect("Expect find channel");
 
   if channel.len() == 1 {
     let result = diesel::insert_or_ignore_into(schema::articles::dsl::articles)
       .values(articles)
-      .execute(&connection)
+      .execute(&mut connection)
       .expect("Expect add articles");
 
     return result;
@@ -118,17 +118,17 @@ pub struct ArticleQueryResult {
 }
 
 pub fn get_article(filter: ArticleFilter) -> ArticleQueryResult {
-  let connection = establish_connection();
+  let mut connection = establish_connection();
   match filter.channel_uuid {
     Some(uuid) => {
       let results = schema::articles::dsl::articles
         .filter(schema::articles::channel_uuid.eq(uuid))
-        .load::<models::Article>(&connection)
+        .load::<models::Article>(&mut connection)
         .expect("Expect loading articles");
       // let count = schema::channels::dsl::channels
       //   .filter(schema::articles::channel_uuid.eq(uuid))
       //   .count()
-      //   .get_result(&connection)
+      //   .get_result(&mut connection)
       //   .expect("Expect articles count");
 
       ArticleQueryResult {
@@ -138,11 +138,11 @@ pub fn get_article(filter: ArticleFilter) -> ArticleQueryResult {
     }
     None => {
       let results = schema::articles::dsl::articles
-        .load::<models::Article>(&connection)
+        .load::<models::Article>(&mut connection)
         .expect("Expect loading articles");
       // let count = schema::channels::dsl::channels
       //   .count()
-      //   .get_result(&connection)
+      //   .get_result(&mut connection)
       //   .optional()
       //   .expect("Expect articles count");
 

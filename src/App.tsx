@@ -17,7 +17,7 @@ function App() {
   const [channel, setChannel] = useState(store.channel);
 
   const updateChannelCount = useCallback(async (article: Article, action: string, count: number) => {
-    await dataAgent.updateCountWithChannel(article.feedUrl);
+    // TODO: update channel count
   }, []);
 
   useEffect(() => {

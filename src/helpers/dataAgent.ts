@@ -81,23 +81,6 @@ export const queryChannelWithKeywords = async(word: string) => {
 }
 
 export const updateCountWithChannel = async (feedUrl: string): Promise<any> => {
-  const c = await db.channels.get({ feedUrl });
-
-  if (c) {
-    const unread = await db.articles
-      .where({
-        feedUrl,
-        unread: 1,
-      })
-      .count();
-
-    console.log("unread", unread);
-
-    await db.channels.where("feedUrl").equals(feedUrl).modify({ unread });
-
-    return { feedUrl: unread };
-  }
-
   return {};
 };
 
