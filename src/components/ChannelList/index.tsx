@@ -10,6 +10,7 @@ import * as dataAgent from "../../helpers/dataAgent";
 import { StoreContext } from "../../context";
 import { Progress } from "@douyinfe/semi-ui";
 import { ArrowPathIcon, Cog6ToothIcon, FolderIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { busChannel } from "../../helpers/busChannel";
 
 const ChannelList = (props: any): JSX.Element => {
   const store = useContext(StoreContext);
@@ -49,6 +50,14 @@ const ChannelList = (props: any): JSX.Element => {
     }
 
     getList();
+
+    const unsucscribeGetChannels = busChannel.on('getChannels', () => {
+      getList()
+    })
+
+    return () => {
+      unsucscribeGetChannels()
+    }
   }, [])
 
   const refreshList = () => {

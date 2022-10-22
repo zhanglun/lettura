@@ -6,6 +6,7 @@ import { requestFeed } from "../../helpers/parseXML";
 import * as dataAgent from "../../helpers/dataAgent";
 import styles from "./index.module.css";
 import { invoke } from '@tauri-apps/api/tauri';
+import { busChannel } from "../../helpers/busChannel";
 
 export const AddFeedChannel = (props: any) => {
   const { showStatus, showModal, hideModal, toggleModal } = useModal();
@@ -73,6 +74,7 @@ export const AddFeedChannel = (props: any) => {
     const saveRes = await invoke('add_channel', { url: feedUrl })
 
     console.log('saveRes ===>', saveRes)
+    busChannel.emit('getChannels')
 
     db.transaction("rw", db.channels, db.articles, async () => {
       await dataAgent.upsertChannel({ ...channel, unread: 0 });
