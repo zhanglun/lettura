@@ -1,14 +1,20 @@
 import React, { useRef, useState } from "react";
-import { v4 as uuidv4} from 'uuid';
 import { Input, Button, Radio, RadioGroup, TextArea } from "@douyinfe/semi-ui";
 import styles from "../setting.module.scss";
-import { db, Channel as ChannelModel } from "../../../db";
+import * as dataAgent from "../../../helpers/dataAgent";
+
+export interface ImportItem {
+  title: string,
+  link: string,
+  feed_url: string,
+}
 
 export const ImportAndExport = (props: any) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [sourceType, setSourceType] = useState("text");
+  const [sourceType, setSourceType] = useState("file");
   const [file, setFile] = useState<File>();
-  const [importedList, setImportedList] = useState<ChannelModel[]>([]);
+  const [importing, setImporting] = useState(false);
+  const [importedList, setImportedList] = useState<ImportItem[]>([]);
 
   const uploadOPMLFile = () => {
     if (fileInputRef && fileInputRef.current) {
@@ -16,31 +22,35 @@ export const ImportAndExport = (props: any) => {
     }
   };
 
-  const parserOPML = (source: string): ChannelModel[] => {
+  const parserOPML = (
+    source: string
+  ): ImportItem[] => {
     const parser = new DOMParser();
     const resultDOM = parser.parseFromString(source, "application/xml");
     const $outlines = resultDOM.querySelectorAll("outline[xmlUrl]");
 
     return Array.from($outlines)
       .map(($item: Element) => {
-        const title = $item.getAttribute("title") || $item.getAttribute("text") || "";
-        const feedUrl = $item.getAttribute("xmlUrl") || "";
-        const link = $item.getAttribute("htmlUrl") || new URL(feedUrl).origin || "";
+        const title =
+          $item.getAttribute("title") || $item.getAttribute("text") || "";
+        const feed_url = $item.getAttribute("xmlUrl") || "";
+        const link =
+          $item.getAttribute("htmlUrl") || new URL(feed_url).origin || "";
 
         return {
           title,
           link,
-          feedUrl,
-          uuid: uuidv4(),
+          feed_url,
         };
       })
-      .filter((item) => item.title && item.feedUrl && item.link);
+      .filter((item) => item.title && item.feed_url && item.link);
   };
 
   const importFromOPML = () => {
-    db.channels.bulkAdd(importedList).then((lastkey) => {
-      console.log("lastKey: ", lastkey);
-    });
+    // TODO: import
+    const urlList = importedList.map(_ => _.feed_url)
+    dataAgent.importChannels(urlList)
+    setImporting(true)
   };
 
   const handleFileChange = (e: any) => {
@@ -51,6 +61,8 @@ export const ImportAndExport = (props: any) => {
     reader.onload = () => {
       const xmlString = reader.result as string;
       const list = parserOPML(xmlString);
+
+      console.log("list", list);
 
       setImportedList(list);
     };
@@ -70,12 +82,12 @@ export const ImportAndExport = (props: any) => {
     }
   };
 
-  const exportToOPML = () => {
-  };
+  const exportToOPML = () => {};
 
   return (
     <div className={styles.panel}>
-      <h1 className={styles.panelTitle}>导入
+      <h1 className={styles.panelTitle}>
+        导入
         <span className={styles.description}>从别处导入您的订阅源</span>
       </h1>
       <div className={styles.panelBody}>
@@ -84,8 +96,10 @@ export const ImportAndExport = (props: any) => {
           <div className={styles.radios}>
             <RadioGroup
               onChange={(e) => handleChangeSourceType(e)}
-              value={sourceType} aria-label="单选组合示例"
-              name="radio-group">
+              value={sourceType}
+              aria-label="单选组合示例"
+              name="radio-group"
+            >
               <Radio value={"file"}>File</Radio>
               <Radio value={"text"}>Text</Radio>
             </RadioGroup>
@@ -97,7 +111,7 @@ export const ImportAndExport = (props: any) => {
                 ref={fileInputRef}
                 type="file"
                 accept=".opml,.xml"
-                onChange={(e) => {
+                onChange={(_, e) => {
                   handleFileChange(e);
                 }}
                 onClick={uploadOPMLFile}
@@ -106,13 +120,16 @@ export const ImportAndExport = (props: any) => {
           )}
           {sourceType === "text" && (
             <div className={styles.inputField}>
-              <TextArea autosize onChange={handleTextSourceChange}/>
+              <TextArea autosize onChange={handleTextSourceChange} />
             </div>
           )}
-          <Button theme="solid" type="primary" onClick={importFromOPML}>导入</Button>
+          <Button theme="solid" type="primary" onClick={importFromOPML} loading={importing}>
+            导入 {importing ? `/${importedList.length}` : ''}
+          </Button>
         </div>
       </div>
-      <h1 className={styles.panelTitle}>导出
+      <h1 className={styles.panelTitle}>
+        导出
         <span className={styles.description}>
           你可以导出订阅源以便在其他阅读器中使用
         </span>
@@ -120,7 +137,9 @@ export const ImportAndExport = (props: any) => {
       <div className={styles.panelBody}>
         <div className={styles.section}>
           <div className={styles.options}>OPML 导出</div>
-          <Button theme="solid" type="primary" onClick={exportToOPML}>导出</Button>
+          <Button theme="solid" type="primary" onClick={exportToOPML}>
+            导出
+          </Button>
         </div>
       </div>
     </div>

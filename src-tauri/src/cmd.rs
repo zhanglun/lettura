@@ -1,6 +1,5 @@
 use reqwest;
 use serde::{Deserialize, Serialize};
-use std::error::Error;
 use tauri::command;
 use uuid::Uuid;
 
@@ -52,10 +51,7 @@ pub async fn get_channels() -> Vec<models::Channel> {
   return results;
 }
 
-#[command]
-pub async fn add_channel(url: String) -> usize {
-  let res = fetch_rss_item(&url).await.unwrap();
-
+pub fn create_channel_model(uuid: &String, url: &String, res: &rss::Channel) -> models::NewChannel {
   let image = match &res.image {
     Some(t) => String::from(&t.url),
     None => String::from(""),
@@ -64,16 +60,20 @@ pub async fn add_channel(url: String) -> usize {
     Some(t) => String::from(t),
     None => String::from(""),
   };
-  let channel_uuid = Uuid::new_v4().hyphenated().to_string();
   let channel = models::NewChannel {
-    uuid: &channel_uuid,
-    title: &res.title,
-    link: &res.link,
-    image: &image,
-    feed_url: &url,
-    description: &res.description,
-    pub_date: &date,
+    uuid: uuid.to_string(),
+    title: res.title.to_string(),
+    link: res.link.to_string(),
+    image: image.to_string(),
+    feed_url: url.to_string(),
+    description: res.description.to_string(),
+    pub_date: date,
   };
+
+  return channel;
+}
+
+pub fn create_article_models(channel_uuid: &String, feed_url: &String, res: &rss::Channel) -> Vec<models::NewArticle> {
   let mut articles: Vec<models::NewArticle> = Vec::new();
 
   for item in res.items() {
@@ -93,7 +93,7 @@ pub async fn add_channel(url: String) -> usize {
       title,
       link,
       content,
-      feed_url: url.to_string(),
+      feed_url: feed_url.to_string(),
       description,
       pub_date: date,
     };
@@ -101,7 +101,21 @@ pub async fn add_channel(url: String) -> usize {
     articles.push(s);
   }
 
-  let res = db::add_channel(&channel, articles);
+  articles
+}
+
+#[command]
+pub async fn add_channel(url: String) -> usize {
+  println!("request channel {}", &url);
+
+  let res = fetch_rss_item(&url).await.unwrap();
+  let channel_uuid = Uuid::new_v4().hyphenated().to_string();
+
+  println!("request channel {:?}", &res);
+
+  let channel = create_channel_model(&channel_uuid, &url, &res);
+  let articles = create_article_models(&channel_uuid, &url, &res);
+  let res = db::add_channel(channel, articles);
 
   res
 }
@@ -163,6 +177,16 @@ pub async fn sync_articles_with_channel_uuid(uuid: String) -> usize {
     }
     None => 0,
   }
+}
+
+
+#[command]
+pub async fn import_channels(list: Vec<String> ) -> usize {
+  println!("{:?}", &list);
+  for url in &list {
+    add_channel(url.to_string()).await;
+  }
+  1
 }
 
 #[cfg(test)]

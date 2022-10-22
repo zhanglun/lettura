@@ -14,6 +14,7 @@ export const ArticleItem = React.memo((props: any) => {
     }
 
     setReadStatus(true);
+
     store.updateChannelCount(article, 'sub', 1)
     store.setArticle(article)
   };

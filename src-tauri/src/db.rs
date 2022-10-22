@@ -24,7 +24,7 @@ pub fn get_channels() -> Vec<models::Channel> {
 }
 
 pub fn add_channel<'a>(
-  channel: &'a models::NewChannel<'_>,
+  channel: models::NewChannel,
   articles: Vec<models::NewArticle>,
 ) -> usize {
   let connection = establish_connection();

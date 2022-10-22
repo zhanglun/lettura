@@ -121,3 +121,8 @@ export const getAllArticleListByChannel = async (
   return table.reverse()
     .sortBy("pubDate");
 };
+
+
+export const importChannels = async (list: string[]) => {
+  invoke('import_channels', { list })
+}

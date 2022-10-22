@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Modal, Table, Input } from "@douyinfe/semi-ui";
 import { Channel } from "../../../db";
 import * as dataAgent from "../../../helpers/dataAgent";
-import styles from "./feedManage.module.scss";
+import { busChannel } from "../../../helpers/busChannel";
+import styles from "./manage.module.scss";
 import { TrashIcon } from "@heroicons/react/24/outline";
 
 export const FeedManager = () => {
@@ -16,6 +17,8 @@ export const FeedManager = () => {
         content: channel.title,
         onOk: async() => {
           await dataAgent.deleteChannel(channel.uuid)
+          busChannel.emit('getChannels')
+          getList()
         },
       });
     }
@@ -76,6 +79,14 @@ export const FeedManager = () => {
 
   useEffect( () => {
     getList()
+
+    const unsucscribeGetChannels = busChannel.on('getChannels', () => {
+      getList()
+    })
+
+    return () => {
+      unsucscribeGetChannels()
+    }
   }, []);
 
   return (
