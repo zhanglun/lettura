@@ -96,7 +96,7 @@ pub fn add_articles(channel_uuid: String, articles: Vec<models::NewArticle>) -> 
     .expect("Expect find channel");
 
   if channel.len() == 1 {
-    let result = diesel::insert_into(schema::articles::dsl::articles)
+    let result = diesel::insert_or_ignore_into(schema::articles::dsl::articles)
       .values(articles)
       .execute(&connection)
       .expect("Expect add articles");

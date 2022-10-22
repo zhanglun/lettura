@@ -126,3 +126,19 @@ export const getAllArticleListByChannel = async (
 export const importChannels = async (list: string[]) => {
   invoke('import_channels', { list })
 }
+
+export const getArticleList = async (uuid: string) => {
+  return invoke('get_articles', { uuid })
+}
+
+export const fetchFeed = async (url: string) => {
+  return invoke('fetch_feed', { url })
+}
+
+export const addChannel = async (url: string) => {
+  return invoke('add_channel', { url })
+}
+
+export const syncArticlesWithChannelUuid = async (uuid: string) => {
+  return invoke('sync_articles_with_channel_uuid', { uuid })
+}

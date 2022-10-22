@@ -7,7 +7,11 @@ import { Button, Dropdown } from "@douyinfe/semi-ui";
 import * as dataAgent from "../../helpers/dataAgent";
 import { useStore } from "../../hooks/useStore";
 import styles from "./index.module.scss";
-import { ArrowPathIcon, LinkIcon, WalletIcon } from '@heroicons/react/24/outline'
+import {
+  ArrowPathIcon,
+  LinkIcon,
+  WalletIcon,
+} from "@heroicons/react/24/outline";
 import { invoke } from "@tauri-apps/api";
 
 function useQuery() {
@@ -24,7 +28,7 @@ export const ArticleContainer = (): JSX.Element => {
   const [syncing, setSyncing] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<HTMLDivElement>(null);
-  const articleListRef = useRef<ArticleListRefType>(null)
+  const articleListRef = useRef<ArticleListRefType>(null);
 
   const handleListScroll = useCallback(() => {
     if (listRef.current) {
@@ -65,29 +69,21 @@ export const ArticleContainer = (): JSX.Element => {
 
   const getArticleList = () => {
     if (articleListRef.current) {
-      articleListRef.current.getList()
+      articleListRef.current.getList();
     }
-  }
+  };
 
   const syncArticles = () => {
     if (feedUrl) {
-      setSyncing(true)
-      const res = invoke('sync_articles_with_channel_uuid', { uuid: channelUuid })
-      console.log("%c Line:77 🥛 res", "color:#ea7e5c", res);
-      // requestFeed(feedUrl).then((res) => {
-      //   if (res.channel && res.items) {
-      //     const { items } = res;
-      //
-      //     return dataAgent.bulkAddArticle(items)
-      //       .then(() => {
-      //         getArticleList()
-      //
-      //         return dataAgent.updateCountWithChannel(feedUrl);
-      //       })
-      //   }
-      // }).finally(() => {
-      //   setSyncing(false)
-      // });
+      setSyncing(true);
+
+      dataAgent
+        .syncArticlesWithChannelUuid(channelUuid as string)
+        .then((res) => {
+          console.log("%c Line:77 🥛 res", "color:#ea7e5c", res);
+          getArticleList();
+          setSyncing(false);
+        });
     }
   };
 
@@ -98,11 +94,11 @@ export const ArticleContainer = (): JSX.Element => {
   const markAllRead = () => {
     if (feedUrl) {
       return dataAgent.makeAllRead(feedUrl).then(() => {
-        getArticleList()
-      })
+        getArticleList();
+      });
     }
 
-    return Promise.resolve()
+    return Promise.resolve();
   };
 
   const changeFilter = (filter: any) => {
@@ -144,29 +140,30 @@ export const ArticleContainer = (): JSX.Element => {
               render={
                 <Dropdown.Menu>
                   {store.filterList.map((item) => {
-                    return <Dropdown.Item key={item.id} onClick={() => changeFilter(item)}
-                                          {...item.id === store.currentFilter.id ? { type: "primary" } : {}}>{item.title}</Dropdown.Item>;
+                    return (
+                      <Dropdown.Item
+                        key={item.id}
+                        onClick={() => changeFilter(item)}
+                        {...(item.id === store.currentFilter.id
+                          ? { type: "primary" }
+                          : {})}
+                      >
+                        {item.title}
+                      </Dropdown.Item>
+                    );
                   })}
                 </Dropdown.Menu>
               }
             >
               <Button>{store.currentFilter.title}</Button>
             </Dropdown>
-            <span
-              className={styles.menuIcon}
-              onClick={markAllRead}
-            >
-            <WalletIcon
-              className={"h-4 w-4"}
-            />
+            <span className={styles.menuIcon} onClick={markAllRead}>
+              <WalletIcon className={"h-4 w-4"} />
             </span>
-            <span
-              className={styles.menuIcon}
-              onClick={handleRefresh}
-            >
-            <ArrowPathIcon
-              className={`h-4 w-4 ${syncing ? 'spinning' : ''}`}
-            />
+            <span className={styles.menuIcon} onClick={handleRefresh}>
+              <ArrowPathIcon
+                className={`h-4 w-4 ${syncing ? "spinning" : ""}`}
+              />
             </span>
           </div>
         </div>
@@ -175,7 +172,7 @@ export const ArticleContainer = (): JSX.Element => {
           ref={articleListRef}
           title={params.name}
           channelUuid={channelUuid}
-          feedUrl={feedUrl || ''}
+          feedUrl={feedUrl || ""}
         />
       </div>
       <div className={styles.mainView} ref={viewRef}>
@@ -183,14 +180,15 @@ export const ArticleContainer = (): JSX.Element => {
           <div className={styles.viewMenu}>
             <a
               className={styles.menuIcon}
-              target="_blank" rel="noreferrer"
+              target="_blank"
+              rel="noreferrer"
               href={(store.article && store.article.link) as string}
             >
-              <LinkIcon className={'h-4 w-4'}/>
+              <LinkIcon className={"h-4 w-4"} />
             </a>
           </div>
         </div>
-        <ArticleView article={store.article}/>
+        <ArticleView article={store.article} />
       </div>
     </div>
   );

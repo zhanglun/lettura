@@ -51,7 +51,7 @@ export const AddFeedChannel = (props: any) => {
       setLoading(false)
     })
 
-    const res: Channel & { items: Article[] } = await invoke('fetch_feed', { url: feedUrl })
+    const res = await dataAgent.fetchFeed(feedUrl) as Channel & { items: Article[] };
 
     console.log("res from rust", res);
 
@@ -80,18 +80,11 @@ export const AddFeedChannel = (props: any) => {
   };
 
   const handleSave = async () => {
-    const saveRes = await invoke('add_channel', { url: feedUrl })
+    const saveRes = await dataAgent.addChannel(feedUrl)
 
     console.log('saveRes ===>', saveRes)
-    busChannel.emit('getChannels')
 
-    db.transaction("rw", db.channels, db.articles, async () => {
-      await dataAgent.upsertChannel({ ...channel, unread: 0 });
-      await dataAgent.bulkAddArticle(articles);
-      await dataAgent.updateCountWithChannel(channel.feedUrl);
-    }).then(() => {
-      handleCancel();
-    });
+    busChannel.emit('getChannels')
   };
 
   return (

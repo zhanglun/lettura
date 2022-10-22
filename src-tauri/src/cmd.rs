@@ -86,14 +86,14 @@ pub fn create_article_models(
 
   for item in res.items() {
     let article_uuid = Uuid::new_v4().hyphenated().to_string();
-    let title = item.title.clone().unwrap_or(String::from("no title"));
-    let link = item.link.clone().unwrap_or(String::from("no link"));
-    let content = item.content.clone().unwrap_or(String::from("no content"));
+    let title = item.title.clone().unwrap_or(String::from(""));
+    let link = item.link.clone().unwrap_or(String::from(""));
+    let content = item.content.clone().unwrap_or(String::from(""));
     let description = item
       .description
       .clone()
       .unwrap_or(String::from("no description"));
-    let date = String::from(item.pub_date().clone().unwrap_or("no pub_date"));
+    let date = String::from(item.pub_date().clone().unwrap_or(""));
 
     let s = models::NewArticle {
       uuid: article_uuid,
@@ -154,34 +154,7 @@ pub async fn sync_articles_with_channel_uuid(uuid: String) -> usize {
   match channel {
     Some(channel) => {
       let res = fetch_rss_item(&channel.feed_url).await.unwrap();
-
-      let mut articles: Vec<models::NewArticle> = Vec::new();
-
-      for item in res.items() {
-        let article_uuid = Uuid::new_v4().hyphenated().to_string();
-        let title = item.title.clone().unwrap_or(String::from("no title"));
-        let link = item.link.clone().unwrap_or(String::from("no link"));
-        let content = item.content.clone().unwrap_or(String::from("no content"));
-        let description = item
-          .description
-          .clone()
-          .unwrap_or(String::from("no description"));
-        let date = String::from(item.pub_date().clone().unwrap());
-
-        let s = models::NewArticle {
-          uuid: article_uuid,
-          channel_uuid: String::from(&channel.uuid),
-          title,
-          link,
-          content,
-          feed_url: String::from(&channel.feed_url),
-          description,
-          pub_date: date,
-        };
-
-        articles.push(s);
-      }
-
+      let articles = create_article_models(&channel.uuid, &channel.feed_url, &res);
       let result = db::add_articles(String::from(&channel.uuid), articles);
 
       result

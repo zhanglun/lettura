@@ -21,18 +21,8 @@ const ChannelList = (props: any): JSX.Element => {
   const [done, setDone] = useState(0);
 
   const loadAndUpdate = (url: string) => {
-    return requestFeed(url).then(async (res) => {
+    return dataAgent.addChannel(url).then(async (res) => {
       console.log("%c Line:27 🍑 res", "color:#fca650", res);
-
-      if (res.channel && res.items) {
-        const { channel, items } = res;
-
-        db.transaction("rw", db.channels, db.articles, async () => {
-          await dataAgent.bulkAddArticle(items);
-          await dataAgent.upsertChannel(channel);
-          await dataAgent.updateCountWithChannel(channel.feedUrl);
-        });
-      }
 
       return res;
     }).catch(() => {
@@ -128,7 +118,7 @@ const ChannelList = (props: any): JSX.Element => {
                 className={({ isActive }) => `${styles.item} ${
                   isActive ? styles.itemActive : ""
                 }`}
-                to={`${RouteConfig.CHANNEL.replace(/:name/, encodeURI(channel.title))}?channelUuid=${
+                to={`${RouteConfig.CHANNEL.replace(/:uuid/, channel.uuid)}?channelUuid=${
                   channel.uuid
                 }&feedUrl=${channel.feed_url}`}>
                 <img

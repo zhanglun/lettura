@@ -5,8 +5,8 @@ export enum RouteConfig {
   TODAY = '/today',
   FAVORITE = '/favorite',
 
-  CHANNEL = '/channels/:name',
-  ARTICLE = '/channels/:name/articles/:id',
+  CHANNEL = '/channels/:uuid',
+  ARTICLE = '/channels/:uuid/articles/:id',
 
   SETTINGS = '/settings',
   SETTINGS_GENERAL = '/settings/general',

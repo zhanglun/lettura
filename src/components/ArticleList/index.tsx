@@ -62,7 +62,7 @@ export const ArticleList = forwardRef((props: ArticleListProps, ref: ForwardedRe
       filter.unread = 0;
     }
 
-    invoke('get_articles', { uuid: channelUuid }).then((res) => {
+    dataAgent.getArticleList(channelUuid).then((res) => {
       const { list } = res as { list: Article[] };
       console.log("%c Line:67 🌭 list", "color:#465975", list);
       setArticleList(list);
