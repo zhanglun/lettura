@@ -134,10 +134,11 @@ pub async fn add_channel(url: String) -> usize {
 }
 
 #[command]
-pub fn get_articles(uuid: String) -> db::ArticleQueryResult {
+pub fn get_articles(uuid: String, filter: db::ArticleFilter) -> db::ArticleQueryResult {
   println!("get articles from rust");
   let res = db::get_article(db::ArticleFilter {
     channel_uuid: Some(uuid),
+    read_status: filter.read_status
   });
 
   res

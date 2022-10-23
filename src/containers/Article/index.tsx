@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { ArticleList, ArticleListRefType } from "../../components/ArticleList";
 import { ArticleView } from "../../components/ArticleView";
-import { requestFeed } from "../../helpers/parseXML";
 import { Button, Dropdown } from "@douyinfe/semi-ui";
 import * as dataAgent from "../../helpers/dataAgent";
 import { useStore } from "../../hooks/useStore";
@@ -12,7 +11,6 @@ import {
   LinkIcon,
   WalletIcon,
 } from "@heroicons/react/24/outline";
-import { invoke } from "@tauri-apps/api";
 import { busChannel } from "../../helpers/busChannel";
 
 function useQuery() {

@@ -20,8 +20,8 @@ export const importChannels = async (list: string[]) => {
   invoke('import_channels', { list })
 }
 
-export const getArticleList = async (uuid: string) => {
-  return invoke('get_articles', { uuid })
+export const getArticleList = async (uuid: string, filter: any) => {
+  return invoke('get_articles', { uuid, filter })
 }
 
 export const fetchFeed = async (url: string) => {

@@ -13,9 +13,6 @@ function createMarkup(html: string) {
 
 export const ArticleView = (props: ArticleViewProps): JSX.Element => {
   const { article } = props;
-
-  console.log('article', article)
-
   const containerRef = useRef<HTMLDivElement>(null);
   const helpBarRef = useRef<HTMLDivElement>(null);
   const [pageContent, setPageContent] = useState("");

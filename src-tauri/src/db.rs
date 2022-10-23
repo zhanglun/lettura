@@ -1,6 +1,7 @@
 use diesel::prelude::*;
 use diesel::sqlite::SqliteConnection;
 use dotenv::dotenv;
+use serde::Deserialize;
 use serde::Serialize;
 
 use crate::models;
@@ -126,13 +127,15 @@ pub fn add_articles(channel_uuid: String, articles: Vec<models::NewArticle>) -> 
   }
 }
 
+#[derive(Debug, Serialize, Deserialize)]
 pub struct ArticleFilter {
   pub channel_uuid: Option<String>,
+  pub read_status: Option<i32>,
 }
 
 #[derive(Debug, Serialize)]
 pub struct ArticleQueryResult {
-  pub list: Vec<models::Article>,
+  list: Vec<models::Article>,
   // pub count: i32,
 }
 
@@ -171,35 +174,35 @@ pub fn update_article_read_status(uuid: String, status: i32) -> usize {
 
 pub fn get_article(filter: ArticleFilter) -> ArticleQueryResult {
   let mut connection = establish_connection();
-  match filter.channel_uuid {
-    Some(uuid) => {
-      let results = schema::articles::dsl::articles
-        .filter(schema::articles::channel_uuid.eq(uuid))
-        .load::<models::Article>(&mut connection)
-        .expect("Expect loading articles");
-      // let count = schema::channels::dsl::channels
-      //   .filter(schema::articles::channel_uuid.eq(uuid))
-      //   .count()
-      //   .get_result(&mut connection)
-      //   .expect("Expect articles count");
+  let mut query = schema::articles::dsl::articles.into_boxed();
 
-      ArticleQueryResult {
-        list: results,
-        // count,
-      }
+  match filter.channel_uuid {
+    Some(channel_uuid) => {
+      query = query.filter(schema::articles::channel_uuid.eq(channel_uuid));
     }
     None => {
-      let results = schema::articles::dsl::articles
-        .load::<models::Article>(&mut connection)
-        .expect("Expect loading articles");
-      // let count = schema::channels::dsl::channels
-      //   .count()
-      //   .get_result(&mut connection)
-      //   .optional()
-      //   .expect("Expect articles count");
-
-      ArticleQueryResult { list: results }
+      1;
     }
+  }
+
+  match filter.read_status {
+    Some(0) => {
+      1;
+    }
+    Some(status) => {
+      query = query.filter(schema::articles::read_status.eq(status));
+    }
+    None => {
+      1;
+    }
+  }
+
+  let result = query
+    .load::<models::Article>(&mut connection)
+    .expect("Expect loading articles");
+
+  ArticleQueryResult {
+    list: result,
   }
 }
 
