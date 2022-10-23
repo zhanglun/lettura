@@ -65,10 +65,7 @@ export const FeedManager = () => {
 
   const handleSearch = (v: string) => {
     setSearchText(v);
-    dataAgent.queryChannelWithKeywords(v).then((res) => {
-      console.log("🚀 ~ file: index.tsx ~ line 67 ~ dataAgent.queryChannelWithKeywords ~ res", res)
-      setList(res);
-    })
+    // TODO
   };
 
   const getList = async () => {

@@ -3,7 +3,7 @@
 import React, { useEffect, useState, forwardRef, useRef, useImperativeHandle, ForwardedRef } from "react";
 import { ArticleItem } from "../ArticleItem";
 import { Loading } from "../Loading";
-import { Article, db } from "../../db";
+import { Article } from "../../db";
 import * as dataAgent from "../../helpers/dataAgent";
 
 import styles from "./articlelist.module.css";
@@ -35,9 +35,7 @@ export const ArticleList = forwardRef((props: ArticleListProps, ref: ForwardedRe
   };
 
   const handleArticleSelect = (article: any) => {
-    db.articles.update(article.id, {
-      unread: 0
-    });
+    // TODO
 
     setHighlightItem(article);
   };

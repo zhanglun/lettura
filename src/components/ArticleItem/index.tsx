@@ -2,20 +2,28 @@ import React, { useState } from "react";
 import Dayjs from "dayjs";
 import { useStore } from "../../hooks/useStore";
 import styles from "./articleitem.module.scss";
+import { busChannel } from "../../helpers/busChannel";
 
 export const ArticleItem = React.memo((props: any) => {
   const { article, onSelect, highlight } = props;
   const store = useStore();
-  const [readStatus, setReadStatus] = useState(article.unread === 0);
+  const [readStatus, setReadStatus] = useState(article.read_status === 2);
 
   const handleClick = (e: any) => {
     if (onSelect) {
       onSelect(article);
     }
 
-    setReadStatus(true);
+    if (article.read_status === 1) {
+      busChannel.emit('updateChannelUnreadCount', {
+        uuid: article.channel_uuid,
+        action: 'decrease',
+        count: 1,
+      });
 
-    store.updateChannelCount(article, 'sub', 1)
+      setReadStatus(true);
+    }
+
     store.setArticle(article)
   };
 

@@ -1,5 +1,3 @@
-import Dexie, { Table } from 'dexie';
-
 export interface Channel {
   id?: number;
   uuid: string;
@@ -8,7 +6,7 @@ export interface Channel {
   feedUrl: string;
   description?: string;
   pubDate?: Date;
-  unread?: Number;
+  unread: number;
 }
 export interface Article {
   id?: number;
@@ -22,18 +20,3 @@ export interface Article {
   pubDate?: Date;
   unread: number;
 }
-
-export class MySubClassedDexie extends Dexie {
-  channels!: Table<Channel>;
-  articles!: Table<Article>;
-
-  constructor() {
-    super('lettura');
-    this.version(1.4).stores({
-      channels: '++id, uuid, title, link, &feedUrl, description, pubDate, unread, favicon',
-      articles: '++id, uuid, title, link, image, [feedUrl+unread], author, description, content, pubDate',
-    });
-  }
-}
-
-export const db = new MySubClassedDexie();

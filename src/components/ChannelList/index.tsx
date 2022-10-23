@@ -3,13 +3,18 @@ import { NavLink, useNavigate } from "react-router-dom";
 import styles from "./channel.module.scss";
 import defaultSiteIcon from "./default.png";
 import { RouteConfig } from "../../config";
-import { Channel, db } from "../../db";
+import { Channel } from "../../db";
 import { AddFeedChannel } from "../AddChannel";
-import { getChannelFavicon, requestFeed } from "../../helpers/parseXML";
+import { getChannelFavicon } from "../../helpers/parseXML";
 import * as dataAgent from "../../helpers/dataAgent";
 import { StoreContext } from "../../context";
 import { Progress } from "@douyinfe/semi-ui";
-import { ArrowPathIcon, Cog6ToothIcon, FolderIcon, PlusIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowPathIcon,
+  Cog6ToothIcon,
+  FolderIcon,
+  PlusIcon,
+} from "@heroicons/react/24/outline";
 import { busChannel } from "../../helpers/busChannel";
 
 const ChannelList = (props: any): JSX.Element => {
@@ -21,39 +26,72 @@ const ChannelList = (props: any): JSX.Element => {
   const [done, setDone] = useState(0);
 
   const loadAndUpdate = (url: string) => {
-    return dataAgent.addChannel(url).then(async (res) => {
-      console.log("%c Line:27 🍑 res", "color:#fca650", res);
+    return dataAgent
+      .addChannel(url)
+      .then(async (res) => {
+        console.log("%c Line:27 🍑 res", "color:#fca650", res);
 
-      return res;
-    }).catch(() => {
-      return Promise.resolve();
-    }).finally(() => {
-      setDone(done => done + 1);
+        return res;
+      })
+      .catch(() => {
+        return Promise.resolve();
+      })
+      .finally(() => {
+        setDone((done) => done + 1);
+      });
+  };
+
+  const updateCount = (uuid: string, action: string, count: number) => {
+    channelList.map((channel) => {
+      if (channel.uuid === uuid) {
+        channel.unread =
+          action === "increase"
+            ? channel.unread + count
+            : channel.unread - count;
+        channel.unread = Math.max(0, channel.unread);
+      }
+
+      return channel;
     });
+
+    console.log("channelList", channelList);
+
+    setChannelList(channelList);
   };
 
   useEffect(() => {
     const getList = async () => {
-      let channel = await dataAgent.getChannels() as Channel[];
-      let unreadTotal = await dataAgent.getUnreadTotal() as {[key: string]: number};
+      let channel = (await dataAgent.getChannels()) as Channel[];
+      let unreadTotal = (await dataAgent.getUnreadTotal()) as {
+        [key: string]: number;
+      };
 
       channel.forEach((item) => {
         item.unread = unreadTotal[item.uuid] || 0;
-      })
+      });
 
-      setChannelList(channel)
-    }
+      setChannelList(channel);
+    };
 
     getList();
 
-    const unsucscribeGetChannels = busChannel.on('getChannels', () => {
-      getList()
-    })
+    const unsubscribeGetChannels = busChannel.on("getChannels", () => {
+      getList();
+    });
+
+    const unsubscribeUpdateCount = busChannel.on(
+      "updateChannelUnreadCount",
+      ({ uuid, action, count }) => {
+        console.log("updateCount", uuid, action, count);
+        updateCount(uuid, action, count);
+      }
+    );
 
     return () => {
-      unsucscribeGetChannels()
-    }
-  }, [])
+      unsubscribeGetChannels();
+      unsubscribeUpdateCount();
+    };
+  }, []);
 
   const refreshList = () => {
     setRefreshing(true);
@@ -92,14 +130,16 @@ const ChannelList = (props: any): JSX.Element => {
       return r.then(() => enQueue());
     };
 
-    enQueue().then(() => {
-      return Promise.allSettled(res);
-    }).then(() => {
-      window.setTimeout(() => {
-        setRefreshing(false);
-        setDone(0);
-      }, 500);
-    });
+    enQueue()
+      .then(() => {
+        return Promise.allSettled(res);
+      })
+      .then(() => {
+        window.setTimeout(() => {
+          setRefreshing(false);
+          setDone(0);
+        }, 500);
+      });
   };
 
   const goToSetting = () => {
@@ -120,12 +160,14 @@ const ChannelList = (props: any): JSX.Element => {
               aria-hidden="true"
             >
               <NavLink
-                className={({ isActive }) => `${styles.item} ${
-                  isActive ? styles.itemActive : ""
-                }`}
-                to={`${RouteConfig.CHANNEL.replace(/:uuid/, channel.uuid)}?channelUuid=${
+                className={({ isActive }) =>
+                  `${styles.item} ${isActive ? styles.itemActive : ""}`
+                }
+                to={`${RouteConfig.CHANNEL.replace(
+                  /:uuid/,
                   channel.uuid
-                }&feedUrl=${channel.feed_url}`}>
+                )}?channelUuid=${channel.uuid}&feedUrl=${channel.feed_url}`}
+              >
                 <img
                   src={ico}
                   onError={(e) => {
@@ -139,9 +181,7 @@ const ChannelList = (props: any): JSX.Element => {
                   alt={channel.title}
                 />
                 <span className={styles.name}>{channel.title}</span>
-                {unread > 0 && (
-                  <span className={styles.count}>{unread}</span>
-                )}
+                {unread > 0 && <span className={styles.count}>{unread}</span>}
               </NavLink>
             </li>
           );
@@ -160,39 +200,35 @@ const ChannelList = (props: any): JSX.Element => {
     <div className={styles.container}>
       <div className={styles.header}>
         <div className={styles.toolbar}>
-          <AddFeedChannel Aref={addFeedButtonRef}/>
+          <AddFeedChannel Aref={addFeedButtonRef} />
           <span className={styles.toolbarItem} onClick={addFeed}>
-            <PlusIcon className={"h-4 w-4"}/>
+            <PlusIcon className={"h-4 w-4"} />
           </span>
-          <span
-            className={styles.toolbarItem}
-          >
-           <FolderIcon className={'h-4 w-4'}/>
+          <span className={styles.toolbarItem}>
+            <FolderIcon className={"h-4 w-4"} />
           </span>
-          <span
-            className={styles.toolbarItem}
-            onClick={refreshList}
-          >
-            <ArrowPathIcon className={`h-4 w-4 ${refreshing ? 'spinning' : ''}`}/>
+          <span className={styles.toolbarItem} onClick={refreshList}>
+            <ArrowPathIcon
+              className={`h-4 w-4 ${refreshing ? "spinning" : ""}`}
+            />
           </span>
-          <span
-            className={styles.toolbarItem}
-            onClick={goToSetting}
-          >
-            <Cog6ToothIcon className={'h-4 w-4'}/>
+          <span className={styles.toolbarItem} onClick={goToSetting}>
+            <Cog6ToothIcon className={"h-4 w-4"} />
           </span>
         </div>
       </div>
-      <div className={styles.inner}>
-        {renderFeedList()}
-      </div>
-      {refreshing && <div className={styles.footer}>
+      <div className={styles.inner}>{renderFeedList()}</div>
+      {refreshing && (
+        <div className={styles.footer}>
           <span>
             {/* @ts-ignore */}
-            <Progress percent={Math.ceil(done / channelList.length * 100)}/>
+            <Progress percent={Math.ceil((done / channelList.length) * 100)} />
           </span>
-        <span className={styles.footerCount}>{done}/{channelList.length}</span>
-      </div>}
+          <span className={styles.footerCount}>
+            {done}/{channelList.length}
+          </span>
+        </div>
+      )}
     </div>
   );
 };

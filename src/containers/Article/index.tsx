@@ -93,9 +93,7 @@ export const ArticleContainer = (): JSX.Element => {
 
   const markAllRead = () => {
     if (feedUrl) {
-      return dataAgent.makeAllRead(feedUrl).then(() => {
-        getArticleList();
-      });
+      // TODO
     }
 
     return Promise.resolve();

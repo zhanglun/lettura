@@ -1,11 +1,10 @@
 import React, { useImperativeHandle, useState } from "react";
 import { useModal } from "../Modal/useModal";
 import { Input, Modal, Button, Toast } from "@douyinfe/semi-ui";
-import { db, Channel as ChannelModel, Article as ArticleModel, Article, Channel } from "../../db";
+import { Channel as ChannelModel, Article as ArticleModel, Article, Channel } from "../../db";
 import { requestFeed } from "../../helpers/parseXML";
 import * as dataAgent from "../../helpers/dataAgent";
 import styles from "./index.module.css";
-import { invoke } from '@tauri-apps/api/tauri';
 import { busChannel } from "../../helpers/busChannel";
 
 export const AddFeedChannel = (props: any) => {
