@@ -20,7 +20,7 @@ CREATE TABLE articles (
   uuid VARCHAR NOT NULL UNIQUE,
   channel_uuid VARCHAR NOT NULL,
   title VARCHAR NOT NULL,
-  link VARCHAR NOT NULL UNIQUE,
+  link VARCHAR NOT NULL,
   feed_url VARCHAR NOT NULL,
   description VARCHAR NOT NULL,
   content VARCHAR NOT NULL,

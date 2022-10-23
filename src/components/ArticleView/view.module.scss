@@ -134,7 +134,7 @@
 }
 
 .content {
-  line-height: 1.7;
+  line-height: 1.6;
   font-weight: 400;
   font-family: var(--sans-font);
   font-size: var(--content-font-size);
@@ -158,7 +158,7 @@ blockquote {
 
 .title {
   //font-family: var(--sans-font);
-  font-size: calc(var(--content-font-size) * 1.5);
+  font-size: calc(var(--content-font-size) * 1.8);
 }
 
 .desc {
@@ -167,7 +167,7 @@ blockquote {
 }
 
 .content p {
-  line-height: 1.7;
+  line-height: 1.6;
   font-weight: 400;
   font-family: var(--sans-font);
   font-size: var(--content-font-size);

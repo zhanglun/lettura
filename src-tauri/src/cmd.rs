@@ -158,6 +158,9 @@ pub async fn sync_articles_with_channel_uuid(uuid: String) -> usize {
     Some(channel) => {
       let res = fetch_rss_item(&channel.feed_url).await.unwrap();
       let articles = create_article_models(&channel.uuid, &channel.feed_url, &res);
+
+      println!("{:?}", &articles.len());
+
       let result = db::add_articles(String::from(&channel.uuid), articles);
 
       result
