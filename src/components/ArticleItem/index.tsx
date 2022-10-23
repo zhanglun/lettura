@@ -32,7 +32,7 @@ export const ArticleItem = React.memo((props: any) => {
       <div className={styles.description}>{(article.description || "").replace(/<[^<>]+>/g, "")}</div>
       <div className={styles.meta}>
         <div>{article.author}</div>
-        <div className={styles.date}>{Dayjs(article.pubDate).format("YYYY-MM-DD HH:mm")}</div>
+        <div className={styles.date}>{Dayjs(article.pub_date).format("YYYY-MM-DD HH:mm")}</div>
       </div>
     </li>
   );

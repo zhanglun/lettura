@@ -30,7 +30,7 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
       return null;
     }
 
-    const { link, pubDate } = article;
+    const { link, pub_date } = article;
     const ico = getChannelFavicon(link);
 
     return (
@@ -40,7 +40,7 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
             <div className={styles.title}>{article.title}</div>
             <div className={styles.meta}>
               <span className={styles.time}>
-                {Dayjs(pubDate).format("YYYY-MM-DD HH:mm")}
+                {Dayjs(pub_date).format("YYYY-MM-DD HH:mm")}
               </span>
               <span className={styles.author}>{article.author}</span>
               <span className={styles.channelInfo}>
