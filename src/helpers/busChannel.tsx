@@ -4,7 +4,7 @@ export const busChannel = eventbus<{
   getChannels: () => void;
   updateChannelUnreadCount: (params: {
     uuid: string;
-    action: "increase" | "decrease";
+    action: "increase" | "decrease" | "upgrade";
     count: number;
   }) => void;
 }>();

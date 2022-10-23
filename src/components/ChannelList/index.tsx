@@ -43,13 +43,29 @@ const ChannelList = (props: any): JSX.Element => {
 
   const updateCount = (uuid: string, action: string, count: number) => {
     channelList.map((channel) => {
-      if (channel.uuid === uuid) {
-        channel.unread =
-          action === "increase"
-            ? channel.unread + count
-            : channel.unread - count;
-        channel.unread = Math.max(0, channel.unread);
+      if (channel.uuid !== uuid) {
+        return channel;
       }
+
+      switch (action) {
+        case "increase": {
+          channel.unread += count;
+          break;
+        }
+        case "decrease": {
+          channel.unread -= count;
+          break;
+        }
+        case "upgrade": {
+          // TODO
+          break;
+        }
+        default: {
+          // TODO
+        }
+      }
+
+      channel.unread = Math.max(0, channel.unread);
 
       return channel;
     });
@@ -79,19 +95,25 @@ const ChannelList = (props: any): JSX.Element => {
       getList();
     });
 
+    return () => {
+      unsubscribeGetChannels();
+    };
+  }, []);
+
+  useEffect(() => {
     const unsubscribeUpdateCount = busChannel.on(
       "updateChannelUnreadCount",
       ({ uuid, action, count }) => {
-        console.log("updateCount", uuid, action, count);
-        updateCount(uuid, action, count);
+        if (count > 0) {
+          updateCount(uuid, action, count);
+        }
       }
     );
 
     return () => {
-      unsubscribeGetChannels();
       unsubscribeUpdateCount();
     };
-  }, []);
+  }, [channelList]);
 
   const refreshList = () => {
     setRefreshing(true);

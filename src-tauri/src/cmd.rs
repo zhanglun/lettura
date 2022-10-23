@@ -185,6 +185,13 @@ pub fn get_unread_total() -> HashMap<String, i32> {
   result
 }
 
+#[command]
+pub fn update_article_read_status(uuid: String, status: i32) -> usize {
+  let res = db::update_article_read_status(uuid, status);
+
+  res
+}
+
 #[cfg(test)]
 mod tests {
   use super::*;

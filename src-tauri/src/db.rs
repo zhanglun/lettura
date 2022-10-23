@@ -95,11 +95,10 @@ pub struct UnreadTotal {
   pub unread_count: i32,
 }
 
-pub const SQL_QUERY_UNREAD_TOTAL: &str = "
+pub fn get_unread_total() -> Vec<UnreadTotal> {
+  const SQL_QUERY_UNREAD_TOTAL: &str = "
  SELECT id, channel_uuid, count(read_status) as unread_count FROM articles WHERE read_status = 1 group by channel_uuid;
 ";
-
-pub fn get_unread_total() -> Vec<UnreadTotal> {
   let mut connection = establish_connection();
   let record = diesel::sql_query(SQL_QUERY_UNREAD_TOTAL)
     .load::<UnreadTotal>(&mut connection)
@@ -135,6 +134,39 @@ pub struct ArticleFilter {
 pub struct ArticleQueryResult {
   pub list: Vec<models::Article>,
   // pub count: i32,
+}
+
+pub fn get_article_with_uuid(uuid: String) -> Option<models::Article> {
+  let mut connection = establish_connection();
+  let mut result = schema::articles::dsl::articles
+    .filter(schema::articles::uuid.eq(&uuid))
+    .load::<models::Article>(&mut connection)
+    .unwrap_or(vec![]);
+
+  if result.len() == 1 {
+    return result.pop();
+  } else {
+    return None;
+  }
+}
+
+pub fn update_article_read_status(uuid: String, status: i32) -> usize {
+  let mut connection = establish_connection();
+  let article = get_article_with_uuid(String::from(&uuid));
+
+  match article {
+    Some(_article) => {
+      let res = diesel::update(schema::articles::dsl::articles.filter(schema::articles::uuid.eq(&uuid)))
+        .set(schema::articles::read_status.eq(status))
+        .execute(&mut connection);
+
+      match res {
+        Ok(r) => r,
+        Err(_) => 0
+      }
+    }
+    None => 0,
+  }
 }
 
 pub fn get_article(filter: ArticleFilter) -> ArticleQueryResult {
@@ -176,7 +208,7 @@ mod tests {
   use super::*;
 
   #[test]
-  fn test_get_unread_total () {
+  fn test_get_unread_total() {
     get_unread_total();
   }
 }

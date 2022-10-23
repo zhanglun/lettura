@@ -13,6 +13,7 @@ import {
   WalletIcon,
 } from "@heroicons/react/24/outline";
 import { invoke } from "@tauri-apps/api";
+import { busChannel } from "../../helpers/busChannel";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -79,10 +80,15 @@ export const ArticleContainer = (): JSX.Element => {
 
       dataAgent
         .syncArticlesWithChannelUuid(channelUuid as string)
-        .then((res) => {
+        .then((res: number) => {
           console.log("%c Line:77 🥛 res", "color:#ea7e5c", res);
           getArticleList();
           setSyncing(false);
+          busChannel.emit("updateChannelUnreadCount", {
+            uuid: channelUuid as string,
+            action: 'increase',
+            count: res || 0,
+          })
         });
     }
   };

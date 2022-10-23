@@ -32,10 +32,17 @@ export const addChannel = async (url: string) => {
   return invoke('add_channel', { url })
 }
 
-export const syncArticlesWithChannelUuid = async (uuid: string) => {
+export const syncArticlesWithChannelUuid = async (uuid: string): Promise<number> => {
   return invoke('sync_articles_with_channel_uuid', { uuid })
 }
 
 export const getUnreadTotal = async () => {
   return invoke('get_unread_total')
+}
+
+export const updateArticleReadStatus = async (article_uuid: string, read_status: number) => {
+  return invoke('update_article_read_status', {
+    uuid: article_uuid,
+    status: read_status,
+  })
 }
