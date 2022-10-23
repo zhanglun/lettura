@@ -23,10 +23,7 @@ pub fn get_channels() -> Vec<models::Channel> {
   results
 }
 
-pub fn add_channel(
-  channel: models::NewChannel,
-  articles: Vec<models::NewArticle>,
-) -> usize {
+pub fn add_channel(channel: models::NewChannel, articles: Vec<models::NewArticle>) -> usize {
   let mut connection = establish_connection();
   let result = diesel::insert_or_ignore_into(schema::channels::dsl::channels)
     .values(channel)
@@ -64,9 +61,11 @@ pub fn delete_channel(uuid: String) -> usize {
         .execute(&mut connection)
         .expect("Expect delete channel");
 
-      diesel::delete(schema::articles::dsl::articles.filter(schema::articles::channel_uuid.eq(&uuid)))
-        .execute(&mut connection)
-        .expect("Expect delete channel");
+    diesel::delete(
+      schema::articles::dsl::articles.filter(schema::articles::channel_uuid.eq(&uuid)),
+    )
+    .execute(&mut connection)
+    .expect("Expect delete channel");
 
     return result;
   } else {
@@ -86,6 +85,27 @@ pub fn get_channel_by_uuid(channel_uuid: String) -> Option<models::Channel> {
   } else {
     return None;
   }
+}
+
+#[derive(Debug, Queryable, Serialize, QueryableByName)]
+pub struct UnreadTotal {
+  #[diesel(sql_type = diesel::sql_types::Text)]
+  pub channel_uuid: String,
+  #[diesel(sql_type = diesel::sql_types::Integer)]
+  pub unread_count: i32,
+}
+
+pub const SQL_QUERY_UNREAD_TOTAL: &str = "
+ SELECT id, channel_uuid, count(read_status) as unread_count FROM articles WHERE read_status = 1 group by channel_uuid;
+";
+
+pub fn get_unread_total() -> Vec<UnreadTotal> {
+  let mut connection = establish_connection();
+  let record = diesel::sql_query(SQL_QUERY_UNREAD_TOTAL)
+    .load::<UnreadTotal>(&mut connection)
+    .unwrap_or(vec![]);
+
+  record
 }
 
 pub fn add_articles(channel_uuid: String, articles: Vec<models::NewArticle>) -> usize {
@@ -148,5 +168,15 @@ pub fn get_article(filter: ArticleFilter) -> ArticleQueryResult {
 
       ArticleQueryResult { list: results }
     }
+  }
+}
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  #[test]
+  fn test_get_unread_total () {
+    get_unread_total();
   }
 }

@@ -125,3 +125,7 @@ export const addChannel = async (url: string) => {
 export const syncArticlesWithChannelUuid = async (uuid: string) => {
   return invoke('sync_articles_with_channel_uuid', { uuid })
 }
+
+export const getUnreadTotal = async () => {
+  return invoke('get_unread_total')
+}

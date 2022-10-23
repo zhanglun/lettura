@@ -73,6 +73,7 @@ fn main() {
       cmd::get_articles,
       cmd::sync_articles_with_channel_uuid,
       cmd::import_channels,
+      cmd::get_unread_total,
     ])
     .run(context)
     .expect("error while running tauri Application");

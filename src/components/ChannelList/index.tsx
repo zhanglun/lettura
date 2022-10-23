@@ -35,7 +35,12 @@ const ChannelList = (props: any): JSX.Element => {
   useEffect(() => {
     const getList = async () => {
       let channel = await dataAgent.getChannels() as Channel[];
-      console.log('data from sqlite', channel)
+      let unreadTotal = await dataAgent.getUnreadTotal() as {[key: string]: number};
+
+      channel.forEach((item) => {
+        item.unread = unreadTotal[item.uuid] || 0;
+      })
+
       setChannelList(channel)
     }
 

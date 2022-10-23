@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use reqwest;
 use serde::{Deserialize, Serialize};
 use tauri::command;
@@ -172,6 +174,17 @@ pub async fn import_channels(list: Vec<String>) -> usize {
   1
 }
 
+#[command]
+pub fn get_unread_total() -> HashMap<String, i32> {
+  let record = db::get_unread_total();
+  let result = record
+    .into_iter()
+    .map(|r| (r.channel_uuid.clone(), r.unread_count.clone()))
+    .collect::<HashMap::<String, i32>>();
+
+  result
+}
+
 #[cfg(test)]
 mod tests {
   use super::*;
@@ -186,5 +199,10 @@ mod tests {
   fn test_delete_channel() {
     let url = "9a6ca3f0-41f2-4486-a50a-1a41f1e80b56";
     delete_channel(String::from(url));
+  }
+
+  #[test]
+  fn test_get_unread_total() {
+    get_unread_total();
   }
 }
