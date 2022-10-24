@@ -8,6 +8,7 @@ import { TrashIcon } from "@heroicons/react/24/outline";
 
 export const FeedManager = () => {
   const [list, setList] = useState<Channel[]>([]);
+  const [renderList, setRenderList] = useState<Channel[]>([]);
   const [searchText, setSearchText] = useState<string>("");
 
   const handleDeleteFeed = (channel: Channel) => {
@@ -65,24 +66,34 @@ export const FeedManager = () => {
 
   const handleSearch = (v: string) => {
     setSearchText(v);
-    // TODO
+
+    if (v) {
+      const result = list.filter((item) => {
+        return item.title.indexOf(v) > -1 || item.feed_url.indexOf(v) > -1
+      })
+
+      setRenderList(result)
+    } else {
+      setRenderList(list)
+    }
   };
 
   const getList = async () => {
     const res = await dataAgent.getChannels() as Channel[];
 
     setList(res)
+    setRenderList(res)
   }
 
   useEffect( () => {
     getList()
 
-    const unsucscribeGetChannels = busChannel.on('getChannels', () => {
+    const unsubscribeGetChannels = busChannel.on('getChannels', () => {
       getList()
     })
 
     return () => {
-      unsucscribeGetChannels()
+      unsubscribeGetChannels()
     }
   }, []);
 
@@ -99,7 +110,7 @@ export const FeedManager = () => {
         </div>
         <Table
           columns={columns}
-          dataSource={list}
+          dataSource={renderList}
           pagination={false}
           size="small"
         />

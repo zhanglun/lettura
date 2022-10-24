@@ -3,9 +3,9 @@ export interface Channel {
   uuid: string;
   title: string;
   link: string;
-  feedUrl: string;
+  feed_url: string;
   description: string;
-  pubDate?: Date;
+  pub_date?: Date;
   unread: number;
 }
 export interface Article {
@@ -14,9 +14,9 @@ export interface Article {
   title: string;
   link: string;
   image: string;
-  feedUrl: string;
+  feed_url: string;
   description: string;
   content?: string;
-  pubDate?: Date;
+  pub_date?: Date;
   read_status: number;
 }

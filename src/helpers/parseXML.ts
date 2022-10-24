@@ -26,7 +26,7 @@ const parseChannel = (dom: any) => {
         break;
       case "lastBuildDate":
       case "pubDate":
-        res.pubDate = child.textContent.trim();
+        res.pub_date = child.textContent.trim();
         break;
       default:
         break;
@@ -54,7 +54,7 @@ export const parseAtomFeed = (url: string, doc: any): {
   const channel = {
     title: titleNode.textContent.trim(),
     link: (linkNode) ? linkNode.getAttribute("href") : url,
-    pubDate: updatedNode.textContent
+    pub_date: updatedNode.textContent
   } as ChannelRes;
 
   const domEntries = doc.querySelectorAll("feed > entry");
@@ -134,9 +134,9 @@ export const parseAtomFeed = (url: string, doc: any): {
     entry.link = link;
     entry.title = entryTitleNode.textContent;
     entry.description = content || shortContent || "";
-    entry.pubDate = new Date(entryPublishedNode ? entryPublishedNode.textContent : updatedNode ? updatedNode.textContent : issuedNode.textContent);
+    entry.pub_date = new Date(entryPublishedNode ? entryPublishedNode.textContent : updatedNode ? updatedNode.textContent : issuedNode.textContent);
     entry.read_status = 1;
-    entry.feedUrl = url;
+    entry.feed_url = url;
 
     return entry;
   }) as ArticleModel[];
