@@ -6,7 +6,6 @@
 #[macro_use]
 extern crate diesel;
 extern crate diesel_migrations;
-
 extern crate dotenv;
 
 use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};

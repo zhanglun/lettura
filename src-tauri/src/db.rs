@@ -4,14 +4,36 @@ use serde::Deserialize;
 use serde::Serialize;
 use std::path;
 
+use dotenv::dotenv;
+use std::env;
+
 use crate::models;
 use crate::schema;
 
 pub fn establish_connection() -> SqliteConnection {
-  let database_url = path::Path::new(&tauri::api::path::home_dir().unwrap()).join(".lettura").join("lettura.db");
-  let database_url = database_url.to_str().clone().unwrap();
-  SqliteConnection::establish(&database_url)
-    .expect(&format!("Error connecting to {}", &database_url))
+  dotenv().ok();
+  let _env = env::var("LETTURA_ENV");
+
+  match _env {
+    Ok(_env) => {
+      let database_url = &env::var("DATABASE_URL").unwrap();
+
+      SqliteConnection::establish(&database_url)
+        .expect(&format!("Error connecting to {}", &database_url))
+    }
+    Err(_) => {
+      println!("no LETTURA_ENV");
+
+      let database_url = path::Path::new(&tauri::api::path::home_dir().unwrap())
+        .join(".lettura")
+        .join("lettura.db");
+
+      let database_url = database_url.to_str().clone().unwrap();
+
+      SqliteConnection::establish(&database_url)
+        .expect(&format!("Error connecting to {}", &database_url))
+    }
+  }
 }
 
 pub fn get_channels() -> Vec<models::Channel> {
@@ -158,13 +180,14 @@ pub fn update_article_read_status(uuid: String, status: i32) -> usize {
 
   match article {
     Some(_article) => {
-      let res = diesel::update(schema::articles::dsl::articles.filter(schema::articles::uuid.eq(&uuid)))
-        .set(schema::articles::read_status.eq(status))
-        .execute(&mut connection);
+      let res =
+        diesel::update(schema::articles::dsl::articles.filter(schema::articles::uuid.eq(&uuid)))
+          .set(schema::articles::read_status.eq(status))
+          .execute(&mut connection);
 
       match res {
         Ok(r) => r,
-        Err(_) => 0
+        Err(_) => 0,
       }
     }
     None => 0,
@@ -200,18 +223,18 @@ pub fn get_article(filter: ArticleFilter) -> ArticleQueryResult {
     .load::<models::Article>(&mut connection)
     .expect("Expect loading articles");
 
-  ArticleQueryResult {
-    list: result,
-  }
+  ArticleQueryResult { list: result }
 }
 
 pub fn update_articles_read_status_channel(uuid: String) -> usize {
   let mut connection = establish_connection();
-  let result = diesel::update(schema::articles::dsl::articles
-    .filter(schema::articles::channel_uuid.eq(uuid))
-    .filter(schema::articles::read_status.eq(1)))
-    .set(schema::articles::read_status.eq(2))
-    .execute(&mut connection);
+  let result = diesel::update(
+    schema::articles::dsl::articles
+      .filter(schema::articles::channel_uuid.eq(uuid))
+      .filter(schema::articles::read_status.eq(1)),
+  )
+  .set(schema::articles::read_status.eq(2))
+  .execute(&mut connection);
 
   match result {
     Ok(r) => r,
