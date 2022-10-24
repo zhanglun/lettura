@@ -1,6 +1,7 @@
 import { invoke } from "@tauri-apps/api";
+import { Channel, Article } from "../db";
 
-export const getChannels = async () => {
+export const getChannels = async (): Promise<Channel[]> => {
   return invoke('get_channels')
 }
 
@@ -24,11 +25,11 @@ export const getArticleList = async (uuid: string, filter: any) => {
   return invoke('get_articles', { uuid, filter })
 }
 
-export const fetchFeed = async (url: string) => {
+export const fetchFeed = async (url: string): Promise<Channel & { items: Article[] }> => {
   return invoke('fetch_feed', { url })
 }
 
-export const addChannel = async (url: string) => {
+export const addChannel = async (url: string): Promise<number> => {
   return invoke('add_channel', { url })
 }
 
@@ -36,7 +37,7 @@ export const syncArticlesWithChannelUuid = async (uuid: string): Promise<number>
   return invoke('sync_articles_with_channel_uuid', { uuid })
 }
 
-export const getUnreadTotal = async () => {
+export const getUnreadTotal = async (): Promise<{ [key: string]: number }> => {
   return invoke('get_unread_total')
 }
 

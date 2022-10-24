@@ -4,7 +4,7 @@ export interface Channel {
   title: string;
   link: string;
   feedUrl: string;
-  description?: string;
+  description: string;
   pubDate?: Date;
   unread: number;
 }
@@ -15,7 +15,7 @@ export interface Article {
   link: string;
   image: string;
   feedUrl: string;
-  description?: string;
+  description: string;
   content?: string;
   pubDate?: Date;
   unread: number;

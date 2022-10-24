@@ -41,8 +41,8 @@ const ChannelList = (props: any): JSX.Element => {
       });
   };
 
-  const updateCount = (uuid: string, action: string, count: number) => {
-    channelList.map((channel) => {
+  const updateCount = (channelList: Channel[], uuid: string, action: string, count: number) => {
+    channelList.forEach((channel) => {
       if (channel.uuid !== uuid) {
         return channel;
       }
@@ -70,25 +70,23 @@ const ChannelList = (props: any): JSX.Element => {
       return channel;
     });
 
-    console.log("channelList", channelList);
-
-    setChannelList(channelList);
+    setChannelList([...channelList]);
   };
 
-  useEffect(() => {
-    const getList = async () => {
-      let channel = (await dataAgent.getChannels()) as Channel[];
-      let unreadTotal = (await dataAgent.getUnreadTotal()) as {
-        [key: string]: number;
-      };
-
+  const getList = () => {
+    Promise.all([
+      dataAgent.getChannels(),
+      dataAgent.getUnreadTotal(),
+    ]).then(([channel, unreadTotal]) => {
       channel.forEach((item) => {
         item.unread = unreadTotal[item.uuid] || 0;
       });
 
       setChannelList(channel);
-    };
+    })
+  };
 
+  useEffect(() => {
     getList();
 
     const unsubscribeGetChannels = busChannel.on("getChannels", () => {
@@ -105,7 +103,8 @@ const ChannelList = (props: any): JSX.Element => {
       "updateChannelUnreadCount",
       ({ uuid, action, count }) => {
         if (count > 0) {
-          updateCount(uuid, action, count);
+          updateCount(channelList, uuid, action, count);
+          unsubscribeUpdateCount();
         }
       }
     );
@@ -222,12 +221,12 @@ const ChannelList = (props: any): JSX.Element => {
     <div className={styles.container}>
       <div className={styles.header}>
         <div className={styles.toolbar}>
-          <AddFeedChannel Aref={addFeedButtonRef} />
+          <AddFeedChannel Aref={addFeedButtonRef}/>
           <span className={styles.toolbarItem} onClick={addFeed}>
-            <PlusIcon className={"h-4 w-4"} />
+            <PlusIcon className={"h-4 w-4"}/>
           </span>
           <span className={styles.toolbarItem}>
-            <FolderIcon className={"h-4 w-4"} />
+            <FolderIcon className={"h-4 w-4"}/>
           </span>
           <span className={styles.toolbarItem} onClick={refreshList}>
             <ArrowPathIcon
@@ -235,7 +234,7 @@ const ChannelList = (props: any): JSX.Element => {
             />
           </span>
           <span className={styles.toolbarItem} onClick={goToSetting}>
-            <Cog6ToothIcon className={"h-4 w-4"} />
+            <Cog6ToothIcon className={"h-4 w-4"}/>
           </span>
         </div>
       </div>
@@ -244,7 +243,7 @@ const ChannelList = (props: any): JSX.Element => {
         <div className={styles.footer}>
           <span>
             {/* @ts-ignore */}
-            <Progress percent={Math.ceil((done / channelList.length) * 100)} />
+            <Progress percent={Math.ceil((done / channelList.length) * 100)}/>
           </span>
           <span className={styles.footerCount}>
             {done}/{channelList.length}

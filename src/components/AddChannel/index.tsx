@@ -1,8 +1,6 @@
 import React, { useImperativeHandle, useState } from "react";
 import { useModal } from "../Modal/useModal";
 import { Input, Modal, Button, Toast } from "@douyinfe/semi-ui";
-import { Channel as ChannelModel, Article as ArticleModel, Article, Channel } from "../../db";
-import { requestFeed } from "../../helpers/parseXML";
 import * as dataAgent from "../../helpers/dataAgent";
 import styles from "./index.module.css";
 import { busChannel } from "../../helpers/busChannel";
@@ -11,9 +9,9 @@ export const AddFeedChannel = (props: any) => {
   const { showStatus, showModal, hideModal, toggleModal } = useModal();
   const [feedUrl, setFeedUrl] = useState("https://feeds.appinn.com/appinns/");
   const [title, setTitle] = useState("");
-  const [channel, setChannel] = useState({} as ChannelModel);
-  const [articles, setArticles] = useState([] as ArticleModel[]);
+  const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
+  const [confirming, setConfirming] = useState(false);
 
   useImperativeHandle(props.Aref, () => {
     return {
@@ -27,40 +25,27 @@ export const AddFeedChannel = (props: any) => {
   const handleLoad = async () => {
     setLoading(true);
 
-    requestFeed(feedUrl).then((res) => {
-      console.log("res", res);
+    dataAgent.fetchFeed(feedUrl).then((res) => {
+      console.log("res from rust", res);
 
-      if (res.status && res.status !== 200) {
+      if (!res) {
         Toast.error({
-          content: `Request Error: ${res.status}`,
+          content: 'Cant find any feed, please check url',
           duration: 2,
           theme: "light"
         });
+
         return;
       }
 
-      const { items, channel } = res;
+      const { title, description } = res;
 
-      items.forEach((item: Article) => item.unread = 1);
+      setTitle(title);
+      setDescription(description);
 
-      setTitle(channel.title);
-      setChannel(channel);
-      setArticles(items);
     }).finally(() => {
-      setLoading(false)
-    })
-
-    const res = await dataAgent.fetchFeed(feedUrl) as Channel & { items: Article[] };
-
-    console.log("res from rust", res);
-
-    if (!res) {
-        Toast.error({
-          content: 'Cant find any feed, plese check url',
-          duration: 2,
-          theme: "light"
-        });
-    }
+      setLoading(false);
+    });
   };
 
   const handleTitleChange = (e: any) => {
@@ -73,17 +58,23 @@ export const AddFeedChannel = (props: any) => {
 
   const handleCancel = () => {
     setLoading(false);
+    setConfirming(false);
     setTitle("");
     setFeedUrl("");
     toggleModal();
   };
 
   const handleSave = async () => {
-    const saveRes = await dataAgent.addChannel(feedUrl)
+    dataAgent.addChannel(feedUrl).then((res) => {
+      console.log('saveRes ===>', res)
 
-    console.log('saveRes ===>', saveRes)
-
-    busChannel.emit('getChannels')
+      if (res > 0) {
+        busChannel.emit('getChannels')
+        toggleModal()
+      }
+    }).finally(() => {
+      setConfirming(false)
+    });
   };
 
   return (
