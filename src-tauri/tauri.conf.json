@@ -18,6 +18,9 @@
       "http": {
         "request": true,
         "scope": ["https://**", "http://**"]
+      },
+      "fs": {
+        "all": true
       }
     },
     "bundle": {

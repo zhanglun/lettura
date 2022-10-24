@@ -9,7 +9,7 @@ extern crate diesel_migrations;
 
 extern crate dotenv;
 
-use diesel_migrations::{embed_migrations, MigrationHarness, EmbeddedMigrations};
+use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 use tauri::{CustomMenuItem, Menu, MenuItem, Submenu};
 
 pub mod cmd;
@@ -55,13 +55,40 @@ pub fn get_menu() -> Menu {
     .add_submenu(Submenu::new("Window", window_menu))
 }
 
+use std::env;
+use std::fs;
+use std::path;
+
+pub fn init_app_config_path() {
+  let home_dir = tauri::api::path::home_dir();
+  match home_dir {
+    Some(home_dir) => {
+      let app_config = path::Path::new(&home_dir);
+      let app_config = app_config.join(".lettura");
+
+      println!("{:?}", app_config);
+      fs::create_dir_all(app_config);
+    },
+    None => {
+      println!("no ")
+    }
+  }
+
+  println!("{:?}", env::current_dir());
+  println!("{:?}", env::current_exe());
+}
+
 pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!("./migrations");
 
 fn main() {
+  init_app_config_path();
+
   let context = tauri::generate_context!();
   let mut connection = db::establish_connection();
 
-  connection.run_pending_migrations(MIGRATIONS).expect("Error migrating");
+  connection
+    .run_pending_migrations(MIGRATIONS)
+    .expect("Error migrating");
 
   tauri::Builder::default()
     .menu(tauri::Menu::os_default(&context.package_info().name))

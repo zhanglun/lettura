@@ -2,14 +2,16 @@ use diesel::prelude::*;
 use diesel::sqlite::SqliteConnection;
 use serde::Deserialize;
 use serde::Serialize;
+use std::path;
 
 use crate::models;
 use crate::schema;
 
 pub fn establish_connection() -> SqliteConnection {
-  let database_url = "./lettura.db";
+  let database_url = path::Path::new(&tauri::api::path::home_dir().unwrap()).join(".lettura").join("lettura.db");
+  let database_url = database_url.to_str().clone().unwrap();
   SqliteConnection::establish(&database_url)
-    .expect(&format!("Error connecting to {}", database_url))
+    .expect(&format!("Error connecting to {}", &database_url))
 }
 
 pub fn get_channels() -> Vec<models::Channel> {
