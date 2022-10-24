@@ -18,6 +18,7 @@ export const ImportAndExport = (props: any) => {
 
   const uploadOPMLFile = () => {
     if (fileInputRef && fileInputRef.current) {
+      console.log('fileInputRef', fileInputRef)
       fileInputRef.current.click();
     }
   };
@@ -54,6 +55,7 @@ export const ImportAndExport = (props: any) => {
   };
 
   const handleFileChange = (e: any) => {
+    console.log('e ====>',e)
     setFile(e.target.files[0]);
 
     const reader = new FileReader();
@@ -71,6 +73,7 @@ export const ImportAndExport = (props: any) => {
   };
 
   const handleChangeSourceType = (e: any) => {
+    console.log('text e', e)
     const type = e.target.value;
     setSourceType(type);
   };

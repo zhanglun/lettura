@@ -96,7 +96,8 @@ export const ArticleContainer = (): JSX.Element => {
   };
 
   const markAllRead = () => {
-    if (feedUrl) {
+    if (feedUrl && articleListRef.current) {
+      articleListRef.current.markAllRead();
       // TODO
     }
 

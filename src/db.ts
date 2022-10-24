@@ -18,5 +18,5 @@ export interface Article {
   description: string;
   content?: string;
   pubDate?: Date;
-  unread: number;
+  read_status: number;
 }

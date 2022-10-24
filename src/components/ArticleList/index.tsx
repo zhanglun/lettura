@@ -14,6 +14,7 @@ import { Article } from "../../db";
 import { useStore } from "../../hooks/useStore";
 import * as dataAgent from "../../helpers/dataAgent";
 import styles from "./articlelist.module.css";
+import { busChannel } from "../../helpers/busChannel";
 
 export type ArticleListProps = {
   channelUuid: string | null;
@@ -23,6 +24,7 @@ export type ArticleListProps = {
 
 export interface ArticleListRefType {
   getList: () => void;
+  markAllRead: () => void;
 }
 
 export const ArticleList = forwardRef(
@@ -44,18 +46,8 @@ export const ArticleList = forwardRef(
     };
 
     const handleArticleSelect = (article: any) => {
-      // TODO
-
       setHighlightItem(article);
     };
-
-    useImperativeHandle(ref, () => {
-      return {
-        getList() {
-          getList(channelUuid || "");
-        },
-      };
-    });
 
     const getList = (channelUuid: string) => {
       const filter: { read_status?: number } = {};
@@ -66,13 +58,41 @@ export const ArticleList = forwardRef(
         .getArticleList(channelUuid, filter)
         .then((res) => {
           const { list } = res as { list: Article[] };
-          console.log("%c Line:67 🌭 list", "color:#465975", list);
           setArticleList(list);
         })
         .catch((err) => {
           console.log("%c Line:71 🍎 err", "color:#ffdd4d", err);
         });
     };
+
+    const markAllRead = () => {
+      dataAgent.markAllRead(channelUuid as string)
+        .then((res) => {
+          articleList.forEach((article) => {
+            article.read_status = 2
+          })
+
+          console.log("%c Line:77 🍏 articleList", "color:#ffdd4d", articleList);
+
+          setArticleList([...articleList])
+          busChannel.emit('updateChannelUnreadCount', {
+            uuid: channelUuid as string,
+            action: 'set',
+            count: 0,
+          })
+        })
+    }
+
+    useImperativeHandle(ref, () => {
+      return {
+        getList() {
+          getList(channelUuid || "");
+        },
+        markAllRead() {
+          markAllRead();
+        }
+      };
+    });
 
     useEffect(() => {
       getList(channelUuid || "");
@@ -91,20 +111,6 @@ export const ArticleList = forwardRef(
       });
     };
 
-    /**
-     * 判断是否需要同步
-     * @param channel 频道信息
-     */
-    const checkSyncStatus = (channel: any | null) => {};
-
-    const showAll = () => {};
-
-    const showUnread = () => {};
-
-    const showRead = () => {};
-
-    const markAllRead = () => {};
-
     useEffect(() => {
       resetScrollTop();
     }, []);
@@ -117,7 +123,7 @@ export const ArticleList = forwardRef(
       <div className={styles.container}>
         <div className={styles.inner} ref={articleListRef}>
           {loading ? (
-            <Loading />
+            <Loading/>
           ) : (
             <ul className={styles.list}>{renderList()}</ul>
           )}

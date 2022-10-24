@@ -1,6 +1,5 @@
 use diesel::prelude::*;
 use diesel::sqlite::SqliteConnection;
-use dotenv::dotenv;
 use serde::Deserialize;
 use serde::Serialize;
 
@@ -8,8 +7,6 @@ use crate::models;
 use crate::schema;
 
 pub fn establish_connection() -> SqliteConnection {
-  dotenv().ok();
-
   let database_url = "./lettura.db";
   SqliteConnection::establish(&database_url)
     .expect(&format!("Error connecting to {}", database_url))
@@ -203,6 +200,20 @@ pub fn get_article(filter: ArticleFilter) -> ArticleQueryResult {
 
   ArticleQueryResult {
     list: result,
+  }
+}
+
+pub fn update_articles_read_status_channel(uuid: String) -> usize {
+  let mut connection = establish_connection();
+  let result = diesel::update(schema::articles::dsl::articles
+    .filter(schema::articles::channel_uuid.eq(uuid))
+    .filter(schema::articles::read_status.eq(1)))
+    .set(schema::articles::read_status.eq(2))
+    .execute(&mut connection);
+
+  match result {
+    Ok(r) => r,
+    Err(_) => 0,
   }
 }
 

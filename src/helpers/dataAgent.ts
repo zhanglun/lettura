@@ -47,3 +47,9 @@ export const updateArticleReadStatus = async (article_uuid: string, read_status:
     status: read_status,
   })
 }
+
+export const markAllRead = async (uuid: string) => {
+  return invoke('mark_all_read', {
+    channelUuid: uuid
+  })
+}

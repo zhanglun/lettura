@@ -196,6 +196,14 @@ pub fn update_article_read_status(uuid: String, status: i32) -> usize {
   res
 }
 
+#[command]
+pub fn mark_all_read(channel_uuid: String) -> usize {
+  let res = db::update_articles_read_status_channel(channel_uuid);
+
+  res
+}
+
+
 #[cfg(test)]
 mod tests {
   use super::*;

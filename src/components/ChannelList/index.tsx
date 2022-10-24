@@ -60,6 +60,11 @@ const ChannelList = (props: any): JSX.Element => {
           // TODO
           break;
         }
+
+        case "set": {
+          channel.unread = count;
+          break;
+        }
         default: {
           // TODO
         }
@@ -102,10 +107,8 @@ const ChannelList = (props: any): JSX.Element => {
     const unsubscribeUpdateCount = busChannel.on(
       "updateChannelUnreadCount",
       ({ uuid, action, count }) => {
-        if (count > 0) {
-          updateCount(channelList, uuid, action, count);
-          unsubscribeUpdateCount();
-        }
+        updateCount(channelList, uuid, action, count);
+        unsubscribeUpdateCount();
       }
     );
 

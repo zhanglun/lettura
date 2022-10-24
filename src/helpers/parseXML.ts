@@ -2,7 +2,7 @@ import { fetch } from "@tauri-apps/api/http";
 import { Channel as ChannelModel, Article as ArticleModel } from "../db";
 
 type ChannelRes = Omit<ChannelModel, "feedUrl">;
-type ArticleRes = Omit<ArticleModel, "feedUrl" | "unread">;
+type ArticleRes = Omit<ArticleModel, "feedUrl" | "read_status">;
 
 
 const parseChannel = (dom: any) => {
@@ -135,7 +135,7 @@ export const parseAtomFeed = (url: string, doc: any): {
     entry.title = entryTitleNode.textContent;
     entry.description = content || shortContent || "";
     entry.pubDate = new Date(entryPublishedNode ? entryPublishedNode.textContent : updatedNode ? updatedNode.textContent : issuedNode.textContent);
-    entry.unread = 1;
+    entry.read_status = 1;
     entry.feedUrl = url;
 
     return entry;
@@ -237,7 +237,7 @@ export const parseRssFeed = (
   };
 
   let channel = {} as Omit<ChannelModel, "feedUrl">;
-  let items = [] as Omit<ArticleModel, "feedUrl" | "unread">[];
+  let items = [] as Omit<ArticleModel, "feedUrl" | "read_status">[];
 
   if (content.querySelector("channel, feed")) {
     channel = {
@@ -256,7 +256,7 @@ export const parseRssFeed = (
 };
 
 export const extendFeedItems = (
-  items: Omit<ArticleModel, "feedUrl" | "unread">[],
+  items: Omit<ArticleModel, "feedUrl" | "read_status">[],
   data: any
 ) => {
   return items.map((item) => {
@@ -289,7 +289,7 @@ export const requestFeed = (
         console.log("----> data", data);
         const { channel, items } = parseFeed(url, data);
 
-        return getBestImages(extendFeedItems(items, { feedUrl: url, unread: 1 })).then((res) => {
+        return getBestImages(extendFeedItems(items, { feedUrl: url, read_status: 1 })).then((res) => {
           return {
             channel: extendChannel(channel, {
               feedUrl: url,
@@ -303,7 +303,7 @@ export const requestFeed = (
               feedUrl: url,
               favicon: getChannelFavicon(url)
             }),
-            items: extendFeedItems(items, { feedUrl: url, unread: 1 })
+            items: extendFeedItems(items, { feedUrl: url, read_status: 1 })
           };
         });
       } else {

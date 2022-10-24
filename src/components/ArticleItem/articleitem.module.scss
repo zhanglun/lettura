@@ -21,7 +21,7 @@
   cursor: pointer;
 }
 
-.item:not(.read) {
+.item:not(.current) {
   &:hover {
     background-color: var(--semi-color-tertiary-light-hover);
   }

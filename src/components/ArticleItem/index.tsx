@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Dayjs from "dayjs";
 import { useStore } from "../../hooks/useStore";
 import styles from "./articleitem.module.scss";
@@ -7,8 +7,9 @@ import * as dataAgent from "../../helpers/dataAgent";
 
 export const ArticleItem = React.memo((props: any) => {
   const { article, onSelect, highlight } = props;
+  console.log("%c Line:10 🍞 article", "color:#42b983", article);
   const store = useStore();
-  const [readStatus, setReadStatus] = useState(article.read_status === 2);
+  const [readStatus, setReadStatus] = useState(article.read_status);
 
   const handleClick = async (e: any) => {
     if (onSelect) {
@@ -31,15 +32,20 @@ export const ArticleItem = React.memo((props: any) => {
     store.setArticle(article);
   };
 
+  useEffect(() => {
+    setReadStatus(article.read_status)
+    console.log("%c Line:37 🍞 article.read_status", "color:#fca650", article.read_status);
+  }, [article.read_status])
+
   return (
     <li
-      className={`${styles.item} ${readStatus ? styles.read : ""} ${
+      className={`${styles.item} ${readStatus === 2 ? styles.read : ""} ${
         highlight ? styles.current : ""
       }`}
       onClick={handleClick}
       aria-hidden="true"
     >
-      {!readStatus && <div className={styles.dot} />}
+      {(readStatus === 1) && <div className={styles.dot} />}
       <div className={styles.title}>
         <div className={styles.titleText}>
           {highlight} {article.title}
