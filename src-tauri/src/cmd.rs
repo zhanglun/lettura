@@ -21,7 +21,11 @@ pub struct FeedRes {
 }
 
 pub async fn fetch_rss_item(url: &str) -> Option<rss::Channel> {
-  let response = reqwest::get(url).await;
+  let client = reqwest::Client::builder()
+    .proxy(reqwest::Proxy::all("socks5h://127.0.0.1:1800").unwrap())
+    .build().unwrap();
+
+  let response = client.get(url).send().await;
 
   match response {
     Ok(response) => match response.status() {
@@ -35,7 +39,6 @@ pub async fn fetch_rss_item(url: &str) -> Option<rss::Channel> {
       }
       _ => {
         println!("{}", &response.status());
-        println!("ddddd");
         None
       }
     },
@@ -138,7 +141,7 @@ pub fn get_articles(uuid: String, filter: db::ArticleFilter) -> db::ArticleQuery
   println!("get articles from rust");
   let res = db::get_article(db::ArticleFilter {
     channel_uuid: Some(uuid),
-    read_status: filter.read_status
+    read_status: filter.read_status,
   });
 
   res
@@ -184,7 +187,7 @@ pub fn get_unread_total() -> HashMap<String, i32> {
   let result = record
     .into_iter()
     .map(|r| (r.channel_uuid.clone(), r.unread_count.clone()))
-    .collect::<HashMap::<String, i32>>();
+    .collect::<HashMap<String, i32>>();
 
   result
 }
@@ -203,17 +206,9 @@ pub fn mark_all_read(channel_uuid: String) -> usize {
   res
 }
 
-
 #[cfg(test)]
 mod tests {
   use super::*;
-
-  #[test]
-  fn test_get_articles() {
-    let uuid = String::from("9a6ca3f0-41f2-4486-a50a-1a41f1e80b56");
-
-    get_articles(uuid);
-  }
 
   #[test]
   fn test_delete_channel() {

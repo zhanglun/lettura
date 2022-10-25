@@ -53,3 +53,10 @@ export const markAllRead = async (uuid: string) => {
     channelUuid: uuid
   })
 }
+
+
+export const updateUserConfig = async (cfg: { [key: string]: any }) => {
+  return invoke('update_user_config', {
+    cfg
+  })
+}

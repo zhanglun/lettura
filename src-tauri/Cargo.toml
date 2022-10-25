@@ -18,7 +18,7 @@ tauri-build = { version = "1.1.1", features = [] }
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 tauri = { version = "1.1.1", features = ["devtools", "fs-all", "http-request", "shell-open"] }
-reqwest = { version = "0.11", features = ["json"] }
+reqwest = { version = "0.11", features = ["json", "socks"] }
 rss = { version="2.0", features = ["serde"] }
 chrono = { version="0.4", features = ["serde"] }
 diesel = { version = "2.0.2", features = ["sqlite", "chrono", "uuid"] }

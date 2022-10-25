@@ -48,10 +48,8 @@ export const ImportAndExport = (props: any) => {
   };
 
   const importFromOPML = () => {
-    // TODO: import
     const urlList = importedList.map(_ => _.feed_url)
 
-    console.log("%c Line:53 🍰 urlList", "color:#4fff4B", urlList);
     setImporting(true)
 
     dataAgent.importChannels(urlList).then(() => {
@@ -62,7 +60,6 @@ export const ImportAndExport = (props: any) => {
   };
 
   const handleFileChange = (e: any) => {
-    console.log('e ====>',e)
     setFile(e.target.files[0]);
 
     const reader = new FileReader();
@@ -71,8 +68,6 @@ export const ImportAndExport = (props: any) => {
       const xmlString = reader.result as string;
       const list = parserOPML(xmlString);
 
-      console.log("list", list);
-
       setImportedList(list);
     };
 
@@ -80,14 +75,15 @@ export const ImportAndExport = (props: any) => {
   };
 
   const handleChangeSourceType = (e: any) => {
-    console.log('text e', e)
     const type = e.target.value;
+
     setSourceType(type);
   };
 
   const handleTextSourceChange = (text: string) => {
     if (text) {
       const list = parserOPML(text);
+
       setImportedList(list);
     }
   };

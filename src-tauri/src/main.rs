@@ -13,6 +13,7 @@ use tauri::{CustomMenuItem, Menu, MenuItem, Submenu};
 
 pub mod cmd;
 pub mod db;
+pub mod config;
 pub mod models;
 pub mod schema;
 
