@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { Input, Button, Radio, RadioGroup, TextArea } from "@douyinfe/semi-ui";
+import { Button, Radio, RadioGroup, TextArea } from "@douyinfe/semi-ui";
 import styles from "../setting.module.scss";
 import * as dataAgent from "../../../helpers/dataAgent";
 
@@ -50,8 +50,15 @@ export const ImportAndExport = (props: any) => {
   const importFromOPML = () => {
     // TODO: import
     const urlList = importedList.map(_ => _.feed_url)
-    dataAgent.importChannels(urlList)
+
+    console.log("%c Line:53 🍰 urlList", "color:#4fff4B", urlList);
     setImporting(true)
+
+    dataAgent.importChannels(urlList).then(() => {
+
+    }).finally(() => {
+      setImporting(false)
+    })
   };
 
   const handleFileChange = (e: any) => {
@@ -110,24 +117,24 @@ export const ImportAndExport = (props: any) => {
           {sourceType === "file" && (
             <div className={styles.inputField}>
               <span>{file && file.name}</span>
-              <Input
+              <input
                 ref={fileInputRef}
                 type="file"
                 accept=".opml,.xml"
-                onChange={(_, e) => {
+                onChange={(e) => {
                   handleFileChange(e);
                 }}
-                onClick={uploadOPMLFile}
               />
             </div>
           )}
           {sourceType === "text" && (
             <div className={styles.inputField}>
-              <TextArea autosize onChange={handleTextSourceChange} />
+              <TextArea autosize onChange={(value) => handleTextSourceChange(value)} />
             </div>
           )}
           <Button theme="solid" type="primary" onClick={importFromOPML} loading={importing}>
-            导入 {importing ? `/${importedList.length}` : ''}
+            导入
+            {/* <>{importing ? `/${importedList.length}` : ''}</> */}
           </Button>
         </div>
       </div>

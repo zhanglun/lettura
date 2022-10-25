@@ -211,6 +211,7 @@ mod tests {
   #[test]
   fn test_get_articles() {
     let uuid = String::from("9a6ca3f0-41f2-4486-a50a-1a41f1e80b56");
+
     get_articles(uuid);
   }
 

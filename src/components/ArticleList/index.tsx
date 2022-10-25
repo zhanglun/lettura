@@ -72,9 +72,8 @@ export const ArticleList = forwardRef(
             article.read_status = 2
           })
 
-          console.log("%c Line:77 🍏 articleList", "color:#ffdd4d", articleList);
-
           setArticleList([...articleList])
+
           busChannel.emit('updateChannelUnreadCount', {
             uuid: channelUuid as string,
             action: 'set',

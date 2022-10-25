@@ -18,7 +18,7 @@ export const updateCountWithChannel = async (feedUrl: string): Promise<any> => {
 };
 
 export const importChannels = async (list: string[]) => {
-  invoke('import_channels', { list })
+  return invoke('import_channels', { list })
 }
 
 export const getArticleList = async (uuid: string, filter: any) => {
