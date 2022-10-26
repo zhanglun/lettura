@@ -4,7 +4,7 @@
 </p>
 <h1 align="center">Lettura</h1>
 
-Another free and open-source feed reader for macOS, maybe for Window in someday.
+Another free and open-source feed reader for macOS and Window.
 
 It supports RSS, Atom, JSON Feed.
 
