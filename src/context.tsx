@@ -6,7 +6,6 @@ interface PContext {
   setChannel: (channel: Channel) => void;
   article: Article | null;
   setArticle: (article: Article) => void;
-  updateChannelCount: (article: Article, action: string, count: number) => void;
   currentFilter: { id: number; title: string };
   filterList: { id: number; title: string }[];
   setFilter: any;

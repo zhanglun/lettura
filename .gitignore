@@ -53,3 +53,4 @@ src-tauri/target
 build
 .vs
 *.db
+lettura.toml

@@ -54,6 +54,9 @@ export const markAllRead = async (uuid: string) => {
   })
 }
 
+export const getUserConfig = async () => {
+  return invoke('get_user_config')
+}
 
 export const updateUserConfig = async (cfg: { [key: string]: any }) => {
   return invoke('update_user_config', {

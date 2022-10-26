@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 use tauri::command;
 use uuid::Uuid;
 
+use crate::config;
 use crate::db;
 use crate::models;
 
@@ -21,9 +22,29 @@ pub struct FeedRes {
 }
 
 pub async fn fetch_rss_item(url: &str) -> Option<rss::Channel> {
-  let client = reqwest::Client::builder()
-    .proxy(reqwest::Proxy::all("socks5h://127.0.0.1:1800").unwrap())
-    .build().unwrap();
+  let user_config = config::get_user_config();
+  let client = match user_config {
+    Some(user_config) => match (user_config.local_proxy) {
+      Some(proxy) => {
+        let mut scheme = String::from("socks5h://");
+
+        scheme.push_str(&proxy.ip.to_string());
+        scheme.push_str(":");
+        scheme.push_str(&proxy.port.to_string());
+
+        println!("{:?}", scheme);
+
+        reqwest::Client::builder()
+          .proxy(reqwest::Proxy::all(scheme).unwrap())
+          .build()
+          .unwrap()
+      }
+      None => reqwest::Client::builder()
+        .build()
+        .unwrap(),
+    },
+    None => reqwest::Client::builder().build().unwrap(),
+  };
 
   let response = client.get(url).send().await;
 
@@ -204,6 +225,18 @@ pub fn mark_all_read(channel_uuid: String) -> usize {
   let res = db::update_articles_read_status_channel(channel_uuid);
 
   res
+}
+
+#[command]
+pub fn get_user_config() -> Option<config::UserConfig> {
+  let user_config = config::get_user_config();
+
+  user_config
+}
+
+#[command]
+pub fn update_user_config(key: String) -> usize {
+  1
 }
 
 #[cfg(test)]

@@ -39,7 +39,7 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
               <span className={styles.time}>
                 {Dayjs(pub_date).format("YYYY-MM-DD HH:mm")}
               </span>
-              <span className={styles.author}>{article.author}</span>
+              { article.author && <span className={styles.author}>{article.author}</span>}
               <span className={styles.channelInfo}>
                 <img src={ico} alt=""/>
                 {article.channelTitle}

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Input } from "@douyinfe/semi-ui";
+import { Input, Button } from "@douyinfe/semi-ui";
 import * as dataAgent from "../../../helpers/dataAgent";
 
 export const General = () => {
@@ -19,11 +19,13 @@ export const General = () => {
     console.log(cfg);
 
     setLocalProxyConfig(cfg);
-
-    setTimeout(() => {
-      dataAgent.updateUserConfig(cfg)
-    }, 150);
   };
+
+  const handleSaveLocalProxy = () => {
+    dataAgent.updateUserConfig(localProxyConfig).then((res) => {
+      console.log('update use config', res)
+    })
+  }
 
   return (
     <div>
@@ -44,6 +46,7 @@ export const General = () => {
             value={localProxyConfig.port}
             onChange={(port) => handleLocalProxyChange("port", port)}
           />
+          <Button type={"primary"} onClick={handleSaveLocalProxy}>Save</Button>
         </div>
       </div>
     </div>
