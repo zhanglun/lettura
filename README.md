@@ -6,7 +6,9 @@
 
 Another free and open-source feed reader for macOS and Window.
 
-It supports RSS, Atom, JSON Feed.
+It supports RSS, ~~Atom~~, JSON Feed.
+
+> Atom support will coming soon
 
 And this project is under construction.
 
