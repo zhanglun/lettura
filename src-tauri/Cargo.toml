@@ -27,6 +27,7 @@ libsqlite3-sys = { version = "^0", features = ["bundled"] }
 dotenv = "0.15.0"
 uuid = { version = "1.2.1", features = [ "v4", "fast-rng", "macro-diagnostics" ] }
 toml = "0.5"
+feed-rs = "1.2"
 
 [features]
 default = [ "custom-protocol" ]

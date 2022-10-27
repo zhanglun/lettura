@@ -9,19 +9,7 @@ use crate::config;
 use crate::db;
 use crate::models;
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct CommandResponse<T> {
-  status: i32,
-  data: T,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct FeedRes {
-  channel: rss::Channel,
-  items: Vec<rss::Item>,
-}
-
-pub async fn fetch_rss_item(url: &str) -> Option<rss::Channel> {
+pub async fn fetch_rss_item(url: &str) -> Option<feed_rs::model::Feed> {
   let user_config = config::get_user_config();
   let client = match user_config {
     Some(user_config) => match (user_config.local_proxy) {
@@ -39,9 +27,7 @@ pub async fn fetch_rss_item(url: &str) -> Option<rss::Channel> {
           .build()
           .unwrap()
       }
-      None => reqwest::Client::builder()
-        .build()
-        .unwrap(),
+      None => reqwest::Client::builder().build().unwrap(),
     },
     None => reqwest::Client::builder().build().unwrap(),
   };
@@ -53,7 +39,11 @@ pub async fn fetch_rss_item(url: &str) -> Option<rss::Channel> {
       reqwest::StatusCode::OK => {
         let content = response.bytes().await.unwrap();
 
-        match rss::Channel::read_from(&content[..]).map(|channel| channel) {
+        // match rss::Channel::read_from(&content[..]).map(|channel| channel) {
+        //   Ok(channel) => Some(channel),
+        //   Err(_) => None,
+        // }
+        match feed_rs::parser::parse(&content[..]).map(|channel| channel) {
           Ok(channel) => Some(channel),
           Err(_) => None,
         }
@@ -68,10 +58,14 @@ pub async fn fetch_rss_item(url: &str) -> Option<rss::Channel> {
 }
 
 #[command]
-pub async fn fetch_feed(url: String) -> Option<rss::Channel> {
+// pub async fn fetch_feed(url: String) -> feed_rs::model::Feed {
+pub async fn fetch_feed(url: String) -> usize {
   let res = fetch_rss_item(&url).await;
+  let result = Some(res);
 
-  res
+  println!("{:?}", result);
+
+  1
 }
 
 #[command]
@@ -81,59 +75,59 @@ pub async fn get_channels() -> Vec<models::Channel> {
   return results;
 }
 
-pub fn create_channel_model(uuid: &String, url: &String, res: &rss::Channel) -> models::NewChannel {
-  let image = match &res.image {
-    Some(t) => String::from(&t.url),
-    None => String::from(""),
-  };
-  let date = match &res.pub_date {
-    Some(t) => String::from(t),
-    None => String::from(""),
-  };
-  let channel = models::NewChannel {
-    uuid: uuid.to_string(),
-    title: res.title.to_string(),
-    link: res.link.to_string(),
-    image: image.to_string(),
-    feed_url: url.to_string(),
-    description: res.description.to_string(),
-    pub_date: date,
-  };
+// pub fn create_channel_model(uuid: &String, url: &String, res: &feed_rs::model::Feed) -> models::NewChannel {
+//   let image = match &res.image {
+//     Some(t) => String::from(&t.url),
+//     None => String::from(""),
+//   };
+//   let date = match &res.pub_date {
+//     Some(t) => String::from(t),
+//     None => String::from(""),
+//   };
+//   let channel = models::NewChannel {
+//     uuid: uuid.to_string(),
+//     title: res.title.to_string(),
+//     link: res.link.to_string(),
+//     image: image.to_string(),
+//     feed_url: url.to_string(),
+//     description: res.description.to_string(),
+//     pub_date: date,
+//   };
 
-  return channel;
-}
+//   return channel;
+// }
 
 pub fn create_article_models(
   channel_uuid: &String,
   feed_url: &String,
-  res: &rss::Channel,
+  res: &feed_rs::model::Feed,
 ) -> Vec<models::NewArticle> {
   let mut articles: Vec<models::NewArticle> = Vec::new();
 
-  for item in res.items() {
-    let article_uuid = Uuid::new_v4().hyphenated().to_string();
-    let title = item.title.clone().unwrap_or(String::from(""));
-    let link = item.link.clone().unwrap_or(String::from(""));
-    let content = item.content.clone().unwrap_or(String::from(""));
-    let description = item
-      .description
-      .clone()
-      .unwrap_or(String::from("no description"));
-    let date = String::from(item.pub_date().clone().unwrap_or(""));
+  // for item in res.entries {
+  //   let article_uuid = Uuid::new_v4().hyphenated().to_string();
+  //   let title = item.title.clone().unwrap_or(String::from(""));
+  //   let link = item.link.clone().unwrap_or(String::from(""));
+  //   let content = item.content.clone().unwrap_or(String::from(""));
+  //   let description = item
+  //     .description
+  //     .clone()
+  //     .unwrap_or(String::from("no description"));
+  //   let date = String::from(item.pub_date().clone().unwrap_or(""));
 
-    let s = models::NewArticle {
-      uuid: article_uuid,
-      channel_uuid: channel_uuid.to_string(),
-      title,
-      link,
-      content,
-      feed_url: feed_url.to_string(),
-      description,
-      pub_date: date,
-    };
+  //   let s = models::NewArticle {
+  //     uuid: article_uuid,
+  //     channel_uuid: channel_uuid.to_string(),
+  //     title,
+  //     link,
+  //     content,
+  //     feed_url: feed_url.to_string(),
+  //     description,
+  //     pub_date: date,
+  //   };
 
-    articles.push(s);
-  }
+  //   articles.push(s);
+  // }
 
   articles
 }
@@ -144,17 +138,18 @@ pub async fn add_channel(url: String) -> usize {
 
   let res = fetch_rss_item(&url).await;
 
-  match res {
-    Some(res) => {
-      let channel_uuid = Uuid::new_v4().hyphenated().to_string();
-      let channel = create_channel_model(&channel_uuid, &url, &res);
-      let articles = create_article_models(&channel_uuid, &url, &res);
-      let res = db::add_channel(channel, articles);
+  // match res {
+  //   Some(res) => {
+  //     let channel_uuid = Uuid::new_v4().hyphenated().to_string();
+  //     let channel = create_channel_model(&channel_uuid, &url, &res);
+  //     let articles = create_article_models(&channel_uuid, &url, &res);
+  //     let res = db::add_channel(channel, articles);
 
-      res
-    }
-    None => 0,
-  }
+  //     res
+  //   }
+  //   None => 0,
+  // }
+  1
 }
 
 #[command]
