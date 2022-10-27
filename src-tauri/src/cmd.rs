@@ -1,7 +1,9 @@
 use std::collections::HashMap;
+use std::fmt;
 
+use feed_rs::model::Feed;
 use reqwest;
-use serde::{Deserialize, Serialize};
+use serde::{ser::Serializer, Deserialize, Serialize};
 use tauri::command;
 use uuid::Uuid;
 
@@ -57,15 +59,42 @@ pub async fn fetch_rss_item(url: &str) -> Option<feed_rs::model::Feed> {
   }
 }
 
+
+#[derive(Debug)]
+pub struct FeedResponse(feed_rs::model::Feed);
+
+impl Serialize for FeedResponse {
+  fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+  where
+    S: Serializer,
+  {
+    serializer.serialize_str(self.to_string().as_ref())
+  }
+}
+
+impl fmt::Display for FeedResponse {
+    // This trait requires `fmt` with this exact signature.
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        // Write strictly the first element into the supplied output
+        // stream: `f`. Returns `fmt::Result` which indicates whether the
+        // operation succeeded or failed. Note that `write!` uses syntax which
+        // is very similar to `println!`.
+        write!(f, "{:?}", self.0)
+    }
+}
+
 #[command]
-// pub async fn fetch_feed(url: String) -> feed_rs::model::Feed {
-pub async fn fetch_feed(url: String) -> usize {
+pub async fn fetch_feed(url: String) -> Option<FeedResponse> {
   let res = fetch_rss_item(&url).await;
-  let result = Some(res);
 
-  println!("{:?}", result);
+  let res = match res {
+    Some(res) => Some(FeedResponse(res)),
+    None => None,
+  };
 
-  1
+  println!("{:?}", res);
+
+  res
 }
 
 #[command]

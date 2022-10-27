@@ -19,7 +19,7 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
   const [showBanner, setShowBanner] = useState(false);
 
   const renderPlaceholder = () => {
-    return "";
+    return "-";
   };
 
   const renderDetail = () => {
