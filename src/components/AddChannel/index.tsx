@@ -1,6 +1,6 @@
 import React, { useImperativeHandle, useState } from "react";
 import { useModal } from "../Modal/useModal";
-import { Input, Modal, Button, Toast } from "@douyinfe/semi-ui";
+import { Input, TextArea, Modal, Button, Toast } from "@douyinfe/semi-ui";
 import * as dataAgent from "../../helpers/dataAgent";
 import styles from "./index.module.css";
 import { busChannel } from "../../helpers/busChannel";
@@ -38,7 +38,7 @@ export const AddFeedChannel = (props: any) => {
         return;
       }
 
-      const { title, description } = res;
+      const { title, description } = res as any;
 
       setTitle(title);
       setDescription(description);
@@ -52,6 +52,10 @@ export const AddFeedChannel = (props: any) => {
     setTitle(e.target.value);
   };
 
+  const handleDescriptionChange = (e: any) => {
+    setDescription(e.target.value);
+  };
+
   const handleInputChange = (value: string) => {
     setFeedUrl(value);
   };
@@ -60,6 +64,7 @@ export const AddFeedChannel = (props: any) => {
     setLoading(false);
     setConfirming(false);
     setTitle("");
+    setDescription("");
     setFeedUrl("");
     toggleModal();
   };
@@ -82,6 +87,7 @@ export const AddFeedChannel = (props: any) => {
       visible={showStatus}
       title="添加 RSS 订阅"
       size="medium"
+      confirmLoading={confirming}
       onOk={handleSave}
       onCancel={handleCancel}
     >
@@ -101,6 +107,12 @@ export const AddFeedChannel = (props: any) => {
           <div className={styles.label}>Title</div>
           <div className={styles.formItem}>
             <Input type="text" style={{ width: "300px" }} value={title} onChange={handleTitleChange}/>
+          </div>
+        </div>
+        <div className={styles.item}>
+          <div className={styles.label}>Title</div>
+          <div className={styles.formItem}>
+            <TextArea style={{ width: "300px" }} value={description} onChange={handleDescriptionChange}/>
           </div>
         </div>
       </div>

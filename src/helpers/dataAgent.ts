@@ -25,7 +25,7 @@ export const getArticleList = async (uuid: string, filter: any) => {
   return invoke('get_articles', { uuid, filter })
 }
 
-export const fetchFeed = async (url: string): Promise<Channel & { items: Article[] }> => {
+export const fetchFeed = async (url: string): Promise<{ Atom?: any, RSS?: any }> => {
   return invoke('fetch_feed', { url })
 }
 

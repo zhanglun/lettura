@@ -91,11 +91,34 @@ pub async fn fetch_feed_item(url: &str) -> Option<Feed> {
   }
 }
 
-#[command]
-pub async fn fetch_feed(url: String) -> Option<Feed> {
-  let res = fetch_feed_item(&url).await;
+#[derive(Debug, Serialize)]
+pub struct FeedFetchResponse {
+  title: String,
+  description: String,
+}
 
-  res
+#[command]
+pub async fn fetch_feed(url: String) -> Option<FeedFetchResponse> {
+  let r = fetch_feed_item(&url).await;
+
+  match r {
+    Some(res) => match res {
+      Feed::Atom(res) => {
+        let title = res.title.to_string();
+        let description = match &res.subtitle {
+          Some(title) => title.value.to_string(),
+          None => String::from(""),
+        };
+
+        Some(FeedFetchResponse { title, description })
+      }
+      Feed::RSS(res) => Some(FeedFetchResponse {
+        title: res.title.to_string(),
+        description: res.description.to_string(),
+      }),
+    },
+    None => None,
+  }
 }
 
 #[command]
@@ -115,7 +138,7 @@ pub fn create_channel_model(uuid: &String, url: &String, res: &Feed) -> models::
         None => String::from(""),
       };
 
-      let subtitle = match &res.subtitle {
+      let description = match &res.subtitle {
         Some(title) => title.value.to_string(),
         None => String::from(""),
       };
@@ -126,7 +149,7 @@ pub fn create_channel_model(uuid: &String, url: &String, res: &Feed) -> models::
         link: link,
         image: image.to_string(),
         feed_url: url.to_string(),
-        description: subtitle,
+        description,
         pub_date: date,
       };
 
@@ -173,11 +196,9 @@ pub fn create_article_models(
           None => String::from(""),
         };
         let content = match &item.content {
-          Some(content) => {
-            match &content.value {
-              Some(v) => v.to_string(),
-              None => String::from(""),
-            }
+          Some(content) => match &content.value {
+            Some(v) => v.to_string(),
+            None => String::from(""),
           },
           None => String::from(""),
         };
@@ -239,11 +260,10 @@ pub async fn add_channel(url: String) -> usize {
     Some(res) => {
       let channel_uuid = Uuid::new_v4().hyphenated().to_string();
       let channel = create_channel_model(&channel_uuid, &url, &res);
-      // let articles = create_article_models(&channel_uuid, &url, &res);
-      // let res = db::add_channel(channel, articles);
+      let articles = create_article_models(&channel_uuid, &url, &res);
+      let res = db::add_channel(channel, articles);
 
-      // res
-      1
+      res
     }
     None => 0,
   };
@@ -270,23 +290,21 @@ pub fn delete_channel(uuid: String) -> usize {
 
 #[command]
 pub async fn sync_articles_with_channel_uuid(uuid: String) -> usize {
-  // let channel = db::get_channel_by_uuid(uuid);
+  let channel = db::get_channel_by_uuid(uuid);
 
-  // match channel {
-  //   Some(channel) => {
-  //     let res = fetch_feed_item(&channel.feed_url).await.unwrap();
-  //     let articles = create_article_models(&channel.uuid, &channel.feed_url, &res);
+  match channel {
+    Some(channel) => {
+      let res = fetch_feed_item(&channel.feed_url).await.unwrap();
+      let articles = create_article_models(&channel.uuid, &channel.feed_url, &res);
 
-  //     println!("{:?}", &articles.len());
+      println!("{:?}", &articles.len());
 
-  //     let result = db::add_articles(String::from(&channel.uuid), articles);
+      let result = db::add_articles(String::from(&channel.uuid), articles);
 
-  //     result
-  //   }
-  //   None => 0,
-  // }
-
-  1
+      result
+    }
+    None => 0,
+  }
 }
 
 #[command]
