@@ -105,42 +105,55 @@ pub async fn get_channels() -> Vec<models::Channel> {
   return results;
 }
 
-pub fn create_channel_model(
-  uuid: &String,
-  url: &String,
-  res: &Feed,
-) -> usize {
-  // match res {
-  //   Feed::Atom(a) => {
-  //     println!("Atom {:?}", a);
-  //   },
-  //   Feed::RSS(b) => {
-  //     println!("RSS {:?}", b);
-  //   }
-  // };
+pub fn create_channel_model(uuid: &String, url: &String, res: &Feed) -> models::NewChannel {
+  return match res {
+    Feed::Atom(res) => {
+      let image = String::from("");
+      let date = String::from("");
+      let link = match res.links.get(0) {
+        Some(link) => link.href.to_string(),
+        None => String::from(""),
+      };
 
-  println!("{:?}", res);
+      let subtitle = match &res.subtitle {
+        Some(title) => title.value.to_string(),
+        None => String::from(""),
+      };
 
-  1
-  // let image = match &res.image {
-  //   Some(t) => String::from(&t.url),
-  //   None => String::from(""),
-  // };
-  // let date = match &res.pub_date {
-  //   Some(t) => String::from(t),
-  //   None => String::from(""),
-  // };
-  // let channel = models::NewChannel {
-  //   uuid: uuid.to_string(),
-  //   title: res.title.to_string(),
-  //   link: res.link.to_string(),
-  //   image: image.to_string(),
-  //   feed_url: url.to_string(),
-  //   description: res.description.to_string(),
-  //   pub_date: date,
-  // };
+      let channel = models::NewChannel {
+        uuid: uuid.to_string(),
+        title: res.title.to_string(),
+        link: link,
+        image: image.to_string(),
+        feed_url: url.to_string(),
+        description: subtitle,
+        pub_date: date,
+      };
 
-  // return channel;
+      return channel;
+    }
+    Feed::RSS(res) => {
+      let image = match &res.image {
+        Some(t) => String::from(&t.url),
+        None => String::from(""),
+      };
+      let date = match &res.pub_date {
+        Some(t) => String::from(t),
+        None => String::from(""),
+      };
+      let channel = models::NewChannel {
+        uuid: uuid.to_string(),
+        title: res.title.to_string(),
+        link: res.link.to_string(),
+        image: image.to_string(),
+        feed_url: url.to_string(),
+        description: res.description.to_string(),
+        pub_date: date,
+      };
+
+      return channel;
+    }
+  };
 }
 
 pub fn create_article_models(
@@ -150,37 +163,68 @@ pub fn create_article_models(
 ) -> Vec<models::NewArticle> {
   let mut articles: Vec<models::NewArticle> = Vec::new();
 
-  let res = match res {
-    Feed::Atom(_) => println!("Atom"),
-    Feed::RSS(_) => println!("RSS"),
+  match res {
+    Feed::Atom(res) => {
+      for item in &res.entries {
+        let article_uuid = Uuid::new_v4().hyphenated().to_string();
+        let title = &item.title.value;
+        let link = match item.links.get(0) {
+          Some(link) => link.href.to_string(),
+          None => String::from(""),
+        };
+        let content = match &item.content {
+          Some(content) => {
+            match &content.value {
+              Some(v) => v.to_string(),
+              None => String::from(""),
+            }
+          },
+          None => String::from(""),
+        };
+        let description = String::from("");
+        let date = String::from("");
+
+        let s = models::NewArticle {
+          uuid: article_uuid,
+          channel_uuid: channel_uuid.to_string(),
+          title: title.to_string(),
+          link,
+          content,
+          feed_url: feed_url.to_string(),
+          description,
+          pub_date: date,
+        };
+
+        articles.push(s);
+      }
+    }
+    Feed::RSS(res) => {
+      for item in &res.items {
+        let article_uuid = Uuid::new_v4().hyphenated().to_string();
+        let title = item.title.clone().unwrap_or(String::from(""));
+        let link = item.link.clone().unwrap_or(String::from(""));
+        let content = item.content.clone().unwrap_or(String::from(""));
+        let description = item
+          .description
+          .clone()
+          .unwrap_or(String::from("no description"));
+        let date = String::from(item.pub_date().clone().unwrap_or(""));
+
+        let s = models::NewArticle {
+          uuid: article_uuid,
+          channel_uuid: channel_uuid.to_string(),
+          title,
+          link,
+          content,
+          feed_url: feed_url.to_string(),
+          description,
+          pub_date: date,
+        };
+
+        articles.push(s);
+      }
+    }
   };
-
-  println!("{:?}", res);
-
-  // for item in res.entries {
-  //   let article_uuid = Uuid::new_v4().hyphenated().to_string();
-  //   let title = item.title.clone().unwrap_or(String::from(""));
-  //   let link = item.link.clone().unwrap_or(String::from(""));
-  //   let content = item.content.clone().unwrap_or(String::from(""));
-  //   let description = item
-  //     .description
-  //     .clone()
-  //     .unwrap_or(String::from("no description"));
-  //   let date = String::from(item.pub_date().clone().unwrap_or(""));
-
-  //   let s = models::NewArticle {
-  //     uuid: article_uuid,
-  //     channel_uuid: channel_uuid.to_string(),
-  //     title,
-  //     link,
-  //     content,
-  //     feed_url: feed_url.to_string(),
-  //     description,
-  //     pub_date: date,
-  //   };
-
-  //   articles.push(s);
-  // }
 
   articles
 }
