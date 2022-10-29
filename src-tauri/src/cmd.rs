@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 use std::fmt;
 
-use feed_rs::model::Feed;
 use reqwest;
 use serde::{ser::Serializer, Deserialize, Serialize};
 use tauri::command;
@@ -11,10 +10,41 @@ use crate::config;
 use crate::db;
 use crate::models;
 
-pub async fn fetch_rss_item(url: &str) -> Option<feed_rs::model::Feed> {
+use std::str::FromStr;
+
+#[derive(Debug, Clone, Serialize)]
+pub enum Feed {
+  Atom(atom_syndication::Feed),
+  RSS(rss::Channel),
+}
+
+impl FromStr for Feed {
+  type Err = &'static str;
+
+  fn from_str(s: &str) -> Result<Self, Self::Err> {
+    match atom_syndication::Feed::from_str(s) {
+      Ok(feed) => Ok(Feed::Atom(feed)),
+      _ => match rss::Channel::from_str(s) {
+        Ok(feed) => Ok(Feed::RSS(feed)),
+        _ => Err("Could not parse XML as Atom or RSS from input"),
+      },
+    }
+  }
+}
+
+impl ToString for Feed {
+  fn to_string(&self) -> String {
+    match self {
+      &Feed::Atom(ref atom_feed) => atom_feed.to_string(),
+      &Feed::RSS(ref rss_channel) => rss_channel.to_string(),
+    }
+  }
+}
+
+pub fn create_client() -> reqwest::Client {
   let user_config = config::get_user_config();
   let client = match user_config {
-    Some(user_config) => match (user_config.local_proxy) {
+    Some(user_config) => match user_config.local_proxy {
       Some(proxy) => {
         let mut scheme = String::from("socks5h://");
 
@@ -34,19 +64,21 @@ pub async fn fetch_rss_item(url: &str) -> Option<feed_rs::model::Feed> {
     None => reqwest::Client::builder().build().unwrap(),
   };
 
+  client
+}
+
+pub async fn fetch_feed_item(url: &str) -> Option<Feed> {
+  let client = create_client();
   let response = client.get(url).send().await;
 
   match response {
     Ok(response) => match response.status() {
       reqwest::StatusCode::OK => {
-        let content = response.bytes().await.unwrap();
+        let content = response.text().await.unwrap();
+        let res = content[..].parse::<Feed>();
 
-        // match rss::Channel::read_from(&content[..]).map(|channel| channel) {
-        //   Ok(channel) => Some(channel),
-        //   Err(_) => None,
-        // }
-        match feed_rs::parser::parse(&content[..]).map(|channel| channel) {
-          Ok(channel) => Some(channel),
+        match res {
+          Ok(res) => Some(res),
           Err(_) => None,
         }
       }
@@ -59,40 +91,9 @@ pub async fn fetch_rss_item(url: &str) -> Option<feed_rs::model::Feed> {
   }
 }
 
-
-#[derive(Debug)]
-pub struct FeedResponse(feed_rs::model::Feed);
-
-impl Serialize for FeedResponse {
-  fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-  where
-    S: Serializer,
-  {
-    serializer.serialize_str(self.to_string().as_ref())
-  }
-}
-
-impl fmt::Display for FeedResponse {
-    // This trait requires `fmt` with this exact signature.
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        // Write strictly the first element into the supplied output
-        // stream: `f`. Returns `fmt::Result` which indicates whether the
-        // operation succeeded or failed. Note that `write!` uses syntax which
-        // is very similar to `println!`.
-        write!(f, "{:?}", self.0)
-    }
-}
-
 #[command]
-pub async fn fetch_feed(url: String) -> Option<FeedResponse> {
-  let res = fetch_rss_item(&url).await;
-
-  let res = match res {
-    Some(res) => Some(FeedResponse(res)),
-    None => None,
-  };
-
-  println!("{:?}", res);
+pub async fn fetch_feed(url: String) -> Option<Feed> {
+  let res = fetch_feed_item(&url).await;
 
   res
 }
@@ -104,34 +105,57 @@ pub async fn get_channels() -> Vec<models::Channel> {
   return results;
 }
 
-// pub fn create_channel_model(uuid: &String, url: &String, res: &feed_rs::model::Feed) -> models::NewChannel {
-//   let image = match &res.image {
-//     Some(t) => String::from(&t.url),
-//     None => String::from(""),
-//   };
-//   let date = match &res.pub_date {
-//     Some(t) => String::from(t),
-//     None => String::from(""),
-//   };
-//   let channel = models::NewChannel {
-//     uuid: uuid.to_string(),
-//     title: res.title.to_string(),
-//     link: res.link.to_string(),
-//     image: image.to_string(),
-//     feed_url: url.to_string(),
-//     description: res.description.to_string(),
-//     pub_date: date,
-//   };
+pub fn create_channel_model(
+  uuid: &String,
+  url: &String,
+  res: &Feed,
+) -> usize {
+  // match res {
+  //   Feed::Atom(a) => {
+  //     println!("Atom {:?}", a);
+  //   },
+  //   Feed::RSS(b) => {
+  //     println!("RSS {:?}", b);
+  //   }
+  // };
 
-//   return channel;
-// }
+  println!("{:?}", res);
+
+  1
+  // let image = match &res.image {
+  //   Some(t) => String::from(&t.url),
+  //   None => String::from(""),
+  // };
+  // let date = match &res.pub_date {
+  //   Some(t) => String::from(t),
+  //   None => String::from(""),
+  // };
+  // let channel = models::NewChannel {
+  //   uuid: uuid.to_string(),
+  //   title: res.title.to_string(),
+  //   link: res.link.to_string(),
+  //   image: image.to_string(),
+  //   feed_url: url.to_string(),
+  //   description: res.description.to_string(),
+  //   pub_date: date,
+  // };
+
+  // return channel;
+}
 
 pub fn create_article_models(
   channel_uuid: &String,
   feed_url: &String,
-  res: &feed_rs::model::Feed,
+  res: &Feed,
 ) -> Vec<models::NewArticle> {
   let mut articles: Vec<models::NewArticle> = Vec::new();
+
+  let res = match res {
+    Feed::Atom(_) => println!("Atom"),
+    Feed::RSS(_) => println!("RSS"),
+  };
+
+  println!("{:?}", res);
 
   // for item in res.entries {
   //   let article_uuid = Uuid::new_v4().hyphenated().to_string();
@@ -165,19 +189,20 @@ pub fn create_article_models(
 pub async fn add_channel(url: String) -> usize {
   println!("request channel {}", &url);
 
-  let res = fetch_rss_item(&url).await;
+  let res = fetch_feed_item(&url).await;
 
-  // match res {
-  //   Some(res) => {
-  //     let channel_uuid = Uuid::new_v4().hyphenated().to_string();
-  //     let channel = create_channel_model(&channel_uuid, &url, &res);
-  //     let articles = create_article_models(&channel_uuid, &url, &res);
-  //     let res = db::add_channel(channel, articles);
+  match res {
+    Some(res) => {
+      let channel_uuid = Uuid::new_v4().hyphenated().to_string();
+      let channel = create_channel_model(&channel_uuid, &url, &res);
+      // let articles = create_article_models(&channel_uuid, &url, &res);
+      // let res = db::add_channel(channel, articles);
 
-  //     res
-  //   }
-  //   None => 0,
-  // }
+      // res
+      1
+    }
+    None => 0,
+  };
   1
 }
 
@@ -201,20 +226,23 @@ pub fn delete_channel(uuid: String) -> usize {
 
 #[command]
 pub async fn sync_articles_with_channel_uuid(uuid: String) -> usize {
-  let channel = db::get_channel_by_uuid(uuid);
-  match channel {
-    Some(channel) => {
-      let res = fetch_rss_item(&channel.feed_url).await.unwrap();
-      let articles = create_article_models(&channel.uuid, &channel.feed_url, &res);
+  // let channel = db::get_channel_by_uuid(uuid);
 
-      println!("{:?}", &articles.len());
+  // match channel {
+  //   Some(channel) => {
+  //     let res = fetch_feed_item(&channel.feed_url).await.unwrap();
+  //     let articles = create_article_models(&channel.uuid, &channel.feed_url, &res);
 
-      let result = db::add_articles(String::from(&channel.uuid), articles);
+  //     println!("{:?}", &articles.len());
 
-      result
-    }
-    None => 0,
-  }
+  //     let result = db::add_articles(String::from(&channel.uuid), articles);
+
+  //     result
+  //   }
+  //   None => 0,
+  // }
+
+  1
 }
 
 #[command]
