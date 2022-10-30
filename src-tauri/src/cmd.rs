@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::fmt;
 
 use reqwest;
-use serde::{ser::Serializer, Deserialize, Serialize};
+use serde::{Serialize};
 use tauri::command;
 use uuid::Uuid;
 
@@ -294,14 +294,21 @@ pub async fn sync_articles_with_channel_uuid(uuid: String) -> usize {
 
   match channel {
     Some(channel) => {
-      let res = fetch_feed_item(&channel.feed_url).await.unwrap();
-      let articles = create_article_models(&channel.uuid, &channel.feed_url, &res);
+      let res = fetch_feed_item(&channel.feed_url).await;
+      match res {
+        Some(res) => {
 
-      println!("{:?}", &articles.len());
+          let articles = create_article_models(&channel.uuid, &channel.feed_url, &res);
 
-      let result = db::add_articles(String::from(&channel.uuid), articles);
+          println!("{:?}", &articles.len());
 
-      result
+          let result = db::add_articles(String::from(&channel.uuid), articles);
+
+          result
+        }
+        None => 0,
+      }
+
     }
     None => 0,
   }
@@ -349,7 +356,13 @@ pub fn get_user_config() -> Option<config::UserConfig> {
 }
 
 #[command]
-pub fn update_user_config(key: String) -> usize {
+pub fn update_proxy(ip: String, port: String) -> usize {
+  config::update_proxy(ip, port);
+  1
+}
+
+#[command]
+pub fn update_user_config<T>(user_cfg: T) -> usize {
   1
 }
 
@@ -366,5 +379,13 @@ mod tests {
   #[test]
   fn test_get_unread_total() {
     get_unread_total();
+  }
+  #[test]
+  fn test_update_proxy () {
+    let ip = "111.111.11.11".to_string();
+    let port = "1111".to_string();
+
+    update_proxy(ip, port);
+    config::get_user_config();
   }
 }

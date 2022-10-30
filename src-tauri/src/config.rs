@@ -1,3 +1,4 @@
+use chrono::Local;
 use dotenv::dotenv;
 use serde::{Deserialize, Serialize};
 use std::env;
@@ -26,6 +27,14 @@ pub struct UserConfig {
   pub local_proxy: Option<LocalProxy>,
 }
 
+impl UserConfig {
+  fn update_proxy(&mut self, ip: String, port: String) -> &mut UserConfig {
+    self.local_proxy = Some(LocalProxy { ip, port });
+
+    self
+  }
+}
+
 pub fn get_user_config_path() -> PathBuf {
   dotenv().ok();
 
@@ -34,8 +43,6 @@ pub fn get_user_config_path() -> PathBuf {
   match _env {
     Ok(_env) => {
       let user_config = path::Path::new("./lettura.toml").to_path_buf();
-
-      println!("-->{:?}", user_config);
 
       user_config
     }
@@ -93,6 +100,27 @@ pub fn get_user_config() -> Option<UserConfig> {
   };
 
   data
+}
+
+pub fn update_proxy(ip: String, port: String) -> usize {
+  let data = get_user_config();
+
+  let res = match data {
+    Some(mut data) => {
+      let user_config_path = get_user_config_path();
+      let a = data.update_proxy(ip, port);
+      let content = toml::to_string(a).unwrap();
+
+      println!("{:?}", &content);
+
+      fs::write(user_config_path, content);
+
+      return 1;
+    }
+    None => 0,
+  };
+
+  1
 }
 
 #[cfg(test)]

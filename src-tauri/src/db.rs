@@ -12,6 +12,7 @@ use crate::schema;
 
 pub fn establish_connection() -> SqliteConnection {
   dotenv().ok();
+
   let _env = env::var("LETTURA_ENV");
 
   match _env {

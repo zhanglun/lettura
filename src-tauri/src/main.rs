@@ -105,6 +105,7 @@ fn main() {
       cmd::mark_all_read,
       cmd::get_user_config,
       cmd::update_user_config,
+      cmd::update_proxy,
     ])
     .run(context)
     .expect("error while running tauri Application");
