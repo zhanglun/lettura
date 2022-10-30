@@ -138,10 +138,14 @@ pub fn add_articles(channel_uuid: String, articles: Vec<models::NewArticle>) -> 
     .expect("Expect find channel");
 
   if channel.len() == 1 {
+    println!("{:?}", &articles);
+
     let result = diesel::insert_or_ignore_into(schema::articles::dsl::articles)
       .values(articles)
       .execute(&mut connection)
       .expect("Expect add articles");
+
+    println!(" ====> {:?}", result);
 
     return result;
   } else {
@@ -165,6 +169,7 @@ pub fn get_article_with_uuid(uuid: String) -> Option<models::Article> {
   let mut connection = establish_connection();
   let mut result = schema::articles::dsl::articles
     .filter(schema::articles::uuid.eq(&uuid))
+    .order((schema::articles::id.desc()))
     .load::<models::Article>(&mut connection)
     .unwrap_or(vec![]);
 

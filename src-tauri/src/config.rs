@@ -84,7 +84,7 @@ pub fn get_user_config() -> Option<UserConfig> {
   let user_config_path = get_user_config_path();
 
   if !user_config_path.exists() {
-    fs::File::create(&user_config_path);
+    fs::File::create(&user_config_path).expect("create user config failed");
   }
 
   let content = match fs::read_to_string(&user_config_path) {
@@ -113,7 +113,7 @@ pub fn update_proxy(ip: String, port: String) -> usize {
 
       println!("{:?}", &content);
 
-      fs::write(user_config_path, content);
+      fs::write(user_config_path, content).expect("update proxy error");
 
       return 1;
     }
