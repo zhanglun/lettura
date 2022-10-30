@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api";
-import { Channel, Article } from "../db";
+import { Channel } from "../db";
 
 export const getChannels = async (): Promise<Channel[]> => {
   return invoke('get_channels')
@@ -54,12 +54,19 @@ export const markAllRead = async (uuid: string) => {
   })
 }
 
-export const getUserConfig = async () => {
+export const getUserConfig = async (): Promise<any> => {
   return invoke('get_user_config')
 }
 
-export const updateUserConfig = async (cfg: { [key: string]: any }) => {
+export const updateUserConfig = async (cfg: any): Promise<any> => {
   return invoke('update_user_config', {
-    cfg
+    userCfg: cfg
+  })
+}
+
+export const updateProxy = async (cfg: LocalProxy): Promise<any> => {
+  return invoke('update_proxy', {
+    ip: cfg.ip,
+    port: cfg.port,
   })
 }

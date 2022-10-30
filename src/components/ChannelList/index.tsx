@@ -8,7 +8,7 @@ import { AddFeedChannel } from "../AddChannel";
 import { getChannelFavicon } from "../../helpers/parseXML";
 import * as dataAgent from "../../helpers/dataAgent";
 import { StoreContext } from "../../context";
-import { Progress } from "@douyinfe/semi-ui";
+import { Progress, Tooltip } from "@douyinfe/semi-ui";
 import {
   ArrowPathIcon,
   Cog6ToothIcon,
@@ -41,7 +41,12 @@ const ChannelList = (props: any): JSX.Element => {
       });
   };
 
-  const updateCount = (channelList: Channel[], uuid: string, action: string, count: number) => {
+  const updateCount = (
+    channelList: Channel[],
+    uuid: string,
+    action: string,
+    count: number
+  ) => {
     channelList.forEach((channel) => {
       if (channel.uuid !== uuid) {
         return channel;
@@ -79,16 +84,15 @@ const ChannelList = (props: any): JSX.Element => {
   };
 
   const getList = () => {
-    Promise.all([
-      dataAgent.getChannels(),
-      dataAgent.getUnreadTotal(),
-    ]).then(([channel, unreadTotal]) => {
-      channel.forEach((item) => {
-        item.unread = unreadTotal[item.uuid] || 0;
-      });
+    Promise.all([dataAgent.getChannels(), dataAgent.getUnreadTotal()]).then(
+      ([channel, unreadTotal]) => {
+        channel.forEach((item) => {
+          item.unread = unreadTotal[item.uuid] || 0;
+        });
 
-      setChannelList(channel);
-    })
+        setChannelList(channel);
+      }
+    );
   };
 
   useEffect(() => {
@@ -224,21 +228,29 @@ const ChannelList = (props: any): JSX.Element => {
     <div className={styles.container}>
       <div className={styles.header}>
         <div className={styles.toolbar}>
-          <AddFeedChannel Aref={addFeedButtonRef}/>
-          <span className={styles.toolbarItem} onClick={addFeed}>
-            <PlusIcon className={"h-4 w-4"}/>
-          </span>
-          <span className={styles.toolbarItem}>
-            <FolderIcon className={"h-4 w-4"}/>
-          </span>
-          <span className={styles.toolbarItem} onClick={refreshList}>
-            <ArrowPathIcon
-              className={`h-4 w-4 ${refreshing ? "spinning" : ""}`}
-            />
-          </span>
-          <span className={styles.toolbarItem} onClick={goToSetting}>
-            <Cog6ToothIcon className={"h-4 w-4"}/>
-          </span>
+          <AddFeedChannel Aref={addFeedButtonRef} />
+          <Tooltip content="Add feed">
+            <span className={styles.toolbarItem} onClick={addFeed}>
+              <PlusIcon className={"h-4 w-4"} />
+            </span>
+          </Tooltip>
+          <Tooltip content="Create folder">
+            <span className={styles.toolbarItem}>
+              <FolderIcon className={"h-4 w-4"} />
+            </span>
+          </Tooltip>
+          <Tooltip content="Refresh">
+            <span className={styles.toolbarItem} onClick={refreshList}>
+              <ArrowPathIcon
+                className={`h-4 w-4 ${refreshing ? "spinning" : ""}`}
+              />
+            </span>
+          </Tooltip>
+          <Tooltip content="Setting">
+            <span className={styles.toolbarItem} onClick={goToSetting}>
+              <Cog6ToothIcon className={"h-4 w-4"} />
+            </span>
+          </Tooltip>
         </div>
       </div>
       <div className={styles.inner}>{renderFeedList()}</div>
@@ -246,7 +258,7 @@ const ChannelList = (props: any): JSX.Element => {
         <div className={styles.footer}>
           <span>
             {/* @ts-ignore */}
-            <Progress percent={Math.ceil((done / channelList.length) * 100)}/>
+            <Progress percent={Math.ceil((done / channelList.length) * 100)} />
           </span>
           <span className={styles.footerCount}>
             {done}/{channelList.length}

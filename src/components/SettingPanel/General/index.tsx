@@ -1,12 +1,24 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Input, Button } from "@douyinfe/semi-ui";
 import * as dataAgent from "../../../helpers/dataAgent";
 
 export const General = () => {
-  const [localProxyConfig, setLocalProxyConfig] = useState({
+  const [localProxyConfig, setLocalProxyConfig] = useState<LocalProxy>({
     ip: "",
     port: "",
   });
+
+  const handleSaveLocalProxy = () => {
+    dataAgent.updateProxy({
+      ...localProxyConfig
+    }).then((res) => {
+    });
+
+    dataAgent.updateUserConfig({
+      ...localProxyConfig
+    }).then((res) => {
+    });
+  };
 
   const handleLocalProxyChange = (key: string, val: string) => {
     const cfg = Object.assign(
@@ -16,16 +28,24 @@ export const General = () => {
       }
     );
 
-    console.log(cfg);
-
     setLocalProxyConfig(cfg);
+    handleSaveLocalProxy();
   };
 
-  const handleSaveLocalProxy = () => {
-    dataAgent.updateUserConfig(localProxyConfig).then((res) => {
-      console.log('update use config', res)
-    })
-  }
+  useEffect(() => {
+    dataAgent.getUserConfig().then((cfg: any) => {
+      console.log("update use config", cfg);
+
+      const { local_proxy } = cfg as UserConfig;
+
+      if (local_proxy) {
+        setLocalProxyConfig({
+          ip: local_proxy.ip,
+          port: local_proxy.port,
+        })
+      }
+    });
+  }, []);
 
   return (
     <div>
@@ -33,8 +53,7 @@ export const General = () => {
       <div>
         <h3>Proxy</h3>
         <div>
-          <p>Local Proxy</p>
-          IP Address:{" "}
+          IP:{" "}
           <Input
             type="text"
             value={localProxyConfig.ip}
@@ -46,7 +65,6 @@ export const General = () => {
             value={localProxyConfig.port}
             onChange={(port) => handleLocalProxyChange("port", port)}
           />
-          <Button type={"primary"} onClick={handleSaveLocalProxy}>Save</Button>
         </div>
       </div>
     </div>

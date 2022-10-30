@@ -2,13 +2,17 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { ArticleList, ArticleListRefType } from "../../components/ArticleList";
 import { ArticleView } from "../../components/ArticleView";
-import { Button, Dropdown } from "@douyinfe/semi-ui";
+import { Button, Dropdown, Tooltip } from "@douyinfe/semi-ui";
 import * as dataAgent from "../../helpers/dataAgent";
 import { useStore } from "../../hooks/useStore";
 import styles from "./index.module.scss";
 import {
   ArrowPathIcon,
+  ArrowTopRightOnSquareIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
   LinkIcon,
+  PaintBrushIcon,
   WalletIcon,
 } from "@heroicons/react/24/outline";
 import { busChannel } from "../../helpers/busChannel";
@@ -84,9 +88,9 @@ export const ArticleContainer = (): JSX.Element => {
           setSyncing(false);
           busChannel.emit("updateChannelUnreadCount", {
             uuid: channelUuid as string,
-            action: 'increase',
+            action: "increase",
             count: res || 0,
-          })
+          });
         });
     }
   };
@@ -160,14 +164,19 @@ export const ArticleContainer = (): JSX.Element => {
             >
               <Button>{store.currentFilter.title}</Button>
             </Dropdown>
-            <span className={styles.menuIcon} onClick={markAllRead}>
-              <WalletIcon className={"h-4 w-4"} />
-            </span>
-            <span className={styles.menuIcon} onClick={handleRefresh}>
-              <ArrowPathIcon
-                className={`h-4 w-4 ${syncing ? "spinning" : ""}`}
-              />
-            </span>
+
+            <Tooltip content="Mark all read">
+              <span className={styles.menuIcon} onClick={markAllRead}>
+                <WalletIcon className={"h-4 w-4"} />
+              </span>
+            </Tooltip>
+            <Tooltip content="Refresh">
+              <span className={styles.menuIcon} onClick={handleRefresh}>
+                <ArrowPathIcon
+                  className={`h-4 w-4 ${syncing ? "spinning" : ""}`}
+                />
+              </span>
+            </Tooltip>
           </div>
         </div>
         {syncing && <div className={styles.syncingBar}>同步中</div>}
@@ -180,15 +189,38 @@ export const ArticleContainer = (): JSX.Element => {
       </div>
       <div className={styles.mainView} ref={viewRef}>
         <div className={`sticky-header ${styles.viewHeader}`}>
+          <div></div>
           <div className={styles.viewMenu}>
-            <a
-              className={styles.menuIcon}
-              target="_blank"
-              rel="noreferrer"
-              href={(store.article && store.article.link) as string}
-            >
-              <LinkIcon className={"h-4 w-4"} />
-            </a>
+            <Tooltip content="Previous">
+              <span className={styles.menuIcon}>
+                <ChevronUpIcon className={"h-4 w-4"} />
+              </span>
+            </Tooltip>
+            <Tooltip content="Next">
+              <span className={styles.menuIcon}>
+                <ChevronDownIcon className={"h-4 w-4"} />
+              </span>
+            </Tooltip>
+            <Tooltip content="Beautify read">
+              <span className={styles.menuIcon}>
+                <PaintBrushIcon className={"h-4 w-4"}/>
+              </span>
+            </Tooltip>
+            <Tooltip content="Open in browser" position="top">
+              <a
+                className={styles.menuIcon}
+                target="_blank"
+                rel="noreferrer"
+                href={(store.article && store.article.link) as string}
+              >
+                <ArrowTopRightOnSquareIcon className={"h-4 w-4"} />
+              </a>
+            </Tooltip>
+            <Tooltip content="Copy link" position="top">
+              <span className={styles.menuIcon}>
+                <LinkIcon className={"h-4 w-4"} />
+              </span>
+            </Tooltip>
           </div>
         </div>
         <ArticleView article={store.article} />

@@ -75,7 +75,7 @@ export const AddFeedChannel = (props: any) => {
 
       if (res > 0) {
         busChannel.emit('getChannels')
-        toggleModal()
+        handleCancel()
       }
     }).finally(() => {
       setConfirming(false)
