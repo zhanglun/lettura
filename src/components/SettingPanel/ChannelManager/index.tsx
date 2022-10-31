@@ -33,7 +33,9 @@ export const FeedManager = () => {
         return (
           <div>
             <div>{text}</div>
-            <div>{record.link}</div>
+            <div>
+              <a href={record.link} target={"_blank"}>{record.link}</a>
+            </div>
           </div>
         );
       },
@@ -42,7 +44,9 @@ export const FeedManager = () => {
       title: "Feed url",
       dataIndex: "feed_url",
       render(text: string, record: Channel): JSX.Element {
-        return <div>{text}</div>;
+        return <div>
+          <a href={text} target={"_blank"}>{text}</a>
+        </div>
       },
     },
     {

@@ -89,10 +89,8 @@ pub fn get_user_config() -> Option<UserConfig> {
 
   let content = match fs::read_to_string(&user_config_path) {
     Ok(content) => content,
-    Err(_) => "nocontent".to_string(),
+    Err(_) => "".to_string(),
   };
-
-  println!("{:?}", content);
 
   let data: Option<UserConfig> = match toml::from_str(&content) {
     Ok(data) => Some(data),
@@ -110,8 +108,6 @@ pub fn update_proxy(ip: String, port: String) -> usize {
       let user_config_path = get_user_config_path();
       let a = data.update_proxy(ip, port);
       let content = toml::to_string(a).unwrap();
-
-      println!("{:?}", &content);
 
       fs::write(user_config_path, content).expect("update proxy error");
 

@@ -4,7 +4,8 @@
 }
 
 .header {
-  padding: 1px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #dfdfdf;
 }
 
 .title {
@@ -61,6 +62,16 @@
   margin-top: 18px;
   padding-bottom: 40px;
   line-height: 1.8;
+
+  a {
+    text-decoration: underline;
+    text-decoration-style: dashed;
+    transition: all 0.3s;
+
+    &:hover {
+      text-decoration-style: wavy;
+    }
+  }
 
   pre {
     white-space: break-spaces;
@@ -157,12 +168,10 @@ blockquote {
 }
 
 .title {
-  //font-family: var(--sans-font);
-  font-size: calc(var(--content-font-size) * 1.8);
+  font-size: calc(var(--content-font-size) * 1.6);
 }
 
 .desc {
-  /*font-family: var(--sans-font);*/
   font-size: calc(var(--content-font-size) * 1.2);
 }
 
