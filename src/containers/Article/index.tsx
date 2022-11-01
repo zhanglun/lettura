@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { ArticleList, ArticleListRefType } from "../../components/ArticleList";
 import { ArticleView } from "../../components/ArticleView";
-import { Button, Dropdown, Tooltip } from "@douyinfe/semi-ui";
+import { Button, Dropdown, Toast, Tooltip } from "@douyinfe/semi-ui";
 import * as dataAgent from "../../helpers/dataAgent";
 import { useStore } from "../../hooks/useStore";
 import styles from "./index.module.scss";
@@ -16,6 +16,7 @@ import {
   WalletIcon,
 } from "@heroicons/react/24/outline";
 import { busChannel } from "../../helpers/busChannel";
+import { Article } from "../../db";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -93,6 +94,23 @@ export const ArticleContainer = (): JSX.Element => {
           });
         });
     }
+  };
+
+  const handleCopyLink = () => {
+    console.log("%c Line:100 🍰 store.article", "color:#f5ce50", store.article);
+    const { link } = store.article as Article;
+
+    navigator.clipboard.writeText(link).then(function() {
+      Toast.success({
+        content: 'Copied!',
+        duration: 2,
+        theme: 'light',
+        showClose: false,
+      })
+      console.log('Async: Copying to clipboard was successful!');
+    }, function(err) {
+      console.error('Async: Could not copy text: ', err);
+    });
   };
 
   const handleRefresh = () => {
@@ -216,8 +234,8 @@ export const ArticleContainer = (): JSX.Element => {
                 <ArrowTopRightOnSquareIcon className={"h-4 w-4"} />
               </a>
             </Tooltip>
-            <Tooltip content="Copy link" position="top">
-              <span className={styles.menuIcon}>
+            <Tooltip content="Copy link" position="left">
+              <span className={styles.menuIcon} onClick={handleCopyLink}>
                 <LinkIcon className={"h-4 w-4"} />
               </span>
             </Tooltip>
