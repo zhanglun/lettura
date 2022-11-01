@@ -1,5 +1,5 @@
 :root {
-  --sans-font: 'Noto Sans', 'Noto Sans TC', 'Noto Sans SC', sans-serif !important;
+  --sans-font: "Helvetica Neue", Helvetica, Arial, "PingFang SC", "Hiragino Sans GB", "Heiti SC", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
   --serif-font: 'Noto Serif', 'Noto Serif TC', 'Noto Sans TC', serif !important;
   --inline-code-font: monospace !important;
   --mono-font: 'JetBrains Mono', monospace !important;

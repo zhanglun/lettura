@@ -32,7 +32,7 @@ export const ArticleList = forwardRef(
     props: ArticleListProps,
     ref: ForwardedRef<ArticleListRefType>
   ): JSX.Element => {
-    const { channelUuid, feedUrl = "" } = props;
+    const { channelUuid } = props;
     const store = useStore();
     const [highlightItem, setHighlightItem] = useState<Article>();
     const [articleList, setArticleList] = useState<Article[]>([]);
@@ -98,6 +98,8 @@ export const ArticleList = forwardRef(
     }, [channelUuid, store.currentFilter]);
 
     const renderList = (): JSX.Element[] => {
+      console.log("%c Line:102 🍓 articleList", "color:#42b983", articleList);
+
       return articleList.map((article: any, idx: number) => {
         return (
           <ArticleItem

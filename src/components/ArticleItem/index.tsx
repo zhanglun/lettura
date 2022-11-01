@@ -7,9 +7,8 @@ import * as dataAgent from "../../helpers/dataAgent";
 
 export const ArticleItem = React.memo((props: any) => {
   const { article, onSelect, highlight } = props;
-  console.log("%c Line:10 🍞 article", "color:#42b983", article);
-  const store = useStore();
   const [readStatus, setReadStatus] = useState(article.read_status);
+  const store = useStore();
 
   const handleClick = async (e: any) => {
     if (onSelect) {
