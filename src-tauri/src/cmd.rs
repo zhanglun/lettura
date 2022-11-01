@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use std::fmt;
 
 use reqwest;
 use serde::{Serialize};
@@ -52,7 +51,7 @@ pub fn create_client() -> reqwest::Client {
         scheme.push_str(":");
         scheme.push_str(&proxy.port.to_string());
 
-        println!("{:?}", scheme);
+        println!("request with proxy: {:?}", scheme);
 
         reqwest::Client::builder()
           .proxy(reqwest::Proxy::all(scheme).unwrap())
@@ -129,7 +128,7 @@ pub async fn get_channels() -> Vec<models::Channel> {
 }
 
 pub fn create_channel_model(uuid: &String, url: &String, res: &Feed) -> models::NewChannel {
-  return match res {
+  match res {
     Feed::Atom(res) => {
       let image = String::from("");
       let date = String::from("");
@@ -176,7 +175,7 @@ pub fn create_channel_model(uuid: &String, url: &String, res: &Feed) -> models::
 
       return channel;
     }
-  };
+  }
 }
 
 pub fn create_article_models(
@@ -297,7 +296,6 @@ pub async fn sync_articles_with_channel_uuid(uuid: String) -> usize {
       let res = fetch_feed_item(&channel.feed_url).await;
       match res {
         Some(res) => {
-
           let articles = create_article_models(&channel.uuid, &channel.feed_url, &res);
 
           println!("{:?}", &articles.len());
