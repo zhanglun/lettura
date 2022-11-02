@@ -275,6 +275,8 @@ pub fn get_articles(uuid: String, filter: db::ArticleFilter) -> db::ArticleQuery
   let res = db::get_article(db::ArticleFilter {
     channel_uuid: Some(uuid),
     read_status: filter.read_status,
+    cursor: filter.cursor,
+    limit: filter.limit,
   });
 
   res

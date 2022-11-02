@@ -50,15 +50,21 @@ export const ArticleList = forwardRef(
     };
 
     const getList = (channelUuid: string) => {
-      const filter: { read_status?: number } = {};
+      const filter: { read_status?: number, limit?: number } = {};
 
       filter.read_status = store.currentFilter.id;
+
+
+      setLoading(true)
 
       dataAgent
         .getArticleList(channelUuid, filter)
         .then((res) => {
           const { list } = res as { list: Article[] };
           setArticleList(list);
+        })
+        .finally(() => {
+          setLoading(false)
         })
         .catch((err) => {
           console.log("%c Line:71 🍎 err", "color:#ffdd4d", err);

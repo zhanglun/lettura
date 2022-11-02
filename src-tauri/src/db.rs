@@ -157,6 +157,8 @@ pub fn add_articles(channel_uuid: String, articles: Vec<models::NewArticle>) -> 
 pub struct ArticleFilter {
   pub channel_uuid: Option<String>,
   pub read_status: Option<i32>,
+  pub cursor: Option<i32>,
+  pub limit: Option<i32>,
 }
 
 #[derive(Debug, Serialize)]
@@ -218,6 +220,24 @@ pub fn get_article(filter: ArticleFilter) -> ArticleQueryResult {
     }
     Some(status) => {
       query = query.filter(schema::articles::read_status.eq(status));
+    }
+    None => {
+      1;
+    }
+  }
+
+  match filter.cursor {
+    Some(cursor) => {
+      query = query.filter(schema::articles::id.gt(cursor));
+    }
+    None => {
+      1;
+    }
+  }
+
+  match filter.limit {
+    Some(limit) => {
+      query = query.limit(limit.into());
     }
     None => {
       1;
