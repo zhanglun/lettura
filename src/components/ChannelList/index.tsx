@@ -25,9 +25,9 @@ const ChannelList = (props: any): JSX.Element => {
   const [channelList, setChannelList] = useState<Channel[]>([]);
   const [done, setDone] = useState(0);
 
-  const loadAndUpdate = (url: string) => {
+  const loadAndUpdate = (uuid: string) => {
     return dataAgent
-      .addChannel(url)
+      .syncArticlesWithChannelUuid(uuid)
       .then(async (res) => {
         console.log("%c Line:27 🍑 res", "color:#fca650", res);
 
@@ -125,7 +125,7 @@ const ChannelList = (props: any): JSX.Element => {
     setRefreshing(true);
 
     const urlList = (channelList || []).map((channel: any) => {
-      return channel.feed_url;
+      return channel.uuid;
     });
 
     const limit = 5;
@@ -166,6 +166,7 @@ const ChannelList = (props: any): JSX.Element => {
         window.setTimeout(() => {
           setRefreshing(false);
           setDone(0);
+          getList();
         }, 500);
       });
   };
