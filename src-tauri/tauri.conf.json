@@ -17,6 +17,7 @@
       },
       "http": {
         "request": true,
+        "all": true,
         "scope": ["https://**", "http://**"]
       },
       "fs": {

@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Dayjs from "dayjs";
 import styles from "./view.module.scss";
 import { getChannelFavicon } from "../../helpers/parseXML";
+import { fetch } from "@tauri-apps/api/http";
 
 type ArticleViewProps = {
   article: any | null;
@@ -59,6 +60,24 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
     );
   };
 
+  const parseImages = (content: string) => {
+    const dom = new DOMParser().parseFromString(content, "text/html");
+    const images = dom.querySelectorAll('img');
+
+    images.forEach((img) => {
+      fetch(img.src, {
+        method: 'GET',
+        responseType: 3,
+      }).then((res) => {
+        const data = new Uint8Array(res.data as number[])
+        const blobUrl = URL.createObjectURL(
+          new Blob([data.buffer], { type: 'image/png' })
+        );
+        (document.querySelector(`img[src="${img.src}"]`) as HTMLImageElement).src = blobUrl;
+      })
+    })
+  }
+
   useEffect(() => {
     if (article) {
       const content = (article.content || article.description || "").replace(
@@ -79,6 +98,7 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
       }
 
       setPageContent(content);
+      parseImages(content);
     }
   }, [article]);
 
