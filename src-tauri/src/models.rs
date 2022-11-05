@@ -1,4 +1,4 @@
-use super::schema::{articles, channels};
+use super::schema::{articles, channels, folders, folder_channel_relations};
 use serde::Serialize;
 use diesel::sql_types::*;
 
@@ -20,6 +20,10 @@ pub struct Channel {
   pub description: String,
   #[diesel(sql_type = Text)]
   pub pub_date: String,
+  #[diesel(sql_type = Text)]
+  pub create_date: String,
+  #[diesel(sql_type = Text)]
+  pub update_date: String,
 }
 
 #[derive(Debug, Queryable, Serialize, Associations, QueryableByName)]
@@ -71,3 +75,45 @@ pub struct NewArticle {
   pub content: String,
   pub pub_date: String,
 }
+
+
+#[derive(Debug, Queryable, Clone)]
+pub struct Folder {
+  #[diesel(sql_type = Integer)]
+  pub id: i32,
+  #[diesel(sql_type = Text)]
+  pub uuid: String,
+  #[diesel(sql_type = Text)]
+  pub name: String,
+  #[diesel(sql_type = Text)]
+  pub create_date: String,
+  #[diesel(sql_type = Text)]
+  pub update_date: String,
+}
+
+#[derive(Debug, Insertable, Clone)]
+#[diesel(table_name = folders)]
+pub struct NewFolder {
+  pub uuid: String,
+  pub name: String,
+}
+
+#[derive(Debug, Queryable, Clone)]
+pub struct FolderChannelRealtion {
+  #[diesel(sql_type = Integer)]
+  pub id: i32,
+  #[diesel(sql_type = Text)]
+  pub folder_uuid: String,
+  #[diesel(sql_type = Text)]
+  pub channle_uuid: String,
+  #[diesel(sql_type = Text)]
+  pub create_date: String,
+}
+#[derive(Debug, Insertable, Clone)]
+#[diesel(table_name = folder_channel_relations)]
+pub struct NewFolderChannelRealtion {
+  pub channel_uuid: String,
+  pub folder_uuid: String,
+}
+
+

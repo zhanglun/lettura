@@ -1,7 +1,5 @@
 -- Your SQL goes here
-DROP TABLE IF EXISTS channels;
-
-CREATE TABLE channels (
+CREATE TABLE IF NOT EXISTS channels (
   id INTEGER NOT NULL PRIMARY KEY,
   uuid VARCHAR NOT NULL UNIQUE,
   title VARCHAR NOT NULL,
@@ -13,9 +11,8 @@ CREATE TABLE channels (
   UNIQUE("link","title")
 );
 
-DROP TABLE IF EXISTS articles;
 
-CREATE TABLE articles (
+CREATE TABLE IF NOT EXISTS articles (
   id INTEGER NOT NULL PRIMARY KEY,
   uuid VARCHAR NOT NULL UNIQUE,
   channel_uuid VARCHAR NOT NULL,

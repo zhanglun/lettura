@@ -15,6 +15,7 @@ pub mod cmd;
 pub mod db;
 pub mod config;
 pub mod models;
+pub mod folder;
 pub mod schema;
 
 pub fn get_menu() -> Menu {
