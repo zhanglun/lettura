@@ -1,4 +1,3 @@
-use diesel::connection;
 use diesel::prelude::*;
 use uuid::Uuid;
 

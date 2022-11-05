@@ -1,4 +1,3 @@
-use chrono::Local;
 use dotenv::dotenv;
 use serde::{Deserialize, Serialize};
 use std::env;
@@ -103,7 +102,7 @@ pub fn get_user_config() -> Option<UserConfig> {
 pub fn update_proxy(ip: String, port: String) -> usize {
   let data = get_user_config();
 
-  let res = match data {
+  match data {
     Some(mut data) => {
       let user_config_path = get_user_config_path();
       let a = data.update_proxy(ip, port);
@@ -114,9 +113,7 @@ pub fn update_proxy(ip: String, port: String) -> usize {
       return 1;
     }
     None => 0,
-  };
-
-  1
+  }
 }
 
 #[cfg(test)]
