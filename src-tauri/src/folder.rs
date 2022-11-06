@@ -86,8 +86,8 @@ pub fn add_folder_channel_relation(folder_uuid: String, channel_uuid: String) ->
   let channel = db::get_channel_by_uuid(String::from(&channel_uuid));
   let folder = get_folder_by_uuid(String::from(&folder_uuid));
   let res = channel
-    .map(|channel| {
-      return folder.map(|folder| {
+    .map(|_channel| {
+      return folder.map(|_folder| {
         let record = models::NewFolderChannelRealtion {
           channel_uuid,
           folder_uuid,

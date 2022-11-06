@@ -70,7 +70,7 @@ pub fn create_user_config() -> usize {
   let user_config = get_user_config_path();
 
   if !user_config.exists() {
-    fs::File::create(user_config);
+    fs::File::create(user_config).unwrap();
     1
   } else {
     0

@@ -19,6 +19,7 @@ serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 tauri = { version = "1.1.1", features = ["devtools", "fs-all", "http-all", "shell-open"] }
 reqwest = { version = "0.11", features = ["json", "socks"] }
+tokio = { version = "1", features = ["full"] }
 rss = { version="2.0", features = ["serde"] }
 atom_syndication = { version = "0.11.0", features = [ "with-serde" ] }
 chrono = { version="0.4", features = ["serde"] }
@@ -28,6 +29,7 @@ libsqlite3-sys = { version = "^0", features = ["bundled"] }
 dotenv = "0.15.0"
 uuid = { version = "1.2.1", features = [ "v4", "fast-rng", "macro-diagnostics" ] }
 toml = "0.5"
+scraper = "0.13.0"
 
 [features]
 default = [ "custom-protocol" ]
