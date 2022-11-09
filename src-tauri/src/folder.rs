@@ -25,6 +25,18 @@ pub struct FolderFilter {
   pub sort: Option<String>,
 }
 
+pub fn add_folder(folder_name: String) -> usize {
+  let uuid = Uuid::new_v4().hyphenated().to_string();
+  let folder = models::NewFolder {
+    uuid,
+    name: folder_name,
+  };
+
+  let result = create_folder(folder);
+
+  result
+}
+
 pub fn get_folders() -> Vec<models::Folder> {
   let mut connection = db::establish_connection();
   let results = schema::folders::dsl::folders
@@ -33,6 +45,32 @@ pub fn get_folders() -> Vec<models::Folder> {
     .expect("Expect loading posts");
 
   results
+}
+
+
+pub fn delete_folders(uuid: String) -> usize {
+  let mut connection = db::establish_connection();
+  let folder = schema::folders::dsl::folders
+    .filter(schema::folders::uuid.eq(&uuid))
+    .load::<models::Folder>(&mut connection)
+    .expect("Expect find folder");
+
+  if folder.len() == 1 {
+    // let result =
+    //   diesel::delete(schema::folders::dsl::folders.filter(schema::folders::uuid.eq(&uuid)))
+    //     .execute(&mut connection)
+    //     .expect("Expect delete folder");
+    let relations = get_folder_channel_relation_by_uuid(String::from(&uuid), None);
+    let channel_uuids = relations.into_iter().map(|item| item.channle_uuid);
+
+    println!("{:?}", channel_uuids);
+    // TODO delete channel and articles
+
+    // return result;
+    return 1;
+  } else {
+    return 0;
+  }
 }
 
 pub fn get_folder_by_uuid(folder_uuid: String) -> Option<models::Folder> {
@@ -155,6 +193,21 @@ mod tests {
   #[test]
   fn test_get_folders() {
     let result = get_folders();
+    println!("{:?}", result);
+  }
+
+  // #[test]
+  // fn test_delete_folders() {
+  //   let uuid = String::from("asdfasdf");
+  //   let reuslt = delete_folders(uuid);
+  //   println!("{:?}", result);
+  // }
+
+  #[test]
+  fn test_get_folder_channel_relation_by_uuid() {
+    let uuid = String::from("9fdf54ce-6397-485d-959a-2992ee4a89e7");
+    let result = get_folder_channel_relation_by_uuid(uuid, None);
+
     println!("{:?}", result);
   }
 
