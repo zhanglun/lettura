@@ -44,6 +44,7 @@ diesel::table! {
         id -> Integer,
         uuid -> Text,
         name -> Text,
+        sort -> Integer,
         create_date -> Timestamp,
         update_date -> Timestamp,
     }

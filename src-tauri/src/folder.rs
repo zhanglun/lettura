@@ -61,7 +61,7 @@ pub fn delete_folders(uuid: String) -> usize {
     //     .execute(&mut connection)
     //     .expect("Expect delete folder");
     let relations = get_folder_channel_relation_by_uuid(String::from(&uuid), None);
-    let channel_uuids = relations.into_iter().map(|item| item.channle_uuid);
+    let channel_uuids = relations.into_iter().map(|item| item.channel_uuid);
 
     println!("{:?}", channel_uuids);
     // TODO delete channel and articles
@@ -90,7 +90,7 @@ pub fn get_folder_by_uuid(folder_uuid: String) -> Option<models::Folder> {
 pub fn get_folder_channel_relation_by_uuid(
   folder_uuid: String,
   channel_uuid: Option<String>,
-) -> Vec<models::FolderChannelRealtion> {
+) -> Vec<models::FolderChannelRelation> {
   let mut connection = db::establish_connection();
   let mut query = schema::folder_channel_relations::dsl::folder_channel_relations.into_boxed();
 
@@ -104,7 +104,7 @@ pub fn get_folder_channel_relation_by_uuid(
   };
 
   let relations = query
-    .load::<models::FolderChannelRealtion>(&mut connection)
+    .load::<models::FolderChannelRelation>(&mut connection)
     .expect("Expect find relations");
 
   relations
@@ -126,7 +126,7 @@ pub fn add_folder_channel_relation(folder_uuid: String, channel_uuid: String) ->
   let res = channel
     .map(|_channel| {
       return folder.map(|_folder| {
-        let record = models::NewFolderChannelRealtion {
+        let record = models::NewFolderChannelRelation {
           channel_uuid,
           folder_uuid,
         };

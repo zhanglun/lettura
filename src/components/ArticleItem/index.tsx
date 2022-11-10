@@ -10,25 +10,30 @@ export const ArticleItem = React.memo((props: any) => {
   const [readStatus, setReadStatus] = useState(article.read_status);
   const store = useStore();
 
+  const updateCurrentArticle = (article: any) => {
+    if (article.read_status === 1) {
+      dataAgent.updateArticleReadStatus(article.uuid, 2).then((res) => {
+        if (res) {
+          busChannel.emit("updateChannelUnreadCount", {
+            uuid: article.channel_uuid,
+            action: "decrease",
+            count: 1,
+          });
+
+          setReadStatus(true);
+        }
+      });
+    }
+
+    store.setArticle(article);
+  }
+
   const handleClick = async (e: any) => {
     if (onSelect) {
       onSelect(article);
     }
 
-    if (article.read_status === 1) {
-      const res = await dataAgent.updateArticleReadStatus(article.uuid, 2);
-      if (res) {
-        busChannel.emit("updateChannelUnreadCount", {
-          uuid: article.channel_uuid,
-          action: "decrease",
-          count: 1,
-        });
-
-        setReadStatus(true);
-      }
-    }
-
-    store.setArticle(article);
+    updateCurrentArticle(article)
   };
 
   useEffect(() => {

@@ -26,6 +26,14 @@ pub struct Channel {
   pub update_date: String,
 }
 
+pub struct FeedMeta {
+  pub id: i32,
+  pub uuid: String,
+  pub channel_uuid: String,
+  pub parent_uuid: String,
+  pub sort: i32,
+}
+
 #[derive(Debug, Queryable, Serialize, Associations, QueryableByName)]
 #[diesel(belongs_to(Channel, foreign_key = uuid))]
 pub struct Article {
@@ -85,6 +93,8 @@ pub struct Folder {
   pub uuid: String,
   #[diesel(sql_type = Text)]
   pub name: String,
+  #[diesel(sql_type = Integer)]
+  pub sort: i32,
   #[diesel(sql_type = Text)]
   pub create_date: String,
   #[diesel(sql_type = Text)]
@@ -99,21 +109,19 @@ pub struct NewFolder {
 }
 
 #[derive(Debug, Queryable, Clone)]
-pub struct FolderChannelRealtion {
+pub struct FolderChannelRelation {
   #[diesel(sql_type = Integer)]
   pub id: i32,
   #[diesel(sql_type = Text)]
   pub folder_uuid: String,
   #[diesel(sql_type = Text)]
-  pub channle_uuid: String,
+  pub channel_uuid: String,
   #[diesel(sql_type = Text)]
   pub create_date: String,
 }
 #[derive(Debug, Insertable, Clone)]
 #[diesel(table_name = folder_channel_relations)]
-pub struct NewFolderChannelRealtion {
+pub struct NewFolderChannelRelation {
   pub channel_uuid: String,
   pub folder_uuid: String,
 }
-
-
