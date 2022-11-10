@@ -85,7 +85,7 @@ pub struct NewArticle {
 }
 
 
-#[derive(Debug, Queryable, Clone)]
+#[derive(Debug, Queryable, QueryableByName, Clone)]
 pub struct Folder {
   #[diesel(sql_type = Integer)]
   pub id: i32,
@@ -106,6 +106,7 @@ pub struct Folder {
 pub struct NewFolder {
   pub uuid: String,
   pub name: String,
+  pub sort: i32,
 }
 
 #[derive(Debug, Queryable, Clone)]

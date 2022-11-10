@@ -5,8 +5,31 @@ use crate::db;
 use crate::models;
 use crate::schema;
 
-pub fn create_folder(folder: models::NewFolder) -> usize {
+pub struct FolderFilter {
+  pub name: Option<String>,
+  pub order_by: Option<String>,
+  pub sort: Option<String>,
+}
+
+pub fn add_folder(folder_name: String) -> usize {
   let mut connection = db::establish_connection();
+  let sql = "SELECT max(id) FROM folders;";
+
+  let last_sort = schema::folders::dsl::folders
+    .select(diesel::dsl::max(schema::folders::id))
+    .first::<i32>(&mut connection);
+
+  let last_sort = match last_sort {
+    Ok(s) => s,
+    Err(_) => 0,
+  };
+  let uuid = Uuid::new_v4().hyphenated().to_string();
+  let folder = models::NewFolder {
+    uuid,
+    name: folder_name,
+    sort: last_sort + 1,
+  };
+
   let result = diesel::insert_or_ignore_into(schema::folders::dsl::folders)
     .values(folder)
     .execute(&mut connection);
@@ -15,24 +38,6 @@ pub fn create_folder(folder: models::NewFolder) -> usize {
     Ok(r) => r,
     Err(_) => 0,
   };
-
-  result
-}
-
-pub struct FolderFilter {
-  pub name: Option<String>,
-  pub order_by: Option<String>,
-  pub sort: Option<String>,
-}
-
-pub fn add_folder(folder_name: String) -> usize {
-  let uuid = Uuid::new_v4().hyphenated().to_string();
-  let folder = models::NewFolder {
-    uuid,
-    name: folder_name,
-  };
-
-  let result = create_folder(folder);
 
   result
 }
@@ -46,7 +51,6 @@ pub fn get_folders() -> Vec<models::Folder> {
 
   results
 }
-
 
 pub fn delete_folders(uuid: String) -> usize {
   let mut connection = db::establish_connection();
@@ -181,13 +185,7 @@ mod tests {
 
   #[test]
   fn test_create_folder() {
-    let uuid = Uuid::new_v4().hyphenated().to_string();
-    let folder = models::NewFolder {
-      uuid,
-      name: "test folder".to_string(),
-    };
-    let result = create_folder(folder);
-    println!("{}", result);
+    // println!("{}", result);
   }
 
   #[test]
