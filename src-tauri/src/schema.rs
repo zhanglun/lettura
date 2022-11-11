@@ -11,6 +11,8 @@ diesel::table! {
         description -> Text,
         content -> Text,
         pub_date -> Timestamp,
+        create_date -> Timestamp,
+        update_date -> Timestamp,
         read_status -> Integer,
     }
 }

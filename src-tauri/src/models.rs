@@ -55,6 +55,10 @@ pub struct Article {
   pub content: String,
   #[diesel(sql_type = Text)]
   pub pub_date: String,
+  #[diesel(sql_type = Text)]
+  pub create_date: String,
+  #[diesel(sql_type = Text)]
+  pub update_date: String,
   #[diesel(sql_type = Integer)]
   pub read_status: i32,
 }

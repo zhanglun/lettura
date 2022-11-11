@@ -8,7 +8,9 @@ CREATE TABLE IF NOT EXISTS channels (
   image VARCHAR NOT NULL,
   description VARCHAR NOT NULL,
   pub_date DATETIME NOT NULL,
-  UNIQUE("link","title")
+  create_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  update_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE("link", "title")
 );
 
 
@@ -22,6 +24,8 @@ CREATE TABLE IF NOT EXISTS articles (
   description VARCHAR NOT NULL,
   content VARCHAR NOT NULL,
   pub_date DATETIME NOT NULL,
-  read_status INTEGER NOT NULL DEFAULT 1,
-  UNIQUE("link","title") -- 1: 未读 2: 已读
+  create_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  update_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  read_status INTEGER NOT NULL DEFAULT 1,  -- 1: 未读 2: 已读
+  UNIQUE("link", "title")
 );
