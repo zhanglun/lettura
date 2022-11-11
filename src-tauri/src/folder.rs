@@ -13,16 +13,24 @@ pub struct FolderFilter {
 
 pub fn add_folder(folder_name: String) -> usize {
   let mut connection = db::establish_connection();
-  let sql = "SELECT max(id) FROM folders;";
-
   let last_sort = schema::folders::dsl::folders
-    .select(diesel::dsl::max(schema::folders::id))
-    .first::<i32>(&mut connection);
+    .select(schema::folders::sort)
+    .get_results::<i32>(&mut connection);
 
   let last_sort = match last_sort {
-    Ok(s) => s,
-    Err(_) => 0,
+    Ok(mut rec) => {
+      rec.pop()
+    }
+    Err(_) => None,
   };
+
+  let last_sort = match last_sort {
+    Some(s) => s,
+    None => 0
+  };
+
+  println!("{:?}", last_sort);
+
   let uuid = Uuid::new_v4().hyphenated().to_string();
   let folder = models::NewFolder {
     uuid,
@@ -47,7 +55,7 @@ pub fn get_folders() -> Vec<models::Folder> {
   let results = schema::folders::dsl::folders
     .order(schema::folders::dsl::name.desc())
     .load::<models::Folder>(&mut connection)
-    .expect("Expect loading posts");
+    .expect("Expect loading folders");
 
   results
 }
@@ -185,7 +193,7 @@ mod tests {
 
   #[test]
   fn test_create_folder() {
-    // println!("{}", result);
+    add_folder("asdf".to_string());
   }
 
   #[test]
