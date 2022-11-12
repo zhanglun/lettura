@@ -1,4 +1,4 @@
-use reqwest::{self, Response};
+use reqwest::{self};
 use scraper::{self, Selector};
 use serde::Serialize;
 

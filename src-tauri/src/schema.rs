@@ -33,6 +33,17 @@ diesel::table! {
 }
 
 diesel::table! {
+    feed_metas (id) {
+        id -> Integer,
+        uuid -> Text,
+        channel_uuid -> Text,
+        parent_uuid -> Text,
+        create_date -> Timestamp,
+        update_date -> Timestamp,
+    }
+}
+
+diesel::table! {
     folder_channel_relations (id) {
         id -> Integer,
         folder_uuid -> Text,
@@ -55,6 +66,7 @@ diesel::table! {
 diesel::allow_tables_to_appear_in_same_query!(
     articles,
     channels,
+    feed_metas,
     folder_channel_relations,
     folders,
 );

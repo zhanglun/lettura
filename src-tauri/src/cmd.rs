@@ -5,9 +5,10 @@ use serde::{Serialize};
 use tauri::command;
 use uuid::Uuid;
 
-use crate::config;
 use crate::db;
+use crate::config;
 use crate::models;
+use crate::feed;
 
 use std::str::FromStr;
 
@@ -284,7 +285,7 @@ pub fn get_articles(uuid: String, filter: db::ArticleFilter) -> db::ArticleQuery
 
 #[command]
 pub fn delete_channel(uuid: String) -> usize {
-  let result = db::delete_channel(uuid);
+  let result = feed::delete_channel(uuid);
 
   result
 }

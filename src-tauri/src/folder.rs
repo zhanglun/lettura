@@ -2,6 +2,7 @@ use diesel::prelude::*;
 use uuid::Uuid;
 
 use crate::db;
+use crate::feed;
 use crate::models;
 use crate::schema;
 
@@ -11,6 +12,18 @@ pub struct FolderFilter {
   pub sort: Option<String>,
 }
 
+pub fn get_channels_in_folders(
+  mut connection: diesel::Connection,
+  uuids: Vec<String>,
+) -> Vec<String> {
+  let result = schema::feed_metas::dsl::feed_metas
+    .filter(schema::feed_metas::parent_uuid.eq_any(&uuids))
+    .load::<models::FeedMeta>(&mut connection)
+    .expect("Expect get feed meta");
+
+  result
+}
+
 pub fn add_folder(folder_name: String) -> usize {
   let mut connection = db::establish_connection();
   let last_sort = schema::folders::dsl::folders
@@ -18,15 +31,13 @@ pub fn add_folder(folder_name: String) -> usize {
     .get_results::<i32>(&mut connection);
 
   let last_sort = match last_sort {
-    Ok(mut rec) => {
-      rec.pop()
-    }
+    Ok(mut rec) => rec.pop(),
     Err(_) => None,
   };
 
   let last_sort = match last_sort {
     Some(s) => s,
-    None => 0
+    None => 0,
   };
 
   println!("{:?}", last_sort);
@@ -60,7 +71,7 @@ pub fn get_folders() -> Vec<models::Folder> {
   results
 }
 
-pub fn delete_folders(uuid: String) -> usize {
+pub fn delete_folders(uuid: String) -> (usize, usize) {
   let mut connection = db::establish_connection();
   let folder = schema::folders::dsl::folders
     .filter(schema::folders::uuid.eq(&uuid))
@@ -68,21 +79,27 @@ pub fn delete_folders(uuid: String) -> usize {
     .expect("Expect find folder");
 
   if folder.len() == 1 {
-    // let result =
-    //   diesel::delete(schema::folders::dsl::folders.filter(schema::folders::uuid.eq(&uuid)))
-    //     .execute(&mut connection)
-    //     .expect("Expect delete folder");
-    let relations = get_folder_channel_relation_by_uuid(String::from(&uuid), None);
+    let relations = get_channels_in_folders(&mut connection, &channel_uuids);
     let channel_uuids = relations.into_iter().map(|item| item.channel_uuid);
 
     println!("{:?}", channel_uuids);
-    // TODO delete channel and articles
 
-    // return result;
-    return 1;
+    let channels = feed::batch_delete_channel(channel_uuids);
+
+    return (1, channels);
   } else {
-    return 0;
+    return (0, 0);
   }
+}
+
+pub fn update_folder_name(uuid: String, name: &str) -> usize {
+  let result =
+    diesel::update(schema::folders::dsl::folders.filter(schema::folders::uuid.eq(&uuid)))
+      .set(schema::folders::name.eq(name))
+      .execute(&mut connnection)
+      .expect("update folder name");
+
+  result
 }
 
 pub fn get_folder_by_uuid(folder_uuid: String) -> Option<models::Folder> {

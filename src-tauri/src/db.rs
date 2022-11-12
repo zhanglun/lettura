@@ -71,31 +71,6 @@ pub fn add_channel(channel: models::NewChannel, articles: Vec<models::NewArticle
   result
 }
 
-pub fn delete_channel(uuid: String) -> usize {
-  let mut connection = establish_connection();
-  let channel = schema::channels::dsl::channels
-    .filter(schema::channels::uuid.eq(&uuid))
-    .load::<models::Channel>(&mut connection)
-    .expect("Expect find channel");
-
-  if channel.len() == 1 {
-    let result =
-      diesel::delete(schema::channels::dsl::channels.filter(schema::channels::uuid.eq(&uuid)))
-        .execute(&mut connection)
-        .expect("Expect delete channel");
-
-    diesel::delete(
-      schema::articles::dsl::articles.filter(schema::articles::channel_uuid.eq(&uuid)),
-    )
-    .execute(&mut connection)
-    .expect("Expect delete channel");
-
-    return result;
-  } else {
-    return 0;
-  }
-}
-
 pub fn get_channel_by_uuid(channel_uuid: String) -> Option<models::Channel> {
   let mut connection = establish_connection();
   let mut channel = schema::channels::dsl::channels

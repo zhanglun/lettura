@@ -26,12 +26,23 @@ pub struct Channel {
   pub update_date: String,
 }
 
+
+#[derive(Debug, Queryable, Serialize, QueryableByName)]
 pub struct FeedMeta {
+  #[diesel(sql_type = Integer)]
   pub id: i32,
+  #[diesel(sql_type = Text)]
   pub uuid: String,
+  #[diesel(sql_type = Text)]
   pub channel_uuid: String,
+  #[diesel(sql_type = Text)]
   pub parent_uuid: String,
+  #[diesel(sql_type = Integer)]
   pub sort: i32,
+  #[diesel(sql_type = Text)]
+  pub create_date: String,
+  #[diesel(sql_type = Text)]
+  pub update_date: String,
 }
 
 #[derive(Debug, Queryable, Serialize, Associations, QueryableByName)]

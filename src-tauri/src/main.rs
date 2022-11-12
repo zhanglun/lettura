@@ -17,6 +17,7 @@ pub mod config;
 pub mod models;
 pub mod folder;
 pub mod scraper;
+pub mod feed;
 pub mod schema;
 
 pub fn get_menu() -> Menu {
