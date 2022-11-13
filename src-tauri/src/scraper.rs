@@ -61,7 +61,7 @@ impl PageScraper {
         }
         _ => String::from(""),
       },
-      Err(a) => String::from(""),
+      Err(_) => String::from(""),
     };
 
     Some(result)

@@ -64,7 +64,7 @@ pub fn add_folder(folder_name: String) -> usize {
 pub fn get_folders() -> Vec<models::Folder> {
   let mut connection = db::establish_connection();
   let results = schema::folders::dsl::folders
-    .order(schema::folders::dsl::name.desc())
+    .order(schema::folders::dsl::sort.asc())
     .load::<models::Folder>(&mut connection)
     .expect("Expect loading folders");
 
