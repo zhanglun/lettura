@@ -13,9 +13,9 @@ pub struct FolderFilter {
 }
 
 pub fn get_channels_in_folders(
-  mut connection: diesel::Connection,
+  mut connection: diesel::SqliteConnection,
   uuids: Vec<String>,
-) -> Vec<String> {
+) -> Vec<models::FeedMeta> {
   let result = schema::feed_metas::dsl::feed_metas
     .filter(schema::feed_metas::parent_uuid.eq_any(&uuids))
     .load::<models::FeedMeta>(&mut connection)
@@ -79,8 +79,11 @@ pub fn delete_folders(uuid: String) -> (usize, usize) {
     .expect("Expect find folder");
 
   if folder.len() == 1 {
-    let relations = get_channels_in_folders(&mut connection, &channel_uuids);
-    let channel_uuids = relations.into_iter().map(|item| item.channel_uuid);
+    let relations = get_channels_in_folders(connection, vec![uuid]);
+    let channel_uuids = relations
+      .into_iter()
+      .map(|item| item.channel_uuid)
+      .collect();
 
     println!("{:?}", channel_uuids);
 
@@ -93,10 +96,11 @@ pub fn delete_folders(uuid: String) -> (usize, usize) {
 }
 
 pub fn update_folder_name(uuid: String, name: &str) -> usize {
+  let mut connection = db::establish_connection();
   let result =
     diesel::update(schema::folders::dsl::folders.filter(schema::folders::uuid.eq(&uuid)))
       .set(schema::folders::name.eq(name))
-      .execute(&mut connnection)
+      .execute(&mut connection)
       .expect("update folder name");
 
   result
