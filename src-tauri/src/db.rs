@@ -46,31 +46,6 @@ pub fn get_channels() -> Vec<models::Channel> {
   results
 }
 
-pub fn add_channel(channel: models::NewChannel, articles: Vec<models::NewArticle>) -> usize {
-  let mut connection = establish_connection();
-  let result = diesel::insert_or_ignore_into(schema::channels::dsl::channels)
-    .values(channel)
-    .execute(&mut connection);
-  let result = match result {
-    Ok(r) => r,
-    Err(_) => 0,
-  };
-
-  println!(" new result {:?}", result);
-
-  if result == 1 {
-    println!("start insert articles");
-
-    let articles = diesel::insert_or_ignore_into(schema::articles::dsl::articles)
-      .values(articles)
-      .execute(&mut connection);
-
-    println!("articles {:?}", articles);
-  }
-
-  result
-}
-
 pub fn get_channel_by_uuid(channel_uuid: String) -> Option<models::Channel> {
   let mut connection = establish_connection();
   let mut channel = schema::channels::dsl::channels

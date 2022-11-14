@@ -261,7 +261,7 @@ pub async fn add_channel(url: String) -> usize {
       let channel_uuid = Uuid::new_v4().hyphenated().to_string();
       let channel = create_channel_model(&channel_uuid, &url, &res);
       let articles = create_article_models(&channel_uuid, &url, &res);
-      let res = db::add_channel(channel, articles);
+      let res = feed::add_channel(channel, articles);
 
       res
     }

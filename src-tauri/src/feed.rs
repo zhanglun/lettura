@@ -1,4 +1,5 @@
 use diesel::prelude::*;
+use uuid::Uuid;
 
 use crate::db;
 use crate::folder;
@@ -67,11 +68,6 @@ pub fn get_all_channel_meta() -> Vec<models::FeedMeta> {
 }
 
 pub fn get_feeds() -> (Vec<models::Folder>, Vec<models::Channel>) {
-  // 1. 获取folders
-  // 2. 获取 feed_meta
-  // 3. 遍历folders，绑定channel_uuid
-  // 4. 没有parent_uuid的channel 按照order排序
-  // 5. 返回folder+channel的列表
   let folders = folder::get_folders();
   let relations = get_all_channel_meta();
   let mut folder_uuids: Vec<String> = vec![];
@@ -91,6 +87,66 @@ pub fn get_feeds() -> (Vec<models::Folder>, Vec<models::Channel>) {
     .expect("dff");
 
   return (folders, channels);
+}
+
+pub fn get_last_sort(connection: &mut diesel::SqliteConnection) -> i32 {
+  let last_sort = schema::feed_metas::dsl::feed_metas
+    .select(schema::feed_metas::sort)
+    .filter(schema::feed_metas::dsl::parent_uuid.is_not(""))
+    .get_results::<i32>(connection);
+
+  let last_sort = match last_sort {
+    Ok(mut rec) => rec.pop(),
+    Err(_) => None,
+  };
+
+  let last_sort = match last_sort {
+    Some(s) => s,
+    None => 0,
+  };
+
+  last_sort
+}
+
+pub fn add_channel(channel: models::NewChannel, articles: Vec<models::NewArticle>) -> usize {
+  let mut connection = db::establish_connection();
+  let result = diesel::insert_or_ignore_into(schema::channels::dsl::channels)
+    .values(channel)
+    .execute(&mut connection);
+  let result = match result {
+    Ok(r) => {
+      if r == 1 {
+        let uuid = Uuid::new_v4().hyphenated().to_string();
+        let last_sort = get_last_sort(&mut connection);
+        let meta_record = models::NewFeedMeta {
+          uuid,
+          channel_uuid: String::from(channel.uuid),
+          parent_uuid: "".to_string(),
+          sort: last_sort + 1,
+        };
+        diesel::insert_or_ignore_into(schema::feed_metas::dsl::feed_metas)
+        .values(meta_record)
+        .execute(&mut connection);
+      }
+
+      r
+    }
+    Err(_) => 0,
+  };
+
+  println!(" new result {:?}", result);
+
+  if result == 1 {
+    println!("start insert articles");
+
+    let articles = diesel::insert_or_ignore_into(schema::articles::dsl::articles)
+      .values(articles)
+      .execute(&mut connection);
+
+    println!("articles {:?}", articles);
+  }
+
+  result
 }
 
 #[cfg(test)]
