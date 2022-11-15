@@ -128,7 +128,7 @@ pub async fn get_channels() -> Vec<models::Channel> {
   return results;
 }
 
-pub fn create_channel_model(uuid: &String, url: &String, res: &Feed) -> models::NewChannel {
+pub fn create_channel_model(uuid: &String, url: &String, res: &Feed) -> Box<models::NewChannel> {
   match res {
     Feed::Atom(res) => {
       let image = String::from("");
@@ -153,7 +153,7 @@ pub fn create_channel_model(uuid: &String, url: &String, res: &Feed) -> models::
         pub_date: date,
       };
 
-      return channel;
+      return Box::new(channel);
     }
     Feed::RSS(res) => {
       let image = match &res.image {
@@ -174,7 +174,7 @@ pub fn create_channel_model(uuid: &String, url: &String, res: &Feed) -> models::
         pub_date: date,
       };
 
-      return channel;
+      return Box::new(channel);
     }
   }
 }
@@ -261,7 +261,7 @@ pub async fn add_channel(url: String) -> usize {
       let channel_uuid = Uuid::new_v4().hyphenated().to_string();
       let channel = create_channel_model(&channel_uuid, &url, &res);
       let articles = create_article_models(&channel_uuid, &url, &res);
-      let res = feed::add_channel(channel, articles);
+      let res = feed::add_channel(*channel, articles);
 
       res
     }

@@ -111,7 +111,7 @@ pub fn get_last_sort(connection: &mut diesel::SqliteConnection) -> i32 {
 pub fn add_channel(channel: models::NewChannel, articles: Vec<models::NewArticle>) -> usize {
   let mut connection = db::establish_connection();
   let result = diesel::insert_or_ignore_into(schema::channels::dsl::channels)
-    .values(channel)
+    .values(&channel)
     .execute(&mut connection);
   let result = match result {
     Ok(r) => {
@@ -124,9 +124,11 @@ pub fn add_channel(channel: models::NewChannel, articles: Vec<models::NewArticle
           parent_uuid: "".to_string(),
           sort: last_sort + 1,
         };
+
         diesel::insert_or_ignore_into(schema::feed_metas::dsl::feed_metas)
-        .values(meta_record)
-        .execute(&mut connection);
+          .values(meta_record)
+          .execute(&mut connection)
+          .expect("Expect create feed meta");
       }
 
       r
