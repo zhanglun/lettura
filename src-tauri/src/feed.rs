@@ -1,4 +1,6 @@
 use diesel::prelude::*;
+use serde::Deserialize;
+use serde::Serialize;
 use uuid::Uuid;
 
 use crate::db;
@@ -67,7 +69,16 @@ pub fn get_all_channel_meta() -> Vec<models::FeedMeta> {
   result
 }
 
-pub fn get_feeds() -> (Vec<models::Folder>, Vec<models::Channel>) {
+#[derive(Debug, Deserialize, Serialize)]
+pub struct FeedItem {
+  pub item_type: String,
+  pub uuid: String,
+  pub title: String,
+  pub sort: i32,
+  pub link: Option<String>,
+}
+
+pub fn get_feeds() -> Vec<FeedItem> {
   let folders = folder::get_folders();
   let relations = get_all_channel_meta();
   let mut folder_uuids: Vec<String> = vec![];
@@ -93,7 +104,29 @@ pub fn get_feeds() -> (Vec<models::Folder>, Vec<models::Channel>) {
     .load::<models::Channel>(&mut connection)
     .expect("dff");
 
-  return (folders, channels);
+  let mut result: Vec<FeedItem> = Vec::new();
+
+  for folder in folders {
+    result.push(FeedItem {
+      item_type: String::from("folder"),
+      uuid: folder.uuid,
+      title: folder.name,
+      sort: folder.sort,
+      link: None,
+    })
+  }
+
+  for channel in channels {
+    result.push(FeedItem {
+      item_type: String::from("channel"),
+      uuid: channel.uuid,
+      title: channel.title,
+      sort: channel.sort,
+      link: Some(channel.link),
+    })
+  }
+
+  result
 }
 
 pub fn get_last_sort(connection: &mut diesel::SqliteConnection) -> i32 {

@@ -70,6 +70,8 @@ export const AddFeedChannel = (props: any) => {
   };
 
   const handleSave = async () => {
+    setConfirming(true)
+
     dataAgent.addChannel(feedUrl).then((res) => {
       console.log('saveRes ===>', res)
 
