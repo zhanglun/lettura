@@ -123,6 +123,7 @@ pub async fn fetch_feed(url: String) -> Option<FeedFetchResponse> {
 
 #[command]
 pub async fn get_channels() -> Vec<models::Channel> {
+  // let results = feed::get_feeds()
   let results = db::get_channels();
 
   return results;

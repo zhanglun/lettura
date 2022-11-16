@@ -27,6 +27,7 @@ diesel::table! {
         image -> Text,
         description -> Text,
         pub_date -> Timestamp,
+        sort -> Integer,
         create_date -> Timestamp,
         update_date -> Timestamp,
     }

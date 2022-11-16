@@ -73,10 +73,17 @@ pub fn get_feeds() -> (Vec<models::Folder>, Vec<models::Channel>) {
   let mut folder_uuids: Vec<String> = vec![];
   let mut channel_uuids: Vec<String> = vec![];
 
+  println!("{:?}", relations);
+
   for relation in relations {
-    folder_uuids.push(relation.parent_uuid);
-    channel_uuids.push(relation.channel_uuid);
+    if relation.parent_uuid == "" {
+      folder_uuids.push(relation.parent_uuid);
+    } else {
+      channel_uuids.push(relation.channel_uuid);
+    }
   }
+
+  println!("{:?}", &channel_uuids);
 
   let mut connection = db::establish_connection();
   let channels = schema::channels::dsl::channels

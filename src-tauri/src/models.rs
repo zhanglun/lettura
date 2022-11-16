@@ -20,6 +20,8 @@ pub struct Channel {
   pub description: String,
   #[diesel(sql_type = Text)]
   pub pub_date: String,
+  #[diesel(sql_type = Integer)]
+  pub sort: i32,
   #[diesel(sql_type = Text)]
   pub create_date: String,
   #[diesel(sql_type = Text)]
