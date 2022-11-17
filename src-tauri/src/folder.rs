@@ -223,13 +223,6 @@ mod tests {
     println!("{:?}", result);
   }
 
-  // #[test]
-  // fn test_delete_folders() {
-  //   let uuid = String::from("asdfasdf");
-  //   let reuslt = delete_folders(uuid);
-  //   println!("{:?}", result);
-  // }
-
   #[test]
   fn test_get_folder_channel_relation_by_uuid() {
     let uuid = String::from("9fdf54ce-6397-485d-959a-2992ee4a89e7");

@@ -191,6 +191,52 @@ pub fn add_channel(channel: models::NewChannel, articles: Vec<models::NewArticle
   result
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ChannelFilter {
+  pub parent_uuid: Option<String>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct ChannelQueryResult {
+  list: Vec<models::Channel>,
+  // pub count: i32,
+}
+pub fn get_channels(filter: ChannelFilter) -> ChannelQueryResult {
+  let mut connection = db::establish_connection();
+  let mut query = schema::channels::dsl::channels.into_boxed();
+
+  match filter.parent_uuid {
+    Some(parent_uuid) => {
+      let relations = schema::feed_metas::dsl::feed_metas
+        .filter(schema::feed_metas::parent_uuid.eq(parent_uuid))
+        .load::<models::FeedMeta>(&mut connection)
+        .expect("Expect get feed meta");
+      let mut folder_uuids: Vec<String> = vec![];
+      let mut channel_uuids: Vec<String> = vec![];
+
+      for relation in relations {
+        if relation.parent_uuid == "" {
+          folder_uuids.push(relation.parent_uuid);
+        } else {
+          channel_uuids.push(relation.channel_uuid);
+        }
+      }
+
+      query = query.filter(schema::channels::uuid.eq_any(channel_uuids));
+    }
+    None => {
+      1;
+    }
+  }
+
+  query = query.order(schema::channels::dsl::create_date.desc());
+
+  let result = query
+    .load::<models::Channel>(&mut connection)
+    .expect("Expect loading articles");
+
+  ChannelQueryResult { list: result }
+}
 #[cfg(test)]
 mod tests {
   use super::*;
