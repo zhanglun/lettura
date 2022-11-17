@@ -89,10 +89,10 @@ export const FeedManager = () => {
 	};
 
 	const getList = async () => {
-		const res = (await dataAgent.getChannels()) as Channel[];
+		const res = await dataAgent.getChannels({});
 
-		setList(res);
-		setRenderList(res);
+		setList(res.list || []);
+		setRenderList(res.list || []);
 	};
 
 	useEffect(() => {

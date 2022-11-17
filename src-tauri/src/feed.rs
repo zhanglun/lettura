@@ -50,7 +50,7 @@ pub fn batch_delete_channel(channel_uuids: Vec<String>) -> usize {
   result
 }
 
-pub fn get_channel_meta_with_uuids(channel_uuids: Vec<String>) -> Vec<models::FeedMeta> {
+pub fn get_feed_meta_with_uuids(channel_uuids: Vec<String>) -> Vec<models::FeedMeta> {
   let mut connection = db::establish_connection();
   let result = schema::feed_metas::dsl::feed_metas
     .filter(schema::feed_metas::channel_uuid.eq_any(&channel_uuids))
@@ -60,13 +60,31 @@ pub fn get_channel_meta_with_uuids(channel_uuids: Vec<String>) -> Vec<models::Fe
   result
 }
 
-pub fn get_all_channel_meta() -> Vec<models::FeedMeta> {
+pub fn get_all_feed_meta() -> Vec<models::FeedMeta> {
   let mut connection = db::establish_connection();
   let result = schema::feed_metas::dsl::feed_metas
     .load::<models::FeedMeta>(&mut connection)
     .expect("Expect get feed meta");
 
   result
+}
+
+#[derive(Deserialize)]
+pub struct FeedMetaUpdateRequest {
+  pub parent_uuid: String,
+  pub sort: i32,
+}
+
+pub fn update_feed_meta(uuid: String, update: FeedMetaUpdateRequest) -> usize {
+  let mut connection = db::establish_connection();
+  let updated_row = diesel::update(
+    schema::feed_metas::dsl::feed_metas.filter(schema::feed_metas::channel_uuid.eq(uuid)),
+  )
+  .set((schema::feed_metas::parent_uuid.eq(update.parent_uuid), schema::feed_metas::sort.eq(update.sort)))
+  .execute(&mut connection)
+  .expect("update feed meta");
+
+ updated_row
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -80,7 +98,7 @@ pub struct FeedItem {
 
 pub fn get_feeds() -> Vec<FeedItem> {
   let folders = folder::get_folders();
-  let relations = get_all_channel_meta();
+  let relations = get_all_feed_meta();
   let mut folder_uuids: Vec<String> = vec![];
   let mut channel_uuids: Vec<String> = vec![];
 
@@ -201,6 +219,7 @@ pub struct ChannelQueryResult {
   list: Vec<models::Channel>,
   // pub count: i32,
 }
+
 pub fn get_channels(filter: ChannelFilter) -> ChannelQueryResult {
   let mut connection = db::establish_connection();
   let mut query = schema::channels::dsl::channels.into_boxed();

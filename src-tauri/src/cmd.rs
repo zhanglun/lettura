@@ -122,9 +122,17 @@ pub async fn fetch_feed(url: String) -> Option<FeedFetchResponse> {
 }
 
 #[command]
-pub async fn get_channels() -> Vec<feed::FeedItem> {
+pub async fn get_feeds() -> Vec<feed::FeedItem> {
   let results = feed::get_feeds();
-  // let results = db::get_channels();
+
+  return results;
+}
+
+#[command]
+pub async fn get_channels(filter: feed::ChannelFilter) -> feed::ChannelQueryResult {
+  let results = feed::get_channels(feed::ChannelFilter {
+    parent_uuid: filter.parent_uuid
+  });
 
   return results;
 }

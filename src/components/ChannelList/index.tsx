@@ -84,7 +84,7 @@ const ChannelList = (props: any): JSX.Element => {
   };
 
   const getList = () => {
-    Promise.all([dataAgent.getChannels(), dataAgent.getUnreadTotal()]).then(
+    Promise.all([dataAgent.getFeeds(), dataAgent.getUnreadTotal()]).then(
       ([channel, unreadTotal]) => {
         channel.forEach((item) => {
           item.unread = unreadTotal[item.uuid] || 0;

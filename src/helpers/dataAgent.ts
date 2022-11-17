@@ -1,8 +1,12 @@
 import { invoke } from "@tauri-apps/api";
 import { Channel } from "../db";
 
-export const getChannels = async (): Promise<Channel[]> => {
-  return invoke('get_channels')
+export const getChannels = async (filter: any): Promise<{ list: Channel[] }> => {
+  return invoke('get_channels', { filter })
+}
+
+export const getFeeds = async (): Promise<Channel[]> => {
+  return invoke('get_feeds')
 }
 
 /**

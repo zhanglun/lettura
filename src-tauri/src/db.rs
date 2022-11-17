@@ -37,15 +37,6 @@ pub fn establish_connection() -> SqliteConnection {
   }
 }
 
-pub fn get_channels() -> Vec<models::Channel> {
-  let mut connection = establish_connection();
-  let results = schema::channels::dsl::channels
-    .load::<models::Channel>(&mut connection)
-    .expect("Expect loading posts");
-
-  results
-}
-
 pub fn get_channel_by_uuid(channel_uuid: String) -> Option<models::Channel> {
   let mut connection = establish_connection();
   let mut channel = schema::channels::dsl::channels
