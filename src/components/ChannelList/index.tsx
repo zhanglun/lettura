@@ -5,6 +5,7 @@ import defaultSiteIcon from "./default.png";
 import { RouteConfig } from "../../config";
 import { Channel } from "../../db";
 import { AddFeedChannel } from "../AddChannel";
+import { AddFolder } from "../AddFolder";
 import { getChannelFavicon } from "../../helpers/parseXML";
 import * as dataAgent from "../../helpers/dataAgent";
 import { StoreContext } from "../../context";
@@ -21,6 +22,7 @@ const ChannelList = (props: any): JSX.Element => {
   const store = useContext(StoreContext);
   const navigate = useNavigate();
   const addFeedButtonRef = useRef(null);
+  const addFolderButtonRef = useRef(null);
   const [refreshing, setRefreshing] = useState(false);
   const [channelList, setChannelList] = useState<Channel[]>([]);
   const [done, setDone] = useState(0);
@@ -225,6 +227,12 @@ const ChannelList = (props: any): JSX.Element => {
     }
   };
 
+  const addFolder = () => {
+    if (addFolderButtonRef && addFolderButtonRef.current) {
+      (addFolderButtonRef.current as any).showModal();
+    }
+  }
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -236,7 +244,8 @@ const ChannelList = (props: any): JSX.Element => {
             </span>
           </Tooltip>
           <Tooltip content="Create folder">
-            <span className={styles.toolbarItem}>
+            <AddFolder Aref={addFolderButtonRef} />
+            <span className={styles.toolbarItem} onClick={addFolder}>
               <FolderIcon className={"h-4 w-4"} />
             </span>
           </Tooltip>

@@ -88,7 +88,7 @@ export const AddFeedChannel = (props: any) => {
     <Modal
       visible={showStatus}
       title="添加 RSS 订阅"
-      size="medium"
+      width={560}
       confirmLoading={confirming}
       onOk={handleSave}
       onCancel={handleCancel}

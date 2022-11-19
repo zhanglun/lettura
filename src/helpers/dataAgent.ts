@@ -9,6 +9,10 @@ export const getFeeds = async (): Promise<Channel[]> => {
   return invoke('get_feeds')
 }
 
+export const createFolder = async (name: string): Promise<number> => {
+  return invoke('create_folder', { name })
+}
+
 /**
  * 删除频道
  * @param {String} uuid  channel 的 uuid

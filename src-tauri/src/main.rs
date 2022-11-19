@@ -110,6 +110,7 @@ fn main() {
       cmd::get_user_config,
       cmd::update_user_config,
       cmd::update_proxy,
+      cmd::create_folder,
     ])
     .run(context)
     .expect("error while running tauri Application");

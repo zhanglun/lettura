@@ -7,6 +7,7 @@ use uuid::Uuid;
 
 use crate::db;
 use crate::config;
+use crate::folder;
 use crate::models;
 use crate::feed;
 
@@ -374,6 +375,11 @@ pub fn update_proxy(ip: String, port: String) -> usize {
 #[command]
 pub fn update_user_config<T>(user_cfg: T) -> usize {
   1
+}
+
+#[command]
+pub fn create_folder(name: String) -> usize {
+  folder::create_folder(name)
 }
 
 #[cfg(test)]
