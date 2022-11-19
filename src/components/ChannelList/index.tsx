@@ -1,14 +1,15 @@
-import React, { useState, useEffect, useRef, useContext } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import React, { useState, useCallback, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDrop } from 'react-dnd';
+// import update from 'immutability-helper';
 import styles from "./channel.module.scss";
-import defaultSiteIcon from "./default.png";
 import { RouteConfig } from "../../config";
 import { Channel } from "../../db";
+import { ChannelItem } from "./Item";
 import { AddFeedChannel } from "../AddChannel";
 import { AddFolder } from "../AddFolder";
 import { getChannelFavicon } from "../../helpers/parseXML";
 import * as dataAgent from "../../helpers/dataAgent";
-import { StoreContext } from "../../context";
 import { Progress, Tooltip } from "@douyinfe/semi-ui";
 import {
   ArrowPathIcon,
@@ -19,7 +20,6 @@ import {
 import { busChannel } from "../../helpers/busChannel";
 
 const ChannelList = (props: any): JSX.Element => {
-  const store = useContext(StoreContext);
   const navigate = useNavigate();
   const addFeedButtonRef = useRef(null);
   const addFolderButtonRef = useRef(null);
@@ -177,6 +177,35 @@ const ChannelList = (props: any): JSX.Element => {
     navigate(RouteConfig.SETTINGS_GENERAL);
   };
 
+  const findCard = useCallback(
+    (id: string) => {
+      const channel = channelList.filter((c) => `${c.id}` === id)[0];
+
+      return {
+        channel,
+        index: channelList.indexOf(channel),
+      };
+    },
+    [channelList]
+  );
+
+  const moveCard = useCallback(
+    (id: string, atIndex: number) => {
+      const { channel, index } = findCard(id);
+      // setChannelList(
+      //   update(channelList, {
+      //     $splice: [
+      //       [index, 1],
+      //       [atIndex, 0, channel],
+      //     ],
+      //   })
+      // );
+    },
+    [findCard, channelList, setChannelList]
+  );
+
+  const [, drop] = useDrop(() => ({ accept: 'card' }));
+
   const renderFeedList = (): JSX.Element => {
     return (
       <ul className={styles.list}>
@@ -184,38 +213,12 @@ const ChannelList = (props: any): JSX.Element => {
           const { unread = 0, link } = channel;
           const ico = getChannelFavicon(link);
 
-          return (
-            <li
-              key={channel.title + i}
-              onClick={() => store.setChannel(channel)}
-              aria-hidden="true"
-            >
-              <NavLink
-                className={({ isActive }) =>
-                  `${styles.item} ${isActive ? styles.itemActive : ""}`
-                }
-                to={`${RouteConfig.CHANNEL.replace(
-                  /:uuid/,
-                  channel.uuid
-                )}?channelUuid=${channel.uuid}&feedUrl=${channel.feed_url}`}
-              >
-                <img
-                  src={ico}
-                  onError={(e) => {
-                    // @ts-ignore
-                    e.target.onerror = null;
-
-                    // @ts-ignore
-                    e.target.src = defaultSiteIcon;
-                  }}
-                  className={styles.icon}
-                  alt={channel.title}
-                />
-                <span className={styles.name}>{channel.title}</span>
-                {unread > 0 && <span className={styles.count}>{unread}</span>}
-              </NavLink>
-            </li>
-          );
+          return <ChannelItem channel={channel} ico={ico} unread={unread}
+          key={channel.uuid}
+          id={`${channel.uuid}`}
+          text={channel.title}
+          moveCard={moveCard}
+          findCard={findCard} />;
         })}
       </ul>
     );
@@ -231,7 +234,7 @@ const ChannelList = (props: any): JSX.Element => {
     if (addFolderButtonRef && addFolderButtonRef.current) {
       (addFolderButtonRef.current as any).showModal();
     }
-  }
+  };
 
   return (
     <div className={styles.container}>
@@ -263,7 +266,11 @@ const ChannelList = (props: any): JSX.Element => {
           </Tooltip>
         </div>
       </div>
-      <div className={styles.inner}>{renderFeedList()}</div>
+      <div className={styles.inner}>
+        {/* <Draggable> */}
+        {renderFeedList()}
+        {/* </Draggable> */}
+      </div>
       {refreshing && (
         <div className={styles.footer}>
           <span>
