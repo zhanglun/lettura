@@ -1,8 +1,7 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDrop } from 'react-dnd';
-// import update from 'immutability-helper';
-import styles from "./channel.module.scss";
+import update from "immutability-helper";
 import { RouteConfig } from "../../config";
 import { Channel } from "../../db";
 import { ChannelItem } from "./Item";
@@ -18,6 +17,7 @@ import {
   PlusIcon,
 } from "@heroicons/react/24/outline";
 import { busChannel } from "../../helpers/busChannel";
+import styles from "./channel.module.scss";
 
 const ChannelList = (props: any): JSX.Element => {
   const navigate = useNavigate();
@@ -178,8 +178,8 @@ const ChannelList = (props: any): JSX.Element => {
   };
 
   const findCard = useCallback(
-    (id: string) => {
-      const channel = channelList.filter((c) => `${c.id}` === id)[0];
+    (uuid: string) => {
+      const channel = channelList.filter((c) => `${c.uuid}` === uuid)[0];
 
       return {
         channel,
@@ -190,35 +190,40 @@ const ChannelList = (props: any): JSX.Element => {
   );
 
   const moveCard = useCallback(
-    (id: string, atIndex: number) => {
-      const { channel, index } = findCard(id);
-      // setChannelList(
-      //   update(channelList, {
-      //     $splice: [
-      //       [index, 1],
-      //       [atIndex, 0, channel],
-      //     ],
-      //   })
-      // );
+    (uuid: string, atIndex: number) => {
+      const { channel, index } = findCard(uuid);
+      const list = update(channelList, {
+        $splice: [
+          [index, 1],
+          [atIndex, 0, channel],
+        ],
+      });
+
+      setChannelList(list);
     },
-    [findCard, channelList, setChannelList]
+    [findCard, channelList]
   );
 
-  const [, drop] = useDrop(() => ({ accept: 'card' }));
+  const [, drop] = useDrop(() => ({ accept: 'card' }))
 
   const renderFeedList = (): JSX.Element => {
     return (
-      <ul className={styles.list}>
+      <ul className={styles.list} ref={drop}>
         {channelList?.map((channel: any, i: number) => {
           const { unread = 0, link } = channel;
           const ico = getChannelFavicon(link);
 
-          return <ChannelItem channel={channel} ico={ico} unread={unread}
-          key={channel.uuid}
-          id={`${channel.uuid}`}
-          text={channel.title}
-          moveCard={moveCard}
-          findCard={findCard} />;
+          return (
+            <ChannelItem
+              channel={channel}
+              ico={ico}
+              unread={unread}
+              key={channel.uuid}
+              id={`${channel.uuid}`}
+              moveCard={moveCard}
+              findCard={findCard}
+            />
+          );
         })}
       </ul>
     );
@@ -266,11 +271,7 @@ const ChannelList = (props: any): JSX.Element => {
           </Tooltip>
         </div>
       </div>
-      <div className={styles.inner}>
-        {/* <Draggable> */}
-        {renderFeedList()}
-        {/* </Draggable> */}
-      </div>
+      <div className={styles.inner}>{renderFeedList()}</div>
       {refreshing && (
         <div className={styles.footer}>
           <span>

@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { useDrop, DndProvider } from "react-dnd";
+import { HTML5Backend } from 'react-dnd-html5-backend'
 import { appWindow } from '@tauri-apps/api/window'
 import { Outlet } from "react-router-dom";
 import { StoreContext } from "./context";
@@ -43,10 +45,12 @@ function App() {
       currentFilter: filter,
       setFilter,
     }}>
+      <DndProvider backend={HTML5Backend}>
       <div className={styles.container}>
         <ChannelList/>
         <Outlet/>
       </div>
+      </DndProvider>
     </StoreContext.Provider>
   );
 }
