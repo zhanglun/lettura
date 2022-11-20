@@ -80,11 +80,14 @@ pub fn update_feed_meta(uuid: String, update: FeedMetaUpdateRequest) -> usize {
   let updated_row = diesel::update(
     schema::feed_metas::dsl::feed_metas.filter(schema::feed_metas::channel_uuid.eq(uuid)),
   )
-  .set((schema::feed_metas::parent_uuid.eq(update.parent_uuid), schema::feed_metas::sort.eq(update.sort)))
+  .set((
+    schema::feed_metas::parent_uuid.eq(update.parent_uuid),
+    schema::feed_metas::sort.eq(update.sort),
+  ))
   .execute(&mut connection)
   .expect("update feed meta");
 
- updated_row
+  updated_row
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -210,6 +213,42 @@ pub fn add_channel(channel: models::NewChannel, articles: Vec<models::NewArticle
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+pub struct FeedSort {
+  uuid: String,
+  item_type: String,
+  sort: i32,
+}
+
+pub fn update_feed_sort(sorts: Vec<FeedSort>) -> usize {
+  let mut connection = db::establish_connection();
+
+  for item in sorts {
+    println!("----> {:?}", item.item_type);
+
+    if item.item_type == String::from("folder") {
+      let result =
+        diesel::update(schema::folders::dsl::folders.filter(schema::folders::uuid.eq(&item.uuid)))
+          .set(schema::folders::sort.eq(item.sort))
+          .execute(&mut connection)
+          .expect("folders msg");
+      println!(" update folder{:?}", result)
+    }
+
+    if item.item_type == String::from("channel") {
+      let result = diesel::update(
+        schema::channels::dsl::channels.filter(schema::channels::uuid.eq(&item.uuid)),
+      )
+      .set(schema::channels::sort.eq(item.sort))
+      .execute(&mut connection)
+      .expect("msg");
+      println!(" update channel{:?}", result)
+    }
+  }
+
+  1
+}
+
+#[derive(Debug, Serialize, Deserialize)]
 pub struct ChannelFilter {
   pub parent_uuid: Option<String>,
 }
@@ -256,6 +295,7 @@ pub fn get_channels(filter: ChannelFilter) -> ChannelQueryResult {
 
   ChannelQueryResult { list: result }
 }
+
 #[cfg(test)]
 mod tests {
   use super::*;

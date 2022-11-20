@@ -101,6 +101,7 @@ fn main() {
       cmd::delete_channel,
       cmd::get_feeds,
       cmd::get_channels,
+      cmd::update_feed_sort,
       cmd::get_articles,
       cmd::sync_articles_with_channel_uuid,
       cmd::import_channels,

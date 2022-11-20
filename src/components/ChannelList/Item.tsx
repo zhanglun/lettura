@@ -43,10 +43,17 @@ export const ChannelItem: FC<CardProps> = memo(function Card({
       item: { id, originalIndex },
       collect: (monitor) => ({
         isDragging: monitor.isDragging(),
+        opacity: monitor.isDragging() ? 0.4 : 1,
       }),
+      canDrag: (monitor) => {
+        //是否取消拖拽
+        console.log(monitor, 'monitor131');
+        return true;
+      },
       end: (item, monitor) => {
         const { id: droppedId, originalIndex } = item;
         const didDrop = monitor.didDrop();
+
         if (!didDrop) {
           moveCard(droppedId, originalIndex);
         }
@@ -77,7 +84,7 @@ export const ChannelItem: FC<CardProps> = memo(function Card({
   return (
     <li
       ref={(node) => drag(drop(node))}
-      style={{ ...style, opacity }}
+      style={{ ...style }}
       key={channel.title}
       onClick={() => store.setChannel(channel)}
       aria-hidden="true"
@@ -103,7 +110,7 @@ export const ChannelItem: FC<CardProps> = memo(function Card({
           className={styles.icon}
           alt={channel.title}
         />
-        <span className={styles.name}>{channel.title}</span>
+        <span className={styles.name}>{channel.title} sort {channel.sort}</span>
         {unread > 0 && <span className={styles.count}>{unread}</span>}
       </NavLink>
     </li>

@@ -138,6 +138,13 @@ pub async fn get_channels(filter: feed::ChannelFilter) -> feed::ChannelQueryResu
   return results;
 }
 
+#[command]
+pub async fn update_feed_sort(sorts: Vec<feed::FeedSort>) -> usize {
+  println!("update feed sort");
+  feed::update_feed_sort(sorts);
+  1
+}
+
 pub fn create_channel_model(uuid: &String, url: &String, res: &Feed) -> Box<models::NewChannel> {
   match res {
     Feed::Atom(res) => {

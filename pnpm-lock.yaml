@@ -32,6 +32,7 @@ specifiers:
   css-loader: ^6.5.1
   css-minimizer-webpack-plugin: ^3.2.0
   dayjs: ^1.10.7
+  dnd-core: ^16.0.1
   dotenv: ^10.0.0
   dotenv-expand: ^5.1.0
   eslint: ^8.3.0
@@ -106,6 +107,7 @@ dependencies:
   css-loader: 6.7.1_webpack@5.74.0
   css-minimizer-webpack-plugin: 3.4.1_webpack@5.74.0
   dayjs: 1.11.5
+  dnd-core: 16.0.1
   dotenv: 10.0.0
   dotenv-expand: 5.1.0
   eslint: 8.23.1

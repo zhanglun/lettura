@@ -1,14 +1,7 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDrop } from 'react-dnd';
+import { useDrop, DropTargetMonitor } from "react-dnd";
 import update from "immutability-helper";
-import { RouteConfig } from "../../config";
-import { Channel } from "../../db";
-import { ChannelItem } from "./Item";
-import { AddFeedChannel } from "../AddChannel";
-import { AddFolder } from "../AddFolder";
-import { getChannelFavicon } from "../../helpers/parseXML";
-import * as dataAgent from "../../helpers/dataAgent";
 import { Progress, Tooltip } from "@douyinfe/semi-ui";
 import {
   ArrowPathIcon,
@@ -16,7 +9,16 @@ import {
   FolderIcon,
   PlusIcon,
 } from "@heroicons/react/24/outline";
+
+import { RouteConfig } from "../../config";
+import { Channel } from "../../db";
+import { AddFeedChannel } from "../AddChannel";
+import { AddFolder } from "../AddFolder";
+import { getChannelFavicon } from "../../helpers/parseXML";
+import * as dataAgent from "../../helpers/dataAgent";
 import { busChannel } from "../../helpers/busChannel";
+
+import { ChannelItem } from "./Item";
 import styles from "./channel.module.scss";
 
 const ChannelList = (props: any): JSX.Element => {
@@ -192,6 +194,10 @@ const ChannelList = (props: any): JSX.Element => {
   const moveCard = useCallback(
     (uuid: string, atIndex: number) => {
       const { channel, index } = findCard(uuid);
+      console.log(
+        "🚀 ~ file: index.tsx ~ line 197 ~ ChannelList ~ index",
+        index
+      );
       const list = update(channelList, {
         $splice: [
           [index, 1],
@@ -199,12 +205,31 @@ const ChannelList = (props: any): JSX.Element => {
         ],
       });
 
+      list.forEach((item, idx) => (item.sort = idx));
+
       setChannelList(list);
     },
     [findCard, channelList]
   );
 
-  const [, drop] = useDrop(() => ({ accept: 'card' }))
+  const [, drop] = useDrop(() => ({
+    accept: "card",
+    collect: (minoter: DropTargetMonitor) => ({
+      isOver: minoter.isOver(),
+    }),
+    drop(item, monitor) {
+      let feedSort = channelList.map((channel: any) => {
+        return {
+          uuid: channel.uuid,
+          item_type: channel.item_type,
+          sort: channel.sort
+        }
+      })
+
+      dataAgent.updateFeedSort(feedSort);
+      console.log("🚀 ~ file: index.tsx ~ line 229 ~ drop ~ feedSort", feedSort)
+    },
+  }), [channelList]);
 
   const renderFeedList = (): JSX.Element => {
     return (
