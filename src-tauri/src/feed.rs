@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use diesel::prelude::*;
 use serde::Deserialize;
 use serde::Serialize;
@@ -63,6 +65,7 @@ pub fn get_feed_meta_with_uuids(channel_uuids: Vec<String>) -> Vec<models::FeedM
 pub fn get_all_feed_meta() -> Vec<models::FeedMeta> {
   let mut connection = db::establish_connection();
   let result = schema::feed_metas::dsl::feed_metas
+    .order(schema::feed_metas::sort.desc())
     .load::<models::FeedMeta>(&mut connection)
     .expect("Expect get feed meta");
 
@@ -104,24 +107,24 @@ pub fn get_feeds() -> Vec<FeedItem> {
   let relations = get_all_feed_meta();
   let mut folder_uuids: Vec<String> = vec![];
   let mut channel_uuids: Vec<String> = vec![];
-
-  println!("{:?}", relations);
+  let mut channel_sorts: HashMap<String, i32> = HashMap::new();
 
   for relation in relations {
     if relation.parent_uuid == "" {
-      folder_uuids.push(relation.parent_uuid);
+      let uuid = String::from(relation.channel_uuid);
+
+      channel_uuids.push(uuid.clone());
+      channel_sorts.insert(uuid.clone(), relation.sort);
     } else {
-      channel_uuids.push(relation.channel_uuid);
+      folder_uuids.push(relation.parent_uuid);
     }
   }
 
-  println!("{:?}", &channel_uuids);
-
   let mut connection = db::establish_connection();
   let channels = schema::channels::dsl::channels
-    .filter(diesel::dsl::not(
+    .filter(
       schema::channels::uuid.eq_any(&channel_uuids),
-    ))
+    )
     .load::<models::Channel>(&mut connection)
     .expect("dff");
 
@@ -138,14 +141,23 @@ pub fn get_feeds() -> Vec<FeedItem> {
   }
 
   for channel in channels {
+    let sort = match channel_sorts.get(&channel.uuid) {
+      Some(uuid) => {
+        uuid
+      }
+      None => &0
+    };
+
     result.push(FeedItem {
       item_type: String::from("channel"),
       uuid: channel.uuid,
       title: channel.title,
-      sort: channel.sort,
+      sort: *sort,
       link: Some(channel.link),
     })
   }
+
+  result.sort_by(|a, b| a.sort.cmp(&b.sort));
 
   result
 }
@@ -223,8 +235,6 @@ pub fn update_feed_sort(sorts: Vec<FeedSort>) -> usize {
   let mut connection = db::establish_connection();
 
   for item in sorts {
-    println!("----> {:?}", item.item_type);
-
     if item.item_type == String::from("folder") {
       let result =
         diesel::update(schema::folders::dsl::folders.filter(schema::folders::uuid.eq(&item.uuid)))
@@ -236,9 +246,9 @@ pub fn update_feed_sort(sorts: Vec<FeedSort>) -> usize {
 
     if item.item_type == String::from("channel") {
       let result = diesel::update(
-        schema::channels::dsl::channels.filter(schema::channels::uuid.eq(&item.uuid)),
+        schema::feed_metas::dsl::feed_metas.filter(schema::feed_metas::channel_uuid.eq(&item.uuid)),
       )
-      .set(schema::channels::sort.eq(item.sort))
+      .set(schema::feed_metas::sort.eq(item.sort))
       .execute(&mut connection)
       .expect("msg");
       println!(" update channel{:?}", result)

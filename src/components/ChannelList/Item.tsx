@@ -84,7 +84,7 @@ export const ChannelItem: FC<CardProps> = memo(function Card({
   return (
     <li
       ref={(node) => drag(drop(node))}
-      style={{ ...style }}
+      style={{ ...style, opacity }}
       key={channel.title}
       onClick={() => store.setChannel(channel)}
       aria-hidden="true"
@@ -110,7 +110,7 @@ export const ChannelItem: FC<CardProps> = memo(function Card({
           className={styles.icon}
           alt={channel.title}
         />
-        <span className={styles.name}>{channel.title} sort {channel.sort}</span>
+        <span className={styles.name}>{channel.title}</span>
         {unread > 0 && <span className={styles.count}>{unread}</span>}
       </NavLink>
     </li>
