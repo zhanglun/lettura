@@ -66,8 +66,7 @@
 }
 
 .panelTitle {
-  margin: 0;
-  padding: 20px 0 10px;
+  margin: 14px 0 10px;
   font-size: 18px;
   font-weight: var(--font-weight-bold);
 }
@@ -93,10 +92,10 @@
 
 .options {
   color: var(--headline-color);
-  font-size: 14px;
+  font-size: 16px;
   font-weight: var(--font-weight-bold);
   line-height: 16px;
-  margin: 12px 0;
+  margin: 22px 0 12px;
 }
 
 .preview {
@@ -150,6 +149,18 @@
 }
 
 .main {
-  padding: 12px;
+  padding: 0 14px;
   overflow-y: auto;
+}
+
+.delBtn {
+  color: var(--color-01);
+  cursor: pointer;
+}
+
+
+.proxyFields {
+  display: grid;
+  grid-template-columns: 100px 200px 200px;
+  grid-gap: 14px;
 }
