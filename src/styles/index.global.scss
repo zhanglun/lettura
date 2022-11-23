@@ -2,8 +2,8 @@
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans GB',
-  'MicroSoft YaHei', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
-  'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    'MicroSoft YaHei', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
+    'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #333;
@@ -29,7 +29,7 @@ body {
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-  monospace;
+    monospace;
 }
 
 a {
@@ -89,7 +89,7 @@ $disabled-gray: #ddd;
   &.focus,
   &:hover,
   &:active {
-    > .traffic-light-close {
+    >.traffic-light-close {
       background-color: $close-red;
 
       &:active:hover {
@@ -97,7 +97,7 @@ $disabled-gray: #ddd;
       }
     }
 
-    > .traffic-light-minimize {
+    >.traffic-light-minimize {
       background-color: $minimize-yellow;
 
       &:active:hover {
@@ -105,7 +105,7 @@ $disabled-gray: #ddd;
       }
     }
 
-    > .traffic-light-maximize {
+    >.traffic-light-maximize {
       background-color: $maximize-green;
 
       &:active:hover {
@@ -116,7 +116,8 @@ $disabled-gray: #ddd;
 
   &:hover,
   &:active {
-    > .traffic-light {
+    >.traffic-light {
+
       &:before,
       &:after,
       svg {
@@ -139,7 +140,7 @@ $disabled-gray: #ddd;
   position: relative;
   outline: none;
 
-  > svg {
+  >svg {
     position: absolute;
     transform: translate(-50%, -50%);
     top: 50%;
@@ -161,7 +162,7 @@ $disabled-gray: #ddd;
     svg {
       transform: translate(-50%, -30%);
 
-      > path {
+      >path {
         stroke: $close-red-icon;
       }
     }
@@ -193,7 +194,37 @@ $disabled-gray: #ddd;
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
+}
+
+/* ===== Scrollbar CSS ===== */
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #707070 #ffffff;
+}
+
+/* Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+  background-color: transparent;
+  width: 10px;
+}
+
+*:hover {
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #707070;
+    border-radius: 12px;
+    border: 2px solid #ffffff;
+  }
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
 }

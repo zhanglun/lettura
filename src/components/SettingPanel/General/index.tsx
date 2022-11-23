@@ -7,7 +7,7 @@ console.log(styles);
 
 export const General = () => {
   const [localProxyConfig, setLocalProxyConfig] = useState<LocalProxy>({
-    protcol: '',
+    protocol: '',
     ip: "",
     port: "",
   });
@@ -40,7 +40,7 @@ export const General = () => {
 
       if (local_proxy) {
         setLocalProxyConfig({
-          protcol: local_proxy.protcol,
+          protocol: local_proxy.protocol,
           ip: local_proxy.ip,
           port: local_proxy.port,
         });
@@ -59,8 +59,8 @@ export const General = () => {
               Protocol:{" "}
               <Select
                 style={{ width: '100%' }}
-                value={localProxyConfig.ip}
-                onChange={(protcol) => handleLocalProxyChange("protocol", protcol as string)}
+                value={localProxyConfig.protocol}
+                onChange={(protocol) => handleLocalProxyChange("protocol", protocol as string)}
               >
                 <Select.Option value={"http"}>http</Select.Option>
                 <Select.Option value={"https"}>https</Select.Option>
