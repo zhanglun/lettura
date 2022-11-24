@@ -1,4 +1,5 @@
 export interface Channel {
+  item_type: string;
   id?: number;
   uuid: string;
   title: string;

@@ -2,6 +2,7 @@ import type { CSSProperties, FC } from "react";
 import { memo, useContext } from "react";
 import { NavLink } from "react-router-dom";
 import { useDrag, useDrop } from "react-dnd";
+import { FolderIcon } from "@heroicons/react/24/outline";
 import { StoreContext } from "../../context";
 import defaultSiteIcon from "./default.png";
 import { Channel } from "../../db";
@@ -81,6 +82,8 @@ export const ChannelItem: FC<CardProps> = memo(function Card({
 
   const opacity = isDragging ? 0 : 1;
 
+  console.log("channle", channel);
+
   return (
     <li
       ref={(node) => drag(drop(node))}
@@ -98,18 +101,25 @@ export const ChannelItem: FC<CardProps> = memo(function Card({
           channel.uuid
         )}?channelUuid=${channel.uuid}&feedUrl=${channel.feed_url}`}
       >
-        <img
-          src={ico}
-          onError={(e) => {
-            // @ts-ignore
-            e.target.onerror = null;
+        { channel.item_type === 'channel' &&
+          <img
+            src={ico}
+            onError={(e) => {
+              // @ts-ignore
+              e.target.onerror = null;
 
-            // @ts-ignore
-            e.target.src = defaultSiteIcon;
-          }}
-          className={styles.icon}
-          alt={channel.title}
-        />
+              // @ts-ignore
+              e.target.src = defaultSiteIcon;
+            }}
+            className={styles.icon}
+            alt={channel.title}
+          />
+        }
+        {channel.item_type === 'folder' &&
+          <span className={styles.icon}>
+            <FolderIcon className={`h-4 w-4`} />
+          </span>
+        }
         <span className={styles.name}>{channel.title}</span>
         {unread > 0 && <span className={styles.count}>{unread}</span>}
       </NavLink>
