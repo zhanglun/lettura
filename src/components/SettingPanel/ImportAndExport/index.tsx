@@ -4,9 +4,9 @@ import styles from "../setting.module.scss";
 import * as dataAgent from "../../../helpers/dataAgent";
 
 export interface ImportItem {
-  title: string,
-  link: string,
-  feed_url: string,
+  title: string;
+  link: string;
+  feed_url: string;
 }
 
 export const ImportAndExport = (props: any) => {
@@ -18,14 +18,12 @@ export const ImportAndExport = (props: any) => {
 
   const uploadOPMLFile = () => {
     if (fileInputRef && fileInputRef.current) {
-      console.log('fileInputRef', fileInputRef)
+      console.log("fileInputRef", fileInputRef);
       fileInputRef.current.click();
     }
   };
 
-  const parserOPML = (
-    source: string
-  ): ImportItem[] => {
+  const parserOPML = (source: string): ImportItem[] => {
     const parser = new DOMParser();
     const resultDOM = parser.parseFromString(source, "application/xml");
     const $outlines = resultDOM.querySelectorAll("outline[xmlUrl]");
@@ -48,15 +46,16 @@ export const ImportAndExport = (props: any) => {
   };
 
   const importFromOPML = () => {
-    const urlList = importedList.map(_ => _.feed_url)
+    const urlList = importedList.map((_) => _.feed_url);
 
-    setImporting(true)
+    setImporting(true);
 
-    dataAgent.importChannels(urlList).then(() => {
-
-    }).finally(() => {
-      setImporting(false)
-    })
+    dataAgent
+      .importChannels(urlList)
+      .then(() => {})
+      .finally(() => {
+        setImporting(false);
+      });
   };
 
   const handleFileChange = (e: any) => {
@@ -112,23 +111,35 @@ export const ImportAndExport = (props: any) => {
           </div>
           {sourceType === "file" && (
             <div className={styles.inputField}>
-              <span>{file && file.name}</span>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".opml,.xml"
-                onChange={(e) => {
-                  handleFileChange(e);
-                }}
-              />
+              <div className={styles.uploadBox}>
+                {!file && <div className={styles.uploadPlaceholder}>Select file</div>}
+                {file && <span>{file && file.name}</span>}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".opml,.xml"
+                  onChange={(e) => {
+                    handleFileChange(e);
+                  }}
+                  className={styles.uploadInput}
+                />
+              </div>
             </div>
           )}
           {sourceType === "text" && (
             <div className={styles.inputField}>
-              <TextArea autosize onChange={(value) => handleTextSourceChange(value)} />
+              <TextArea
+                autosize
+                onChange={(value) => handleTextSourceChange(value)}
+              />
             </div>
           )}
-          <Button theme="solid" type="primary" onClick={importFromOPML} loading={importing}>
+          <Button
+            theme="solid"
+            type="primary"
+            onClick={importFromOPML}
+            loading={importing}
+          >
             导入
             {/* <>{importing ? `/${importedList.length}` : ''}</> */}
           </Button>

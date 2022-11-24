@@ -164,3 +164,39 @@
   grid-template-columns: 100px 200px 200px;
   grid-gap: 14px;
 }
+
+.uploadBox {
+  width: 440px;
+  height: 210px;
+  position: relative;
+  border: 2px dashed #dedede;
+}
+
+.uploadPlaceholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  pointer-events: none;
+  user-select: none;
+}
+
+.uploadInput {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  text-indent: -9999px;
+  font-size: 0;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #eee;
+    border-color: #c2c2c2;
+  }
+}
