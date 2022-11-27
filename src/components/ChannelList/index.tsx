@@ -20,6 +20,8 @@ import { busChannel } from "../../helpers/busChannel";
 
 import { ChannelItem } from "./Item";
 import styles from "./channel.module.scss";
+import { Folder } from "./Folder";
+import { ItemTypes } from "./ItemTypes";
 
 const ChannelList = (props: any): JSX.Element => {
   const navigate = useNavigate();
@@ -212,24 +214,30 @@ const ChannelList = (props: any): JSX.Element => {
     [findCard, channelList]
   );
 
-  const [, drop] = useDrop(() => ({
-    accept: "card",
-    collect: (minoter: DropTargetMonitor) => ({
-      isOver: minoter.isOver(),
-    }),
-    drop(item, monitor) {
-      let feedSort = channelList.map((channel: any) => {
-        return {
-          uuid: channel.uuid,
-          item_type: channel.item_type,
-          sort: channel.sort
-        }
-      })
+  const [, drop] = useDrop(
+    () => ({
+      accept: ItemTypes.BOX,
+      collect: (minoter: DropTargetMonitor) => ({
+        isOver: minoter.isOver(),
+      }),
+      drop(item, monitor) {
+        let feedSort = channelList.map((channel: any) => {
+          return {
+            uuid: channel.uuid,
+            item_type: channel.item_type,
+            sort: channel.sort,
+          };
+        });
 
-      dataAgent.updateFeedSort(feedSort);
-      console.log("🚀 ~ file: index.tsx ~ line 229 ~ drop ~ feedSort", feedSort)
-    },
-  }), [channelList]);
+        dataAgent.updateFeedSort(feedSort);
+        console.log(
+          "🚀 ~ file: index.tsx ~ line 229 ~ drop ~ feedSort",
+          feedSort
+        );
+      },
+    }),
+    [channelList]
+  );
 
   const renderFeedList = (): JSX.Element => {
     return (
@@ -238,17 +246,31 @@ const ChannelList = (props: any): JSX.Element => {
           const { unread = 0, link } = channel;
           const ico = getChannelFavicon(link);
 
-          return (
-            <ChannelItem
-              channel={channel}
-              ico={ico}
-              unread={unread}
-              key={channel.uuid}
-              id={`${channel.uuid}`}
-              moveCard={moveCard}
-              findCard={findCard}
-            />
-          );
+          if (channel.item_type === "folder") {
+            return (
+              <Folder
+                id={channel.uuid}
+                ico={ico}
+                channel={channel}
+                unread={unread}
+                key={channel.uuid}
+                moveCard={moveCard}
+                findCard={findCard}
+              />
+            );
+          } else {
+            return (
+              <ChannelItem
+                channel={channel}
+                ico={ico}
+                unread={unread}
+                key={channel.uuid}
+                id={`${channel.uuid}`}
+                moveCard={moveCard}
+                findCard={findCard}
+              />
+            );
+          }
         })}
       </ul>
     );
