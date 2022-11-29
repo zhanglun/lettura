@@ -20,6 +20,7 @@ export interface CardProps {
   channel: Channel;
   ico: string;
   unread: number;
+  type: string;
   moveCard: (id: string, to: number) => void;
   findCard: (id: string) => { index: number };
 }
@@ -37,6 +38,7 @@ interface DropResult {
   allowedDropEffect: string
   dropEffect: string
   name: string
+  type: string
 }
 
 export const ChannelItem: FC<CardProps> = memo(function Card({
@@ -44,6 +46,7 @@ export const ChannelItem: FC<CardProps> = memo(function Card({
   channel,
   ico,
   unread,
+  type,
   moveCard,
   findCard,
 }) {
@@ -52,22 +55,26 @@ export const ChannelItem: FC<CardProps> = memo(function Card({
   const [{ opacity }, drag] = useDrag(
     () => ({
       type: ItemTypes.BOX,
-      item: { id, originalIndex, name: channel.title },
+      item: {
+        id,
+        originalIndex,
+        name: channel.title,
+        type,
+      },
       collect: (monitor) => ({
         isDragging: monitor.isDragging(),
         opacity: monitor.isDragging() ? 0.4 : 1,
         handlerId: monitor.getHandlerId(),
       }),
-      canDrag: (monitor) => {
-        //是否取消拖拽
-        console.log(monitor, 'monitor131');
-        return true;
-      },
       end: (item, monitor) => {
         const { id: droppedId, originalIndex } = item;
 
+        console.log("%c Line:81 🍭 droppedId", "color:#b03734", droppedId);
+        console.log(id)
+
         const didDrop = monitor.didDrop();
         const dropResult = monitor.getDropResult<DropResult>()
+        console.log("%c Line:76 🍧 dropResult", "color:#ffdd4d", dropResult);
 
         if (item && dropResult) {
           let alertMessage = ''
@@ -75,7 +82,7 @@ export const ChannelItem: FC<CardProps> = memo(function Card({
             dropResult.allowedDropEffect === 'any' ||
             dropResult.allowedDropEffect === dropResult.dropEffect
 
-          if (isDropAllowed) {
+          if (isDropAllowed && dropResult.type === 'folder') {
             const isCopyAction = dropResult.dropEffect === 'copy'
             const actionName = isCopyAction ? 'copied' : 'moved'
             alertMessage = `You ${actionName} ${item.name} into ${dropResult.name}!`
@@ -105,6 +112,12 @@ export const ChannelItem: FC<CardProps> = memo(function Card({
           moveCard(draggedId, overIndex);
         }
       },
+      drop(item, monitor) {
+        return {
+          name: "channel-" + channel.title,
+          allowedDropEffect: "move",
+        }
+      }
     }),
     [findCard, moveCard]
   );

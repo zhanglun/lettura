@@ -413,7 +413,7 @@ mod tests {
   }
   #[tokio::test]
   async fn test_create_article_models() {
-    let url = "https://36kr.com/feed".to_string();
+    let url = "https://www.ifanr.com/feed".to_string();
     println!("{:?}", url);
     let res = fetch_feed_item(&url).await;
 

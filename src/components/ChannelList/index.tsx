@@ -256,6 +256,7 @@ const ChannelList = (props: any): JSX.Element => {
                 key={channel.uuid}
                 moveCard={moveCard}
                 findCard={findCard}
+                type={channel.item_type}
               />
             );
           } else {
@@ -268,6 +269,7 @@ const ChannelList = (props: any): JSX.Element => {
                 id={`${channel.uuid}`}
                 moveCard={moveCard}
                 findCard={findCard}
+                type={channel.item_type}
               />
             );
           }

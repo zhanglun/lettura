@@ -29,6 +29,7 @@ export const Folder = ({
   unread,
   moveCard,
   findCard,
+  type
 }: CardProps) => {
   const store = useContext(StoreContext);
   const originalIndex = findCard(id).index;
@@ -46,7 +47,12 @@ export const Folder = ({
   const [{ opacity }, drag] = useDrag(
     () => ({
       type: ItemTypes.BOX,
-      item: { id, originalIndex, name: channel.title },
+      item: {
+        id,
+        originalIndex,
+        name: channel.title,
+        type
+      },
       collect: (monitor) => ({
         isDragging: monitor.isDragging(),
         opacity: monitor.isDragging() ? 0.4 : 1,
@@ -57,35 +63,36 @@ export const Folder = ({
         console.log(monitor, "monitor131");
         return true;
       },
-      end: (item, monitor) => {
-        const { id: droppedId, originalIndex } = item;
+      // end: (item, monitor) => {
+      //   const { id: droppedId, originalIndex } = item;
 
-        const didDrop = monitor.didDrop();
-        const dropResult = monitor.getDropResult<DropResult>();
+      //   const didDrop = monitor.didDrop();
+      //   const dropResult = monitor.getDropResult<DropResult>();
+      //   console.log("%c Line:71 🍞 dropResult", "color:#e41a6a", dropResult);
 
-        if (item && dropResult) {
-          let alertMessage = "";
-          const isDropAllowed =
-            dropResult.allowedDropEffect === "any" ||
-            dropResult.allowedDropEffect === dropResult.dropEffect;
+      //   if (item && dropResult) {
+      //     let alertMessage = "";
+      //     const isDropAllowed =
+      //       dropResult.allowedDropEffect === "any" ||
+      //       dropResult.allowedDropEffect === dropResult.dropEffect;
 
-          if (isDropAllowed) {
-            const isCopyAction = dropResult.dropEffect === "copy";
-            const actionName = isCopyAction ? "copied" : "moved";
-            alertMessage = `You ${actionName} ${item.name} into ${dropResult.name}!`;
-            // TODO: move channel into folder
-          } else {
-            alertMessage = `You cannot ${dropResult.dropEffect} an item into the ${dropResult.name}`;
-          }
+      //     if (isDropAllowed) {
+      //       const isCopyAction = dropResult.dropEffect === "copy";
+      //       const actionName = isCopyAction ? "copied" : "moved";
+      //       alertMessage = `You ${actionName} ${item.name} into ${dropResult.name}!`;
+      //       // TODO: move channel into folder
+      //     } else {
+      //       alertMessage = `You cannot ${dropResult.dropEffect} an item into the ${dropResult.name}`;
+      //     }
 
-          console.log(alertMessage);
-        }
+      //     alert(alertMessage);
+      //   }
 
-        if (!didDrop) {
-          console.log("moveCard");
-          moveCard(droppedId, originalIndex);
-        }
-      },
+      //   if (!didDrop) {
+      //     alert("moveCard");
+      //     moveCard(droppedId, originalIndex);
+      //   }
+      // },
     }),
     [id, originalIndex, moveCard]
   );
@@ -94,11 +101,19 @@ export const Folder = ({
     () => ({
       accept: ItemTypes.BOX,
       drop: () => ({
-        name: "folder-" + channel.uuid,
+        name: "folder-" + channel.title,
         allowedDropEffect: "move",
+        type: channel.item_type,
       }),
-      hover({ id: draggedId, name }: Item) {
-        if (draggedId !== id) {
+      hover({ id: draggedId, name, type }: Item, monitor) {
+        console.log("%c Line:102 🍒 name", "color:#42b983", name);
+        console.log("%c Line:102 🥕 type", "color:#7f2b82", type);
+
+        const monitorItem = monitor.getItem();
+
+        console.log("%c Line:110 🌽 monitorItem", "color:#465975", monitorItem);
+
+        if (draggedId !== id && type === 'folder') {
           console.log('item ==>', name)
           const { index: overIndex } = findCard(id);
           moveCard(draggedId, overIndex);
