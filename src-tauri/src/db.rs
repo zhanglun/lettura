@@ -148,7 +148,25 @@ pub fn get_article(filter: ArticleFilter) -> ArticleQueryResult {
 
   match filter.channel_uuid {
     Some(channel_uuid) => {
-      query = query.filter(schema::articles::channel_uuid.eq(channel_uuid));
+      let relations = schema::feed_metas::dsl::feed_metas
+        .filter(schema::feed_metas::parent_uuid.eq(&channel_uuid))
+        .load::<models::FeedMeta>(&mut connection)
+        .expect("Expect find channel");
+      let mut channel_uuids: Vec<String> = vec![];
+
+      if relations.len() > 0 {
+        for relation in relations {
+          if relation.parent_uuid == channel_uuid {
+            let uuid = String::from(relation.channel_uuid);
+
+            channel_uuids.push(uuid.clone());
+          }
+        }
+
+        query = query.filter(schema::articles::channel_uuid.eq_any(channel_uuids));
+      } else {
+        query = query.filter(schema::articles::channel_uuid.eq(channel_uuid));
+      }
     }
     None => {
       1;

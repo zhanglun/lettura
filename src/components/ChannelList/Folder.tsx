@@ -148,7 +148,7 @@ export const Folder = ({
         to={`${RouteConfig.CHANNEL.replace(
           /:uuid/,
           channel.uuid
-        )}?channelUuid=${channel.uuid}&feedUrl=${channel.feed_url}`}
+        )}?channelUuid=${channel.uuid}&type=${channel.item_type}&feedUrl=${channel.feed_url}`}
       >
         <span className={styles.icon}>
           <FolderIcon className={`h-4 w-4`} />
