@@ -21,6 +21,14 @@ export const updateFeedSort = async (
   return invoke("update_feed_sort", { sorts });
 };
 
+export const moveChannelIntoFolder = async (channelUuid: string, folderUuid: string, sort: number): Promise<any> => {
+  return invoke("move_channel_into_folder", {
+    channelUuid,
+    folderUuid,
+    sort
+  })
+}
+
 /**
  * 删除频道
  * @param {String} uuid  channel 的 uuid

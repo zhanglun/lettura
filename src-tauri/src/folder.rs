@@ -24,6 +24,7 @@ pub fn get_channels_in_folders(
   result
 }
 
+
 pub fn create_folder(folder_name: String) -> usize {
   let mut connection = db::establish_connection();
   let last_sort = schema::folders::dsl::folders

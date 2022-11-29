@@ -17,11 +17,12 @@ interface Item {
   type: string;
 }
 
-interface DropResult {
-  allowedDropEffect: string;
-  dropEffect: string;
-  name: string;
-}
+// interface DropResult {
+//   allowedDropEffect: string;
+//   dropEffect: string;
+//   name: string;
+//   id: string,
+// }
 
 export const Folder = ({
   id,
@@ -101,6 +102,7 @@ export const Folder = ({
     () => ({
       accept: ItemTypes.BOX,
       drop: () => ({
+        id,
         name: "folder-" + channel.title,
         allowedDropEffect: "move",
         type: channel.item_type,

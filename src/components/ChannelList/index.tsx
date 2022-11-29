@@ -220,20 +220,24 @@ const ChannelList = (props: any): JSX.Element => {
       collect: (minoter: DropTargetMonitor) => ({
         isOver: minoter.isOver(),
       }),
-      drop(item, monitor) {
-        let feedSort = channelList.map((channel: any) => {
-          return {
-            uuid: channel.uuid,
-            item_type: channel.item_type,
-            sort: channel.sort,
-          };
-        });
+      drop(item: any, monitor) {
+        const dropResult = monitor.getDropResult() as any;
 
-        dataAgent.updateFeedSort(feedSort);
-        console.log(
-          "🚀 ~ file: index.tsx ~ line 229 ~ drop ~ feedSort",
-          feedSort
-        );
+        console.log("🚀 ~ file: index.tsx ~ line 225 ~ drop ~ dropResult", dropResult)
+        console.log("🚀 ~ file: index.tsx ~ line 224 ~ drop ~ item", item)
+
+        if (item.id === dropResult.id) {
+          let feedSort = channelList.map((channel: any) => {
+            return {
+              uuid: channel.uuid,
+              item_type: channel.item_type,
+              sort: channel.sort,
+            };
+          });
+
+          dataAgent.updateFeedSort(feedSort);
+        }
+
       },
     }),
     [channelList]

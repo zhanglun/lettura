@@ -145,6 +145,16 @@ pub async fn update_feed_sort(sorts: Vec<feed::FeedSort>) -> usize {
   1
 }
 
+#[command]
+pub async fn move_channel_into_folder(channel_uuid: String, folder_uuid: String, sort: i32) -> usize {
+  let result = feed::update_feed_meta(channel_uuid, feed::FeedMetaUpdateRequest {
+    parent_uuid: folder_uuid,
+    sort
+  });
+
+  result
+}
+
 pub fn create_channel_model(uuid: &String, url: &String, res: &Feed) -> Box<models::NewChannel> {
   match res {
     Feed::Atom(res) => {

@@ -112,6 +112,7 @@ fn main() {
       cmd::update_user_config,
       cmd::update_proxy,
       cmd::create_folder,
+      cmd::move_channel_into_folder,
     ])
     .run(context)
     .expect("error while running tauri Application");

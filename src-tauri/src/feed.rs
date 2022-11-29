@@ -29,6 +29,12 @@ pub fn delete_channel(uuid: String) -> usize {
     .execute(&mut connection)
     .expect("Expect delete channel");
 
+    diesel::delete(
+      schema::feed_metas::dsl::feed_metas.filter(schema::feed_metas::channel_uuid.eq(&uuid)),
+    )
+    .execute(&mut connection)
+    .expect("Expect delete channel");
+
     return result;
   } else {
     return 0;

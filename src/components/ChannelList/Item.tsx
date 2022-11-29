@@ -6,6 +6,7 @@ import { FolderIcon } from "@heroicons/react/24/outline";
 import { StoreContext } from "../../context";
 import defaultSiteIcon from "./default.png";
 import { Channel } from "../../db";
+import * as dataAgent from '../../helpers/dataAgent';
 import { RouteConfig } from "../../config";
 
 import styles from "./channel.module.scss";
@@ -39,6 +40,7 @@ interface DropResult {
   dropEffect: string
   name: string
   type: string
+  id: string
 }
 
 export const ChannelItem: FC<CardProps> = memo(function Card({
@@ -68,13 +70,8 @@ export const ChannelItem: FC<CardProps> = memo(function Card({
       }),
       end: (item, monitor) => {
         const { id: droppedId, originalIndex } = item;
-
-        console.log("%c Line:81 🍭 droppedId", "color:#b03734", droppedId);
-        console.log(id)
-
         const didDrop = monitor.didDrop();
         const dropResult = monitor.getDropResult<DropResult>()
-        console.log("%c Line:76 🍧 dropResult", "color:#ffdd4d", dropResult);
 
         if (item && dropResult) {
           let alertMessage = ''
@@ -86,6 +83,12 @@ export const ChannelItem: FC<CardProps> = memo(function Card({
             const isCopyAction = dropResult.dropEffect === 'copy'
             const actionName = isCopyAction ? 'copied' : 'moved'
             alertMessage = `You ${actionName} ${item.name} into ${dropResult.name}!`
+
+            console.log("🚀 ~ file: Item.tsx ~ line 89 ~ dropResult", dropResult)
+            console.log("🚀 ~ file: Item.tsx ~ line 89 ~ item", item)
+            dataAgent.moveChannelIntoFolder(item.id, dropResult.id, 1).then((res) => {
+              console.log('res ==>', res)
+            })
             // TODO: move channel into folder
           } else {
             alertMessage = `You cannot ${dropResult.dropEffect} an item into the ${dropResult.name}`
@@ -114,7 +117,8 @@ export const ChannelItem: FC<CardProps> = memo(function Card({
       },
       drop(item, monitor) {
         return {
-          name: "channel-" + channel.title,
+          name: channel.title,
+          id: channel.uuid,
           allowedDropEffect: "move",
         }
       }
