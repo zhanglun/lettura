@@ -411,4 +411,24 @@ mod tests {
     update_proxy(ip, port);
     config::get_user_config();
   }
+  #[tokio::test]
+  async fn test_create_article_models() {
+    let url = "https://36kr.com/feed".to_string();
+    println!("{:?}", url);
+    let res = fetch_feed_item(&url).await;
+
+    let a = match res {
+      Some(res) => {
+        let channel_uuid = Uuid::new_v4().hyphenated().to_string();
+        let channel = create_channel_model(&channel_uuid, &url, &res);
+        let articles = create_article_models(&channel_uuid, &url, &res);
+
+        println!("{:?}", articles);
+        1
+      }
+      None => 0,
+    };
+
+    ()
+  }
 }
