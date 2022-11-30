@@ -51,26 +51,6 @@ pub fn get_channel_by_uuid(channel_uuid: String) -> Option<models::Channel> {
   }
 }
 
-#[derive(Debug, Queryable, Serialize, QueryableByName)]
-pub struct UnreadTotal {
-  #[diesel(sql_type = diesel::sql_types::Text)]
-  pub channel_uuid: String,
-  #[diesel(sql_type = diesel::sql_types::Integer)]
-  pub unread_count: i32,
-}
-
-pub fn get_unread_total() -> Vec<UnreadTotal> {
-  const SQL_QUERY_UNREAD_TOTAL: &str = "
- SELECT id, channel_uuid, count(read_status) as unread_count FROM articles WHERE read_status = 1 group by channel_uuid;
-";
-  let mut connection = establish_connection();
-  let record = diesel::sql_query(SQL_QUERY_UNREAD_TOTAL)
-    .load::<UnreadTotal>(&mut connection)
-    .unwrap_or(vec![]);
-
-  record
-}
-
 pub fn add_articles(channel_uuid: String, articles: Vec<models::NewArticle>) -> usize {
   let mut connection = establish_connection();
   let channel = schema::channels::dsl::channels
@@ -232,8 +212,4 @@ pub fn update_articles_read_status_channel(uuid: String) -> usize {
 mod tests {
   use super::*;
 
-  #[test]
-  fn test_get_unread_total() {
-    get_unread_total();
-  }
 }

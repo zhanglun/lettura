@@ -92,6 +92,7 @@ const ChannelList = (props: any): JSX.Element => {
   const getList = () => {
     Promise.all([dataAgent.getFeeds(), dataAgent.getUnreadTotal()]).then(
       ([channel, unreadTotal]) => {
+        console.log("%c Line:95 🥖 unreadTotal", "color:#93c0a4", unreadTotal);
         channel.forEach((item) => {
           item.unread = unreadTotal[item.uuid] || 0;
         });
@@ -217,8 +218,8 @@ const ChannelList = (props: any): JSX.Element => {
   const [, drop] = useDrop(
     () => ({
       accept: ItemTypes.BOX,
-      collect: (minoter: DropTargetMonitor) => ({
-        isOver: minoter.isOver(),
+      collect: (moniter: DropTargetMonitor) => ({
+        isOver: moniter.isOver(),
       }),
       drop(item: any, monitor) {
         const dropResult = monitor.getDropResult() as any;

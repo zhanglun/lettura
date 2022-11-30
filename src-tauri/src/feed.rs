@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::hash::Hash;
 
 use diesel::prelude::*;
 use serde::Deserialize;
@@ -78,6 +79,26 @@ pub fn get_all_feed_meta() -> Vec<models::FeedMeta> {
   result
 }
 
+#[derive(Debug, Queryable, Serialize, QueryableByName)]
+pub struct UnreadTotal {
+  #[diesel(sql_type = diesel::sql_types::Text)]
+  pub channel_uuid: String,
+  #[diesel(sql_type = diesel::sql_types::Integer)]
+  pub unread_count: i32,
+}
+
+pub fn get_unread_total() -> Vec<UnreadTotal> {
+  const SQL_QUERY_UNREAD_TOTAL: &str = "
+ SELECT id, channel_uuid, count(read_status) as unread_count FROM articles WHERE read_status = 1 group by channel_uuid;
+";
+  let mut connection = db::establish_connection();
+  let record = diesel::sql_query(SQL_QUERY_UNREAD_TOTAL)
+    .load::<UnreadTotal>(&mut connection)
+    .unwrap_or(vec![]);
+
+  record
+}
+
 #[derive(Deserialize)]
 pub struct FeedMetaUpdateRequest {
   pub parent_uuid: String,
@@ -105,13 +126,14 @@ pub struct FeedItem {
   pub uuid: String,
   pub title: String,
   pub sort: i32,
+  pub child_uuids: Option<Vec<String>>,
   pub link: Option<String>,
 }
 
 pub fn get_feeds() -> Vec<FeedItem> {
   let folders = folder::get_folders();
   let relations = get_all_feed_meta();
-  let mut folder_uuids: Vec<String> = vec![];
+  let mut folder_uuids: HashMap<String, Vec<String>> = HashMap::new();
   let mut channel_uuids: Vec<String> = vec![];
   let mut channel_sorts: HashMap<String, i32> = HashMap::new();
 
@@ -122,9 +144,14 @@ pub fn get_feeds() -> Vec<FeedItem> {
       channel_uuids.push(uuid.clone());
       channel_sorts.insert(uuid.clone(), relation.sort);
     } else {
-      folder_uuids.push(relation.parent_uuid);
+      let list = folder_uuids.entry(String::from(relation.parent_uuid)).or_insert(Vec::new());
+
+      list.push(String::from(relation.channel_uuid));
+
     }
   }
+
+  println!("{:?}", folder_uuids);
 
   let mut connection = db::establish_connection();
   let channels = schema::channels::dsl::channels
@@ -143,6 +170,7 @@ pub fn get_feeds() -> Vec<FeedItem> {
       title: folder.name,
       sort: folder.sort,
       link: None,
+      child_uuids: folder_uuids.get(&folder.uuid),
     })
   }
 
@@ -160,6 +188,7 @@ pub fn get_feeds() -> Vec<FeedItem> {
       title: channel.title,
       sort: *sort,
       link: Some(channel.link),
+      child_uuids: Some(Vec::new()),
     })
   }
 
@@ -320,5 +349,12 @@ mod tests {
   fn test_get_feeds() {
     let result = get_feeds();
     println!("{:?}", result)
+  }
+
+  #[test]
+  fn test_get_unread_total() {
+    let record = get_unread_total();
+
+    println!("{:?}", record);
   }
 }
