@@ -1,4 +1,6 @@
-table! {
+// @generated automatically by Diesel CLI.
+
+diesel::table! {
     articles (id) {
         id -> Integer,
         uuid -> Text,
@@ -15,7 +17,7 @@ table! {
     }
 }
 
-table! {
+diesel::table! {
     channels (id) {
         id -> Integer,
         uuid -> Text,
@@ -31,11 +33,10 @@ table! {
     }
 }
 
-table! {
+diesel::table! {
     feed_metas (id) {
         id -> Integer,
-        uuid -> Text,
-        channel_uuid -> Text,
+        child_uuid -> Text,
         parent_uuid -> Text,
         sort -> Integer,
         create_date -> Timestamp,
@@ -43,7 +44,7 @@ table! {
     }
 }
 
-table! {
+diesel::table! {
     folder_channel_relations (id) {
         id -> Integer,
         folder_uuid -> Text,
@@ -52,7 +53,7 @@ table! {
     }
 }
 
-table! {
+diesel::table! {
     folders (id) {
         id -> Integer,
         uuid -> Text,
@@ -63,7 +64,7 @@ table! {
     }
 }
 
-allow_tables_to_appear_in_same_query!(
+diesel::allow_tables_to_appear_in_same_query!(
     articles,
     channels,
     feed_metas,

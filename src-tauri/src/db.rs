@@ -137,7 +137,7 @@ pub fn get_article(filter: ArticleFilter) -> ArticleQueryResult {
       if relations.len() > 0 {
         for relation in relations {
           if relation.parent_uuid == channel_uuid {
-            let uuid = String::from(relation.channel_uuid);
+            let uuid = String::from(relation.child_uuid);
 
             channel_uuids.push(uuid.clone());
           }

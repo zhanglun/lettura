@@ -45,9 +45,7 @@ pub struct FeedMeta {
   #[diesel(sql_type = Integer)]
   pub id: i32,
   #[diesel(sql_type = Text)]
-  pub uuid: String,
-  #[diesel(sql_type = Text)]
-  pub channel_uuid: String,
+  pub child_uuid: String,
   #[diesel(sql_type = Text)]
   pub parent_uuid: String,
   #[diesel(sql_type = Integer)]
@@ -61,8 +59,7 @@ pub struct FeedMeta {
 #[derive(Debug, Insertable)]
 #[diesel(table_name = feed_metas)]
 pub struct NewFeedMeta {
-  pub uuid: String,
-  pub channel_uuid: String,
+  pub child_uuid: String,
   pub parent_uuid: String,
   pub sort: i32,
 }
