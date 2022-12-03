@@ -11,6 +11,7 @@ import styles from "./App.module.css";
 import "./styles/index.global.scss";
 import "./App.css";
 import { Article } from "./db";
+import { busChannel } from "./helpers/busChannel";
 
 function App() {
   const store = useStore();
@@ -28,6 +29,22 @@ function App() {
 
     setCurrentIdx(idx);
     setArticle(article);
+
+    if (article.read_status === 1) {
+      dataAgent.updateArticleReadStatus(article.uuid, 2).then((res) => {
+        if (res) {
+          busChannel.emit("updateChannelUnreadCount", {
+            uuid: article.channel_uuid,
+            action: "decrease",
+            count: 1,
+          });
+
+          article.read_status = 2;
+
+          setArticle(article);
+        }
+      });
+    }
   }
 
   useEffect(() => {

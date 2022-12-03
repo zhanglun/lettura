@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import Dayjs from "dayjs";
 import { useStore } from "../../hooks/useStore";
 import styles from "./articleitem.module.scss";
-import { busChannel } from "../../helpers/busChannel";
-import * as dataAgent from "../../helpers/dataAgent";
 
 export const ArticleItem = React.memo((props: any) => {
   const { article, onSelect, highlight } = props;
@@ -12,17 +10,8 @@ export const ArticleItem = React.memo((props: any) => {
 
   const updateCurrentArticle = (article: any) => {
     if (article.read_status === 1) {
-      dataAgent.updateArticleReadStatus(article.uuid, 2).then((res) => {
-        if (res) {
-          busChannel.emit("updateChannelUnreadCount", {
-            uuid: article.channel_uuid,
-            action: "decrease",
-            count: 1,
-          });
-
-          setReadStatus(true);
-        }
-      });
+      console.log("🚀 ~ file: index.tsx:13 ~ updateCurrentArticle ~ article.read_status", article.read_status)
+      setReadStatus(1);
     }
 
     store.updateArticleAndIdx(article);

@@ -18,6 +18,7 @@ export interface Channel {
 export interface Article {
   id?: number;
   uuid: string;
+  channel_uuid: string;
   title: string;
   link: string;
   image: string;

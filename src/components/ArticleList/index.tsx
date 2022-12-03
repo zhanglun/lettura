@@ -44,9 +44,6 @@ export const ArticleList = forwardRef(
       }
     };
 
-    const handleArticleSelect = (article: any) => {
-    };
-
     const getList = (channelUuid: string) => {
       const filter: { read_status?: number, limit?: number } = {};
 
@@ -107,7 +104,6 @@ export const ArticleList = forwardRef(
             article={article}
             highlight={store.article?.id === article.id}
             key={article.id}
-            onSelect={handleArticleSelect}
           />
         );
       });

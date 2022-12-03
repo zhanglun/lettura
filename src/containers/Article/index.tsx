@@ -100,16 +100,19 @@ export const ArticleContainer = (): JSX.Element => {
   const handleCopyLink = () => {
     const { link } = store.article as Article;
 
-    navigator.clipboard.writeText(link).then(function() {
-      Toast.success({
-        content: 'Copied!',
-        duration: 2,
-        theme: 'light',
-        showClose: false,
-      })
-    }, function(err) {
-      console.error('Async: Could not copy text: ', err);
-    });
+    navigator.clipboard.writeText(link).then(
+      function () {
+        Toast.success({
+          content: "Copied!",
+          duration: 2,
+          theme: "light",
+          showClose: false,
+        });
+      },
+      function (err) {
+        console.error("Async: Could not copy text: ", err);
+      }
+    );
   };
 
   const handleRefresh = () => {
@@ -139,7 +142,7 @@ export const ArticleContainer = (): JSX.Element => {
     let cur = -1;
 
     if (currentIdx <= 0) {
-      cur = 0
+      cur = 0;
     } else {
       cur = currentIdx - 1;
     }
@@ -149,13 +152,17 @@ export const ArticleContainer = (): JSX.Element => {
   };
 
   const handleViewNext = () => {
+    console.log(
+      "🚀 ~ file: index.tsx:152 ~ handleViewNext ~ handleViewNext",
+      handleViewNext
+    );
     let cur = -1;
 
     if (currentIdx < store.articleList.length - 1) {
       cur = currentIdx + 1;
 
-    setCurrentIdx(cur);
-    store.updateArticleAndIdx(store.articleList[cur] || null);
+      setCurrentIdx(cur);
+      store.updateArticleAndIdx(store.articleList[cur] || null);
     }
   };
 
@@ -235,18 +242,29 @@ export const ArticleContainer = (): JSX.Element => {
           <div></div>
           <div className={styles.viewMenu}>
             <Tooltip content="Previous">
-              <span className={`${styles.menuIcon} ${currentIdx < 0 && styles.menuIconDisabled}`}>
-                <ChevronUpIcon className={"h-4 w-4"} onClick={handleViewPrevious} />
+              <span
+                className={`${styles.menuIcon} ${
+                  currentIdx < 0 && styles.menuIconDisabled
+                }`}
+                onClick={handleViewPrevious}
+              >
+                <ChevronUpIcon className={"h-4 w-4"} />
               </span>
             </Tooltip>
             <Tooltip content="Next">
-              <span className={`${styles.menuIcon} ${currentIdx >= store.articleList.length - 1 && styles.menuIconDisabled}`}>
-                <ChevronDownIcon className={"h-4 w-4"} onClick={handleViewNext} />
+              <span
+                className={`${styles.menuIcon} ${
+                  currentIdx >= store.articleList.length - 1 &&
+                  styles.menuIconDisabled
+                }`}
+                onClick={handleViewNext}
+              >
+                <ChevronDownIcon className={"h-4 w-4"} />
               </span>
             </Tooltip>
             <Tooltip content="Beautify read">
               <span className={styles.menuIcon}>
-                <PaintBrushIcon className={"h-4 w-4"}/>
+                <PaintBrushIcon className={"h-4 w-4"} />
               </span>
             </Tooltip>
             <Tooltip content="Open in browser" position="top">
