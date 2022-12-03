@@ -92,7 +92,6 @@ const ChannelList = (props: any): JSX.Element => {
   const getList = () => {
     Promise.all([dataAgent.getFeeds(), dataAgent.getUnreadTotal()]).then(
       ([channel, unreadTotal]) => {
-        console.log("%c Line:95 🥖 unreadTotal", "color:#93c0a4", unreadTotal);
         channel.forEach((item) => {
           item.unread = unreadTotal[item.uuid] || 0;
         });

@@ -353,11 +353,7 @@ pub async fn import_channels(list: Vec<String>) -> usize {
 
 #[command]
 pub fn get_unread_total() -> HashMap<String, i32> {
-  let record = feed::get_unread_total();
-  let result = record
-    .into_iter()
-    .map(|r| (r.channel_uuid.clone(), r.unread_count.clone()))
-    .collect::<HashMap<String, i32>>();
+  let result = feed::get_unread_total();
 
   result
 }

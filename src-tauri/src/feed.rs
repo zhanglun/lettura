@@ -85,16 +85,54 @@ pub struct UnreadTotal {
   pub unread_count: i32,
 }
 
-pub fn get_unread_total() -> Vec<UnreadTotal> {
+#[derive(Debug, Queryable, Serialize, QueryableByName)]
+pub struct MetaGroup {
+  #[diesel(sql_type = diesel::sql_types::Text)]
+  pub child_uuid: String,
+  #[diesel(sql_type = diesel::sql_types::Text)]
+  pub parent_uuid: String,
+  #[diesel(sql_type = diesel::sql_types::Integer)]
+  pub sort: i32,
+}
+
+pub fn get_unread_total() -> HashMap<String, i32> {
   const SQL_QUERY_UNREAD_TOTAL: &str = "
- SELECT id, channel_uuid, count(read_status) as unread_count FROM articles WHERE read_status = 1 group by channel_uuid;
-";
+    SELECT id, channel_uuid, count(read_status) as unread_count FROM articles WHERE  read_status = 1 group by channel_uuid;
+  ";
+  let sql_folders: &str = "
+    select child_uuid, parent_uuid, sort from feed_metas;
+  ";
+
   let mut connection = db::establish_connection();
   let record = diesel::sql_query(SQL_QUERY_UNREAD_TOTAL)
     .load::<UnreadTotal>(&mut connection)
     .unwrap_or(vec![]);
+  let total_map = record.into_iter()
+  .map(|r| (r.channel_uuid.clone(), r.unread_count.clone()))
+  .collect::<HashMap<String, i32>>();
+  let meta_group = diesel::sql_query(sql_folders)
+    .load::<MetaGroup>(&mut connection)
+    .unwrap_or(vec![]);
+  let mut result_map: HashMap<String, i32> = HashMap::new();
 
-  record
+  for group in meta_group {
+    match total_map.get(&group.child_uuid) {
+      Some(count) => {
+        if group.parent_uuid == "".to_string() {
+          result_map.entry(group.child_uuid)
+            .or_insert(count.clone());
+        } else {
+          println!("{:?}", group.parent_uuid);
+          let c= result_map.entry(group.parent_uuid)
+            .or_insert(0);
+          *c += count;
+        }
+      },
+      None => {}
+    };
+  }
+
+  result_map
 }
 
 #[derive(Deserialize)]
