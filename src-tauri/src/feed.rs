@@ -236,12 +236,7 @@ pub fn get_feeds() -> Vec<FeedItem> {
   }
 
   for folder in folders {
-    let c_uuids = match folder_channel_map.get(&folder.uuid) {
-      Some(uuids) => uuids,
-      None => {
-        return Vec::new();
-      },
-    };
+    let c_uuids = folder_channel_map.entry(String::from(&folder.uuid)).or_insert(vec![]);
 
     result.push(FeedItem {
       item_type: String::from("folder"),
@@ -251,7 +246,7 @@ pub fn get_feeds() -> Vec<FeedItem> {
       link: Some(folder.link),
       parent_uuid: "".to_string(),
       children: Some(c_uuids.to_vec()),
-    })
+    });
   }
 
   result.sort_by(|a, b| a.sort.cmp(&b.sort));
