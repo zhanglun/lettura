@@ -5,11 +5,13 @@
   --mono-font: 'JetBrains Mono', monospace !important;
   --content-font-size: 16px;
 
-  --app-channel-width: 240px;
+  --app-channel-width: 260px;
   --app-article-width: 340px;
   --app-toolbar-height: 50px;
   --app-setting-sidebar-width: 200px;
   --view-helpbar-width: 50px;
+  --app-sidebar-bg: rgba(60,60,67,.03);
+  --app-sidebar-border-color: rgba(0,0,0,.15);
 
   --headline-color: #333;
   --title-color: #363636;

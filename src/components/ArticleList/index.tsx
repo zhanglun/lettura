@@ -34,7 +34,6 @@ export const ArticleList = forwardRef(
   ): JSX.Element => {
     const { channelUuid } = props;
     const store = useStore();
-    const [highlightItem, setHighlightItem] = useState<Article>();
     const [articleList, setArticleList] = useState<Article[]>([]);
     const [loading, setLoading] = useState(false);
     const articleListRef = useRef<HTMLDivElement>(null);
@@ -46,14 +45,12 @@ export const ArticleList = forwardRef(
     };
 
     const handleArticleSelect = (article: any) => {
-      setHighlightItem(article);
     };
 
     const getList = (channelUuid: string) => {
       const filter: { read_status?: number, limit?: number } = {};
 
       filter.read_status = store.currentFilter.id;
-
 
       setLoading(true)
 
@@ -104,13 +101,11 @@ export const ArticleList = forwardRef(
     }, [channelUuid, store.currentFilter]);
 
     const renderList = (): JSX.Element[] => {
-      console.log("%c Line:102 🍓 articleList", "color:#42b983", articleList);
-
       return articleList.map((article: any, idx: number) => {
         return (
           <ArticleItem
             article={article}
-            highlight={highlightItem?.id === article.id}
+            highlight={store.article?.id === article.id}
             key={article.id}
             onSelect={handleArticleSelect}
           />
@@ -125,6 +120,10 @@ export const ArticleList = forwardRef(
     useEffect(() => {
       resetScrollTop();
     }, [channelUuid, articleList]);
+
+    useEffect(() => {
+      store.setArticleList(articleList);
+    }, [articleList]);
 
     return (
       <div className={styles.container}>

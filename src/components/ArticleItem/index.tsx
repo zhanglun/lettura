@@ -25,7 +25,7 @@ export const ArticleItem = React.memo((props: any) => {
       });
     }
 
-    store.setArticle(article);
+    store.updateArticleAndIdx(article);
   }
 
   const handleClick = async (e: any) => {

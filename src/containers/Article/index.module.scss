@@ -21,8 +21,11 @@
 :global(.is-scroll) {
   .header, .viewHeader {
     backdrop-filter: saturate(180%) blur(20px);
-    background: rgba(255, 255, 255, 0.92);
-    box-shadow: rgb(0 0 0 / 12%) 0px 1px 3px;
+    background: rgba(255, 255, 255, 0.8);
+    --playerDropShadow2: rgba(0, 0, 0, 0.07);
+    --playerInnerShadow: rgba(255, 255, 255, 0.45);
+    backdrop-filter: saturate(50%) blur(20px);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05), 0 1px 3px var(--playerDropShadow2), inset 0 1px 1px var(--playerInnerShadow);
   }
 }
 
@@ -77,12 +80,20 @@
   border-radius: var(--button-radius);
   cursor: pointer;
   margin-left: 4px;
+  user-select: none;
 }
 
-.menuIcon:hover {
+.menuIcon:not(.menuIconDisabled):hover {
   color: var(--headline-color);
   background-color: var(--color-gray-200);
 }
+
+.menuIconDisabled {
+  cursor: not-allowed;
+  color: var(--color-gray-400);
+  background-color: var(--color-gray-200);
+}
+
 
 .list {
   height: 100%;

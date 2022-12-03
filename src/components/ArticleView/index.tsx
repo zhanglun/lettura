@@ -20,7 +20,7 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
   const [showBanner, setShowBanner] = useState(false);
 
   const renderPlaceholder = () => {
-    return "-";
+    return "Please Select Some read";
   };
 
   const renderDetail = () => {

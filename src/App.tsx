@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useDrop, DndProvider } from "react-dnd";
+import { DndProvider } from "react-dnd";
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import { appWindow } from '@tauri-apps/api/window'
 import { Outlet } from "react-router-dom";
@@ -10,12 +10,25 @@ import * as dataAgent from "./helpers/dataAgent";
 import styles from "./App.module.css";
 import "./styles/index.global.scss";
 import "./App.css";
+import { Article } from "./db";
 
 function App() {
   const store = useStore();
+
   const [filter, setFilter] = useState({ ...store.currentFilter });
   const [article, setArticle] = useState(store.article);
+  const [currentIdx, setCurrentIdx] = useState(-1);
   const [channel, setChannel] = useState(store.channel);
+  const [articleList, setArticleList] = useState(store.articleList);
+
+  const updateArticleAndIdx = (article: Article, idx?: number) => {
+    if (idx === undefined || idx <= 0) {
+      idx = articleList.findIndex((item) => item.uuid === article.uuid);
+    }
+
+    setCurrentIdx(idx);
+    setArticle(article);
+  }
 
   useEffect(() => {
     document
@@ -40,7 +53,12 @@ function App() {
       channel: channel,
       setChannel,
       article: article,
+      updateArticleAndIdx,
+      articleList: articleList,
+      setArticleList,
       setArticle,
+      currentIdx,
+      setCurrentIdx,
       filterList: store.filterList,
       currentFilter: filter,
       setFilter,
