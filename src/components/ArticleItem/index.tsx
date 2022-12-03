@@ -38,7 +38,6 @@ export const ArticleItem = React.memo((props: any) => {
 
   useEffect(() => {
     setReadStatus(article.read_status)
-    console.log("%c Line:37 🍞 article.read_status", "color:#fca650", article.read_status);
   }, [article.read_status])
 
   return (

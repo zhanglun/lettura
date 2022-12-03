@@ -100,7 +100,7 @@ pub fn get_unread_total() -> HashMap<String, i32> {
     SELECT id, channel_uuid, count(read_status) as unread_count FROM articles WHERE  read_status = 1 group by channel_uuid;
   ";
   let sql_folders: &str = "
-    select child_uuid, parent_uuid, sort from feed_metas;
+    SELECT child_uuid, parent_uuid, sort FROM feed_metas;
   ";
 
   let mut connection = db::establish_connection();
@@ -122,9 +122,9 @@ pub fn get_unread_total() -> HashMap<String, i32> {
           result_map.entry(group.child_uuid)
             .or_insert(count.clone());
         } else {
-          println!("{:?}", group.parent_uuid);
           let c= result_map.entry(group.parent_uuid)
             .or_insert(0);
+
           *c += count;
         }
       },
@@ -156,18 +156,28 @@ pub fn update_feed_meta(uuid: String, update: FeedMetaUpdateRequest) -> usize {
   updated_row
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct ChildItem {
+  pub uuid: String,
+  pub title: String,
+  pub sort: i32,
+  pub link: Option<String>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct FeedItem {
   pub item_type: String,
   pub uuid: String,
   pub title: String,
   pub sort: i32,
-  pub child_uuids: Option<Vec<String>>,
+  pub children: Option<Vec<ChildItem>>,
+  pub parent_uuid: String,
   pub link: Option<String>,
 }
 
 #[derive(Debug, Queryable, Serialize, QueryableByName)]
-pub struct FolderJoinItem {
+pub struct FeedJoinRecord {
   #[diesel(sql_type = diesel::sql_types::Text)]
   pub title: String,
   #[diesel(sql_type = diesel::sql_types::Integer)]
@@ -175,47 +185,72 @@ pub struct FolderJoinItem {
   #[diesel(sql_type = diesel::sql_types::Text)]
   pub uuid: String,
   #[diesel(sql_type = diesel::sql_types::Text)]
+  pub parent_uuid: String,
+  #[diesel(sql_type = diesel::sql_types::Text)]
   pub link: String
 }
 
 pub fn get_feeds() -> Vec<FeedItem> {
   let sql_folder = "
-  SELECT C.name AS title, F.child_uuid AS uuid, F.sort, F.parent_uuid as link FROM folders AS C LEFT JOIN feed_metas AS F where F.parent_uuid = '' AND C.uuid = F.child_uuid;
+  SELECT C.name AS title, F.child_uuid AS uuid, F.sort, F.parent_uuid as link, F.parent_uuid AS parent_uuid FROM folders AS C LEFT JOIN feed_metas AS F where F.parent_uuid = '' AND C.uuid = F.child_uuid;
   ";
   let sql_channel = "
-  SELECT C.title AS title, F.child_uuid AS uuid, F.sort, C.link FROM channels as C LEFT JOIN  feed_metas AS F where F.parent_uuid = '' and C.uuid = F.child_uuid;";
+  SELECT C.title AS title, F.child_uuid AS uuid, F.sort, C.link, F.parent_uuid as parent_uuid FROM channels as C LEFT JOIN  feed_metas AS F WHERE C.uuid = F.child_uuid;";
 
   let mut connection = db::establish_connection();
 
   let channels = diesel::sql_query(sql_channel)
-  .load::<FolderJoinItem>(&mut connection)
+  .load::<FeedJoinRecord>(&mut connection)
   .unwrap_or(vec![]);
 
   let folders = diesel::sql_query(sql_folder)
-  .load::<FolderJoinItem>(&mut connection)
+  .load::<FeedJoinRecord>(&mut connection)
   .unwrap_or(vec![]);
 
+  let mut folder_channel_map: HashMap<String, Vec<ChildItem>> = HashMap::new();
   let mut result: Vec<FeedItem> = Vec::new();
 
+  for channel in channels {
+    let p_uuid = String::from(&channel.parent_uuid);
+
+    if p_uuid != "".to_string() {
+      let childs = folder_channel_map.entry(p_uuid.clone()).or_insert(vec![]);
+
+      childs.push(ChildItem {
+        uuid: channel.uuid,
+        title: channel.title,
+        sort: channel.sort,
+        link: Some(channel.link),
+      });
+    } else {
+      result.push(FeedItem {
+        item_type: String::from("channel"),
+        uuid: channel.uuid,
+        title: channel.title,
+        sort: channel.sort,
+        link: Some(channel.link),
+        parent_uuid: p_uuid,
+        children: Some(Vec::new()),
+      });
+    }
+  }
+
   for folder in folders {
+    let c_uuids = match folder_channel_map.get(&folder.uuid) {
+      Some(uuids) => uuids,
+      None => {
+        return Vec::new();
+      },
+    };
+
     result.push(FeedItem {
       item_type: String::from("folder"),
       uuid: folder.uuid,
       title: folder.title,
       sort: folder.sort,
       link: Some(folder.link),
-      child_uuids: Some(vec![]),
-    })
-  }
-
-  for channel in channels {
-    result.push(FeedItem {
-      item_type: String::from("channel"),
-      uuid: channel.uuid,
-      title: channel.title,
-      sort: channel.sort,
-      link: Some(channel.link),
-      child_uuids: Some(Vec::new()),
+      parent_uuid: "".to_string(),
+      children: Some(c_uuids.to_vec()),
     })
   }
 

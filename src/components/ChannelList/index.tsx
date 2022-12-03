@@ -35,8 +35,6 @@ const ChannelList = (props: any): JSX.Element => {
     return dataAgent
       .syncArticlesWithChannelUuid(uuid)
       .then(async (res) => {
-        console.log("%c Line:27 🍑 res", "color:#fca650", res);
-
         return res;
       })
       .catch(() => {
@@ -54,7 +52,11 @@ const ChannelList = (props: any): JSX.Element => {
     count: number
   ) => {
     channelList.forEach((channel) => {
-      if (channel.uuid !== uuid) {
+      if (channel.item_type === 'channel' && channel.uuid !== uuid) {
+        return channel;
+      }
+
+      if (channel.item_type === 'folder' && !channel.children.some((child) => child.uuid === uuid )) {
         return channel;
       }
 
@@ -92,6 +94,8 @@ const ChannelList = (props: any): JSX.Element => {
   const getList = () => {
     Promise.all([dataAgent.getFeeds(), dataAgent.getUnreadTotal()]).then(
       ([channel, unreadTotal]) => {
+        console.log("🚀 ~ file: index.tsx:95 ~ getList ~ unreadTotal", unreadTotal)
+        console.log("🚀 ~ file: index.tsx:95 ~ getList ~ channel", channel)
         channel.forEach((item) => {
           item.unread = unreadTotal[item.uuid] || 0;
         });

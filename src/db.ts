@@ -1,5 +1,10 @@
 export interface Channel {
   item_type: string;
+  children: {
+    uuid: String,
+    title: String,
+    sort: number,
+  }[];
   id?: number;
   uuid: string;
   title: string;
