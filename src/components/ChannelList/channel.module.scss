@@ -74,7 +74,7 @@
   }
 }
 
-.itemActive {
+.itemActive, .itemDropActive {
   background-color: var(--semi-color-primary);
 
   &:hover {

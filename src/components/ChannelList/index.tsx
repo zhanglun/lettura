@@ -198,18 +198,29 @@ const ChannelList = (props: any): JSX.Element => {
   );
 
   const moveCard = useCallback(
-    (uuid: string, atIndex: number) => {
+    (uuid: string, atIndex: number, intoFolder?: Boolean) => {
       const { channel, index } = findCard(uuid);
       console.log(
         "🚀 ~ file: index.tsx ~ line 197 ~ ChannelList ~ index",
         index
       );
-      const list = update(channelList, {
-        $splice: [
-          [index, 1],
-          [atIndex, 0, channel],
-        ],
-      });
+
+      let list: Channel[] = [];
+
+      if (intoFolder) {
+        list = update(channelList, {
+          $splice: [
+            [index, 1],
+          ],
+        });
+      } else {
+        list = update(channelList, {
+          $splice: [
+            [index, 1],
+            [atIndex, 0, channel],
+          ],
+        });
+      }
 
       list.forEach((item, idx) => (item.sort = idx));
 

@@ -129,13 +129,12 @@ export const Folder = ({
     [findCard, moveCard]
   );
 
-  const isActive = canDrop && isOver;
-  const backgroundColor = selectBackgroundColor(isActive, canDrop);
+  const isDropActive = canDrop && isOver;
 
   return (
     <li
       ref={(node) => drag(drop(node))}
-      style={{ backgroundColor, opacity }}
+      style={{ opacity }}
       key={channel.title}
       onClick={() => store.setChannel(channel)}
       aria-hidden="true"
@@ -143,7 +142,7 @@ export const Folder = ({
     >
       <NavLink
         className={({ isActive }) =>
-          `${styles.item} ${isActive ? styles.itemActive : ""}`
+        `${styles.item} ${isActive ? styles.itemActive : ""} ${isDropActive ? styles.itemDropActive : ""} `
         }
         to={`${RouteConfig.CHANNEL.replace(
           /:uuid/,

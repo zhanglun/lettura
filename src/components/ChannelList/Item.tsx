@@ -22,7 +22,7 @@ export interface CardProps {
   ico: string;
   unread: number;
   type: string;
-  moveCard: (id: string, to: number) => void;
+  moveCard: (id: string, to: number, intoFolder?: boolean) => void;
   findCard: (id: string) => { index: number };
 }
 
@@ -89,7 +89,8 @@ export const ChannelItem: FC<CardProps> = memo(function Card({
             dataAgent.moveChannelIntoFolder(item.id, dropResult.id, 1).then((res) => {
               console.log('res ==>', res)
             })
-            // TODO: move channel into folder
+
+            moveCard(droppedId, originalIndex, true);
           } else {
             alertMessage = `You cannot ${dropResult.dropEffect} an item into the ${dropResult.name}`
           }
