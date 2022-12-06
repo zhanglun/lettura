@@ -166,22 +166,44 @@
 }
 
 .uploadBox {
-  width: 440px;
-  height: 210px;
+  width: 480px;
+  height: 180px;
   position: relative;
   border: 2px dashed #dedede;
+  transition: all 0.3s ease-in-out;
+
+  &:hover {
+    background-color: #eee;
+    border-color: #c2c2c2;
+    cursor: pointer;
+  }
 }
 
-.uploadPlaceholder {
+.uploadBoxInner {
   position: absolute;
   top: 0;
   left: 0;
   z-index: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
   width: 100%;
   height: 100%;
-  text-align: center;
   pointer-events: none;
   user-select: none;
+
+  .text {
+    color: #999;
+    font-size: 18px;
+  }
+
+  .additionText {
+    margin-top: 4px;
+    color: #bfbfbf;
+    font-size: 12px;
+  }
+
 }
 
 .uploadInput {
@@ -191,12 +213,5 @@
   z-index: 1;
   width: 100%;
   height: 100%;
-  text-indent: -9999px;
-  font-size: 0;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #eee;
-    border-color: #c2c2c2;
-  }
+  opacity: 0;
 }

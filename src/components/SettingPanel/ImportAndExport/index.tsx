@@ -112,8 +112,14 @@ export const ImportAndExport = (props: any) => {
           {sourceType === "file" && (
             <div className={styles.inputField}>
               <div className={styles.uploadBox}>
-                {!file && <div className={styles.uploadPlaceholder}>Select file</div>}
-                {file && <span>{file && file.name}</span>}
+                <div className={styles.uploadBoxInner}>
+                  <div className={styles.text}>
+                    {file ? "Selected file" : "Click to Select file"}
+                  </div>
+                  {file && (
+                    <p className={styles.additionText}>{file && file.name}</p>
+                  )}
+                </div>
                 <input
                   ref={fileInputRef}
                   type="file"

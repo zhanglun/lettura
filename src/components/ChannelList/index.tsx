@@ -309,9 +309,30 @@ const ChannelList = (props: any): JSX.Element => {
     }
   };
 
+  const listRef = useRef<HTMLDivElement>(null);
+  const handleListScroll = useCallback(() => {
+    if (listRef.current) {
+      const scrollTop = listRef.current.scrollTop;
+
+      if (scrollTop > 0) {
+        listRef.current?.parentElement?.classList.add("is-scroll");
+      } else {
+        listRef.current?.parentElement?.classList.remove("is-scroll");
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (listRef.current) {
+      const $list = listRef.current as HTMLDivElement;
+      $list.addEventListener("scroll", handleListScroll);
+    }
+  }, []);
+
   return (
     <div className={styles.container}>
-      <div className={styles.header}>
+      <div className={`sticky-header ${styles.header}`}>
+        <div></div>
         <div className={styles.toolbar}>
           <AddFeedChannel Aref={addFeedButtonRef} />
           <Tooltip content="Add feed">
@@ -339,7 +360,7 @@ const ChannelList = (props: any): JSX.Element => {
           </Tooltip>
         </div>
       </div>
-      <div className={styles.inner}>{renderFeedList()}</div>
+      <div className={styles.inner} ref={listRef}>{renderFeedList()}</div>
       {refreshing && (
         <div className={styles.footer}>
           <span>

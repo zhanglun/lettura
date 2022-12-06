@@ -40,9 +40,9 @@ export const ArticleContainer = (): JSX.Element => {
       const scrollTop = listRef.current.scrollTop;
 
       if (scrollTop > 0) {
-        listRef.current.classList.add("is-scroll");
+        listRef.current?.parentElement?.classList.add("is-scroll");
       } else {
-        listRef.current.classList.remove("is-scroll");
+        listRef.current?.parentElement?.classList.remove("is-scroll");
       }
     }
   }, []);
@@ -53,9 +53,9 @@ export const ArticleContainer = (): JSX.Element => {
       console.log("scrolling", scrollTop);
 
       if (scrollTop > 0) {
-        viewRef.current.classList.add("is-scroll");
+        viewRef.current?.parentElement?.classList.add("is-scroll");
       } else {
-        viewRef.current.classList.remove("is-scroll");
+        viewRef.current?.parentElement?.classList.remove("is-scroll");
       }
     }
   };
@@ -184,7 +184,7 @@ export const ArticleContainer = (): JSX.Element => {
 
   return (
     <div className={styles.article}>
-      <div className={styles.list} ref={listRef}>
+      <div className={styles.list}>
         <div className={`sticky-header ${styles.header}`}>
           <div className={styles.title}>
             {store.channel ? store.channel.title : ""}
@@ -230,14 +230,16 @@ export const ArticleContainer = (): JSX.Element => {
           </div>
         </div>
         {syncing && <div className={styles.syncingBar}>同步中</div>}
-        <ArticleList
-          ref={articleListRef}
-          title={params.name}
-          channelUuid={channelUuid}
-          feedUrl={feedUrl || ""}
-        />
+        <div className={styles.scrollList} ref={listRef}>
+          <ArticleList
+            ref={articleListRef}
+            title={params.name}
+            channelUuid={channelUuid}
+            feedUrl={feedUrl || ""}
+          />
+        </div>
       </div>
-      <div className={styles.mainView} ref={viewRef}>
+      <div className={styles.mainView}>
         <div className={`sticky-header ${styles.viewHeader}`}>
           <div></div>
           <div className={styles.viewMenu}>
@@ -284,7 +286,9 @@ export const ArticleContainer = (): JSX.Element => {
             </Tooltip>
           </div>
         </div>
-        <ArticleView article={store.article} />
+        <div className={styles.scrolllView} ref={viewRef}>
+          <ArticleView article={store.article} />
+        </div>
       </div>
     </div>
   );
