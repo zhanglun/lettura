@@ -55,7 +55,7 @@ export const General = () => {
         <div className={styles.section}>
           <p className={styles.options}>Proxy</p>
           <div className={styles.proxyFields}>
-            <div>
+            {/* <div>
               Protocol:{" "}
               <Select
                 style={{ width: '100%' }}
@@ -67,7 +67,7 @@ export const General = () => {
                 <Select.Option value={"sock4"}>sock4</Select.Option>
                 <Select.Option value={"sock5"}>sock5</Select.Option>
               </Select>
-            </div>
+            </div> */}
             <div>
               IP:{" "}
               <Input
@@ -86,6 +86,12 @@ export const General = () => {
             </div>
           </div>
         </div>
+        {/* <div className={styles.section}>
+          <p className={styles.options}>Auto update interval (minutes)</p>
+        </div>
+        <div className={styles.section}>
+          <p className={styles.options}>Number of update threads (from 1 to 10)</p>
+        </div> */}
       </div>
     </div>
   );

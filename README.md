@@ -15,7 +15,7 @@ And this project is under construction.
 Pre-release version is [here](https://github.com/zhanglun/lettura/releases), you can download it and try to subscribe some feeds.
 
 <p align="center">
-  <img src="./screenshot.jpg" width="100%"/>
+  <img src="./screenshot.png" width="100%"/>
 </p>
 
 
