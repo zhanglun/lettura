@@ -110,13 +110,13 @@
 .scrollList {
   overflow-y: auto;
   height: calc(100vh - var(--app-toolbar-height));
-  margin-top: var(--app-toolbar-height);
+  padding-top: var(--app-toolbar-height);
 }
 
-.scrolllView {
+.scrollView {
   overflow-y: auto;
   height: calc(100vh - var(--app-toolbar-height));
-  margin-top: var(--app-toolbar-height);
+  padding-top: var(--app-toolbar-height);
 }
 
 .mainView {

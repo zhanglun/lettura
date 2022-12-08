@@ -28,3 +28,8 @@ export interface Article {
   pub_date?: Date;
   read_status: number;
 }
+
+export interface Folder {
+  uuid: string;
+  name: string;
+}

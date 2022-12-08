@@ -106,7 +106,7 @@ pub struct NewArticle {
   pub pub_date: String,
 }
 
-#[derive(Debug, Queryable, QueryableByName, Clone)]
+#[derive(Debug, Queryable, QueryableByName, Clone, Serialize)]
 pub struct Folder {
   #[diesel(sql_type = Integer)]
   pub id: i32,

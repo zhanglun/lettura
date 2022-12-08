@@ -97,10 +97,10 @@ fn main() {
     .menu(tauri::Menu::os_default(&context.package_info().name))
     .invoke_handler(tauri::generate_handler![
       cmd::fetch_feed,
-      cmd::add_channel,
-      cmd::delete_channel,
       cmd::get_feeds,
       cmd::get_channels,
+      cmd::add_channel,
+      cmd::delete_channel,
       cmd::update_feed_sort,
       cmd::get_articles,
       cmd::sync_articles_with_channel_uuid,
@@ -108,10 +108,13 @@ fn main() {
       cmd::get_unread_total,
       cmd::update_article_read_status,
       cmd::mark_all_read,
+
       cmd::get_user_config,
       cmd::update_user_config,
       cmd::update_proxy,
+
       cmd::create_folder,
+      cmd::get_folders,
       cmd::move_channel_into_folder,
     ])
     .run(context)

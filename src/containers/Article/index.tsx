@@ -152,10 +152,6 @@ export const ArticleContainer = (): JSX.Element => {
   };
 
   const handleViewNext = () => {
-    console.log(
-      "🚀 ~ file: index.tsx:152 ~ handleViewNext ~ handleViewNext",
-      handleViewNext
-    );
     let cur = -1;
 
     if (currentIdx < store.articleList.length - 1) {
@@ -286,7 +282,7 @@ export const ArticleContainer = (): JSX.Element => {
             </Tooltip>
           </div>
         </div>
-        <div className={styles.scrolllView} ref={viewRef}>
+        <div className={styles.scrollView} ref={viewRef}>
           <ArticleView article={store.article} />
         </div>
       </div>

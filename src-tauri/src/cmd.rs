@@ -130,10 +130,8 @@ pub async fn get_feeds() -> Vec<feed::FeedItem> {
 }
 
 #[command]
-pub async fn get_channels(filter: feed::ChannelFilter) -> feed::ChannelQueryResult {
-  let results = feed::get_channels(feed::ChannelFilter {
-    parent_uuid: filter.parent_uuid
-  });
+pub async fn get_channels() -> feed::ChannelQueryResult {
+  let results = feed::get_channels();
 
   return results;
 }
@@ -393,6 +391,11 @@ pub fn update_user_config<T>(user_cfg: T) -> usize {
 #[command]
 pub fn create_folder(name: String) -> usize {
   folder::create_folder(name)
+}
+
+#[command]
+pub fn get_folders() -> Vec<models::Folder> {
+  folder::get_folders()
 }
 
 #[cfg(test)]

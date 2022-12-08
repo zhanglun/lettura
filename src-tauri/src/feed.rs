@@ -337,52 +337,65 @@ pub fn update_feed_sort(sorts: Vec<FeedSort>) -> usize {
   1
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct ChannelFilter {
-  pub parent_uuid: Option<String>,
+#[derive(Debug, Queryable, Serialize, QueryableByName)]
+pub struct ChannelQuery {
+  #[diesel(sql_type = diesel::sql_types::Integer)]
+  pub id: i32,
+  #[diesel(sql_type = diesel::sql_types::Text)]
+  pub uuid: String,
+  #[diesel(sql_type = diesel::sql_types::Text)]
+  pub title: String,
+  #[diesel(sql_type = diesel::sql_types::Text)]
+  pub link: String,
+  #[diesel(sql_type = diesel::sql_types::Text)]
+  pub feed_url: String,
+  #[diesel(sql_type = diesel::sql_types::Text)]
+  pub image: String,
+  #[diesel(sql_type = diesel::sql_types::Text)]
+  pub description: String,
+  #[diesel(sql_type = diesel::sql_types::Text)]
+  pub pub_date: String,
+  #[diesel(sql_type = diesel::sql_types::Integer)]
+  pub sort: i32,
+  #[diesel(sql_type = diesel::sql_types::Text)]
+  pub create_date: String,
+  #[diesel(sql_type = diesel::sql_types::Text)]
+  pub update_date: String,
+  #[diesel(sql_type = diesel::sql_types::Text)]
+  parent_uuid: String,
 }
 
 #[derive(Debug, Serialize)]
 pub struct ChannelQueryResult {
-  list: Vec<models::Channel>,
-  // pub count: i32,
+  list: Vec<ChannelQuery>,
 }
 
-pub fn get_channels(filter: ChannelFilter) -> ChannelQueryResult {
+pub fn get_channels() -> ChannelQueryResult {
   let mut connection = db::establish_connection();
-  let mut query = schema::channels::dsl::channels.into_boxed();
+  let sql_channels = "
+    SELECT
+      C.id as id,
+      C.uuid AS uuid,
+      C.title AS title,
+      C.link AS link,
+      C.feed_url AS feed_url,
+      C.image AS image,
+      C.description AS description,
+      C.pub_date as pub_date,
+      C.sort as sort,
+      C.create_date as create_date,
+      C.update_date as update_date,
+      F.parent_uuid as parent_uuid
+    FROM channels AS C LEFT JOIN feed_metas AS F
+    ON F.child_uuid = C.uuid
+    ORDER BY create_date DESC
+  ";
 
-  match filter.parent_uuid {
-    Some(parent_uuid) => {
-      let relations = schema::feed_metas::dsl::feed_metas
-        .filter(schema::feed_metas::parent_uuid.eq(parent_uuid))
-        .load::<models::FeedMeta>(&mut connection)
-        .expect("Expect get feed meta");
-      let mut folder_uuids: Vec<String> = vec![];
-      let mut channel_uuids: Vec<String> = vec![];
+  let channels = diesel::sql_query(sql_channels)
+    .load::<ChannelQuery>(&mut connection)
+    .unwrap_or(vec![]);
 
-      for relation in relations {
-        if relation.parent_uuid == "" {
-          folder_uuids.push(relation.parent_uuid);
-        } else {
-          channel_uuids.push(relation.child_uuid);
-        }
-      }
-
-      query = query.filter(schema::channels::uuid.eq_any(channel_uuids));
-    }
-    None => {
-      1;
-    }
-  }
-
-  query = query.order(schema::channels::dsl::create_date.desc());
-
-  let result = query
-    .load::<models::Channel>(&mut connection)
-    .expect("Expect loading articles");
-
-  ChannelQueryResult { list: result }
+  ChannelQueryResult { list: channels }
 }
 
 #[cfg(test)]

@@ -2,12 +2,15 @@
   flex: 1;
   display: grid;
   grid-template-columns: var(--app-setting-sidebar-width) 1fr;
-  grid-template-rows: var(--app-toolbar-height) 1fr;
+  // grid-template-rows: var(--app-toolbar-height) 1fr;
   background-color: #fff;
+  position: relative;
+  padding-top: var(--app-toolbar-height);
+  height: 100vh;
 }
 
 .header{
-  grid-column: 1 / -1;
+  // grid-column: 1 / -1;
   background-color: #fff;
 }
 
@@ -26,9 +29,9 @@
 }
 
 .sidebar {
-  width: var(--app-setting-sidebar-width);
+  // width: var(--app-setting-sidebar-width);
   border-right: 1px solid var(--line-color);
-  grid-column: 1;
+  grid-column: 1/1;
   padding: 8px 10px;
 }
 
@@ -145,9 +148,6 @@
   color: var(--title-color);
 }
 
-.hideFileInput {
-}
-
 .main {
   padding: 0 14px;
   overflow-y: auto;
@@ -214,4 +214,12 @@
   width: 100%;
   height: 100%;
   opacity: 0;
+}
+
+
+.feedManagerFields {
+  display: grid;
+  padding: 1rem 0;
+  grid-template-columns: 260px 140px;
+  grid-gap: 1rem;
 }

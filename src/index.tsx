@@ -9,7 +9,7 @@ import { ArticleContainer } from "./containers/Article";
 import { SettingContainer } from "./containers/Setting";
 
 import { General } from "./components/SettingPanel/General";
-import { FeedManager } from "./components/SettingPanel/ChannelManager";
+import { FeedManager } from "./components/SettingPanel/FeedManager";
 import { ImportAndExport } from "./components/SettingPanel/ImportAndExport";
 import { WelcomePage } from "./components/WelcomePage";
 

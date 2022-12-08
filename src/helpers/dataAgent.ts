@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api";
-import { Channel } from "../db";
+import { Channel, Folder } from "../db";
 
 export const getChannels = async (
   filter: any
@@ -13,6 +13,10 @@ export const getFeeds = async (): Promise<Channel[]> => {
 
 export const createFolder = async (name: string): Promise<number> => {
   return invoke("create_folder", { name });
+};
+
+export const getFolders = async (): Promise<Folder[]> => {
+  return invoke("get_folders");
 };
 
 export const updateFeedSort = async (
@@ -101,3 +105,4 @@ export const updateProxy = async (cfg: LocalProxy): Promise<any> => {
     port: cfg.port,
   });
 };
+
