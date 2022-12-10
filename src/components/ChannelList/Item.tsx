@@ -136,7 +136,7 @@ export const ChannelItem: FC<CardProps> = memo(function Card({
       aria-hidden="true"
     >
       <NavLink
-        className={({ isActive }) =>
+        className={({ isActive }: any) =>
           `${styles.item} ${isActive ? styles.itemActive : ""}`
         }
         to={`${RouteConfig.CHANNEL.replace(

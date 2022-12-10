@@ -16,7 +16,8 @@ import styles from "./articlelist.module.css";
 import { busChannel } from "../../helpers/busChannel";
 
 export type ArticleListProps = {
-  channelUuid: string | null;
+  feedUuid: string | null;
+  type: string | null;
   feedUrl: string | null;
   title: string | null;
 };
@@ -32,7 +33,7 @@ export const ArticleList = forwardRef(
     props: ArticleListProps,
     ref: ForwardedRef<ArticleListRefType>
   ): JSX.Element => {
-    const { channelUuid } = props;
+    const { feedUuid } = props;
     const store = useStore();
     const [articleList, setArticleList] = useState<Article[]>([]);
     const [loading, setLoading] = useState(false);
@@ -45,7 +46,7 @@ export const ArticleList = forwardRef(
       }
     };
 
-    const getList = (channelUuid: string) => {
+    const getList = (feedUuid: string) => {
       const filter: { read_status?: number, limit?: number } = {};
 
       filter.read_status = store.currentFilter.id;
@@ -53,7 +54,7 @@ export const ArticleList = forwardRef(
       setLoading(true)
 
       dataAgent
-        .getArticleList(channelUuid, filter)
+        .getArticleList(feedUuid, filter)
         .then((res) => {
           const { list } = res as { list: Article[] };
           setArticleList(list);
@@ -67,7 +68,8 @@ export const ArticleList = forwardRef(
     };
 
     const markAllRead = () => {
-      dataAgent.markAllRead(channelUuid as string)
+      console.log("🚀 ~ file: index.tsx:71 ~ markAllRead ~ markAllRead")
+      dataAgent.markAllRead(feedUuid as string)
         .then((res) => {
           articleList.forEach((article) => {
             article.read_status = 2
@@ -76,7 +78,7 @@ export const ArticleList = forwardRef(
           setArticleList([...articleList])
 
           busChannel.emit('updateChannelUnreadCount', {
-            uuid: channelUuid as string,
+            uuid: feedUuid as string,
             action: 'set',
             count: 0,
           })
@@ -86,7 +88,7 @@ export const ArticleList = forwardRef(
     useImperativeHandle(ref, () => {
       return {
         getList() {
-          getList(channelUuid || "");
+          getList(feedUuid || "");
         },
         markAllRead() {
           markAllRead();
@@ -96,8 +98,8 @@ export const ArticleList = forwardRef(
     });
 
     useEffect(() => {
-      getList(channelUuid || "");
-    }, [channelUuid, store.currentFilter]);
+      getList(feedUuid || "");
+    }, [feedUuid, store.currentFilter]);
 
     const renderList = (): JSX.Element[] => {
       return articleList.map((article: any, idx: number) => {
@@ -118,7 +120,7 @@ export const ArticleList = forwardRef(
 
     useEffect(() => {
       resetScrollTop();
-    }, [channelUuid, articleList]);
+    }, [feedUuid, articleList]);
 
     useEffect(() => {
       store.setArticleList(articleList);

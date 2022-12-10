@@ -56,9 +56,13 @@ const ChannelList = (props: any): JSX.Element => {
         return channel;
       }
 
-      if (channel.item_type === 'folder' && !channel.children.some((child) => child.uuid === uuid )) {
+      if (channel.item_type === 'folder' && channel.uuid !== uuid && !channel.children.some((child) => child.uuid === uuid )) {
         return channel;
       }
+
+      console.log('channel', channel)
+      console.log('channel.uuid', channel.uuid)
+      console.log('uuid', uuid)
 
       switch (action) {
         case "increase": {
@@ -121,6 +125,7 @@ const ChannelList = (props: any): JSX.Element => {
     const unsubscribeUpdateCount = busChannel.on(
       "updateChannelUnreadCount",
       ({ uuid, action, count }) => {
+        console.log("🚀 ~ file: index.tsx:138 ~ useEffect ~ updateChannelUnreadCount")
         updateCount(channelList, uuid, action, count);
         unsubscribeUpdateCount();
       }

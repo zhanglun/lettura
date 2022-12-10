@@ -194,9 +194,26 @@ pub fn get_article(filter: ArticleFilter) -> ArticleQueryResult {
 
 pub fn update_articles_read_status_channel(uuid: String) -> usize {
   let mut connection = establish_connection();
+  let mut channel_uuids: Vec<String> = vec![];
+  let relations = schema::feed_metas::dsl::feed_metas
+    .filter(schema::feed_metas::parent_uuid.eq(&uuid))
+    .load::<models::FeedMeta>(&mut connection)
+    .expect("Expect find channel");
+
+  if relations.len() > 0 {
+    for relation in relations {
+      if relation.parent_uuid == uuid {
+        let uuid = String::from(relation.child_uuid);
+
+        channel_uuids.push(uuid.clone());
+      }
+    }
+  } else {
+    channel_uuids.push(uuid);
+  }
   let result = diesel::update(
     schema::articles::dsl::articles
-      .filter(schema::articles::channel_uuid.eq(uuid))
+      .filter(schema::articles::channel_uuid.eq_any(channel_uuids))
       .filter(schema::articles::read_status.eq(1)),
   )
   .set(schema::articles::read_status.eq(2))
@@ -206,10 +223,4 @@ pub fn update_articles_read_status_channel(uuid: String) -> usize {
     Ok(r) => r,
     Err(_) => 0,
   }
-}
-
-#[cfg(test)]
-mod tests {
-  use super::*;
-
 }

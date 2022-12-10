@@ -28,6 +28,7 @@ export const ArticleContainer = (): JSX.Element => {
   const store = useStore();
   const query = useQuery();
   const feedUrl = query.get("feedUrl");
+  const type = query.get('type');
   const channelUuid = query.get("channelUuid");
   const [syncing, setSyncing] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
@@ -144,6 +145,7 @@ export const ArticleContainer = (): JSX.Element => {
 
   const markAllRead = () => {
     if (feedUrl && articleListRef.current) {
+      console.log("🚀 ~ file: index.tsx:148 ~ markAllRead ~ feedUrl", feedUrl)
       articleListRef.current.markAllRead();
       // TODO
     }
@@ -253,7 +255,8 @@ export const ArticleContainer = (): JSX.Element => {
           <ArticleList
             ref={articleListRef}
             title={params.name}
-            channelUuid={channelUuid}
+            type={type}
+            feedUuid={channelUuid}
             feedUrl={feedUrl || ""}
           />
         </div>
