@@ -20,11 +20,6 @@
   justify-content: space-between;
 }
 
-// :global(.is-scroll) {
-//   .header, .viewHeader {
-//   }
-// }
-
 :global(.is-scroll .sticky-header) {
   backdrop-filter: saturate(180%) blur(20px);
   background: rgba(255, 255, 255, 0.8);
@@ -109,13 +104,13 @@
 
 .scrollList {
   overflow-y: auto;
-  height: calc(100vh - var(--app-toolbar-height));
+  height: 100vh;
   padding-top: var(--app-toolbar-height);
 }
 
 .scrollView {
   overflow-y: auto;
-  height: calc(100vh - var(--app-toolbar-height));
+  height: 100vh;
   padding-top: var(--app-toolbar-height);
 }
 

@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { ForwardedRef, useEffect, useState } from "react";
 import Dayjs from "dayjs";
 import { useStore } from "../../hooks/useStore";
 import styles from "./articleitem.module.scss";
 
-export const ArticleItem = React.memo((props: any) => {
+export const ArticleItem = React.forwardRef((props: any, ref: ForwardedRef<HTMLLIElement>) => {
   const { article, onSelect, highlight } = props;
   const [readStatus, setReadStatus] = useState(article.read_status);
   const store = useStore();
@@ -36,6 +36,7 @@ export const ArticleItem = React.memo((props: any) => {
       }`}
       onClick={handleClick}
       aria-hidden="true"
+      ref={ref}
     >
       {(readStatus === 1) && <div className={styles.dot} />}
       <div className={styles.title}>

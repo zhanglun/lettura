@@ -61,16 +61,39 @@ export const ArticleContainer = (): JSX.Element => {
   };
 
   useEffect(() => {
-    if (listRef.current) {
-      const $list = listRef.current as HTMLDivElement;
-      $list.addEventListener("scroll", handleListScroll);
-    }
-
     if (viewRef.current) {
       const $list = viewRef.current as HTMLDivElement;
       $list.addEventListener("scroll", handleViewScroll);
     }
-  }, []);
+  }, [store.articleList]);
+
+  useEffect(() => {
+    if (listRef.current && articleListRef.current && Object.keys(articleListRef.current.articlesRef).length > 0) {
+      const $rootElem = listRef.current as HTMLDivElement;
+
+      const options = {
+        root: $rootElem,
+        rootMargin: '50px',
+        threshold: 1
+      }
+
+      const callback = (entries: IntersectionObserverEntry[], observer: IntersectionObserver) => {
+        if (entries[0].intersectionRatio < 1) {
+          listRef.current?.parentElement?.classList.add("is-scroll");
+        } else {
+          listRef.current?.parentElement?.classList.remove("is-scroll");
+        }
+      }
+
+      const observer = new IntersectionObserver(callback, options)
+      const $target = (Object.values(articleListRef.current.articlesRef as any)[0] as any).current
+
+      if ($target) {
+        observer.observe($target)
+      }
+    }
+
+  }, [articleListRef.current])
 
   const getArticleList = () => {
     if (articleListRef.current) {

@@ -1,5 +1,3 @@
-/* eslint-disable jsx-a11y/no-static-element-interactions */
-/* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, {
   useEffect,
   useState,
@@ -7,6 +5,7 @@ import React, {
   useRef,
   useImperativeHandle,
   ForwardedRef,
+  createRef,
 } from "react";
 import { ArticleItem } from "../ArticleItem";
 import { Loading } from "../Loading";
@@ -25,6 +24,7 @@ export type ArticleListProps = {
 export interface ArticleListRefType {
   getList: () => void;
   markAllRead: () => void;
+  articlesRef: any;
 }
 
 export const ArticleList = forwardRef(
@@ -36,11 +36,12 @@ export const ArticleList = forwardRef(
     const store = useStore();
     const [articleList, setArticleList] = useState<Article[]>([]);
     const [loading, setLoading] = useState(false);
-    const articleListRef = useRef<HTMLDivElement>(null);
+    const innerRef = useRef<HTMLDivElement>(null);
+    const [articlesRef, setArticlesRef] = useState([]);
 
     const resetScrollTop = () => {
-      if (articleListRef.current !== null) {
-        articleListRef.current.scroll(0, 0);
+      if (innerRef.current !== null) {
+        innerRef.current.scroll(0, 0);
       }
     };
 
@@ -89,7 +90,8 @@ export const ArticleList = forwardRef(
         },
         markAllRead() {
           markAllRead();
-        }
+        },
+        articlesRef,
       };
     });
 
@@ -101,6 +103,7 @@ export const ArticleList = forwardRef(
       return articleList.map((article: any, idx: number) => {
         return (
           <ArticleItem
+            ref={articlesRef[article.uuid]}
             article={article}
             highlight={store.article?.id === article.id}
             key={article.id}
@@ -119,11 +122,18 @@ export const ArticleList = forwardRef(
 
     useEffect(() => {
       store.setArticleList(articleList);
+      const refs = articleList.reduce((acc: any, cur) => {
+        acc[cur.uuid] = createRef();
+
+        return acc;
+      }, {});
+
+      setArticlesRef(refs);
     }, [articleList]);
 
     return (
       <div className={styles.container}>
-        <div className={styles.inner} ref={articleListRef}>
+        <div className={styles.inner} ref={innerRef}>
           {loading ? (
             <Loading/>
           ) : (
