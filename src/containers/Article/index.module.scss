@@ -120,9 +120,7 @@
   overflow-y: auto;
   display: grid;
   grid-auto-flow: row;
-  grid-template-rows: 50px 1fr;
-  background: linear-gradient(90deg, #f9fafb 15px, transparent 1%) 50%, linear-gradient(#f9fafb 15px, transparent 1%) 50%, rgba(0, 0, 0, .24);
-  background-size: 16px 16px;
+  grid-template-rows: var(--app-toolbar-height) 1fr;
 }
 
 .viewHeader {

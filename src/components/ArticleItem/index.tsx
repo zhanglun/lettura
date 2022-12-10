@@ -2,15 +2,16 @@ import React, { ForwardedRef, useEffect, useState } from "react";
 import Dayjs from "dayjs";
 import { useStore } from "../../hooks/useStore";
 import styles from "./articleitem.module.scss";
+import { getChannelFavicon } from "../../helpers/parseXML";
 
 export const ArticleItem = React.forwardRef((props: any, ref: ForwardedRef<HTMLLIElement>) => {
   const { article, onSelect, highlight } = props;
+  console.log("🚀 ~ file: index.tsx:8 ~ ArticleItem ~ article", article)
   const [readStatus, setReadStatus] = useState(article.read_status);
   const store = useStore();
 
   const updateCurrentArticle = (article: any) => {
     if (article.read_status === 1) {
-      console.log("🚀 ~ file: index.tsx:13 ~ updateCurrentArticle ~ article.read_status", article.read_status)
       setReadStatus(1);
     }
 
@@ -24,6 +25,8 @@ export const ArticleItem = React.forwardRef((props: any, ref: ForwardedRef<HTMLL
 
     updateCurrentArticle(article)
   };
+
+  const ico = getChannelFavicon(article.feed_url);
 
   useEffect(() => {
     setReadStatus(article.read_status)
@@ -48,7 +51,7 @@ export const ArticleItem = React.forwardRef((props: any, ref: ForwardedRef<HTMLL
         {(article.description || "").replace(/<[^<>]+>/g, "")}
       </div>
       <div className={styles.meta}>
-        <div>{article.author}</div>
+        <div className={styles.author}><img src={ico} alt="" />{article.author}</div>
         <div className={styles.date}>
           {Dayjs(article.pub_date.replace(/-/ig, '/')).format("YYYY-MM-DD HH:mm")}
         </div>

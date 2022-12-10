@@ -86,6 +86,8 @@ pub struct Article {
   #[diesel(sql_type = Text)]
   pub pub_date: String,
   #[diesel(sql_type = Text)]
+  pub author: String,
+  #[diesel(sql_type = Text)]
   pub create_date: String,
   #[diesel(sql_type = Text)]
   pub update_date: String,
@@ -103,6 +105,7 @@ pub struct NewArticle {
   pub feed_url: String,
   pub description: String,
   pub content: String,
+  pub author: String,
   pub pub_date: String,
 }
 

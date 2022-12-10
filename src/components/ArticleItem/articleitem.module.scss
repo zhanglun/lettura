@@ -111,6 +111,16 @@
   color: var(--text-color);
 }
 
+.author {
+  display: flex;
+  align-items: center;
+
+  img {
+    width: 18px;
+    margin-right: 4px;
+  }
+}
+
 .channel {
   max-width: 120px;
   overflow: hidden;

@@ -227,8 +227,12 @@ pub fn create_article_models(
           },
           None => String::from(""),
         };
+        let author = match item.authors.get(0) {
+          Some(person) => person.name.to_string(),
+          None => String::from(""),
+        };
         let description = String::from("");
-        let date = String::from("");
+        let date = &item.updated;
 
         let s = models::NewArticle {
           uuid: article_uuid,
@@ -238,7 +242,8 @@ pub fn create_article_models(
           content,
           feed_url: feed_url.to_string(),
           description,
-          pub_date: date,
+          author: author,
+          pub_date: date.to_string(),
         };
 
         articles.push(s);
@@ -249,6 +254,7 @@ pub fn create_article_models(
         let article_uuid = Uuid::new_v4().hyphenated().to_string();
         let title = item.title.clone().unwrap_or(String::from(""));
         let link = item.link.clone().unwrap_or(String::from(""));
+        let author = item.author.clone().unwrap_or(String::from(""));
         let content = item.content.clone().unwrap_or(String::from(""));
         let description = item
           .description
@@ -264,6 +270,7 @@ pub fn create_article_models(
           content,
           feed_url: feed_url.to_string(),
           description,
+          author: author,
           pub_date: date,
         };
 
@@ -422,7 +429,7 @@ mod tests {
   }
   #[tokio::test]
   async fn test_create_article_models() {
-    let url = "https://www.ifanr.com/feed".to_string();
+    let url = "https://feeds.appinn.com/appinns/".to_string();
     println!("{:?}", url);
     let res = fetch_feed_item(&url).await;
 
@@ -432,7 +439,7 @@ mod tests {
         let channel = create_channel_model(&channel_uuid, &url, &res);
         let articles = create_article_models(&channel_uuid, &url, &res);
 
-        println!("{:?}", articles);
+        println!("{:?}", articles.get(0));
         1
       }
       None => 0,
