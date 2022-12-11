@@ -24,7 +24,6 @@ pub fn get_channels_in_folders(
   result
 }
 
-
 pub fn create_folder(folder_name: String) -> usize {
   let mut connection = db::establish_connection();
   let last_sort = schema::feed_metas::dsl::feed_metas
@@ -51,23 +50,33 @@ pub fn create_folder(folder_name: String) -> usize {
     sort: last_sort + 1,
   };
 
-  let result = diesel::insert_or_ignore_into(schema::folders::dsl::folders)
+  let folder_record = diesel::insert_or_ignore_into(schema::folders::dsl::folders)
     .values(folder)
     .execute(&mut connection);
+  let result = match folder_record {
+    Ok(record) => {
+      if record == 1 {
+        let feed_meta = models::NewFeedMeta {
+          child_uuid: String::from(&uuid),
+          parent_uuid: "".to_string(),
+          sort: last_sort + 1,
+        };
 
-  let feed_meta = models::NewFeedMeta {
-    child_uuid: String::from(&uuid),
-    parent_uuid: "".to_string(),
-    sort: last_sort + 1,
-  };
+        let result = diesel::insert_or_ignore_into(schema::feed_metas::dsl::feed_metas)
+          .values(feed_meta)
+          .execute(&mut connection);
 
-  let result = diesel::insert_or_ignore_into(schema::feed_metas::dsl::feed_metas)
-    .values(feed_meta)
-    .execute(&mut connection);
-
-  let result = match result {
-    Ok(r) => r,
-    Err(_) => 0,
+        match result {
+          Ok(r) => r,
+          Err(_) => 0,
+        }
+      } else {
+        0
+      }
+    }
+    _ => {
+      return 0;
+    }
   };
 
   result
@@ -92,10 +101,7 @@ pub fn delete_folders(uuid: String) -> (usize, usize) {
 
   if folder.len() == 1 {
     let relations = get_channels_in_folders(connection, vec![uuid]);
-    let channel_uuids = relations
-      .into_iter()
-      .map(|item| item.child_uuid)
-      .collect();
+    let channel_uuids = relations.into_iter().map(|item| item.child_uuid).collect();
 
     println!("{:?}", channel_uuids);
 

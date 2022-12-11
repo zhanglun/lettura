@@ -6,7 +6,6 @@ import { getChannelFavicon } from "../../helpers/parseXML";
 
 export const ArticleItem = React.forwardRef((props: any, ref: ForwardedRef<HTMLLIElement>) => {
   const { article, onSelect, highlight } = props;
-  console.log("🚀 ~ file: index.tsx:8 ~ ArticleItem ~ article", article)
   const [readStatus, setReadStatus] = useState(article.read_status);
   const store = useStore();
 

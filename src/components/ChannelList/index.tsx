@@ -60,10 +60,6 @@ const ChannelList = (props: any): JSX.Element => {
         return channel;
       }
 
-      console.log('channel', channel)
-      console.log('channel.uuid', channel.uuid)
-      console.log('uuid', uuid)
-
       switch (action) {
         case "increase": {
           channel.unread += count;

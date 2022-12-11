@@ -64,9 +64,10 @@ export const addChannel = async (url: string): Promise<number> => {
 };
 
 export const syncArticlesWithChannelUuid = async (
+  feedType: string,
   uuid: string
 ): Promise<number> => {
-  return invoke("sync_articles_with_channel_uuid", { uuid });
+  return invoke("sync_articles_with_channel_uuid", { feedType, uuid });
 };
 
 export const getUnreadTotal = async (): Promise<{ [key: string]: number }> => {

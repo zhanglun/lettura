@@ -5,7 +5,6 @@ use serde::Deserialize;
 use serde::Serialize;
 
 use crate::db;
-use crate::folder;
 use crate::models;
 use crate::schema;
 
@@ -325,12 +324,13 @@ pub fn update_feed_sort(sorts: Vec<FeedSort>) -> usize {
   let mut connection = db::establish_connection();
 
   for item in sorts {
-    let result = diesel::update(
+    diesel::update(
       schema::feed_metas::dsl::feed_metas.filter(schema::feed_metas::child_uuid.eq(&item.uuid)),
     )
     .set(schema::feed_metas::sort.eq(item.sort))
     .execute(&mut connection)
     .expect("msg");
+
     println!(" update channel{:?} {:?}", &item.uuid, item.sort);
   }
 

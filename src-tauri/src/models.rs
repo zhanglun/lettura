@@ -21,6 +21,10 @@ pub struct Channel {
   #[diesel(sql_type = Text)]
   pub pub_date: String,
   #[diesel(sql_type = Integer)]
+  pub sync_interval: i32,
+  #[diesel(sql_type = Text)]
+  pub last_sync_date: String,
+  #[diesel(sql_type = Integer)]
   pub sort: i32,
   #[diesel(sql_type = Text)]
   pub create_date: String,

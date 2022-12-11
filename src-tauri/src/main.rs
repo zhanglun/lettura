@@ -12,13 +12,13 @@ use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 use tauri::{CustomMenuItem, Menu, MenuItem, Submenu};
 
 pub mod cmd;
-pub mod db;
 pub mod config;
-pub mod models;
-pub mod folder;
-pub mod scraper;
+pub mod db;
 pub mod feed;
+pub mod folder;
+pub mod models;
 pub mod schema;
+pub mod scraper;
 
 pub fn get_menu() -> Menu {
   #[allow(unused_mut)]
@@ -71,7 +71,7 @@ pub fn init_app_config_path() {
 
       println!("{:?}", app_config);
       fs::create_dir_all(app_config);
-    },
+    }
     None => {
       println!("no ")
     }
@@ -108,11 +108,9 @@ fn main() {
       cmd::get_unread_total,
       cmd::update_article_read_status,
       cmd::mark_all_read,
-
       cmd::get_user_config,
       cmd::update_user_config,
       cmd::update_proxy,
-
       cmd::create_folder,
       cmd::get_folders,
       cmd::move_channel_into_folder,

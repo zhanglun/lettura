@@ -322,9 +322,8 @@ pub fn delete_channel(uuid: String) -> usize {
   result
 }
 
-#[command]
-pub async fn sync_articles_with_channel_uuid(uuid: String) -> usize {
-  let channel = db::get_channel_by_uuid(uuid);
+pub async fn sync_articles(uuid: String) -> usize {
+  let channel = db::get_channel_by_uuid(String::from(&uuid));
 
   match channel {
     Some(channel) => {
@@ -341,9 +340,32 @@ pub async fn sync_articles_with_channel_uuid(uuid: String) -> usize {
         }
         None => 0,
       }
-
-    }
+    },
     None => 0,
+  }
+}
+
+pub async fn sync_article_in_folder(uuid: String) -> usize {
+  let connection = db::establish_connection();
+  let channels = folder::get_channels_in_folders(connection, vec![uuid]);
+
+  println!("{:?}", channels);
+
+  for channel in channels {
+    sync_articles(channel.child_uuid).await;
+  }
+
+  1
+}
+
+#[command]
+pub async fn sync_articles_with_channel_uuid(feed_type: String, uuid: String) -> usize {
+  println!("{:?}", feed_type);
+
+  if feed_type == "folder" {
+    sync_article_in_folder(uuid).await
+  } else {
+    sync_articles(uuid).await
   }
 }
 
@@ -391,7 +413,7 @@ pub fn update_proxy(ip: String, port: String) -> usize {
 }
 
 #[command]
-pub fn update_user_config<T>(user_cfg: T) -> usize {
+pub fn update_user_config<T>(_user_cfg: T) -> usize {
   1
 }
 
@@ -427,6 +449,7 @@ mod tests {
     update_proxy(ip, port);
     config::get_user_config();
   }
+
   #[tokio::test]
   async fn test_create_article_models() {
     let url = "https://feeds.appinn.com/appinns/".to_string();
@@ -436,7 +459,6 @@ mod tests {
     let a = match res {
       Some(res) => {
         let channel_uuid = Uuid::new_v4().hyphenated().to_string();
-        let channel = create_channel_model(&channel_uuid, &url, &res);
         let articles = create_article_models(&channel_uuid, &url, &res);
 
         println!("{:?}", articles.get(0));
@@ -446,5 +468,10 @@ mod tests {
     };
 
     ()
+  }
+
+  #[tokio::test]
+  async fn test_sync_() {
+    sync_article_in_folder(String::from("52f4b910-2551-4bce-84cb-5ceae1f3773c")).await;
   }
 }

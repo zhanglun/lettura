@@ -103,11 +103,11 @@ export const ArticleContainer = (): JSX.Element => {
   };
 
   const syncArticles = () => {
-    if (feedUrl) {
+    if (channelUuid) {
       setSyncing(true);
 
       dataAgent
-        .syncArticlesWithChannelUuid(channelUuid as string)
+        .syncArticlesWithChannelUuid(store.channel?.item_type as string, channelUuid as string)
         .then((res: number) => {
           console.log("%c Line:77 🥛 res", "color:#ea7e5c", res);
           getArticleList();

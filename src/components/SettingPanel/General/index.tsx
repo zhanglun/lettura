@@ -3,8 +3,6 @@ import { Input, Select } from "@douyinfe/semi-ui";
 import * as dataAgent from "../../../helpers/dataAgent";
 import styles from "../setting.module.scss";
 
-console.log(styles);
-
 export const General = () => {
   const [localProxyConfig, setLocalProxyConfig] = useState<LocalProxy>({
     protocol: '',
