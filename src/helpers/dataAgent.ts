@@ -107,3 +107,6 @@ export const updateProxy = async (cfg: LocalProxy): Promise<any> => {
   });
 };
 
+export const initProcess = async(): Promise<any> => {
+  return invoke("init_process", {})
+}

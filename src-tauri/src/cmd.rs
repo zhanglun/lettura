@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use reqwest;
 use serde::{Serialize};
-use tauri::command;
+use tauri::{command, Manager, Window};
 use uuid::Uuid;
 
 use crate::db;
@@ -374,9 +374,28 @@ pub async fn import_channels(list: Vec<String>) -> usize {
   println!("{:?}", &list);
   for url in &list {
     add_channel(url.to_string()).await;
+
   }
   1
 }
+
+// the payload type must implement `Serialize` and `Clone`.
+#[derive(Clone, serde::Serialize)]
+struct Payload {
+  message: String,
+}
+
+
+#[command]
+pub fn init_process(window: Window) {
+  println!("asdfasdf");
+  std::thread::spawn(move || {
+    loop {
+      window.emit("event-name", Payload { message: "Tauri is awesome!".into() }).unwrap();
+    }
+  });
+}
+
 
 #[command]
 pub fn get_unread_total() -> HashMap<String, i32> {

@@ -9,9 +9,6 @@
           <outline type="rss" text="设计" title="设计" xmlUrl="https://anyway.fm/news/rss.xml" htmlUrl="http://anyway.fm/news"/>
         </outline>
         <outline text="前端" title="前端"/>
-        <outline text="ideal" title="ideal">
-            <outline type="rss" text="好奇心日报" title="好奇心日报" xmlUrl="http://www.qdaily.com/feed.xml" htmlUrl="http://www.qdaily.com"/>
-        </outline>
         <outline text="Must Read" title="Must Read"/>
         <outline text="阅读" title="阅读">
             <outline type="rss" text="观止" title="观止" xmlUrl="https://feedx.net/rss/guanzhi.xml" htmlUrl="https://meiriyiwen.com"/>

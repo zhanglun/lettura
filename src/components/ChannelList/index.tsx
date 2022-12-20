@@ -1,6 +1,6 @@
-import React, { useState, useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDrop, DropTargetMonitor } from "react-dnd";
+import { DropTargetMonitor, useDrop } from "react-dnd";
 import update from "immutability-helper";
 import { Progress, Tooltip } from "@douyinfe/semi-ui";
 import {
@@ -9,19 +9,19 @@ import {
   FolderIcon,
   PlusIcon,
 } from "@heroicons/react/24/outline";
-
 import { RouteConfig } from "../../config";
 import { Channel } from "../../db";
-import { AddFeedChannel } from "../AddChannel";
-import { AddFolder } from "../AddFolder";
 import { getChannelFavicon } from "../../helpers/parseXML";
 import * as dataAgent from "../../helpers/dataAgent";
 import { busChannel } from "../../helpers/busChannel";
-
+import { promisePool } from "../../helpers/promsiePool";
+import { AddFeedChannel } from "../AddChannel";
+import { AddFolder } from "../AddFolder";
 import { ChannelItem } from "./Item";
-import styles from "./channel.module.scss";
 import { Folder } from "./Folder";
 import { ItemTypes } from "./ItemTypes";
+
+import styles from "./channel.module.scss";
 
 const ChannelList = (props: any): JSX.Element => {
   const navigate = useNavigate();
@@ -31,20 +31,6 @@ const ChannelList = (props: any): JSX.Element => {
   const [channelList, setChannelList] = useState<Channel[]>([]);
   const [done, setDone] = useState(0);
 
-  const loadAndUpdate = (uuid: string) => {
-    return dataAgent
-      .syncArticlesWithChannelUuid(uuid)
-      .then(async (res) => {
-        return res;
-      })
-      .catch(() => {
-        return Promise.resolve();
-      })
-      .finally(() => {
-        setDone((done) => done + 1);
-      });
-  };
-
   const updateCount = (
     channelList: Channel[],
     uuid: string,
@@ -52,11 +38,15 @@ const ChannelList = (props: any): JSX.Element => {
     count: number
   ) => {
     channelList.forEach((channel) => {
-      if (channel.item_type === 'channel' && channel.uuid !== uuid) {
+      if (channel.item_type === "channel" && channel.uuid !== uuid) {
         return channel;
       }
 
-      if (channel.item_type === 'folder' && channel.uuid !== uuid && !channel.children.some((child) => child.uuid === uuid )) {
+      if (
+        channel.item_type === "folder" &&
+        channel.uuid !== uuid &&
+        !channel.children.some((child) => child.uuid === uuid)
+      ) {
         return channel;
       }
 
@@ -94,8 +84,6 @@ const ChannelList = (props: any): JSX.Element => {
   const getList = () => {
     Promise.all([dataAgent.getFeeds(), dataAgent.getUnreadTotal()]).then(
       ([channel, unreadTotal]) => {
-        console.log("🚀 ~ file: index.tsx:95 ~ getList ~ unreadTotal", unreadTotal)
-        console.log("🚀 ~ file: index.tsx:95 ~ getList ~ channel", channel)
         channel.forEach((item) => {
           item.unread = unreadTotal[item.uuid] || 0;
         });
@@ -120,8 +108,10 @@ const ChannelList = (props: any): JSX.Element => {
   useEffect(() => {
     const unsubscribeUpdateCount = busChannel.on(
       "updateChannelUnreadCount",
-      ({ uuid, action, count }) => {
-        console.log("🚀 ~ file: index.tsx:138 ~ useEffect ~ updateChannelUnreadCount")
+      ({uuid, action, count}) => {
+        console.log(
+          "🚀 ~ file: index.tsx:138 ~ useEffect ~ updateChannelUnreadCount"
+        );
         updateCount(channelList, uuid, action, count);
         unsubscribeUpdateCount();
       }
@@ -132,54 +122,36 @@ const ChannelList = (props: any): JSX.Element => {
     };
   }, [channelList]);
 
+  const loadAndUpdate = (type: string, uuid: string) => {
+    return dataAgent
+      .syncArticlesWithChannelUuid(type, uuid)
+      .then((res) => {
+        return res;
+      })
+      .catch(() => {
+        return Promise.resolve();
+      })
+      .finally(() => {
+        setDone((done) => done + 1);
+      });
+  };
+
   const refreshList = () => {
     setRefreshing(true);
 
-    const urlList = (channelList || []).map((channel: any) => {
-      return channel.uuid;
+    const fns = (channelList || []).map((channel: any) => {
+      return loadAndUpdate(channel.item_type, channel.uuid);
     });
 
-    const limit = 5;
-    let cur = 0;
-    let tasks: Promise<any>[] = [];
-    const res: Promise<any>[] = [];
-    const enQueue = (): Promise<any> => {
-      if (cur === urlList?.length || urlList.length === 0) {
-        return Promise.resolve();
-      }
+    const pool = promisePool({limit: 5, fns});
 
-      const url = urlList[cur];
-
-      cur += 1;
-
-      const p = Promise.resolve().then(() => loadAndUpdate(url));
-
-      res.push(p);
-
-      let r = Promise.resolve();
-
-      if (limit <= urlList.length) {
-        const e: Promise<any> = p.then(() => tasks.splice(tasks.indexOf(e), 1));
-        tasks.push(e);
-        if (tasks.length >= limit) {
-          r = Promise.race(tasks);
-        }
-      }
-
-      return r.then(() => enQueue());
-    };
-
-    enQueue()
-      .then(() => {
-        return Promise.allSettled(res);
-      })
-      .then(() => {
-        window.setTimeout(() => {
-          setRefreshing(false);
-          setDone(0);
-          getList();
-        }, 500);
-      });
+    pool.run().then((res) => {
+      window.setTimeout(() => {
+        setRefreshing(false);
+        setDone(0);
+        getList();
+      }, 500);
+    });
   };
 
   const goToSetting = () => {
@@ -200,19 +172,13 @@ const ChannelList = (props: any): JSX.Element => {
 
   const moveCard = useCallback(
     (uuid: string, atIndex: number, intoFolder?: Boolean) => {
-      const { channel, index } = findCard(uuid);
-      console.log(
-        "🚀 ~ file: index.tsx ~ line 197 ~ ChannelList ~ index",
-        index
-      );
+      const {channel, index} = findCard(uuid);
 
       let list: Channel[] = [];
 
       if (intoFolder) {
         list = update(channelList, {
-          $splice: [
-            [index, 1],
-          ],
+          $splice: [[index, 1]],
         });
       } else {
         list = update(channelList, {
@@ -239,8 +205,11 @@ const ChannelList = (props: any): JSX.Element => {
       drop(item: any, monitor) {
         const dropResult = monitor.getDropResult() as any;
 
-        console.log("🚀 ~ file: index.tsx ~ line 225 ~ drop ~ dropResult", dropResult)
-        console.log("🚀 ~ file: index.tsx ~ line 224 ~ drop ~ item", item)
+        console.log(
+          "🚀 ~ file: index.tsx ~ line 225 ~ drop ~ dropResult",
+          dropResult
+        );
+        console.log("🚀 ~ file: index.tsx ~ line 224 ~ drop ~ item", item);
 
         if (item.id === dropResult.id) {
           let feedSort = channelList.map((channel: any) => {
@@ -253,7 +222,6 @@ const ChannelList = (props: any): JSX.Element => {
 
           dataAgent.updateFeedSort(feedSort);
         }
-
       },
     }),
     [channelList]
@@ -263,7 +231,7 @@ const ChannelList = (props: any): JSX.Element => {
     return (
       <ul className={styles.list} ref={drop}>
         {channelList?.map((channel: any, i: number) => {
-          const { unread = 0, link } = channel;
+          const {unread = 0, link} = channel;
           const ico = getChannelFavicon(link);
 
           if (channel.item_type === "folder") {
@@ -335,16 +303,16 @@ const ChannelList = (props: any): JSX.Element => {
       <div className={`sticky-header ${styles.header}`}>
         <div></div>
         <div className={styles.toolbar}>
-          <AddFeedChannel Aref={addFeedButtonRef} />
+          <AddFeedChannel Aref={addFeedButtonRef}/>
           <Tooltip content="Add feed">
             <span className={styles.toolbarItem} onClick={addFeed}>
-              <PlusIcon className={"h-4 w-4"} />
+              <PlusIcon className={"h-4 w-4"}/>
             </span>
           </Tooltip>
           <Tooltip content="Create folder">
-            <AddFolder Aref={addFolderButtonRef} />
+            <AddFolder Aref={addFolderButtonRef}/>
             <span className={styles.toolbarItem} onClick={addFolder}>
-              <FolderIcon className={"h-4 w-4"} />
+              <FolderIcon className={"h-4 w-4"}/>
             </span>
           </Tooltip>
           <Tooltip content="Refresh">
@@ -356,17 +324,19 @@ const ChannelList = (props: any): JSX.Element => {
           </Tooltip>
           <Tooltip content="Setting">
             <span className={styles.toolbarItem} onClick={goToSetting}>
-              <Cog6ToothIcon className={"h-4 w-4"} />
+              <Cog6ToothIcon className={"h-4 w-4"}/>
             </span>
           </Tooltip>
         </div>
       </div>
-      <div className={styles.inner} ref={listRef}>{renderFeedList()}</div>
+      <div className={styles.inner} ref={listRef}>
+        {renderFeedList()}
+      </div>
       {refreshing && (
         <div className={styles.footer}>
           <span>
             {/* @ts-ignore */}
-            <Progress percent={Math.ceil((done / channelList.length) * 100)} />
+            <Progress percent={Math.ceil((done / channelList.length) * 100)}/>
           </span>
           <span className={styles.footerCount}>
             {done}/{channelList.length}

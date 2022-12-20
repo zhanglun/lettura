@@ -2,6 +2,7 @@ import React, { useRef, useState } from "react";
 import { Button, Radio, RadioGroup, TextArea } from "@douyinfe/semi-ui";
 import styles from "../setting.module.scss";
 import * as dataAgent from "../../../helpers/dataAgent";
+import { promisePool } from "../../../helpers/promsiePool";
 
 export interface ImportItem {
   title: string;
@@ -15,6 +16,7 @@ export const ImportAndExport = (props: any) => {
   const [file, setFile] = useState<File>();
   const [importing, setImporting] = useState(false);
   const [importedList, setImportedList] = useState<ImportItem[]>([]);
+  const [done, setDone] = useState(0);
 
   const uploadOPMLFile = () => {
     if (fileInputRef && fileInputRef.current) {
@@ -45,17 +47,34 @@ export const ImportAndExport = (props: any) => {
       .filter((item) => item.title && item.feed_url && item.link);
   };
 
+  const addChannel = (url: string) => {
+    return dataAgent.addChannel(url)
+      .then((res) => {
+        return res;
+      })
+      .catch(() => {
+        return Promise.resolve();
+      })
+      .finally(() => {
+        setDone((done) => done + 1)
+      })
+  }
+
   const importFromOPML = () => {
-    const urlList = importedList.map((_) => _.feed_url);
+    const fns = importedList.map((_) => {
+      return addChannel(_.feed_url)
+    });
 
     setImporting(true);
 
-    dataAgent
-      .importChannels(urlList)
-      .then(() => {})
-      .finally(() => {
+    const pool = promisePool({limit: 5, fns});
+
+    pool.run().then((res) => {
+      window.setTimeout(() => {
         setImporting(false);
-      });
+        setDone(0);
+      }, 500);
+    })
   };
 
   const handleFileChange = (e: any) => {
@@ -87,7 +106,8 @@ export const ImportAndExport = (props: any) => {
     }
   };
 
-  const exportToOPML = () => {};
+  const exportToOPML = () => {
+  };
 
   return (
     <div className={styles.panel}>
@@ -147,7 +167,7 @@ export const ImportAndExport = (props: any) => {
             loading={importing}
           >
             导入
-            {/* <>{importing ? `/${importedList.length}` : ''}</> */}
+             <>{importing ? `${done}/${importedList.length}` : ''}</>
           </Button>
         </div>
       </div>
