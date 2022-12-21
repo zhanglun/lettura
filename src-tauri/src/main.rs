@@ -138,8 +138,11 @@ fn main() {
       cmd::update_article_read_status,
       cmd::mark_all_read,
       cmd::get_user_config,
+
       cmd::update_user_config,
       cmd::update_proxy,
+      cmd::update_threads,
+
       cmd::create_folder,
       cmd::get_folders,
       cmd::move_channel_into_folder,

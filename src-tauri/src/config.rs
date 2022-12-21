@@ -23,10 +23,27 @@ struct RemoteProxy {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UserConfig {
+  pub threads: i32,
   pub local_proxy: Option<LocalProxy>,
 }
 
 impl UserConfig {
+  pub fn new() -> Self {
+    Self {
+      local_proxy: Some(LocalProxy {
+        ip: "".to_string(),
+        port: "".to_string(),
+      }),
+      threads: 1
+    }
+  }
+
+  fn update_threads(&mut self, threads: i32) -> &mut UserConfig {
+    self.threads = threads;
+
+    self
+  }
+  
   fn update_proxy(&mut self, ip: String, port: String) -> &mut UserConfig {
     self.local_proxy = Some(LocalProxy { ip, port });
 
@@ -102,19 +119,46 @@ pub fn get_user_config() -> Option<UserConfig> {
 pub fn update_proxy(ip: String, port: String) -> usize {
   let data = get_user_config();
 
-  match data {
-    Some(mut data) => {
-      let user_config_path = get_user_config_path();
-      let a = data.update_proxy(ip, port);
-      let content = toml::to_string(a).unwrap();
-
-      fs::write(user_config_path, content).expect("update proxy error");
-
-      return 1;
+  let mut data = match data {
+    Some(data) => {
+      data
     }
-    None => 0,
-  }
+    None => {
+      UserConfig::new()
+    },
+  };
+
+  let user_config_path = get_user_config_path();
+  let a = data.update_proxy(ip, port);
+  let content = toml::to_string(a).unwrap();
+
+  fs::write(user_config_path, content).expect("update proxy error");
+
+  return 1;
 }
+
+pub fn update_threads(threads: i32) -> usize {
+  let data = get_user_config();
+
+  let mut data = match data {
+    Some(data) => {
+      data
+    }
+    None => {
+      UserConfig::new()
+    },
+  };
+
+  let user_config_path = get_user_config_path();
+  let a = data.update_threads(threads);
+
+  let content = toml::to_string(a).unwrap();
+
+  fs::write(user_config_path, content).expect("update threads error");
+
+  return 1;
+}
+
 
 #[cfg(test)]
 

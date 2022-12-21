@@ -11,4 +11,5 @@ declare interface LocalProxy {
 
 declare interface UserConfig {
   local_proxy?: LocalProxy,
+  threads?: number,
 }

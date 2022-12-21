@@ -432,6 +432,12 @@ pub fn update_proxy(ip: String, port: String) -> usize {
 }
 
 #[command]
+pub fn update_threads(threads: i32) -> usize {
+  config::update_threads(threads);
+  1
+}
+
+#[command]
 pub fn update_user_config<T>(_user_cfg: T) -> usize {
   1
 }

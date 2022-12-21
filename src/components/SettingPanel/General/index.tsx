@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Input, Select } from "@douyinfe/semi-ui";
+import { Input, InputNumber, Select } from "@douyinfe/semi-ui";
 import * as dataAgent from "../../../helpers/dataAgent";
 import styles from "../setting.module.scss";
 
@@ -9,6 +9,7 @@ export const General = () => {
     ip: "",
     port: "",
   });
+  const [threads, setThreads] = useState<number>(1)
 
   const handleSaveLocalProxy = (cfg: LocalProxy) => {
     dataAgent
@@ -30,11 +31,18 @@ export const General = () => {
     handleSaveLocalProxy(cfg);
   };
 
+  const handleThreadsChange = (val: number) => {
+    setThreads(val)
+    dataAgent.updateThreads(val).then((res) => {
+      console.log('res ===>', res);
+    })
+  }
+
   useEffect(() => {
     dataAgent.getUserConfig().then((cfg: any) => {
       console.log("update use config", cfg);
 
-      const { local_proxy } = cfg as UserConfig;
+      const { local_proxy, threads } = cfg as UserConfig;
 
       if (local_proxy) {
         setLocalProxyConfig({
@@ -42,6 +50,10 @@ export const General = () => {
           ip: local_proxy.ip,
           port: local_proxy.port,
         });
+      }
+
+      if (threads) {
+        setThreads(threads)
       }
     });
   }, []);
@@ -84,12 +96,13 @@ export const General = () => {
             </div>
           </div>
         </div>
-        {/* <div className={styles.section}>
+        <div className={styles.section}>
           <p className={styles.options}>Auto update interval (minutes)</p>
         </div>
         <div className={styles.section}>
           <p className={styles.options}>Number of update threads (from 1 to 10)</p>
-        </div> */}
+          <InputNumber step={1} min={1} max={10} value={threads} onChange={(thread: number|string) => handleThreadsChange(thread as number)} />
+        </div>
       </div>
     </div>
   );

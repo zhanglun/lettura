@@ -107,6 +107,10 @@ export const updateProxy = async (cfg: LocalProxy): Promise<any> => {
   });
 };
 
+export const updateThreads = async (threads: number): Promise<any> => {
+  return invoke("update_threads", { threads });
+};
+
 export const initProcess = async(): Promise<any> => {
   return invoke("init_process", {})
 }
