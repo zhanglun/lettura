@@ -75,12 +75,24 @@ pub async fn fetch_feed_item(url: &str) -> Option<Feed> {
   match response {
     Ok(response) => match response.status() {
       reqwest::StatusCode::OK => {
-        let content = response.text().await.unwrap();
-        let res = content[..].parse::<Feed>();
+        let content = response.text().await;
 
-        match res {
-          Ok(res) => Some(res),
-          Err(_) => None,
+        match content {
+          Ok(content) => {
+            let res = content[..].parse::<Feed>();
+
+            match res {
+              Ok(res) => Some(res),
+              Err(res_error) => {
+                println!("content parse error{:?}", res_error);
+                None
+              }
+            }
+          }
+          Err(err) => {
+            println!("content error{:?}", err);
+            None
+          }
         }
       }
       _ => {
@@ -147,7 +159,7 @@ pub async fn update_feed_sort(sorts: Vec<feed::FeedSort>) -> usize {
 pub async fn move_channel_into_folder(channel_uuid: String, folder_uuid: String, sort: i32) -> usize {
   let result = feed::update_feed_meta(channel_uuid, feed::FeedMetaUpdateRequest {
     parent_uuid: folder_uuid,
-    sort
+    sort,
   });
 
   result
@@ -340,7 +352,7 @@ pub async fn sync_articles(uuid: String) -> usize {
         }
         None => 0,
       }
-    },
+    }
     None => 0,
   }
 }
@@ -374,7 +386,6 @@ pub async fn import_channels(list: Vec<String>) -> usize {
   println!("{:?}", &list);
   for url in &list {
     add_channel(url.to_string()).await;
-
   }
   1
 }
@@ -466,8 +477,9 @@ mod tests {
   fn test_get_unread_total() {
     get_unread_total();
   }
+
   #[test]
-  fn test_update_proxy () {
+  fn test_update_proxy() {
     let ip = "111.111.11.11".to_string();
     let port = "1111".to_string();
 

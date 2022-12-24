@@ -43,7 +43,7 @@ impl UserConfig {
 
     self
   }
-  
+
   fn update_proxy(&mut self, ip: String, port: String) -> &mut UserConfig {
     self.local_proxy = Some(LocalProxy { ip, port });
 

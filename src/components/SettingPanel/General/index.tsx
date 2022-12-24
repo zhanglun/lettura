@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Input, InputNumber, Select } from "@douyinfe/semi-ui";
+import { Input, InputNumber } from "@douyinfe/semi-ui";
 import * as dataAgent from "../../../helpers/dataAgent";
 import styles from "../setting.module.scss";
 
@@ -16,12 +16,13 @@ export const General = () => {
       .updateProxy({
         ...cfg,
       })
-      .then((res) => {});
+      .then((res) => {
+      });
   };
 
   const handleLocalProxyChange = (key: string, val: string) => {
     const cfg = Object.assign(
-      { ...localProxyConfig },
+      {...localProxyConfig},
       {
         [key]: val,
       }
@@ -42,7 +43,7 @@ export const General = () => {
     dataAgent.getUserConfig().then((cfg: any) => {
       console.log("update use config", cfg);
 
-      const { local_proxy, threads } = cfg as UserConfig;
+      const {local_proxy, threads} = cfg as UserConfig;
 
       if (local_proxy) {
         setLocalProxyConfig({
@@ -101,7 +102,8 @@ export const General = () => {
         </div>
         <div className={styles.section}>
           <p className={styles.options}>Number of update threads (from 1 to 10)</p>
-          <InputNumber step={1} min={1} max={10} value={threads} onChange={(thread: number|string) => handleThreadsChange(thread as number)} />
+          <InputNumber step={1} min={1} max={10} value={threads}
+                       onChange={(thread: number | string) => handleThreadsChange(thread as number)}/>
         </div>
       </div>
     </div>

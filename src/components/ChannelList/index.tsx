@@ -143,15 +143,19 @@ const ChannelList = (props: any): JSX.Element => {
       return loadAndUpdate(channel.item_type, channel.uuid);
     });
 
-    const pool = promisePool({limit: 5, fns});
 
-    pool.run().then((res) => {
-      window.setTimeout(() => {
-        setRefreshing(false);
-        setDone(0);
-        getList();
-      }, 500);
-    });
+    dataAgent.getUserConfig().then((config) => {
+      const { threads = 5 } = config;
+      const pool = promisePool({limit: threads, fns});
+
+      pool.run().then((res) => {
+        window.setTimeout(() => {
+          setRefreshing(false);
+          setDone(0);
+          getList();
+        }, 500);
+      });
+    })
   };
 
   const goToSetting = () => {
