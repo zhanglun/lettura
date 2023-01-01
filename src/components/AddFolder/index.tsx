@@ -1,5 +1,4 @@
-
-import React, { useImperativeHandle, useState } from "react";
+import React, { useEffect, useImperativeHandle, useRef, useState } from "react";
 import { useModal } from "../Modal/useModal";
 import { Input, Modal } from "@douyinfe/semi-ui";
 import * as dataAgent from "../../helpers/dataAgent";
@@ -11,6 +10,7 @@ export const AddFolder = (props: any) => {
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const [confirming, setConfirming] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useImperativeHandle(props.Aref, () => {
     return {
@@ -47,6 +47,14 @@ export const AddFolder = (props: any) => {
     });
   };
 
+  useEffect(() => {
+    console.log(inputRef)
+
+    if (showStatus && inputRef && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [showStatus]);
+
   return (
     <Modal
       visible={showStatus}
@@ -60,7 +68,13 @@ export const AddFolder = (props: any) => {
         <div className={styles.item}>
           <div className={styles.label}>Name</div>
           <div className={styles.formItem}>
-            <Input type="text" style={{ width: "300px" }} value={name} onChange={handleNameChange}/>
+            <Input
+              type="text"
+              style={{ width: "300px" }}
+              value={name}
+              onChange={handleNameChange}
+              ref={inputRef}
+            />
           </div>
         </div>
       </div>

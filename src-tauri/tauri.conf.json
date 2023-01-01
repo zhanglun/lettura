@@ -69,11 +69,11 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 800,
+        "height": 760,
         "decorations": true,
         "resizable": true,
         "title": "Lettura, Your RSS reader",
-        "width": 1300,
+        "width": 1440,
         "fileDropEnabled": false
       }
     ]

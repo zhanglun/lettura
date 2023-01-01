@@ -1,4 +1,4 @@
-import React, { useImperativeHandle, useState } from "react";
+import React, { useEffect, useImperativeHandle, useRef, useState } from "react";
 import { useModal } from "../Modal/useModal";
 import { Input, TextArea, Modal, Button, Toast } from "@douyinfe/semi-ui";
 import * as dataAgent from "../../helpers/dataAgent";
@@ -12,6 +12,7 @@ export const AddFeedChannel = (props: any) => {
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
   const [confirming, setConfirming] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null)
 
   useImperativeHandle(props.Aref, () => {
     return {
@@ -73,8 +74,6 @@ export const AddFeedChannel = (props: any) => {
     setConfirming(true)
 
     dataAgent.addChannel(feedUrl).then((res) => {
-      console.log('saveRes ===>', res)
-
       if (res > 0) {
         busChannel.emit('getChannels')
         handleCancel()
@@ -83,6 +82,12 @@ export const AddFeedChannel = (props: any) => {
       setConfirming(false)
     });
   };
+
+  useEffect(() => {
+    if (showStatus && inputRef && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [showStatus]);
 
   return (
     <Modal
@@ -97,7 +102,7 @@ export const AddFeedChannel = (props: any) => {
         <div className={styles.item}>
           <div className={styles.label}>Feed URL</div>
           <div className={styles.formItem}>
-            <Input type="text" style={{ width: "300px" }} disabled={loading} value={feedUrl}
+            <Input type="text" ref={inputRef} style={{ width: "300px" }} disabled={loading} value={feedUrl}
                    onChange={handleInputChange}/>
           </div>
           <div className={styles.action}>

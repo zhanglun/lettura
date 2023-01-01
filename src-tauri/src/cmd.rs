@@ -53,8 +53,6 @@ pub fn create_client() -> reqwest::Client {
         scheme.push_str(":");
         scheme.push_str(&proxy.port.to_string());
 
-        println!("request with proxy: {:?}", scheme);
-
         reqwest::Client::builder()
           .proxy(reqwest::Proxy::all(scheme).unwrap())
           .build()
@@ -375,9 +373,13 @@ pub async fn sync_articles_with_channel_uuid(feed_type: String, uuid: String) ->
   println!("{:?}", feed_type);
 
   if feed_type == "folder" {
-    sync_article_in_folder(uuid).await
+    let res = sync_article_in_folder(uuid).await;
+    println!("{:?}", res);
+    res
   } else {
-    sync_articles(uuid).await
+    let res = sync_articles(uuid).await;
+    println!("{:?}", res);
+    res
   }
 }
 

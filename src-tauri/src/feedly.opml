@@ -16,7 +16,6 @@
         <outline text="摄影" title="摄影">
             <outline type="rss" text="必应今日美图" title="必应今日美图" xmlUrl="https://feedx.net/rss/bingwallpaper.xml" htmlUrl="http://bing.com"/>
         </outline>
-        <outline text="ddd" title="ddd"/>
         <outline text="默认" title="默认">
             <outline type="rss" text="Web前端 腾讯AlloyTeam  Blog" title="Web前端 腾讯AlloyTeam  Blog" xmlUrl="http://www.alloyteam.com/feed/" htmlUrl="http://www.alloyteam.com"/>
             <outline type="rss" text="煎蛋随手拍" title="煎蛋随手拍" xmlUrl="https://rsshub.app/jandan/ooxx" htmlUrl="http://jandan.net/ooxx/"/>

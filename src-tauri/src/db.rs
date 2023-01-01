@@ -59,14 +59,10 @@ pub fn add_articles(channel_uuid: String, articles: Vec<models::NewArticle>) -> 
     .expect("Expect find channel");
 
   if channel.len() == 1 {
-    println!("articles count ====> {:?}", &articles.len());
-
     let result = diesel::insert_or_ignore_into(schema::articles::dsl::articles)
       .values(articles)
       .execute(&mut connection)
       .expect("Expect add articles");
-
-    println!("insert count ====> {:?}", result);
 
     return result;
   } else {

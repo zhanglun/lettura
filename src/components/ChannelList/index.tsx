@@ -126,6 +126,8 @@ const ChannelList = (props: any): JSX.Element => {
     return dataAgent
       .syncArticlesWithChannelUuid(type, uuid)
       .then((res) => {
+        getList();
+        console.log(res)
         return res;
       })
       .catch(() => {
@@ -208,12 +210,6 @@ const ChannelList = (props: any): JSX.Element => {
       }),
       drop(item: any, monitor) {
         const dropResult = monitor.getDropResult() as any;
-
-        console.log(
-          "🚀 ~ file: index.tsx ~ line 225 ~ drop ~ dropResult",
-          dropResult
-        );
-        console.log("🚀 ~ file: index.tsx ~ line 224 ~ drop ~ item", item);
 
         if (item.id === dropResult.id) {
           let feedSort = channelList.map((channel: any) => {
