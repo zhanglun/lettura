@@ -11,6 +11,7 @@ import { RouteConfig } from "../../config";
 
 import styles from "./channel.module.scss";
 import { ItemTypes } from "./ItemTypes";
+import { after } from "node:test";
 
 const style: CSSProperties = {
   cursor: 'move',
@@ -24,6 +25,7 @@ export interface CardProps {
   type: string;
   moveCard: (id: string, to: number, intoFolder?: boolean) => void;
   findCard: (id: string) => { index: number };
+  afterFn: any;
 }
 
 interface Item {
@@ -51,6 +53,7 @@ export const ChannelItem: FC<CardProps> = memo(function Card({
   type,
   moveCard,
   findCard,
+  afterFn,
 }) {
   const store = useContext(StoreContext);
   const originalIndex = findCard(id).index;
@@ -82,12 +85,11 @@ export const ChannelItem: FC<CardProps> = memo(function Card({
           if (isDropAllowed && dropResult.type === 'folder') {
             const isCopyAction = dropResult.dropEffect === 'copy'
             const actionName = isCopyAction ? 'copied' : 'moved'
-            alertMessage = `You ${actionName} ${item.name} into ${dropResult.name}!`
 
-            console.log("🚀 ~ file: Item.tsx ~ line 89 ~ dropResult", dropResult)
-            console.log("🚀 ~ file: Item.tsx ~ line 89 ~ item", item)
+            alertMessage = `You ${actionName} ${item.name} into ${dropResult.name}!`
             dataAgent.moveChannelIntoFolder(item.id, dropResult.id, 1).then((res) => {
               console.log('res ==>', res)
+              afterFn && afterFn();
             })
 
             moveCard(droppedId, originalIndex, true);

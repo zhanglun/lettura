@@ -258,6 +258,7 @@ const ChannelList = (props: any): JSX.Element => {
                 moveCard={moveCard}
                 findCard={findCard}
                 type={channel.item_type}
+                afterFn={getList}
               />
             );
           }
