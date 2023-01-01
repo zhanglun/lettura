@@ -36,18 +36,6 @@ export const ArticleContainer = (): JSX.Element => {
   const articleListRef = useRef<ArticleListRefType>(null);
   const { currentIdx, setCurrentIdx } = store;
 
-  const handleListScroll = useCallback(() => {
-    if (listRef.current) {
-      const scrollTop = listRef.current.scrollTop;
-
-      if (scrollTop > 0) {
-        listRef.current?.parentElement?.classList.add("is-scroll");
-      } else {
-        listRef.current?.parentElement?.classList.remove("is-scroll");
-      }
-    }
-  }, []);
-
   const handleViewScroll = () => {
     if (viewRef.current) {
       const scrollTop = viewRef.current.scrollTop;
@@ -194,6 +182,20 @@ export const ArticleContainer = (): JSX.Element => {
   useEffect(() => {
     resetScrollTop();
   }, []);
+
+  useEffect(() => {
+    const unsubscribeGoPrev = busChannel.on("goPreviousArticle", () => {
+      handleViewPrevious()
+    })
+    const unsubscribeGoNext = busChannel.on("goNextArticle", () => {
+      handleViewNext()
+    })
+
+    return  () => {
+      unsubscribeGoPrev();
+      unsubscribeGoNext();
+    }
+  }, [currentIdx]);
 
   useEffect(() => {
     if (listRef.current !== null) {

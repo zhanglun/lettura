@@ -25,7 +25,7 @@ export interface CardProps {
   type: string;
   moveCard: (id: string, to: number, intoFolder?: boolean) => void;
   findCard: (id: string) => { index: number };
-  afterFn: any;
+  afterFn?: any;
 }
 
 interface Item {

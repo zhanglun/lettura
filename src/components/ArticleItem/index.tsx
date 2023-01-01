@@ -37,8 +37,9 @@ export const ArticleItem = React.forwardRef((props: any, ref: ForwardedRef<HTMLL
         highlight ? styles.current : ""
       }`}
       onClick={handleClick}
-      aria-hidden="true"
+      aria-current="page"
       ref={ref}
+      tabIndex={1}
     >
       {(readStatus === 1) && <div className={styles.dot} />}
       <div className={styles.title}>

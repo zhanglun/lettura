@@ -21,6 +21,10 @@
   cursor: pointer;
 }
 
+.item:focus-visible {
+  outline: none;
+}
+
 .item:not(.current) {
   &:hover {
     background-color: var(--semi-color-tertiary-light-hover);

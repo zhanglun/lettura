@@ -65,6 +65,52 @@ function App() {
     })
   }, [])
 
+  const goPrev = (elem: HTMLElement, tagName: string) => {
+    if (tagName === 'a') {
+
+    } else if (tagName === 'li') {
+      busChannel.emit("goPreviousArticle")
+    }
+
+    elem.scrollIntoView(true)
+  };
+
+  const goNext = (elem: HTMLElement, tagName: string) => {
+    if (tagName === 'a') {
+
+    } else if (tagName === 'li') {
+      busChannel.emit("goNextArticle")
+    }
+
+    elem.scrollIntoView(true)
+  };
+  const handleKeyPress = (event: React.KeyboardEvent) => {
+    const activeElement = document.activeElement as HTMLElement;
+    const tagName = activeElement.tagName.toLowerCase()
+
+    switch (event.key) {
+      case 'ArrowDown':
+      case 'j':
+        goNext(activeElement, tagName)
+        break;
+      case 'ArrowUp':
+      case 'k':
+        goPrev(activeElement, tagName)
+        break;
+      default:
+        break;
+        ;
+    }
+    console.log('event', event)
+  }
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyPress)
+    return () => {
+      document.removeEventListener('keydown', handleKeyPress)
+    }
+  }, [])
+
   return (
     <StoreContext.Provider value={{
       channel: channel,

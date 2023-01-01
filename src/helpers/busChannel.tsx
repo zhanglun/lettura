@@ -7,4 +7,7 @@ export const busChannel = eventbus<{
     action: "increase" | "decrease" | "upgrade" | "set";
     count: number;
   }) => void;
+
+  goPreviousArticle: () => void;
+  goNextArticle: () => void;
 }>();
