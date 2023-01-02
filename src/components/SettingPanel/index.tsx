@@ -8,7 +8,7 @@ function SettingPanel() {
   return (
     <div className={styles.container}>
       <div className={`sticky-header ${styles.header}`}>
-        <div className={styles.title}>设置</div>
+        <div className={styles.title}>Settings</div>
       </div>
       <div className={styles.sidebar}>
         <ul>

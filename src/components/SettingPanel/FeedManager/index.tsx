@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Table, Input, Select } from "@douyinfe/semi-ui";
-import { FolderIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { Modal, Table, Input, Select, Tabs, TabPane } from "@douyinfe/semi-ui";
+import { FolderIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { Channel, Folder } from "../../../db";
 import * as dataAgent from "../../../helpers/dataAgent";
 import { busChannel } from "../../../helpers/busChannel";
@@ -11,14 +11,16 @@ export const FeedManager = () => {
   const [renderList, setRenderList] = useState<(Channel & { parent_uuid: String })[]>([]);
   const [folderList, setFolderList] = useState<Folder[]>([]);
   const [filterParams, setFilterParams] = useState<{searchText?: string, folderUuid?: string}>({});
-  const [searchText, setSearchText] = useState<string>("");
-  const [folderUuid, setFolderUuid] = useState<string>("");
+  const okText='Sounds great!'
+  const cancelText='No, thanks.'
 
   const handleDeleteFeed = (channel: Channel) => {
     if (channel?.uuid) {
       Modal.confirm({
-        title: "你确定要删除这个订阅吗？",
+        title: "Do you want to unfollow this feed？",
         content: channel.title,
+        okText,
+        cancelText,
         onOk: async () => {
           await dataAgent.deleteChannel(channel.uuid);
           busChannel.emit("getChannels");
@@ -27,6 +29,27 @@ export const FeedManager = () => {
       });
     }
   };
+
+  const handleEditFolder = (folder: Folder) => {
+    if (folder?.uuid) {
+    }
+  }
+
+  const handleDeleteFolder = (folder: Folder) => {
+    if (folder?.uuid) {
+      Modal.confirm({
+        title: "Are you sure you want to delete this folder?？",
+        content: folder.name,
+        okText,
+        cancelText,
+        onOk: async () => {
+          await dataAgent.deleteFolder(folder.uuid);
+          await getFolderList();
+          busChannel.emit("getChannels");
+        },
+      });
+    }
+  }
 
   const columns = [
     {
@@ -66,10 +89,47 @@ export const FeedManager = () => {
         return (
           <div>
             <span
-              className={styles.delBtn}
+              className={styles.actionBtn}
               onClick={() => handleDeleteFeed(record)}
             >
-              <TrashIcon className={"h4 w-4"} />
+              <TrashIcon className={"h-4 w-4"} />
+            </span>
+          </div>
+        );
+      },
+    },
+  ];
+
+  const folderColumns = [
+    {
+      title: "name",
+      dataIndex: "name",
+      render(text: string, record: Channel) {
+        return (
+          <div className={styles.nameCol}>
+            <FolderIcon className={"h-4 w-4"} /><span>{text}</span>
+          </div>
+        );
+      },
+    },
+    {
+      title: "Action",
+      dataIndex: "opt",
+      width: 100,
+      render(text: string, record: Folder): JSX.Element {
+        return (
+          <div className={styles.actionCol}>
+            <span
+              className={styles.actionBtn}
+              onClick={() => handleEditFolder(record)}
+            >
+             <PencilIcon className={"h-4 w-4"} />
+            </span>
+            <span
+              className={styles.actionBtn}
+              onClick={() => handleDeleteFolder(record)}
+            >
+              <TrashIcon className={"h-4 w-4"} />
             </span>
           </div>
         );
@@ -92,17 +152,25 @@ export const FeedManager = () => {
   }
 
   const getList = async (params = {}) => {
-    const res = await dataAgent.getChannels(params) as { list: (Channel & { parent_uuid: String })[] };
-
-    setList(res.list || []);
-    console.log("%c Line:96 🍎 res.list", "color:#ffdd4d", res.list);
-    setRenderList(res.list || []);
+    dataAgent.getChannels(params).then((res) => {
+      setList(res.list || []);
+      setRenderList(res.list || []);
+    })
   };
 
-  const getFolderList = async () => {
-    const res = await dataAgent.getFolders();
+  const getFolderList = () => {
+    dataAgent.getFolders().then((res) => {
+      setFolderList(res || []);
+    });
+  }
+  const handleTabChange = (key: string) => {
+    if (key == 1) {
+      getList()
+    }
 
-    setFolderList(res || []);
+    if (key == 2) {
+     getFolderList();
+    }
   }
 
   useEffect(() => {
@@ -130,34 +198,49 @@ export const FeedManager = () => {
   return (
     <div className={styles.panel}>
       <h1 className={styles.panelTitle}>Feed Manager</h1>
-      <div className={styles.panelBody}>
-        <div className={styles.feedManagerFields}>
-          <Input
-            placeholder="Search Feed"
-            showClear={true}
-            value={filterParams.searchText}
-            onChange={handleSearch}
-          />
-          <Select
-            value={filterParams.folderUuid}
-            showClear={true}
-            placeholder="All Folder"
-            onFocus={getFolderList}
-            onChange={(v) => handleFolderChange(v as string)}
-          >
-            {folderList.map((folder) => {
-              return <Select.Option value={folder.uuid}>{folder.name}</Select.Option>
-            })}
+      <Tabs type="line" onChange={handleTabChange}>
+        <TabPane tab="Feeds" itemKey={"1"}>
+          <div className={styles.panelBody}>
+            <div className={styles.feedManagerFields}>
+              <Input
+                placeholder="Search Feed"
+                showClear={true}
+                value={filterParams.searchText}
+                onChange={handleSearch}
+              />
+              <Select
+                value={filterParams.folderUuid}
+                showClear={true}
+                placeholder="All Folder"
+                onFocus={getFolderList}
+                onChange={(v) => handleFolderChange(v as string)}
+              >
+                {folderList.map((folder) => {
+                  return <Select.Option value={folder.uuid}>{folder.name}</Select.Option>
+                })}
 
-          </Select>
-        </div>
-        <Table
-          columns={columns}
-          dataSource={renderList}
-          pagination={false}
-          size="small"
-        />
-      </div>
+              </Select>
+            </div>
+            <Table
+              columns={columns}
+              dataSource={renderList}
+              pagination={false}
+              size="small"
+            />
+          </div>
+        </TabPane>
+        <TabPane tab="Folders" itemKey={"2"}>
+          <div className={styles.panelBody}>
+            <Table
+              // @ts-ignore
+              columns={folderColumns}
+              dataSource={folderList}
+              pagination={false}
+              size="small"
+            />
+          </div>
+        </TabPane>
+      </Tabs>
     </div>
   );
 };

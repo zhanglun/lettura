@@ -3,7 +3,7 @@ import { Channel, Folder } from "../db";
 
 export const getChannels = async (
   filter: any
-): Promise<{ list: Channel[] }> => {
+): Promise<{ list: (Channel & { parent_uuid: String })[] }> => {
   return invoke("get_channels", { filter });
 };
 
@@ -39,6 +39,10 @@ export const moveChannelIntoFolder = async (channelUuid: string, folderUuid: str
  */
 export const deleteChannel = async (uuid: string) => {
   return invoke("delete_channel", { uuid });
+};
+
+export const deleteFolder = async (uuid: string) => {
+  return invoke("delete_folder", { uuid });
 };
 
 export const updateCountWithChannel = async (feedUrl: string): Promise<any> => {

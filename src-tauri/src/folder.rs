@@ -92,20 +92,29 @@ pub fn get_folders() -> Vec<models::Folder> {
   results
 }
 
-pub fn delete_folders(uuid: String) -> (usize, usize) {
+pub fn delete_folder(uuid: String) -> (usize, usize) {
   let mut connection = db::establish_connection();
   let folder = schema::folders::dsl::folders
     .filter(schema::folders::uuid.eq(&uuid))
     .load::<models::Folder>(&mut connection)
     .expect("Expect find folder");
 
+  println!(" ===> {:?}", folder);
+
   if folder.len() == 1 {
-    let relations = get_channels_in_folders(connection, vec![uuid]);
+    let relations = schema::feed_metas::dsl::feed_metas
+      .filter(schema::feed_metas::parent_uuid.eq_any(vec![String::from(&uuid)]))
+      .load::<models::FeedMeta>(&mut connection)
+      .expect("Expect get feed meta");
     let channel_uuids = relations.into_iter().map(|item| item.child_uuid).collect();
 
     println!("{:?}", channel_uuids);
 
     let channels = feed::batch_delete_channel(channel_uuids);
+
+    diesel::delete(schema::folders::dsl::folders.filter(schema::folders::uuid.eq(&uuid)))
+      .execute(&mut connection)
+      .expect("Expect delete folder");
 
     return (1, channels);
   } else {

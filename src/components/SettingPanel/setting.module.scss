@@ -153,11 +153,29 @@
   overflow-y: auto;
 }
 
-.delBtn {
-  color: var(--color-01);
+.actionBtn {
+  color: var(--text-color);
   cursor: pointer;
+
+  &:hover {
+    color: var(--semi-color-text-0);
+  }
 }
 
+.actionCol {
+  display: grid;
+  grid-auto-flow: column;
+  grid-gap: 0.8rem;
+  grid-template-columns: 1rem;
+}
+
+.nameCol {
+  display: grid;
+  grid-auto-flow: column;
+  grid-gap: 0.5rem;
+  grid-template-columns: 1rem;
+  align-items: center;
+}
 
 .proxyFields {
   display: grid;
