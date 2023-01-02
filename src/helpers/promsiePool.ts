@@ -1,46 +1,48 @@
-export const promisePool = ({limit, fns}: { limit: number, fns: Promise<any>[] }) => {
-  let cur = 0;
-  let tasks: Promise<any>[] = [];
-  const res: Promise<any>[] = [];
+export const promisePool = ({
+	limit,
+	fns,
+}: { limit: number; fns: Promise<any>[] }) => {
+	let cur = 0;
+	let tasks: Promise<any>[] = [];
+	const res: Promise<any>[] = [];
 
-  const enQueue = (): Promise<any> => {
-    if (cur === fns?.length || fns.length === 0) {
-      return Promise.resolve();
-    }
+	const enQueue = (): Promise<any> => {
+		if (cur === fns?.length || fns.length === 0) {
+			return Promise.resolve();
+		}
 
-    const fn = fns[cur];
+		const fn = fns[cur];
 
-    cur += 1;
+		cur += 1;
 
-    const p = Promise.resolve().then(() => fn);
+		const p = Promise.resolve().then(() => fn);
 
-    res.push(p);
+		res.push(p);
 
-    let r = Promise.resolve();
+		let r = Promise.resolve();
 
-    console.log('tasks.length', tasks.length)
+		console.log("tasks.length", tasks.length);
 
-    if (limit <= fns.length) {
-      const e: Promise<any> = p.then(() => tasks.splice(tasks.indexOf(e), 1));
+		if (limit <= fns.length) {
+			const e: Promise<any> = p.then(() => tasks.splice(tasks.indexOf(e), 1));
 
-      tasks.push(e);
+			tasks.push(e);
 
-      if (tasks.length >= limit) {
-        r = Promise.race(tasks);
-      }
-    }
+			if (tasks.length >= limit) {
+				r = Promise.race(tasks);
+			}
+		}
 
-    return r.then(() => enQueue());
-  };
+		return r.then(() => enQueue());
+	};
 
-  const run = () => {
-    return enQueue()
-      .then(() => {
-        return Promise.allSettled(res);
-      })
-  }
+	const run = () => {
+		return enQueue().then(() => {
+			return Promise.allSettled(res);
+		});
+	};
 
-  return {
-    run
-  }
-}
+	return {
+		run,
+	};
+};
