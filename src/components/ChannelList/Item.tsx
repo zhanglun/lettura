@@ -91,7 +91,7 @@ export const ChannelItem: FC<CardProps> = memo(function Card({
 							.moveChannelIntoFolder(item.id, dropResult.id, 1)
 							.then((res) => {
 								console.log("res ==>", res);
-								afterFn && afterFn();
+								afterFn?.();
 							});
 
 						moveCard(droppedId, originalIndex, true);
@@ -164,7 +164,7 @@ export const ChannelItem: FC<CardProps> = memo(function Card({
 				)}
 				{channel.item_type === "folder" && (
 					<span className={styles.icon}>
-						<FolderIcon className={`h-4 w-4`} />
+						<FolderIcon className={"h-4 w-4"} />
 					</span>
 				)}
 				<span className={styles.name}>{channel.title}</span>

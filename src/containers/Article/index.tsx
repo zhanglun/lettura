@@ -276,7 +276,7 @@ export const ArticleContainer = (): JSX.Element => {
 			</div>
 			<div className={styles.mainView}>
 				<div className={`sticky-header ${styles.viewHeader}`}>
-					<div></div>
+					<div />
 					<div className={styles.viewMenu}>
 						<Tooltip content="Previous">
 							<span
@@ -309,7 +309,7 @@ export const ArticleContainer = (): JSX.Element => {
 								className={styles.menuIcon}
 								target="_blank"
 								rel="noreferrer"
-								href={(store.article && store.article.link) as string}
+								href={(store.article?.link) as string}
 							>
 								<ArrowTopRightOnSquareIcon className={"h-4 w-4"} />
 							</a>

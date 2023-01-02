@@ -15,18 +15,18 @@ const Modal = (props: ModalProps) => {
 	const { visible, title, children, footer } = props;
 
 	const handleConfirm = () => {
-		props.onConfirm && props.onConfirm();
+		props.onConfirm?.();
 	};
 
 	const handleCancel = () => {
-		props.onCancel && props.onCancel();
+		props.onCancel?.();
 	};
 
 	return visible
 		? ReactDOM.createPortal(
 				//@ts-ignore
 				<div className="modal-overlay">
-					<div className="modal-mask"></div>
+					<div className="modal-mask" />
 					{/* @ts-ignore */}
 					<div className="modal">
 						<div className="modal-header">

@@ -3,7 +3,16 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true
+      "recommended": true,
+      "suspicious": {
+        "noExplicitAny": "off"
+      },
+      "security":{
+        "noDangerouslySetInnerHtml": "off"
+      },
+      "a11y": {
+        "useKeyWithClickEvents": "off"
+      }
     }
   }
 }

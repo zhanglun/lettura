@@ -267,13 +267,13 @@ const ChannelList = (props: any): JSX.Element => {
 	};
 
 	const addFeed = () => {
-		if (addFeedButtonRef && addFeedButtonRef.current) {
+		if (addFeedButtonRef?.current) {
 			(addFeedButtonRef.current as any).showModal();
 		}
 	};
 
 	const addFolder = () => {
-		if (addFolderButtonRef && addFolderButtonRef.current) {
+		if (addFolderButtonRef?.current) {
 			(addFolderButtonRef.current as any).showModal();
 		}
 	};
@@ -301,7 +301,7 @@ const ChannelList = (props: any): JSX.Element => {
 	return (
 		<div className={styles.container}>
 			<div className={`sticky-header ${styles.header}`}>
-				<div></div>
+				<div />
 				<div className={styles.toolbar}>
 					<AddFeedChannel Aref={addFeedButtonRef} />
 					<Tooltip content="Add feed">

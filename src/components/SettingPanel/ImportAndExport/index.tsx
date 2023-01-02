@@ -19,7 +19,7 @@ export const ImportAndExport = (props: any) => {
 	const [done, setDone] = useState(0);
 
 	const uploadOPMLFile = () => {
-		if (fileInputRef && fileInputRef.current) {
+		if (fileInputRef?.current) {
 			console.log("fileInputRef", fileInputRef);
 			fileInputRef.current.click();
 		}
@@ -78,7 +78,7 @@ export const ImportAndExport = (props: any) => {
 		});
 	};
 
-	const handleFileChange = (e: any) => {
+	const handleFileChange = (e: React.ChangeEvent) => {
 		setFile(e.target.files[0]);
 
 		const reader = new FileReader();
@@ -93,7 +93,7 @@ export const ImportAndExport = (props: any) => {
 		reader.readAsText(e.target.files[0]);
 	};
 
-	const handleChangeSourceType = (e: any) => {
+	const handleChangeSourceType = (e: React.ChangeEvent) => {
 		const type = e.target.value;
 
 		setSourceType(type);
@@ -137,7 +137,7 @@ export const ImportAndExport = (props: any) => {
 										{file ? "Selected file" : "Click to Select file"}
 									</div>
 									{file && (
-										<p className={styles.additionText}>{file && file.name}</p>
+										<p className={styles.additionText}>{file?.name}</p>
 									)}
 								</div>
 								<input

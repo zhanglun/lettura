@@ -102,7 +102,7 @@ export const parseAtomFeed = (
 		if (link.startsWith("/")) {
 			const a = document.createElement("a");
 			a.href = url;
-			link = a.protocol + "//" + a.host + link;
+			link = `${a.protocol}//${a.host}${link}`;
 		}
 
 		if (thumbnailNode) {
@@ -433,5 +433,5 @@ export const getBestImages = (
 export const getChannelFavicon = (url: string) => {
 	const hostname = url ? new URL(url).hostname : "";
 
-	return "https://icons.duckduckgo.com/ip3/" + hostname + ".ico";
+	return `https://icons.duckduckgo.com/ip3/${hostname}.ico`;
 };

@@ -18,7 +18,7 @@ export const ArticleItem = React.forwardRef(
 			store.updateArticleAndIdx(article);
 		};
 
-		const handleClick = async (e: any) => {
+		const handleClick = async (e: React.MouseEvent) => {
 			if (onSelect) {
 				onSelect(article);
 			}

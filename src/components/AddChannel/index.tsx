@@ -51,11 +51,11 @@ export const AddFeedChannel = (props: any) => {
 			});
 	};
 
-	const handleTitleChange = (e: any) => {
+	const handleTitleChange = (e: React.ChangeEvent) => {
 		setTitle(e.target.value);
 	};
 
-	const handleDescriptionChange = (e: any) => {
+	const handleDescriptionChange = (e: React.ChangeEvent) => {
 		setDescription(e.target.value);
 	};
 

@@ -103,7 +103,7 @@ export const Folder = ({
 			accept: ItemTypes.BOX,
 			drop: () => ({
 				id,
-				name: "folder-" + channel.title,
+				name: `folder-${channel.title}`,
 				allowedDropEffect: "move",
 				type: channel.item_type,
 			}),
@@ -154,7 +154,7 @@ export const Folder = ({
 				}`}
 			>
 				<span className={styles.icon}>
-					<FolderIcon className={`h-4 w-4`} />
+					<FolderIcon className={"h-4 w-4"} />
 				</span>
 				<span className={styles.name}>{channel.title}</span>
 				{unread > 0 && <span className={styles.count}>{unread}</span>}

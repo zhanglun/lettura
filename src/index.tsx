@@ -18,24 +18,24 @@ ReactDOM.render(
 		<BrowserRouter>
 			<Routes>
 				<Route path={"/"} element={<App />}>
-					<Route path={"/"} element={<WelcomePage />}></Route>
+					<Route path={"/"} element={<WelcomePage />} />
 					<Route
 						path={RouteConfig.CHANNEL}
 						element={<ArticleContainer />}
-					></Route>
+					/>
 					<Route path={RouteConfig.SETTINGS} element={<SettingContainer />}>
 						<Route
 							path={RouteConfig.SETTINGS_GENERAL}
 							element={<General />}
-						></Route>
+						/>
 						<Route
 							path={RouteConfig.SETTINGS_FEED_MANAGER}
 							element={<FeedManager />}
-						></Route>
+						/>
 						<Route
 							path={RouteConfig.SETTINGS_IMPORT}
 							element={<ImportAndExport />}
-						></Route>
+						/>
 					</Route>
 				</Route>
 			</Routes>
