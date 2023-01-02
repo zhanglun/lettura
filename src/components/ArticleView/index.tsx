@@ -114,7 +114,7 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
 	}, [article]);
 
 	useEffect(() => {
-		if (!(containerRef?.current)) {
+		if (!containerRef?.current) {
 			return;
 		}
 

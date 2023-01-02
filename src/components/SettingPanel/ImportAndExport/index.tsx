@@ -136,9 +136,7 @@ export const ImportAndExport = (props: any) => {
 									<div className={styles.text}>
 										{file ? "Selected file" : "Click to Select file"}
 									</div>
-									{file && (
-										<p className={styles.additionText}>{file?.name}</p>
-									)}
+									{file && <p className={styles.additionText}>{file?.name}</p>}
 								</div>
 								<input
 									ref={fileInputRef}

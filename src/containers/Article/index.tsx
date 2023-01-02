@@ -11,6 +11,7 @@ import {
 	ArrowTopRightOnSquareIcon,
 	ChevronDownIcon,
 	ChevronUpIcon,
+	GlobeAltIcon,
 	LinkIcon,
 	PaintBrushIcon,
 	WalletIcon,
@@ -118,6 +119,11 @@ export const ArticleContainer = (): JSX.Element => {
 					});
 				});
 		}
+	};
+
+	const handleViewSourcePage = () => {
+		const { link } = store.article as Article;
+        // TODO: parse web content
 	};
 
 	const handleCopyLink = () => {
@@ -304,12 +310,17 @@ export const ArticleContainer = (): JSX.Element => {
 								<PaintBrushIcon className={"h-4 w-4"} />
 							</span>
 						</Tooltip>
+						<Tooltip content="View source page">
+							<span className={styles.menuIcon} onClick={handleViewSourcePage}>
+								<GlobeAltIcon className={"h-4 w-4"} />
+							</span>
+						</Tooltip>
 						<Tooltip content="Open in browser" position="top">
 							<a
 								className={styles.menuIcon}
 								target="_blank"
 								rel="noreferrer"
-								href={(store.article?.link) as string}
+								href={store.article?.link as string}
 							>
 								<ArrowTopRightOnSquareIcon className={"h-4 w-4"} />
 							</a>

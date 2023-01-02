@@ -227,7 +227,7 @@ export const FeedManager = () => {
 							>
 								{folderList.map((folder) => {
 									return (
-										<Select.Option value={folder.uuid}>
+										<Select.Option key={folder.uuid} value={folder.uuid}>
 											{folder.name}
 										</Select.Option>
 									);

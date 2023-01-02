@@ -38,7 +38,6 @@ export const AddFolder = (props: any) => {
 		dataAgent
 			.createFolder(name)
 			.then((res) => {
-
 				if (res > 0) {
 					busChannel.emit("getChannels");
 					handleCancel();
