@@ -48,11 +48,15 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-}
 
-.toolbarItem:hover {
-  color: var(--headline-color);
-  background-color: var(--color-gray-300);
+  &:hover {
+    color: var(--headline-color);
+    background-color: var(--color-gray-300);
+  }
+
+  &:focus-visible {
+    outline: none;
+  }
 }
 
 .title {
