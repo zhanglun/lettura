@@ -78,25 +78,26 @@ export const ImportAndExport = (props: any) => {
 		});
 	};
 
-	const handleFileChange = (e: React.ChangeEvent) => {
-		setFile(e.target.files[0]);
+	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setFile(e.target.files[0]);
+      const reader = new FileReader();
 
-		const reader = new FileReader();
+      reader.onload = () => {
+        const xmlString = reader.result as string;
+        const list = parserOPML(xmlString);
 
-		reader.onload = () => {
-			const xmlString = reader.result as string;
-			const list = parserOPML(xmlString);
+        setImportedList(list);
+      };
 
-			setImportedList(list);
-		};
-
-		reader.readAsText(e.target.files[0]);
+      reader.readAsText(e.target.files[0]);
+    }
 	};
 
-	const handleChangeSourceType = (e: React.ChangeEvent) => {
-		const type = e.target.value;
+	const handleChangeSourceType = (value: string) => {
+      const type = value;
 
-		setSourceType(type);
+      setSourceType(type);
 	};
 
 	const handleTextSourceChange = (text: string) => {
@@ -120,7 +121,7 @@ export const ImportAndExport = (props: any) => {
 					<p className={styles.options}>OPML 导入</p>
 					<div className={styles.radios}>
 						<RadioGroup
-							onChange={(e) => handleChangeSourceType(e)}
+							onChange={(e) => handleChangeSourceType(e.target.value)}
 							value={sourceType}
 							aria-label="单选组合示例"
 							name="radio-group"
