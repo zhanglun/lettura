@@ -51,12 +51,12 @@ export const AddFeedChannel = (props: any) => {
 			});
 	};
 
-	const handleTitleChange = (e: React.ChangeEvent) => {
-		setTitle(e.target.value);
+	const handleTitleChange = (v: string) => {
+		setTitle(v);
 	};
 
-	const handleDescriptionChange = (e: React.ChangeEvent) => {
-		setDescription(e.target.value);
+	const handleDescriptionChange = (v: string) => {
+		setDescription(v);
 	};
 
 	const handleInputChange = (value: string) => {
@@ -130,7 +130,7 @@ export const AddFeedChannel = (props: any) => {
 							type="text"
 							style={{ width: "300px" }}
 							value={title}
-							onChange={handleTitleChange}
+							onChange={(e) => handleTitleChange}
 						/>
 					</div>
 				</div>

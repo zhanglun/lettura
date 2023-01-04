@@ -82,7 +82,7 @@ function App() {
 
 		elem.scrollIntoView({ behavior: "smooth" });
 	};
-	const handleKeyPress = (event: React.KeyboardEvent) => {
+	const handleKeyPress = (event: KeyboardEvent) => {
 		const activeElement = document.activeElement as HTMLElement;
 		const tagName = activeElement.tagName.toLowerCase();
 
@@ -102,9 +102,9 @@ function App() {
 	};
 
 	useEffect(() => {
-		document.addEventListener("keydown", handleKeyPress);
+		document.addEventListener("keydown", (e) => handleKeyPress(e));
 		return () => {
-			document.removeEventListener("keydown", handleKeyPress);
+			document.removeEventListener("keydown", (e) => handleKeyPress(e));
 		};
 	}, []);
 
