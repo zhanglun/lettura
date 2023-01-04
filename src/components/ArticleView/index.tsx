@@ -29,6 +29,7 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
 		}
 
 		const { link, pub_date } = article;
+    console.log("%c Line:32 🥖 article", "color:#42b983", article);
 		const ico = getChannelFavicon(link);
 
 		return (
@@ -38,7 +39,7 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
 						<div className={styles.title}>{article.title}</div>
 						<div className={styles.meta}>
 							<span className={styles.time}>
-								{Dayjs(pub_date).format("YYYY-MM-DD HH:mm")}
+								{Dayjs(pub_date.replace(/-/gi, '/')).format("YYYY-MM-DD HH:mm")}
 							</span>
 							{article.author && (
 								<span className={styles.author}>{article.author}</span>
