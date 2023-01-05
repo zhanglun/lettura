@@ -3,6 +3,8 @@ on:
   push:
     branches:
       - release
+env:
+  TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
 
 jobs:
   release:
