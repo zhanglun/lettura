@@ -3,6 +3,9 @@ on:
   push:
     branches:
       - release
+env:
+  TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+  TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
 
 jobs:
   release:
@@ -30,10 +33,11 @@ jobs:
         with:
           workspaces: './src-tauri -> target'
 
-      - name: Sync node version and setup cache
+      - name: Sync Pnpm version
         uses: pnpm/action-setup@v2
         with:
           version: 6.32.9
+      - name: Sync node version and setup cache
         uses: actions/setup-node@v3
         with:
           node-version: 'lts/*'
@@ -45,12 +49,11 @@ jobs:
 
       - name: Build the app
         uses: tauri-apps/tauri-action@v0
-
         env:
-          GITHUB_TOKEN: ${{ secrets.BUILD_SECRET }}
+          GITHUB_TOKEN: ${{ secrets.LETTURA_TOKEN }}
         with:
-          tagName: ${{ github.ref_name }} # This only works if your workflow triggers on new tags.
-          releaseName: 'App Name v__VERSION__' # tauri-action replaces \_\_VERSION\_\_ with the app version.
+          tagName: 'v__VERSION__' # This only works if your workflow triggers on new tags.
+          releaseName: 'Lettura v__VERSION__' # tauri-action replaces \_\_VERSION\_\_ with the app version.
           releaseBody: 'See the assets to download and install this version.'
-          releaseDraft: true
-          prerelease: false
+          releaseDraft: false
+          prerelease: true
