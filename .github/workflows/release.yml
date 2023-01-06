@@ -49,7 +49,6 @@ jobs:
 
       - name: Build the app
         uses: tauri-apps/tauri-action@v0
-
         env:
           GITHUB_TOKEN: ${{ secrets.LETTURA_TOKEN }}
         with:
