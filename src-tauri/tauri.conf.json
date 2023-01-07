@@ -79,7 +79,8 @@
         "resizable": true,
         "title": "Lettura, Your RSS reader",
         "width": 1440,
-        "fileDropEnabled": false
+        "fileDropEnabled": false,
+        "transparent": true
       }
     ]
   }

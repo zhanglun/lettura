@@ -64,3 +64,30 @@
   --color-gray-600: #524e56;
   --color-gray-600-rgb: rgb(82, 78, 86);
 }
+
+
+@media screen and (prefers-color-scheme: light) {
+  :root {
+    --body-color: #000;
+    --body-bg-color: #fff;
+  }
+}
+
+@media screen and (prefers-color-scheme: dark) {
+  :root {
+    --body-color: #fff;
+    --body-bg-color: #000;
+  }
+}
+
+:root body[data-theme='light'] {
+  --body-color: #333;
+}
+
+
+:root body[data-theme='dark'] {
+  --body-color: #fff;
+  --body-bg-color: #000;
+  --app-sidebar-bg:  #000;
+  --headline-color: #fff;
+}

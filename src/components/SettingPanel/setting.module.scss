@@ -3,7 +3,6 @@
   display: grid;
   grid-template-columns: var(--app-setting-sidebar-width) 1fr;
   // grid-template-rows: var(--app-toolbar-height) 1fr;
-  background-color: #fff;
   position: relative;
   padding-top: var(--app-toolbar-height);
   height: 100vh;
@@ -11,7 +10,6 @@
 
 .header{
   // grid-column: 1 / -1;
-  background-color: #fff;
 }
 
 .title {

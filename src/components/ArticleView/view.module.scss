@@ -1,6 +1,5 @@
 .container {
   padding: 2px 50px;
-  background-color: #FFFFFF;
 }
 
 .header {
@@ -10,13 +9,11 @@
 
 .title {
   margin: 18px 0 14px;
-  color: #000;
+  color: var(--headline-color);
   font-size: 28px;
-  // font-weight: var(--font-weight-bold);
 }
 
 .inner {
-  background-color: #fff;
 }
 
 .banner {
@@ -133,7 +130,6 @@
   color: var(--title-color);
   border-radius: 50%;
   cursor: pointer;
-  background-color: #fff;
   margin: 6px 0;
 }
 
