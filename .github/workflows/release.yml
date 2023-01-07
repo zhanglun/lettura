@@ -67,4 +67,4 @@ jobs:
 #        with:
 #          node-version: 'lts/*'
 #        run: |
-#          npx ts-node ./scripts/updater.js
+#          npx ts-node ./scripts/updater.mjs
