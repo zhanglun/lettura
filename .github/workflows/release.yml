@@ -2,7 +2,8 @@ name: 'Publish'
 on:
   push:
     branches:
-      - release
+#      - release
+      - test
 env:
   TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
   TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
@@ -66,4 +67,4 @@ jobs:
 #        with:
 #          node-version: 'lts/*'
 #        run: |
-#          npx ts-node ./scripts/updater.ts
+#          npx ts-node ./scripts/updater.js

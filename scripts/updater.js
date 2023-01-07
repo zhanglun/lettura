@@ -5,7 +5,7 @@ import { getOctokit, context } from "@actions/github";
 
 console.log("start updater");
 
-function getAssetName(assetPath: string) {
+function getAssetName(assetPath) {
 	const ext = path.extname(assetPath);
 	const filename = path.basename(assetPath).replace(ext, "");
 	return path.dirname(assetPath).includes(`target${path.sep}debug`)
@@ -13,16 +13,22 @@ function getAssetName(assetPath: string) {
 		: `${filename}${ext}`;
 }
 
+/**
+ * 	version: string;
+ * 	notes: string;
+ * 	releaseId: number;
+ * 	artifacts: string[];
+ * @param version
+ * @param notes
+ * @param releaseId
+ * @param artifacts
+ * @returns {Promise<void>}
+ */
 export default async function uploadVersionJSON({
 	version,
 	notes,
 	releaseId,
 	artifacts,
-}: {
-	version: string;
-	notes: string;
-	releaseId: number;
-	artifacts: string[];
 }) {
 	if (process.env.GITHUB_TOKEN === undefined) {
 		throw new Error("GITHUB_TOKEN is required");
@@ -37,14 +43,6 @@ export default async function uploadVersionJSON({
 		notes,
 		pub_date: new Date().toISOString(),
 		platforms: {},
-	} as {
-		version: string;
-		notes: string;
-		pub_date: string;
-		platforms: {
-			url: string;
-			signature: string;
-		}[];
 	};
 
 	const assets = await github.rest.repos.listReleaseAssets({
@@ -56,7 +54,7 @@ export default async function uploadVersionJSON({
 
 	if (asset) {
 		versionContent.platforms = (
-			(await (await fetch(asset.browser_download_url)).json()) as any
+			await (await fetch(asset.browser_download_url)).json()
 		).platforms;
 
 		// https://docs.github.com/en/rest/releases/assets#update-a-release-asset
