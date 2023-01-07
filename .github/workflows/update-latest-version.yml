@@ -18,5 +18,6 @@ jobs:
       - name: Create file
         working-directory: ./
         run: |
-          echo `pwd`
+          ls
+          ls ./scripts
           node ./scripts/updater.mjs
