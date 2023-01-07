@@ -6,7 +6,8 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "create-json": "node ./scripts/updater.mjs"
   },
   "dependencies": {
     "@douyinfe/semi-ui": "^2.26.0",
@@ -24,6 +25,8 @@
     "web-vitals": "^3.1.0"
   },
   "devDependencies": {
+    "@actions/github": "^5.1.1",
+    "@tauri-apps/action-core": "^0.3.1",
     "@tauri-apps/cli": "^1.2.2",
     "@types/node": "^18.11.18",
     "@types/react": "^18.0.26",
