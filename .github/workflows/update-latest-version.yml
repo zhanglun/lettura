@@ -16,6 +16,7 @@ jobs:
         with:
           node-version: 'lts/*'
       - name: Create file
+        working-directory: ./
         run: |
           echo `pwd`
           node ./scripts/updater.mjs
