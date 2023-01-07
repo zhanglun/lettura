@@ -11,6 +11,7 @@ jobs:
   update_json:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - name: Set Node.js Env
         uses: actions/setup-node@v3
         with:
