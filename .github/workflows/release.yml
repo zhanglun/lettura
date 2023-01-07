@@ -2,8 +2,7 @@ name: 'Publish'
 on:
   push:
     branches:
-#      - release
-      - test
+      - release
 env:
   TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
   TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
@@ -60,11 +59,14 @@ jobs:
           releaseDraft: false
           prerelease: true
 
-#  update_json:
-#    steps:
-#      - name: Create file
-#        uses: actions/setup-node@v3
-#        with:
-#          node-version: 'lts/*'
-#        run: |
-#          npx ts-node ./scripts/updater.mjs
+  update_json:
+    needs: release
+    steps:
+      - uses: actions/checkout@v3
+      - name: Create file
+        uses: actions/setup-node@v3
+        with:
+          node-version: 'lts/*'
+        run: |
+          pnpm install
+          node ./scripts/updater.mjs --info ${{ needs.release.outputs }}

@@ -2,6 +2,7 @@ import path from "path";
 import { readFileSync, writeFileSync } from "fs";
 import { arch, platform } from "os";
 import { getOctokit, context } from "@actions/github";
+import { getPackageJson, buildProject, getInfo, execCommand } from '@tauri-apps/action-core'
 
 console.log("start updater");
 
@@ -93,3 +94,18 @@ export default async function uploadVersionJSON({
 
 	console.log(`Uploading ${versionFile}...`);
 }
+async function run() {
+  const projectPath = path.resolve(
+    process.cwd(),
+    core.getInput('projectPath') || process.argv[2]
+  )
+
+  let body = core.getInput('releaseBody')
+  const info = getInfo(projectPath)
+
+  console.log(process.argv)
+  console.log(body)
+  console.log(info)
+  // await uploadVersionJSON({ version: info.version, notes: body, releaseId, artifacts });
+}
+run()
