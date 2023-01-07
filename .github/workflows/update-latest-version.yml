@@ -17,4 +17,5 @@ jobs:
           node-version: 'lts/*'
       - name: Create file
         run: |
+          echo "{path}"
           node ./scripts/updater.mjs
