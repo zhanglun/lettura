@@ -1,0 +1,18 @@
+name: 'Update latest version'
+on:
+  push:
+    branches:
+      - release
+env:
+  TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+  TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
+
+jobs:
+update_json:
+  steps:
+    - name: Create file
+      uses: actions/setup-node@v3
+      with:
+        node-version: 'lts/*'
+      run: |
+        npx ts-node ./scripts/updater.ts

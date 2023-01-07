@@ -58,3 +58,12 @@ jobs:
           releaseBody: 'See the assets to download and install this version.'
           releaseDraft: false
           prerelease: true
+
+#  update_json:
+#    steps:
+#      - name: Create file
+#        uses: actions/setup-node@v3
+#        with:
+#          node-version: 'lts/*'
+#        run: |
+#          npx ts-node ./scripts/updater.ts
