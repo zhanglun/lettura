@@ -19,5 +19,4 @@ jobs:
         working-directory: ./
         run: |
           ls
-          ls ./scripts
           node ./scripts/updater.mjs
