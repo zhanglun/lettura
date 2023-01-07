@@ -8,11 +8,13 @@ env:
   TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
 
 jobs:
-update_json:
-  steps:
-    - name: Create file
-      uses: actions/setup-node@v3
-      with:
-        node-version: 'lts/*'
-      run: |
-        npx ts-node ./scripts/updater.ts
+  update_json:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set Node.js Env
+        uses: actions/setup-node@v3
+        with:
+          node-version: 'lts/*'
+      - name: Create file
+        run: |
+          npx ts-node ./scripts/updater.ts
