@@ -14,28 +14,28 @@ import { ImportAndExport } from "./components/SettingPanel/ImportAndExport";
 import { WelcomePage } from "./components/WelcomePage";
 
 ReactDOM.render(
-	<React.StrictMode>
-		<BrowserRouter>
-			<Routes>
-				<Route path={"/"} element={<App />}>
-					<Route path={"/"} element={<WelcomePage />} />
-					<Route path={RouteConfig.CHANNEL} element={<ArticleContainer />} />
-					<Route path={RouteConfig.SETTINGS} element={<SettingContainer />}>
-						<Route path={RouteConfig.SETTINGS_GENERAL} element={<General />} />
-						<Route
-							path={RouteConfig.SETTINGS_FEED_MANAGER}
-							element={<FeedManager />}
-						/>
-						<Route
-							path={RouteConfig.SETTINGS_IMPORT}
-							element={<ImportAndExport />}
-						/>
-					</Route>
-				</Route>
-			</Routes>
-		</BrowserRouter>
-	</React.StrictMode>,
-	document.getElementById("root"),
+  <React.StrictMode>
+    <BrowserRouter>
+      <Routes>
+        <Route path={"/"} element={<App />}>
+          <Route path={"/"} element={<WelcomePage />} />
+          <Route path={RouteConfig.CHANNEL} element={<ArticleContainer />} />
+          <Route path={RouteConfig.SETTINGS} element={<SettingContainer />}>
+            <Route path={RouteConfig.SETTINGS_GENERAL} element={<General />} />
+            <Route
+              path={RouteConfig.SETTINGS_FEED_MANAGER}
+              element={<FeedManager />}
+            />
+            <Route
+              path={RouteConfig.SETTINGS_IMPORT}
+              element={<ImportAndExport />}
+            />
+          </Route>
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  </React.StrictMode>,
+  document.getElementById("root"),
 );
 
 // If you want to start measuring performance in your app, pass a function
