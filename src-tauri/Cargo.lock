@@ -3,6 +3,28 @@
 version = 3
 
 [[package]]
+name = "Lettura"
+version = "0.1.0"
+dependencies = [
+ "atom_syndication",
+ "chrono",
+ "diesel",
+ "diesel_migrations",
+ "dotenv",
+ "libsqlite3-sys",
+ "reqwest",
+ "rss",
+ "scraper",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-build",
+ "tokio",
+ "toml",
+ "uuid 1.2.1",
+]
+
+[[package]]
 name = "adler"
 version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -52,28 +74,6 @@ name = "anyhow"
 version = "1.0.66"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "216261ddc8289130e551ddcd5ce8a064710c0d064a4d2895c67151c92b5443f6"
-
-[[package]]
-name = "app"
-version = "0.1.0"
-dependencies = [
- "atom_syndication",
- "chrono",
- "diesel",
- "diesel_migrations",
- "dotenv",
- "libsqlite3-sys",
- "reqwest",
- "rss",
- "scraper",
- "serde",
- "serde_json",
- "tauri",
- "tauri-build",
- "tokio",
- "toml",
- "uuid 1.2.1",
-]
 
 [[package]]
 name = "atk"

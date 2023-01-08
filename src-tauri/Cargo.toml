@@ -1,12 +1,12 @@
 [package]
-name = "app"
+name = "Lettura"
 version = "0.1.0"
-description = "A Tauri App"
-authors = ["you"]
+description = "Your RSS reader"
+authors = ["zhanglun1410@gmail.com"]
 license = ""
 repository = ""
-default-run = "app"
-edition = "2018"
+default-run = "Lettura"
+edition = "2021"
 build = "src/build.rs"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

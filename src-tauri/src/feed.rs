@@ -8,6 +8,14 @@ use crate::db;
 use crate::models;
 use crate::schema;
 
+/// delete channel and associated articles
+/// # Example
+/// ```
+/// let uuid = String::from("123456");
+/// let result = delete_channel(uuid);
+///
+/// assert_eq!(1, result);
+/// ```
 pub fn delete_channel(uuid: String) -> usize {
   let mut connection = db::establish_connection();
   let channel = schema::channels::dsl::channels
