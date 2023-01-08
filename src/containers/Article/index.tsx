@@ -108,15 +108,34 @@ export const ArticleContainer = (): JSX.Element => {
           store.channel?.item_type as string,
           channelUuid as string,
         )
-        .then((res: number) => {
+        .then((res) => {
+          const [num, message] = res;
+
           console.log("%c Line:77 🥛 res", "color:#ea7e5c", res);
-          getArticleList();
+
+          if (message) {
+            Toast.warning({
+              content: (
+                <>
+                  <div>Something wrong!</div>
+                  <p>{message}</p>
+                </>
+              ),
+              duration: 4,
+              theme: "light",
+              showClose: false,
+            });
+          } else {
+            getArticleList();
+            busChannel.emit("updateChannelUnreadCount", {
+              uuid: channelUuid as string,
+              action: "increase",
+              count: num || 0,
+            });
+          }
+        })
+        .finally(() => {
           setSyncing(false);
-          busChannel.emit("updateChannelUnreadCount", {
-            uuid: channelUuid as string,
-            action: "increase",
-            count: res || 0,
-          });
         });
     }
   };

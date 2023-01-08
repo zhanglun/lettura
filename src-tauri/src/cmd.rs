@@ -66,11 +66,18 @@ pub fn create_client() -> reqwest::Client {
   client
 }
 
-pub async fn fetch_feed_item(url: &str) -> Option<Feed> {
+/// reuqest feed, parse Feeds
+///
+/// # Examples
+/// ```
+/// let url = "https://sspai.com/feed".to_string();
+/// let res = fetch_feed_item(&url).await;
+/// ```
+pub async fn fetch_feed_item(url: &str) -> Result<Feed, String> {
   let client = create_client();
-  let response = client.get(url).send().await;
+  let result = client.get(url).send().await;
 
-  match response {
+  match result {
     Ok(response) => match response.status() {
       reqwest::StatusCode::OK => {
         let content = response.text().await;
@@ -80,25 +87,27 @@ pub async fn fetch_feed_item(url: &str) -> Option<Feed> {
             let res = content[..].parse::<Feed>();
 
             match res {
-              Ok(res) => Some(res),
-              Err(res_error) => {
-                println!("content parse error{:?}", res_error);
-                None
+              Ok(res) => Ok(res),
+              Err(error) => {
+                println!("content parse error{:?}", error);
+                Err(error.to_string())
               }
             }
           }
-          Err(err) => {
-            println!("content error{:?}", err);
-            None
+          Err(error) => {
+            println!("content error{:?}", error);
+            Err(error.to_string())
           }
         }
       }
       _ => {
-        println!("{}", &response.status());
-        None
+        Err("Not 200 OK".to_string())
       }
     },
-    Err(_) => None,
+    Err(error) => {
+      println!("{:?}", error);
+      Err(error.to_string())
+    },
   }
 }
 
@@ -113,7 +122,7 @@ pub async fn fetch_feed(url: String) -> Option<FeedFetchResponse> {
   let r = fetch_feed_item(&url).await;
 
   match r {
-    Some(res) => match res {
+    Ok(res) => match res {
       Feed::Atom(res) => {
         let title = res.title.to_string();
         let description = match &res.subtitle {
@@ -128,7 +137,7 @@ pub async fn fetch_feed(url: String) -> Option<FeedFetchResponse> {
         description: res.description.to_string(),
       }),
     },
-    None => None,
+    Err(_) => None,
   }
 }
 
@@ -293,23 +302,24 @@ pub fn create_article_models(
 }
 
 #[command]
-pub async fn add_channel(url: String) -> usize {
+pub async fn add_channel(url: String) -> (usize, String) {
   println!("request channel {}", &url);
 
   let res = fetch_feed_item(&url).await;
 
   match res {
-    Some(res) => {
+    Ok(res) => {
       let channel_uuid = Uuid::new_v4().hyphenated().to_string();
       let channel = create_channel_model(&channel_uuid, &url, &res);
       let articles = create_article_models(&channel_uuid, &url, &res);
       let res = feed::add_channel(*channel, articles);
 
-      res
+      (res, String::from(""))
     }
-    None => 0,
-  };
-  1
+    Err(err) => {
+      (0, err)
+    },
+  }
 }
 
 #[command]
@@ -332,26 +342,28 @@ pub fn delete_channel(uuid: String) -> usize {
   result
 }
 
-pub async fn sync_articles(uuid: String) -> usize {
+pub async fn sync_articles(uuid: String) -> (usize, String) {
   let channel = db::get_channel_by_uuid(String::from(&uuid));
 
   match channel {
     Some(channel) => {
       let res = fetch_feed_item(&channel.feed_url).await;
       match res {
-        Some(res) => {
+        Ok(res) => {
           let articles = create_article_models(&channel.uuid, &channel.feed_url, &res);
 
           println!("{:?}", &articles.len());
 
           let result = db::add_articles(String::from(&channel.uuid), articles);
 
-          result
+          (result, String::from(""))
         }
-        None => 0,
+        Err(err) => {
+          (0, err)
+        },
       }
     }
-    None => 0,
+    None => (0, String::from("feed not found")),
   }
 }
 
@@ -369,13 +381,13 @@ pub async fn sync_article_in_folder(uuid: String) -> usize {
 }
 
 #[command]
-pub async fn sync_articles_with_channel_uuid(feed_type: String, uuid: String) -> usize {
+pub async fn sync_articles_with_channel_uuid(feed_type: String, uuid: String) -> (usize, String) {
   println!("{:?}", feed_type);
 
   if feed_type == "folder" {
     let res = sync_article_in_folder(uuid).await;
     println!("{:?}", res);
-    res
+    (res, String::from(""))
   } else {
     let res = sync_articles(uuid).await;
     println!("{:?}", res);
@@ -501,14 +513,17 @@ mod tests {
     let res = fetch_feed_item(&url).await;
 
     let a = match res {
-      Some(res) => {
+      Ok(res) => {
         let channel_uuid = Uuid::new_v4().hyphenated().to_string();
         let articles = create_article_models(&channel_uuid, &url, &res);
 
         println!("{:?}", articles.get(0));
         1
       }
-      None => 0,
+      Err(err) => {
+        println!("{:?}", err);
+        0
+      },
     };
 
     ()
