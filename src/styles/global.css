@@ -10,7 +10,7 @@
   --app-toolbar-height: 50px;
   --app-setting-sidebar-width: 200px;
   --view-helpbar-width: 50px;
-  --app-sidebar-bg: rgba(60,60,67,.03);
+  --app-sidebar-bg: rgba(60,60,67, 0.03);
   --app-sidebar-border-color: rgba(0,0,0,.15);
 
   --headline-color: #333;
@@ -70,6 +70,8 @@
   :root {
     --body-color: #000;
     --body-bg-color: #fff;
+    /* --body-bg-color: rgba(255, 255, 255, 0.5); */
+    --app-main-bg-color: #fff;
   }
 }
 
@@ -77,11 +79,13 @@
   :root {
     --body-color: #fff;
     --body-bg-color: #000;
+    --app-main-bg-color: #000;
   }
 }
 
 :root body[data-theme='light'] {
   --body-color: #333;
+  --app-main-bg-color: #fff;
 }
 
 
@@ -90,4 +94,5 @@
   --body-bg-color: #000;
   --app-sidebar-bg:  #000;
   --headline-color: #fff;
+  --app-main-bg-color: #000;
 }

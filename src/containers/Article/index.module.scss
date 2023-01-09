@@ -3,6 +3,7 @@
   height: 100vh;
   display: grid;
   grid-template-columns: 360px 1fr;
+  background-color: var(--app-main-bg-color);
 }
 
 :global(.sticky-header) {

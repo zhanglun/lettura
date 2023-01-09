@@ -70,8 +70,6 @@ function App() {
     } else if (tagName === "li") {
       busChannel.emit("goPreviousArticle");
     }
-
-    // elem.scrollIntoView({ behavior: "smooth" });
   };
 
   const goNext = (elem: HTMLElement, tagName: string) => {
@@ -79,8 +77,6 @@ function App() {
     } else if (tagName === "li") {
       busChannel.emit("goNextArticle");
     }
-
-    // elem.scrollIntoView({ behavior: "smooth" });
   };
   const handleKeyPress = (event: KeyboardEvent) => {
     const activeElement = document.activeElement as HTMLElement;

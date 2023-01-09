@@ -8,6 +8,18 @@
   background-color: var(--app-sidebar-bg);
   user-select: none;
   border-right: 1px solid var(--app-sidebar-border-color);
+
+  &::before {
+    content: "";
+    margin: -35px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    filter: blur(20px);
+    z-index: -1;
+  }
 }
 
 .inner {
