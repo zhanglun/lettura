@@ -196,8 +196,12 @@ export const ArticleContainer = (): JSX.Element => {
       cur = currentIdx - 1;
     }
 
-    setCurrentIdx(cur);
-    store.updateArticleAndIdx(store.articleList[cur] || null);
+    calculateItemPosition('up', store.articleList[cur] || null);
+
+    setTimeout(() => {
+      setCurrentIdx(cur);
+      store.updateArticleAndIdx(store.articleList[cur] || null);
+    }, 50)
   };
 
   const handleViewNext = () => {
@@ -206,10 +210,12 @@ export const ArticleContainer = (): JSX.Element => {
     if (currentIdx < store.articleList.length - 1) {
       cur = currentIdx + 1;
 
-      setCurrentIdx(cur);
-      store.updateArticleAndIdx(store.articleList[cur] || null);
+      calculateItemPosition('down', store.articleList[cur] || null);
 
-      // TODO: reset scroll
+      setTimeout(() => {
+        setCurrentIdx(cur);
+        store.updateArticleAndIdx(store.articleList[cur] || null);
+      }, 50);
     }
   };
 
@@ -243,10 +249,31 @@ export const ArticleContainer = (): JSX.Element => {
     setCurrentIdx(-1);
   }, [channelUuid]);
 
-  useEffect(() => {
-    // TODO: watch currentIdx, set scrollTop
-    console.log('listRef.current.scrollTop %s', listRef?.current?.scrollTop);
-  }, [store.currentIdx]);
+  function getOffsetTopWithParent (child: HTMLElement, parent: HTMLElement) {
+
+  }
+
+  function calculateItemPosition(direction: 'up' | 'down', article: Article | null) {
+    if (!article || !article.uuid) {
+      return
+    }
+
+    const $li = document.getElementById(article.uuid)
+    const bounding = $li?.getBoundingClientRect()
+    const winH = window.innerHeight;
+
+    if ((direction === 'up' || direction === 'down') && bounding && bounding.top < 58) {
+      const offset = 58 - bounding.top
+      const scrollTop = (listRef?.current?.scrollTop || 0) - offset
+
+      listRef?.current?.scrollTo(0, scrollTop)
+    } else if ((direction === 'up' || direction === 'down') && bounding && bounding.bottom > winH) {
+      const offset = bounding.bottom - winH
+      const scrollTop = (listRef?.current?.scrollTop || 0) + offset
+
+      listRef?.current?.scrollTo(0, scrollTop)
+    }
+  }
 
   return (
     <div className={styles.article}>

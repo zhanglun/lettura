@@ -45,6 +45,7 @@ export const ArticleItem = React.forwardRef(
         onClick={handleClick}
         aria-current="page"
         ref={ref}
+        id={article.uuid}
         tabIndex={1}
       >
         {readStatus === 1 && <div className={styles.dot} />}

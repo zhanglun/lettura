@@ -26,6 +26,7 @@ export interface ArticleListRefType {
   getList: () => void;
   markAllRead: () => void;
   articlesRef: any;
+  innerRef: React.RefObject<HTMLDivElement>;
 }
 
 export const ArticleList = forwardRef(
@@ -93,6 +94,7 @@ export const ArticleList = forwardRef(
           markAllRead();
         },
         articlesRef,
+        innerRef,
       };
     });
 

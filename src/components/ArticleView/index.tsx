@@ -29,7 +29,6 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
     }
 
     const { link, pub_date } = article;
-    console.log("%c Line:32 🥖 article", "color:#42b983", article);
     const ico = getChannelFavicon(link);
 
     return (
