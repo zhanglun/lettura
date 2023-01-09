@@ -17,7 +17,7 @@ tauri-build = { version = "1.1.1", features = [] }
 [dependencies]
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
-tauri = { version = "1.1.1", features = ["devtools", "dialog-all", "fs-all", "http-all", "shell-open", "updater"] }
+tauri = { version = "1.1.1", features = ["devtools", "dialog-all", "fs-all", "http-all", "macos-private-api", "shell-open", "updater"] }
 reqwest = { version = "0.11", features = ["json", "socks"] }
 tokio = { version = "1", features = ["full"] }
 rss = { version="2.0", features = ["serde"] }

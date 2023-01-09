@@ -71,7 +71,7 @@ function App() {
       busChannel.emit("goPreviousArticle");
     }
 
-    elem.scrollIntoView({ behavior: "smooth" });
+    // elem.scrollIntoView({ behavior: "smooth" });
   };
 
   const goNext = (elem: HTMLElement, tagName: string) => {
@@ -80,7 +80,7 @@ function App() {
       busChannel.emit("goNextArticle");
     }
 
-    elem.scrollIntoView({ behavior: "smooth" });
+    // elem.scrollIntoView({ behavior: "smooth" });
   };
   const handleKeyPress = (event: KeyboardEvent) => {
     const activeElement = document.activeElement as HTMLElement;
@@ -98,6 +98,8 @@ function App() {
       default:
         break;
     }
+
+    event.preventDefault();
     console.log("event", event);
   };
 

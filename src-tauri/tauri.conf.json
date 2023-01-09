@@ -82,6 +82,7 @@
         "fileDropEnabled": false,
         "transparent": true
       }
-    ]
+    ],
+    "macOSPrivateApi": true
   }
 }

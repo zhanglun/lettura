@@ -106,7 +106,6 @@ export const ArticleList = forwardRef(
           <ArticleItem
             ref={articlesRef[article.uuid]}
             article={article}
-            highlight={store.article?.id === article.id}
             key={article.id}
           />
         );

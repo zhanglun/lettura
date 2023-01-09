@@ -208,6 +208,8 @@ export const ArticleContainer = (): JSX.Element => {
 
       setCurrentIdx(cur);
       store.updateArticleAndIdx(store.articleList[cur] || null);
+
+      // TODO: reset scroll
     }
   };
 
@@ -240,6 +242,11 @@ export const ArticleContainer = (): JSX.Element => {
 
     setCurrentIdx(-1);
   }, [channelUuid]);
+
+  useEffect(() => {
+    // TODO: watch currentIdx, set scrollTop
+    console.log('listRef.current.scrollTop %s', listRef?.current?.scrollTop);
+  }, [store.currentIdx]);
 
   return (
     <div className={styles.article}>

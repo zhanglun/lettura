@@ -6,9 +6,10 @@ import { getChannelFavicon } from "../../helpers/parseXML";
 
 export const ArticleItem = React.forwardRef(
   (props: any, ref: ForwardedRef<HTMLLIElement>) => {
-    const { article, onSelect, highlight } = props;
-    const [readStatus, setReadStatus] = useState(article.read_status);
     const store = useStore();
+    const { article, onSelect } = props;
+    const [highlight, setHighlight] = useState<boolean>();
+    const [readStatus, setReadStatus] = useState(article.read_status);
 
     const updateCurrentArticle = (article: any) => {
       if (article.read_status === 1) {
@@ -31,6 +32,10 @@ export const ArticleItem = React.forwardRef(
     useEffect(() => {
       setReadStatus(article.read_status);
     }, [article.read_status]);
+
+    useEffect(() => {
+      setHighlight(store.article?.id === article.id)
+    }, [store.article, article])
 
     return (
       <li
