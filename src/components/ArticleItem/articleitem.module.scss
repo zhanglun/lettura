@@ -1,7 +1,7 @@
 .item {
   list-style-type: none;
   border-radius: 4px;
-  padding: 8px 8px 8px 30px;
+  padding: 8px 8px 8px 26px;
   display: grid;
   grid-gap: 5px;
   position: relative;
@@ -9,7 +9,7 @@
 
 .dot {
   position: absolute;
-  left: 14px;
+  left: 10px;
   top: 14px;
   width: 8px;
   height: 8px;

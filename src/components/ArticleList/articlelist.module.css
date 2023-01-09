@@ -9,7 +9,7 @@
 
 .list {
   margin: 0;
-  padding: 8px;
+  padding: 8px 0 8px 10px;
   display: grid;
   grid-gap: 6px;
 }
