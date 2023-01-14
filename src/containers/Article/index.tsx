@@ -67,7 +67,7 @@ export const ArticleContainer = (): JSX.Element => {
 
       const options = {
         root: $rootElem,
-        rootMargin: "0",
+        rootMargin: "0px",
         threshold: 1,
       };
 

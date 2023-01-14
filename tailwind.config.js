@@ -3,6 +3,8 @@ module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   darkMode: ['class', '[data-mode="dark"]'],
   theme: {
+    colors: ({colors}) => ({
+      ...colors,
       "royal-blue": {
         50: "#eff4ff",
         100: "#dbe6fe",
@@ -15,6 +17,7 @@ module.exports = {
         800: "#1e4baf",
         900: "#1e408a",
       },
+    }),
     extend: {
     },
   },

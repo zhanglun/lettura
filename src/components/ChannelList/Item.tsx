@@ -11,7 +11,6 @@ import { RouteConfig } from "../../config";
 
 import styles from "./channel.module.scss";
 import { ItemTypes } from "./ItemTypes";
-import { after } from "node:test";
 
 const style: CSSProperties = {
   cursor: "move",
@@ -108,7 +107,7 @@ export const ChannelItem: FC<CardProps> = memo(function Card({
         }
       },
     }),
-    [id, originalIndex, moveCard],
+    [id, originalIndex, moveCard]
   );
 
   const [, drop] = useDrop(
@@ -128,7 +127,7 @@ export const ChannelItem: FC<CardProps> = memo(function Card({
         };
       },
     }),
-    [findCard, moveCard],
+    [findCard, moveCard]
   );
 
   return (
@@ -141,11 +140,13 @@ export const ChannelItem: FC<CardProps> = memo(function Card({
     >
       <NavLink
         className={({ isActive }: any) =>
-          `${styles.item} ${isActive ? styles.itemActive : ""}`
+          `flex items-center h-8 px-2 py-3 rounded-md cursor-pointer ${
+            isActive ? "text-[#fff] bg-royal-blue-600 hover:text-[#fff] hover:bg-royal-blue-600" : " text-slate-600 hover:text-slate-900 hover:bg-stone-100"
+          }`
         }
         to={`${RouteConfig.CHANNEL.replace(
           /:uuid/,
-          channel.uuid,
+          channel.uuid
         )}?channelUuid=${channel.uuid}&feedUrl=${channel.feed_url}`}
       >
         {channel.item_type === "channel" && (
@@ -158,17 +159,14 @@ export const ChannelItem: FC<CardProps> = memo(function Card({
               // @ts-ignore
               e.target.src = defaultSiteIcon;
             }}
-            className={styles.icon}
+            className="h-4 w-4 rounded mr-3"
             alt={channel.title}
           />
         )}
-        {channel.item_type === "folder" && (
-          <span className={styles.icon}>
-            <FolderIcon className={"h-4 w-4"} />
-          </span>
-        )}
-        <span className={styles.name}>{channel.title}</span>
-        {unread > 0 && <span className={styles.count}>{unread}</span>}
+        <span className="grow shrink basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-sm text-[color:currentColor]">
+          {channel.title}
+        </span>
+        {unread > 0 && <span className="px-1 min-w-[1rem] h-4 leading-4 text-center text-[10px] text-white rounded-lg bg-neutral-600">{unread}</span>}
       </NavLink>
     </li>
   );
