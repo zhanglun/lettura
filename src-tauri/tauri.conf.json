@@ -83,6 +83,10 @@
         "transparent": true
       }
     ],
-    "macOSPrivateApi": true
+    "macOSPrivateApi": true,
+    "systemTray": {
+      "iconPath": "icons/icon.png",
+      "iconAsTemplate": true
+    }
   }
 }

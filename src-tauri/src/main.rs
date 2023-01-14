@@ -9,12 +9,13 @@ extern crate diesel_migrations;
 extern crate dotenv;
 
 use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
-use tauri::{Manager, CustomMenuItem, Menu, MenuItem, Submenu};
+use tauri::{Manager, CustomMenuItem, Menu, MenuItem, Submenu, SystemTray, SystemTrayMenu};
 
 pub mod cmd;
 pub mod config;
 pub mod db;
 pub mod feed;
+mod core;
 pub mod folder;
 pub mod models;
 pub mod schema;
@@ -99,31 +100,14 @@ fn main() {
     .run_pending_migrations(MIGRATIONS)
     .expect("Error migrating");
 
+  let tray_menu = SystemTrayMenu::new(); // insert the menu items here
+  let system_tray = SystemTray::new()
+    .with_menu(tray_menu);
+
   tauri::Builder::default()
     .menu(tauri::Menu::os_default(&context.package_info().name))
-    .setup(|app| {
-      // `main` here is the window label; it is defined on the window creation or under `tauri.conf.json`
-      // the default value is `main`. note that it must be unique
-      let main_window = app.get_window("main").unwrap();
-
-      // listen to the `event-name` (emitted on the `main` window)
-      let id = main_window.listen("event-name", |event| {
-        println!("got window event-name with payload {:?}", event.payload());
-      });
-      // unlisten to the event using the `id` returned on the `listen` function
-      // an `once` API is also exposed on the `Window` struct
-
-      // emit the `event-name` event to the `main` window
-      main_window
-        .emit(
-          "event-name",
-          Payload {
-            message: "Tauri is awesome!".into(),
-          },
-        )
-        .unwrap();
-      Ok(())
-    })
+    .system_tray(SystemTray::new().with_menu(core::tray::Tray::tray_menu()))
+    .on_system_tray_event(core::tray::Tray::on_system_tray_event)
     .invoke_handler(tauri::generate_handler![
       cmd::fetch_feed,
       cmd::get_feeds,
@@ -149,6 +133,12 @@ fn main() {
       cmd::move_channel_into_folder,
       cmd::init_process,
     ])
-    .run(context)
-    .expect("error while running tauri Application");
+    .build(tauri::generate_context!())
+    .expect("error while running tauri Application")
+    .run(|_app_handle, event| match event {
+      tauri::RunEvent::ExitRequested { api, .. } => {
+        api.prevent_exit();
+      }
+      _ => {}
+    });
 }
