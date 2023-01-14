@@ -1,14 +1,11 @@
-use tauri::{
-  api, AppHandle, CustomMenuItem, Manager, SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem,
-  SystemTraySubmenu,
-};
-use std::error::Error;
+use tauri::{api, AppHandle, CustomMenuItem, Manager};
+use tauri::{SystemTray, SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem, SystemTraySubmenu};
 
 pub struct Tray {}
 
 impl Tray {
-  pub fn tray_menu() -> SystemTrayMenu {
-    SystemTrayMenu::new()
+  pub fn get_tray_menu() -> SystemTray {
+    let menu = SystemTrayMenu::new()
       .add_item(CustomMenuItem::new("open_window", "Open Window"))
       .add_item(CustomMenuItem::new("hide_window", "Hide Window"))
       .add_native_item(SystemTrayMenuItem::Separator)
@@ -18,7 +15,9 @@ impl Tray {
           .add_item(CustomMenuItem::new("restart_app", "Restart Lettura"))
       ))
       .add_native_item(SystemTrayMenuItem::Separator)
-      .add_item(CustomMenuItem::new("quit", "Quit").accelerator("CmdOrControl+Q"))
+      .add_item(CustomMenuItem::new("quit", "Quit").accelerator("CmdOrControl+Q"));
+
+    SystemTray::new().with_menu(menu)
   }
 
   pub fn on_system_tray_event(app_handle: &AppHandle, event: SystemTrayEvent) {
@@ -26,11 +25,17 @@ impl Tray {
       SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
         "open_window" => {
           let window = app_handle.get_window("main").unwrap();
-          window.show().unwrap();
+
+          if !window.is_visible().unwrap() {
+            window.show().unwrap()
+          }
         },
         "hide_window" => {
           let window = app_handle.get_window("main").unwrap();
-          window.hide().unwrap();
+
+          if window.is_visible().unwrap() {
+            window.hide().unwrap();
+          }
         },
         "restart_app" => api::process::restart(&app_handle.env()),
         "quit" => {
@@ -39,6 +44,7 @@ impl Tray {
         }
         _ => {}
       },
+
       #[cfg(target_os = "windows")]
       SystemTrayEvent::LeftClick { .. } => {
         println!("system tray received a left click");

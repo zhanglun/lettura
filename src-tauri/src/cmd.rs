@@ -6,7 +6,7 @@ use tauri::{command, Manager, Window};
 use uuid::Uuid;
 
 use crate::db;
-use crate::config;
+use crate::core::config;
 use crate::folder;
 use crate::models;
 use crate::feed;
