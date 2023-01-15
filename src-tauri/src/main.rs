@@ -19,7 +19,6 @@ mod schema;
 
 use std::env;
 
-
 pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!("./migrations");
 
 // the payload type must implement `Serialize` and `Clone`.
@@ -40,6 +39,7 @@ fn main() {
 
   tauri::Builder::default()
     .menu(core::menu::AppMenu::get_menu(&context))
+    .on_menu_event(core::menu::AppMenu::on_menu_event)
     .system_tray(core::tray::Tray::get_tray_menu())
     .on_system_tray_event(core::tray::Tray::on_system_tray_event)
     .invoke_handler(tauri::generate_handler![

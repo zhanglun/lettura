@@ -78,6 +78,7 @@ function App() {
       busChannel.emit("goNextArticle");
     }
   };
+
   const handleKeyPress = (event: KeyboardEvent) => {
     const activeElement = document.activeElement as HTMLElement;
     const tagName = activeElement.tagName.toLowerCase();
@@ -86,16 +87,17 @@ function App() {
       case "ArrowDown":
       case "j":
         goNext(activeElement, tagName);
+        event.preventDefault();
         break;
       case "ArrowUp":
       case "k":
         goPrev(activeElement, tagName);
+        event.preventDefault();
         break;
       default:
         break;
     }
 
-    event.preventDefault();
     console.log("event", event);
   };
 

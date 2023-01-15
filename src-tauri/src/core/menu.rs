@@ -1,5 +1,5 @@
-use tauri::{utils::assets::EmbeddedAssets};
-use tauri::{AboutMetadata, CustomMenuItem, Menu, MenuItem, Submenu, Context};
+use tauri::{AppHandle, utils::assets::EmbeddedAssets};
+use tauri::{AboutMetadata, CustomMenuItem, Menu, MenuItem, Submenu, Context, WindowMenuEvent};
 pub struct AppMenu {
 
 }
@@ -27,7 +27,7 @@ impl AppMenu {
           .add_native_item(MenuItem::Hide)
           .add_native_item(MenuItem::HideOthers)
           .add_native_item(MenuItem::Separator)
-          .add_item(CustomMenuItem::new("quit".to_string(), "Quit Lettura"))
+          .add_item(CustomMenuItem::new("quit".to_string(), "Quit Lettura").accelerator("CmdOrControl+Q"))
     );
 
     let file_menu = Submenu::new(
@@ -40,6 +40,9 @@ impl AppMenu {
     let edit_menu = Submenu::new(
         "Edit",
         Menu::new()
+            .add_native_item(MenuItem::Copy)
+            .add_native_item(MenuItem::Paste)
+            .add_native_item(MenuItem::Cut)
             .add_item(CustomMenuItem::new("undo".to_string(), "Undo"))
             .add_item(CustomMenuItem::new("redo".to_string(), "Redo")),
     );
@@ -58,5 +61,18 @@ impl AppMenu {
       .add_submenu(file_menu)
       .add_submenu(edit_menu)
       .add_submenu(window_menu)
+  }
+
+  pub fn on_menu_event(event: WindowMenuEvent) {
+    match event.menu_item_id() {
+      "quit" => {
+        println!("quit");
+        std::process::exit(0);
+      }
+      "close" => {
+        event.window().close().unwrap();
+      }
+      _ => {}
+    }
   }
 }
