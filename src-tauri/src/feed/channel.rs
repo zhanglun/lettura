@@ -8,6 +8,21 @@ use crate::db;
 use crate::models;
 use crate::schema;
 
+
+pub fn get_channel_by_uuid(channel_uuid: String) -> Option<models::Channel> {
+  let mut connection = db::establish_connection();
+  let mut channel = schema::channels::dsl::channels
+    .filter(schema::channels::uuid.eq(&channel_uuid))
+    .load::<models::Channel>(&mut connection)
+    .expect("Expect find channel");
+
+  if channel.len() == 1 {
+    return channel.pop();
+  } else {
+    return None;
+  }
+}
+
 /// delete channel and associated articles
 /// # Example
 /// ```

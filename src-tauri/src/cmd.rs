@@ -8,9 +8,8 @@ use uuid::Uuid;
 use crate::core;
 use crate::db;
 use crate::core::config;
-use crate::folder;
-use crate::models;
 use crate::feed;
+use crate::models;
 
 use std::str::FromStr;
 
@@ -143,29 +142,29 @@ pub async fn fetch_feed(url: String) -> Option<FeedFetchResponse> {
 }
 
 #[command]
-pub async fn get_feeds() -> Vec<feed::FeedItem> {
-  let results = feed::get_feeds();
+pub async fn get_feeds() -> Vec<feed::channel::FeedItem> {
+  let results = feed::channel::get_feeds();
 
   return results;
 }
 
 #[command]
-pub async fn get_channels() -> feed::ChannelQueryResult {
-  let results = feed::get_channels();
+pub async fn get_channels() -> feed::channel::ChannelQueryResult {
+  let results = feed::channel::get_channels();
 
   return results;
 }
 
 #[command]
-pub async fn update_feed_sort(sorts: Vec<feed::FeedSort>) -> usize {
+pub async fn update_feed_sort(sorts: Vec<feed::channel::FeedSort>) -> usize {
   println!("update feed sort");
-  feed::update_feed_sort(sorts);
+  feed::channel::update_feed_sort(sorts);
   1
 }
 
 #[command]
 pub async fn move_channel_into_folder(channel_uuid: String, folder_uuid: String, sort: i32) -> usize {
-  let result = feed::update_feed_meta(channel_uuid, feed::FeedMetaUpdateRequest {
+  let result = feed::channel::update_feed_meta(channel_uuid, feed::channel::FeedMetaUpdateRequest {
     parent_uuid: folder_uuid,
     sort,
   });
@@ -313,7 +312,7 @@ pub async fn add_channel(url: String) -> (usize, String) {
       let channel_uuid = Uuid::new_v4().hyphenated().to_string();
       let channel = create_channel_model(&channel_uuid, &url, &res);
       let articles = create_article_models(&channel_uuid, &url, &res);
-      let res = feed::add_channel(*channel, articles);
+      let res = feed::channel::add_channel(*channel, articles);
 
       (res, String::from(""))
     }
@@ -324,9 +323,9 @@ pub async fn add_channel(url: String) -> (usize, String) {
 }
 
 #[command]
-pub fn get_articles(uuid: String, filter: db::ArticleFilter) -> db::ArticleQueryResult {
+pub fn get_articles(uuid: String, filter: feed::article::ArticleFilter) -> feed::article::ArticleQueryResult {
   println!("get articles from rust");
-  let res = db::get_article(db::ArticleFilter {
+  let res = feed::article::Article::get_article(feed::article::ArticleFilter {
     channel_uuid: Some(uuid),
     read_status: filter.read_status,
     cursor: filter.cursor,
@@ -338,13 +337,13 @@ pub fn get_articles(uuid: String, filter: db::ArticleFilter) -> db::ArticleQuery
 
 #[command]
 pub fn delete_channel(uuid: String) -> usize {
-  let result = feed::delete_channel(uuid);
+  let result = feed::channel::delete_channel(uuid);
 
   result
 }
 
 pub async fn sync_articles(uuid: String) -> (usize, String) {
-  let channel = db::get_channel_by_uuid(String::from(&uuid));
+  let channel = feed::channel::get_channel_by_uuid(String::from(&uuid));
 
   match channel {
     Some(channel) => {
@@ -355,7 +354,7 @@ pub async fn sync_articles(uuid: String) -> (usize, String) {
 
           println!("{:?}", &articles.len());
 
-          let result = db::add_articles(String::from(&channel.uuid), articles);
+          let result = feed::article::Article::add_articles(String::from(&channel.uuid), articles);
 
           (result, String::from(""))
         }
@@ -370,7 +369,7 @@ pub async fn sync_articles(uuid: String) -> (usize, String) {
 
 pub async fn sync_article_in_folder(uuid: String) -> usize {
   let connection = db::establish_connection();
-  let channels = folder::get_channels_in_folders(connection, vec![uuid]);
+  let channels = feed::folder::get_channels_in_folders(connection, vec![uuid]);
 
   println!("{:?}", channels);
 
@@ -425,21 +424,21 @@ pub fn init_process(window: Window) {
 
 #[command]
 pub fn get_unread_total() -> HashMap<String, i32> {
-  let result = feed::get_unread_total();
+  let result = feed::channel::get_unread_total();
 
   result
 }
 
 #[command]
 pub fn update_article_read_status(uuid: String, status: i32) -> usize {
-  let res = db::update_article_read_status(uuid, status);
+  let res = feed::article::Article::update_article_read_status(uuid, status);
 
   res
 }
 
 #[command]
 pub fn mark_all_read(channel_uuid: String) -> usize {
-  let res = db::update_articles_read_status_channel(channel_uuid);
+  let res = feed::article::Article::update_articles_read_status_channel(channel_uuid);
 
   res
 }
@@ -470,17 +469,17 @@ pub fn update_user_config<T>(_user_cfg: T) -> usize {
 
 #[command]
 pub fn create_folder(name: String) -> usize {
-  folder::create_folder(name)
+  feed::folder::create_folder(name)
 }
 
 #[command]
 pub fn delete_folder(uuid: String) -> (usize , usize) {
-  folder::delete_folder(uuid)
+  feed::folder::delete_folder(uuid)
 }
 
 #[command]
 pub fn get_folders() -> Vec<models::Folder> {
-  folder::get_folders()
+  feed::folder::get_folders()
 }
 
 

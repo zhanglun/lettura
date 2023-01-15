@@ -110,7 +110,7 @@ pub fn delete_folder(uuid: String) -> (usize, usize) {
 
     println!("{:?}", channel_uuids);
 
-    let channels = feed::batch_delete_channel(channel_uuids);
+    let channels = feed::channel::batch_delete_channel(channel_uuids);
 
     diesel::delete(schema::folders::dsl::folders.filter(schema::folders::uuid.eq(&uuid)))
       .execute(&mut connection)
@@ -181,7 +181,7 @@ pub fn add_folder_channel_relation(folder_uuid: String, channel_uuid: String) ->
   }
 
   let mut connection = db::establish_connection();
-  let channel = db::get_channel_by_uuid(String::from(&channel_uuid));
+  let channel = feed::channel::get_channel_by_uuid(String::from(&channel_uuid));
   let folder = get_folder_by_uuid(String::from(&folder_uuid));
   let res = channel
     .map(|_channel| {

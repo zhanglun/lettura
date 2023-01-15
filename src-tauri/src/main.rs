@@ -14,7 +14,6 @@ mod cmd;
 mod core;
 mod db;
 mod feed;
-mod folder;
 mod models;
 mod schema;
 
