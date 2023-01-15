@@ -2,9 +2,10 @@ use std::collections::HashMap;
 
 use reqwest;
 use serde::{Serialize};
-use tauri::{command, Manager, Window};
+use tauri::{command, Window};
 use uuid::Uuid;
 
+use crate::core;
 use crate::db;
 use crate::core::config;
 use crate::folder;
@@ -480,6 +481,13 @@ pub fn delete_folder(uuid: String) -> (usize , usize) {
 #[command]
 pub fn get_folders() -> Vec<models::Folder> {
   folder::get_folders()
+}
+
+
+#[command]
+pub async fn get_web_source (url: String) -> Option<String> {
+  let res = core::scraper::PageScraper::fetch_page(&url).await;
+  res
 }
 
 #[cfg(test)]

@@ -77,6 +77,8 @@ mod tests {
     let url = "https://post.smzdm.com/p/a3032dkd/";
     let response = PageScraper::fetch_page(&url).await.unwrap();
 
+    println!("{:?}", response);
+
     PageScraper::from_str(&response);
   }
 }

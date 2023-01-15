@@ -122,3 +122,8 @@ export const updateThreads = async (threads: number): Promise<any> => {
 export const initProcess = async (): Promise<any> => {
   return invoke("init_process", {});
 };
+
+
+export const getPageSources = async (url: string): Promise<string> => {
+  return invoke("get_web_source", { url })
+}

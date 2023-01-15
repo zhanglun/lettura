@@ -17,7 +17,6 @@ mod feed;
 mod folder;
 mod models;
 mod schema;
-mod scraper;
 
 use std::env;
 
@@ -66,6 +65,7 @@ fn main() {
       cmd::get_folders,
       cmd::move_channel_into_folder,
       cmd::init_process,
+      cmd::get_web_source,
     ])
     .build(context)
     .expect("error while running tauri Application")

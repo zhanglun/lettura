@@ -142,7 +142,12 @@ export const ArticleContainer = (): JSX.Element => {
 
   const handleViewSourcePage = () => {
     const { link } = store.article as Article;
+
+    dataAgent.getPageSources(link).then((res) => {
+      console.log(res)
+    })
     // TODO: parse web content
+
   };
 
   const handleCopyLink = () => {
