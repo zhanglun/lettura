@@ -1,5 +1,5 @@
 import { createRoot } from "react-dom/client";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
 
 import reportWebVitals from "./reportWebVitals";
 import { Toaster } from "./components/ui/sonner";
@@ -32,7 +32,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <WelcomePage />,
+        element: <Navigate to={RouteConfig.LOCAL_TODAY} />,
       },
       {
         path: RouteConfig.LOCAL,
