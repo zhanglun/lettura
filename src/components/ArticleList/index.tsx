@@ -13,7 +13,6 @@ export type ArticleListProps = {
   articles: ArticleResItem[];
   size: any;
   setSize: any;
-  isRefreshing?: boolean;
   isReachingEnd?: boolean;
   isEmpty: boolean;
   isLoading: boolean;

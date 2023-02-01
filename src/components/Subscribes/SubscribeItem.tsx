@@ -130,21 +130,6 @@ export const SubscribeItem: FC<CardProps> = memo(
 
     drag(drop(ref));
 
-    const nodeRef = useRef<HTMLDivElement>();
-    const heightRef = useRef<number | undefined>(0);
-
-    useEffect(() => {
-      const node = nodeRef.current;
-
-      console.log(node);
-
-      if (node) {
-        const rect = node.getBoundingClientRect();
-        console.log("rectll", rect);
-        heightRef.current = rect.height;
-      }
-    }, [isExpanded]);
-
     return (
       <div
         ref={ref}

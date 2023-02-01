@@ -5,8 +5,6 @@ import { useMatch } from "react-router-dom";
 import { RouteConfig } from "@/config";
 import { omit, throttle } from "lodash";
 import { ArticleResItem } from "@/db";
-import { useCallback, useState } from "react";
-import { ArticleReadStatus } from "@/typing";
 
 const PAGE_SIZE = 20;
 
@@ -45,7 +43,7 @@ export function useArticle(props: UseArticleProps) {
       cursor: pageIndex + 1,
     }; // SWR key
   };
-  const { data, error, isLoading, isValidating, size, mutate, setSize } =
+  const { data, isLoading, size, mutate, setSize } =
     useSWRInfinite(
       getKey,
       (q) =>
@@ -65,25 +63,18 @@ export function useArticle(props: UseArticleProps) {
     ? data.reduce((acu, cur) => acu.concat(cur.list || []), [])
     : [];
   const articles: ArticleResItem[] = list ? [].concat(list) : [];
-  const isLoadingMore =
-    isLoading || (size > 0 && data && typeof data[size - 1] === "undefined");
   const isEmpty = !isLoading && list.length === 0;
   const isReachingEnd =
     isEmpty || (data && data[data.length - 1]?.list?.length < PAGE_SIZE);
-  const isRefreshing = isValidating && data && data.length === size;
 
   return {
     articles,
-    error,
     isLoading,
     mutate,
-    isValidating,
-    isLoadingMore,
     size,
     setSize,
     isEmpty,
     isReachingEnd,
-    isRefreshing,
     isToday: !!isToday,
     isAll: !!isAll,
     isStarred: !!isStarred,

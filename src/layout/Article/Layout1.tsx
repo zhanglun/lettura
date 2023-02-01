@@ -49,16 +49,12 @@ export const Layout1 = React.memo(
 
     const {
       articles,
-      error,
       isLoading,
-      isValidating,
-      isLoadingMore,
       size,
       mutate,
       setSize,
       isEmpty,
       isReachingEnd,
-      isRefreshing,
       isToday,
       isAll,
       isStarred,
@@ -279,7 +275,6 @@ export const Layout1 = React.memo(
             type={type}
             feedUuid={feedUuid}
             isLoading={isLoading}
-            isRefreshing={isRefreshing}
             isEmpty={isEmpty}
             isReachingEnd={isReachingEnd}
             size={size}
