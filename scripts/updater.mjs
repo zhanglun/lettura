@@ -1,7 +1,8 @@
-import path from "path";
-import { readFileSync, writeFileSync } from "fs";
-import { arch, platform } from "os";
+import path from "node:path";
+import { readFileSync, writeFileSync } from "node:fs";
+import { arch, platform } from "node:os";
 import { getOctokit, context } from "@actions/github";
+import * as core from "@actions/core";
 import { getPackageJson, buildProject, getInfo, execCommand } from '@tauri-apps/action-core'
 
 console.log("start updater");
@@ -93,7 +94,56 @@ export default async function uploadVersionJSON({
 	writeFileSync(versionFile, JSON.stringify(versionContent, null, 2));
 
 	console.log(`Uploading ${versionFile}...`);
+
+  await updateAssets(releaseId, [{ path: versionFile, arch: '' }])
 }
+
+async function updateAssets (releaseId, assets = []) {
+  const existingAssets = (
+    await github.rest.repos.listReleaseAssets({
+      owner: context.repo.owner,
+      repo: context.repo.repo,
+      release_id: releaseId,
+      per_page: 50,
+    })
+  ).data;
+
+  // Determine content-length for header to upload asset
+  const contentLength = (filePath) => fs.statSync(filePath).size;
+
+  for (const asset of assets) {
+    const headers = {
+      'content-type': 'application/zip',
+      'content-length': contentLength(asset.path),
+    };
+
+    const assetName = getAssetName(asset.path);
+
+    const existingAsset = existingAssets.find((a) => a.name === assetName);
+    if (existingAsset) {
+      console.log(`Deleting existing ${assetName}...`);
+      await github.rest.repos.deleteReleaseAsset({
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+        asset_id: existingAsset.id,
+      });
+    }
+
+    console.log(`Uploading ${assetName}...`);
+
+    await github.rest.repos.uploadReleaseAsset({
+      headers,
+      name: assetName,
+      // https://github.com/tauri-apps/tauri-action/pull/45
+      // @ts-ignore error TS2322: Type 'Buffer' is not assignable to type 'string'.
+      data: fs.readFileSync(asset.path),
+      owner: context.repo.owner,
+      repo: context.repo.repo,
+      release_id: releaseId,
+    });
+  }
+}
+
 async function run() {
   const projectPath = path.resolve(
     process.cwd(),
@@ -106,6 +156,8 @@ async function run() {
   console.log(process.argv)
   console.log(body)
   console.log(info)
-  // await uploadVersionJSON({ version: info.version, notes: body, releaseId, artifacts });
+  
+  await uploadVersionJSON({ version: info.version, notes: body, releaseId, artifacts });
 }
+
 run()

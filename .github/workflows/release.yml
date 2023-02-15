@@ -69,5 +69,7 @@ jobs:
           node-version: 'lts/*'
       - name: Create file
         working-directory: ./
+        env:
+          GITHUB_TOKEN: ${{ secrets.LETTURA_TOKEN }}
         run: |
           node ./scripts/updater.mjs --info ${{ needs.release.outputs }}

@@ -95,7 +95,7 @@ pub async fn fetch_feed_item(url: &str) -> Result<Feed, String> {
             }
           }
           Err(error) => {
-            println!("content error{:?}", error);
+            println!("response not OK {:?}", error);
             Err(error.to_string())
           }
         }
@@ -105,7 +105,9 @@ pub async fn fetch_feed_item(url: &str) -> Result<Feed, String> {
       }
     },
     Err(error) => {
-      println!("{:?}", error);
+      println!("ERROR: {:?}", error);
+      println!("URL: {:?}", url);
+
       Err(error.to_string())
     },
   }
