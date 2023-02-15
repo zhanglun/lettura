@@ -67,7 +67,7 @@ export const fetchFeed = async (
   return invoke("fetch_feed", { url });
 };
 
-export const addChannel = async (url: string): Promise<number> => {
+export const addChannel = async (url: string): Promise<[number, string]> => {
   return invoke("add_channel", { url });
 };
 

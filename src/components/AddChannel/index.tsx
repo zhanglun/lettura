@@ -78,7 +78,8 @@ export const AddFeedChannel = (props: any) => {
     dataAgent
       .addChannel(feedUrl)
       .then((res) => {
-        if (res > 0) {
+
+        if (res[1] === '') {
           busChannel.emit("getChannels");
           handleCancel();
         }
