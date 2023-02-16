@@ -23,7 +23,7 @@ import { ItemTypes } from "./ItemTypes";
 
 import styles from "./channel.module.scss";
 
-const ChannelList = (props: any): JSX.Element => {
+const ChannelList = (): JSX.Element => {
   const navigate = useNavigate();
   const addFeedButtonRef = useRef(null);
   const addFolderButtonRef = useRef(null);
@@ -305,25 +305,25 @@ const ChannelList = (props: any): JSX.Element => {
         <div className={styles.toolbar}>
           <AddFeedChannel Aref={addFeedButtonRef} />
           <Tooltip content="Add feed">
-            <span className={styles.toolbarItem} onClick={addFeed}>
+            <span className={styles.toolbarItem} onClick={addFeed} onKeyUp={addFeed}>
               <PlusIcon className={"h-4 w-4"} />
             </span>
           </Tooltip>
           <Tooltip content="Create folder">
             <AddFolder Aref={addFolderButtonRef} />
-            <span className={styles.toolbarItem} onClick={addFolder}>
+            <span className={styles.toolbarItem} onClick={addFolder} onKeyUp={addFolder}>
               <FolderIcon className={"h-4 w-4"} />
             </span>
           </Tooltip>
           <Tooltip content="Refresh">
-            <span className={styles.toolbarItem} onClick={refreshList}>
+            <span className={styles.toolbarItem} onClick={refreshList} onKeyUp={refreshList}>
               <ArrowPathIcon
                 className={`h-4 w-4 ${refreshing ? "spinning" : ""}`}
               />
             </span>
           </Tooltip>
           <Tooltip content="Setting">
-            <span className={styles.toolbarItem} onClick={goToSetting}>
+            <span className={styles.toolbarItem} onClick={goToSetting} onKeyUp={goToSetting}>
               <Cog6ToothIcon className={"h-4 w-4"} />
             </span>
           </Tooltip>

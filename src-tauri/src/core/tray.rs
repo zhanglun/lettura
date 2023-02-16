@@ -26,16 +26,12 @@ impl Tray {
         "open_window" => {
           let window = app_handle.get_window("main").unwrap();
 
-          if !window.is_visible().unwrap() {
-            window.show().unwrap()
-          }
+          window.show().unwrap();
         },
         "hide_window" => {
           let window = app_handle.get_window("main").unwrap();
 
-          if window.is_visible().unwrap() {
-            window.hide().unwrap();
-          }
+          window.hide().unwrap();
         },
         "restart_app" => api::process::restart(&app_handle.env()),
         "quit" => {
