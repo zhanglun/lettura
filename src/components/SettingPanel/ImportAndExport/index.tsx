@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import { Button, Radio, RadioGroup, TextArea } from "@douyinfe/semi-ui";
 import styles from "../setting.module.scss";
 import * as dataAgent from "../../../helpers/dataAgent";
-import { promisePool } from "../../../helpers/promsiePool";
+import { promisePool } from "../../../helpers/promisePool";
 
 export interface ImportItem {
   title: string;

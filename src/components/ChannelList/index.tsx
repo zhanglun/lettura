@@ -14,7 +14,7 @@ import { Channel } from "../../db";
 import { getChannelFavicon } from "../../helpers/parseXML";
 import * as dataAgent from "../../helpers/dataAgent";
 import { busChannel } from "../../helpers/busChannel";
-import { promisePool } from "../../helpers/promsiePool";
+import { promisePool } from "../../helpers/promisePool";
 import { AddFeedChannel } from "../AddChannel";
 import { AddFolder } from "../AddFolder";
 import { ChannelItem } from "./Item";
@@ -82,7 +82,7 @@ const ChannelList = (): JSX.Element => {
   };
 
   const getList = () => {
-    Promise.all([dataAgent.getFeeds(), dataAgent.getUnreadTotal()]).then(
+    return Promise.all([dataAgent.getFeeds(), dataAgent.getUnreadTotal()]).then(
       ([channel, unreadTotal]) => {
         channel.forEach((item) => {
           item.unread = unreadTotal[item.uuid] || 0;
@@ -94,7 +94,9 @@ const ChannelList = (): JSX.Element => {
   };
 
   useEffect(() => {
-    getList();
+    getList().then(() => {
+     refreshList();
+   });
 
     const unsubscribeGetChannels = busChannel.on("getChannels", () => {
       getList();
