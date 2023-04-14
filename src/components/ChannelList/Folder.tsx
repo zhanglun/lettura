@@ -5,10 +5,10 @@ import { FolderIcon } from "@heroicons/react/24/outline";
 
 import styles from "./channel.module.scss";
 import { ItemTypes } from "./ItemTypes";
-import { StoreContext } from "../../context";
 import { RouteConfig } from "../../config";
 
 import { CardProps } from "./Item";
+import {useBearStore} from "../../hooks/useBearStore";
 
 interface Item {
   id: string;
@@ -32,7 +32,7 @@ export const Folder = ({
   findCard,
   type,
 }: CardProps) => {
-  const store = useContext(StoreContext);
+  const store = useBearStore();
   const originalIndex = findCard(id).index;
 
   function selectBackgroundColor(isActive: boolean, canDrop: boolean) {

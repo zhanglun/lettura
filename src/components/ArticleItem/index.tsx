@@ -1,12 +1,12 @@
 import React, { ForwardedRef, useEffect, useState } from "react";
 import Dayjs from "dayjs";
-import { useStore } from "../../hooks/useStore";
+import { useBearStore } from "../../hooks/useBearStore";
 import styles from "./articleitem.module.scss";
 import { getChannelFavicon } from "../../helpers/parseXML";
 
 export const ArticleItem = React.forwardRef(
   (props: any, ref: ForwardedRef<HTMLLIElement>) => {
-    const store = useStore();
+    const store = useBearStore();
     const { article, onSelect } = props;
     const [highlight, setHighlight] = useState<boolean>();
     const [readStatus, setReadStatus] = useState(article.read_status);

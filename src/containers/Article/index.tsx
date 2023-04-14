@@ -4,7 +4,7 @@ import { ArticleList, ArticleListRefType } from "../../components/ArticleList";
 import { ArticleView } from "../../components/ArticleView";
 import { Button, Dropdown, Toast, Tooltip } from "@douyinfe/semi-ui";
 import * as dataAgent from "../../helpers/dataAgent";
-import { useStore } from "../../hooks/useStore";
+import { useBearStore } from "../../hooks/useBearStore";
 import styles from "./index.module.scss";
 import {
   ArrowPathIcon,
@@ -26,7 +26,7 @@ function useQuery() {
 export const ArticleContainer = (): JSX.Element => {
   // @ts-ignore
   const params: { name: string } = useParams();
-  const store = useStore();
+  const store = useBearStore();
   const query = useQuery();
   const feedUrl = query.get("feedUrl");
   const type = query.get("type");

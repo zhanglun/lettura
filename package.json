@@ -22,7 +22,8 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.6.1",
     "tailwindcss": "^3.2.4",
-    "web-vitals": "^3.1.0"
+    "web-vitals": "^3.1.0",
+    "zustand": "^4.3.7"
   },
   "devDependencies": {
     "@actions/core": "^1.10.0",

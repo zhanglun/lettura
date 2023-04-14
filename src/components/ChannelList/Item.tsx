@@ -3,7 +3,6 @@ import { memo, useContext } from "react";
 import { NavLink } from "react-router-dom";
 import { useDrag, useDrop } from "react-dnd";
 import { FolderIcon } from "@heroicons/react/24/outline";
-import { StoreContext } from "../../context";
 import defaultSiteIcon from "./default.png";
 import { Channel } from "../../db";
 import * as dataAgent from "../../helpers/dataAgent";
@@ -11,6 +10,7 @@ import { RouteConfig } from "../../config";
 
 import styles from "./channel.module.scss";
 import { ItemTypes } from "./ItemTypes";
+import {useBearStore} from "../../hooks/useBearStore";
 
 const style: CSSProperties = {
   cursor: "move",
@@ -54,7 +54,7 @@ export const ChannelItem: FC<CardProps> = memo(function Card({
   findCard,
   afterFn,
 }) {
-  const store = useContext(StoreContext);
+  const store = useBearStore();
   const originalIndex = findCard(id).index;
   const [{ opacity }, drag] = useDrag(
     () => ({

@@ -4,7 +4,6 @@ import { Input, TextArea, Modal, Button, Toast } from "@douyinfe/semi-ui";
 import * as dataAgent from "../../helpers/dataAgent";
 import styles from "./index.module.css";
 import { busChannel } from "../../helpers/busChannel";
-
 export const AddFeedChannel = (props: any) => {
   const { showStatus, showModal, hideModal, toggleModal } = useModal();
   const [feedUrl, setFeedUrl] = useState("https://feeds.appinn.com/appinns/");

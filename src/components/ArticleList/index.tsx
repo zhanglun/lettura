@@ -10,7 +10,7 @@ import React, {
 import { ArticleItem } from "../ArticleItem";
 import { Loading } from "../Loading";
 import { Article } from "../../db";
-import { useStore } from "../../hooks/useStore";
+import { useBearStore } from "../../hooks/useBearStore";
 import * as dataAgent from "../../helpers/dataAgent";
 import styles from "./articlelist.module.css";
 import { busChannel } from "../../helpers/busChannel";
@@ -35,7 +35,7 @@ export const ArticleList = forwardRef(
     ref: ForwardedRef<ArticleListRefType>,
   ): JSX.Element => {
     const { feedUuid } = props;
-    const store = useStore();
+    const store = useBearStore();
     const [articleList, setArticleList] = useState<Article[]>([]);
     const [loading, setLoading] = useState(false);
     const innerRef = useRef<HTMLDivElement>(null);

@@ -20,9 +20,7 @@ import { AddFolder } from "../AddFolder";
 import { ChannelItem } from "./Item";
 import { Folder } from "./Folder";
 import { ItemTypes } from "./ItemTypes";
-
 import styles from "./channel.module.scss";
-
 const ChannelList = (): JSX.Element => {
   const navigate = useNavigate();
   const addFeedButtonRef = useRef(null);

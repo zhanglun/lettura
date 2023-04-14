@@ -29,6 +29,7 @@ specifiers:
   typescript: ^4.9.4
   vite: ^4.0.4
   web-vitals: ^3.1.0
+  zustand: ^4.3.7
 
 dependencies:
   '@douyinfe/semi-ui': 2.26.0_biqbaboplfbrettd7655fr4n2y
@@ -44,6 +45,7 @@ dependencies:
   react-router-dom: 6.6.1_biqbaboplfbrettd7655fr4n2y
   tailwindcss: 3.2.4_postcss@8.4.20
   web-vitals: 3.1.0
+  zustand: 4.3.7_react@18.2.0
 
 devDependencies:
   '@actions/core': 1.10.0
@@ -2079,6 +2081,14 @@ packages:
       picocolors: 1.0.0
     dev: true
 
+  /use-sync-external-store/1.2.0_react@18.2.0:
+    resolution: {integrity: sha512-eEgnFxGQ1Ife9bzYs6VLi8/4X6CObHMw9Qr9tPY43iKwsPw8xE8+EFsf/2cFZ5S3esXgpWgtSCtLNS41F+sKPA==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      react: 18.2.0
+    dev: false
+
   /util-deprecate/1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
 
@@ -2169,6 +2179,22 @@ packages:
   /yaml/1.10.2:
     resolution: {integrity: sha512-r3vXyErRCYJ7wg28yvBY5VSoAF8ZvlcW9/BwUzEtUsjvX/DKs24dIkuwjtuprwJJHsbyUbLApepYTR1BN4uHrg==}
     engines: {node: '>= 6'}
+
+  /zustand/4.3.7_react@18.2.0:
+    resolution: {integrity: sha512-dY8ERwB9Nd21ellgkBZFhudER8KVlelZm8388B5nDAXhO/+FZDhYMuRnqDgu5SYyRgz/iaf8RKnbUs/cHfOGlQ==}
+    engines: {node: '>=12.7.0'}
+    peerDependencies:
+      immer: '>=9.0'
+      react: '>=16.8'
+    peerDependenciesMeta:
+      immer:
+        optional: true
+      react:
+        optional: true
+    dependencies:
+      react: 18.2.0
+      use-sync-external-store: 1.2.0_react@18.2.0
+    dev: false
 
   registry.npmmirror.com/@tailwindcss/typography/0.5.9_tailwindcss@3.2.4:
     resolution: {integrity: sha512-t8Sg3DyynFysV9f4JDOVISGsjazNb48AeIYQwcL+Bsq5uf4RYL75C1giZ43KISjeDGBaTN3Kxh7Xj/vRSMJUUg==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@tailwindcss/typography/-/typography-0.5.9.tgz}

@@ -1,22 +1,27 @@
-import React, { useEffect, useState } from "react";
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
-import { appWindow } from "@tauri-apps/api/window";
-import { Outlet } from "react-router-dom";
-import { StoreContext } from "./context";
-import { ChannelList } from "./components/ChannelList";
-import { useStore } from "./hooks/useStore";
+import React, {useEffect, useState} from "react";
+import {DndProvider} from "react-dnd";
+import {HTML5Backend} from "react-dnd-html5-backend";
+import {appWindow} from "@tauri-apps/api/window";
+import {Outlet} from "react-router-dom";
+import {StoreContext} from "./context";
+import {ChannelList} from "./components/ChannelList";
+import {useBearStore} from "./hooks/useBearStore";
 import * as dataAgent from "./helpers/dataAgent";
 import styles from "./App.module.css";
 import "./styles/index.global.scss";
 import "./App.css";
-import { Article } from "./db";
-import { busChannel } from "./helpers/busChannel";
+import {Article} from "./db";
+import {busChannel} from "./helpers/busChannel";
 
 function App() {
-  const store = useStore();
+  const store = useBearStore();
+  const bearStore = useBearStore((state) => state);
 
-  const [filter, setFilter] = useState({ ...store.currentFilter });
+  console.log("===> bearStore ---> ", bearStore);
+
+  // const [filter, setFilter] = useState({ ...store.currentFilter });
+  const filter = bearStore.currentFilter;
+  const setFilter = bearStore.setFilter;
   const [article, setArticle] = useState(store.article);
   const [currentIdx, setCurrentIdx] = useState(-1);
   const [channel, setChannel] = useState(store.channel);
@@ -109,29 +114,12 @@ function App() {
   }, []);
 
   return (
-    <StoreContext.Provider
-      value={{
-        channel: channel,
-        setChannel,
-        article: article,
-        updateArticleAndIdx,
-        articleList: articleList,
-        setArticleList,
-        setArticle,
-        currentIdx,
-        setCurrentIdx,
-        filterList: store.filterList,
-        currentFilter: filter,
-        setFilter,
-      }}
-    >
-      <DndProvider backend={HTML5Backend}>
-        <div className={styles.container}>
-          <ChannelList />
-          <Outlet />
-        </div>
-      </DndProvider>
-    </StoreContext.Provider>
+    <DndProvider backend={HTML5Backend}>
+      <div className={styles.container}>
+        <ChannelList/>
+        <Outlet/>
+      </div>
+    </DndProvider>
   );
 }
 
