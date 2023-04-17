@@ -21,6 +21,8 @@ import { ChannelItem } from "./Item";
 import { Folder } from "./Folder";
 import { ItemTypes } from "./ItemTypes";
 import styles from "./channel.module.scss";
+import pLimit from "p-limit";
+
 const ChannelList = (): JSX.Element => {
   const navigate = useNavigate();
   const addFeedButtonRef = useRef(null);
@@ -92,9 +94,7 @@ const ChannelList = (): JSX.Element => {
   };
 
   useEffect(() => {
-    getList().then(() => {
-     refreshList();
-   });
+    getList();
 
     const unsubscribeGetChannels = busChannel.on("getChannels", () => {
       getList();
@@ -126,7 +126,7 @@ const ChannelList = (): JSX.Element => {
     return dataAgent
       .syncArticlesWithChannelUuid(type, uuid)
       .then((res) => {
-        getList();
+        // getList();
         console.log(res);
         return res;
       })
@@ -139,17 +139,20 @@ const ChannelList = (): JSX.Element => {
   };
 
   const refreshList = () => {
+    console.log("%c Line:144 🍷 refreshList", "color:#42b983", "refreshList");
     setRefreshing(true);
 
-    const fns = (channelList || []).map((channel: any) => {
-      return loadAndUpdate(channel.item_type, channel.uuid);
-    });
 
     dataAgent.getUserConfig().then((config) => {
       const { threads = 5 } = config;
-      const pool = promisePool({ limit: threads, fns });
+      const limit = pLimit(threads);
+      const fns = (channelList || []).map((channel: any) => {
+        return limit(() => loadAndUpdate(channel.item_type, channel.uuid));
+      });
 
-      pool.run().then((res) => {
+      console.log('fns.length ===> ', fns.length);
+
+      Promise.all(fns).then((res) => {
         window.setTimeout(() => {
           setRefreshing(false);
           setDone(0);
@@ -204,8 +207,8 @@ const ChannelList = (): JSX.Element => {
   const [, drop] = useDrop(
     () => ({
       accept: ItemTypes.BOX,
-      collect: (moniter: DropTargetMonitor) => ({
-        isOver: moniter.isOver(),
+      collect: (monitor: DropTargetMonitor) => ({
+        isOver: monitor.isOver(),
       }),
       drop(item: any, monitor) {
         const dropResult = monitor.getDropResult() as any;
