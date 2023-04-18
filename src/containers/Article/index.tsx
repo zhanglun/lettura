@@ -40,6 +40,14 @@ export const ArticleContainer = (): JSX.Element => {
     currentIdx: state.currentIdx,
     setCurrentIdx: state.setCurrentIdx,
   }));
+
+  const unsub2 = useBearStore.subscribe((state) => state.currentIdx, (idx, previousIdx) => {
+    if (idx < previousIdx) {
+      calculateItemPosition("up", store.articleList[idx]);
+    } else {
+      calculateItemPosition("down", store.articleList[idx]);
+    }
+  });
   const query = useQuery();
   const feedUrl = query.get("feedUrl");
   const type = query.get("type");
@@ -245,19 +253,19 @@ export const ArticleContainer = (): JSX.Element => {
     resetScrollTop();
   }, []);
 
-  useEffect(() => {
-    const unsubscribeGoPrev = busChannel.on("goPreviousArticle", () => {
-      handleViewPrevious();
-    });
-    const unsubscribeGoNext = busChannel.on("goNextArticle", () => {
-      handleViewNext();
-    });
+  // useEffect(() => {
+  //   const unsubscribeGoPrev = busChannel.on("goPreviousArticle", () => {
+  //     handleViewPrevious();
+  //   });
+  //   const unsubscribeGoNext = busChannel.on("goNextArticle", () => {
+  //     handleViewNext();
+  //   });
 
-    return () => {
-      unsubscribeGoPrev();
-      unsubscribeGoNext();
-    };
-  }, [currentIdx]);
+  //   return () => {
+  //     unsubscribeGoPrev();
+  //     unsubscribeGoNext();
+  //   };
+  // }, [currentIdx]);
 
   useEffect(() => {
     if (listRef.current !== null) {

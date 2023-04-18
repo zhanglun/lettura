@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { subscribeWithSelector } from 'zustand/middleware';
 import { Article, Channel } from "../db";
 import { busChannel } from "../helpers/busChannel";
 import * as dataAgent from "../helpers/dataAgent"
@@ -24,7 +25,7 @@ interface BearStore {
   setFilter: any;
 }
 
-export const useBearStore = create<BearStore>()((set, get) => {
+export const useBearStore = create<BearStore>()(subscribeWithSelector((set, get) => {
   return {
     channel: null,
     setChannel: (channel: Channel) => {
@@ -99,12 +100,9 @@ export const useBearStore = create<BearStore>()((set, get) => {
         cur = currentIdx - 1;
       }
 
-      // set((state) => ({
-      //   currentIdx: cur,
-      //   article: articleList[cur]
-      // }));
       get().updateArticleAndIdx(articleList[cur], cur);
     },
+
     goNextArticle() {
       console.log("%c Line:108 🍐 goNextArticle", "color:#6ec1c2", "goNextArticle");
       let cur = -1;
@@ -114,11 +112,6 @@ export const useBearStore = create<BearStore>()((set, get) => {
       if (currentIdx < articleList.length - 1) {
         cur = currentIdx + 1;
       }
-
-      // set((state) => ({
-      //   currentIdx: cur,
-      //   article: articleList[cur]
-      // }));
 
       get().updateArticleAndIdx(articleList[cur], cur);
     },
@@ -154,4 +147,4 @@ export const useBearStore = create<BearStore>()((set, get) => {
       }))
     }
   };
-});
+}));
