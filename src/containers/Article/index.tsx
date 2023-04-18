@@ -26,7 +26,20 @@ function useQuery() {
 export const ArticleContainer = (): JSX.Element => {
   // @ts-ignore
   const params: { name: string } = useParams();
-  const store = useBearStore();
+  const store = useBearStore(state => ({
+    article: state.article,
+    articleList: state.articleList,
+    setArticle: state.setArticle,
+    updateArticleAndIdx: state.updateArticleAndIdx,
+    channel: state.channel,
+
+    filterList: state.filterList,
+    currentFilter: state.currentFilter,
+    setFilter: state.setFilter,
+
+    currentIdx: state.currentIdx,
+    setCurrentIdx: state.setCurrentIdx,
+  }));
   const query = useQuery();
   const feedUrl = query.get("feedUrl");
   const type = query.get("type");

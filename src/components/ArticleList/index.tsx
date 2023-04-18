@@ -35,7 +35,10 @@ export const ArticleList = forwardRef(
     ref: ForwardedRef<ArticleListRefType>,
   ): JSX.Element => {
     const { feedUuid } = props;
-    const store = useBearStore();
+    const store = useBearStore(state => ({
+      currentFilter: state.currentFilter,
+      setArticleList: state.setArticleList,
+    }));
     const [articleList, setArticleList] = useState<Article[]>([]);
     const [loading, setLoading] = useState(false);
     const innerRef = useRef<HTMLDivElement>(null);

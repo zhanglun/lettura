@@ -12,7 +12,20 @@ import "./App.css";
 import {Article} from "./db";
 import {busChannel} from "./helpers/busChannel";
 
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { RouteConfig } from "./config";
+import { ArticleContainer } from "./containers/Article";
+import { SettingContainer } from "./containers/Setting";
+
+import { General } from "./components/SettingPanel/General";
+import { FeedManager } from "./components/SettingPanel/FeedManager";
+import { ImportAndExport } from "./components/SettingPanel/ImportAndExport";
+import { WelcomePage } from "./components/WelcomePage";
+
+let a = 0;
+
 function App() {
+  a += 1;
   const store = useBearStore(state => ({
     goPreviousArticle: state.goPreviousArticle,
     goNextArticle: state.goNextArticle,
@@ -42,7 +55,7 @@ function App() {
     if (tagName === "a") {
     } else if (tagName === "li") {
       store.goPreviousArticle();
-      busChannel.emit("goPreviousArticle");
+      // busChannel.emit("goPreviousArticle");
     }
   };
 
@@ -50,7 +63,7 @@ function App() {
     if (tagName === "a") {
     } else if (tagName === "li") {
       store.goNextArticle();
-      busChannel.emit("goNextArticle");
+      // busChannel.emit("goNextArticle");
     }
   };
 
@@ -79,17 +92,40 @@ function App() {
   useEffect(() => {
     document.addEventListener("keydown", (e) => handleKeyPress(e));
     return () => {
+      console.log('remove listener');
       document.removeEventListener("keydown", (e) => handleKeyPress(e));
     };
   }, []);
 
   return (
-    <DndProvider backend={HTML5Backend}>
-      <div className={styles.container}>
-        <ChannelList/>
-        <Outlet/>
-      </div>
-    </DndProvider>
+    <BrowserRouter>
+      <Routes>
+        <Route path={"/"} element={
+          <DndProvider backend={HTML5Backend}>
+            <div className={styles.container}>
+              {a}
+              <ChannelList/>
+              <Outlet/>
+            </div>
+          </DndProvider>
+        }>
+          <Route path={"/"} element={<WelcomePage />} />
+          <Route path={RouteConfig.CHANNEL} element={<ArticleContainer />} />
+          <Route path={RouteConfig.SETTINGS} element={<SettingContainer />}>
+            <Route path={RouteConfig.SETTINGS_GENERAL} element={<General />} />
+            <Route
+              path={RouteConfig.SETTINGS_FEED_MANAGER}
+              element={<FeedManager />}
+            />
+            <Route
+              path={RouteConfig.SETTINGS_IMPORT}
+              element={<ImportAndExport />}
+            />
+          </Route>
+        </Route>
+      </Routes>
+    </BrowserRouter>
+
   );
 }
 

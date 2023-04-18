@@ -55,6 +55,8 @@ export const useBearStore = create<BearStore>()((set, get) => {
         idx = articleList.findIndex((item) => item.uuid === article.uuid);
       }
 
+      console.log("%c Line:59 🍬 article.read_status", "color:#fca650", article.read_status);
+
       if (article.read_status === 1) {
         dataAgent.updateArticleReadStatus(article.uuid, 2).then((res) => {
           if (res) {
@@ -97,12 +99,14 @@ export const useBearStore = create<BearStore>()((set, get) => {
         cur = currentIdx - 1;
       }
 
-      set((state) => ({
-        currentIdx: cur,
-        article: articleList[cur]
-      }));
+      // set((state) => ({
+      //   currentIdx: cur,
+      //   article: articleList[cur]
+      // }));
+      get().updateArticleAndIdx(articleList[cur], cur);
     },
     goNextArticle() {
+      console.log("%c Line:108 🍐 goNextArticle", "color:#6ec1c2", "goNextArticle");
       let cur = -1;
       let currentIdx = get().currentIdx;
       let articleList = get().articleList;
@@ -111,10 +115,12 @@ export const useBearStore = create<BearStore>()((set, get) => {
         cur = currentIdx + 1;
       }
 
-      set((state) => ({
-        currentIdx: cur,
-        article: articleList[cur]
-      }));
+      // set((state) => ({
+      //   currentIdx: cur,
+      //   article: articleList[cur]
+      // }));
+
+      get().updateArticleAndIdx(articleList[cur], cur);
     },
 
     currentIdx: 0,

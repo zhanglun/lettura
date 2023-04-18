@@ -54,7 +54,9 @@ export const ChannelItem: FC<CardProps> = memo(function Card({
   findCard,
   afterFn,
 }) {
-  const store = useBearStore();
+  const store = useBearStore(state => ({
+    setChannel: state.setChannel,
+  }));
   const originalIndex = findCard(id).index;
   const [{ opacity }, drag] = useDrag(
     () => ({

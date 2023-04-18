@@ -32,7 +32,9 @@ export const Folder = ({
   findCard,
   type,
 }: CardProps) => {
-  const store = useBearStore();
+  const store = useBearStore(state => ({
+    setChannel: state.setChannel,
+  }));
   const originalIndex = findCard(id).index;
 
   function selectBackgroundColor(isActive: boolean, canDrop: boolean) {
