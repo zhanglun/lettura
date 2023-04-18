@@ -6,7 +6,10 @@ import { getChannelFavicon } from "../../helpers/parseXML";
 
 export const ArticleItem = React.forwardRef(
   (props: any, ref: ForwardedRef<HTMLLIElement>) => {
-    const store = useBearStore();
+    const store = useBearStore(state => ({
+      updateArticleAndIdx: state.updateArticleAndIdx,
+      article: state.article,
+    }));
     const { article, onSelect } = props;
     const [highlight, setHighlight] = useState<boolean>();
     const [readStatus, setReadStatus] = useState(article.read_status);

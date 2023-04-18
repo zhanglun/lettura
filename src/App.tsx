@@ -3,7 +3,6 @@ import {DndProvider} from "react-dnd";
 import {HTML5Backend} from "react-dnd-html5-backend";
 import {appWindow} from "@tauri-apps/api/window";
 import {Outlet} from "react-router-dom";
-import {StoreContext} from "./context";
 import {ChannelList} from "./components/ChannelList";
 import {useBearStore} from "./hooks/useBearStore";
 import * as dataAgent from "./helpers/dataAgent";
@@ -14,43 +13,12 @@ import {Article} from "./db";
 import {busChannel} from "./helpers/busChannel";
 
 function App() {
-  const store = useBearStore();
-  const bearStore = useBearStore((state) => state);
+  const store = useBearStore(state => ({
+    goPreviousArticle: state.goPreviousArticle,
+    goNextArticle: state.goNextArticle,
+  }));
 
-  console.log("===> bearStore ---> ", bearStore);
-
-  // const [filter, setFilter] = useState({ ...store.currentFilter });
-  const filter = bearStore.currentFilter;
-  const setFilter = bearStore.setFilter;
-  const [article, setArticle] = useState(store.article);
-  const [currentIdx, setCurrentIdx] = useState(-1);
-  const [channel, setChannel] = useState(store.channel);
-  const [articleList, setArticleList] = useState(store.articleList);
-
-  const updateArticleAndIdx = (article: Article, idx?: number) => {
-    if (idx === undefined || idx <= 0) {
-      idx = articleList.findIndex((item) => item.uuid === article.uuid);
-    }
-
-    setCurrentIdx(idx);
-    setArticle(article);
-
-    if (article.read_status === 1) {
-      dataAgent.updateArticleReadStatus(article.uuid, 2).then((res) => {
-        if (res) {
-          busChannel.emit("updateChannelUnreadCount", {
-            uuid: article.channel_uuid,
-            action: "decrease",
-            count: 1,
-          });
-
-          article.read_status = 2;
-
-          setArticle(article);
-        }
-      });
-    }
-  };
+  console.log("%c Line:17 🥓 store", "color:#42b983", store);
 
   useEffect(() => {
     document
@@ -73,6 +41,7 @@ function App() {
   const goPrev = (elem: HTMLElement, tagName: string) => {
     if (tagName === "a") {
     } else if (tagName === "li") {
+      store.goPreviousArticle();
       busChannel.emit("goPreviousArticle");
     }
   };
@@ -80,6 +49,7 @@ function App() {
   const goNext = (elem: HTMLElement, tagName: string) => {
     if (tagName === "a") {
     } else if (tagName === "li") {
+      store.goNextArticle();
       busChannel.emit("goNextArticle");
     }
   };

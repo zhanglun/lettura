@@ -1,5 +1,7 @@
-import {create, State} from "zustand";
+import { create } from "zustand";
 import { Article, Channel } from "../db";
+import { busChannel } from "../helpers/busChannel";
+import * as dataAgent from "../helpers/dataAgent"
 
 interface BearStore {
   channel: Channel | null;
@@ -11,6 +13,8 @@ interface BearStore {
   setArticleList: (list: Article[]) => void;
 
   updateArticleAndIdx: (article: Article, idx?: number) => void;
+  goPreviousArticle: any;
+  goNextArticle: any;
 
   currentIdx: number;
   setCurrentIdx: (idx: number) => void;
@@ -20,7 +24,7 @@ interface BearStore {
   setFilter: any;
 }
 
-export const useBearStore = create<BearStore>()((set) => {
+export const useBearStore = create<BearStore>()((set, get) => {
   return {
     channel: null,
     setChannel: (channel: Channel) => {
@@ -44,21 +48,73 @@ export const useBearStore = create<BearStore>()((set) => {
     },
 
     updateArticleAndIdx: (article: Article, idx?: number) => {
-      set(() => {
-        console.log('update Article and Idx', idx);
+      console.log('update Article and Idx', idx);
+      let articleList = get().articleList;
 
-        if (idx) {
-          return {
-            article,
-            currentIdx: idx,
+      if (idx === undefined || idx <= 0) {
+        idx = articleList.findIndex((item) => item.uuid === article.uuid);
+      }
+
+      if (article.read_status === 1) {
+        dataAgent.updateArticleReadStatus(article.uuid, 2).then((res) => {
+          if (res) {
+            busChannel.emit("updateChannelUnreadCount", {
+              uuid: article.channel_uuid,
+              action: "decrease",
+              count: 1,
+            });
+
+            article.read_status = 2;
+
+            set(() => ({
+              article,
+              currentIdx: idx,
+            }))
           }
-        } else {
-          return {
-            article,
-            currentIdx: idx,
-          }
-        }
-      })
+        });
+      }
+
+      if (idx) {
+        set(() => ({
+          article,
+          currentIdx: idx,
+        }))
+      } else {
+        set(() => ({
+          article,
+        }))
+      }
+    },
+
+    goPreviousArticle(){
+      let cur = -1;
+      let currentIdx = get().currentIdx;
+      let articleList = get().articleList;
+
+      if (currentIdx <= 0) {
+        cur = 0;
+      } else {
+        cur = currentIdx - 1;
+      }
+
+      set((state) => ({
+        currentIdx: cur,
+        article: articleList[cur]
+      }));
+    },
+    goNextArticle() {
+      let cur = -1;
+      let currentIdx = get().currentIdx;
+      let articleList = get().articleList;
+
+      if (currentIdx < articleList.length - 1) {
+        cur = currentIdx + 1;
+      }
+
+      set((state) => ({
+        currentIdx: cur,
+        article: articleList[cur]
+      }));
     },
 
     currentIdx: 0,
