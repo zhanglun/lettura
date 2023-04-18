@@ -26,7 +26,7 @@ function useQuery() {
 export const ArticleContainer = (): JSX.Element => {
   // @ts-ignore
   const params: { name: string } = useParams();
-  const store = useBearStore(state => ({
+  const store = useBearStore((state) => ({
     article: state.article,
     articleList: state.articleList,
     setArticle: state.setArticle,
@@ -41,13 +41,6 @@ export const ArticleContainer = (): JSX.Element => {
     setCurrentIdx: state.setCurrentIdx,
   }));
 
-  const unsub2 = useBearStore.subscribe((state) => state.currentIdx, (idx, previousIdx) => {
-    if (idx < previousIdx) {
-      calculateItemPosition("up", store.articleList[idx]);
-    } else {
-      calculateItemPosition("down", store.articleList[idx]);
-    }
-  });
   const query = useQuery();
   const feedUrl = query.get("feedUrl");
   const type = query.get("type");
@@ -94,7 +87,7 @@ export const ArticleContainer = (): JSX.Element => {
 
       const callback = (
         entries: IntersectionObserverEntry[],
-        observer: IntersectionObserver,
+        observer: IntersectionObserver
       ) => {
         if (entries[0].intersectionRatio < 1) {
           listRef.current?.parentElement?.classList.add("is-scroll");
@@ -127,7 +120,7 @@ export const ArticleContainer = (): JSX.Element => {
       dataAgent
         .syncArticlesWithChannelUuid(
           store.channel?.item_type as string,
-          channelUuid as string,
+          channelUuid as string
         )
         .then((res) => {
           const [num, message] = res;
@@ -165,10 +158,9 @@ export const ArticleContainer = (): JSX.Element => {
     const { link } = store.article as Article;
 
     dataAgent.getPageSources(link).then((res) => {
-      console.log(res)
-    })
+      console.log(res);
+    });
     // TODO: parse web content
-
   };
 
   const handleCopyLink = () => {
@@ -185,7 +177,7 @@ export const ArticleContainer = (): JSX.Element => {
       },
       function (err) {
         console.error("Async: Could not copy text: ", err);
-      },
+      }
     );
   };
 
@@ -222,12 +214,9 @@ export const ArticleContainer = (): JSX.Element => {
       cur = currentIdx - 1;
     }
 
-    calculateItemPosition('up', store.articleList[cur] || null);
+    calculateItemPosition("up", store.articleList[cur] || null);
 
-    setTimeout(() => {
-      setCurrentIdx(cur);
-      store.updateArticleAndIdx(store.articleList[cur] || null);
-    }, 50)
+    store.updateArticleAndIdx(store.articleList[cur] || null, cur);
   };
 
   const handleViewNext = () => {
@@ -236,14 +225,30 @@ export const ArticleContainer = (): JSX.Element => {
     if (currentIdx < store.articleList.length - 1) {
       cur = currentIdx + 1;
 
-      calculateItemPosition('down', store.articleList[cur] || null);
+      calculateItemPosition("down", store.articleList[cur] || null);
 
-      setTimeout(() => {
-        setCurrentIdx(cur);
-        store.updateArticleAndIdx(store.articleList[cur] || null);
-      }, 50);
+      store.updateArticleAndIdx(store.articleList[cur] || null, cur);
     }
   };
+
+  useEffect(() => {
+    const unsub2 = useBearStore.subscribe(
+      (state) => state.currentIdx,
+      (idx, previousIdx) => {
+        if (idx <= previousIdx) {
+          calculateItemPosition("up", store.articleList[idx]);
+        } else {
+          console.log("往下", store.articleList[idx])
+          calculateItemPosition("down", store.articleList[idx]);
+        }
+      }
+    );
+
+    return () => {
+      console.log("clean!!!!");
+      unsub2();
+    };
+  }, [store.articleList])
 
   useEffect(() => {
     resetScrollTop();
@@ -275,29 +280,41 @@ export const ArticleContainer = (): JSX.Element => {
     setCurrentIdx(-1);
   }, [channelUuid]);
 
-  function getOffsetTopWithParent (child: HTMLElement, parent: HTMLElement) {
+  function getOffsetTopWithParent(child: HTMLElement, parent: HTMLElement) {}
 
-  }
-
-  function calculateItemPosition(direction: 'up' | 'down', article: Article | null) {
+  function calculateItemPosition(
+    direction: "up" | "down",
+    article: Article | null
+  ) {
     if (!article || !article.uuid) {
-      return
+      return;
     }
 
-    const $li = document.getElementById(article.uuid)
-    const bounding = $li?.getBoundingClientRect()
+    const $li = document.getElementById(article.uuid);
+    const bounding = $li?.getBoundingClientRect();
     const winH = window.innerHeight;
 
-    if ((direction === 'up' || direction === 'down') && bounding && bounding.top < 58) {
-      const offset = 58 - bounding.top
-      const scrollTop = (listRef?.current?.scrollTop || 0) - offset
+    if (
+      (direction === "up" || direction === "down") &&
+      bounding &&
+      bounding.top < 58
+    ) {
+      const offset = 58 - bounding.top;
+      const scrollTop = (listRef?.current?.scrollTop || 0) - offset;
 
-      listRef?.current?.scrollTo(0, scrollTop)
-    } else if ((direction === 'up' || direction === 'down') && bounding && bounding.bottom > winH) {
-      const offset = bounding.bottom - winH
-      const scrollTop = (listRef?.current?.scrollTop || 0) + offset
+      console.log("🚀 ~ file: index.tsx:315 ~ ArticleContainer ~ scrollTop:", scrollTop)
 
-      listRef?.current?.scrollTo(0, scrollTop)
+      listRef?.current?.scrollTo(0, scrollTop);
+    } else if (
+      (direction === "up" || direction === "down") &&
+      bounding &&
+      bounding.bottom > winH
+    ) {
+      const offset = bounding.bottom - winH;
+      const scrollTop = (listRef?.current?.scrollTop || 0) + offset;
+
+      console.log("🚀 ~ file: index.tsx:324 ~ ArticleContainer ~ scrollTop:", scrollTop)
+      listRef?.current?.scrollTo(0, scrollTop);
     }
   }
 

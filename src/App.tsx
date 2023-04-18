@@ -1,16 +1,14 @@
-import React, {useEffect, useState} from "react";
-import {DndProvider} from "react-dnd";
-import {HTML5Backend} from "react-dnd-html5-backend";
-import {appWindow} from "@tauri-apps/api/window";
-import {Outlet} from "react-router-dom";
-import {ChannelList} from "./components/ChannelList";
-import {useBearStore} from "./hooks/useBearStore";
+import React, { useEffect } from "react";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
+import { appWindow } from "@tauri-apps/api/window";
+import { Outlet } from "react-router-dom";
+import { ChannelList } from "./components/ChannelList";
+import { useBearStore } from "./hooks/useBearStore";
 import * as dataAgent from "./helpers/dataAgent";
 import styles from "./App.module.css";
 import "./styles/index.global.scss";
 import "./App.css";
-import {Article} from "./db";
-import {busChannel} from "./helpers/busChannel";
 
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { RouteConfig } from "./config";
@@ -26,12 +24,10 @@ let a = 0;
 
 function App() {
   a += 1;
-  const store = useBearStore(state => ({
+  const store = useBearStore((state) => ({
     goPreviousArticle: state.goPreviousArticle,
     goNextArticle: state.goNextArticle,
   }));
-
-  console.log("%c Line:17 🥓 store", "color:#42b983", store);
 
   useEffect(() => {
     document
@@ -55,7 +51,6 @@ function App() {
     if (tagName === "a") {
     } else if (tagName === "li") {
       store.goPreviousArticle();
-      // busChannel.emit("goPreviousArticle");
     }
   };
 
@@ -63,7 +58,6 @@ function App() {
     if (tagName === "a") {
     } else if (tagName === "li") {
       store.goNextArticle();
-      // busChannel.emit("goNextArticle");
     }
   };
 
@@ -85,14 +79,12 @@ function App() {
       default:
         break;
     }
-
-    console.log("event", event);
   };
 
   useEffect(() => {
     document.addEventListener("keydown", (e) => handleKeyPress(e));
     return () => {
-      console.log('remove listener');
+      console.log("remove listener");
       document.removeEventListener("keydown", (e) => handleKeyPress(e));
     };
   }, []);
@@ -100,15 +92,18 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path={"/"} element={
-          <DndProvider backend={HTML5Backend}>
-            <div className={styles.container}>
-              {a}
-              <ChannelList/>
-              <Outlet/>
-            </div>
-          </DndProvider>
-        }>
+        <Route
+          path={"/"}
+          element={
+            <DndProvider backend={HTML5Backend}>
+              <div className={styles.container}>
+                {a}
+                <ChannelList />
+                <Outlet />
+              </div>
+            </DndProvider>
+          }
+        >
           <Route path={"/"} element={<WelcomePage />} />
           <Route path={RouteConfig.CHANNEL} element={<ArticleContainer />} />
           <Route path={RouteConfig.SETTINGS} element={<SettingContainer />}>
@@ -125,7 +120,6 @@ function App() {
         </Route>
       </Routes>
     </BrowserRouter>
-
   );
 }
 

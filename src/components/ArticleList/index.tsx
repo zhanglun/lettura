@@ -12,7 +12,6 @@ import { Loading } from "../Loading";
 import { Article } from "../../db";
 import { useBearStore } from "../../hooks/useBearStore";
 import * as dataAgent from "../../helpers/dataAgent";
-import styles from "./articlelist.module.css";
 import { busChannel } from "../../helpers/busChannel";
 
 export type ArticleListProps = {
@@ -137,12 +136,12 @@ export const ArticleList = forwardRef(
     }, [articleList]);
 
     return (
-      <div className={styles.container}>
-        <div className={styles.inner} ref={innerRef}>
+      <div className="grid grid-cols-1 grid-rows-[calc(100% - var(--app-toolbar-height))]">
+        <div ref={innerRef}>
           {loading ? (
             <Loading />
           ) : (
-            <ul className={styles.list}>{renderList()}</ul>
+            <ul className="m-0 pt-2 pb-2 pl-2 grid gap-2">{renderList()}</ul>
           )}
         </div>
       </div>

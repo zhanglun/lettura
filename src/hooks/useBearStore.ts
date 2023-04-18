@@ -52,11 +52,10 @@ export const useBearStore = create<BearStore>()(subscribeWithSelector((set, get)
       console.log('update Article and Idx', idx);
       let articleList = get().articleList;
 
-      if (idx === undefined || idx <= 0) {
+      if (idx === undefined || idx < 0) {
         idx = articleList.findIndex((item) => item.uuid === article.uuid);
+        console.log("🚀 ~ file: useBearStore.ts:57 ~ useBearStore ~ idx:", idx)
       }
-
-      console.log("%c Line:59 🍬 article.read_status", "color:#fca650", article.read_status);
 
       if (article.read_status === 1) {
         dataAgent.updateArticleReadStatus(article.uuid, 2).then((res) => {
@@ -77,16 +76,10 @@ export const useBearStore = create<BearStore>()(subscribeWithSelector((set, get)
         });
       }
 
-      if (idx) {
-        set(() => ({
-          article,
-          currentIdx: idx,
-        }))
-      } else {
-        set(() => ({
-          article,
-        }))
-      }
+      set(() => ({
+        article,
+        currentIdx: idx,
+      }))
     },
 
     goPreviousArticle(){
