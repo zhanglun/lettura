@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { DropTargetMonitor, useDrop } from "react-dnd";
 import update from "immutability-helper";
-import { Progress, Tooltip } from "@douyinfe/semi-ui";
+import { Progress, Tooltip, Tree } from "@douyinfe/semi-ui";
 import {
   ArrowPathIcon,
   Cog6ToothIcon,
@@ -35,7 +35,7 @@ const ChannelList = (): JSX.Element => {
     channelList: Channel[],
     uuid: string,
     action: string,
-    count: number,
+    count: number
   ) => {
     channelList.forEach((channel) => {
       if (channel.item_type === "channel" && channel.uuid !== uuid) {
@@ -89,7 +89,7 @@ const ChannelList = (): JSX.Element => {
         });
 
         setChannelList(channel);
-      },
+      }
     );
   };
 
@@ -110,11 +110,11 @@ const ChannelList = (): JSX.Element => {
       "updateChannelUnreadCount",
       ({ uuid, action, count }) => {
         console.log(
-          "🚀 ~ file: index.tsx:138 ~ useEffect ~ updateChannelUnreadCount",
+          "🚀 ~ file: index.tsx:138 ~ useEffect ~ updateChannelUnreadCount"
         );
         updateCount(channelList, uuid, action, count);
         unsubscribeUpdateCount();
-      },
+      }
     );
 
     return () => {
@@ -142,7 +142,6 @@ const ChannelList = (): JSX.Element => {
     console.log("%c Line:144 🍷 refreshList", "color:#42b983", "refreshList");
     setRefreshing(true);
 
-
     dataAgent.getUserConfig().then((config) => {
       const { threads = 5 } = config;
       const limit = pLimit(threads);
@@ -150,7 +149,7 @@ const ChannelList = (): JSX.Element => {
         return limit(() => loadAndUpdate(channel.item_type, channel.uuid));
       });
 
-      console.log('fns.length ===> ', fns.length);
+      console.log("fns.length ===> ", fns.length);
 
       Promise.all(fns).then((res) => {
         window.setTimeout(() => {
@@ -175,7 +174,7 @@ const ChannelList = (): JSX.Element => {
         index: channelList.indexOf(channel),
       };
     },
-    [channelList],
+    [channelList]
   );
 
   const moveCard = useCallback(
@@ -201,7 +200,7 @@ const ChannelList = (): JSX.Element => {
 
       setChannelList(list);
     },
-    [findCard, channelList],
+    [findCard, channelList]
   );
 
   const [, drop] = useDrop(
@@ -226,7 +225,7 @@ const ChannelList = (): JSX.Element => {
         }
       },
     }),
-    [channelList],
+    [channelList]
   );
 
   const renderFeedList = (): JSX.Element => {
@@ -269,6 +268,93 @@ const ChannelList = (): JSX.Element => {
     );
   };
 
+  const renderLabel = ({
+    className,
+    onExpand,
+    data,
+    onCheck,
+    checkStatus,
+    expandIcon,
+  }: any) => {
+    console.log("🚀 ~ file: index.tsx:279 ~ ChannelList ~ className:", className)
+    const { unread = 0, link, label, item_type } = data;
+    const channel = data;
+    const ico = getChannelFavicon(link);
+    const isLeaf = !(data.children && data.children.length);
+    return (
+      <li role="treeitem" onClick={isLeaf ? onCheck : onExpand}>
+        <NavLink
+          className={({ isActive }: any) =>
+            `w-full flex items-center h-8 px-2 py-3 rounded-md cursor-pointer ${
+              isActive
+                ? "text-[#fff] bg-royal-blue-600 hover:text-[#fff] hover:bg-royal-blue-600"
+                : " text-slate-600 hover:text-slate-900 hover:bg-stone-100"
+            }`
+          }
+          to={`${RouteConfig.CHANNEL.replace(
+            /:uuid/,
+            channel.uuid
+          )}?channelUuid=${channel.uuid}&feedUrl=${channel.feed_url}`}
+        >
+          {isLeaf ? null : (
+            <span className="h-4 w-4 rounded mr-3">
+              <FolderIcon className={"h-4 w-4"} />
+            </span>
+          )}
+          {channel.link && (
+            <img
+              src={ico}
+              onError={(e) => {
+                // @ts-ignore
+                e.target.onerror = null;
+
+                // @ts-ignore
+                e.target.src = defaultSiteIcon;
+              }}
+              className="h-4 w-4 rounded mr-3"
+              alt={channel.title}
+            />
+          )}
+          <span className="grow shrink basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-sm text-[color:currentColor]">
+            {channel.title}
+          </span>
+          {unread > 0 && (
+            <span className="px-1 min-w-[1rem] h-4 leading-4 text-center text-[10px] text-white rounded-lg bg-neutral-600">
+              {unread}
+            </span>
+          )}
+        </NavLink>
+      </li>
+    );
+  };
+
+  const renderTree = (): JSX.Element => {
+    const format = (item: any) => {
+      item.label = item.title;
+      item.key = item.uuid;
+      item.value = item.uuid;
+      if (item.children) {
+        (item.children || []).map((child) => {
+          return format(child);
+        });
+
+        return item;
+      }
+    };
+
+    const data = channelList.map((item) => format(item));
+    console.log(
+      "🚀 ~ file: index.tsx:345 ~ renderTree ~ channelList:",
+      channelList
+    );
+
+    return (
+      <div>
+        <Tree treeData={data} renderFullLabel={renderLabel} directory></Tree>
+      </div>
+    );
+  };
+
   const addFeed = () => {
     if (addFeedButtonRef?.current) {
       (addFeedButtonRef.current as any).showModal();
@@ -308,32 +394,48 @@ const ChannelList = (): JSX.Element => {
         <div className={styles.toolbar}>
           <AddFeedChannel Aref={addFeedButtonRef} />
           <Tooltip content="Add feed">
-            <span className={styles.toolbarItem} onClick={addFeed} onKeyUp={addFeed}>
+            <span
+              className={styles.toolbarItem}
+              onClick={addFeed}
+              onKeyUp={addFeed}
+            >
               <PlusIcon className={"h-4 w-4"} />
             </span>
           </Tooltip>
           <Tooltip content="Create folder">
             <AddFolder Aref={addFolderButtonRef} />
-            <span className={styles.toolbarItem} onClick={addFolder} onKeyUp={addFolder}>
+            <span
+              className={styles.toolbarItem}
+              onClick={addFolder}
+              onKeyUp={addFolder}
+            >
               <FolderIcon className={"h-4 w-4"} />
             </span>
           </Tooltip>
           <Tooltip content="Refresh">
-            <span className={styles.toolbarItem} onClick={refreshList} onKeyUp={refreshList}>
+            <span
+              className={styles.toolbarItem}
+              onClick={refreshList}
+              onKeyUp={refreshList}
+            >
               <ArrowPathIcon
                 className={`h-4 w-4 ${refreshing ? "spinning" : ""}`}
               />
             </span>
           </Tooltip>
           <Tooltip content="Setting">
-            <span className={styles.toolbarItem} onClick={goToSetting} onKeyUp={goToSetting}>
+            <span
+              className={styles.toolbarItem}
+              onClick={goToSetting}
+              onKeyUp={goToSetting}
+            >
               <Cog6ToothIcon className={"h-4 w-4"} />
             </span>
           </Tooltip>
         </div>
       </div>
       <div className={styles.inner} ref={listRef}>
-        {renderFeedList()}
+        {renderTree()}
       </div>
       {refreshing && (
         <div className={styles.footer}>
