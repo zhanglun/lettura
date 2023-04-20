@@ -1,13 +1,13 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { DropTargetMonitor, useDrop } from "react-dnd";
-import update from "immutability-helper";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Progress, Tooltip, Tree } from "@douyinfe/semi-ui";
 import {
   ArrowPathIcon,
+  ChevronDownIcon,
   ChevronRightIcon,
   Cog6ToothIcon,
   FolderIcon,
+  FolderOpenIcon,
   PlusIcon,
 } from "@heroicons/react/24/outline";
 import { RouteConfig } from "../../config";
@@ -17,12 +17,10 @@ import * as dataAgent from "../../helpers/dataAgent";
 import { busChannel } from "../../helpers/busChannel";
 import { AddFeedChannel } from "../AddChannel";
 import { AddFolder } from "../AddFolder";
-import { ChannelItem } from "./Item";
-import { Folder } from "./Folder";
-import { ItemTypes } from "./ItemTypes";
-import styles from "./channel.module.scss";
 import pLimit from "p-limit";
 import { useBearStore } from "../../hooks/useBearStore";
+
+import styles from "./channel.module.scss";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -178,23 +176,41 @@ const ChannelList = (): JSX.Element => {
     navigate(RouteConfig.SETTINGS_GENERAL);
   };
 
+  const renderFolder = (expandStatus: { expanded: boolean }, onExpand: any) => {
+    if (expandStatus.expanded) {
+      return <>
+        <span className="h-4 w-4 rounded mr-2" onClick={onExpand}>
+          <ChevronDownIcon className={"h-4 w-4"} />
+        </span>
+        <span className="h-4 w-4 rounded mr-3">
+          <FolderOpenIcon className={"h-4 w-4"} />
+        </span>
+      </>
+    } else {
+      return <>
+        <span className="h-4 w-4 rounded mr-2" onClick={onExpand}>
+          <ChevronRightIcon className={"h-4 w-4"} />
+        </span>
+        <span className="h-4 w-4 rounded mr-3">
+          <FolderIcon className={"h-4 w-4"} />
+        </span>
+      </>
+    }
+  }
+
   const renderLabel = ({
     className,
     onExpand,
     data,
-    onCheck,
-    checkStatus,
+    level,
     expandIcon,
+    expandStatus,
   }: any) => {
-    console.log("🚀 ~ file: index.tsx:279 ~ ChannelList ~ className:", className)
     const { unread = 0, link, label, item_type, uuid } = data;
     const channel = data;
     const ico = getChannelFavicon(link);
     const isLeaf = !(data.children && data.children.length);
     const isActive = (store?.channel?.uuid || channelUuid) === uuid;
-
-    console.log("%c Line:289 🥓 uuid", "color:#ea7e5c", uuid);
-    console.log("%c Line:289 🍖 store?.channel?.uuid", "color:#b03734", store?.channel);
 
     return (
       <li role="treeitem"
@@ -213,19 +229,11 @@ const ChannelList = (): JSX.Element => {
               isActive
                 ? "text-[#fff] bg-royal-blue-600 hover:text-[#fff] hover:bg-royal-blue-600"
                 : " text-slate-600 hover:text-slate-900 hover:bg-stone-100"
-            }`
+            } ${level ? 'pl-8' : ''}`
           }
         >
-          {isLeaf ? null : (
-            <span className="h-4 w-4 rounded mr-3" onClick={onExpand}>
-              <ChevronRightIcon className={"h-4 w-4"} />
-            </span>
-          )}
-          {isLeaf ? null : (
-            <span className="h-4 w-4 rounded mr-3">
-              <FolderIcon className={"h-4 w-4"} />
-            </span>
-          )}
+          {!isLeaf && renderFolder(expandStatus, onExpand)}
+
           {channel.link && (
             <img
               src={ico}
@@ -268,14 +276,14 @@ const ChannelList = (): JSX.Element => {
     };
 
     const data = channelList.map((item) => format(item));
-    console.log(
-      "🚀 ~ file: index.tsx:345 ~ renderTree ~ channelList:",
-      channelList
-    );
 
     return (
       <div>
-        <Tree treeData={data} renderFullLabel={renderLabel} directory></Tree>
+        <Tree
+          treeData={data}
+          renderFullLabel={renderLabel}
+          directory
+        ></Tree>
       </div>
     );
   };
@@ -363,12 +371,12 @@ const ChannelList = (): JSX.Element => {
         {renderTree()}
       </div>
       {refreshing && (
-        <div className={styles.footer}>
+        <div className="sticky left-0 right-0 bottom-0 grid grid-flow-col items-center gap-3 p-3">
           <span>
             {/* @ts-ignore */}
             <Progress percent={Math.ceil((done / channelList.length) * 100)} />
           </span>
-          <span className={styles.footerCount}>
+          <span className="text-sm">
             {done}/{channelList.length}
           </span>
         </div>

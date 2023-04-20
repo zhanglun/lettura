@@ -71,13 +71,6 @@
   }
 }
 
-.title {
-  margin: 0;
-  padding: 0;
-  font-size: 24px;
-  color: var(--body-color);
-}
-
 .item {
   height: 32px;
   padding: 8px 10px;
@@ -110,22 +103,6 @@
 
 .read {
   background-color: rgba(0, 0, 0, 0.05);
-}
-
-.name {
-  font-size: 13px;
-  color: var(--body-color);
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.icon {
-  width: 16px;
-  height: 16px;
-  border-radius: 4px;
-  margin-right: 14px;
 }
 
 .count {
@@ -169,21 +146,4 @@
 
 .orange {
   color: orange;
-}
-
-
-.footer {
-  position: sticky;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: grid;
-  grid-auto-flow: column;
-  align-items: center;
-  grid-gap: 10px;
-  padding: 10px;
-}
-
-.footerCount {
-  font-size: 13px;
 }
