@@ -97,7 +97,6 @@ function App() {
           element={
             <DndProvider backend={HTML5Backend}>
               <div className={styles.container}>
-                {a}
                 <ChannelList />
                 <Outlet />
               </div>

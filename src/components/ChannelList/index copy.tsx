@@ -1,11 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { DropTargetMonitor, useDrop } from "react-dnd";
 import update from "immutability-helper";
 import { Progress, Tooltip, Tree } from "@douyinfe/semi-ui";
 import {
   ArrowPathIcon,
-  ChevronRightIcon,
   Cog6ToothIcon,
   FolderIcon,
   PlusIcon,
@@ -15,6 +14,7 @@ import { Channel } from "../../db";
 import { getChannelFavicon } from "../../helpers/parseXML";
 import * as dataAgent from "../../helpers/dataAgent";
 import { busChannel } from "../../helpers/busChannel";
+import { promisePool } from "../../helpers/promisePool";
 import { AddFeedChannel } from "../AddChannel";
 import { AddFolder } from "../AddFolder";
 import { ChannelItem } from "./Item";
@@ -23,10 +23,6 @@ import { ItemTypes } from "./ItemTypes";
 import styles from "./channel.module.scss";
 import pLimit from "p-limit";
 import { useBearStore } from "../../hooks/useBearStore";
-
-function useQuery() {
-  return new URLSearchParams(useLocation().search);
-}
 
 const ChannelList = (): JSX.Element => {
   const navigate = useNavigate();
@@ -39,10 +35,6 @@ const ChannelList = (): JSX.Element => {
     channel: state.channel,
     setChannel: state.setChannel,
   }))
-  const query = useQuery();
-  const feedUrl = query.get("feedUrl");
-  const type = query.get("type");
-  const channelUuid = query.get("channelUuid");
 
   const updateCount = (
     channelList: Channel[],
@@ -178,6 +170,109 @@ const ChannelList = (): JSX.Element => {
     navigate(RouteConfig.SETTINGS_GENERAL);
   };
 
+  const findCard = useCallback(
+    (uuid: string) => {
+      const channel = channelList.filter((c) => `${c.uuid}` === uuid)[0];
+
+      return {
+        channel,
+        index: channelList.indexOf(channel),
+      };
+    },
+    [channelList]
+  );
+
+  const moveCard = useCallback(
+    (uuid: string, atIndex: number, intoFolder?: Boolean) => {
+      const { channel, index } = findCard(uuid);
+
+      let list: Channel[] = [];
+
+      if (intoFolder) {
+        list = update(channelList, {
+          $splice: [[index, 1]],
+        });
+      } else {
+        list = update(channelList, {
+          $splice: [
+            [index, 1],
+            [atIndex, 0, channel],
+          ],
+        });
+      }
+
+      list.forEach((item, idx) => (item.sort = idx));
+
+      setChannelList(list);
+    },
+    [findCard, channelList]
+  );
+
+  const [, drop] = useDrop(
+    () => ({
+      accept: ItemTypes.BOX,
+      collect: (monitor: DropTargetMonitor) => ({
+        isOver: monitor.isOver(),
+      }),
+      drop(item: any, monitor) {
+        const dropResult = monitor.getDropResult() as any;
+
+        if (item.id === dropResult.id) {
+          let feedSort = channelList.map((channel: any) => {
+            return {
+              uuid: channel.uuid,
+              item_type: channel.item_type,
+              sort: channel.sort,
+            };
+          });
+
+          dataAgent.updateFeedSort(feedSort);
+        }
+      },
+    }),
+    [channelList]
+  );
+
+  const renderFeedList = (): JSX.Element => {
+    return (
+      <ul className={styles.list} ref={drop}>
+        {channelList?.map((channel: any, i: number) => {
+          const { unread = 0, link } = channel;
+          const ico = getChannelFavicon(link);
+
+          if (channel.item_type === "folder") {
+            return (
+              <Folder
+                id={channel.uuid}
+                ico={ico}
+                channel={channel}
+                unread={unread}
+                key={channel.uuid}
+                moveCard={moveCard}
+                findCard={findCard}
+                type={channel.item_type}
+              />
+            );
+          } else {
+            return (
+              <ChannelItem
+                channel={channel}
+                ico={ico}
+                unread={unread}
+                key={channel.uuid}
+                id={`${channel.uuid}`}
+                moveCard={moveCard}
+                findCard={findCard}
+                type={channel.item_type}
+                afterFn={getList}
+              />
+            );
+          }
+        })}
+      </ul>
+    );
+  };
+
   const renderLabel = ({
     className,
     onExpand,
@@ -191,7 +286,7 @@ const ChannelList = (): JSX.Element => {
     const channel = data;
     const ico = getChannelFavicon(link);
     const isLeaf = !(data.children && data.children.length);
-    const isActive = (store?.channel?.uuid || channelUuid) === uuid;
+    const isActive = store?.channel?.uuid === uuid
 
     console.log("%c Line:289 🥓 uuid", "color:#ea7e5c", uuid);
     console.log("%c Line:289 🍖 store?.channel?.uuid", "color:#b03734", store?.channel);
@@ -201,13 +296,10 @@ const ChannelList = (): JSX.Element => {
       key={channel.title}
       onClick={() => {
         store.setChannel(channel)
-        navigate(`${RouteConfig.CHANNEL.replace(
-            /:uuid/,
-            channel.uuid
-          )}?channelUuid=${channel.uuid}&feedUrl=${channel.feed_url}`)
+        isLeaf ? onCheck : onExpand
       }}
         >
-        <span
+        <NavLink
           className={
             `w-full flex items-center h-8 px-2 py-3 rounded-md cursor-pointer ${
               isActive
@@ -215,12 +307,11 @@ const ChannelList = (): JSX.Element => {
                 : " text-slate-600 hover:text-slate-900 hover:bg-stone-100"
             }`
           }
+          to={`${RouteConfig.CHANNEL.replace(
+            /:uuid/,
+            channel.uuid
+          )}?channelUuid=${channel.uuid}&feedUrl=${channel.feed_url}`}
         >
-          {isLeaf ? null : (
-            <span className="h-4 w-4 rounded mr-3" onClick={onExpand}>
-              <ChevronRightIcon className={"h-4 w-4"} />
-            </span>
-          )}
           {isLeaf ? null : (
             <span className="h-4 w-4 rounded mr-3">
               <FolderIcon className={"h-4 w-4"} />
@@ -248,7 +339,7 @@ const ChannelList = (): JSX.Element => {
               {unread}
             </span>
           )}
-        </span>
+        </NavLink>
       </li>
     );
   };
@@ -259,7 +350,7 @@ const ChannelList = (): JSX.Element => {
       item.key = item.uuid;
       item.value = item.uuid;
       if (item.children) {
-        (item.children || []).map((child: Channel) => {
+        (item.children || []).map((child) => {
           return format(child);
         });
 
