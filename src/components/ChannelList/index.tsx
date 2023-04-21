@@ -48,20 +48,7 @@ const ChannelList = (): JSX.Element => {
     action: string,
     count: number
   ) => {
-    console.log('uuid', uuid);
     channelList.forEach((channel) => {
-      // if (channel.item_type === "channel" && channel.uuid !== uuid) {
-      //   return channel;
-      // }
-      //
-      // if (
-      //   channel.item_type === "folder" &&
-      //   channel.uuid !== uuid &&
-      //   !channel.children.some((child) => child.uuid === uuid)
-      // ) {
-      //   return channel;
-      // }
-
       let target: any = channel.uuid === uuid ? channel : null
       let child: any = channel.children.find((item) => item.uuid === uuid) || null;
 

@@ -1,4 +1,5 @@
 use diesel::prelude::*;
+use diesel::sql_types::*;
 use serde::{Deserialize, Serialize};
 
 use crate::db::establish_connection;
@@ -26,7 +27,7 @@ impl Article {
   /// get articles
   pub fn get_article(filter: ArticleFilter) -> ArticleQueryResult {
     let mut connection = establish_connection();
-    let mut query = schema::articles::dsl::articles.into_boxed();
+    let mut query = diesel::sql_query().into_boxed();
 
     match filter.channel_uuid {
       Some(channel_uuid) => {
@@ -45,9 +46,13 @@ impl Article {
             }
           }
 
-          query = query.filter(schema::articles::channel_uuid.eq_any(channel_uuids));
+          // query = query.filter(schema::articles::channel_uuid.eq_any(channel_uuids));
+          let query = query.sql("select A.id, A.uuid, A.channel_uuid, A.title, A.link, A.feed_url, A.description, A.content, A.pub_date, A.author, A.create_date, A.update_date, A.read_status, C.title as channel_title from articles  as A Left  join channels as C where  C.uuid = A.channel_uuid and C.uuid in ?")
+            .bind::<Vec<Text>, _>(channel_uuids);
         } else {
-          query = query.filter(schema::articles::channel_uuid.eq(channel_uuid));
+          // query = query.filter(schema::articles::channel_uuid.eq(channel_uuid));
+          query = query.sql("select A.id, A.uuid, A.channel_uuid, A.title, A.link, A.feed_url, A.description, A.content, A.pub_date, A.author, A.create_date, A.update_date, A.read_status, C.title as channel_title from articles  as A Left  join channels as C where  C.uuid = A.channel_uuid and C.uuid= ?");
+          query = query.bind::<Text, _>(channel_uuid);
         }
       }
       None => {
@@ -55,37 +60,37 @@ impl Article {
       }
     }
 
-    match filter.read_status {
-      Some(0) => {
-        1;
-      }
-      Some(status) => {
-        query = query.filter(schema::articles::read_status.eq(status));
-      }
-      None => {
-        1;
-      }
-    }
+    // match filter.read_status {
+    //   Some(0) => {
+    //     1;
+    //   }
+    //   Some(status) => {
+    //     query = query.filter(schema::articles::read_status.eq(status));
+    //   }
+    //   None => {
+    //     1;
+    //   }
+    // }
+    //
+    // match filter.cursor {
+    //   Some(cursor) => {
+    //     query = query.filter(schema::articles::id.gt(cursor));
+    //   }
+    //   None => {
+    //     1;
+    //   }
+    // }
 
-    match filter.cursor {
-      Some(cursor) => {
-        query = query.filter(schema::articles::id.gt(cursor));
-      }
-      None => {
-        1;
-      }
-    }
+    // match filter.limit {
+    //   Some(limit) => {
+    //     query = query.limit(limit.into());
+    //   }
+    //   None => {
+    //     1;
+    //   }
+    // }
 
-    match filter.limit {
-      Some(limit) => {
-        query = query.limit(limit.into());
-      }
-      None => {
-        1;
-      }
-    }
-
-    query = query.order(schema::articles::dsl::pub_date.desc());
+    // query = query.order(schema::articles::dsl::pub_date.desc());
 
     let result = query
       .load::<models::Article>(&mut connection)

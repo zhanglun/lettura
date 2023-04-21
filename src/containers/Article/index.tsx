@@ -258,20 +258,6 @@ export const ArticleContainer = (): JSX.Element => {
     resetScrollTop();
   }, []);
 
-  // useEffect(() => {
-  //   const unsubscribeGoPrev = busChannel.on("goPreviousArticle", () => {
-  //     handleViewPrevious();
-  //   });
-  //   const unsubscribeGoNext = busChannel.on("goNextArticle", () => {
-  //     handleViewNext();
-  //   });
-
-  //   return () => {
-  //     unsubscribeGoPrev();
-  //     unsubscribeGoNext();
-  //   };
-  // }, [currentIdx]);
-
   useEffect(() => {
     if (listRef.current !== null) {
       listRef.current.scroll(0, 0);
@@ -279,8 +265,6 @@ export const ArticleContainer = (): JSX.Element => {
 
     setCurrentIdx(-1);
   }, [channelUuid]);
-
-  function getOffsetTopWithParent(child: HTMLElement, parent: HTMLElement) {}
 
   function calculateItemPosition(
     direction: "up" | "down",
@@ -301,8 +285,6 @@ export const ArticleContainer = (): JSX.Element => {
     ) {
       const offset = 58 - bounding.top;
       const scrollTop = (listRef?.current?.scrollTop || 0) - offset;
-
-      console.log("🚀 ~ file: index.tsx:315 ~ ArticleContainer ~ scrollTop:", scrollTop)
 
       listRef?.current?.scrollTo(0, scrollTop);
     } else if (
