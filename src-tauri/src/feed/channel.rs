@@ -8,7 +8,6 @@ use crate::db;
 use crate::models;
 use crate::schema;
 
-
 pub fn get_channel_by_uuid(channel_uuid: String) -> Option<models::Channel> {
   let mut connection = db::establish_connection();
   let mut channel = schema::channels::dsl::channels
@@ -16,10 +15,10 @@ pub fn get_channel_by_uuid(channel_uuid: String) -> Option<models::Channel> {
     .load::<models::Channel>(&mut connection)
     .expect("Expect find channel");
 
-  if channel.len() == 1 {
-    return channel.pop();
+  return if channel.len() == 1 {
+    channel.pop()
   } else {
-    return None;
+    None
   }
 }
 
@@ -38,7 +37,7 @@ pub fn delete_channel(uuid: String) -> usize {
     .load::<models::Channel>(&mut connection)
     .expect("Expect find channel");
 
-  if channel.len() == 1 {
+  return if channel.len() == 1 {
     let result =
       diesel::delete(schema::channels::dsl::channels.filter(schema::channels::uuid.eq(&uuid)))
         .execute(&mut connection)
@@ -47,18 +46,18 @@ pub fn delete_channel(uuid: String) -> usize {
     diesel::delete(
       schema::articles::dsl::articles.filter(schema::articles::channel_uuid.eq(&uuid)),
     )
-    .execute(&mut connection)
-    .expect("Expect delete channel");
+      .execute(&mut connection)
+      .expect("Expect delete channel");
 
     diesel::delete(
       schema::feed_metas::dsl::feed_metas.filter(schema::feed_metas::child_uuid.eq(&uuid)),
     )
-    .execute(&mut connection)
-    .expect("Expect delete channel");
+      .execute(&mut connection)
+      .expect("Expect delete channel");
 
-    return result;
+    result
   } else {
-    return 0;
+    0
   }
 }
 
@@ -140,15 +139,15 @@ pub fn get_unread_total() -> HashMap<String, i32> {
   for group in meta_group {
     match total_map.get(&group.child_uuid) {
       Some(count) => {
-        if group.parent_uuid == "".to_string() {
-          result_map.entry(group.child_uuid)
-            .or_insert(count.clone());
-        } else {
+        if group.parent_uuid != "".to_string() {
           let c= result_map.entry(group.parent_uuid)
             .or_insert(0);
 
           *c += count;
         }
+
+        result_map.entry(group.child_uuid)
+          .or_insert(count.clone());
       },
       None => {}
     };

@@ -1,14 +1,4 @@
 .container {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  flex: 0 0 auto;
-  width: var(--app-channel-width);
-  height: 100%;
-  background-color: var(--app-sidebar-bg);
-  user-select: none;
-  border-right: 1px solid var(--app-sidebar-border-color);
-
   &::before {
     content: "";
     margin: -35px;

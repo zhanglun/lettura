@@ -10,8 +10,6 @@
   --app-toolbar-height: 50px;
   --app-setting-sidebar-width: 200px;
   --view-helpbar-width: 50px;
-  --app-sidebar-bg: rgba(60,60,67, 0.03);
-  --app-sidebar-border-color: rgba(0,0,0,.15);
 
   --headline-color: #333;
   --title-color: #363636;
@@ -92,7 +90,6 @@
 :root body[data-theme='dark'] {
   --body-color: #fff;
   --body-bg-color: #000;
-  --app-sidebar-bg:  #000;
   --headline-color: #fff;
   --app-main-bg-color: #000;
 }
