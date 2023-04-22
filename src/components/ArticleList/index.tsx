@@ -71,7 +71,6 @@ export const ArticleList = forwardRef(
     };
 
     const markAllRead = () => {
-      console.log("🚀 ~ file: index.tsx:71 ~ markAllRead ~ markAllRead");
       dataAgent.markAllRead(feedUuid as string).then((res) => {
         articleList.forEach((article) => {
           article.read_status = 2;

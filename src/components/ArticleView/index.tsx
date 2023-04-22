@@ -28,8 +28,8 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
       return null;
     }
 
-    const { link, pub_date } = article;
-    const ico = getChannelFavicon(link);
+    const { pub_date, channel_link } = article;
+    const ico = getChannelFavicon(channel_link);
 
     return (
       <div ref={containerRef}>
@@ -40,13 +40,13 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
               <span className={styles.time}>
                 {Dayjs(pub_date.replace(/-/gi, "/")).format("YYYY-MM-DD HH:mm")}
               </span>
+              <span className={styles.channelInfo}>
+                <img src={ico} alt="" className="rounded" />
+                {article.channel_title}
+              </span>
               {article.author && (
                 <span className={styles.author}>{article.author}</span>
               )}
-              <span className={styles.channelInfo}>
-                <img src={ico} alt="" />
-                {article.channelTitle}
-              </span>
             </div>
           </div>
           <div className="m-auto pt-1 mt-6 prose lg:prose-xl">

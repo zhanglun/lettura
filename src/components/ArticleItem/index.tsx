@@ -30,7 +30,7 @@ export const ArticleItem = React.forwardRef(
       updateCurrentArticle(article);
     };
 
-    const ico = getChannelFavicon(article.feed_url);
+    const ico = getChannelFavicon(article.channel_link);
 
     useEffect(() => {
       setReadStatus(article.read_status);
@@ -62,8 +62,8 @@ export const ArticleItem = React.forwardRef(
         </div>
         <div className={styles.meta}>
           <div className={styles.author}>
-            <img src={ico} alt="" />
-            {article.author}
+            <img src={ico} alt="" className="rounded" />
+            {article.author || article.channel_title}
           </div>
           <div className={styles.date}>
             {Dayjs(article.pub_date.replace(/-/gi, "/")).format(
