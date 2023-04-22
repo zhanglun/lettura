@@ -16,18 +16,49 @@ pub struct ArticleFilter {
   pub limit: Option<i32>,
 }
 
+#[derive(Debug, Queryable, Serialize, QueryableByName)]
+pub struct ArticleQueryItem {
+  #[diesel(sql_type = Integer)]
+  pub id: i32,
+  #[diesel(sql_type = Text)]
+  pub uuid: String,
+  #[diesel(sql_type = Text)]
+  pub channel_uuid: String,
+  #[diesel(sql_type = Text)]
+  pub channel_title: String,
+  #[diesel(sql_type = Text)]
+  pub title: String,
+  #[diesel(sql_type = Text)]
+  pub link: String,
+  #[diesel(sql_type = Text)]
+  pub feed_url: String,
+  #[diesel(sql_type = Text)]
+  pub description: String,
+  #[diesel(sql_type = Text)]
+  pub content: String,
+  #[diesel(sql_type = Text)]
+  pub pub_date: String,
+  #[diesel(sql_type = Text)]
+  pub author: String,
+  #[diesel(sql_type = Text)]
+  pub create_date: String,
+  #[diesel(sql_type = Text)]
+  pub update_date: String,
+  #[diesel(sql_type = Integer)]
+  pub read_status: i32,
+}
+
 #[derive(Debug, Serialize)]
 pub struct ArticleQueryResult {
-  list: Vec<models::Article>,
+  list: Vec<ArticleQueryItem>,
   // pub count: i32,
 }
 
 impl Article {
-
   /// get articles
   pub fn get_article(filter: ArticleFilter) -> ArticleQueryResult {
     let mut connection = establish_connection();
-    let mut query = diesel::sql_query().into_boxed();
+    let mut query = diesel::sql_query("").into_boxed();
 
     match filter.channel_uuid {
       Some(channel_uuid) => {
@@ -46,12 +77,16 @@ impl Article {
             }
           }
 
-          // query = query.filter(schema::articles::channel_uuid.eq_any(channel_uuids));
-          let query = query.sql("select A.id, A.uuid, A.channel_uuid, A.title, A.link, A.feed_url, A.description, A.content, A.pub_date, A.author, A.create_date, A.update_date, A.read_status, C.title as channel_title from articles  as A Left  join channels as C where  C.uuid = A.channel_uuid and C.uuid in ?")
-            .bind::<Vec<Text>, _>(channel_uuids);
+          let params = format!("?{}", ", ?".repeat(channel_uuids.len() - 1));
+          query = query
+          .sql(format!("
+            select A.id, A.uuid, A.channel_uuid, A.title, A.link, A.feed_url, A.description, A.content, A.pub_date, A.author, A.create_date, A.update_date, A.read_status, C.title as channel_title from articles as A Left join channels as C where C.uuid = A.channel_uuid and C.uuid in ({})", params));
+
+          for uuid in channel_uuids {
+            query = query.bind::<Text, _>(uuid);
+          }
         } else {
-          // query = query.filter(schema::articles::channel_uuid.eq(channel_uuid));
-          query = query.sql("select A.id, A.uuid, A.channel_uuid, A.title, A.link, A.feed_url, A.description, A.content, A.pub_date, A.author, A.create_date, A.update_date, A.read_status, C.title as channel_title from articles  as A Left  join channels as C where  C.uuid = A.channel_uuid and C.uuid= ?");
+          query = query.sql("select A.id, A.uuid, A.channel_uuid, A.title, A.link, A.feed_url, A.description, A.content, A.pub_date, A.author, A.create_date, A.update_date, A.read_status, C.title as channel_title from articles  as A Left  join channels as C where C.uuid = A.channel_uuid and C.uuid = ?");
           query = query.bind::<Text, _>(channel_uuid);
         }
       }
@@ -60,40 +95,46 @@ impl Article {
       }
     }
 
-    // match filter.read_status {
-    //   Some(0) => {
-    //     1;
-    //   }
-    //   Some(status) => {
-    //     query = query.filter(schema::articles::read_status.eq(status));
-    //   }
-    //   None => {
-    //     1;
-    //   }
-    // }
-    //
-    // match filter.cursor {
-    //   Some(cursor) => {
-    //     query = query.filter(schema::articles::id.gt(cursor));
-    //   }
-    //   None => {
-    //     1;
-    //   }
-    // }
+    match filter.read_status {
+      Some(0) => {
+        1;
+      }
+      Some(status) => {
+        query = query
+          .sql(" and A.read_status = ?")
+          .bind::<Integer, _>(status);
+      }
+      None => {
+        1;
+      }
+    }
 
-    // match filter.limit {
-    //   Some(limit) => {
-    //     query = query.limit(limit.into());
-    //   }
-    //   None => {
-    //     1;
-    //   }
-    // }
+    match filter.cursor {
+      Some(cursor) => {
+        query = query.sql(" adn A.id > ?").bind::<Integer, _>(cursor);
+      }
+      None => {
+        1;
+      }
+    }
 
-    // query = query.order(schema::articles::dsl::pub_date.desc());
+    match filter.limit {
+      Some(limit) => {
+        query = query.sql(" limit ?").bind::<Integer, _>(limit);
+      }
+      None => {
+        1;
+      }
+    }
+
+    query = query.sql(" order by A.pub_date DESC");
+
+    let debug = diesel::debug_query::<diesel::sqlite::Sqlite, _>(&query);
+
+    println!("The insert query: {:?}", debug);
 
     let result = query
-      .load::<models::Article>(&mut connection)
+      .load::<ArticleQueryItem>(&mut connection)
       .expect("Expect loading articles");
 
     ArticleQueryResult { list: result }
@@ -184,6 +225,4 @@ impl Article {
       return 0;
     }
   }
-
-
 }
