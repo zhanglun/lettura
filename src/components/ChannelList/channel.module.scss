@@ -12,13 +12,6 @@
   }
 }
 
-.inner {
-  height: calc(100% - var(--app-toolbar-height));
-  margin-top: var(--app-toolbar-height);
-  overflow-y: auto;
-  padding: 10px 0 10px 10px;
-}
-
 .list {
   margin: 0;
   padding: 0;

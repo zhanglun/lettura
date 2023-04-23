@@ -379,7 +379,7 @@ const ChannelList = (): JSX.Element => {
           </Tooltip>
         </div>
       </div>
-      <div className={styles.inner} ref={listRef}>
+      <div className="overflow-y-auto mt-[var(--app-toolbar-height)] pb-3 pl-3 height-[calc(100% - var(--app-toolbar-height))]" ref={listRef}>
         {renderTree()}
       </div>
       {refreshing && (
