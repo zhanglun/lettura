@@ -8,7 +8,44 @@ env:
   TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
 
 jobs:
-  release:
+  create-release:
+    permissions:
+      contents: write
+    runs-on: ubuntu-20.04
+    outputs:
+      release_id: ${{ steps.create-release.outputs.result }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Get version
+        run: echo "PACKAGE_VERSION=$(node -p "require('./src-tauri/tauri.conf.json').package.version")" >> $GITHUB_ENV
+      - name: Create release
+        id: create-release
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { data } = await github.rest.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: `v${process.env.PACKAGE_VERSION}`,
+              name: ` v${process.env.PACKAGE_VERSION}`,
+              body: 'Take a look at the assets to download and install this app.',
+              draft: true,
+              prerelease: false
+            })
+            return data.id
+  build:
+    name: Build and Upload Release Asset
+    needs: create-release
+    permissions:
+      contents: write
     strategy:
       fail-fast: false
       matrix:
@@ -20,7 +57,6 @@ jobs:
 
       - name: Install dependencies (ubuntu only)
         if: matrix.platform == 'ubuntu-20.04'
-        # You can remove libayatana-appindicator3-dev if you don't use the system tray feature.
         run: |
           sudo apt-get update
           sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libayatana-appindicator3-dev librsvg2-dev
@@ -44,32 +80,51 @@ jobs:
           cache: 'pnpm'
 
       - name: Install app dependencies and build web
-        # Remove `&& yarn build` if you build your frontend in `beforeBuildCommand`
         run: pnpm install
 
       - name: Build the app
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.LETTURA_TOKEN }}
+          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_KEY_PASSWORD : ${{ secrets.TAURI_KEY_PASSWORD }}
         with:
-          tagName: 'v__VERSION__' # This only works if your workflow triggers on new tags.
-          releaseName: 'Lettura v__VERSION__' # tauri-action replaces \_\_VERSION\_\_ with the app version.
-          releaseBody: 'See the assets to download and install this version.'
-          releaseDraft: false
-          prerelease: true
+          releaseId: ${{ needs.create-release.outputs.release_id }}
 
-  update_json:
-    needs: release
-    runs-on: macos-latest
+  publish-release:
+    permissions:
+      contents: write
+    runs-on: ubuntu-20.04
+    needs: [create-release, build]
+
     steps:
-      - uses: actions/checkout@v3
-      - name: Set Node.js Env
-        uses: actions/setup-node@v3
-        with:
-          node-version: 'lts/*'
-      - name: Create file
-        working-directory: ./
+      - name: publish release
+        id: publish-release
+        uses: actions/github-script@v6
         env:
-          GITHUB_TOKEN: ${{ secrets.LETTURA_TOKEN }}
-        run: |
-          node ./scripts/updater.mjs --info ${{ needs.release.outputs }}
+          release_id: ${{ needs.create-release.outputs.release_id }}
+        with:
+          script: |
+            github.rest.repos.updateRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: process.env.release_id,
+              draft: false,
+              prerelease: false
+            })
+
+  # update_json:
+  #   needs: release
+  #   runs-on: macos-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: Set Node.js Env
+  #       uses: actions/setup-node@v3
+  #       with:
+  #         node-version: 'lts/*'
+  #     - name: Create file
+  #       working-directory: ./
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.LETTURA_TOKEN }}
+  #       run: |
+  #         node ./scripts/updater.mjs --info ${{ needs.release.outputs }}
