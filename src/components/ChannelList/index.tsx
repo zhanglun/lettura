@@ -300,6 +300,7 @@ const ChannelList = (): JSX.Element => {
       let data = [...treeData];
       const loop = (data: Channel[], key: string, callback: (item: Channel, idx: number, arr: Channel[]) => void) => {
         data.forEach((item, ind, arr) => {
+          // @ts-ignore
           if (item.key === key) return callback(item, ind, arr);
           if (item.children) return loop(item.children, key, callback);
         });
