@@ -21,6 +21,7 @@ import pLimit from "p-limit";
 import {useBearStore} from "../../hooks/useBearStore";
 
 import styles from "./channel.module.scss";
+import {channel} from "diagnostics_channel";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -109,6 +110,7 @@ const ChannelList = (): JSX.Element => {
     return Promise.all([dataAgent.getFeeds(), dataAgent.getUnreadTotal()]).then(
       ([channel, unreadTotal]) => {
         channel = initUnreadCount(channel, unreadTotal);
+        console.log('channel', channel);
         setChannelList(channel);
       }
     );
@@ -264,7 +266,7 @@ const ChannelList = (): JSX.Element => {
           </span>
           {unread > 0 && (
             <span
-              className="px-1 min-w-[1rem] h-4 leading-4 text-center text-[10px] text-white rounded-lg bg-neutral-600">
+              className={`px-1 min-w-[1rem] h-4 leading-4 text-center text-[10px] text-white rounded-lg ${isActive ? 'bg-neutral-600' : 'bg-neutral-500'}`}>
               {unread}
             </span>
           )}
@@ -287,15 +289,115 @@ const ChannelList = (): JSX.Element => {
       }
     };
 
-    const data = channelList.map((item) => format(item));
+    let treeData = channelList.map((item) => format(item));
+    function onDrop(info: any) {
+      const { dropToGap, node, dragNode } = info;
+      const dropKey = node.key;
+      const dragKey = dragNode.key;
+      const dropPos = node.pos.split('-');
+      const dropPosition = info.dropPosition - Number(dropPos[dropPos.length - 1]);
+
+      let data = [...treeData];
+      const loop = (data: Channel[], key: string, callback: (item: Channel, idx: number, arr: Channel[]) => void) => {
+        data.forEach((item, ind, arr) => {
+          if (item.key === key) return callback(item, ind, arr);
+          if (item.children) return loop(item.children, key, callback);
+        });
+      };
+      let dragObj: any;
+      loop(data, dragKey, (item, ind, arr) => {
+        arr.splice(ind, 1);
+        dragObj = item;
+      });
+
+      if (!dropToGap) {
+        // inset into the dropPosition
+        loop(data, dropKey, (item, ind, arr) => {
+          if (item.item_type === 'folder') {
+            item.children = item.children || [];
+            item.children.push(dragObj);
+          }
+        });
+      } else if (dropPosition === 1 && node.children && node.expanded) {
+        // has children && expanded and drop into the node bottom gap
+        // insert to the top
+        loop(data, dropKey, (item: Channel) => {
+          item.children = item.children || [];
+          item.children.unshift(dragObj);
+        });
+      } else {
+        let dropNodeInd: number = 0;
+        let dropNodePosArr: Channel[] = [];
+
+        loop(data, dropKey, (item, ind, arr) => {
+          dropNodePosArr = arr;
+          dropNodeInd = ind;
+        });
+
+        if (dropPosition === -1) {
+          // insert to top
+          dropNodePosArr.splice(dropNodeInd, 0, dragObj);
+        } else {
+          // insert to bottom
+          dropNodePosArr.splice(dropNodeInd + 1, 0, dragObj);
+        }
+      }
+
+      const updateSort = (list: any[]) => {
+        return list.map((channel: Channel, idx: number) => {
+          channel.sort = idx;
+
+          if (channel.children) {
+            channel.children = updateSort(channel.children);
+          }
+          return channel;
+        })
+      }
+
+      console.log('updateSort(data)', updateSort(data))
+
+      let res: any[] = [];
+      const createSortsMeta = (parent_uuid: string, list: Channel[], res: any[]) => {
+        list.forEach((item, idx) => {
+          if (parent_uuid) {
+            res.push({
+              parent_uuid,
+              child_uuid: item.uuid,
+              sort: idx
+            })
+          } else {
+            res.push({
+              parent_uuid: '',
+              child_uuid: item.uuid,
+              sort: idx
+            })
+          }
+
+          if (item.children) {
+            createSortsMeta(item.uuid, item.children, res);
+          }
+        })
+      }
+
+      createSortsMeta('', updateSort(data), res);
+      setChannelList(updateSort(data));
+
+      console.log('res', res)
+
+      dataAgent.updateFeedSort(res).then(() => {
+        console.log('====>after sort', data)
+      });
+    }
 
     return (
       <div>
         <Tree
-          treeData={data}
+          treeData={treeData}
+          draggable={true}
+          onDrop={onDrop}
           renderFullLabel={renderLabel}
           directory
-        ></Tree>
+         aria-label={"tree"}></Tree>
       </div>
     );
   };

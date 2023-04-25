@@ -163,7 +163,7 @@ export const Folder = ({
         <span className="grow shrink overflow-hidden text-ellipsis whitespace-nowrap text-sm text-[color:currentColor]">
           {channel.title}
         </span>
-        {unread > 0 && <span className="px-1 min-w-[1rem] h-4 leading-4 text-center text-[10px] text-white rounded-lg bg-neutral-600">{unread}</span>}
+        {unread > 0 && <span className="px-1 min-w-[1rem] h-4 leading-4 text-center text-[10px] text-white rounded-lg bg-neutral-400">{unread}</span>}
       </NavLink>
     </li>
   );
