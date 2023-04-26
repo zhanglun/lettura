@@ -57,7 +57,7 @@ const ChannelList = (): JSX.Element => {
         target = channel
       }
 
-      if (!target || !child) {
+      if (!target && !child) {
         return channel;
       }
 

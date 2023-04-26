@@ -16,7 +16,7 @@ export const ArticleItem = React.forwardRef(
 
     const updateCurrentArticle = (article: any) => {
       if (article.read_status === 1) {
-        setReadStatus(1);
+        setReadStatus(2);
       }
 
       store.updateArticleAndIdx(article);
