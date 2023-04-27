@@ -162,7 +162,6 @@ const ChannelList = (): JSX.Element => {
   };
 
   const refreshList = () => {
-    console.log("%c Line:144 🍷 refreshList", "color:#42b983", "refreshList");
     setRefreshing(true);
 
     dataAgent.getUserConfig().then((config) => {
@@ -241,7 +240,8 @@ const ChannelList = (): JSX.Element => {
               isActive
                 ? "text-[#fff] bg-royal-blue-600 hover:text-[#fff] hover:bg-royal-blue-600"
                 : " text-slate-600 hover:text-slate-900 hover:bg-stone-100"
-            } ${level ? 'pl-8' : ''}`
+            } ${level ? 'pl-8' : ''}
+            active:bg-gray-200`
           }
         >
           {!isLeaf && renderFolder(expandStatus, onExpand)}
