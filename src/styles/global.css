@@ -76,8 +76,8 @@
 @media screen and (prefers-color-scheme: dark) {
   :root {
     --body-color: #fff;
-    --body-bg-color: #000;
-    --app-main-bg-color: #000;
+    --body-bg-color: #3c3c3c;
+    --app-main-bg-color: #3c3c3c;
   }
 }
 
@@ -89,7 +89,7 @@
 
 :root body[data-theme='dark'] {
   --body-color: #fff;
-  --body-bg-color: #000;
+  --body-bg-color: #3c3c3c;
   --headline-color: #fff;
-  --app-main-bg-color: #000;
+  --app-main-bg-color: #3c3c3c;
 }
