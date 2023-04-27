@@ -6,8 +6,8 @@ pub struct Tray {}
 impl Tray {
   pub fn get_tray_menu() -> SystemTray {
     let menu = SystemTrayMenu::new()
-      .add_item(CustomMenuItem::new("open_window", "Open Window"))
-      .add_item(CustomMenuItem::new("hide_window", "Hide Window"))
+      .add_item(CustomMenuItem::new("open_window", "Open Lettura"))
+      .add_item(CustomMenuItem::new("hide_window", "Hide Lettura"))
       .add_native_item(SystemTrayMenuItem::Separator)
       .add_submenu(SystemTraySubmenu::new(
         "More",
@@ -27,6 +27,7 @@ impl Tray {
           let window = app_handle.get_window("main").unwrap();
 
           window.show().unwrap();
+          window.set_focus().unwrap();
         },
         "hide_window" => {
           let window = app_handle.get_window("main").unwrap();

@@ -3,28 +3,6 @@
 version = 3
 
 [[package]]
-name = "Lettura"
-version = "0.1.1"
-dependencies = [
- "atom_syndication",
- "chrono",
- "diesel",
- "diesel_migrations",
- "dotenv",
- "libsqlite3-sys",
- "reqwest",
- "rss",
- "scraper",
- "serde",
- "serde_json",
- "tauri",
- "tauri-build",
- "tokio",
- "toml",
- "uuid 1.2.1",
-]
-
-[[package]]
 name = "adler"
 version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1619,6 +1597,28 @@ name = "lazy_static"
 version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
+
+[[package]]
+name = "lettura"
+version = "0.1.1"
+dependencies = [
+ "atom_syndication",
+ "chrono",
+ "diesel",
+ "diesel_migrations",
+ "dotenv",
+ "libsqlite3-sys",
+ "reqwest",
+ "rss",
+ "scraper",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-build",
+ "tokio",
+ "toml",
+ "uuid 1.2.1",
+]
 
 [[package]]
 name = "libappindicator"

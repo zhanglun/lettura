@@ -1,11 +1,11 @@
 [package]
-name = "Lettura"
+name = "lettura"
 version = "0.1.1"
 description = "Your RSS reader"
 authors = ["zhanglun1410@gmail.com"]
 license = ""
 repository = ""
-default-run = "Lettura"
+default-run = "lettura"
 edition = "2021"
 build = "src/build.rs"
 

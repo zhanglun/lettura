@@ -10,7 +10,7 @@ extern crate dotenv;
 
 use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 use tauri::{Manager, GlobalWindowEvent, WindowEvent, Wry};
-use tokio::sync::{mpsc, Mutex};
+use tokio::sync::{mpsc};
 
 mod cmd;
 mod core;
@@ -37,8 +37,8 @@ fn handle_window_event(event: GlobalWindowEvent<Wry>) {
     WindowEvent::CloseRequested { api, .. } => {
       let window = window.clone();
 
-      api.prevent_close();
       window.hide().unwrap();
+      api.prevent_close();
     }
     _ => {}
   }
