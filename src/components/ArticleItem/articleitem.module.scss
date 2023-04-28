@@ -1,7 +1,7 @@
 .item {
   list-style-type: none;
   border-radius: 4px;
-  padding: 8px 8px 8px 26px;
+  padding: 12px 12px 12px 26px;
   display: grid;
   grid-gap: 5px;
   position: relative;
@@ -96,7 +96,7 @@
 }
 
 .current {
-  background-color: var(--semi-color-primary);
+  background-color: var(--color-primary-blue);
   color: var(--color-primary-white);
 }
 

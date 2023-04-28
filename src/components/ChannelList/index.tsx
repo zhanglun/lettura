@@ -240,7 +240,7 @@ const ChannelList = (): JSX.Element => {
             `w-full flex items-center h-8 px-2 py-3 rounded-md cursor-pointer mt-[2px] ${
               isActive
                 ? "text-[#fff] bg-royal-blue-600 hover:text-[#fff] hover:bg-royal-blue-600"
-                : " text-slate-600 hover:text-slate-900 hover:bg-stone-100"
+                : " text-slate-600 hover:text-slate-900 hover:bg-gray-100"
             } ${level ? 'pl-8' : ''}
             active:bg-gray-200`
           }

@@ -11,14 +11,15 @@
   --app-setting-sidebar-width: 200px;
   --view-helpbar-width: 50px;
 
-  --color-primary-blue: #2563eb;
+  /* --color-primary-blue: #2563eb; */
+  --color-primary-blue: #078080;
 }
 
 
 @media screen and (prefers-color-scheme: light) {
   :root {
     --body-color: #000;
-    --body-bg-color: #fff;
+    --body-bg-color: #fffffe;
     --app-main-bg-color: #fff;
   }
 }

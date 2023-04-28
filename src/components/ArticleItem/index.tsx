@@ -43,9 +43,13 @@ export const ArticleItem = React.forwardRef(
 
     return (
       <li
-        className={`${styles.item} ${readStatus === 2 ? styles.read : ""} ${
-          highlight ? styles.current : ""
-        }`}
+        className={classnames(
+          styles.item,
+          {
+            [styles.read]: readStatus === 2,
+            [styles.current]: highlight,
+            "hover:bg-red": highlight,
+          })}
         onClick={handleClick}
         aria-current="page"
         ref={ref}
