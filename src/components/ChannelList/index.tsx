@@ -224,7 +224,8 @@ const ChannelList = (): JSX.Element => {
     const isActive = (store?.channel?.uuid || channelUuid) === uuid;
 
     return (
-      <li role="treeitem"
+      <li className={`${className} border-2 border-[transparent]`}
+          role="treeitem"
           key={channel.title}
           onClick={() => {
             store.setChannel(channel)

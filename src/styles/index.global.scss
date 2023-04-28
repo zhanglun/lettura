@@ -2,8 +2,8 @@
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans GB',
-    'MicroSoft YaHei', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
-    'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  'MicroSoft YaHei', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
+  'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: var(--body-color);
@@ -29,7 +29,7 @@ body {
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  monospace;
 }
 
 a {
@@ -89,7 +89,7 @@ $disabled-gray: #ddd;
   &.focus,
   &:hover,
   &:active {
-    >.traffic-light-close {
+    > .traffic-light-close {
       background-color: $close-red;
 
       &:active:hover {
@@ -97,7 +97,7 @@ $disabled-gray: #ddd;
       }
     }
 
-    >.traffic-light-minimize {
+    > .traffic-light-minimize {
       background-color: $minimize-yellow;
 
       &:active:hover {
@@ -105,7 +105,7 @@ $disabled-gray: #ddd;
       }
     }
 
-    >.traffic-light-maximize {
+    > .traffic-light-maximize {
       background-color: $maximize-green;
 
       &:active:hover {
@@ -116,7 +116,7 @@ $disabled-gray: #ddd;
 
   &:hover,
   &:active {
-    >.traffic-light {
+    > .traffic-light {
 
       &:before,
       &:after,
@@ -140,7 +140,7 @@ $disabled-gray: #ddd;
   position: relative;
   outline: none;
 
-  >svg {
+  > svg {
     position: absolute;
     transform: translate(-50%, -50%);
     top: 50%;
@@ -162,7 +162,7 @@ $disabled-gray: #ddd;
     svg {
       transform: translate(-50%, -30%);
 
-      >path {
+      > path {
         stroke: $close-red-icon;
       }
     }
@@ -228,3 +228,23 @@ $disabled-gray: #ddd;
 *::-webkit-scrollbar-track {
   background: transparent;
 }
+
+.semi-tree-option-list li.semi-tree-option {
+  padding: 0;
+}
+//
+//.semi-tree-option-list-block .semi-tree-option:hover {
+//  background: inherit;
+//}
+//.semi-tree-option-drag-over {
+//  position: relative;
+//}
+//.semi-tree-option-list .semi-tree-option-drag-over.semi-tree-option-draggable,
+//.semi-tree-option-list .semi-tree-option-drag-over.semi-tree-option-fullLabel-draggable {
+//  border-color: var(--color-primary-blue);
+//}
+//
+//.semi-tree-option-list .semi-tree-option-fullLabel-draggable.semi-tree-option-fullLabel-drag-over-gap-top,
+//.semi-tree-option-list .semi-tree-option-fullLabel-draggable.semi-tree-option-fullLabel-drag-over-gap-bottom {
+//  border-color: var(--color-primary-blue);
+//}
