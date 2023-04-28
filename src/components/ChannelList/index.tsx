@@ -224,7 +224,7 @@ const ChannelList = (): JSX.Element => {
     const isActive = (store?.channel?.uuid || channelUuid) === uuid;
 
     return (
-      <li className={`${className} border-2 border-[transparent]`}
+      <li className={`${className}`}
           role="treeitem"
           key={channel.title}
           onClick={() => {
@@ -237,7 +237,7 @@ const ChannelList = (): JSX.Element => {
       >
         <span
           className={
-            `w-full flex items-center h-8 px-2 py-3 rounded-md cursor-pointer ${
+            `w-full flex items-center h-8 px-2 py-3 rounded-md cursor-pointer mt-[2px] ${
               isActive
                 ? "text-[#fff] bg-royal-blue-600 hover:text-[#fff] hover:bg-royal-blue-600"
                 : " text-slate-600 hover:text-slate-900 hover:bg-stone-100"

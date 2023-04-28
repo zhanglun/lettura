@@ -11,56 +11,7 @@
   --app-setting-sidebar-width: 200px;
   --view-helpbar-width: 50px;
 
-  --headline-color: #333;
-  --title-color: #363636;
-  --text-color: #666;
-  --link-default-color: #296bcc;
-  --link-hover-color: #296bcc;
-  --background-color: #fafafa;
-
-  --block-padding: 16px;
-  --font-weight-bold: 600;
-  --font-weight-normal: 400;
-  --button-height-large: 28px;
-  --button-height-normal: 28px;
-  --button-height-small: 20px;
-  --button-radius: 6px;
-  --input-height: 26px;
-  --input-border-radius: 4px;
-  --input-bg: rgba(245, 245, 245, 0.5);
-  --input-border-color: #d1d1d1;
-  --input-shadow-color: #87aef3;
-  --input-color: #232526;
-  --input-placeholder-color: rgba(121, 121, 121, 0.5);
-  --input-shadow: 0 0 0 2px var(--input-shadow-color);
-  --input-disabled-bg: rgba(0, 0, 0, 0.05);
-  --line-color: rgba(0, 0, 0, 0.05);
-  --icon-focused-bg: rgba(0, 0, 0, 0.05);
-
-  --color-primary-blue: #017aff;
-  --color-primary-90: #232526;
-  --color-primary-10: #e5e5e5;
-  --color-primary-3: #f4f4f4;
-  --color-primary-white: #fff;
-  --color-01: #f96057;
-  --color-02: #f8a34d;
-  --color-03: #f8ce52;
-  --color-04: #5fcf65;
-  --color-05: #488ef7;
-  --color-06: #b470d4;
-  --color-07: #9d9ca0;
-  --color-gray-100: #f9f9f9;
-  --color-gray-100-rgb: rgb(249, 249, 249);
-  --color-gray-200: #f4f4f5;
-  --color-gray-200-rgb: rgb(244, 244, 245);
-  --color-gray-300: #eaeaec;
-  --color-gray-300-rgb: rgb(234, 234, 236);
-  --color-gray-400: #cdcdd0;
-  --color-gray-400-rgb: rgb(205, 205, 208);
-  --color-gray-500: #8c8c97;
-  --color-gray-500-rgb: rgb(140, 140, 151);
-  --color-gray-600: #524e56;
-  --color-gray-600-rgb: rgb(82, 78, 86);
+  --color-primary-blue: #2563eb;
 }
 
 
@@ -68,7 +19,6 @@
   :root {
     --body-color: #000;
     --body-bg-color: #fff;
-    /* --body-bg-color: rgba(255, 255, 255, 0.5); */
     --app-main-bg-color: #fff;
   }
 }

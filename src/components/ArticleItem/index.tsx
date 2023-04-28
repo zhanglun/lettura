@@ -1,4 +1,5 @@
 import React, { ForwardedRef, useEffect, useState } from "react";
+import classnames from "classnames";
 import Dayjs from "dayjs";
 import { useBearStore } from "../../hooks/useBearStore";
 import styles from "./articleitem.module.scss";
@@ -53,19 +54,19 @@ export const ArticleItem = React.forwardRef(
       >
         {readStatus === 1 && <div className={styles.dot} />}
         <div className={styles.title}>
-          <div className={styles.titleText}>
-            {highlight} {article.title}
+          <div className={`font-bold text-sm ${highlight ? "text-white" : ""}`}>
+            {article.title}
           </div>
         </div>
-        <div className={styles.description}>
+        <div className={classnames(styles.description, { "text-white": highlight })}>
           {(article.description || "").replace(/<[^<>]+>/g, "")}
         </div>
-        <div className={styles.meta}>
-          <div className={styles.author}>
-            <img src={ico} alt="" className="rounded" />
+        <div className={classnames(styles.meta, {'text-white': highlight})}>
+          <div className={classnames("flex items-center", {'text-white': highlight})}>
+            <img src={ico} alt="" className="rounded w-4 mr-1" />
             {article.author || article.channel_title}
           </div>
-          <div className={styles.date}>
+          <div className={classnames({'text-white': highlight})}>
             {Dayjs(article.pub_date.replace(/-/gi, "/")).format(
               "YYYY-MM-DD HH:mm",
             )}

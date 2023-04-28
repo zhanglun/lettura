@@ -302,9 +302,20 @@ export const ArticleContainer = (): JSX.Element => {
 
   return (
     <div className={styles.article}>
-      <div className={styles.list}>
+      <div className="relative h-full border-r border-stone-100">
         <div className={`sticky-header ${styles.header}`}>
-          <div className={styles.title}>
+          <div className="
+            flex
+            items-center
+            px-3
+            text-sm
+            font-bold
+            w-full
+            text-ellipsis
+            overflow-hidden
+            whitespace-nowrap
+          "
+          >
             {store.channel ? store.channel.title : ""}
           </div>
           <div className={styles.menu}>

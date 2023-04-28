@@ -10,10 +10,11 @@
     "create-json": "node ./scripts/updater.mjs"
   },
   "dependencies": {
-    "@douyinfe/semi-ui": "^2.26.0",
+    "@douyinfe/semi-ui": "^2.33.1",
     "@headlessui/react": "^1.7.7",
     "@heroicons/react": "^2.0.13",
     "@tauri-apps/api": "^1.2.0",
+    "classnames": "^2.3.2",
     "dayjs": "^1.11.7",
     "immutability-helper": "^3.1.1",
     "p-limit": "^4.0.0",

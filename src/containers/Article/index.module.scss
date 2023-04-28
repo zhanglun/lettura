@@ -92,13 +92,6 @@
   background-color: var(--color-gray-200);
 }
 
-
-.list {
-  position: relative;
-  height: 100%;
-  border-right: 1px solid var(--line-color);
-}
-
 .scrollList {
   overflow-y: auto;
   height: 100vh;
