@@ -1,3 +1,4 @@
+import fs from 'fs';
 import axios from "axios";
 import * as cheerio from "cheerio";
 
@@ -65,6 +66,7 @@ idLen.forEach((idx) => {
     return fetchPalette(idx + 1)
   }).then((res) => {
     list.push(res)
+    fs.writeFileSync(`./token/palette${idx + 1}.json`, JSON.stringify(res, null, "  "));
     return res
   })
 })
