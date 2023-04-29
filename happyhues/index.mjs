@@ -1,12 +1,9 @@
 import axios from "axios";
 import * as cheerio from "cheerio";
 
-let cache = new Map();
-let res = new Map();
-
-
 function parseSection ($, sectionId, dom) {
   const prefix = `color-${sectionId}`;
+  const result = new Map();
   const heads = dom.find('h4');
 
   if (heads.length === 0) {
@@ -15,7 +12,7 @@ function parseSection ($, sectionId, dom) {
       let value = $(row).find('.hue-hex').text().trim();
       let key = [prefix, title].join('-');
 
-      res.set(key, value.trim())
+      result.set(key, value.trim())
     })
   } else {
     heads.each((idx, head) => {
@@ -27,36 +24,52 @@ function parseSection ($, sectionId, dom) {
         let value = $(row).find('.hue-hex').text().trim();
         let key = [prefix, block, title].join('-');
 
-        // if (cache.get(key)) {
-        //   cache.set(key, cache.get(key) + 1)
-        //   key = `${key}-${cache.get(key)}`
-        // } else {
-        //   cache.set(key, 1)
-        // }
-        res.set(key, value.trim())
+        result.set(key, value.trim())
       })
     });
   }
+
+  return result;
 }
 
-const fetchPages = async () => {
+const baseUrl = 'https://www.happyhues.co/palettes/';
+const idLen = Array.from(new Array(2).keys());
+
+const fetchPalette = async (id) => {
+  let palette = {};
+
   try {
-    const response = await axios.get('https://www.happyhues.co/palettes/14');
+    const response = await axios.get(baseUrl + id);
     const html = response.data;
     const $ = cheerio.load(html);
 
     $('.section.wf-section').each((i, wrap) => {
-      console.log("🚀 ~ file: index.mjs:40 ~ $ ~ i:", i)
-      parseSection($, i + 1, $(wrap));
+      let result = parseSection($, i + 1, $(wrap));
+      console.log("🚀 ~ file: index.mjs:49 ~ $ ~ result:", result)
+
+      result.forEach((val, key) => {
+        palette[key] = { value: val };
+      })
     });
 
-    let json = {};
-
-    console.log("🚀 ~ file: index.mjs:33 ~ res:", res)
+    return palette;
   } catch (err) {
     throw err;
   }
 }
 
-// Print all tags in the console
-fetchPages().then(titles => console.log(titles));
+let list = [];
+let p = Promise.resolve();
+idLen.forEach((idx) => {
+  p = p.then(()=> {
+    return fetchPalette(idx + 1)
+  }).then((res) => {
+    list.push(res)
+    return res
+  })
+})
+
+p.then(() => {
+  console.log(list)
+})
+
