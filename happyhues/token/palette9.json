@@ -1,0 +1,140 @@
+{
+  "color-1-elements-background": {
+    "value": "#eff0f3"
+  },
+  "color-1-elements-headline": {
+    "value": "#0d0d0d"
+  },
+  "color-1-elements-paragraph": {
+    "value": "#2a2a2a"
+  },
+  "color-1-elements-button": {
+    "value": "#ff8e3c"
+  },
+  "color-1-elements-button-text": {
+    "value": "#0d0d0d"
+  },
+  "color-1-illustration-stroke": {
+    "value": "#0d0d0d"
+  },
+  "color-1-illustration-main": {
+    "value": "#eff0f3"
+  },
+  "color-1-illustration-highlight": {
+    "value": "#ff8e3c"
+  },
+  "color-1-illustration-secondary": {
+    "value": "#fffffe"
+  },
+  "color-1-illustration-tertiary": {
+    "value": "#d9376e"
+  },
+  "color-2-elements-background": {
+    "value": "#fffffe"
+  },
+  "color-2-elements-headline": {
+    "value": "#0d0d0d"
+  },
+  "color-2-elements-sub-headline": {
+    "value": "#2a2a2a"
+  },
+  "color-2-elements-card-background": {
+    "value": "#eff0f3"
+  },
+  "color-2-elements-card-heading": {
+    "value": "#0d0d0d"
+  },
+  "color-2-elements-card-paragraph": {
+    "value": "#2a2a2a"
+  },
+  "color-2-icons-stroke": {
+    "value": "#0d0d0d"
+  },
+  "color-2-icons-main": {
+    "value": "#eff0f3"
+  },
+  "color-2-icons-highlight": {
+    "value": "#ff8e3c"
+  },
+  "color-2-icons-secondary": {
+    "value": "#fffffe"
+  },
+  "color-2-icons-tertiary": {
+    "value": "#d9376e"
+  },
+  "color-3-background": {
+    "value": "#eff0f3"
+  },
+  "color-3-headline": {
+    "value": "#0d0d0d"
+  },
+  "color-3-paragraph": {
+    "value": "#2a2a2a"
+  },
+  "color-3-card-background": {
+    "value": "#fffffe"
+  },
+  "color-3-card-headline": {
+    "value": "#0d0d0d"
+  },
+  "color-3-card-paragraph": {
+    "value": "#2a2a2a"
+  },
+  "color-3-card-tag-background": {
+    "value": "#ff8e3c"
+  },
+  "color-3-card-tag-text": {
+    "value": "#fffffe"
+  },
+  "color-3-card-highlight": {
+    "value": "#0d0d0d"
+  },
+  "color-4-elements-background": {
+    "value": "#fffffe"
+  },
+  "color-4-elements-headline": {
+    "value": "#0d0d0d"
+  },
+  "color-4-elements-paragraph": {
+    "value": "#2a2a2a"
+  },
+  "color-4-elements-link": {
+    "value": "#ff8e3c"
+  },
+  "color-4-elements-card-backgroud": {
+    "value": "#eff0f3"
+  },
+  "color-4-elements-card-headline": {
+    "value": "#0d0d0d"
+  },
+  "color-4-elements-card-paragraph": {
+    "value": "#2a2a2a"
+  },
+  "color-4-newsletter-background": {
+    "value": "#0d0d0d"
+  },
+  "color-4-newsletter-form-input": {
+    "value": "#eff0f3"
+  },
+  "color-4-newsletter-label-&-placeholder": {
+    "value": "#0d0d0d"
+  },
+  "color-4-newsletter-form-button": {
+    "value": "#ff8e3c"
+  },
+  "color-4-newsletter-form-button-text": {
+    "value": "#fffffe"
+  },
+  "color-5-elements-background": {
+    "value": "#eff0f3"
+  },
+  "color-5-elements-headline": {
+    "value": "#0d0d0d"
+  },
+  "color-5-elements-paragraph": {
+    "value": "#2a2a2a"
+  },
+  "color-5-elements-links": {
+    "value": "#ff8e3c"
+  }
+}
