@@ -4,8 +4,8 @@ import * as cheerio from "cheerio";
 import StyleDictionary from "style-dictionary";
 import path from "path";
 
-function parseSection($, sectionId, dom) {
-  const prefix = `color-${sectionId}`;
+function parseSection($, paletteId, sectionId, dom) {
+  const prefix = `palette-${paletteId}-color-${sectionId}`;
   const result = new Map();
   const heads = dom.find("h4");
 
@@ -57,7 +57,7 @@ const fetchPalette = async (id) => {
     const $ = cheerio.load(html);
 
     $(".section.wf-section").each((i, wrap) => {
-      let result = parseSection($, i + 1, $(wrap));
+      let result = parseSection($, id, i + 1, $(wrap));
 
       result.forEach((val, key) => {
         palette[key] = { value: val };
@@ -71,69 +71,122 @@ const fetchPalette = async (id) => {
 };
 
 let list = [];
-let p = Promise.resolve();
-idLen.forEach((idx) => {
-  p = p
-    .then(() => {
-      return fetchPalette(idx + 1);
-    })
-    .then((res) => {
-      const filename = `palette${idx + 1}`;
-      const filepath = `./token/${filename}.json`;
 
-      console.log("🚀 ~ file: index.mjs:83 ~ .then ~ filename:", filename)
+function accessWeb () {
+  let p = Promise.resolve();
 
-      list.push(filename);
+  idLen.forEach((idx) => {
+    p = p
+      .then(() => {
+        return fetchPalette(idx + 1);
+      })
+      .then((res) => {
+        const filename = `palette${idx + 1}`;
+        const filepath = `./token/${filename}.json`;
 
-      fs.writeFileSync(filepath, JSON.stringify(res, null, "  "));
-      setTimeout(() => {
-        return Promise.resolve(res);
-      }, 2000);
-    });
-});
+        console.log("🚀 ~ file: index.mjs:83 ~ .then ~ filename:", filename)
 
-p.then(() => {
-  console.log(list);
+        list.push(filename);
+
+        fs.writeFileSync(filepath, JSON.stringify(res, null, "  "));
+        setTimeout(() => {
+          return Promise.resolve(res);
+        }, 2000);
+      });
+  });
+
+  return p;
+}
+
+function createStyleDist(type, list) {
+  const types = {
+    css: 'css/variables',
+    scss: 'scss/variables',
+    less: 'less/variables',
+  }
+  const options = {
+    'outputReferences': true
+  };
+
+
+  let base = [];
+
+  if (type === 'ts') {
+    base = [
+      {
+        'destination': `variables.ts`,
+        'format': 'javascript/es6',
+        options
+      },
+      {
+        'destination': `variables.d.ts`,
+        'format': 'typescript/es6-declarations',
+        options
+      }
+    ]
+  } else {
+    base = [
+      {
+        'destination': `variables.${type}`,
+        'format': types[type],
+        options
+      }
+    ]
+  }
+
+  return list.reduce((res, filename) => {
+    if (type !== 'ts') {
+      res.push({
+        destination: `${filename}.${type}`,
+        format: types[type],
+        options
+      });
+    } else {
+      res.push({
+        'destination': `${filename}.ts`,
+        'format': 'javascript/es6',
+        options
+      })
+      res.push({
+        'destination': `${filename}.d.ts`,
+        'format': 'typescript/es6-declarations',
+        options
+      })
+    }
+
+    return res;
+  }, base);
+}
+
+function createStyles() {
   const sdExtend = StyleDictionary.extend({
     source: ["./token/**/*.json"],
     platforms: {
       scss: {
         transformGroup: "scss",
         buildPath: "dist/scss/",
-        files: list.map((filename) => {
-          return {
-            destination: filename + '.scss',
-            format: "scss/variables",
-          };
-        }),
+        files: createStyleDist('scss', list),
       },
       css: {
         transformGroup: "css",
         buildPath: "dist/css/",
-        files: list.map((filename) => {
-          return {
-            destination: filename + '.css',
-            format: "css/variables",
-          };
-        }),
+        files: createStyleDist('css', list),
       },
       ts: {
         transformGroup: "js",
         buildPath: "dist/ts/",
-        files: [...list.map((filename) => {
-          return {
-            destination: filename + '.ts',
-            format: "javascript/es6",
-          };
-        }), ...list.map((filename) => {
-          return {
-            destination: filename + '.d.ts',
-            format: "typescript/es6-declarations",
-          };
-        })],
+        files: createStyleDist('ts', list),
       },
     },
   });
 
   sdExtend.buildAllPlatforms();
+}
+
+accessWeb().then(() => {
+  console.log(list);
+  console.log(createStyleDist('css', list))
+  createStyles();
 });
+
+// createStyles();
