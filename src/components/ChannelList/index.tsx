@@ -1,6 +1,6 @@
-import React, {useCallback, useEffect, useRef, useState} from "react";
-import {useLocation, useNavigate} from "react-router-dom";
-import {Progress, Tooltip, Tree} from "@douyinfe/semi-ui";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Progress, Tooltip, Tree } from "@douyinfe/semi-ui";
 import {
   ArrowPathIcon,
   ChevronDownIcon,
@@ -10,18 +10,18 @@ import {
   FolderOpenIcon,
   PlusIcon,
 } from "@heroicons/react/24/outline";
-import {RouteConfig} from "../../config";
-import {Channel} from "../../db";
-import {getChannelFavicon} from "../../helpers/parseXML";
+import { RouteConfig } from "../../config";
+import { Channel } from "../../db";
+import { getChannelFavicon } from "../../helpers/parseXML";
 import * as dataAgent from "../../helpers/dataAgent";
-import {busChannel} from "../../helpers/busChannel";
-import {AddFeedChannel} from "../AddChannel";
-import {AddFolder} from "../AddFolder";
+import { busChannel } from "../../helpers/busChannel";
+import { AddFeedChannel } from "../AddChannel";
+import { AddFolder } from "../AddFolder";
 import pLimit from "p-limit";
-import {useBearStore} from "../../hooks/useBearStore";
+import { useBearStore } from "../../hooks/useBearStore";
 
 import styles from "./channel.module.scss";
-import {channel} from "diagnostics_channel";
+import { channel } from "diagnostics_channel";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -37,7 +37,7 @@ const ChannelList = (): JSX.Element => {
   const store = useBearStore((state) => ({
     channel: state.channel,
     setChannel: state.setChannel,
-  }))
+  }));
   const query = useQuery();
   const feedUrl = query.get("feedUrl");
   const type = query.get("type");
@@ -50,11 +50,12 @@ const ChannelList = (): JSX.Element => {
     count: number
   ) => {
     channelList.forEach((channel) => {
-      let target: any = channel.uuid === uuid ? channel : null
-      let child: any = channel.children.find((item) => item.uuid === uuid) || null;
+      let target: any = channel.uuid === uuid ? channel : null;
+      let child: any =
+        channel.children.find((item) => item.uuid === uuid) || null;
 
       if (child) {
-        target = channel
+        target = channel;
       }
 
       if (!target && !child) {
@@ -63,13 +64,13 @@ const ChannelList = (): JSX.Element => {
 
       switch (action) {
         case "increase": {
-          target ? target.unread += count : null;
-          child ? child.unread += count : null;
+          target ? (target.unread += count) : null;
+          child ? (child.unread += count) : null;
           break;
         }
         case "decrease": {
-          target ? target.unread -= count : null;
-          child ? child.unread -= count : null;
+          target ? (target.unread -= count) : null;
+          child ? (child.unread -= count) : null;
           break;
         }
         case "upgrade": {
@@ -78,8 +79,8 @@ const ChannelList = (): JSX.Element => {
         }
 
         case "set": {
-          target ? target.unread = count : null;
-          child ? child.unread = count : null;
+          target ? (target.unread = count) : null;
+          child ? (child.unread = count) : null;
           break;
         }
         default: {
@@ -96,21 +97,24 @@ const ChannelList = (): JSX.Element => {
   };
 
   const getList = () => {
-    const initUnreadCount = (list: any[], countCache: { [key: string]: number }) => {
+    const initUnreadCount = (
+      list: any[],
+      countCache: { [key: string]: number }
+    ) => {
       return list.map((item) => {
         item.unread = countCache[item.uuid] || 0;
 
         if (item.children) {
-          item.children = initUnreadCount(item.children, countCache)
+          item.children = initUnreadCount(item.children, countCache);
         }
 
         return item;
       });
-    }
+    };
     return Promise.all([dataAgent.getFeeds(), dataAgent.getUnreadTotal()]).then(
       ([channel, unreadTotal]) => {
         channel = initUnreadCount(channel, unreadTotal);
-        console.log('channel', channel);
+        console.log("channel", channel);
         setChannelList(channel);
       }
     );
@@ -131,7 +135,7 @@ const ChannelList = (): JSX.Element => {
   useEffect(() => {
     const unsubscribeUpdateCount = busChannel.on(
       "updateChannelUnreadCount",
-      ({uuid, action, count}) => {
+      ({ uuid, action, count }) => {
         console.log(
           "🚀 ~ file: index.tsx:138 ~ useEffect ~ updateChannelUnreadCount"
         );
@@ -165,7 +169,7 @@ const ChannelList = (): JSX.Element => {
     setRefreshing(true);
 
     dataAgent.getUserConfig().then((config) => {
-      const {threads = 5} = config;
+      const { threads = 5 } = config;
       const limit = pLimit(threads);
       const fns = (channelList || []).map((channel: any) => {
         return limit(() => loadAndUpdate(channel.item_type, channel.uuid));
@@ -189,61 +193,68 @@ const ChannelList = (): JSX.Element => {
 
   const renderFolder = (expandStatus: { expanded: boolean }, onExpand: any) => {
     if (expandStatus.expanded) {
-      return <>
-        <span className="h-4 w-4 rounded mr-2" onClick={onExpand}>
-          <ChevronDownIcon className={"h-4 w-4"}/>
-        </span>
-        <span className="h-4 w-4 rounded mr-3">
-          <FolderOpenIcon className={"h-4 w-4"}/>
-        </span>
-      </>
+      return (
+        <>
+          <span className="h-4 w-4 rounded mr-2" onClick={onExpand}>
+            <ChevronDownIcon className={"h-4 w-4"} />
+          </span>
+          <span className="h-4 w-4 rounded mr-3">
+            <FolderOpenIcon className={"h-4 w-4"} />
+          </span>
+        </>
+      );
     } else {
-      return <>
-        <span className="h-4 w-4 rounded mr-2" onClick={onExpand}>
-          <ChevronRightIcon className={"h-4 w-4"}/>
-        </span>
-        <span className="h-4 w-4 rounded mr-3">
-          <FolderIcon className={"h-4 w-4"}/>
-        </span>
-      </>
+      return (
+        <>
+          <span className="h-4 w-4 rounded mr-2" onClick={onExpand}>
+            <ChevronRightIcon className={"h-4 w-4"} />
+          </span>
+          <span className="h-4 w-4 rounded mr-3">
+            <FolderIcon className={"h-4 w-4"} />
+          </span>
+        </>
+      );
     }
-  }
+  };
 
   const renderLabel = ({
-                         className,
-                         onExpand,
-                         data,
-                         level,
-                         expandIcon,
-                         expandStatus,
-                       }: any) => {
-    const {unread = 0, link, label, item_type, uuid} = data;
+    className,
+    onExpand,
+    data,
+    level,
+    expandIcon,
+    expandStatus,
+  }: any) => {
+    const { unread = 0, link, label, item_type, uuid } = data;
     const channel = data;
     const ico = getChannelFavicon(link);
     const isLeaf = !(data.children && data.children.length);
     const isActive = (store?.channel?.uuid || channelUuid) === uuid;
 
     return (
-      <li className={`${className}`}
-          role="treeitem"
-          key={channel.title}
-          onClick={() => {
-            store.setChannel(channel)
-            navigate(`${RouteConfig.CHANNEL.replace(
+      <li
+        className={`${className}`}
+        role="treeitem"
+        key={channel.title}
+        onClick={() => {
+          store.setChannel(channel);
+          navigate(
+            `${RouteConfig.CHANNEL.replace(
               /:uuid/,
               channel.uuid
-            )}?channelUuid=${channel.uuid}&feedUrl=${channel.feed_url}`)
-          }}
+            )}?channelUuid=${channel.uuid}&feedUrl=${channel.feed_url}`
+          );
+        }}
       >
         <span
-          className={
-            `w-full flex items-center h-8 px-2 py-3 rounded-md cursor-pointer mt-[2px] ${
-              isActive
-                ? "text-[#fff] bg-primary hover:text-[#fff] hover:bg-primary"
-                : " text-slate-600 hover:text-slate-900 hover:bg-gray-100"
-            } ${level ? 'pl-8' : ''}
-            active:bg-gray-200`
-          }
+          className={`w-full flex items-center h-8 px-2 py-3 rounded-md cursor-pointer mt-[2px]
+             text-feed-headline hover:text-feed-active-headline
+             ${
+               isActive
+                 ? "bg-feed-active-bg text-feed-active-headline hover:bg-feed-active-bg"
+                 : "hover:bg-feed-active-bg hover:opacity-80"
+             } ${level ? "pl-8" : ""}
+            active:bg-gray-200`}
         >
           {!isLeaf && renderFolder(expandStatus, onExpand)}
 
@@ -261,13 +272,15 @@ const ChannelList = (): JSX.Element => {
               alt={channel.title}
             />
           )}
-          <span
-            className="grow shrink basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-sm text-[color:currentColor]">
+          <span className="grow shrink basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-sm">
             {channel.title}
           </span>
           {unread > 0 && (
             <span
-              className={`px-1 min-w-[1rem] h-4 leading-4 text-center text-[10px] text-white rounded-lg ${isActive ? 'bg-neutral-600' : 'bg-neutral-500'}`}>
+              className={`px-1 min-w-[1rem] h-4 leading-4 text-center text-[10px] text-white rounded-lg ${
+                isActive ? "bg-neutral-600" : "bg-neutral-500"
+              }`}
+            >
               {unread}
             </span>
           )}
@@ -295,11 +308,16 @@ const ChannelList = (): JSX.Element => {
       const { dropToGap, node, dragNode } = info;
       const dropKey = node.key;
       const dragKey = dragNode.key;
-      const dropPos = node.pos.split('-');
-      const dropPosition = info.dropPosition - Number(dropPos[dropPos.length - 1]);
+      const dropPos = node.pos.split("-");
+      const dropPosition =
+        info.dropPosition - Number(dropPos[dropPos.length - 1]);
 
       let data = [...treeData];
-      const loop = (data: Channel[], key: string, callback: (item: Channel, idx: number, arr: Channel[]) => void) => {
+      const loop = (
+        data: Channel[],
+        key: string,
+        callback: (item: Channel, idx: number, arr: Channel[]) => void
+      ) => {
         data.forEach((item, ind, arr) => {
           // @ts-ignore
           if (item.key === key) return callback(item, ind, arr);
@@ -315,7 +333,7 @@ const ChannelList = (): JSX.Element => {
       if (!dropToGap) {
         // inset into the dropPosition
         loop(data, dropKey, (item, ind, arr) => {
-          if (item.item_type === 'folder') {
+          if (item.item_type === "folder") {
             item.children = item.children || [];
             item.children.push(dragObj);
           }
@@ -353,41 +371,45 @@ const ChannelList = (): JSX.Element => {
             channel.children = updateSort(channel.children);
           }
           return channel;
-        })
-      }
+        });
+      };
 
-      console.log('updateSort(data)', updateSort(data))
+      console.log("updateSort(data)", updateSort(data));
 
       let res: any[] = [];
-      const createSortsMeta = (parent_uuid: string, list: Channel[], res: any[]) => {
+      const createSortsMeta = (
+        parent_uuid: string,
+        list: Channel[],
+        res: any[]
+      ) => {
         list.forEach((item, idx) => {
           if (parent_uuid) {
             res.push({
               parent_uuid,
               child_uuid: item.uuid,
-              sort: idx
-            })
+              sort: idx,
+            });
           } else {
             res.push({
-              parent_uuid: '',
+              parent_uuid: "",
               child_uuid: item.uuid,
-              sort: idx
-            })
+              sort: idx,
+            });
           }
 
           if (item.children) {
             createSortsMeta(item.uuid, item.children, res);
           }
-        })
-      }
+        });
+      };
 
-      createSortsMeta('', updateSort(data), res);
+      createSortsMeta("", updateSort(data), res);
       setChannelList(updateSort(data));
 
-      console.log('res', res)
+      console.log("res", res);
 
       dataAgent.updateFeedSort(res).then(() => {
-        console.log('====>after sort', data)
+        console.log("====>after sort", data);
       });
     }
 
@@ -399,7 +421,8 @@ const ChannelList = (): JSX.Element => {
           onDrop={onDrop}
           renderFullLabel={renderLabel}
           directory
-         aria-label={"tree"}></Tree>
+          aria-label={"tree"}
+        ></Tree>
       </div>
     );
   };
@@ -437,28 +460,28 @@ const ChannelList = (): JSX.Element => {
   }, []);
 
   return (
-    <div className="relative flex flex-col w-[var(--app-channel-width)] h-full select-none border-r border-slate-100">
+    <div className="relative flex flex-col w-[var(--app-channel-width)] h-full select-none border-r border-slate-100 bg-feed-list-bg">
       <div className={`sticky-header ${styles.header}`}>
-        <div/>
+        <div />
         <div className={styles.toolbar}>
-          <AddFeedChannel Aref={addFeedButtonRef}/>
+          <AddFeedChannel Aref={addFeedButtonRef} />
           <Tooltip content="Add feed">
             <span
               className={styles.toolbarItem}
               onClick={addFeed}
               onKeyUp={addFeed}
             >
-              <PlusIcon className={"h-4 w-4"}/>
+              <PlusIcon className={"h-4 w-4"} />
             </span>
           </Tooltip>
           <Tooltip content="Create folder">
-            <AddFolder Aref={addFolderButtonRef}/>
+            <AddFolder Aref={addFolderButtonRef} />
             <span
               className={styles.toolbarItem}
               onClick={addFolder}
               onKeyUp={addFolder}
             >
-              <FolderIcon className={"h-4 w-4"}/>
+              <FolderIcon className={"h-4 w-4"} />
             </span>
           </Tooltip>
           <Tooltip content="Refresh">
@@ -478,19 +501,22 @@ const ChannelList = (): JSX.Element => {
               onClick={goToSetting}
               onKeyUp={goToSetting}
             >
-              <Cog6ToothIcon className={"h-4 w-4"}/>
+              <Cog6ToothIcon className={"h-4 w-4"} />
             </span>
           </Tooltip>
         </div>
       </div>
-      <div className="overflow-y-auto mt-[var(--app-toolbar-height)] pb-3 pl-3 height-[calc(100% - var(--app-toolbar-height))]" ref={listRef}>
+      <div
+        className="overflow-y-auto mt-[var(--app-toolbar-height)] pb-3 pl-3 height-[calc(100% - var(--app-toolbar-height))]"
+        ref={listRef}
+      >
         {renderTree()}
       </div>
       {refreshing && (
         <div className="sticky left-0 right-0 bottom-0 grid grid-flow-col items-center gap-3 p-3">
           <span>
             {/* @ts-ignore */}
-            <Progress percent={Math.ceil((done / channelList.length) * 100)}/>
+            <Progress percent={Math.ceil((done / channelList.length) * 100)} />
           </span>
           <span className="text-sm">
             {done}/{channelList.length}
@@ -501,4 +527,4 @@ const ChannelList = (): JSX.Element => {
   );
 };
 
-export {ChannelList};
+export { ChannelList };

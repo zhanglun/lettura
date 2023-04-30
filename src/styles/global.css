@@ -54,15 +54,34 @@
   --app-main-bg-color: #3c3c3c; */
 }
 
-:root body[data-palette='1'] {
-  --color-primary: var(--palette-1-color-1-illustration-highlight);
-  --color-secondary: var(--palette-1-color-1-illustration-secondary);
-  --color-tertiary: var(--palette-1-color-1-illustration-tertiary);
-  --headline-color:var(--palette-1-color-2-elements-headline);
-  --paragraph-color: var(--palette-1-color-2-elements-paragraph);
+@for $i from 1 to 17 {
+  :root body[data-palette='$(i)'] {
+    --color-primary: var(--palette-$(i)-color-1-illustration-highlight);
+    --color-secondary: var(--palette-$(i)-color-1-illustration-secondary);
+    --color-tertiary: var(--palette-$(i)-color-1-illustration-tertiary);
+    --headline-color:var(--palette-$(i)-color-1-elements-headline);
+    --paragraph-color: var(--palette-$(i)-color-1-elements-paragraph);
+    --button-bg-color: var(--palette-$(i)-color-1-elements-button);
+    --button-text-color: var(--palette-$(i)-color-1-elements-button-text);
 
-  --body-color: var(--paragraph-color);
-  --body-bg-color: var(--palette-1-color-2-elements-background);
-  --app-main-bg-color: var(--palette-1-color-1-elements-background);
+    --body-color: var(--paragraph-color);
+    --body-bg-color: var(--palette-$(i)-color-2-elements-background);
+    --app-main-bg-color: var(--palette-$(i)-color-1-elements-background);
+
+    --feed-list-bg-color: var(--palette-$(i)-color-1-elements-background);
+    --feed-headline-color: var(--palette-$(i)-color-1-elements-headling);
+    --feed-active-bg-color: var(--palette-$(i)-color-1-elements-button);
+    --feed-active-headline-color: var(--palette-$(i)-color-1-elements-button-text);
+
+    --artcle-list-bg-color: var(--palette-$(i)-color-2-elements-background);
+    --article-headline-color: var(--palette-$(i)-color-2-elements-headline);
+    --article-paragraph-color: var(--palette-$(i)-color-2-elements-sub-headline);
+    --article-active-bg-color: var(--palette-$(i)-color-2-elements-card-background);
+    --article-active-headline-color: var(--palette-$(i)-color-2-elements-card-heading);
+    --article-active-paragraph-color: var(--palette-$(i)-color-2-elements-card-paragraph);
+  }
+
+  body[data-palette='$(i)'], body[theme-mode=dark] .semi-always-light {
+    --semi-color-text-0: var(--paragraph-color);
+  }
 }
-

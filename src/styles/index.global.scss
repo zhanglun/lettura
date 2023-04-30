@@ -1,4 +1,4 @@
-@import 'global.css';
+@import './global.css';
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans GB',
@@ -256,6 +256,7 @@ box-shadow: inset 2px 2px 0 0 var(--color-primary), inset -2px -2px 0 0 var(--co
   box-shadow: inset 0 2px 0 0 var(--color-primary);
   border:none;
 }
+
 .semi-tree-option-list .semi-tree-option-fullLabel-draggable.semi-tree-option-fullLabel-drag-over-gap-bottom {
   border:none;
   box-shadow: 0 2px 0 0 var(--color-primary);

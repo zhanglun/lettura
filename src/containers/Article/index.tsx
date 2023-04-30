@@ -302,7 +302,7 @@ export const ArticleContainer = (): JSX.Element => {
 
   return (
     <div className={styles.article}>
-      <div className="relative h-full border-r border-stone-100">
+      <div className="relative h-full border-r border-stone-100 bg-article-list-bg">
         <div className={`sticky-header ${styles.header}`}>
           <div className="
             flex

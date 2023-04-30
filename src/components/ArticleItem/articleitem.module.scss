@@ -14,7 +14,7 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background-color: var(--semi-color-primary);
+  background-color: var(--color-primary);
 }
 
 .item:hover {
@@ -23,12 +23,6 @@
 
 .item:focus-visible {
   outline: none;
-}
-
-.item:not(.current) {
-  &:hover {
-    background-color: var(--semi-color-tertiary-light-hover);
-  }
 }
 
 .titleText {
@@ -95,17 +89,11 @@
   color: var(--text-color);
 }
 
-.current {
-  background-color: var(--color-primary);
-  color: var(--color-primary-white);
-}
-
 .meta {
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-size: 12px;
-  color: var(--text-color);
 }
 
 .author {

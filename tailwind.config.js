@@ -5,24 +5,26 @@ module.exports = {
   theme: {
     colors: ({colors}) => ({
       ...colors,
-      "royal-blue": {
-        50: "#eff4ff",
-        100: "#dbe6fe",
-        200: "#bfd3fe",
-        300: "#93b4fd",
-        400: "#6090fa",
-        500: "#3b76f6",
-        // 600: "#2563eb",
-        600: "#078080",
-        700: "#1d58d8",
-        800: "#1e4baf",
-        900: "#1e408a",
-      },
       primary: 'var(--color-primary)',
       secondary: 'var(--color-secondary)',
       tertiary: 'var(--color-tertiary)',
-      heading: 'var(--headline-color)',
+      headline: 'var(--headline-color)',
       paragraph: 'var(--paragraph-color)',
+      button: 'var(--button-bg-color)',
+      'button-text': 'var(--button-text-color)',
+
+      'feed-list-bg': 'var(--feed-list-bg-color)',
+      'feed-headline': 'var(--feed-headline-color)',
+      'feed-active-bg': 'var(--feed-active-bg-color)',
+      'feed-active-headline': 'var(--feed-active-headline-color)',
+
+      'article-list-bg': 'var(--artcle-list-bg-color)',
+      'article-headline': 'var(--article-headline-color)',
+      'article-paragraph': 'var(--article-paragraph-color)',
+      'article-active-bg': 'var(--article-active-bg-color)',
+      'article-active-headline':'var(--article-active-headline-color)',
+      'article-active-paragraph': 'var(--article-active-paragraph-color)',
+
     }),
     extend: {
     },

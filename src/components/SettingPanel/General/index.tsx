@@ -25,7 +25,7 @@ export const General = () => {
       { ...localProxyConfig },
       {
         [key]: val,
-      },
+      }
     );
 
     setLocalProxyConfig(cfg);
@@ -41,7 +41,8 @@ export const General = () => {
 
   const onThemeChange = (val: string) => {
     setThemeMode(val);
-    document.body.dataset.theme = val;
+    // document.body.dataset.theme = val;
+    document.body.dataset.palette = val;
   };
 
   useEffect(() => {
@@ -121,7 +122,7 @@ export const General = () => {
         </div>
       </div>
       <div className={styles.section}>
-        <p className={styles.options}>Choose you theme mode</p>
+        {/* <p className={styles.options}>Choose you theme mode</p>
         <div>
           <RadioGroup
             onChange={(e) => onThemeChange(e.target.value)}
@@ -131,6 +132,19 @@ export const General = () => {
           >
             <Radio value={"light"}>Light</Radio>
             <Radio value={"dark"}>Dark</Radio>
+          </RadioGroup>
+        </div> */}
+        <p className={styles.options}>Choose you color theme</p>
+        <div>
+          <RadioGroup
+            onChange={(e) => onThemeChange(e.target.value)}
+            value={themeMode}
+            aria-label="单选组合示例"
+            name="theme-mode"
+          >
+            {[...new Array(17).keys()].map((idx) => {
+              return <Radio value={idx + 1}>{idx + 1}</Radio>;
+            })}
           </RadioGroup>
         </div>
       </div>
