@@ -18,6 +18,11 @@ module.exports = {
         800: "#1e4baf",
         900: "#1e408a",
       },
+      primary: 'var(--color-primary)',
+      secondary: 'var(--color-secondary)',
+      tertiary: 'var(--color-tertiary)',
+      heading: 'var(--headline-color)',
+      paragraph: 'var(--paragraph-color)',
     }),
     extend: {
     },

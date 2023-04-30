@@ -98,6 +98,10 @@ function accessWeb () {
   return p;
 }
 
+const underline = (str) => {
+  return str.replace(/\B([A-Z])/g, '-$1').toLowerCase()
+}
+
 function createStyleDist(type, list) {
   const types = {
     css: 'css/variables',
@@ -139,17 +143,20 @@ function createStyleDist(type, list) {
       res.push({
         destination: `${filename}.${type}`,
         format: types[type],
+        filter: (token) => underline(path.basename(token.filePath, '.json')).indexOf(underline(filename)) > -1,
         options
       });
     } else {
       res.push({
         'destination': `${filename}.ts`,
         'format': 'javascript/es6',
+        filter: (token) => underline(path.basename(token.filePath, '.json')).indexOf(underline(filename)) > -1,
         options
       })
       res.push({
         'destination': `${filename}.d.ts`,
         'format': 'typescript/es6-declarations',
+        filter: (token) => underline(path.basename(token.filePath, '.json')).indexOf(underline(filename)) > -1,
         options
       })
     }

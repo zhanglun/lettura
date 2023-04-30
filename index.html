@@ -8,15 +8,15 @@
     <link rel="stylesheet" href="https://unpkg.com/@douyinfe/semi-ui@2.27.0/dist/css/semi.css">
   </head>
 
-  <body>
+  <body data-palette="1">
     <div id="root"></div>
     <script type="module" src="/src/index.tsx"></script>
     <script>
       // On page load or when changing themes, best to add inline in `head` to avoid FOUC
       if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.documentElement.classList.add('dark')
+        document.body.classList.add('dark')
       } else {
-        document.documentElement.classList.remove('dark')
+        document.body.classList.remove('dark')
       }
 
       // Whenever the user explicitly chooses light mode

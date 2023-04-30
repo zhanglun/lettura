@@ -6,9 +6,6 @@ import { Outlet } from "react-router-dom";
 import { ChannelList } from "./components/ChannelList";
 import { useBearStore } from "./hooks/useBearStore";
 import * as dataAgent from "./helpers/dataAgent";
-import styles from "./App.module.css";
-import "./styles/index.global.scss";
-import "./App.css";
 
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { RouteConfig } from "./config";
@@ -19,6 +16,9 @@ import { General } from "./components/SettingPanel/General";
 import { FeedManager } from "./components/SettingPanel/FeedManager";
 import { ImportAndExport } from "./components/SettingPanel/ImportAndExport";
 import { WelcomePage } from "./components/WelcomePage";
+
+import "./styles/happyhues/css/variables.css";
+import "./styles/index.global.scss";
 
 let a = 0;
 
@@ -96,7 +96,7 @@ function App() {
           path={"/"}
           element={
             <DndProvider backend={HTML5Backend}>
-              <div className={styles.container}>
+              <div className="flex h-full max-h-full">
                 <ChannelList />
                 <Outlet />
               </div>

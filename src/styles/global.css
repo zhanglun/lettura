@@ -1,3 +1,5 @@
+@import "./happyhues/css/variables.css";
+
 :root {
   --sans-font: "Helvetica Neue", Helvetica, Arial, "PingFang SC", "Hiragino Sans GB", "Heiti SC", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
   --serif-font: 'Noto Serif', 'Noto Serif TC', 'Noto Sans TC', serif !important;
@@ -11,9 +13,16 @@
   --app-setting-sidebar-width: 200px;
   --view-helpbar-width: 50px;
 
-  /* --color-primary-blue: #2563eb; */
-  --color-primary-blue: #078080;
+  --color-primary: #078080;
 }
+
+
+
+
+
+
+
+
 
 
 @media screen and (prefers-color-scheme: light) {
@@ -33,14 +42,27 @@
 }
 
 :root body[data-theme='light'] {
-  --body-color: #333;
-  --app-main-bg-color: #fff;
+  /* --body-color: #333;
+  --app-main-bg-color: #fff; */
 }
 
 
 :root body[data-theme='dark'] {
-  --body-color: #fff;
+  /* --body-color: #fff;
   --body-bg-color: #3c3c3c;
   --headline-color: #fff;
-  --app-main-bg-color: #3c3c3c;
+  --app-main-bg-color: #3c3c3c; */
 }
+
+:root body[data-palette='1'] {
+  --color-primary: var(--palette-1-color-1-illustration-highlight);
+  --color-secondary: var(--palette-1-color-1-illustration-secondary);
+  --color-tertiary: var(--palette-1-color-1-illustration-tertiary);
+  --headline-color:var(--palette-1-color-2-elements-headline);
+  --paragraph-color: var(--palette-1-color-2-elements-paragraph);
+
+  --body-color: var(--paragraph-color);
+  --body-bg-color: var(--palette-1-color-2-elements-background);
+  --app-main-bg-color: var(--palette-1-color-1-elements-background);
+}
+
