@@ -79,9 +79,21 @@
     --article-active-bg-color: var(--palette-$(i)-color-2-elements-card-background);
     --article-active-headline-color: var(--palette-$(i)-color-2-elements-card-heading);
     --article-active-paragraph-color: var(--palette-$(i)-color-2-elements-card-paragraph);
+    --detail-bg-color: var(--palette-$(i)-color-3-elements-card-paragraph);
   }
 
   body[data-palette='$(i)'], body[theme-mode=dark] .semi-always-light {
     --semi-color-text-0: var(--paragraph-color);
+    --semi-color-primary: var(--color-primary);
+    --semi-color-primary-hover: var(--color-primary);
+    --semi-color-focus-border: var(--color-primary);
+
+  }
+
+  body[data-palette='$(i)'] {
+    .semi-button-primary {
+      color: var(--palette-1-color-1-elements-button-text);
+    }
   }
 }
+

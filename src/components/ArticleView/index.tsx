@@ -3,6 +3,7 @@ import Dayjs from "dayjs";
 import styles from "./view.module.scss";
 import { getChannelFavicon } from "../../helpers/parseXML";
 import { fetch } from "@tauri-apps/api/http";
+import classNames from "classnames";
 
 type ArticleViewProps = {
   article: any | null;
@@ -35,8 +36,8 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
       <div ref={containerRef}>
         <div className={styles.main}>
           <div className="pb-4 border-b border-slate-100">
-            <div className="mt-10 mb-5 text-4xl font-bold">{article.title}</div>
-            <div className={styles.meta}>
+            <div className="mt-10 mb-5 text-4xl font-bold text-headline">{article.title}</div>
+            <div className={classNames(styles.meta)}>
               <span className={styles.time}>
                 {Dayjs(pub_date.replace(/-/gi, "/")).format("YYYY-MM-DD HH:mm")}
               </span>
@@ -56,7 +57,7 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
               </div>
             )}
             <div
-              className={styles.content}
+              className={classNames(styles.content, 'text-paragraph')}
               // eslint-disable-next-line react/no-danger
               dangerouslySetInnerHTML={createMarkup(pageContent)}
             />

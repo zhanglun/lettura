@@ -465,6 +465,12 @@ pub fn update_threads(threads: i32) -> usize {
 }
 
 #[command]
+pub fn update_theme(theme: String) -> usize {
+  config::update_theme(theme);
+  1
+}
+
+#[command]
 pub fn update_user_config<T>(_user_cfg: T) -> usize {
   1
 }

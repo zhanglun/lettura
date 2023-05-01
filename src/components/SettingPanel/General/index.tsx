@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Input, InputNumber, RadioGroup, Radio } from "@douyinfe/semi-ui";
 import * as dataAgent from "../../../helpers/dataAgent";
 import styles from "../setting.module.scss";
+import { ColorTheme } from "./ColorTheme";
 
 export const General = () => {
   const [localProxyConfig, setLocalProxyConfig] = useState<LocalProxy>({
@@ -10,7 +11,6 @@ export const General = () => {
     port: "",
   });
   const [threads, setThreads] = useState<number>(1);
-  const [themeMode, setThemeMode] = useState("light");
 
   const handleSaveLocalProxy = (cfg: LocalProxy) => {
     dataAgent
@@ -37,12 +37,6 @@ export const General = () => {
     dataAgent.updateThreads(val).then((res) => {
       console.log("res ===>", res);
     });
-  };
-
-  const onThemeChange = (val: string) => {
-    setThemeMode(val);
-    // document.body.dataset.theme = val;
-    document.body.dataset.palette = val;
   };
 
   useEffect(() => {
@@ -121,33 +115,7 @@ export const General = () => {
           />
         </div>
       </div>
-      <div className={styles.section}>
-        {/* <p className={styles.options}>Choose you theme mode</p>
-        <div>
-          <RadioGroup
-            onChange={(e) => onThemeChange(e.target.value)}
-            value={themeMode}
-            aria-label="单选组合示例"
-            name="theme-mode"
-          >
-            <Radio value={"light"}>Light</Radio>
-            <Radio value={"dark"}>Dark</Radio>
-          </RadioGroup>
-        </div> */}
-        <p className={styles.options}>Choose you color theme</p>
-        <div>
-          <RadioGroup
-            onChange={(e) => onThemeChange(e.target.value)}
-            value={themeMode}
-            aria-label="单选组合示例"
-            name="theme-mode"
-          >
-            {[...new Array(17).keys()].map((idx) => {
-              return <Radio value={idx + 1}>{idx + 1}</Radio>;
-            })}
-          </RadioGroup>
-        </div>
-      </div>
+      <ColorTheme />
     </div>
   );
 };

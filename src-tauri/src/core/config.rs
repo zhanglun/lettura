@@ -24,6 +24,7 @@ struct RemoteProxy {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UserConfig {
   pub threads: i32,
+  pub theme: String,
   pub local_proxy: Option<LocalProxy>,
 }
 
@@ -34,12 +35,19 @@ impl UserConfig {
         ip: "".to_string(),
         port: "".to_string(),
       }),
-      threads: 1
+      threads: 1,
+      theme: String::from('1'),
     }
   }
 
   fn update_threads(&mut self, threads: i32) -> &mut UserConfig {
     self.threads = threads;
+
+    self
+  }
+
+  fn update_theme(&mut self, theme: String) -> &mut UserConfig {
+    self.theme = theme;
 
     self
   }
@@ -66,11 +74,8 @@ impl UserConfig {
 
         UserConfig::new()
       }
-      None => {
-        UserConfig::new()
-      }
+      None => UserConfig::new(),
     }
-
   }
 }
 
@@ -143,12 +148,8 @@ pub fn update_proxy(ip: String, port: String) -> usize {
   let data = get_user_config();
 
   let mut data = match data {
-    Some(data) => {
-      data
-    }
-    None => {
-      UserConfig::new()
-    },
+    Some(data) => data,
+    None => UserConfig::new(),
   };
 
   let user_config_path = get_user_config_path();
@@ -164,12 +165,8 @@ pub fn update_threads(threads: i32) -> usize {
   let data = get_user_config();
 
   let mut data = match data {
-    Some(data) => {
-      data
-    }
-    None => {
-      UserConfig::new()
-    },
+    Some(data) => data,
+    None => UserConfig::new(),
   };
 
   let user_config_path = get_user_config_path();
@@ -182,6 +179,26 @@ pub fn update_threads(threads: i32) -> usize {
   return 1;
 }
 
+pub fn update_theme(theme: String) -> usize {
+  let data = get_user_config();
+
+  let mut data = match data {
+    Some(data) => data,
+    None => UserConfig::new(),
+  };
+
+  let user_config_path = get_user_config_path();
+
+  println!("data {:?}", data);
+
+  let a = data.update_theme(theme);
+
+  let content = toml::to_string(a).unwrap();
+
+  fs::write(user_config_path, content).expect("update threads error");
+
+  return 1;
+}
 
 #[cfg(test)]
 

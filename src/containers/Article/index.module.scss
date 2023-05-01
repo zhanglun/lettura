@@ -111,6 +111,7 @@
   display: grid;
   grid-auto-flow: row;
   grid-template-rows: var(--app-toolbar-height) 1fr;
+  background-color: var(--detail-bg-color);
 }
 
 .viewHeader {
@@ -119,6 +120,10 @@
   grid-template-columns: 1fr 1fr;
   align-items: center;
   justify-content: space-between;
+}
+
+.header {
+  background: var(--artcle-list-bg-color);
 }
 
 .viewMenu {

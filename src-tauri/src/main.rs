@@ -85,6 +85,7 @@ async fn main() {
       cmd::update_user_config,
       cmd::update_proxy,
       cmd::update_threads,
+      cmd::update_theme,
       cmd::create_folder,
       cmd::delete_folder,
       cmd::get_folders,

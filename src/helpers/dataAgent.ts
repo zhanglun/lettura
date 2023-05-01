@@ -119,6 +119,10 @@ export const updateThreads = async (threads: number): Promise<any> => {
   return invoke("update_threads", { threads });
 };
 
+export const updateTheme = async (theme: string): Promise<any> => {
+  return invoke("update_theme", { theme });
+};
+
 export const initProcess = async (): Promise<any> => {
   return invoke("init_process", {});
 };
