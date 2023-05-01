@@ -12,6 +12,7 @@ module.exports = {
       paragraph: 'var(--paragraph-color)',
       button: 'var(--button-bg-color)',
       'button-text': 'var(--button-text-color)',
+      stroke: 'var(--color-stroke)',
 
       'feed-list-bg': 'var(--feed-list-bg-color)',
       'feed-headline': 'var(--feed-headline-color)',
@@ -24,6 +25,8 @@ module.exports = {
       'article-active-bg': 'var(--article-active-bg-color)',
       'article-active-headline':'var(--article-active-headline-color)',
       'article-active-paragraph': 'var(--article-active-paragraph-color)',
+
+      'detail-bg': 'var(--detail-bg-color)',
 
     }),
     extend: {

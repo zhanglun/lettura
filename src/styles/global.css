@@ -63,6 +63,7 @@
     --paragraph-color: var(--palette-$(i)-color-1-elements-paragraph);
     --button-bg-color: var(--palette-$(i)-color-1-elements-button);
     --button-text-color: var(--palette-$(i)-color-1-elements-button-text);
+    --stroke-color: var(--palette-1-color-1-illustration-stroke);
 
     --body-color: var(--paragraph-color);
     --body-bg-color: var(--palette-$(i)-color-2-elements-background);
