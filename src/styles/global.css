@@ -74,7 +74,7 @@
     --feed-active-bg-color: var(--palette-$(i)-color-1-elements-button);
     --feed-active-headline-color: var(--palette-$(i)-color-1-elements-button-text);
 
-    --artcle-list-bg-color: var(--palette-$(i)-color-2-elements-background);
+    --article-list-bg-color: var(--palette-$(i)-color-2-elements-background);
     --article-headline-color: var(--palette-$(i)-color-2-elements-headline);
     --article-paragraph-color: var(--palette-$(i)-color-2-elements-sub-headline);
     --article-active-bg-color: var(--palette-$(i)-color-2-elements-card-background);

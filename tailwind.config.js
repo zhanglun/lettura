@@ -19,7 +19,7 @@ module.exports = {
       'feed-active-bg': 'var(--feed-active-bg-color)',
       'feed-active-headline': 'var(--feed-active-headline-color)',
 
-      'article-list-bg': 'var(--artcle-list-bg-color)',
+      'article-list-bg': 'var(--article-list-bg-color)',
       'article-headline': 'var(--article-headline-color)',
       'article-paragraph': 'var(--article-paragraph-color)',
       'article-active-bg': 'var(--article-active-bg-color)',
