@@ -1,11 +1,11 @@
-import React from "react";
-import styles from "./loading.css";
+import React from "react"
+import Skeleton from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
 
-export const Loading = () => {
-  return (
-    <div className={styles.spinner}>
-      <div className={styles["double-bounce1"]} />
-      <div className={styles["double-bounce2"]} />
-    </div>
-  );
-};
+
+export const Loading = (props: any) => (
+  <div>
+    <Skeleton />
+    <Skeleton count={5} />
+  </div>
+)

@@ -16,8 +16,6 @@ Object.keys(ThemeVariables).forEach((key) => {
   }
 })
 
-console.log("🚀 ~ file: ColorTheme.tsx:16 ~ Object.keys ~ ThemeMap:", ThemeMap)
-
 export const ColorTheme = () => {
   const [theme, setTheme] = useState("1");
 
@@ -49,8 +47,7 @@ export const ColorTheme = () => {
   return (
     <div className={styles.section}>
       <p className={styles.options}>Choose you color theme</p>
-      {theme}
-      <div>
+      <div className="mt-6">
         <RadioGroup
           onChange={(e) => onThemeChange(e.target.value)}
           value={parseInt(theme, 10)}
@@ -58,7 +55,7 @@ export const ColorTheme = () => {
           name="theme"
         >
           {[...new Array(17).keys()].map((idx) => {
-            return <div className="grid gap-2 grid-flow-row" key={idx}>
+            return <div className="grid gap-2 grid-flow-row items-center" key={idx}>
               <div className="">
                 <div
                   className="flex border border-stroke p-4 pr-7 rounded"
@@ -92,7 +89,7 @@ export const ColorTheme = () => {
                     }}></div>
                 </div>
               </div>
-              <Radio value={idx + 1}>{idx + 1}</Radio>
+              <Radio value={idx + 1}></Radio>
             </div>
           })}
         </RadioGroup>
