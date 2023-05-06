@@ -1,9 +1,9 @@
-@import './global';
+@import "./global";
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans GB',
-  'MicroSoft YaHei', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
-  'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans GB",
+    "MicroSoft YaHei", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell",
+    "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: var(--body-color);
@@ -28,8 +28,8 @@ body {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-  monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
 }
 
 /* ================= */
@@ -98,7 +98,6 @@ $disabled-gray: #ddd;
   &:hover,
   &:active {
     > .traffic-light {
-
       &:before,
       &:after,
       svg {
@@ -220,25 +219,39 @@ $disabled-gray: #ddd;
 }
 
 .semi-tree-option-list-block .semi-tree-option:hover {
- background: inherit;
+  background: inherit;
 }
 .semi-tree-option-drag-over {
- position: relative;
+  position: relative;
 }
 
 .semi-tree-option-list .semi-tree-option-drag-over.semi-tree-option-draggable,
-.semi-tree-option-list .semi-tree-option-drag-over.semi-tree-option-fullLabel-draggable {
-//  border-color: var(--color-primary);
-box-shadow: inset 2px 2px 0 0 var(--color-primary), inset -2px -2px 0 0 var(--color-primary);
- border:none;
+.semi-tree-option-list
+  .semi-tree-option-drag-over.semi-tree-option-fullLabel-draggable {
+  //  border-color: var(--color-primary);
+  box-shadow: inset 2px 2px 0 0 var(--color-primary),
+    inset -2px -2px 0 0 var(--color-primary);
+  border: none;
 }
 
-.semi-tree-option-list .semi-tree-option-fullLabel-draggable.semi-tree-option-fullLabel-drag-over-gap-top {
+.semi-tree-option-list
+  .semi-tree-option-fullLabel-draggable.semi-tree-option-fullLabel-drag-over-gap-top {
   box-shadow: inset 0 2px 0 0 var(--color-primary);
-  border:none;
+  border: none;
 }
 
-.semi-tree-option-list .semi-tree-option-fullLabel-draggable.semi-tree-option-fullLabel-drag-over-gap-bottom {
-  border:none;
+.semi-tree-option-list
+  .semi-tree-option-fullLabel-draggable.semi-tree-option-fullLabel-drag-over-gap-bottom {
+  border: none;
   box-shadow: 0 2px 0 0 var(--color-primary);
+}
+
+.semi-input-wrapper {
+  color: var(--detail-form-input-color);
+  background-color: var(--detail-form-input-background);
+
+  &:hover {
+    color: var(--detail-form-input-color);
+    background-color: var(--detail-form-input-background);
+  }
 }

@@ -49,20 +49,26 @@
     --detail-bg-color: var(--color-palette-#{$i}-section-2-elements-background);
     --detail-headline-color: var(--color-palette-#{$i}-section-2-elements-headline);
     --detail-paragraph-color: var(--color-palette-#{$i}-section-2-elements-sub-headline);
+    --detail-form-input-background: var(--color-palette-#{$i}-section-4-newsletter-form-input);
+    --detail-form-input-color: var(--color-palette-#{$i}-section-4-newsletter-label-placeholder);
+    --detail-form-input-button-background: var(--color-palette-#{$i}-section-4-newsletter-form-button);
+    --detail-form-input-button-color: var(--color-palette-#{$i}-section-4-newsletter-form-button-text);
   }
 
-  body[data-palette='#{$i}'], body[theme-mode=dark] .semi-always-light {
+  body[data-palette='#{$i}'] {
     --semi-color-text-0: var(--paragraph-color);
     --semi-color-primary: var(--color-primary);
     --semi-color-primary-hover: var(--color-primary);
     --semi-color-focus-border: var(--color-primary);
+    --semi-color-focus-border: var(--detail-form-input-background);
 
     --tw-prose-quotes: var(--color-primary);
+    --tw-prose-bold: var(--color-primary);
   }
 
   body[data-palette='#{$i}'] {
     .semi-button-primary {
-      color: var(--color-palette-1-color-1-elements-button-text);
+      color: var(--color-palette-#{$i}-section-1-elements-button-text);
     }
   }
 }

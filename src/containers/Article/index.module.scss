@@ -76,14 +76,14 @@
   height: 34px;
   line-height: 34px;
   font-size: 20px;
-  color: var(--icon-stroke);
+  color: var(--article-headline-color);
   cursor: pointer;
   margin-left: 4px;
   user-select: none;
   border-radius: 4px;
 
   &:hover {
-    color: var(--icon-stroke);
+    color: var(--article-headline-color);
   }
 }
 
@@ -94,8 +94,8 @@
 
 .menuIconDisabled {
   cursor: not-allowed;
-  --icon-stroke-gray: hsl(from var(--icon-stroke) h s calc(l + 60%));
-  --bg-gray: hsl(from var(--detail-bg-color) h s l / 8%);
+  --icon-stroke-gray: hsl(from var(--article-headline-color) h s calc(l + 60%));
+  --bg-gray: hsl(from var(--detail-bg-color) h calc(s - 35%) calc(l + 5%));
   color: var(--icon-stroke-gray);
   background-color: var(--bg-gray);
 

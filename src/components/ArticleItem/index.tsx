@@ -59,7 +59,7 @@ export const ArticleItem = React.forwardRef(
           <div
             className={classnames(
               `${highlight ? "text-article-active-headline" : "text-article-headline"}`,
-              "font-bold text-sm group-hover:text-headline",
+              "font-bold text-sm group-hover:text-article-headline",
             )}
           >
             {article.title}
@@ -68,7 +68,7 @@ export const ArticleItem = React.forwardRef(
         <div
           className={classnames(
             styles.description,
-            "text-article-paragraph group-hover:text-paragraph",
+            "text-article-paragraph group-hover:text-article-paragraph",
             {
             "text-article-active-paragraph": highlight,
             }
@@ -77,7 +77,7 @@ export const ArticleItem = React.forwardRef(
           {(article.description || "").replace(/<[^<>]+>/g, "")}
         </div>
         <div
-          className={classnames(styles.meta, "text-article-paragraph group-hover:text-paragraph", {
+          className={classnames(styles.meta, "text-article-paragraph group-hover:text-article-paragraph", {
             "text-article-active-paragraph": highlight,
           })}
         >

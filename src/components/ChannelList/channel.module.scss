@@ -45,9 +45,10 @@
   justify-content: center;
   cursor: pointer;
   border-radius: 4px;
+  color: var(--feed-headline-color);
 
   &:hover {
-    color: var(--headline-color);
+    color: var(--feed-headline-color);
     background-color: var(--color-primary);
   }
 

@@ -8,7 +8,6 @@ import React, {
   createRef,
 } from "react";
 import { ArticleItem } from "../ArticleItem";
-import { Loading } from "../Loading";
 import { ArticleListSkeleton } from "../Loading/ArticleListLoading";
 import { Article } from "../../db";
 import { useBearStore } from "../../hooks/useBearStore";
