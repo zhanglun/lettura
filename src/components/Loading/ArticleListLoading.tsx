@@ -17,12 +17,12 @@ export const ArticleListSkeleton = (props: SkeletonProps) => {
           <div className='h-[10px] w-[80%] mb-1'><Skeleton height="100%" /></div>
         </div>
         <div className='overflow-hidden'>
-          <span className="float-left w-[20%] h-[10px]">
+          <div className="float-left w-[20%] h-[10px]">
             <Skeleton height="100%" />
-          </span>
-          <span className="float-right w-[20%] h-[10px]">
+          </div>
+          <div className="float-right w-[20%] h-[10px]">
             <Skeleton height="100%" />
-          </span>
+          </div>
         </div>
       </div>
 
@@ -33,12 +33,12 @@ export const ArticleListSkeleton = (props: SkeletonProps) => {
           <div className='h-[10px] w-[80%] mb-1'><Skeleton height="100%" /></div>
         </div>
         <div className='overflow-hidden'>
-          <span className="float-left w-[20%] h-[10px]">
+          <div className="float-left w-[20%] h-[10px]">
             <Skeleton height="100%" />
-          </span>
-          <span className="float-right w-[20%] h-[10px]">
+          </div>
+          <div className="float-right w-[20%] h-[10px]">
             <Skeleton height="100%" />
-          </span>
+          </div>
         </div>
       </div>
 
@@ -49,12 +49,12 @@ export const ArticleListSkeleton = (props: SkeletonProps) => {
           <div className='h-[10px] w-[80%] mb-1'><Skeleton height="100%" /></div>
         </div>
         <div className='overflow-hidden'>
-          <span className="float-left w-[20%] h-[10px]">
+          <div className="float-left w-[20%] h-[10px]">
             <Skeleton height="100%" />
-          </span>
-          <span className="float-right w-[20%] h-[10px]">
+          </div>
+          <div className="float-right w-[20%] h-[10px]">
             <Skeleton height="100%" />
-          </span>
+          </div>
         </div>
       </div>
     </SkeletonTheme>

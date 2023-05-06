@@ -138,6 +138,6 @@ export const useBearStore = create<BearStore>()(subscribeWithSelector((set, get)
       set(() => ({
         currentFilter: filter
       }))
-    }
+    },
   };
 }));

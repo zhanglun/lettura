@@ -40,6 +40,9 @@ export const ColorTheme = () => {
       if (theme) {
         setTheme(theme);
         document.body.dataset.palette = theme;
+
+        // keep in localStorage for first load
+        window.localStorage.setItem("palette", theme);
       }
     });
   }, []);
