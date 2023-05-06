@@ -36,7 +36,7 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
       <div ref={containerRef}>
         <div className={styles.main}>
           <div className="pb-4 border-b border-slate-100">
-            <div className="mt-10 mb-5 text-4xl font-bold text-headline">{article.title}</div>
+            <div className="mt-10 mb-5 text-4xl font-bold text-detail-headline">{article.title}</div>
             <div className={classNames(styles.meta)}>
               <span className={styles.time}>
                 {Dayjs(pub_date.replace(/-/gi, "/")).format("YYYY-MM-DD HH:mm")}

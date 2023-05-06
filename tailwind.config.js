@@ -27,6 +27,8 @@ module.exports = {
       'article-active-paragraph': 'var(--article-active-paragraph-color)',
 
       'detail-bg': 'var(--detail-bg-color)',
+      'detail-headline': 'var(--detail-headline-color)',
+      'detail-paragraph': 'var(--detail-paragraph-color)',
     }),
     extend: {
     },

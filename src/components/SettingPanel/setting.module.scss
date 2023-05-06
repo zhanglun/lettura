@@ -17,9 +17,6 @@
   height: var(--app-toolbar-height);
   display: flex;
   align-items: center;
-  padding: 0 var(--block-padding);
-  color: var(--headline-color);
-  font-size: 20px;
   font-weight: var(--font-weight-bold);
   width: 100%;
   overflow: hidden;
@@ -28,10 +25,9 @@
 }
 
 .sidebar {
-  // width: var(--app-setting-sidebar-width);
   border-right: 1px solid var(--line-color);
   grid-column: 1/1;
-  padding: 8px 10px;
+  padding: 2rem 10px;
 }
 
 .menuItem {
@@ -40,12 +36,15 @@
   align-items: center;
   justify-content: start;
   grid-gap: 10px;
-  margin: 4px 0;
-  height: 32px;
-  line-height: 32px;
+  margin: 2px 0;
+  height: 30px;
+  line-height: 30px;
   padding: 0 8px;
   font-size: 14px;
-  color: var(--text-color);
+
+  &:hover {
+    color: var(--color-primary);
+  }
 }
 
 .menuItemActive {
@@ -68,9 +67,9 @@
 }
 
 .panelTitle {
-  margin: 14px 0 10px;
+  margin: 0 0 3rem;
   font-size: 18px;
-  font-weight: var(--font-weight-bold);
+  font-weight: 700;
 }
 
 .panelBody {
@@ -90,12 +89,13 @@
 
 .section {
   padding: 0 0;
+  margin-bottom: 3rem;
 }
 
 .options {
   color: var(--headline-color);
   font-size: 16px;
-  font-weight: var(--font-weight-bold);
+  font-weight: 700;
   line-height: 16px;
   margin: 22px 0 12px;
 }
@@ -148,7 +148,7 @@
 }
 
 .main {
-  padding: 0 14px;
+  padding: 2rem 14px;
   overflow-y: auto;
 }
 

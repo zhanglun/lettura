@@ -5,7 +5,7 @@ import StyleDictionary from "style-dictionary";
 import path from "path";
 
 function parseSection($, paletteId, sectionId, dom) {
-  const prefix = `palette-${paletteId}-color-${sectionId}`;
+  const prefix = `palette-${paletteId}-section-${sectionId}`;
   const result = new Map();
   const heads = dom.find("h4");
 
@@ -88,7 +88,7 @@ function accessWeb () {
 
         list.push(filename);
 
-        fs.writeFileSync(filepath, JSON.stringify(res, null, "  "));
+        fs.writeFileSync(filepath, JSON.stringify({ color: res }, null, "  "));
         setTimeout(() => {
           return Promise.resolve(res);
         }, 2000);
@@ -101,6 +101,36 @@ function accessWeb () {
 const underline = (str) => {
   return str.replace(/\B([A-Z])/g, '-$1').toLowerCase()
 }
+
+
+
+StyleDictionary.registerTransformGroup({
+  name: 'custom/css',
+  transforms: StyleDictionary.transformGroup['css'].concat([
+    'color/hsl',
+  ])
+})
+
+StyleDictionary.registerTransformGroup({
+  name: 'custom/less',
+  transforms: StyleDictionary.transformGroup['less'].concat([
+    'color/hsl',
+  ])
+})
+
+StyleDictionary.registerTransformGroup({
+  name: 'custom/scss',
+  transforms: StyleDictionary.transformGroup['scss'].concat([
+    'color/hsl',
+  ])
+})
+
+StyleDictionary.registerTransformGroup({
+  name: 'custom/typescript',
+  transforms: StyleDictionary.transformGroup['js'].concat([
+    'color/hsl',
+  ])
+})
 
 function createStyleDist(type, list) {
   const types = {
@@ -170,17 +200,17 @@ function createStyles() {
     source: ["./token/**/*.json"],
     platforms: {
       scss: {
-        transformGroup: "scss",
+        transformGroup: "custom/scss",
         buildPath: "dist/scss/",
         files: createStyleDist('scss', list),
       },
       css: {
-        transformGroup: "css",
+        transformGroup: "custom/css",
         buildPath: "dist/css/",
         files: createStyleDist('css', list),
       },
       ts: {
-        transformGroup: "js",
+        transformGroup: "custom/typescript",
         buildPath: "dist/ts/",
         files: createStyleDist('ts', list),
       },

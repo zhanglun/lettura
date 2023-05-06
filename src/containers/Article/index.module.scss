@@ -1,3 +1,6 @@
+
+@import "../../styles/index.global.scss";
+
 .article {
   flex: 1;
   height: 100vh;
@@ -74,21 +77,26 @@
   height: 34px;
   line-height: 34px;
   font-size: 20px;
-  color: var(--title-color);
-  border-radius: var(--button-radius);
+  color: var(--icon-stroke);
   cursor: pointer;
   margin-left: 4px;
   user-select: none;
+  border-radius: 4px;
+
+  &:hover {
+    color: var(--icon-stroke);
+    background-color: var(--color-primary);
+  }
 }
 
 .menuIcon:not(.menuIconDisabled):hover {
-  color: var(--headline-color);
-  background-color: var(--color-gray-200);
+  color: var(--icon-stroke);
+  background-color: var(--color-primary);
 }
 
 .menuIconDisabled {
   cursor: not-allowed;
-  color: var(--color-gray-400);
+  color: hsl(var(--icon-stroke), 0.5);
   background-color: var(--color-gray-200);
 }
 

@@ -1,4 +1,4 @@
-@import './global.css';
+@import './global';
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans GB',
@@ -261,3 +261,51 @@ box-shadow: inset 2px 2px 0 0 var(--color-primary), inset -2px -2px 0 0 var(--co
   border:none;
   box-shadow: 0 2px 0 0 var(--color-primary);
 }
+
+@function color($color-name) {
+  @return var(#{$color-name});
+}
+
+// return css color variable with different opacity value
+@function alpha($color, $opacity){
+  $color: str-replace($color, 'var(');
+  $color: str-replace($color, ')');
+  $color-h: var(#{$color+'-h'});
+  $color-s: var(#{$color+'-s'});
+  $color-l: var(#{$color+'-l'});
+  @return hsla($color-h, $color-s, $color-l, $opacity);
+}
+
+// replace substring with another string
+// credits: https://css-tricks.com/snippets/sass/str-replace-function/
+@function str-replace($string, $search, $replace: '') {
+  $index: str-index($string, $search);
+  @if $index {
+    @return str-slice($string, 1, $index - 1) + $replace + str-replace(str-slice($string, $index + str-length($search)), $search, $replace);
+  }
+  @return $string;
+}
+
+@function lightness($color, $lightnessMultiplier){
+  $value: color($color);
+  @debug $value;
+  $value: str-replace($value, 'hsl(');
+  $value: str-replace($value, ')');
+  $value: str-split($value, ', ');
+  // $color-h: nth($value, 1);
+  // $color-s: nth($value, 2);
+  // $color-l: nth($value, 3);
+  // @return hsl($color-h, $color-s, calc(#{$color-l} * #{$lightnessMultiplier}));
+  @return $color;
+}
+
+@function saturation($color, $saturationMultiplier){
+  $color: str-replace($color, 'var(');
+  $color: str-replace($color, ')');
+  $color-h: var(#{$color+'-h'});
+  $color-s: var(#{$color+'-s'});
+  $color-l: var(#{$color+'-l'});
+  @return hsl($color-h, calc(#{$color-s} * #{$saturationMultiplier}), $color-l);
+}
+
+

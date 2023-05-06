@@ -43,7 +43,7 @@ export const ArticleItem = React.forwardRef(
 
     return (
       <li
-        className={classnames(styles.item, "hover:bg-article-active-bg", {
+        className={classnames(styles.item, "group hover:bg-article-active-bg", {
           [styles.read]: readStatus === 2,
           [styles.current]: highlight,
           "bg-article-active-bg": highlight,
@@ -58,22 +58,26 @@ export const ArticleItem = React.forwardRef(
         <div className={styles.title}>
           <div
             className={classnames(
-              "font-bold text-sm",
-              `${highlight ? "text-article-active-headline" : "text-article-headline"}`
+              `${highlight ? "text-article-active-headline" : "text-article-headline"}`,
+              "font-bold text-sm group-hover:text-headline",
             )}
           >
             {article.title}
           </div>
         </div>
         <div
-          className={classnames(styles.description, "text-article-paragraph", {
+          className={classnames(
+            styles.description,
+            "text-article-paragraph group-hover:text-paragraph",
+            {
             "text-article-active-paragraph": highlight,
-          })}
+            }
+          )}
         >
           {(article.description || "").replace(/<[^<>]+>/g, "")}
         </div>
         <div
-          className={classnames(styles.meta, "text-article-paragraph", {
+          className={classnames(styles.meta, "text-article-paragraph group-hover:text-paragraph", {
             "text-article-active-paragraph": highlight,
           })}
         >

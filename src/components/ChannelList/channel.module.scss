@@ -44,10 +44,11 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  border-radius: 4px;
 
   &:hover {
     color: var(--headline-color);
-    background-color: var(--color-gray-300);
+    background-color: var(--color-primary);
   }
 
   &:focus-visible {

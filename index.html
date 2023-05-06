@@ -28,10 +28,10 @@
       // Whenever the user explicitly chooses to respect the OS preference
       localStorage.removeItem('theme')
     </script>
+  </body>
     <script>
       if (localStorage.getItem('palette')) {
-        document.body.dataset('palette', localStorage.getItem('palette'))
+        document.body.dataset.palette = localStorage.getItem('palette')
       }
     </script>
-  </body>
 </html>

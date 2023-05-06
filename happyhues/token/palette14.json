@@ -1,140 +1,142 @@
 {
-  "palette-14-color-1-elements-background": {
-    "value": "#fffffe"
-  },
-  "palette-14-color-1-elements-headline": {
-    "value": "#272343"
-  },
-  "palette-14-color-1-elements-paragraph": {
-    "value": "#2d334a"
-  },
-  "palette-14-color-1-elements-button": {
-    "value": "#ffd803"
-  },
-  "palette-14-color-1-elements-button-text": {
-    "value": "#272343"
-  },
-  "palette-14-color-1-illustration-stroke": {
-    "value": "#272343"
-  },
-  "palette-14-color-1-illustration-main": {
-    "value": "#fffffe"
-  },
-  "palette-14-color-1-illustration-highlight": {
-    "value": "#ffd803"
-  },
-  "palette-14-color-1-illustration-secondary": {
-    "value": "#e3f6f5"
-  },
-  "palette-14-color-1-illustration-tertiary": {
-    "value": "#bae8e8"
-  },
-  "palette-14-color-2-elements-background": {
-    "value": "#e3f6f5"
-  },
-  "palette-14-color-2-elements-headline": {
-    "value": "#272343"
-  },
-  "palette-14-color-2-elements-sub-headline": {
-    "value": "#2d334a"
-  },
-  "palette-14-color-2-elements-card-background": {
-    "value": "#fffffe"
-  },
-  "palette-14-color-2-elements-card-heading": {
-    "value": "#272343"
-  },
-  "palette-14-color-2-elements-card-paragraph": {
-    "value": "#2d334a"
-  },
-  "palette-14-color-2-icons-stroke": {
-    "value": "#272343"
-  },
-  "palette-14-color-2-icons-main": {
-    "value": "#fffffe"
-  },
-  "palette-14-color-2-icons-highlight": {
-    "value": "#ffd803"
-  },
-  "palette-14-color-2-icons-secondary": {
-    "value": "#e3f6f5"
-  },
-  "palette-14-color-2-icons-tertiary": {
-    "value": "#bae8e8"
-  },
-  "palette-14-color-3-background": {
-    "value": "#fffffe"
-  },
-  "palette-14-color-3-headline": {
-    "value": "#272343"
-  },
-  "palette-14-color-3-paragraph": {
-    "value": "#2d334a"
-  },
-  "palette-14-color-3-card-background": {
-    "value": "#272343"
-  },
-  "palette-14-color-3-card-headline": {
-    "value": "#fffffe"
-  },
-  "palette-14-color-3-card-paragraph": {
-    "value": "#2d334a"
-  },
-  "palette-14-color-3-card-tag-background": {
-    "value": "#bae8e8"
-  },
-  "palette-14-color-3-card-tag-text": {
-    "value": "#272343"
-  },
-  "palette-14-color-3-card-highlight": {
-    "value": "#bae8e8"
-  },
-  "palette-14-color-4-elements-background": {
-    "value": "#e3f6f5"
-  },
-  "palette-14-color-4-elements-headline": {
-    "value": "#272343"
-  },
-  "palette-14-color-4-elements-paragraph": {
-    "value": "#2d334a"
-  },
-  "palette-14-color-4-elements-link": {
-    "value": "#272343"
-  },
-  "palette-14-color-4-elements-card-backgroud": {
-    "value": "#fffffe"
-  },
-  "palette-14-color-4-elements-card-headline": {
-    "value": "#272343"
-  },
-  "palette-14-color-4-elements-card-paragraph": {
-    "value": "#2d334a"
-  },
-  "palette-14-color-4-newsletter-background": {
-    "value": "#bae8e8"
-  },
-  "palette-14-color-4-newsletter-form-input": {
-    "value": "#fffffe"
-  },
-  "palette-14-color-4-newsletter-label-&-placeholder": {
-    "value": "#272343"
-  },
-  "palette-14-color-4-newsletter-form-button": {
-    "value": "#272343"
-  },
-  "palette-14-color-4-newsletter-form-button-text": {
-    "value": "#fffffe"
-  },
-  "palette-14-color-5-elements-background": {
-    "value": "#fffffe"
-  },
-  "palette-14-color-5-elements-headline": {
-    "value": "#272343"
-  },
-  "palette-14-color-5-elements-paragraph": {
-    "value": "#2d334a"
-  },
-  "palette-14-color-5-elements-links": {
-    "value": "#ffd803"
+  "color": {
+    "palette-14-section-1-elements-background": {
+      "value": "#fffffe"
+    },
+    "palette-14-section-1-elements-headline": {
+      "value": "#272343"
+    },
+    "palette-14-section-1-elements-paragraph": {
+      "value": "#2d334a"
+    },
+    "palette-14-section-1-elements-button": {
+      "value": "#ffd803"
+    },
+    "palette-14-section-1-elements-button-text": {
+      "value": "#272343"
+    },
+    "palette-14-section-1-illustration-stroke": {
+      "value": "#272343"
+    },
+    "palette-14-section-1-illustration-main": {
+      "value": "#fffffe"
+    },
+    "palette-14-section-1-illustration-highlight": {
+      "value": "#ffd803"
+    },
+    "palette-14-section-1-illustration-secondary": {
+      "value": "#e3f6f5"
+    },
+    "palette-14-section-1-illustration-tertiary": {
+      "value": "#bae8e8"
+    },
+    "palette-14-section-2-elements-background": {
+      "value": "#e3f6f5"
+    },
+    "palette-14-section-2-elements-headline": {
+      "value": "#272343"
+    },
+    "palette-14-section-2-elements-sub-headline": {
+      "value": "#2d334a"
+    },
+    "palette-14-section-2-elements-card-background": {
+      "value": "#fffffe"
+    },
+    "palette-14-section-2-elements-card-heading": {
+      "value": "#272343"
+    },
+    "palette-14-section-2-elements-card-paragraph": {
+      "value": "#2d334a"
+    },
+    "palette-14-section-2-icons-stroke": {
+      "value": "#272343"
+    },
+    "palette-14-section-2-icons-main": {
+      "value": "#fffffe"
+    },
+    "palette-14-section-2-icons-highlight": {
+      "value": "#ffd803"
+    },
+    "palette-14-section-2-icons-secondary": {
+      "value": "#e3f6f5"
+    },
+    "palette-14-section-2-icons-tertiary": {
+      "value": "#bae8e8"
+    },
+    "palette-14-section-3-background": {
+      "value": "#fffffe"
+    },
+    "palette-14-section-3-headline": {
+      "value": "#272343"
+    },
+    "palette-14-section-3-paragraph": {
+      "value": "#2d334a"
+    },
+    "palette-14-section-3-card-background": {
+      "value": "#272343"
+    },
+    "palette-14-section-3-card-headline": {
+      "value": "#fffffe"
+    },
+    "palette-14-section-3-card-paragraph": {
+      "value": "#2d334a"
+    },
+    "palette-14-section-3-card-tag-background": {
+      "value": "#bae8e8"
+    },
+    "palette-14-section-3-card-tag-text": {
+      "value": "#272343"
+    },
+    "palette-14-section-3-card-highlight": {
+      "value": "#bae8e8"
+    },
+    "palette-14-section-4-elements-background": {
+      "value": "#e3f6f5"
+    },
+    "palette-14-section-4-elements-headline": {
+      "value": "#272343"
+    },
+    "palette-14-section-4-elements-paragraph": {
+      "value": "#2d334a"
+    },
+    "palette-14-section-4-elements-link": {
+      "value": "#272343"
+    },
+    "palette-14-section-4-elements-card-backgroud": {
+      "value": "#fffffe"
+    },
+    "palette-14-section-4-elements-card-headline": {
+      "value": "#272343"
+    },
+    "palette-14-section-4-elements-card-paragraph": {
+      "value": "#2d334a"
+    },
+    "palette-14-section-4-newsletter-background": {
+      "value": "#bae8e8"
+    },
+    "palette-14-section-4-newsletter-form-input": {
+      "value": "#fffffe"
+    },
+    "palette-14-section-4-newsletter-label-&-placeholder": {
+      "value": "#272343"
+    },
+    "palette-14-section-4-newsletter-form-button": {
+      "value": "#272343"
+    },
+    "palette-14-section-4-newsletter-form-button-text": {
+      "value": "#fffffe"
+    },
+    "palette-14-section-5-elements-background": {
+      "value": "#fffffe"
+    },
+    "palette-14-section-5-elements-headline": {
+      "value": "#272343"
+    },
+    "palette-14-section-5-elements-paragraph": {
+      "value": "#2d334a"
+    },
+    "palette-14-section-5-elements-links": {
+      "value": "#ffd803"
+    }
   }
 }

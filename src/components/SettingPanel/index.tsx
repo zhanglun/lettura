@@ -7,12 +7,13 @@ import {
 } from "@heroicons/react/24/outline";
 import { RouteConfig } from "../../config";
 import styles from "./setting.module.scss";
+import classnames from "classnames";
 
 function SettingPanel() {
   return (
     <div className={styles.container}>
       <div className={`sticky-header ${styles.header}`}>
-        <div className={styles.title}>Settings</div>
+        <div className={classnames(styles.title, 'text-2xl p-4 pl-5 font-bold')}>Settings</div>
       </div>
       <div className={styles.sidebar}>
         <ul>
@@ -20,7 +21,7 @@ function SettingPanel() {
             <NavLink
               to={RouteConfig.SETTINGS_GENERAL}
               className={({ isActive }) =>
-                isActive ? styles.menuItemActive : styles.menuItem
+                isActive ?  classnames(styles.menuItem, 'font-bold text-primary') : styles.menuItem
               }
             >
               <HomeIcon className={"h-4 w-4"} />
@@ -31,7 +32,7 @@ function SettingPanel() {
             <NavLink
               to={RouteConfig.SETTINGS_FEED_MANAGER}
               className={({ isActive }) =>
-                isActive ? styles.menuItemActive : styles.menuItem
+                isActive ?  classnames(styles.menuItem, 'font-bold text-primary') : styles.menuItem
               }
             >
               <CircleStackIcon className={"h-4 w-4"} />
@@ -42,7 +43,7 @@ function SettingPanel() {
             <NavLink
               to={RouteConfig.SETTINGS_IMPORT}
               className={({ isActive }) =>
-                isActive ? styles.menuItemActive : styles.menuItem
+                isActive ?  classnames(styles.menuItem, 'font-bold text-primary') : styles.menuItem
               }
             >
               <RssIcon className={"h-4 w-4"} />

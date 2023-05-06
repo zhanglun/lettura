@@ -9,7 +9,7 @@
 
 .title {
   margin: 18px 0 14px;
-  color: var(--headline-color);
+  color: var(--detail-headline-color);
   font-size: 28px;
 }
 
@@ -117,7 +117,7 @@
   height: 48px;
   line-height: 49px;
   font-size: 22px;
-  color: var(--title-color);
+  color: var(--icon-stroke);
   border-radius: 50%;
   cursor: pointer;
   margin: 6px 0;
@@ -125,7 +125,7 @@
 
 .menuIcon:hover {
   color: var(--headline-color);
-  background-color: var(--color-gray-200);
+  background-color: var(--color-primary);
 }
 
 .content {
@@ -138,8 +138,6 @@
     max-width: 100%;
   }
 }
-
-
 
 .title {
   font-size: calc(var(--content-font-size) * 1.6);
