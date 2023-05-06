@@ -41,15 +41,6 @@
   line-height: 30px;
   padding: 0 8px;
   font-size: 14px;
-
-  &:hover {
-    color: var(--color-primary);
-  }
-}
-
-.menuItemActive {
-  @extend .menuItem;
-  color: var(--color-primary);
 }
 
 .subTitle {
@@ -70,6 +61,7 @@
   margin: 0 0 3rem;
   font-size: 18px;
   font-weight: 700;
+  color: var(--detail-headline-color);
 }
 
 .panelBody {
@@ -78,7 +70,7 @@
 
 .description {
   font-size: 13px;
-  color: var(--text-color);
+  color: var(--detail-paragraph-color);
   font-weight: normal;
   margin-left: 14px;
 }
@@ -93,7 +85,7 @@
 }
 
 .options {
-  color: var(--headline-color);
+  color: var(--detail-headline-color);
   font-size: 16px;
   font-weight: 700;
   line-height: 16px;
@@ -102,7 +94,7 @@
 
 .preview {
   margin-top: 20px;
-  border: 1px solid var(--line-color);
+  border: 1px solid var(--icon-stroke-color);
   border-radius: 10px;
   margin-bottom: 14px;
   max-width: 600px;

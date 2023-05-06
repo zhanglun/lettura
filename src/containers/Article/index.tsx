@@ -314,6 +314,7 @@ export const ArticleContainer = (): JSX.Element => {
             text-ellipsis
             overflow-hidden
             whitespace-nowrap
+            text-article-headline
           "
           >
             {store.channel ? store.channel.title : ""}

@@ -471,7 +471,7 @@ const ChannelList = (): JSX.Element => {
               onClick={addFeed}
               onKeyUp={addFeed}
             >
-              <PlusIcon className={"h-4 w-4"} />
+              <PlusIcon className="h-4 w-4" />
             </span>
           </Tooltip>
           <Tooltip content="Create folder">

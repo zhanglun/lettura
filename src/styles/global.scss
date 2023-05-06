@@ -14,35 +14,6 @@
   --view-helpbar-width: 50px;
 }
 
-@media screen and (prefers-color-scheme: light) {
-  :root {
-    --body-color: #000;
-    --body-bg-color: #fffffe;
-    --app-main-bg-color: #fff;
-  }
-}
-
-@media screen and (prefers-color-scheme: dark) {
-  :root {
-    --body-color: #fff;
-    --body-bg-color: #3c3c3c;
-    --app-main-bg-color: #3c3c3c;
-  }
-}
-
-:root body[data-theme='light'] {
-  /* --body-color: #333;
-  --app-main-bg-color: #fff; */
-}
-
-
-:root body[data-theme='dark'] {
-  /* --body-color: #fff;
-  --body-bg-color: #3c3c3c;
-  --headline-color: #fff;
-  --app-main-bg-color: #3c3c3c; */
-}
-
 @for $i from 1 to 17 {
   :root body[data-palette='#{$i}'] {
     --color-primary: var(--color-palette-#{$i}-section-1-illustration-highlight);
@@ -59,7 +30,7 @@
     --icon-main: var(--color-palette-#{$i}-section-2-icons-main);
     --icon-stroke: var(--color-palette-#{$i}-section-2-icons-stroke);
 
-    --body-color: var(--paragraph-color);
+    --body-color: var(--detail-paragraph-color);
     --body-bg-color: var(--color-palette-#{$i}-section-2-elements-background);
     --app-main-bg-color: var(--color-palette-#{$i}-section-2-elements-background);
 
@@ -86,6 +57,7 @@
     --semi-color-primary-hover: var(--color-primary);
     --semi-color-focus-border: var(--color-primary);
 
+    --tw-prose-quotes: var(--color-primary);
   }
 
   body[data-palette='#{$i}'] {

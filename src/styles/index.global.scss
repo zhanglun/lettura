@@ -32,25 +32,6 @@ code {
   monospace;
 }
 
-a {
-  text-decoration: none;
-  color: var(--link-default-color);
-}
-
-a:hover {
-  color: var(--link-hover-color);
-}
-
-/* ================= */
-
-.flex {
-  display: flex;
-}
-
-.align-items-center {
-  align-items: center;
-}
-
 /* ================= */
 .titlebar {
   position: fixed;

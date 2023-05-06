@@ -51,11 +51,11 @@
 }
 
 .content {
-
   a {
     text-decoration: underline;
     text-decoration-style: dashed;
     transition: all 0.3s;
+    color: var(--color-primary);
 
     &:hover {
       text-decoration-style: wavy;

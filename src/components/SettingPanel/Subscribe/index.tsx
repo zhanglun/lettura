@@ -59,7 +59,7 @@ export const SettingSubscribe: () => JSX.Element = () => {
         <h1 className={styles.panelTitle}>添加 RSS 源</h1>
       </div>
       <div className={styles.panelBody}>
-        <div className="flex align-items-center">
+        <div className="flex items-center">
           <input
             type="text"
             className="input"

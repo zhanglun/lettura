@@ -5,7 +5,6 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Lettura Web</title>
-    <link rel="stylesheet" href="https://unpkg.com/@douyinfe/semi-ui@2.27.0/dist/css/semi.css">
   </head>
 
   <body>
@@ -28,10 +27,10 @@
       // Whenever the user explicitly chooses to respect the OS preference
       localStorage.removeItem('theme')
     </script>
-  </body>
     <script>
       if (localStorage.getItem('palette')) {
         document.body.dataset.palette = localStorage.getItem('palette')
       }
     </script>
+  </body>
 </html>

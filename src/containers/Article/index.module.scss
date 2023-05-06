@@ -1,4 +1,3 @@
-
 @import "../../styles/index.global.scss";
 
 .article {
@@ -96,9 +95,14 @@
 .menuIconDisabled {
   cursor: not-allowed;
   --icon-stroke-gray: hsl(from var(--icon-stroke) h s calc(l + 60%));
-  --bg-gray: hsl(from var(--color-primary) h s calc(l + 40%));
+  --bg-gray: hsl(from var(--detail-bg-color) h s l / 8%);
   color: var(--icon-stroke-gray);
   background-color: var(--bg-gray);
+
+  &:hover {
+    color: var(--icon-stroke-gray);
+    background-color: var(--bg-gray);
+  }
 }
 
 .scrollList {

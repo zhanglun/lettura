@@ -13,7 +13,14 @@ function SettingPanel() {
   return (
     <div className={styles.container}>
       <div className={`sticky-header ${styles.header}`}>
-        <div className={classnames(styles.title, 'text-2xl p-4 pl-5 font-bold')}>Settings</div>
+        <div
+          className={classnames(
+            styles.title,
+            "text-2xl p-4 pl-5 font-bold text-detail-headline"
+          )}
+        >
+          Settings
+        </div>
       </div>
       <div className={styles.sidebar}>
         <ul>
@@ -21,7 +28,10 @@ function SettingPanel() {
             <NavLink
               to={RouteConfig.SETTINGS_GENERAL}
               className={({ isActive }) =>
-                isActive ?  classnames(styles.menuItem, 'font-bold text-primary') : styles.menuItem
+                classnames(styles.menuItem, "hover:text-primary", {
+                  "font-bold text-primary": isActive,
+                  "text-detail-paragraph": !isActive,
+                })
               }
             >
               <HomeIcon className={"h-4 w-4"} />
@@ -32,7 +42,10 @@ function SettingPanel() {
             <NavLink
               to={RouteConfig.SETTINGS_FEED_MANAGER}
               className={({ isActive }) =>
-                isActive ?  classnames(styles.menuItem, 'font-bold text-primary') : styles.menuItem
+                classnames(styles.menuItem, "hover:text-primary", {
+                  "font-bold text-primary": isActive,
+                  "text-detail-paragraph": !isActive,
+                })
               }
             >
               <CircleStackIcon className={"h-4 w-4"} />
@@ -43,7 +56,10 @@ function SettingPanel() {
             <NavLink
               to={RouteConfig.SETTINGS_IMPORT}
               className={({ isActive }) =>
-                isActive ?  classnames(styles.menuItem, 'font-bold text-primary') : styles.menuItem
+                classnames(styles.menuItem, "hover:text-primary", {
+                  "font-bold text-primary": isActive,
+                  "text-detail-paragraph": !isActive,
+                })
               }
             >
               <RssIcon className={"h-4 w-4"} />
