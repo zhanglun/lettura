@@ -12,8 +12,6 @@
   --app-toolbar-height: 50px;
   --app-setting-sidebar-width: 200px;
   --view-helpbar-width: 50px;
-
-  --color-primary: #078080;
 }
 
 @media screen and (prefers-color-scheme: light) {
@@ -63,7 +61,7 @@
 
     --body-color: var(--paragraph-color);
     --body-bg-color: var(--color-palette-#{$i}-section-2-elements-background);
-    --app-main-bg-color: var(--color-palette-#{$i}-section-1-elements-background);
+    --app-main-bg-color: var(--color-palette-#{$i}-section-2-elements-background);
 
     --feed-list-bg-color: var(--color-palette-#{$i}-section-1-elements-background);
     --feed-headline-color: var(--color-palette-#{$i}-section-1-elements-headline);

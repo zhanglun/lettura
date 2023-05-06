@@ -85,7 +85,6 @@
 
   &:hover {
     color: var(--icon-stroke);
-    background-color: var(--color-primary);
   }
 }
 
@@ -96,8 +95,10 @@
 
 .menuIconDisabled {
   cursor: not-allowed;
-  color: hsl(var(--icon-stroke), 0.5);
-  background-color: var(--color-gray-200);
+  --icon-stroke-gray: hsl(from var(--icon-stroke) h s calc(l + 60%));
+  --bg-gray: hsl(from var(--color-primary) h s calc(l + 40%));
+  color: var(--icon-stroke-gray);
+  background-color: var(--bg-gray);
 }
 
 .scrollList {

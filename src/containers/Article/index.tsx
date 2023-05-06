@@ -376,7 +376,7 @@ export const ArticleContainer = (): JSX.Element => {
             <Tooltip content="Previous">
               <span
                 className={`${styles.menuIcon} ${
-                  currentIdx < 0 && styles.menuIconDisabled
+                  currentIdx <= 0 && styles.menuIconDisabled
                 }`}
                 onClick={handleViewPrevious}
               >
