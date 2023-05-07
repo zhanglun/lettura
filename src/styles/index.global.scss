@@ -190,18 +190,17 @@ $disabled-gray: #ddd;
 /* Chrome, Edge, and Safari */
 *::-webkit-scrollbar {
   background-color: transparent;
-  width: 10px;
+  width: 8px;
 }
 
 *:hover {
   &::-webkit-scrollbar {
-    width: 10px;
+    width: 8px;
   }
 
   &::-webkit-scrollbar-thumb {
     background-color: #707070;
     border-radius: 12px;
-    border: 2px solid #ffffff;
   }
 }
 
