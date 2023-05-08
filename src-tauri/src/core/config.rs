@@ -1,11 +1,11 @@
 use dotenv::dotenv;
 use serde::{Deserialize, Serialize};
-use std::env;
-use std::fs;
-use std::path;
-use std::path::PathBuf;
-
+use std::{env, fs, io, path, path::PathBuf};
 use toml;
+enum ConfigError {
+  IoError(io::Error),
+  InvalidConfig(toml::de::Error),
+}
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct LocalProxy {
@@ -22,24 +22,49 @@ struct RemoteProxy {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+pub struct CustomizeStyle {
+  typeface: String,
+  font_size: i32,
+  line_width: i32,
+}
+
+impl Default for CustomizeStyle {
+  fn default() -> Self {
+    Self {
+      typeface: String::from("adsf"),
+
+    }
+  }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
 pub struct UserConfig {
   pub threads: i32,
   pub theme: String,
   pub local_proxy: Option<LocalProxy>,
+  pub customize_style: CustomizeStyle,
 }
 
-impl UserConfig {
-  pub fn new() -> Self {
+impl Default for UserConfig {
+  fn default() -> Self {
     Self {
+      threads: 1,
+      theme: String::from('1'),
       local_proxy: Some(LocalProxy {
         ip: "".to_string(),
         port: "".to_string(),
       }),
-      threads: 1,
-      theme: String::from('1'),
+
+      customize_style: CustomizeStyle {
+        typeface: String::from(""),
+        font_size: 14,
+        line_width: 2,
+      },
     }
   }
+}
 
+impl UserConfig {
   fn update_threads(&mut self, threads: i32) -> &mut UserConfig {
     self.threads = threads;
 
@@ -72,9 +97,9 @@ impl UserConfig {
         println!("{:?}", env::current_dir());
         println!("{:?}", env::current_exe());
 
-        UserConfig::new()
+        UserConfig::default()
       }
-      None => UserConfig::new(),
+      None => UserConfig::default(),
     }
   }
 }
@@ -104,25 +129,12 @@ pub fn get_user_config_path() -> PathBuf {
 }
 
 pub fn read_user_config() {
-  let user_config = get_user_config_path();
+  let user_config = get_user_config();
 
-  println!("{:?}", user_config);
+  println!("read_user_config ---> {:?}", user_config);
 
   // TODO: read yml
 }
-
-pub fn create_user_config() -> usize {
-  let user_config = get_user_config_path();
-
-  if !user_config.exists() {
-    fs::File::create(user_config).unwrap();
-    1
-  } else {
-    0
-  }
-}
-
-pub fn write_user_config() {}
 
 pub fn get_user_config() -> Option<UserConfig> {
   let user_config_path = get_user_config_path();
@@ -144,12 +156,36 @@ pub fn get_user_config() -> Option<UserConfig> {
   data
 }
 
+pub fn load_or_initial() -> toml::map::Map<String, toml::Value> {
+  let user_config_path = get_user_config_path();
+
+  if !user_config_path.exists() {
+    fs::File::create(&user_config_path).expect("create user config failed");
+  }
+
+  let content = match fs::read_to_string(&user_config_path) {
+    Ok(content) => content,
+    Err(_) => "".to_string(),
+  };
+
+  let data = match content.parse::<toml::Table>() {
+    Ok(data) => data,
+    Err(err) => {
+      println!("error ==> {:?}", err);
+      toml::map::Map::new()
+    }
+  };
+
+  println!("data: {:?}", data);
+  data
+}
+
 pub fn update_proxy(ip: String, port: String) -> usize {
   let data = get_user_config();
 
   let mut data = match data {
     Some(data) => data,
-    None => UserConfig::new(),
+    None => UserConfig::default(),
   };
 
   let user_config_path = get_user_config_path();
@@ -166,7 +202,7 @@ pub fn update_threads(threads: i32) -> usize {
 
   let mut data = match data {
     Some(data) => data,
-    None => UserConfig::new(),
+    None => UserConfig::default(),
   };
 
   let user_config_path = get_user_config_path();
@@ -184,7 +220,7 @@ pub fn update_theme(theme: String) -> usize {
 
   let mut data = match data {
     Some(data) => data,
-    None => UserConfig::new(),
+    None => UserConfig::default(),
   };
 
   let user_config_path = get_user_config_path();
@@ -206,19 +242,17 @@ mod tests {
   use super::*;
 
   #[test]
-  fn test_get_user_config() {
-    get_user_config();
-  }
-
-  #[test]
   fn test_read_user_config() {
     read_user_config();
   }
 
   #[test]
-  fn test_create_user_config() {
-    let res = create_user_config();
-
-    println!("{}", res)
+  fn test_load_or_initial() {
+    let a = load_or_initial();
+    if a.contains_key("customize_style") {
+      a.insert(String::from("customize_style"), CustomizeStyle::default());
+      println!("{:?}", a.contains_key("customize_style"));
+    }
+    // println!("try {:?}", a.try_into::<UserConfig>().unwrap());
   }
 }
