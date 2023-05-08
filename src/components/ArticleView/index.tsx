@@ -34,9 +34,9 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
 
     return (
       <div ref={containerRef}>
-        <div className={styles.main}>
+        <div className="m-auto prose lg:prose-xl">
           <div className="pb-4 border-b border-slate-100">
-            <div className="mt-10 mb-5 text-4xl font-bold text-detail-headline">
+            <div className="mt-6 mb-5 text-4xl font-bold text-detail-headline">
               {article.title}
             </div>
             <div className={classnames(styles.meta)}>
