@@ -447,7 +447,7 @@ pub fn mark_all_read(channel_uuid: String) -> usize {
 
 #[command]
 pub fn get_user_config() -> Option<config::UserConfig> {
-  let user_config = config::get_user_config();
+  let user_config = config::load_or_initial();
 
   user_config
 }

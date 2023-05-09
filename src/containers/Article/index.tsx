@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { ArticleList, ArticleListRefType } from "../../components/ArticleList";
 import { ArticleView } from "../../components/ArticleView";
-import { Button, Dropdown, Toast, Tooltip } from "@douyinfe/semi-ui";
+import { Button, Dropdown, Menu, Message, Tooltip, Slider } from "@arco-design/web-react";
 import * as dataAgent from "../../helpers/dataAgent";
 import { useBearStore } from "../../hooks/useBearStore";
 import styles from "./index.module.scss";
@@ -128,7 +128,7 @@ export const ArticleContainer = (): JSX.Element => {
           console.log("%c Line:77 🥛 res", "color:#ea7e5c", res);
 
           if (message) {
-            Toast.warning({
+            Message.warning({
               content: (
                 <>
                   <div>Something wrong!</div>
@@ -136,8 +136,7 @@ export const ArticleContainer = (): JSX.Element => {
                 </>
               ),
               duration: 4,
-              theme: "light",
-              showClose: false,
+              closable: false,
             });
           } else {
             getArticleList();
@@ -168,11 +167,10 @@ export const ArticleContainer = (): JSX.Element => {
 
     navigator.clipboard.writeText(link).then(
       function () {
-        Toast.success({
+        Message.success({
           content: "Copied!",
           duration: 2,
-          theme: "light",
-          showClose: false,
+          closable: false,
         });
       },
       function (err) {
@@ -322,24 +320,23 @@ export const ArticleContainer = (): JSX.Element => {
           <div className={styles.menu}>
             <Dropdown
               trigger="click"
-              position="bottomLeft"
-              clickToHide={true}
-              render={
-                <Dropdown.Menu>
+              position="bl"
+              droplist={
+                <Menu>
                   {store.filterList.map((item) => {
                     return (
-                      <Dropdown.Item
-                        key={item.id}
+                      <Menu.Item
+                        key={item.id + ''}
                         onClick={() => changeFilter(item)}
                         {...(item.id === store.currentFilter.id
                           ? { type: "primary" }
                           : {})}
                       >
                         {item.title}
-                      </Dropdown.Item>
+                      </Menu.Item>
                     );
                   })}
-                </Dropdown.Menu>
+                </Menu>
               }
             >
               <Button>{store.currentFilter.title}</Button>
@@ -395,11 +392,44 @@ export const ArticleContainer = (): JSX.Element => {
                 <ChevronDownIcon className={"h-4 w-4"} />
               </span>
             </Tooltip>
-            <Tooltip content="Beautify read">
+            <Dropdown droplist={
+              <div className="w-[440px] bg-detail-bg p-3 rounded border">
+                <div>
+                  <div>Font Size</div>
+                  <div>
+                    <Slider
+                      defaultValue={14}
+                      max={20}
+                      step={1}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <div>Line Height</div>
+                  <div>
+                    <Slider
+                      defaultValue={1.3}
+                      max={2}
+                      step={0.1}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <div>Line Width</div>
+                  <div>
+                    <Slider
+                      defaultValue={1.3}
+                      max={2}
+                      step={0.1}
+                    />
+                  </div>
+                </div>
+              </div>
+            }>
               <span className={styles.menuIcon}>
                 <PaintBrushIcon className={"h-4 w-4"} />
               </span>
-            </Tooltip>
+            </Dropdown>
             <Tooltip content="View source page">
               <span className={styles.menuIcon} onClick={handleViewSourcePage}>
                 <GlobeAltIcon className={"h-4 w-4"} />

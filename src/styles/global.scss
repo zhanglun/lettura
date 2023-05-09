@@ -58,12 +58,14 @@
   body[data-palette='#{$i}'] {
     --semi-color-text-0: var(--paragraph-color);
     --semi-color-primary: var(--color-primary);
+    --semi-color-success: var(--color-secondary);
     --semi-color-primary-hover: var(--color-primary);
     --semi-color-focus-border: var(--color-primary);
     --semi-color-focus-border: var(--detail-form-input-background);
 
-    --tw-prose-quotes: var(--color-primary);
-    --tw-prose-bold: var(--color-primary);
+    --tw-prose-quotes: var(--detail-paragraph-color);
+    --tw-prose-bold: var(--detail-paragraph-color);
+    --tw-prose-headings: var(--detail-headline-color);
   }
 
   body[data-palette='#{$i}'] {

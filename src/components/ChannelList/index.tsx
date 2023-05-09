@@ -21,7 +21,6 @@ import pLimit from "p-limit";
 import { useBearStore } from "../../hooks/useBearStore";
 
 import styles from "./channel.module.scss";
-import { channel } from "diagnostics_channel";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -248,7 +247,7 @@ const ChannelList = (): JSX.Element => {
       >
         <span
           className={`w-full flex items-center h-8 px-2 py-3 rounded-md cursor-pointer mt-[2px]
-             text-feed-headline hover:text-feed-active-headline
+             text-feed-headline group hover:text-feed-active-headline
              ${
                isActive
                  ? "bg-feed-active-bg text-feed-active-headline hover:bg-feed-active-bg"
@@ -257,7 +256,6 @@ const ChannelList = (): JSX.Element => {
             active:bg-gray-200`}
         >
           {!isLeaf && renderFolder(expandStatus, onExpand)}
-
           {channel.link && (
             <img
               src={ico}
@@ -277,9 +275,9 @@ const ChannelList = (): JSX.Element => {
           </span>
           {unread > 0 && (
             <span
-              className={`px-1 min-w-[1rem] h-4 leading-4 text-center text-[10px] text-white rounded-lg ${
-                isActive ? "bg-neutral-600" : "bg-neutral-500"
-              }`}
+              className={`px-1 min-w-[1rem] h-4 leading-4 text-center text-[10px] ${
+                isActive ? "text-feed-active-headline" : "text-feed-headline"
+              } group-hover:text-feed-active-headline`}
             >
               {unread}
             </span>
@@ -518,7 +516,7 @@ const ChannelList = (): JSX.Element => {
             {/* @ts-ignore */}
             <Progress percent={Math.ceil((done / channelList.length) * 100)} />
           </span>
-          <span className="text-sm">
+          <span className="text-sm text-feed-headline">
             {done}/{channelList.length}
           </span>
         </div>

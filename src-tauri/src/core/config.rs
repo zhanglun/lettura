@@ -32,7 +32,8 @@ impl Default for CustomizeStyle {
   fn default() -> Self {
     Self {
       typeface: String::from("adsf"),
-
+      font_size: 14,
+      line_width: 1,
     }
   }
 }
@@ -128,14 +129,6 @@ pub fn get_user_config_path() -> PathBuf {
   }
 }
 
-pub fn read_user_config() {
-  let user_config = get_user_config();
-
-  println!("read_user_config ---> {:?}", user_config);
-
-  // TODO: read yml
-}
-
 pub fn get_user_config() -> Option<UserConfig> {
   let user_config_path = get_user_config_path();
 
@@ -156,7 +149,7 @@ pub fn get_user_config() -> Option<UserConfig> {
   data
 }
 
-pub fn load_or_initial() -> toml::map::Map<String, toml::Value> {
+pub fn load_or_initial() -> Option<UserConfig> {
   let user_config_path = get_user_config_path();
 
   if !user_config_path.exists() {
@@ -168,7 +161,7 @@ pub fn load_or_initial() -> toml::map::Map<String, toml::Value> {
     Err(_) => "".to_string(),
   };
 
-  let data = match content.parse::<toml::Table>() {
+  let mut data = match content.parse::<toml::Table>() {
     Ok(data) => data,
     Err(err) => {
       println!("error ==> {:?}", err);
@@ -176,8 +169,13 @@ pub fn load_or_initial() -> toml::map::Map<String, toml::Value> {
     }
   };
 
+  if !data.contains_key("customize_style") {
+    data.insert(String::from("customize_style"), toml::Value::try_from::<CustomizeStyle>(CustomizeStyle::default()).unwrap());
+  }
+
   println!("data: {:?}", data);
-  data
+
+  Some(data.try_into::<UserConfig>().unwrap_or(UserConfig::default()))
 }
 
 pub fn update_proxy(ip: String, port: String) -> usize {
@@ -242,17 +240,9 @@ mod tests {
   use super::*;
 
   #[test]
-  fn test_read_user_config() {
-    read_user_config();
-  }
-
-  #[test]
   fn test_load_or_initial() {
-    let a = load_or_initial();
-    if a.contains_key("customize_style") {
-      a.insert(String::from("customize_style"), CustomizeStyle::default());
-      println!("{:?}", a.contains_key("customize_style"));
-    }
-    // println!("try {:?}", a.try_into::<UserConfig>().unwrap());
+    let res = load_or_initial();
+
+    println!("test_load_or_initial res {:?}", res);
   }
 }
