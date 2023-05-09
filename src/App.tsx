@@ -29,6 +29,7 @@ function App() {
   const store = useBearStore((state) => ({
     goPreviousArticle: state.goPreviousArticle,
     goNextArticle: state.goNextArticle,
+    getUserConfig: state.getUserConfig,
   }));
 
   useEffect(() => {
@@ -47,6 +48,8 @@ function App() {
     dataAgent.getUserConfig().then((res) => {
       console.log("user config", res);
     });
+
+    store.getUserConfig();
   }, []);
 
   const goPrev = (elem: HTMLElement, tagName: string) => {

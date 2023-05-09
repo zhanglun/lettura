@@ -2,7 +2,14 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { ArticleList, ArticleListRefType } from "../../components/ArticleList";
 import { ArticleView } from "../../components/ArticleView";
-import { Button, Dropdown, Menu, Message, Tooltip, Slider } from "@arco-design/web-react";
+import {
+  Button,
+  Dropdown,
+  Menu,
+  Message,
+  Tooltip,
+  Slider,
+} from "@arco-design/web-react";
 import * as dataAgent from "../../helpers/dataAgent";
 import { useBearStore } from "../../hooks/useBearStore";
 import styles from "./index.module.scss";
@@ -39,7 +46,10 @@ export const ArticleContainer = (): JSX.Element => {
 
     currentIdx: state.currentIdx,
     setCurrentIdx: state.setCurrentIdx,
+    userConfig: state.userConfig,
   }));
+
+  console.log("🚀 ~ file: index.tsx:51 ~ store ~ store:", store);
 
   const query = useQuery();
   const feedUrl = query.get("feedUrl");
@@ -236,7 +246,7 @@ export const ArticleContainer = (): JSX.Element => {
         if (idx <= previousIdx) {
           calculateItemPosition("up", store.articleList[idx]);
         } else {
-          console.log("往下", store.articleList[idx])
+          console.log("往下", store.articleList[idx]);
           calculateItemPosition("down", store.articleList[idx]);
         }
       }
@@ -246,7 +256,7 @@ export const ArticleContainer = (): JSX.Element => {
       console.log("clean!!!!");
       unsub2();
     };
-  }, [store.articleList])
+  }, [store.articleList]);
 
   useEffect(() => {
     resetScrollTop();
@@ -293,16 +303,34 @@ export const ArticleContainer = (): JSX.Element => {
       const offset = bounding.bottom - winH;
       const scrollTop = (listRef?.current?.scrollTop || 0) + offset;
 
-      console.log("🚀 ~ file: index.tsx:324 ~ ArticleContainer ~ scrollTop:", scrollTop)
+      console.log(
+        "🚀 ~ file: index.tsx:324 ~ ArticleContainer ~ scrollTop:",
+        scrollTop
+      );
       listRef?.current?.scrollTo(0, scrollTop);
     }
+  }
+
+  function handleCustomizeStyleChange(
+    key: keyof CustomizeStyle,
+    value: number | string | number[]
+  ) {
+    console.log(
+      "🚀 ~ file: index.tsx:315 ~ handleCustomizeStyleChange ~ value:",
+      value
+    );
+    console.log(
+      "🚀 ~ file: index.tsx:315 ~ handleCustomizeStyleChange ~ key:",
+      key
+    );
   }
 
   return (
     <div className={styles.article}>
       <div className="relative h-full border-r border-stone-100 bg-article-list-bg">
         <div className={`sticky-header ${styles.header}`}>
-          <div className="
+          <div
+            className="
             flex
             items-center
             px-3
@@ -326,7 +354,7 @@ export const ArticleContainer = (): JSX.Element => {
                   {store.filterList.map((item) => {
                     return (
                       <Menu.Item
-                        key={item.id + ''}
+                        key={item.id + ""}
                         onClick={() => changeFilter(item)}
                         {...(item.id === store.currentFilter.id
                           ? { type: "primary" }
@@ -392,40 +420,47 @@ export const ArticleContainer = (): JSX.Element => {
                 <ChevronDownIcon className={"h-4 w-4"} />
               </span>
             </Tooltip>
-            <Dropdown droplist={
-              <div className="w-[440px] bg-detail-bg p-3 rounded border">
-                <div>
-                  <div>Font Size</div>
-                  <div>
-                    <Slider
-                      defaultValue={14}
-                      max={20}
-                      step={1}
-                    />
+            <Dropdown
+              trigger="click"
+              droplist={
+                <div className="w-[320px] bg-detail-bg px-3 py-2 rounded border grid gap-2">
+                  <div className="grid gap-2 grid-flow-col grid-cols-[74px_auto_42px] items-center">
+                    <div className="text-sm">Font Size</div>
+                    <div>
+                      <Slider
+                        defaultValue={
+                          store.userConfig.customize_style?.font_size
+                        }
+                        max={20}
+                        min={12}
+                        step={1}
+                        onChange={(value: number | number[]) =>
+                          handleCustomizeStyleChange("font_size", value)
+                        }
+                      />
+                    </div>
+                    <div className="bg-button text-button-text rounded text-center text-xs py-[2px]">
+                      {store.userConfig.customize_style?.font_size}px
+                    </div>
+                  </div>
+                  <div className="grid gap-2 grid-flow-col grid-cols-[74px_auto_42px] items-center">
+                    <div className="text-sm">Line Height</div>
+                    <div>
+                      <Slider defaultValue={1.3} max={2} step={0.1} />
+                    </div>
+                    <div className="bg-button text-button-text rounded text-center">
+                      111
+                    </div>
+                  </div>
+                  <div className="grid gap-2 grid-flow-col grid-cols-[74px_auto_42px] items-center">
+                    <div className="text-sm">Line Width</div>
+                    <div>
+                      <Slider defaultValue={1.3} max={2} step={0.1} />
+                    </div>
                   </div>
                 </div>
-                <div>
-                  <div>Line Height</div>
-                  <div>
-                    <Slider
-                      defaultValue={1.3}
-                      max={2}
-                      step={0.1}
-                    />
-                  </div>
-                </div>
-                <div>
-                  <div>Line Width</div>
-                  <div>
-                    <Slider
-                      defaultValue={1.3}
-                      max={2}
-                      step={0.1}
-                    />
-                  </div>
-                </div>
-              </div>
-            }>
+              }
+            >
               <span className={styles.menuIcon}>
                 <PaintBrushIcon className={"h-4 w-4"} />
               </span>

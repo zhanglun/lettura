@@ -9,8 +9,16 @@ declare interface LocalProxy {
   port: string;
 }
 
+declare interface CustomizeStyle {
+  typeface: string;
+  font_size: number;
+  line_width: number;
+}
+
 declare interface UserConfig {
-  local_proxy?: LocalProxy;
   threads?: number;
   theme?: string;
+  local_proxy?: LocalProxy;
+  customize_style?: CustomizeStyle;
+
 }
