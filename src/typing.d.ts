@@ -12,6 +12,7 @@ declare interface LocalProxy {
 declare interface CustomizeStyle {
   typeface: string;
   font_size: number;
+  line_height: number;
   line_width: number;
 }
 

@@ -25,6 +25,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { busChannel } from "../../helpers/busChannel";
 import { Article } from "../../db";
+import { CustomizeStyle } from "../../components/SettingPanel/CustomizeStyle";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -311,20 +312,6 @@ export const ArticleContainer = (): JSX.Element => {
     }
   }
 
-  function handleCustomizeStyleChange(
-    key: keyof CustomizeStyle,
-    value: number | string | number[]
-  ) {
-    console.log(
-      "🚀 ~ file: index.tsx:315 ~ handleCustomizeStyleChange ~ value:",
-      value
-    );
-    console.log(
-      "🚀 ~ file: index.tsx:315 ~ handleCustomizeStyleChange ~ key:",
-      key
-    );
-  }
-
   return (
     <div className={styles.article}>
       <div className="relative h-full border-r border-stone-100 bg-article-list-bg">
@@ -409,56 +396,19 @@ export const ArticleContainer = (): JSX.Element => {
                 <ChevronUpIcon className={"h-4 w-4"} />
               </span>
             </Tooltip>
-            <Tooltip content="Next">
-              <span
-                className={`${styles.menuIcon} ${
-                  currentIdx >= store.articleList.length - 1 &&
-                  styles.menuIconDisabled
-                }`}
-                onClick={handleViewNext}
-              >
-                <ChevronDownIcon className={"h-4 w-4"} />
-              </span>
-            </Tooltip>
+            <span
+              className={`${styles.menuIcon} ${
+                currentIdx >= store.articleList.length - 1 &&
+                styles.menuIconDisabled
+              }`}
+              onClick={handleViewNext}
+            >
+              <ChevronDownIcon className={"h-4 w-4"} />
+            </span>
             <Dropdown
               trigger="click"
               droplist={
-                <div className="w-[320px] bg-detail-bg px-3 py-2 rounded border grid gap-2">
-                  <div className="grid gap-2 grid-flow-col grid-cols-[74px_auto_42px] items-center">
-                    <div className="text-sm">Font Size</div>
-                    <div>
-                      <Slider
-                        defaultValue={
-                          store.userConfig.customize_style?.font_size
-                        }
-                        max={20}
-                        min={12}
-                        step={1}
-                        onChange={(value: number | number[]) =>
-                          handleCustomizeStyleChange("font_size", value)
-                        }
-                      />
-                    </div>
-                    <div className="bg-button text-button-text rounded text-center text-xs py-[2px]">
-                      {store.userConfig.customize_style?.font_size}px
-                    </div>
-                  </div>
-                  <div className="grid gap-2 grid-flow-col grid-cols-[74px_auto_42px] items-center">
-                    <div className="text-sm">Line Height</div>
-                    <div>
-                      <Slider defaultValue={1.3} max={2} step={0.1} />
-                    </div>
-                    <div className="bg-button text-button-text rounded text-center">
-                      111
-                    </div>
-                  </div>
-                  <div className="grid gap-2 grid-flow-col grid-cols-[74px_auto_42px] items-center">
-                    <div className="text-sm">Line Width</div>
-                    <div>
-                      <Slider defaultValue={1.3} max={2} step={0.1} />
-                    </div>
-                  </div>
-                </div>
+                <CustomizeStyle styleConfig={store.userConfig.customize_style} />
               }
             >
               <span className={styles.menuIcon}>
@@ -488,6 +438,7 @@ export const ArticleContainer = (): JSX.Element => {
           </div>
         </div>
         <div className={styles.scrollView} ref={viewRef}>
+          <CustomizeStyle styleConfig={store.userConfig.customize_style} />
           <ArticleView article={store.article} />
         </div>
       </div>

@@ -26,6 +26,7 @@ interface BearStore {
 
   userConfig: UserConfig;
   getUserConfig: any;
+  updateUserConfig: (cfg: UserConfig) => void;
 }
 
 export const useBearStore = create<BearStore>()(
@@ -160,6 +161,18 @@ export const useBearStore = create<BearStore>()(
           }));
         });
       },
+
+      updateUserConfig: (config: UserConfig) => {
+        const cfg = {...get().userConfig, ...config};
+
+        console.log("%c Line:167 🍯 cfg", "color:#fca650", cfg);
+
+        dataAgent.updateUserConfig(cfg).then(() => {
+          set(() => ({
+            userConfig: cfg,
+          }))
+        });
+      }
     };
   })
 );

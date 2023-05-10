@@ -471,7 +471,11 @@ pub fn update_theme(theme: String) -> usize {
 }
 
 #[command]
-pub fn update_user_config<T>(_user_cfg: T) -> usize {
+pub fn update_user_config(user_cfg: config::UserConfig) -> usize {
+  println!("user_cfg {:?}", user_cfg);
+
+  config::update_user_config(user_cfg);
+
   1
 }
 

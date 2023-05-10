@@ -25,6 +25,7 @@ struct RemoteProxy {
 pub struct CustomizeStyle {
   typeface: String,
   font_size: i32,
+  line_height: f32,
   line_width: i32,
 }
 
@@ -33,6 +34,7 @@ impl Default for CustomizeStyle {
     Self {
       typeface: String::from("adsf"),
       font_size: 14,
+      line_height: 1.25,
       line_width: 1,
     }
   }
@@ -56,11 +58,7 @@ impl Default for UserConfig {
         port: "".to_string(),
       }),
 
-      customize_style: CustomizeStyle {
-        typeface: String::from(""),
-        font_size: 14,
-        line_width: 2,
-      },
+      customize_style: CustomizeStyle::default(),
     }
   }
 }
@@ -175,7 +173,7 @@ pub fn load_or_initial() -> Option<UserConfig> {
 
   println!("data: {:?}", data);
 
-  Some(data.try_into::<UserConfig>().unwrap_or(UserConfig::default()))
+  Some(data.try_into::<UserConfig>().expect("asdfasdfasdfasdf"))
 }
 
 pub fn update_proxy(ip: String, port: String) -> usize {
@@ -228,6 +226,16 @@ pub fn update_theme(theme: String) -> usize {
   let a = data.update_theme(theme);
 
   let content = toml::to_string(a).unwrap();
+
+  fs::write(user_config_path, content).expect("update threads error");
+
+  return 1;
+}
+
+pub fn update_user_config (cfg: UserConfig) -> usize {
+  let user_config_path = get_user_config_path();
+
+  let content = toml::to_string(&cfg).unwrap();
 
   fs::write(user_config_path, content).expect("update threads error");
 
