@@ -45,11 +45,24 @@ function App() {
   }, []);
 
   useEffect(() => {
-    dataAgent.getUserConfig().then((res) => {
-      console.log("user config", res);
-    });
-
     store.getUserConfig();
+
+    dataAgent.getUserConfig().then((cfg: any) => {
+      console.log("update use config", cfg);
+
+      const { theme, customize_style } = cfg as UserConfig;
+
+      if (theme) {
+        document.body.dataset.palette = theme;
+      }
+
+      customize_style && Object.keys(customize_style).length && Object.keys(customize_style).forEach((key) => {
+        document.documentElement.style.setProperty(
+          `--customize-style-${key.replace(/_/gi, "-")}`,
+          customize_style[key] as string
+        );
+      })
+    });
   }, []);
 
   const goPrev = (elem: HTMLElement, tagName: string) => {
@@ -89,7 +102,6 @@ function App() {
   useEffect(() => {
     document.addEventListener("keydown", (e) => handleKeyPress(e));
     return () => {
-      console.log("remove listener");
       document.removeEventListener("keydown", (e) => handleKeyPress(e));
     };
   }, []);

@@ -40,6 +40,11 @@ export const CustomizeStyle = (props: CustomizeStyleProps) => {
         [key]: value,
       },
     });
+
+    document.documentElement.style.setProperty(
+      `--customize-style-${key.replace(/_/gi, "-")}`,
+      value as string
+    );
   }
 
   return (
@@ -75,7 +80,7 @@ export const CustomizeStyle = (props: CustomizeStyleProps) => {
           />
         </div>
         <div className="bg-button text-button-text rounded text-center">
-          111
+          {cfg.line_height}
         </div>
       </div>
       <div className="grid gap-2 grid-flow-col grid-cols-[74px_auto_42px] items-center">
@@ -87,9 +92,12 @@ export const CustomizeStyle = (props: CustomizeStyleProps) => {
             min={1.2}
             step={0.1}
             onChange={(value: number | number[]) =>
-              handleCustomizeStyleChange("line_width", value)
+              handleCustomizeStyleChange("line_width", (value as number).toFixed(1))
             }
           />
+        </div>
+        <div className="bg-button text-button-text rounded text-center">
+          {cfg.line_width}
         </div>
       </div>
     </div>

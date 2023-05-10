@@ -21,5 +21,4 @@ declare interface UserConfig {
   theme?: string;
   local_proxy?: LocalProxy;
   customize_style?: CustomizeStyle;
-
 }

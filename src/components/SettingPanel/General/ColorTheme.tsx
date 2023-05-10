@@ -42,8 +42,6 @@ export const ColorTheme = () => {
 
       if (theme) {
         setTheme(theme);
-
-        document.body.dataset.palette = theme;
       }
     });
   }, []);
