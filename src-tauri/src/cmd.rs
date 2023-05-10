@@ -531,7 +531,7 @@ mod tests {
     println!("{:?}", url);
     let res = fetch_feed_item(&url).await;
 
-    let a = match res {
+    match res {
       Ok(res) => {
         let channel_uuid = Uuid::new_v4().hyphenated().to_string();
         let articles = create_article_models(&channel_uuid, &url, &res);

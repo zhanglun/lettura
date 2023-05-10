@@ -1,11 +1,7 @@
 use dotenv::dotenv;
 use serde::{Deserialize, Serialize};
-use std::{env, fs, io, path, path::PathBuf};
+use std::{env, fs, path, path::PathBuf};
 use toml;
-enum ConfigError {
-  IoError(io::Error),
-  InvalidConfig(toml::de::Error),
-}
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct LocalProxy {

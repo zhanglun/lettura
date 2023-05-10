@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Slider } from "@arco-design/web-react";
 import { useBearStore } from "../../../hooks/useBearStore";
 
@@ -12,14 +12,17 @@ export const CustomizeStyle = (props: CustomizeStyleProps) => {
     updateUserConfig: state.updateUserConfig,
   }));
   const { styleConfig } = props;
-  const [cfg, setCfg] = useState(
-    styleConfig || {
-      typeface: "",
-      font_size: 12,
-      line_height: 1.2,
-      line_width: 1,
-    }
-  );
+  console.log("%c Line:15 🍿 styleConfig", "color:#3f7cff", styleConfig);
+  const [cfg, setCfg] = useState({
+    typeface: "",
+    font_size: 12,
+    line_height: 1.2,
+    line_width: 1,
+  });
+
+  useEffect(() => {
+    styleConfig && setCfg({ ...styleConfig });
+  }, [styleConfig]);
 
   function handleCustomizeStyleChange(
     key: keyof CustomizeStyle,

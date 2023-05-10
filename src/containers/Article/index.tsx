@@ -8,7 +8,6 @@ import {
   Menu,
   Message,
   Tooltip,
-  Slider,
 } from "@arco-design/web-react";
 import * as dataAgent from "../../helpers/dataAgent";
 import { useBearStore } from "../../hooks/useBearStore";
@@ -357,18 +356,14 @@ export const ArticleContainer = (): JSX.Element => {
               <Button>{store.currentFilter.title}</Button>
             </Dropdown>
 
-            <Tooltip content="Mark all read">
-              <span className={styles.menuIcon} onClick={markAllRead}>
-                <WalletIcon className={"h-4 w-4"} />
-              </span>
-            </Tooltip>
-            <Tooltip content="Refresh">
-              <span className={styles.menuIcon} onClick={handleRefresh}>
-                <ArrowPathIcon
-                  className={`h-4 w-4 ${syncing ? "spinning" : ""}`}
-                />
-              </span>
-            </Tooltip>
+            <span className={styles.menuIcon} onClick={markAllRead}>
+              <WalletIcon className={"h-4 w-4"} />
+            </span>
+            <span className={styles.menuIcon} onClick={handleRefresh}>
+              <ArrowPathIcon
+                className={`h-4 w-4 ${syncing ? "spinning" : ""}`}
+              />
+            </span>
           </div>
         </div>
         {syncing && <div className={styles.syncingBar}>同步中</div>}
@@ -408,7 +403,9 @@ export const ArticleContainer = (): JSX.Element => {
             <Dropdown
               trigger="click"
               droplist={
-                <CustomizeStyle styleConfig={store.userConfig.customize_style} />
+                <CustomizeStyle
+                  styleConfig={store.userConfig.customize_style}
+                />
               }
             >
               <span className={styles.menuIcon}>
@@ -439,7 +436,8 @@ export const ArticleContainer = (): JSX.Element => {
         </div>
         <div className={styles.scrollView} ref={viewRef}>
           <CustomizeStyle styleConfig={store.userConfig.customize_style} />
-          <ArticleView article={store.article} />
+          <p>{store.userConfig.customize_style?.font_size}px</p>
+          <ArticleView article={store.article} userConfig={store.userConfig} />
         </div>
       </div>
     </div>

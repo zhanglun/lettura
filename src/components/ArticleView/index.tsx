@@ -7,6 +7,7 @@ import classnames from "classnames";
 
 type ArticleViewProps = {
   article: any | null;
+  userConfig: UserConfig;
 };
 
 function createMarkup(html: string) {
@@ -14,7 +15,7 @@ function createMarkup(html: string) {
 }
 
 export const ArticleView = (props: ArticleViewProps): JSX.Element => {
-  const { article } = props;
+  const { article, userConfig } = props;
   const containerRef = useRef<HTMLDivElement>(null);
   const helpBarRef = useRef<HTMLDivElement>(null);
   const [pageContent, setPageContent] = useState("");
@@ -65,7 +66,10 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
               </div>
             )}
             <div
-              className={classnames(styles.content, "text-detail-paragraph")}
+              className={classnames(
+                styles.content,
+                "text-detail-paragraph",
+              )}
               // eslint-disable-next-line react/no-danger
               dangerouslySetInnerHTML={createMarkup(pageContent)}
             />
