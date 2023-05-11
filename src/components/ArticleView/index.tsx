@@ -35,7 +35,7 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
 
     return (
       <div ref={containerRef}>
-        <div className="m-auto prose lg:prose-xl">
+        <div className="m-auto">
           <div className="pb-4 border-b border-slate-100">
             <div className="mt-6 mb-5 text-4xl font-bold text-detail-headline">
               {article.title}
@@ -59,7 +59,7 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
               )}
             </div>
           </div>
-          <div className="m-auto pt-1 mt-6 prose lg:prose-xl">
+          <div className="m-auto pt-1 mt-6">
             {showBanner && article.image && (
               <div className={styles.banner}>
                 <img src={article.image} alt="" />

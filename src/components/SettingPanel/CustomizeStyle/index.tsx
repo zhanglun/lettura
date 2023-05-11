@@ -42,7 +42,7 @@ export const CustomizeStyle = (props: CustomizeStyleProps) => {
     });
 
     document.documentElement.style.setProperty(
-      `--customize-style-${key.replace(/_/gi, "-")}`,
+      `--reading-editable-${key.replace(/_/gi, "-")}`,
       value as string
     );
   }
