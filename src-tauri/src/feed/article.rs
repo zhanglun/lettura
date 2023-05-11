@@ -29,23 +29,15 @@ pub struct ArticleQueryItem {
   #[diesel(sql_type = Text)]
   pub channel_link: String,
   #[diesel(sql_type = Text)]
-  pub title: String,
-  #[diesel(sql_type = Text)]
   pub link: String,
+  #[diesel(sql_type = Text)]
+  pub title: String,
   #[diesel(sql_type = Text)]
   pub feed_url: String,
   #[diesel(sql_type = Text)]
   pub description: String,
   #[diesel(sql_type = Text)]
-  pub content: String,
-  #[diesel(sql_type = Text)]
   pub pub_date: String,
-  #[diesel(sql_type = Text)]
-  pub author: String,
-  #[diesel(sql_type = Text)]
-  pub create_date: String,
-  #[diesel(sql_type = Text)]
-  pub update_date: String,
   #[diesel(sql_type = Integer)]
   pub read_status: i32,
 }
@@ -82,13 +74,46 @@ impl Article {
           let params = format!("?{}", ", ?".repeat(channel_uuids.len() - 1));
           query = query
           .sql(format!("
-            select A.id, A.uuid, A.channel_uuid, A.title, A.link, A.feed_url, A.description, A.content, A.pub_date, A.author, A.create_date, A.update_date, A.read_status, C.title as channel_title, C.link as channel_link from articles as A Left join channels as C where C.uuid = A.channel_uuid and C.uuid in ({})", params));
+            select
+              A.id, A.uuid,
+              A.channel_uuid,
+              C.title as channel_title,
+              C.link as channel_link,
+              A.link,
+              A.title,
+              A.feed_url,
+              A.description,
+              A.pub_date,
+              A.read_status
+            from
+              channels as C
+            Left join
+              articles as A
+            on C.uuid = A.channel_uuid where C.uuid in ({})", params));
 
           for uuid in channel_uuids {
             query = query.bind::<Text, _>(uuid);
           }
         } else {
-          query = query.sql("select A.id, A.uuid, A.channel_uuid, A.title, A.link, A.feed_url, A.description, A.content, A.pub_date, A.author, A.create_date, A.update_date, A.read_status, C.title as channel_title, C.link as channel_link from articles  as A Left  join channels as C where C.uuid = A.channel_uuid and C.uuid = ?");
+          query = query.sql(format!("
+            select
+              A.id,
+              A.uuid,
+              A.channel_uuid,
+              C.title as channel_title,
+              C.link as channel_link,
+              A.title,
+              A.link,
+              A.feed_url,
+              A.description,
+              A.pub_date,
+              A.read_status
+            from
+              channels as C
+            Left join
+              articles as A
+            on C.uuid = A.channel_uuid
+            where C.uuid = {}", "?"));
           query = query.bind::<Text, _>(channel_uuid);
         }
       }

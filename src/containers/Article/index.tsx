@@ -49,8 +49,6 @@ export const ArticleContainer = (): JSX.Element => {
     userConfig: state.userConfig,
   }));
 
-  console.log("🚀 ~ file: index.tsx:51 ~ store ~ store:", store);
-
   const query = useQuery();
   const feedUrl = query.get("feedUrl");
   const type = query.get("type");

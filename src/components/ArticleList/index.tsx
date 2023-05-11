@@ -50,6 +50,8 @@ export const ArticleList = forwardRef(
     };
 
     const getList = (feedUuid: string) => {
+      console.time("getList")
+      console.time("getList 2")
       const filter: { read_status?: number; limit?: number } = {};
 
       filter.read_status = store.currentFilter.id;
@@ -61,9 +63,11 @@ export const ArticleList = forwardRef(
         .then((res) => {
           const { list } = res as { list: Article[] };
           setArticleList(list);
+          console.timeEnd("getList 2")
         })
         .finally(() => {
           setLoading(false);
+          console.timeEnd("getList")
         })
         .catch((err) => {
           console.log("%c Line:71 🍎 err", "color:#ffdd4d", err);
