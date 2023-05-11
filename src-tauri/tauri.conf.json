@@ -18,7 +18,7 @@
       "http": {
         "request": true,
         "all": true,
-        "scope": ["https://**", "http://**"]
+        "scope": ["https://**", "http://**", "http://lettura./"]
       },
       "fs": {
         "all": true
