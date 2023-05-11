@@ -21,7 +21,7 @@ struct RemoteProxy {
 pub struct CustomizeStyle {
   typeface: String,
   font_size: i32,
-  line_height: f32,
+  line_height: i32,
   line_width: i32,
 }
 
@@ -30,7 +30,7 @@ impl Default for CustomizeStyle {
     Self {
       typeface: String::from("adsf"),
       font_size: 14,
-      line_height: 1.25,
+      line_height: 28,
       line_width: 1,
     }
   }

@@ -16,7 +16,7 @@ export const CustomizeStyle = (props: CustomizeStyleProps) => {
   const [cfg, setCfg] = useState({
     typeface: "",
     font_size: 12,
-    line_height: 1.2,
+    line_height: 28,
     line_width: 1,
   });
 
@@ -71,9 +71,9 @@ export const CustomizeStyle = (props: CustomizeStyleProps) => {
         <div>
           <Slider
             value={cfg.line_height}
-            max={2}
-            min={1.2}
-            step={0.1}
+            max={36}
+            min={20}
+            step={2}
             onChange={(value: number | number[]) =>
               handleCustomizeStyleChange("line_height", value)
             }
