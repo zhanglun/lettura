@@ -15,10 +15,10 @@
   --reading-editable-font-size: 14;
   --reading-editable-line-width: 450;
   --reading-editable-line-height: 28; /* should land on 4px increments. 20, 24, 28, 32, 36 */
-  --reading-editable-font-family: "Source Serif VF", Georgia, Serif;
+  // --reading-editable-font-family: "Source Serif VF", Georgia, Serif;
   /* auto generate */
 
-  --reading-scale: 1.067;
+  --reading-scale: 1.267;
   --reading-root-size: 16; /* This is to replicate the browser base size for math purposes */
 
   --reading-base-fs: calc(var(--reading-editable-font-size) / var(--reading-root-size)); /* fs is unitless and is only used for calculations*/

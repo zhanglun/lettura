@@ -433,8 +433,7 @@ export const ArticleContainer = (): JSX.Element => {
           </div>
         </div>
         <div className={styles.scrollView} ref={viewRef}>
-          <CustomizeStyle styleConfig={store.userConfig.customize_style} />
-          <p>{store.userConfig.customize_style?.font_size}px</p>
+          {/* <CustomizeStyle styleConfig={store.userConfig.customize_style} /> */}
           <ArticleView article={store.article} userConfig={store.userConfig} />
         </div>
       </div>
