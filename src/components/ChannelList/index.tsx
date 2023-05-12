@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Progress, Tooltip, Tree } from "@douyinfe/semi-ui";
+import { Progress, Tree } from "@douyinfe/semi-ui";
 import {
   ArrowPathIcon,
   ChevronDownIcon,
@@ -32,14 +32,13 @@ const ChannelList = (): JSX.Element => {
   const addFolderButtonRef = useRef(null);
   const [refreshing, setRefreshing] = useState(false);
   const [channelList, setChannelList] = useState<Channel[]>([]);
+  const [treeData, setTreeData] = useState<any>([]);
   const [done, setDone] = useState(0);
   const store = useBearStore((state) => ({
     channel: state.channel,
     setChannel: state.setChannel,
   }));
   const query = useQuery();
-  const feedUrl = query.get("feedUrl");
-  const type = query.get("type");
   const channelUuid = query.get("channelUuid");
 
   const updateCount = (
@@ -288,20 +287,7 @@ const ChannelList = (): JSX.Element => {
   };
 
   const renderTree = (): JSX.Element => {
-    const format = (item: any) => {
-      item.label = item.title;
-      item.key = item.uuid;
-      item.value = item.uuid;
-      if (item.children) {
-        (item.children || []).map((child: Channel) => {
-          return format(child);
-        });
 
-        return item;
-      }
-    };
-
-    let treeData = channelList.map((item) => format(item));
     function onDrop(info: any) {
       const { dropToGap, node, dragNode } = info;
       const dropKey = node.key;
@@ -361,6 +347,8 @@ const ChannelList = (): JSX.Element => {
         }
       }
 
+      setTreeData(data);
+
       const updateSort = (list: any[]) => {
         return list.map((channel: Channel, idx: number) => {
           channel.sort = idx;
@@ -402,7 +390,8 @@ const ChannelList = (): JSX.Element => {
       };
 
       createSortsMeta("", updateSort(data), res);
-      setChannelList(updateSort(data));
+      // setChannelList(updateSort(data));
+      setTreeData(data);
 
       console.log("res", res);
 
@@ -456,6 +445,23 @@ const ChannelList = (): JSX.Element => {
       $list.addEventListener("scroll", handleListScroll);
     }
   }, []);
+
+  useEffect(() => {
+    const format = (item: any) => {
+      item.label = item.title;
+      item.key = item.uuid;
+      item.value = item.uuid;
+      if (item.children) {
+        (item.children || []).map((child: Channel) => {
+          return format(child);
+        });
+
+        return item;
+      }
+    };
+
+    setTreeData(channelList.map((item) => format(item)));
+  }, [channelList]);
 
   return (
     <div className="relative flex flex-col w-[var(--app-channel-width)] h-full select-none border-r border-slate-100 bg-feed-list-bg">
