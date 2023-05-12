@@ -531,7 +531,7 @@ mod tests {
 
   #[tokio::test]
   async fn test_create_article_models() {
-    let url = "https://feeds.appinn.com/appinns/".to_string();
+    let url = "https://rsshub.app/bing".to_string();
     println!("{:?}", url);
     let res = fetch_feed_item(&url).await;
 

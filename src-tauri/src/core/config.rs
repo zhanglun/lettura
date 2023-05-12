@@ -28,7 +28,7 @@ pub struct CustomizeStyle {
 impl Default for CustomizeStyle {
   fn default() -> Self {
     Self {
-      typeface: String::from("adsf"),
+      typeface: String::from("var(--sans-font)"),
       font_size: 14,
       line_height: 28,
       line_width: 1,
