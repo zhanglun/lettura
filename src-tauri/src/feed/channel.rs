@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use diesel::prelude::*;
+use diesel::sql_types::*;
 use serde::Deserialize;
 use serde::Serialize;
 
@@ -213,7 +214,16 @@ pub struct FeedJoinRecord {
 
 pub fn get_feeds() -> Vec<FeedItem> {
   let sql_folder = "
-  SELECT C.name AS title, F.child_uuid AS uuid, F.sort, F.parent_uuid as link, F.parent_uuid AS parent_uuid FROM folders AS C LEFT JOIN feed_metas AS F where F.parent_uuid = '' AND C.uuid = F.child_uuid;
+  SELECT
+    C.name AS title,
+    F.child_uuid AS uuid,
+    F.sort,
+    F.parent_uuid as link,
+    F.parent_uuid AS parent_uuid
+  FROM
+    folders AS C
+  LEFT JOIN feed_metas AS F
+    where F.parent_uuid = '' AND C.uuid = F.child_uuid;
   ";
   let sql_channel = "
   SELECT C.title AS title, F.child_uuid AS uuid, F.sort, C.link, F.parent_uuid as parent_uuid FROM channels as C LEFT JOIN feed_metas AS F WHERE C.uuid = F.child_uuid ORDER BY F.sort ASC;";
@@ -342,20 +352,50 @@ pub struct FeedSort {
   sort: i32,
 }
 
+#[derive(Debug, Queryable, Serialize, QueryableByName)]
+pub struct FeedSortRes {
+  #[diesel(sql_type = Text)]
+  parent_uuid: String,
+  #[diesel(sql_type = Text)]
+  child_uuid: String,
+  #[diesel(sql_type = Integer)]
+  sort: i32,
+}
+
 pub fn update_feed_sort(sorts: Vec<FeedSort>) -> usize {
   let mut connection = db::establish_connection();
 
   for item in sorts {
+    let mut query = diesel::sql_query("").into_boxed();
     match &item.parent_uuid {
       Some(parent_uuid) => {
-        diesel::update(
-          schema::feed_metas::dsl::feed_metas
-            .filter(schema::feed_metas::parent_uuid.eq(parent_uuid))
-            .filter(schema::feed_metas::child_uuid.eq(&item.child_uuid))
-        )
-          .set(schema::feed_metas::sort.eq(item.sort))
-          .execute(&mut connection)
-          .expect("msg");
+        println!("parent_uuid =====> {:?}", parent_uuid);
+        // diesel::update(
+        //   schema::feed_metas::dsl::feed_metas
+        //     .filter(schema::feed_metas::parent_uuid.eq(parent_uuid))
+        //     .filter(schema::feed_metas::child_uuid.eq(&item.child_uuid))
+        // )
+        //   .set(schema::feed_metas::sort.eq(item.sort))
+        //   .execute(&mut connection)
+        //   .expect("msg");
+
+        query = query
+          .sql(format!("
+          insert or replace into feed_metas (id, parent_uuid, child_uuid, sort) values
+        ((select id from feed_metas where parent_uuid = ? and child_uuid = ? ), ?, ?, ?);
+        "))
+          .bind::<Text, _>(parent_uuid)
+          .bind::<Text, _>(&item.child_uuid)
+          .bind::<Text, _>(parent_uuid)
+          .bind::<Text, _>(&item.child_uuid)
+          .bind::<Integer, _>(&item.sort);
+
+        let debug = diesel::debug_query::<diesel::sqlite::Sqlite, _>(&query);
+
+        println!("The insert query: {:?}", debug);
+
+        query.load::<FeedSortRes>(&mut connection)
+        .expect("Expect loading articles");
       }
       None => {
         diesel::update(
