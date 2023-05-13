@@ -226,7 +226,8 @@ const ChannelList = (): JSX.Element => {
     const { unread = 0, link, label, item_type, uuid } = data;
     const channel = data;
     const ico = getChannelFavicon(link);
-    const isLeaf = !(data.children && data.children.length);
+    // const isLeaf = !(data.children && data.children.length);
+    const isFolder = item_type === 'folder';
     const isActive = (store?.channel?.uuid || channelUuid) === uuid;
 
     return (
@@ -254,7 +255,7 @@ const ChannelList = (): JSX.Element => {
              } ${level ? "pl-8" : ""}
             active:bg-gray-200`}
         >
-          {!isLeaf && renderFolder(expandStatus, onExpand)}
+          {isFolder && renderFolder(expandStatus, onExpand)}
           {channel.link && (
             <img
               src={ico}

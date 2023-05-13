@@ -20,7 +20,7 @@ pub fn get_channel_by_uuid(channel_uuid: String) -> Option<models::Channel> {
     channel.pop()
   } else {
     None
-  }
+  };
 }
 
 /// delete channel and associated articles
@@ -47,19 +47,19 @@ pub fn delete_channel(uuid: String) -> usize {
     diesel::delete(
       schema::articles::dsl::articles.filter(schema::articles::channel_uuid.eq(&uuid)),
     )
-      .execute(&mut connection)
-      .expect("Expect delete channel");
+    .execute(&mut connection)
+    .expect("Expect delete channel");
 
     diesel::delete(
       schema::feed_metas::dsl::feed_metas.filter(schema::feed_metas::child_uuid.eq(&uuid)),
     )
-      .execute(&mut connection)
-      .expect("Expect delete channel");
+    .execute(&mut connection)
+    .expect("Expect delete channel");
 
     result
   } else {
     0
-  }
+  };
 }
 
 pub fn batch_delete_channel(channel_uuids: Vec<String>) -> usize {
@@ -129,9 +129,10 @@ pub fn get_unread_total() -> HashMap<String, i32> {
   let record = diesel::sql_query(SQL_QUERY_UNREAD_TOTAL)
     .load::<UnreadTotal>(&mut connection)
     .unwrap_or(vec![]);
-  let total_map = record.into_iter()
-  .map(|r| (r.channel_uuid.clone(), r.unread_count.clone()))
-  .collect::<HashMap<String, i32>>();
+  let total_map = record
+    .into_iter()
+    .map(|r| (r.channel_uuid.clone(), r.unread_count.clone()))
+    .collect::<HashMap<String, i32>>();
   let meta_group = diesel::sql_query(sql_folders)
     .load::<MetaGroup>(&mut connection)
     .unwrap_or(vec![]);
@@ -141,15 +142,13 @@ pub fn get_unread_total() -> HashMap<String, i32> {
     match total_map.get(&group.child_uuid) {
       Some(count) => {
         if group.parent_uuid != "".to_string() {
-          let c= result_map.entry(group.parent_uuid)
-            .or_insert(0);
+          let c = result_map.entry(group.parent_uuid).or_insert(0);
 
           *c += count;
         }
 
-        result_map.entry(group.child_uuid)
-          .or_insert(count.clone());
-      },
+        result_map.entry(group.child_uuid).or_insert(count.clone());
+      }
       None => {}
     };
   }
@@ -177,7 +176,6 @@ pub fn update_feed_meta(uuid: String, update: FeedMetaUpdateRequest) -> usize {
 
   updated_row
 }
-
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct ChildItem {
@@ -209,74 +207,93 @@ pub struct FeedJoinRecord {
   #[diesel(sql_type = diesel::sql_types::Text)]
   pub parent_uuid: String,
   #[diesel(sql_type = diesel::sql_types::Text)]
-  pub link: String
+  pub link: String,
 }
 
 pub fn get_feeds() -> Vec<FeedItem> {
   let sql_folder = "
-  SELECT
-    C.name AS title,
-    F.child_uuid AS uuid,
-    F.sort,
-    F.parent_uuid as link,
-    F.parent_uuid AS parent_uuid
-  FROM
-    folders AS C
-  LEFT JOIN feed_metas AS F
-    where F.parent_uuid = '' AND C.uuid = F.child_uuid;
+    SELECT
+      C.name AS title,
+      F.child_uuid AS uuid,
+      F.sort,
+      F.parent_uuid as link,
+      F.parent_uuid AS parent_uuid
+    FROM
+      folders AS C
+    LEFT JOIN feed_metas AS F ON C.uuid = F.child_uuid
+      where F.parent_uuid = '';
   ";
-  let sql_channel = "
-  SELECT C.title AS title, F.child_uuid AS uuid, F.sort, C.link, F.parent_uuid as parent_uuid FROM channels as C LEFT JOIN feed_metas AS F WHERE C.uuid = F.child_uuid ORDER BY F.sort ASC;";
+  let sql_channel_in_folder = "
+    SELECT
+      C.title AS title,
+      F.child_uuid AS uuid,
+      F.sort, C.link,
+      F.parent_uuid as parent_uuid FROM channels as C
+    LEFT JOIN feed_metas AS F
+    ON C.uuid = F.child_uuid
+    WHERE F.parent_uuid is not \"\"
+    ORDER BY F.sort ASC;";
 
   let mut connection = db::establish_connection();
 
-  let channels = diesel::sql_query(sql_channel)
-  .load::<FeedJoinRecord>(&mut connection)
-  .unwrap_or(vec![]);
-
-  let folders = diesel::sql_query(sql_folder)
-  .load::<FeedJoinRecord>(&mut connection)
-  .unwrap_or(vec![]);
+  let channels_in_folder = diesel::sql_query(sql_channel_in_folder)
+    .load::<FeedJoinRecord>(&mut connection)
+    .unwrap_or(vec![]);
+  // let folders = diesel::sql_query(sql_folder)
+  //   .load::<FeedJoinRecord>(&mut connection)
+  //   .unwrap_or(vec![]);
+  let folders = schema::folders::dsl::folders
+    .load::<models::Folder>(&mut connection)
+    .unwrap();
 
   let mut folder_channel_map: HashMap<String, Vec<ChildItem>> = HashMap::new();
   let mut result: Vec<FeedItem> = Vec::new();
+  let mut filter_uuids: Vec<String> = Vec::new();
 
-  for channel in channels {
+  for channel in channels_in_folder {
     let p_uuid = String::from(&channel.parent_uuid);
+    let childs = folder_channel_map.entry(p_uuid.clone()).or_insert(vec![]);
 
-    if p_uuid != "".to_string() {
-      let childs = folder_channel_map.entry(p_uuid.clone()).or_insert(vec![]);
+    childs.push(ChildItem {
+      uuid: String::from(&channel.uuid),
+      title: channel.title,
+      sort: channel.sort,
+      link: Some(channel.link),
+    });
 
-      childs.push(ChildItem {
-        uuid: channel.uuid,
-        title: channel.title,
-        sort: channel.sort,
-        link: Some(channel.link),
-      });
-    } else {
-      result.push(FeedItem {
-        item_type: String::from("channel"),
-        uuid: channel.uuid,
-        title: channel.title,
-        sort: channel.sort,
-        link: Some(channel.link),
-        parent_uuid: p_uuid,
-        children: Some(Vec::new()),
-      });
-    }
+    filter_uuids.push(channel.uuid);
   }
 
   for folder in folders {
-    let c_uuids = folder_channel_map.entry(String::from(&folder.uuid)).or_insert(vec![]);
+    let c_uuids = folder_channel_map
+      .entry(String::from(&folder.uuid))
+      .or_insert(vec![]);
 
     result.push(FeedItem {
       item_type: String::from("folder"),
       uuid: folder.uuid,
-      title: folder.title,
+      title: folder.name,
       sort: folder.sort,
-      link: Some(folder.link),
+      link: Some(String::from("")),
       parent_uuid: "".to_string(),
       children: Some(c_uuids.to_vec()),
+    });
+  }
+
+  let channels = schema::channels::dsl::channels
+    .filter(diesel::dsl::not(schema::channels::uuid.eq_any(&filter_uuids)))
+    .load::<models::Channel>(&mut connection)
+    .unwrap();
+
+  for channel in channels {
+    result.push(FeedItem {
+      item_type: String::from("channel"),
+      uuid: channel.uuid,
+      title: channel.title,
+      sort: channel.sort,
+      link: Some(channel.link),
+      parent_uuid: String::from(""),
+      children: Some(Vec::new()),
     });
   }
 
@@ -380,10 +397,12 @@ pub fn update_feed_sort(sorts: Vec<FeedSort>) -> usize {
         //   .expect("msg");
 
         query = query
-          .sql(format!("
+          .sql(format!(
+            "
           insert or replace into feed_metas (id, parent_uuid, child_uuid, sort) values
         ((select id from feed_metas where parent_uuid = ? and child_uuid = ? ), ?, ?, ?);
-        "))
+        "
+          ))
           .bind::<Text, _>(parent_uuid)
           .bind::<Text, _>(&item.child_uuid)
           .bind::<Text, _>(parent_uuid)
@@ -394,17 +413,18 @@ pub fn update_feed_sort(sorts: Vec<FeedSort>) -> usize {
 
         println!("The insert query: {:?}", debug);
 
-        query.load::<FeedSortRes>(&mut connection)
-        .expect("Expect loading articles");
+        query
+          .load::<FeedSortRes>(&mut connection)
+          .expect("Expect loading articles");
       }
       None => {
         diesel::update(
-          schema::feed_metas::dsl::feed_metas.
-            filter(schema::feed_metas::child_uuid.eq(&item.child_uuid))
+          schema::feed_metas::dsl::feed_metas
+            .filter(schema::feed_metas::child_uuid.eq(&item.child_uuid)),
         )
-          .set(schema::feed_metas::sort.eq(item.sort))
-          .execute(&mut connection)
-          .expect("msg");
+        .set(schema::feed_metas::sort.eq(item.sort))
+        .execute(&mut connection)
+        .expect("msg");
       }
     }
 
