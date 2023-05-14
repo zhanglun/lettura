@@ -6,9 +6,9 @@ import styles from "./index.module.css";
 import { busChannel } from "../../helpers/busChannel";
 export const AddFeedChannel = (props: any) => {
   const { showStatus, showModal, hideModal, toggleModal } = useModal();
+  const [step, setStep] = useState(1);
   const [feedUrl, setFeedUrl] = useState("https://feeds.appinn.com/appinns/");
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+  const [feed, setFeed] = useState<any>({});
   const [loading, setLoading] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -29,7 +29,6 @@ export const AddFeedChannel = (props: any) => {
       .fetchFeed(feedUrl)
       .then((res) => {
         console.log("res from rust", res);
-
         if (!res) {
           Toast.error({
             content: "Cant find any feed, please check url",
@@ -40,22 +39,12 @@ export const AddFeedChannel = (props: any) => {
           return;
         }
 
-        const { title, description } = res as any;
-
-        setTitle(title);
-        setDescription(description);
+        setFeed(res);
+        setStep(2);
       })
       .finally(() => {
         setLoading(false);
       });
-  };
-
-  const handleTitleChange = (v: string) => {
-    setTitle(v);
-  };
-
-  const handleDescriptionChange = (v: string) => {
-    setDescription(v);
   };
 
   const handleInputChange = (value: string) => {
@@ -65,9 +54,9 @@ export const AddFeedChannel = (props: any) => {
   const handleCancel = () => {
     setLoading(false);
     setConfirming(false);
-    setTitle("");
-    setDescription("");
+    setStep(1);
     setFeedUrl("");
+    setFeed({});
     toggleModal();
   };
 
@@ -77,8 +66,7 @@ export const AddFeedChannel = (props: any) => {
     dataAgent
       .addChannel(feedUrl)
       .then((res) => {
-
-        if (res[1] === '') {
+        if (res[1] === "") {
           busChannel.emit("getChannels");
           handleCancel();
         }
@@ -97,53 +85,61 @@ export const AddFeedChannel = (props: any) => {
   return (
     <Modal
       visible={showStatus}
-      title="添加 RSS 订阅"
-      width={560}
+      title="添加订阅"
+      footer={false}
+      width={460}
       confirmLoading={confirming}
       onOk={handleSave}
       onCancel={handleCancel}
     >
-      <div className={styles.box}>
-        <div className={styles.item}>
-          <div className={styles.label}>Feed URL</div>
-          <div className={styles.formItem}>
-            <Input
-              type="text"
-              ref={inputRef}
-              style={{ width: "300px" }}
-              disabled={loading}
-              value={feedUrl}
-              onChange={handleInputChange}
-            />
+      <div className="pb-8">
+        {step === 1 && (
+          <div>
+            <div className="mb-3">
+              <Input
+                type="text"
+                placeholder={""}
+                ref={inputRef}
+                disabled={loading}
+                value={feedUrl}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div>
+              <Button
+                block
+                type={"primary"}
+                loading={loading}
+                onClick={handleLoad}
+              >
+                {loading ? "Loading" : "Load"}
+              </Button>
+            </div>
           </div>
-          <div className={styles.action}>
-            <Button type={"primary"} loading={loading} onClick={handleLoad}>
-              Load
-            </Button>
+        )}
+        {step === 2 && (
+          <div>
+            <div className="border rounded p-3 mb-3">
+              <div>
+                <div>{feed.title}</div>
+                <div>{feedUrl}</div>
+              </div>
+              <div>
+                <div>{feed.description}</div>
+              </div>
+            </div>
+            <div>
+              <Button
+                block
+                type={"primary"}
+                loading={loading}
+                onClick={handleSave}
+              >
+                Subscribe
+              </Button>
+            </div>
           </div>
-        </div>
-
-        <div className={styles.item}>
-          <div className={styles.label}>Title</div>
-          <div className={styles.formItem}>
-            <Input
-              type="text"
-              style={{ width: "300px" }}
-              value={title}
-              onChange={(e) => handleTitleChange}
-            />
-          </div>
-        </div>
-        <div className={styles.item}>
-          <div className={styles.label}>Title</div>
-          <div className={styles.formItem}>
-            <TextArea
-              style={{ width: "300px" }}
-              value={description}
-              onChange={handleDescriptionChange}
-            />
-          </div>
-        </div>
+        )}
       </div>
     </Modal>
   );
