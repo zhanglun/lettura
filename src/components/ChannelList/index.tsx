@@ -361,7 +361,7 @@ const ChannelList = (): JSX.Element => {
         });
       };
 
-      console.log("updateSort(data)", updateSort(data));
+      console.log("updateSort(data)", data);
 
       let res: any[] = [];
       const createSortsMeta = (
@@ -375,7 +375,7 @@ const ChannelList = (): JSX.Element => {
               parent_uuid,
               child_uuid: item.uuid,
               sort: idx,
-              item: item.item_type,
+              item_type: item.item_type,
             });
           } else {
             res.push({

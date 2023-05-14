@@ -179,6 +179,7 @@ pub fn update_feed_meta(uuid: String, update: FeedMetaUpdateRequest) -> usize {
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct ChildItem {
+  pub item_type: String,
   pub uuid: String,
   pub title: String,
   pub sort: i32,
@@ -243,6 +244,7 @@ pub fn get_feeds() -> Vec<FeedItem> {
     let childs = folder_channel_map.entry(p_uuid.clone()).or_insert(vec![]);
 
     childs.push(ChildItem {
+      item_type: String::from("channel"),
       uuid: String::from(&channel.uuid),
       title: channel.title,
       sort: channel.sort,
@@ -376,7 +378,7 @@ pub fn update_feed_sort(sorts: Vec<FeedSort>) -> usize {
   for item in sorts {
     let mut query = diesel::sql_query("").into_boxed();
 
-    if item.parent_uuid.len() > 0 && item.item_type == "folder" {
+    if item.parent_uuid.len() > 0 && item.item_type == "channel" {
       query = query
         .sql(format!(
           "
