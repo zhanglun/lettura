@@ -2,13 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { ArticleList, ArticleListRefType } from "../../components/ArticleList";
 import { ArticleView } from "../../components/ArticleView";
-import {
-  Button,
-  Dropdown,
-  Menu,
-  Message,
-  Tooltip,
-} from "@arco-design/web-react";
+import { Button, Dropdown, Menu, Message } from "@arco-design/web-react";
 import * as dataAgent from "../../helpers/dataAgent";
 import { useBearStore } from "../../hooks/useBearStore";
 import styles from "./index.module.scss";
@@ -379,16 +373,14 @@ export const ArticleContainer = (): JSX.Element => {
         <div className={`sticky-header ${styles.viewHeader}`}>
           <div />
           <div className={styles.viewMenu}>
-            <Tooltip content="Previous">
-              <span
-                className={`${styles.menuIcon} ${
-                  currentIdx <= 0 && styles.menuIconDisabled
-                }`}
-                onClick={handleViewPrevious}
-              >
-                <ChevronUpIcon className={"h-4 w-4"} />
-              </span>
-            </Tooltip>
+            <span
+              className={`${styles.menuIcon} ${
+                currentIdx <= 0 && styles.menuIconDisabled
+              }`}
+              onClick={handleViewPrevious}
+            >
+              <ChevronUpIcon className={"h-4 w-4"} />
+            </span>
             <span
               className={`${styles.menuIcon} ${
                 currentIdx >= store.articleList.length - 1 &&
@@ -410,26 +402,20 @@ export const ArticleContainer = (): JSX.Element => {
                 <PaintBrushIcon className={"h-4 w-4"} />
               </span>
             </Dropdown>
-            <Tooltip content="View source page">
-              <span className={styles.menuIcon} onClick={handleViewSourcePage}>
-                <GlobeAltIcon className={"h-4 w-4"} />
-              </span>
-            </Tooltip>
-            <Tooltip content="Open in browser" position="top">
-              <a
-                className={styles.menuIcon}
-                target="_blank"
-                rel="noreferrer"
-                href={store.article?.link as string}
-              >
-                <ArrowTopRightOnSquareIcon className={"h-4 w-4"} />
-              </a>
-            </Tooltip>
-            <Tooltip content="Copy link" position="left">
-              <span className={styles.menuIcon} onClick={handleCopyLink}>
-                <LinkIcon className={"h-4 w-4"} />
-              </span>
-            </Tooltip>
+            <span className={styles.menuIcon} onClick={handleViewSourcePage}>
+              <GlobeAltIcon className={"h-4 w-4"} />
+            </span>
+            <a
+              className={styles.menuIcon}
+              target="_blank"
+              rel="noreferrer"
+              href={store.article?.link as string}
+            >
+              <ArrowTopRightOnSquareIcon className={"h-4 w-4"} />
+            </a>
+            <span className={styles.menuIcon} onClick={handleCopyLink}>
+              <LinkIcon className={"h-4 w-4"} />
+            </span>
           </div>
         </div>
         <div className={styles.scrollView} ref={viewRef}>
