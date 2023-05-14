@@ -20,7 +20,7 @@ export const getFolders = async (): Promise<Folder[]> => {
 };
 
 export const updateFeedSort = async (
-  sorts: { parent_uuid: string; child_uuid: string, sort: number }[],
+  sorts: { item_type: string; parent_uuid: string; child_uuid: string, sort: number }[],
 ): Promise<any> => {
   return invoke("update_feed_sort", { sorts });
 };

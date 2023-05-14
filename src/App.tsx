@@ -26,9 +26,9 @@ let a = 0;
 
 function App() {
   a += 1;
-  fetch('http://lettura./').then((res) => {
-    console.log(res);
-  })
+  // fetch('http://lettura./').then((res) => {
+  //   console.log(res);
+  // })
   const store = useBearStore((state) => ({
     goPreviousArticle: state.goPreviousArticle,
     goNextArticle: state.goNextArticle,

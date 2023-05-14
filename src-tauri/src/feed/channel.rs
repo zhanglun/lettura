@@ -211,18 +211,6 @@ pub struct FeedJoinRecord {
 }
 
 pub fn get_feeds() -> Vec<FeedItem> {
-  let sql_folder = "
-    SELECT
-      C.name AS title,
-      F.child_uuid AS uuid,
-      F.sort,
-      F.parent_uuid as link,
-      F.parent_uuid AS parent_uuid
-    FROM
-      folders AS C
-    LEFT JOIN feed_metas AS F ON C.uuid = F.child_uuid
-      where F.parent_uuid = '';
-  ";
   let sql_channel_in_folder = "
     SELECT
       C.title AS title,
@@ -281,7 +269,9 @@ pub fn get_feeds() -> Vec<FeedItem> {
   }
 
   let channels = schema::channels::dsl::channels
-    .filter(diesel::dsl::not(schema::channels::uuid.eq_any(&filter_uuids)))
+    .filter(diesel::dsl::not(
+      schema::channels::uuid.eq_any(&filter_uuids),
+    ))
     .load::<models::Channel>(&mut connection)
     .unwrap();
 
@@ -364,7 +354,8 @@ pub fn add_channel(channel: models::NewChannel, articles: Vec<models::NewArticle
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct FeedSort {
-  parent_uuid: Option<String>,
+  item_type: String,
+  parent_uuid: String,
   child_uuid: String,
   sort: i32,
 }
@@ -384,48 +375,49 @@ pub fn update_feed_sort(sorts: Vec<FeedSort>) -> usize {
 
   for item in sorts {
     let mut query = diesel::sql_query("").into_boxed();
-    match &item.parent_uuid {
-      Some(parent_uuid) => {
-        println!("parent_uuid =====> {:?}", parent_uuid);
-        // diesel::update(
-        //   schema::feed_metas::dsl::feed_metas
-        //     .filter(schema::feed_metas::parent_uuid.eq(parent_uuid))
-        //     .filter(schema::feed_metas::child_uuid.eq(&item.child_uuid))
-        // )
-        //   .set(schema::feed_metas::sort.eq(item.sort))
-        //   .execute(&mut connection)
-        //   .expect("msg");
 
-        query = query
-          .sql(format!(
-            "
-          insert or replace into feed_metas (id, parent_uuid, child_uuid, sort) values
-        ((select id from feed_metas where parent_uuid = ? and child_uuid = ? ), ?, ?, ?);
+    if item.parent_uuid.len() > 0 && item.item_type == "folder" {
+      query = query
+        .sql(format!(
+          "
+          insert into feed_metas (id, parent_uuid, child_uuid, sort) values
+        ((select id from feed_metas where parent_uuid = ? and child_uuid = ? ), ?, ?, ?)
+        ON CONFLICT(id) DO UPDATE SET sort = excluded.sort;
         "
-          ))
-          .bind::<Text, _>(parent_uuid)
-          .bind::<Text, _>(&item.child_uuid)
-          .bind::<Text, _>(parent_uuid)
-          .bind::<Text, _>(&item.child_uuid)
-          .bind::<Integer, _>(&item.sort);
+        ))
+        .bind::<Text, _>(&item.parent_uuid)
+        .bind::<Text, _>(&item.child_uuid)
+        .bind::<Text, _>(&item.parent_uuid)
+        .bind::<Text, _>(&item.child_uuid)
+        .bind::<Integer, _>(&item.sort);
 
-        let debug = diesel::debug_query::<diesel::sqlite::Sqlite, _>(&query);
+      let debug = diesel::debug_query::<diesel::sqlite::Sqlite, _>(&query);
 
-        println!("The insert query: {:?}", debug);
+      println!("The insert query: {:?}", debug);
 
-        query
-          .load::<FeedSortRes>(&mut connection)
-          .expect("Expect loading articles");
-      }
-      None => {
+      query
+        .load::<FeedSortRes>(&mut connection)
+        .expect("Expect loading articles");
+    }
+
+    if item.parent_uuid.len() == 0 && item.item_type == "channel" {
         diesel::update(
-          schema::feed_metas::dsl::feed_metas
-            .filter(schema::feed_metas::child_uuid.eq(&item.child_uuid)),
+          schema::channels::dsl::channels
+            .filter(schema::channels::uuid.eq(&item.child_uuid)),
         )
-        .set(schema::feed_metas::sort.eq(item.sort))
+        .set(schema::channels::sort.eq(item.sort))
         .execute(&mut connection)
         .expect("msg");
-      }
+    }
+
+    if item.parent_uuid.len() == 0 && item.item_type == "folder" {
+        diesel::update(
+          schema::folders::dsl::folders
+            .filter(schema::folders::uuid.eq(&item.child_uuid)),
+        )
+        .set(schema::folders::sort.eq(item.sort))
+        .execute(&mut connection)
+        .expect("msg");
     }
 
     println!(" update sort {:?}", item);

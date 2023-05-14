@@ -375,12 +375,14 @@ const ChannelList = (): JSX.Element => {
               parent_uuid,
               child_uuid: item.uuid,
               sort: idx,
+              item: item.item_type,
             });
           } else {
             res.push({
               parent_uuid: "",
               child_uuid: item.uuid,
               sort: idx,
+              item_type: item.item_type,
             });
           }
 
