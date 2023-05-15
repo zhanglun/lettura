@@ -99,7 +99,7 @@ pub fn get_all_feed_meta() -> Vec<models::FeedMeta> {
   result
 }
 
-#[derive(Debug, Queryable, Serialize, QueryableByName)]
+#[derive(Debug, Clone, Queryable, Serialize, QueryableByName)]
 pub struct UnreadTotal {
   #[diesel(sql_type = diesel::sql_types::Text)]
   pub channel_uuid: String,
@@ -119,17 +119,27 @@ pub struct MetaGroup {
 
 pub fn get_unread_total() -> HashMap<String, i32> {
   const SQL_QUERY_UNREAD_TOTAL: &str = "
-    SELECT id, channel_uuid, count(read_status) as unread_count FROM articles WHERE  read_status = 1 group by channel_uuid;
+    SELECT
+      id,
+      channel_uuid,
+      count(read_status) as unread_count
+    FROM articles
+    WHERE read_status = 1
+    GROUP BY channel_uuid;
   ";
   let sql_folders: &str = "
-    SELECT child_uuid, parent_uuid, sort FROM feed_metas;
+    SELECT
+      child_uuid,
+      parent_uuid,
+      sort
+    FROM feed_metas;
   ";
 
   let mut connection = db::establish_connection();
   let record = diesel::sql_query(SQL_QUERY_UNREAD_TOTAL)
     .load::<UnreadTotal>(&mut connection)
     .unwrap_or(vec![]);
-  let total_map = record
+  let total_map = record.clone()
     .into_iter()
     .map(|r| (r.channel_uuid.clone(), r.unread_count.clone()))
     .collect::<HashMap<String, i32>>();
@@ -151,6 +161,16 @@ pub fn get_unread_total() -> HashMap<String, i32> {
       }
       None => {}
     };
+  }
+
+  for i in record {
+    match total_map.get(&i.channel_uuid) {
+      Some(count) => {
+        result_map.entry(i.channel_uuid).or_insert(count.clone());
+      }
+
+      None => {}
+    }
   }
 
   result_map
@@ -220,7 +240,7 @@ pub fn get_feeds() -> Vec<FeedItem> {
       F.parent_uuid as parent_uuid FROM channels as C
     LEFT JOIN feed_metas AS F
     ON C.uuid = F.child_uuid
-    WHERE F.parent_uuid is not \"\"
+    WHERE F.parent_uuid is not Null
     ORDER BY F.sort ASC;";
 
   let mut connection = db::establish_connection();
@@ -228,9 +248,6 @@ pub fn get_feeds() -> Vec<FeedItem> {
   let channels_in_folder = diesel::sql_query(sql_channel_in_folder)
     .load::<FeedJoinRecord>(&mut connection)
     .unwrap_or(vec![]);
-  // let folders = diesel::sql_query(sql_folder)
-  //   .load::<FeedJoinRecord>(&mut connection)
-  //   .unwrap_or(vec![]);
   let folders = schema::folders::dsl::folders
     .load::<models::Folder>(&mut connection)
     .unwrap();
@@ -239,11 +256,13 @@ pub fn get_feeds() -> Vec<FeedItem> {
   let mut result: Vec<FeedItem> = Vec::new();
   let mut filter_uuids: Vec<String> = Vec::new();
 
+  println!("channels_in_folder :{:?}", &channels_in_folder);
+
   for channel in channels_in_folder {
     let p_uuid = String::from(&channel.parent_uuid);
-    let childs = folder_channel_map.entry(p_uuid.clone()).or_insert(vec![]);
+    let children = folder_channel_map.entry(p_uuid.clone()).or_insert(vec![]);
 
-    childs.push(ChildItem {
+    children.push(ChildItem {
       item_type: String::from("channel"),
       uuid: String::from(&channel.uuid),
       title: channel.title,
@@ -269,6 +288,8 @@ pub fn get_feeds() -> Vec<FeedItem> {
       children: Some(c_uuids.to_vec()),
     });
   }
+
+  println!("filter_uuids :{:?}", &filter_uuids);
 
   let channels = schema::channels::dsl::channels
     .filter(diesel::dsl::not(
