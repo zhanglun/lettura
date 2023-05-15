@@ -498,6 +498,11 @@ pub fn get_folders() -> Vec<models::Folder> {
   feed::folder::get_folders()
 }
 
+#[command]
+pub async fn get_article_detail (uuid: String) -> Option<models::Article> {
+  let res: Option<models::Article> = feed::article::Article::get_article_with_uuid(uuid);
+  res
+}
 
 #[command]
 pub async fn get_web_source (url: String) -> Option<String> {

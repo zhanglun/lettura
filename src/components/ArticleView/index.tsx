@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import Dayjs from "dayjs";
+import classnames from "classnames";
 import styles from "./view.module.scss";
 import { getChannelFavicon } from "../../helpers/parseXML";
-import { fetch } from "@tauri-apps/api/http";
-import classnames from "classnames";
+import * as dataAgent from "../../helpers/dataAgent";
 
 type ArticleViewProps = {
   article: any | null;
@@ -66,10 +66,7 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
               </div>
             )}
             <div
-              className={classnames(
-                styles.content,
-                "text-detail-paragraph",
-              )}
+              className={classnames(styles.content, "text-detail-paragraph")}
               // eslint-disable-next-line react/no-danger
               dangerouslySetInnerHTML={createMarkup(pageContent)}
             />
@@ -101,28 +98,31 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
 
   useEffect(() => {
     if (article) {
-      const content = (article.content || article.description || "").replace(
-        /<a[^>]+>/gi,
-        (a: string) => {
-          if (!/\starget\s*=/gi.test(a)) {
-            return a.replace(/^<a\s/, '<a target="_blank"');
+      dataAgent.getArticleDetail(article.uuid).then((res) => {
+        console.log("%c Line:102 🥓 res", "color:#33a5ff", res);
+        const content = (res.content || res.description || "").replace(
+          /<a[^>]+>/gi,
+          (a: string) => {
+            if (!/\starget\s*=/gi.test(a)) {
+              return a.replace(/^<a\s/, '<a target="_blank"');
+            }
+
+            return a;
           }
+        );
 
-          return a;
+        if (
+          res.image &&
+          content.includes(res.image.split("/").slice(-1)[0])
+        ) {
+          setShowBanner(false);
+        } else {
+          setShowBanner(true);
         }
-      );
 
-      if (
-        article.image &&
-        content.includes(article.image.split("/").slice(-1)[0])
-      ) {
-        setShowBanner(false);
-      } else {
-        setShowBanner(true);
-      }
-
-      setPageContent(content);
-      parseImages(content);
+        setPageContent(content);
+        // parseImages(content);
+      });
     }
   }, [article]);
 

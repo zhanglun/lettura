@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api";
-import { Channel, Folder } from "../db";
+import { Article, Channel, Folder } from "../db";
 
 export const getChannels = async (
   filter: any,
@@ -127,6 +127,10 @@ export const initProcess = async (): Promise<any> => {
   return invoke("init_process", {});
 };
 
+
+export const getArticleDetail = async (uuid: string): Promise<Article> => {
+  return invoke("get_article_detail", { uuid })
+}
 
 export const getPageSources = async (url: string): Promise<string> => {
   return invoke("get_web_source", { url })

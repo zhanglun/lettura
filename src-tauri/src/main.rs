@@ -91,6 +91,7 @@ async fn main() {
       cmd::get_folders,
       cmd::move_channel_into_folder,
       cmd::init_process,
+      cmd::get_article_detail,
       cmd::get_web_source,
     ])
     .register_uri_scheme_protocol("lettura", move |app, request| {
