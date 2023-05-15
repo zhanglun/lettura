@@ -82,7 +82,7 @@ impl Article {
               A.link,
               A.title,
               A.feed_url,
-              A.description,
+              substr(A.description, 0, 70) as description,
               A.pub_date,
               A.read_status
             from
@@ -105,7 +105,7 @@ impl Article {
               A.title,
               A.link,
               A.feed_url,
-              A.description,
+              substr(A.description, 0, 70) as description,
               A.pub_date,
               A.read_status
             from

@@ -63,6 +63,7 @@ export const ArticleList = forwardRef(
         .then((res) => {
           const { list } = res as { list: Article[] };
           setArticleList(list);
+          console.log("%c Line:66 🍺 list", "color:#e41a6a", list);
           console.timeEnd("getList 2")
         })
         .finally(() => {
