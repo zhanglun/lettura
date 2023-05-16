@@ -242,10 +242,10 @@ const ChannelList = (): JSX.Element => {
              text-feed-headline group hover:text-feed-active-headline
              ${
                isActive
-                 ? "bg-feed-active-bg text-feed-active-headline hover:bg-feed-active-bg"
+                 ? "bg-feed-active-bg text-feed-active-headline font-bold hover:bg-feed-active-bg"
                  : "hover:bg-feed-active-bg hover:opacity-80"
              } ${level ? "pl-8" : ""}
-            active:bg-gray-200`}
+            active:opacity-70`}
         >
           {isFolder && renderFolder(expandStatus, onExpand)}
           {channel.link && (
@@ -262,7 +262,7 @@ const ChannelList = (): JSX.Element => {
               alt={channel.title}
             />
           )}
-          <span className="grow shrink basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-sm">
+          <span className="grow shrink basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-xs">
             {channel.title}
           </span>
           {unread > 0 && (
