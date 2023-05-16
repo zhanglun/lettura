@@ -48,7 +48,7 @@ export const CustomizeStyle = (props: CustomizeStyleProps) => {
   }
 
   return (
-    <div className="w-[320px] bg-detail-bg px-3 py-2 rounded border grid gap-2">
+    <div className="w-full max-w-xs bg-detail-bg px-1 grid gap-2">
       <div className="grid gap-2 grid-flow-col grid-cols-[74px_auto_42px] items-center">
         <div className="text-sm">Font Size</div>
         <div>
@@ -92,7 +92,7 @@ export const CustomizeStyle = (props: CustomizeStyleProps) => {
             min={1.2}
             step={0.1}
             onChange={(value: number | number[]) =>
-              handleCustomizeStyleChange("line_width", (value as number).toFixed(1))
+              handleCustomizeStyleChange("line_width", Math.round(value as number * 100) / 100)
             }
           />
         </div>

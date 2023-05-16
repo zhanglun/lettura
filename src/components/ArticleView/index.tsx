@@ -84,7 +84,7 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
       fetch(img.src, {
         method: "GET",
         responseType: 3,
-      }).then((res) => {
+      }).then((res: any) => {
         const data = new Uint8Array(res.data as number[]);
         const blobUrl = URL.createObjectURL(
           new Blob([data.buffer], { type: "image/png" })

@@ -7,18 +7,30 @@ import * as dataAgent from "../../helpers/dataAgent";
 import { useBearStore } from "../../hooks/useBearStore";
 import styles from "./index.module.scss";
 import {
-  ArrowPathIcon,
   ArrowTopRightOnSquareIcon,
   ChevronDownIcon,
   ChevronUpIcon,
   GlobeAltIcon,
   LinkIcon,
   PaintBrushIcon,
-  WalletIcon,
 } from "@heroicons/react/24/outline";
+import { Filter, CheckCheck, RefreshCw } from "lucide-react";
 import { busChannel } from "../../helpers/busChannel";
 import { Article } from "../../db";
-import { CustomizeStyle } from "../../components/SettingPanel/CustomizeStyle";
+import { CustomizeStyle } from "@/components/SettingPanel/CustomizeStyle";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -42,6 +54,8 @@ export const ArticleContainer = (): JSX.Element => {
     setCurrentIdx: state.setCurrentIdx,
     userConfig: state.userConfig,
   }));
+
+  console.log(store.currentFilter);
 
   const query = useQuery();
   const feedUrl = query.get("feedUrl");
@@ -195,8 +209,10 @@ export const ArticleContainer = (): JSX.Element => {
     return Promise.resolve();
   };
 
-  const changeFilter = (filter: any) => {
-    store.setFilter(filter);
+  const changeFilter = (id: any) => {
+    if (store.filterList.some(_ => _.id === id)) {
+      store.setFilter({...store.filterList.filter(_ => _.id === id)[0]});
+    }
   };
 
   const resetScrollTop = () => {
@@ -324,7 +340,29 @@ export const ArticleContainer = (): JSX.Element => {
             {store.channel ? store.channel.title : ""}
           </div>
           <div className={styles.menu}>
-            <Dropdown
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <span className={styles.menuIcon}>
+                  <Filter size={16}></Filter>
+                </span>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="bg-detail-bg">
+                <DropdownMenuRadioGroup
+                  value={store.currentFilter.id}
+                  onValueChange={changeFilter}
+                >
+                  {store.filterList.map((item) => {
+                    return (
+                      <DropdownMenuRadioItem key={item.id + ""} value={item.id}>
+                        {item.title}
+                      </DropdownMenuRadioItem>
+                    );
+                  })}
+                </DropdownMenuRadioGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* <Dropdown
               trigger="click"
               position="bl"
               droplist={
@@ -346,14 +384,15 @@ export const ArticleContainer = (): JSX.Element => {
               }
             >
               <Button>{store.currentFilter.title}</Button>
-            </Dropdown>
+            </Dropdown> */}
 
             <span className={styles.menuIcon} onClick={markAllRead}>
-              <WalletIcon className={"h-4 w-4"} />
+              <CheckCheck size={16} />
             </span>
             <span className={styles.menuIcon} onClick={handleRefresh}>
-              <ArrowPathIcon
-                className={`h-4 w-4 ${syncing ? "spinning" : ""}`}
+              <RefreshCw
+                size={16}
+                className={`${syncing ? "spinning" : ""}`}
               />
             </span>
           </div>
@@ -390,18 +429,18 @@ export const ArticleContainer = (): JSX.Element => {
             >
               <ChevronDownIcon className={"h-4 w-4"} />
             </span>
-            <Dropdown
-              trigger="click"
-              droplist={
+            <Popover>
+              <PopoverTrigger asChild>
+                <span className={styles.menuIcon}>
+                  <PaintBrushIcon className={"h-4 w-4"} />
+                </span>
+              </PopoverTrigger>
+              <PopoverContent className="bg-detail-bg">
                 <CustomizeStyle
                   styleConfig={store.userConfig.customize_style}
                 />
-              }
-            >
-              <span className={styles.menuIcon}>
-                <PaintBrushIcon className={"h-4 w-4"} />
-              </span>
-            </Dropdown>
+              </PopoverContent>
+            </Popover>
             <span className={styles.menuIcon} onClick={handleViewSourcePage}>
               <GlobeAltIcon className={"h-4 w-4"} />
             </span>
