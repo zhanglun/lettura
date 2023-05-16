@@ -1,20 +1,11 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { ArticleList, ArticleListRefType } from "../../components/ArticleList";
 import { ArticleView } from "../../components/ArticleView";
-import { Button, Dropdown, Menu, Message } from "@arco-design/web-react";
 import * as dataAgent from "../../helpers/dataAgent";
 import { useBearStore } from "../../hooks/useBearStore";
 import styles from "./index.module.scss";
-import {
-  ArrowTopRightOnSquareIcon,
-  ChevronDownIcon,
-  ChevronUpIcon,
-  GlobeAltIcon,
-  LinkIcon,
-  PaintBrushIcon,
-} from "@heroicons/react/24/outline";
-import { Filter, CheckCheck, RefreshCw } from "lucide-react";
+import { Filter, CheckCheck, RefreshCw, ChevronUp, ChevronDown, ExternalLink, Paintbrush, Link, Ghost } from "lucide-react";
 import { busChannel } from "../../helpers/busChannel";
 import { Article } from "../../db";
 import { CustomizeStyle } from "@/components/SettingPanel/CustomizeStyle";
@@ -31,6 +22,9 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
+import { ToastAction } from "@/components/ui/toast"
+import { useToast } from "@/components/ui/use-toast"
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -55,7 +49,7 @@ export const ArticleContainer = (): JSX.Element => {
     userConfig: state.userConfig,
   }));
 
-  console.log(store.currentFilter);
+  const { toast } = useToast();
 
   const query = useQuery();
   const feedUrl = query.get("feedUrl");
@@ -144,16 +138,13 @@ export const ArticleContainer = (): JSX.Element => {
           console.log("%c Line:77 🥛 res", "color:#ea7e5c", res);
 
           if (message) {
-            Message.warning({
-              content: (
-                <>
-                  <div>Something wrong!</div>
-                  <p>{message}</p>
-                </>
+            toast({
+              title: "Something wrong!",
+              description: message,
+              action: (
+                <ToastAction altText="Goto schedule to undo">Close</ToastAction>
               ),
-              duration: 4,
-              closable: false,
-            });
+            })
           } else {
             getArticleList();
             busChannel.emit("updateChannelUnreadCount", {
@@ -183,11 +174,11 @@ export const ArticleContainer = (): JSX.Element => {
 
     navigator.clipboard.writeText(link).then(
       function () {
-        Message.success({
-          content: "Copied!",
-          duration: 2,
-          closable: false,
-        });
+        toast(
+          {
+            description: "Copied",
+          }
+        )
       },
       function (err) {
         console.error("Async: Could not copy text: ", err);
@@ -418,7 +409,7 @@ export const ArticleContainer = (): JSX.Element => {
               }`}
               onClick={handleViewPrevious}
             >
-              <ChevronUpIcon className={"h-4 w-4"} />
+              <ChevronUp size={16} />
             </span>
             <span
               className={`${styles.menuIcon} ${
@@ -427,12 +418,12 @@ export const ArticleContainer = (): JSX.Element => {
               }`}
               onClick={handleViewNext}
             >
-              <ChevronDownIcon className={"h-4 w-4"} />
+              <ChevronDown size={16} />
             </span>
             <Popover>
               <PopoverTrigger asChild>
                 <span className={styles.menuIcon}>
-                  <PaintBrushIcon className={"h-4 w-4"} />
+                  <Paintbrush size={16} />
                 </span>
               </PopoverTrigger>
               <PopoverContent className="bg-detail-bg">
@@ -442,7 +433,7 @@ export const ArticleContainer = (): JSX.Element => {
               </PopoverContent>
             </Popover>
             <span className={styles.menuIcon} onClick={handleViewSourcePage}>
-              <GlobeAltIcon className={"h-4 w-4"} />
+              <Ghost size={16} />
             </span>
             <a
               className={styles.menuIcon}
@@ -450,10 +441,10 @@ export const ArticleContainer = (): JSX.Element => {
               rel="noreferrer"
               href={store.article?.link as string}
             >
-              <ArrowTopRightOnSquareIcon className={"h-4 w-4"} />
+              <ExternalLink size={16} />
             </a>
             <span className={styles.menuIcon} onClick={handleCopyLink}>
-              <LinkIcon className={"h-4 w-4"} />
+              <Link size={16} />
             </span>
           </div>
         </div>

@@ -1,15 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Progress, Tree } from "@douyinfe/semi-ui";
-import {
-  ArrowPathIcon,
-  ChevronDownIcon,
-  ChevronRightIcon,
-  Cog6ToothIcon,
-  FolderIcon,
-  FolderOpenIcon,
-  PlusIcon,
-} from "@heroicons/react/24/outline";
 import { RouteConfig } from "../../config";
 import { Channel } from "../../db";
 import { getChannelFavicon } from "../../helpers/parseXML";
@@ -21,6 +12,7 @@ import pLimit from "p-limit";
 import { useBearStore } from "../../hooks/useBearStore";
 
 import styles from "./channel.module.scss";
+import { ChevronDown, ChevronRight, Folder, FolderOpen, Plus, RefreshCw, Settings } from "lucide-react";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -194,10 +186,10 @@ const ChannelList = (): JSX.Element => {
       return (
         <>
           <span className="h-4 w-4 rounded mr-2" onClick={onExpand}>
-            <ChevronDownIcon className={"h-4 w-4"} />
+            <ChevronDown size={16} />
           </span>
           <span className="h-4 w-4 rounded mr-3">
-            <FolderOpenIcon className={"h-4 w-4"} />
+            <FolderOpen size={16} />
           </span>
         </>
       );
@@ -205,10 +197,10 @@ const ChannelList = (): JSX.Element => {
       return (
         <>
           <span className="h-4 w-4 rounded mr-2" onClick={onExpand}>
-            <ChevronRightIcon className={"h-4 w-4"} />
+            <ChevronRight size={16} />
           </span>
           <span className="h-4 w-4 rounded mr-3">
-            <FolderIcon className={"h-4 w-4"} />
+            <Folder size={16} />
           </span>
         </>
       );
@@ -477,7 +469,7 @@ const ChannelList = (): JSX.Element => {
             onClick={addFeed}
             onKeyUp={addFeed}
           >
-            <PlusIcon className="h-4 w-4" />
+            <Plus size={16} />
           </span>
           <AddFolder Aref={addFolderButtonRef} />
           <span
@@ -485,15 +477,16 @@ const ChannelList = (): JSX.Element => {
             onClick={addFolder}
             onKeyUp={addFolder}
           >
-            <FolderIcon className={"h-4 w-4"} />
+            <Folder size={16} />
           </span>
           <span
             className={styles.toolbarItem}
             onClick={refreshList}
             onKeyUp={refreshList}
           >
-            <ArrowPathIcon
-              className={`h-4 w-4 ${refreshing ? "spinning" : ""}`}
+            <RefreshCw
+              size={16}
+              className={`${refreshing ? "spinning" : ""}`}
             />
           </span>
           <span
@@ -501,7 +494,7 @@ const ChannelList = (): JSX.Element => {
             onClick={goToSetting}
             onKeyUp={goToSetting}
           >
-            <Cog6ToothIcon className={"h-4 w-4"} />
+            <Settings size={16} />
           </span>
         </div>
       </div>
