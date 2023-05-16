@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Slider } from "@arco-design/web-react";
+import { Slider } from "@/components/ui/slider"
 import { useBearStore } from "../../../hooks/useBearStore";
 
 export interface CustomizeStyleProps {
@@ -53,12 +53,13 @@ export const CustomizeStyle = (props: CustomizeStyleProps) => {
         <div className="text-sm">Font Size</div>
         <div>
           <Slider
-            value={cfg.font_size}
+            value={[cfg.font_size]}
             max={20}
             min={12}
             step={1}
-            onChange={(value: number | number[]) =>
-              handleCustomizeStyleChange("font_size", value)
+            onValueChange={(value: number[]) => {
+              handleCustomizeStyleChange("font_size", value[0])
+            }
             }
           />
         </div>
@@ -70,12 +71,12 @@ export const CustomizeStyle = (props: CustomizeStyleProps) => {
         <div className="text-sm">Line Height</div>
         <div>
           <Slider
-            value={cfg.line_height}
+            value={[cfg.line_height]}
             max={36}
             min={20}
             step={2}
-            onChange={(value: number | number[]) =>
-              handleCustomizeStyleChange("line_height", value)
+            onValueChange={(value: number[]) =>
+              handleCustomizeStyleChange("line_height", value[0])
             }
           />
         </div>
@@ -87,12 +88,12 @@ export const CustomizeStyle = (props: CustomizeStyleProps) => {
         <div className="text-sm">Line Width</div>
         <div>
           <Slider
-            value={cfg.line_width}
-            max={2}
-            min={1.2}
-            step={0.1}
-            onChange={(value: number | number[]) =>
-              handleCustomizeStyleChange("line_width", Math.round(value as number * 100) / 100)
+            value={[cfg.line_width]}
+            max={5}
+            min={1}
+            step={1}
+            onValueChange={(value: number[]) =>
+              handleCustomizeStyleChange("line_width", value[0])
             }
           />
         </div>
