@@ -4,8 +4,6 @@ specifiers:
   '@actions/core': ^1.10.0
   '@actions/github': ^5.1.1
   '@douyinfe/semi-ui': ^2.33.1
-  '@headlessui/react': ^1.7.7
-  '@heroicons/react': ^2.0.13
   '@radix-ui/react-dropdown-menu': ^2.0.4
   '@radix-ui/react-popover': ^1.0.5
   '@radix-ui/react-slider': ^1.1.1
@@ -45,8 +43,6 @@ specifiers:
 
 dependencies:
   '@douyinfe/semi-ui': 2.33.1_biqbaboplfbrettd7655fr4n2y
-  '@headlessui/react': 1.7.7_biqbaboplfbrettd7655fr4n2y
-  '@heroicons/react': 2.0.13_react@18.2.0
   '@radix-ui/react-dropdown-menu': 2.0.4_ib3m5ricvtkl2cll7qpr2f6lvq
   '@radix-ui/react-popover': 1.0.5_ib3m5ricvtkl2cll7qpr2f6lvq
   '@radix-ui/react-slider': 1.1.1_biqbaboplfbrettd7655fr4n2y
@@ -666,26 +662,6 @@ packages:
       use-isomorphic-layout-effect: 1.1.2_kzbn2opkn2327fwg5yzwzya5o4
     transitivePeerDependencies:
       - '@types/react'
-    dev: false
-
-  /@headlessui/react/1.7.7_biqbaboplfbrettd7655fr4n2y:
-    resolution: {integrity: sha512-BqDOd/tB9u2tA0T3Z0fn18ktw+KbVwMnkxxsGPIH2hzssrQhKB5n/6StZOyvLYP/FsYtvuXfi9I0YowKPv2c1w==}
-    engines: {node: '>=10'}
-    peerDependencies:
-      react: ^16 || ^17 || ^18
-      react-dom: ^16 || ^17 || ^18
-    dependencies:
-      client-only: 0.0.1
-      react: 18.2.0
-      react-dom: 18.2.0_react@18.2.0
-    dev: false
-
-  /@heroicons/react/2.0.13_react@18.2.0:
-    resolution: {integrity: sha512-iSN5XwmagrnirWlYEWNPdCDj9aRYVD/lnK3JlsC9/+fqGF80k8C7rl+1HCvBX0dBoagKqOFBs6fMhJJ1hOg1EQ==}
-    peerDependencies:
-      react: '>= 16'
-    dependencies:
-      react: 18.2.0
     dev: false
 
   /@iarna/toml/2.2.5:
@@ -1594,10 +1570,6 @@ packages:
 
   /classnames/2.3.2:
     resolution: {integrity: sha512-CSbhY4cFEJRe6/GQzIk5qXZ4Jeg5pcsP7b5peFSDpffpe1cqjASH/n9UTjBwOp6XpMSTwQ8Za2K5V02ueA7Tmw==}
-    dev: false
-
-  /client-only/0.0.1:
-    resolution: {integrity: sha512-IV3Ou0jSMzZrd3pZ48nLkT9DA7Ag1pnPzaiQhpW7c3RbcqqzvzzVu+L8gfqMp/8IM2MQtSiqaCxrrcfu8I8rMA==}
     dev: false
 
   /clsx/1.2.1:

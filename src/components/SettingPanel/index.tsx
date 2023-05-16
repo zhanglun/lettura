@@ -1,13 +1,9 @@
 import React from "react";
 import { NavLink, Outlet } from "react-router-dom";
-import {
-  CircleStackIcon,
-  HomeIcon,
-  RssIcon,
-} from "@heroicons/react/24/outline";
+import classnames from "classnames";
+import { ArrowLeft, Cog, Database, Palette, Rss } from "lucide-react";
 import { RouteConfig } from "../../config";
 import styles from "./setting.module.scss";
-import classnames from "classnames";
 
 function SettingPanel() {
   return (
@@ -16,9 +12,12 @@ function SettingPanel() {
         <div
           className={classnames(
             styles.title,
-            "text-2xl p-4 pl-5 font-bold text-detail-headline"
+            "p-4 pl-5 font-bold text-detail-headline"
           )}
         >
+          <span className={styles.menuIcon}>
+            <ArrowLeft size={16} />
+          </span>
           Settings
         </div>
       </div>
@@ -34,8 +33,22 @@ function SettingPanel() {
                 })
               }
             >
-              <HomeIcon className={"h-4 w-4"} />
+              <Cog size={16} />
               General
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to={RouteConfig.SETTINGS_APPEARANCE}
+              className={({ isActive }) =>
+                classnames(styles.menuItem, "hover:text-primary", {
+                  "font-bold text-primary": isActive,
+                  "text-detail-paragraph": !isActive,
+                })
+              }
+            >
+              <Palette size={16} />
+              Appearance
             </NavLink>
           </li>
           <li>
@@ -48,7 +61,7 @@ function SettingPanel() {
                 })
               }
             >
-              <CircleStackIcon className={"h-4 w-4"} />
+              <Database size={16} />
               Feed Manager
             </NavLink>
           </li>
@@ -62,7 +75,7 @@ function SettingPanel() {
                 })
               }
             >
-              <RssIcon className={"h-4 w-4"} />
+              <Rss size={16} />
               Import/Export
             </NavLink>
           </li>

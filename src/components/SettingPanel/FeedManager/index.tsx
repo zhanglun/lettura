@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Table, Input, Select, Tabs, TabPane } from "@douyinfe/semi-ui";
-import { FolderIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { Edit, Folder as FolderIcon, Trash2 } from "lucide-react";
 import { Channel, Folder } from "../../../db";
 import * as dataAgent from "../../../helpers/dataAgent";
 import { busChannel } from "../../../helpers/busChannel";
@@ -97,7 +97,7 @@ export const FeedManager = () => {
               className={styles.actionBtn}
               onClick={() => handleDeleteFeed(record)}
             >
-              <TrashIcon className={"h-4 w-4"} />
+              <Trash2 size={16} />
             </span>
           </div>
         );
@@ -112,7 +112,7 @@ export const FeedManager = () => {
       render(text: string, record: Channel) {
         return (
           <div className={styles.nameCol}>
-            <FolderIcon className={"h-4 w-4"} />
+            <FolderIcon size={16}/>
             <span>{text}</span>
           </div>
         );
@@ -129,13 +129,13 @@ export const FeedManager = () => {
               className={styles.actionBtn}
               onClick={() => handleEditFolder(record)}
             >
-              <PencilIcon className={"h-4 w-4"} />
+              <Edit size={16}/>
             </span>
             <span
               className={styles.actionBtn}
               onClick={() => handleDeleteFolder(record)}
             >
-              <TrashIcon className={"h-4 w-4"} />
+              <Trash2 size={16} />
             </span>
           </div>
         );

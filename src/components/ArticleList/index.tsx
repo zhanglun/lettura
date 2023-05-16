@@ -8,7 +8,6 @@ import React, {
   createRef,
 } from "react";
 import { ArticleItem } from "../ArticleItem";
-import { ArticleListSkeleton } from "../Loading/ArticleListLoading";
 import { Article } from "../../db";
 import { useBearStore } from "../../hooks/useBearStore";
 import * as dataAgent from "../../helpers/dataAgent";
@@ -141,7 +140,6 @@ export const ArticleList = forwardRef(
 
     return (
       <div className="grid grid-cols-1 pl-2 grid-rows-[calc(100% - var(--app-toolbar-height))]">
-        {/* <ArticleListSkeleton /> */}
         <div ref={innerRef}>
           <ul className="m-0 pb-2 grid gap-2">{renderList()}</ul>
         </div>

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Input, InputNumber, RadioGroup, Radio } from "@douyinfe/semi-ui";
+import { Input, InputNumber } from "@douyinfe/semi-ui";
 import * as dataAgent from "../../../helpers/dataAgent";
 import styles from "../setting.module.scss";
-import { ColorTheme } from "./ColorTheme";
+import { Panel, PanelSection } from "../Panel";
 
 export const General = () => {
   const [localProxyConfig, setLocalProxyConfig] = useState<LocalProxy>({
@@ -60,62 +60,42 @@ export const General = () => {
   }, []);
 
   return (
-    <div className={styles.panel}>
-      <h1 className={styles.panelTitle}>General</h1>
-      <div className={styles.panelBody}>
-        <div className={styles.section}>
-          <p className={styles.options}>Proxy</p>
-          <div className={styles.proxyFields}>
-            {/* <div>
-              Protocol:{" "}
-              <Select
-                style={{ width: '100%' }}
-                value={localProxyConfig.protocol}
-                onChange={(protocol) => handleLocalProxyChange("protocol", protocol as string)}
-              >
-                <Select.Option value={"http"}>http</Select.Option>
-                <Select.Option value={"https"}>https</Select.Option>
-                <Select.Option value={"sock4"}>sock4</Select.Option>
-                <Select.Option value={"sock5"}>sock5</Select.Option>
-              </Select>
-            </div> */}
-            <div>
-              IP:{" "}
-              <Input
-                type="text"
-                value={localProxyConfig.ip}
-                onChange={(ip) => handleLocalProxyChange("ip", ip)}
-              />
-            </div>
-            <div>
-              Port:{" "}
-              <Input
-                type="text"
-                value={localProxyConfig.port}
-                onChange={(port) => handleLocalProxyChange("port", port)}
-              />
-            </div>
-          </div>
-        </div>
-        <div className={styles.section}>
-          <p className={styles.options}>Auto update interval (minutes)</p>
-        </div>
-        <div className={styles.section}>
-          <p className={styles.options}>
-            Number of update threads (from 1 to 10)
-          </p>
-          <InputNumber
-            step={1}
-            min={1}
-            max={10}
-            value={threads}
-            onChange={(thread: number | string) =>
-              handleThreadsChange(thread as number)
-            }
+    <Panel title="General">
+      <PanelSection title="Proxy" subTitle="use a proxy server for connection">
+        <div className="grid gap-1 grid-cols-[120px_10px_60px] items-center">
+          <Input
+            type="text"
+            value={localProxyConfig.ip}
+            className="tracking-wide"
+            onChange={(ip) => handleLocalProxyChange("ip", ip)}
+          />
+          <span className="text-center">:</span>
+          <Input
+            type="text"
+            className="tracking-wide"
+            value={localProxyConfig.port}
+            onChange={(port) => handleLocalProxyChange("port", port)}
           />
         </div>
-      </div>
-      <ColorTheme />
-    </div>
+      </PanelSection>
+      <PanelSection
+        title="Update Interval"
+        subTitle="set the update interval"
+      ></PanelSection>
+      <PanelSection
+        title="Thread"
+        subTitle="set the concurrent number of requests (from 1 to 10)"
+      >
+        <InputNumber
+          step={1}
+          min={1}
+          max={10}
+          value={threads}
+          onChange={(thread: number | string) =>
+            handleThreadsChange(thread as number)
+          }
+        />
+      </PanelSection>
+    </Panel>
   );
 };

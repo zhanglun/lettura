@@ -19,6 +19,7 @@ import { WelcomePage } from "./components/WelcomePage";
 
 import "./styles/happyhues/css/variables.css";
 import "./styles/index.global.scss";
+import { Appearance } from "./components/SettingPanel/Appearance";
 
 let a = 0;
 
@@ -57,12 +58,14 @@ function App() {
         document.body.dataset.palette = theme;
       }
 
-      customize_style && Object.keys(customize_style).length && Object.keys(customize_style).forEach((key) => {
-        document.documentElement.style.setProperty(
-          `--reading-editable-${key.replace(/_/gi, "-")}`,
-          customize_style[key] as string
-        );
-      })
+      customize_style &&
+        Object.keys(customize_style).length &&
+        Object.keys(customize_style).forEach((key) => {
+          document.documentElement.style.setProperty(
+            `--reading-editable-${key.replace(/_/gi, "-")}`,
+            customize_style[key] as string
+          );
+        });
     });
   }, []);
 
@@ -125,6 +128,10 @@ function App() {
           <Route path={RouteConfig.CHANNEL} element={<ArticleContainer />} />
           <Route path={RouteConfig.SETTINGS} element={<SettingContainer />}>
             <Route path={RouteConfig.SETTINGS_GENERAL} element={<General />} />
+            <Route
+              path={RouteConfig.SETTINGS_APPEARANCE}
+              element={<Appearance />}
+            />
             <Route
               path={RouteConfig.SETTINGS_FEED_MANAGER}
               element={<FeedManager />}
