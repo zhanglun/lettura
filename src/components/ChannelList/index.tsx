@@ -12,7 +12,16 @@ import pLimit from "p-limit";
 import { useBearStore } from "../../hooks/useBearStore";
 
 import styles from "./channel.module.scss";
-import { ChevronDown, ChevronRight, Folder, FolderOpen, Plus, RefreshCw, Settings } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronRight,
+  Folder,
+  FolderOpen,
+  Plus,
+  RefreshCw,
+  Settings,
+} from "lucide-react";
+import { Icon } from "../Icon";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -219,7 +228,7 @@ const ChannelList = (): JSX.Element => {
     const channel = data;
     const ico = getChannelFavicon(link);
     // const isLeaf = !(data.children && data.children.length);
-    const isFolder = item_type === 'folder';
+    const isFolder = item_type === "folder";
     const isActive = (store?.channel?.uuid || channelUuid) === uuid;
 
     return (
@@ -239,13 +248,12 @@ const ChannelList = (): JSX.Element => {
       >
         <span
           className={`w-full flex items-center h-8 px-2 py-3 rounded-md cursor-pointer mt-[2px]
-          bg-secondary text-secondary-foreground hover:bg-secondary/80 group
+           text-primary group
              ${
                isActive
-                 ? "hover:bg-accent hover:text-accent-foreground font-bold"
-                 : "hover:bg-secondary/80"
-             } ${level ? "pl-8" : ""}
-            active:opacity-70`}
+                 ? "bg-primary text-primary-foreground font-bold"
+                 : "hover:bg-primary hover:text-primary-foreground"
+             } ${level ? "pl-8" : ""}`}
         >
           {isFolder && renderFolder(expandStatus, onExpand)}
           {channel.link && (
@@ -268,8 +276,8 @@ const ChannelList = (): JSX.Element => {
           {unread > 0 && (
             <span
               className={`px-1 min-w-[1rem] h-4 leading-4 text-center text-[10px] ${
-                isActive ? "text-feed-active-headline" : "text-feed-headline"
-              } group-hover:text-feed-active-headline`}
+                isActive ? "text-primary-foreground" : "text-primary"
+              } group-hover:text-primary-foreground`}
             >
               {unread}
             </span>
@@ -280,7 +288,6 @@ const ChannelList = (): JSX.Element => {
   };
 
   const renderTree = (): JSX.Element => {
-
     function onDrop(info: any) {
       const { dropToGap, node, dragNode } = info;
       const dropKey = node.key;
@@ -459,30 +466,18 @@ const ChannelList = (): JSX.Element => {
         <div className={styles.toolbar}>
           <AddFeedChannel />
           <AddFolder Aref={addFolderButtonRef} />
-          <span
-            className={styles.toolbarItem}
-            onClick={addFolder}
-            onKeyUp={addFolder}
-          >
+          <Icon onClick={addFolder}>
             <Folder size={16} />
-          </span>
-          <span
-            className={styles.toolbarItem}
-            onClick={refreshList}
-            onKeyUp={refreshList}
-          >
+          </Icon>
+          <Icon onClick={refreshList}>
             <RefreshCw
               size={16}
               className={`${refreshing ? "spinning" : ""}`}
             />
-          </span>
-          <span
-            className={styles.toolbarItem}
-            onClick={goToSetting}
-            onKeyUp={goToSetting}
-          >
+          </Icon>
+          <Icon onClick={goToSetting}>
             <Settings size={16} />
-          </span>
+          </Icon>
         </div>
       </div>
       <div

@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { ArrowLeft, Loader2, Plus } from "lucide-react";
+import { Icon } from "../Icon";
 
 export const AddFeedChannel = (props: any) => {
   const { showStatus, toggleModal } = useModal();
@@ -93,20 +94,20 @@ export const AddFeedChannel = (props: any) => {
   return (
     <Dialog open={showStatus} onOpenChange={handleStatusChange}>
       <DialogTrigger asChild>
-        <span className="w-8 h-8 flex items-center justify-center rounded">
+        <Icon>
           <Plus size={16} />
-        </span>
+        </Icon>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle className="text-2xl flex items-center">
             {step === 2 && (
-              <span
-                className="flex items-center justify-center rounded p-1 mr-2 hover:bg-icon-hover"
+              <Icon
+                className="w-6 h-6 p-1 mr-2"
                 onClick={() => setStep(1)}
               >
                 <ArrowLeft size={16} />
-              </span>
+              </Icon>
             )}
             Subscribe
           </DialogTitle>
@@ -172,7 +173,6 @@ export const AddFeedChannel = (props: any) => {
                   ) : (
                     "Subscribe"
                   )}
-                  Subscribe
                 </Button>
               </div>
             </div>

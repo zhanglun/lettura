@@ -35,28 +35,6 @@
   justify-content: flex-end;
 }
 
-.toolbarItem {
-  width: 34px;
-  height: 34px;
-  border-radius: var(--button-radius);
-  font-size: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  border-radius: 4px;
-  color: var(--feed-headline-color);
-
-  &:hover {
-    color: var(--feed-headline-color);
-    background-color: var(--color-primary);
-  }
-
-  &:focus-visible {
-    outline: none;
-  }
-}
-
 .item {
   height: 32px;
   padding: 8px 10px;

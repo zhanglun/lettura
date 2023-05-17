@@ -25,6 +25,7 @@ import {
 
 import { ToastAction } from "@/components/ui/toast"
 import { useToast } from "@/components/ui/use-toast"
+import { Icon } from "@/components/Icon";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -332,12 +333,12 @@ export const ArticleContainer = (): JSX.Element => {
           </div>
           <div className={styles.menu}>
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <span className={styles.menuIcon}>
+              <DropdownMenuTrigger>
+                <Icon>
                   <Filter size={16}></Filter>
-                </span>
+                </Icon>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="bg-detail-bg">
+              <DropdownMenuContent>
                 <DropdownMenuRadioGroup
                   value={store.currentFilter.id}
                   onValueChange={changeFilter}
@@ -353,39 +354,15 @@ export const ArticleContainer = (): JSX.Element => {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* <Dropdown
-              trigger="click"
-              position="bl"
-              droplist={
-                <Menu>
-                  {store.filterList.map((item) => {
-                    return (
-                      <Menu.Item
-                        key={item.id + ""}
-                        onClick={() => changeFilter(item)}
-                        {...(item.id === store.currentFilter.id
-                          ? { type: "primary" }
-                          : {})}
-                      >
-                        {item.title}
-                      </Menu.Item>
-                    );
-                  })}
-                </Menu>
-              }
-            >
-              <Button>{store.currentFilter.title}</Button>
-            </Dropdown> */}
-
-            <span className={styles.menuIcon} onClick={markAllRead}>
+            <Icon onClick={markAllRead}>
               <CheckCheck size={16} />
-            </span>
-            <span className={styles.menuIcon} onClick={handleRefresh}>
+            </Icon>
+            <Icon onClick={handleRefresh}>
               <RefreshCw
                 size={16}
                 className={`${syncing ? "spinning" : ""}`}
               />
-            </span>
+            </Icon>
           </div>
         </div>
         {syncing && <div className={styles.syncingBar}>同步中</div>}
@@ -403,28 +380,23 @@ export const ArticleContainer = (): JSX.Element => {
         <div className={`sticky-header ${styles.viewHeader}`}>
           <div />
           <div className={styles.viewMenu}>
-            <span
-              className={`${styles.menuIcon} ${
-                currentIdx <= 0 && styles.menuIconDisabled
-              }`}
+            <Icon
+              disable={currentIdx <= 0}
               onClick={handleViewPrevious}
             >
               <ChevronUp size={16} />
-            </span>
-            <span
-              className={`${styles.menuIcon} ${
-                currentIdx >= store.articleList.length - 1 &&
-                styles.menuIconDisabled
-              }`}
+            </Icon>
+            <Icon
+              disable={currentIdx >= store.articleList.length - 1}
               onClick={handleViewNext}
             >
               <ChevronDown size={16} />
-            </span>
+            </Icon>
             <Popover>
               <PopoverTrigger asChild>
-                <span className={styles.menuIcon}>
+                <Icon>
                   <Paintbrush size={16} />
-                </span>
+                </Icon>
               </PopoverTrigger>
               <PopoverContent className="bg-detail-bg">
                 <CustomizeStyle
@@ -432,9 +404,9 @@ export const ArticleContainer = (): JSX.Element => {
                 />
               </PopoverContent>
             </Popover>
-            <span className={styles.menuIcon} onClick={handleViewSourcePage}>
+            <Icon onClick={handleViewSourcePage}>
               <Ghost size={16} />
-            </span>
+            </Icon>
             <a
               className={styles.menuIcon}
               target="_blank"
@@ -443,9 +415,9 @@ export const ArticleContainer = (): JSX.Element => {
             >
               <ExternalLink size={16} />
             </a>
-            <span className={styles.menuIcon} onClick={handleCopyLink}>
+            <Icon onClick={handleCopyLink}>
               <Link size={16} />
-            </span>
+            </Icon>
           </div>
         </div>
         <div className={styles.scrollView} ref={viewRef}>

@@ -244,13 +244,3 @@ $disabled-gray: #ddd;
   border: none;
   box-shadow: 0 2px 0 0 var(--color-primary);
 }
-
-.semi-input-wrapper {
-  color: var(--detail-form-input-color);
-  background-color: var(--detail-form-input-background);
-
-  &:hover {
-    color: var(--detail-form-input-color);
-    background-color: var(--detail-form-input-background);
-  }
-}

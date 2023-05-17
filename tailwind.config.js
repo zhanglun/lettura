@@ -16,14 +16,14 @@ module.exports = {
       ...colors,
 
       "feed-list-bg": "var(--feed-list-bg-color)",
-      "feed-headline": 'hsl(var(--background) / <alpha-value>)',
-      "feed-active-bg": 'hsl(var(--background) / <alpha-value>)',
-      "feed-active-headline": "hsl(var(--foreground) / <alpha-value>)",
+      "feed-headline": 'hsl(var(--background))',
+      "feed-active-bg": 'hsl(var(--background))',
+      "feed-active-headline": "hsl(var(--foreground))",
 
       "article-list-bg": "var(--article-list-bg-color)",
       "article-headline": "var(--article-headline-color)",
       "article-paragraph": "var(--article-paragraph-color)",
-      "article-active-bg": "var(--article-active-bg-color)",
+      "article-active-bg": "hsl(var(--secondary))",
       "article-active-headline": "var(--article-active-headline-color)",
       "article-active-paragraph": "var(--article-active-paragraph-color)",
 
