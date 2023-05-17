@@ -55,7 +55,7 @@ function App() {
       const { theme, customize_style } = cfg as UserConfig;
 
       if (theme) {
-        document.body.dataset.palette = theme;
+        // document.body.dataset.palette = theme;
       }
 
       customize_style &&

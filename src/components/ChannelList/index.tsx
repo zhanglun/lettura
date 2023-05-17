@@ -409,12 +409,6 @@ const ChannelList = (): JSX.Element => {
     );
   };
 
-  const addFeed = () => {
-    if (addFeedButtonRef?.current) {
-      (addFeedButtonRef.current as any).showModal();
-    }
-  };
-
   const addFolder = () => {
     if (addFolderButtonRef?.current) {
       (addFolderButtonRef.current as any).showModal();
@@ -463,14 +457,7 @@ const ChannelList = (): JSX.Element => {
       <div className={`sticky-header ${styles.header}`}>
         <div />
         <div className={styles.toolbar}>
-          <AddFeedChannel Aref={addFeedButtonRef} />
-          <span
-            className={styles.toolbarItem}
-            onClick={addFeed}
-            onKeyUp={addFeed}
-          >
-            <Plus size={16} />
-          </span>
+          <AddFeedChannel />
           <AddFolder Aref={addFolderButtonRef} />
           <span
             className={styles.toolbarItem}

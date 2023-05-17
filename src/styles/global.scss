@@ -1,10 +1,12 @@
 @import "./happyhues/css/variables";
 
 :root {
-  --sans-font: "Helvetica Neue", Helvetica, Arial, "PingFang SC", "Hiragino Sans GB", "Heiti SC", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
-  --serif-font: 'Noto Serif', 'Noto Serif TC', 'Noto Sans TC', serif !important;
+  --sans-font: "Helvetica Neue", Helvetica, Arial, "PingFang SC",
+    "Hiragino Sans GB", "Heiti SC", "Microsoft YaHei", "WenQuanYi Micro Hei",
+    sans-serif;
+  --serif-font: "Noto Serif", "Noto Serif TC", "Noto Sans TC", serif !important;
   --inline-code-font: monospace !important;
-  --mono-font: 'JetBrains Mono', monospace !important;
+  --mono-font: "JetBrains Mono", monospace !important;
 
   --app-channel-width: 260px;
   --app-article-width: 340px;
@@ -21,116 +23,262 @@
   --reading-scale: 1.267;
   --reading-root-size: 16; /* This is to replicate the browser base size for math purposes */
 
-  --reading-base-fs: calc(var(--reading-editable-font-size) / var(--reading-root-size)); /* fs is unitless and is only used for calculations*/
-  --reading-base-font-size: calc(var(--reading-editable-font-size) / var(--reading-root-size) * 1rem);
-  --reading-base-line-height: calc(var(--reading-editable-line-height) / calc(var(--reading-root-size) * var(--reading-p-fs)));
-  --reading-base-margin: calc(var(--reading-editable-font-size) / var(--reading-root-size) * 1rem);
+  --reading-base-fs: calc(
+    var(--reading-editable-font-size) / var(--reading-root-size)
+  ); /* fs is unitless and is only used for calculations*/
+  --reading-base-font-size: calc(
+    var(--reading-editable-font-size) / var(--reading-root-size) * 1rem
+  );
+  --reading-base-line-height: calc(
+    var(--reading-editable-line-height) /
+      calc(var(--reading-root-size) * var(--reading-p-fs))
+  );
+  --reading-base-margin: calc(
+    var(--reading-editable-font-size) / var(--reading-root-size) * 1rem
+  );
 
-  --reading-base-margin-v: calc((var(--reading-editable-line-height) / 32) * (var(--reading-editable-font-size) / var(--reading-root-size) * 1em)); /* added as a variable margin size that factors in line-height and font-size */
+  --reading-base-margin-v: calc(
+    (var(--reading-editable-line-height) / 32) *
+      (var(--reading-editable-font-size) / var(--reading-root-size) * 1em)
+  ); /* added as a variable margin size that factors in line-height and font-size */
 
   /* Caption = table divided by scale */
-  --reading-caption-fs: calc(var(--reading-table-fs) / var(--reading-scale)  / var(--reading-scale));
+  --reading-caption-fs: calc(
+    var(--reading-table-fs) / var(--reading-scale) / var(--reading-scale)
+  );
   --reading-caption-font-size: calc(var(--reading-caption-fs) * 1rem);
-  --reading-caption-line-height: calc(var(--reading-editable-line-height) / calc(var(--reading-root-size) * var(--reading-p-fs)));
-  --reading-caption-margin: calc(var(--reading-editable-line-height) / calc(var(--reading-root-size) * var(--reading-p-fs)) * 1em);
+  --reading-caption-line-height: calc(
+    var(--reading-editable-line-height) /
+      calc(var(--reading-root-size) * var(--reading-p-fs))
+  );
+  --reading-caption-margin: calc(
+    var(--reading-editable-line-height) /
+      calc(var(--reading-root-size) * var(--reading-p-fs)) * 1em
+  );
 
   /* Table = base size divided by scale */
-  --reading-table-fs: calc(var(--reading-base-fs) / var(--reading-scale) / var(--reading-scale));
+  --reading-table-fs: calc(
+    var(--reading-base-fs) / var(--reading-scale) / var(--reading-scale)
+  );
   --reading-table-font-size: calc(var(--reading-table-fs) * 1rem);
-  --reading-table-line-height: calc(var(--reading-editable-line-height) / var(--reading-root-size));
-  --reading-table-margin: calc(var(--reading-editable-line-height) / calc(var(--reading-root-size) * var(--reading-p-fs)) * 1em);
+  --reading-table-line-height: calc(
+    var(--reading-editable-line-height) / var(--reading-root-size)
+  );
+  --reading-table-margin: calc(
+    var(--reading-editable-line-height) /
+      calc(var(--reading-root-size) * var(--reading-p-fs)) * 1em
+  );
 
   /* P = base size */
   --reading-p-fs: calc(var(--reading-base-fs));
   --reading-p-font-size: calc(var(--reading-base-fs) * 1rem);
-  --reading-p-line-height: calc(var(--reading-editable-line-height) / calc(var(--reading-root-size) * var(--reading-p-fs)));
-  --reading-p-margin: calc(var(--reading-editable-font-size) / var(--reading-root-size) * 1rem);
+  --reading-p-line-height: calc(
+    var(--reading-editable-line-height) /
+      calc(var(--reading-root-size) * var(--reading-p-fs))
+  );
+  --reading-p-margin: calc(
+    var(--reading-editable-font-size) / var(--reading-root-size) * 1rem
+  );
 
   /* H3 = base size x scale */
   --reading-h3-fs: var(--reading-p-fs);
   --reading-h3-font-size: calc(var(--reading-p-fs) * 1rem);
-  --reading-h3-line-height: calc(var(--reading-editable-line-height) / calc(var(--reading-root-size) * var(--reading-h3-fs)));
+  --reading-h3-line-height: calc(
+    var(--reading-editable-line-height) /
+      calc(var(--reading-root-size) * var(--reading-h3-fs))
+  );
   --reading-h3-margin: calc(var(--reading-h3-line-height) * 1em);
 
   /* H2 = H3 size x scale */
   --reading-h2-fs: calc(var(--reading-h3-fs) * var(--reading-scale));
-  --reading-h2-font-size: calc(var(--reading-h3-fs) * var(--reading-scale) * 1rem);
-  --reading-h2-line-height: calc(var(--reading-editable-line-height) / calc(var(--reading-h2-fs) * var(--reading-root-size)));
-
+  --reading-h2-font-size: calc(
+    var(--reading-h3-fs) * var(--reading-scale) * 1rem
+  );
+  --reading-h2-line-height: calc(
+    var(--reading-editable-line-height) /
+      calc(var(--reading-h2-fs) * var(--reading-root-size))
+  );
 
   /* H1 = H2 size x scale */
   --reading-h1-fs: calc(var(--reading-h2-fs) * var(--reading-scale));
-  --reading-h1-font-size: calc(var(--reading-h2-fs) * var(--reading-scale) * 1rem);
-  --reading-h1-line-height: calc(var(--reading-editable-line-height) / calc(var(--reading-h1-fs) * var(--reading-root-size)));
+  --reading-h1-font-size: calc(
+    var(--reading-h2-fs) * var(--reading-scale) * 1rem
+  );
+  --reading-h1-line-height: calc(
+    var(--reading-editable-line-height) /
+      calc(var(--reading-h1-fs) * var(--reading-root-size))
+  );
   --reading-h1-margin: calc(var(--reading-h1-line-height) * 1em);
-
 
   /* Typefaces */
   --reading-font-body: var(--reading-editable-font-family);
   --reading-font-title: var(--reading-editable-font-family);
   --reading-font-caption: "Inter VF", sans-serif;
 
-  --reading-font-monospace: "Roboto Mono VF","SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  --reading-font-monospace: "Roboto Mono VF", "SFMono-Regular", Consolas,
+    "Liberation Mono", Menlo, Courier, monospace;
+}
+
+:root {
+//   --color-primary: var(--color-palette-#{$i}-section-1-illustration-highlight);
+//   --color-secondary: var(
+//     --color-palette-#{$i}-section-1-illustration-secondary
+//   );
+//   --color-tertiary: var(--color-palette-#{$i}-section-1-illustration-tertiary);
+//   --headline-color: var(--color-palette-#{$i}-section-1-elements-headline);
+//   --paragraph-color: var(--color-palette-#{$i}-section-1-elements-paragraph);
+//   --button-bg-color: var(--color-palette-#{$i}-section-1-elements-button);
+//   --button-text-color: var(
+//     --color-palette-#{$i}-section-1-elements-button-text
+//   );
+//   --stroke-color: var(--color-palette-#{$i}-section-1-illustration-stroke);
+//   --icon-tertiary: var(--color-palette-#{$i}-section-2-icons-tertiary);
+//   --icon-secondary: var(--color-palette-#{$i}-section-2-icons-secondary);
+    --icon-hover-bg: #d4d4d4;
+//   --icon-highlight: var(--color-palette-#{$i}-section-2-icons-highlight);
+//   --icon-main: var(--color-palette-#{$i}-section-2-icons-main);
+//   --icon-stroke: var(--color-palette-#{$i}-section-2-icons-stroke);
+
+//   --body-color: var(--detail-paragraph-color);
+//   --body-bg-color: var(--color-palette-#{$i}-section-2-elements-background);
+//   --app-main-bg-color: var(--color-palette-#{$i}-section-2-elements-background);
+
+//   --feed-list-bg-color: var(
+//     --color-palette-#{$i}-section-1-elements-background
+//   );
+//   --feed-headline-color: var(--color-palette-#{$i}-section-1-elements-headline);
+//   --feed-active-bg-color: var(--color-palette-#{$i}-section-1-elements-button);
+//   --feed-active-headline-color: var(
+//     --color-palette-#{$i}-section-1-elements-button-text
+//   );
+
+//   --article-list-bg-color: var(
+//     --color-palette-#{$i}-section-2-elements-background
+//   );
+//   --article-headline-color: var(
+//     --color-palette-#{$i}-section-2-elements-headline
+//   );
+//   --article-paragraph-color: var(
+//     --color-palette-#{$i}-section-2-elements-sub-headline
+//   );
+//   --article-active-bg-color: var(
+//     --color-palette-#{$i}-section-2-elements-card-background
+//   );
+//   --article-active-headline-color: var(
+//     --color-palette-#{$i}-section-2-elements-card-heading
+//   );
+//   --article-active-paragraph-color: var(
+//     --color-palette-#{$i}-section-2-elements-card-paragraph
+//   );
+
+//   --detail-bg-color: var(--color-palette-#{$i}-section-2-elements-background);
+//   --detail-headline-color: var(
+//     --color-palette-#{$i}-section-2-elements-headline
+//   );
+//   --detail-paragraph-color: var(
+//     --color-palette-#{$i}-section-2-elements-sub-headline
+//   );
+//   --detail-form-input-background: var(
+//     --color-palette-#{$i}-section-4-newsletter-form-input
+//   );
+//   --detail-form-input-color: var(
+//     --color-palette-#{$i}-section-4-newsletter-label-placeholder
+//   );
+//   --detail-form-input-button-background: var(
+//     --color-palette-#{$i}-section-4-newsletter-form-button
+//   );
+//   --detail-form-input-button-color: var(
+//     --color-palette-#{$i}-section-4-newsletter-form-button-text
+//   );
 }
 
 @for $i from 1 to 17 {
-  :root body[data-palette='#{$i}'] {
-    --color-primary: var(--color-palette-#{$i}-section-1-illustration-highlight);
-    --color-secondary: var(--color-palette-#{$i}-section-1-illustration-secondary);
-    --color-tertiary: var(--color-palette-#{$i}-section-1-illustration-tertiary);
-    --headline-color:var(--color-palette-#{$i}-section-1-elements-headline);
+  :root body[data-palette="#{$i}"] {
+    --color-primary: var(
+      --color-palette-#{$i}-section-1-illustration-highlight
+    );
+    --color-secondary: var(
+      --color-palette-#{$i}-section-1-illustration-secondary
+    );
+    --color-tertiary: var(
+      --color-palette-#{$i}-section-1-illustration-tertiary
+    );
+    --headline-color: var(--color-palette-#{$i}-section-1-elements-headline);
     --paragraph-color: var(--color-palette-#{$i}-section-1-elements-paragraph);
     --button-bg-color: var(--color-palette-#{$i}-section-1-elements-button);
-    --button-text-color: var(--color-palette-#{$i}-section-1-elements-button-text);
+    --button-text-color: var(
+      --color-palette-#{$i}-section-1-elements-button-text
+    );
     --stroke-color: var(--color-palette-#{$i}-section-1-illustration-stroke);
     --icon-tertiary: var(--color-palette-#{$i}-section-2-icons-tertiary);
     --icon-secondary: var(--color-palette-#{$i}-section-2-icons-secondary);
+    --icon-hover-bg: #d4d4d4;
     --icon-highlight: var(--color-palette-#{$i}-section-2-icons-highlight);
     --icon-main: var(--color-palette-#{$i}-section-2-icons-main);
     --icon-stroke: var(--color-palette-#{$i}-section-2-icons-stroke);
 
     --body-color: var(--detail-paragraph-color);
     --body-bg-color: var(--color-palette-#{$i}-section-2-elements-background);
-    --app-main-bg-color: var(--color-palette-#{$i}-section-2-elements-background);
+    --app-main-bg-color: var(
+      --color-palette-#{$i}-section-2-elements-background
+    );
 
-    --feed-list-bg-color: var(--color-palette-#{$i}-section-1-elements-background);
-    --feed-headline-color: var(--color-palette-#{$i}-section-1-elements-headline);
-    --feed-active-bg-color: var(--color-palette-#{$i}-section-1-elements-button);
-    --feed-active-headline-color: var(--color-palette-#{$i}-section-1-elements-button-text);
+    --feed-list-bg-color: var(
+      --color-palette-#{$i}-section-1-elements-background
+    );
+    --feed-headline-color: var(
+      --color-palette-#{$i}-section-1-elements-headline
+    );
+    --feed-active-bg-color: var(
+      --color-palette-#{$i}-section-1-elements-button
+    );
+    --feed-active-headline-color: var(
+      --color-palette-#{$i}-section-1-elements-button-text
+    );
 
-    --article-list-bg-color: var(--color-palette-#{$i}-section-2-elements-background);
-    --article-headline-color: var(--color-palette-#{$i}-section-2-elements-headline);
-    --article-paragraph-color: var(--color-palette-#{$i}-section-2-elements-sub-headline);
-    --article-active-bg-color: var(--color-palette-#{$i}-section-2-elements-card-background);
-    --article-active-headline-color: var(--color-palette-#{$i}-section-2-elements-card-heading);
-    --article-active-paragraph-color: var(--color-palette-#{$i}-section-2-elements-card-paragraph);
+    --article-list-bg-color: var(
+      --color-palette-#{$i}-section-2-elements-background
+    );
+    --article-headline-color: var(
+      --color-palette-#{$i}-section-2-elements-headline
+    );
+    --article-paragraph-color: var(
+      --color-palette-#{$i}-section-2-elements-sub-headline
+    );
+    --article-active-bg-color: var(
+      --color-palette-#{$i}-section-2-elements-card-background
+    );
+    --article-active-headline-color: var(
+      --color-palette-#{$i}-section-2-elements-card-heading
+    );
+    --article-active-paragraph-color: var(
+      --color-palette-#{$i}-section-2-elements-card-paragraph
+    );
 
     --detail-bg-color: var(--color-palette-#{$i}-section-2-elements-background);
-    --detail-headline-color: var(--color-palette-#{$i}-section-2-elements-headline);
-    --detail-paragraph-color: var(--color-palette-#{$i}-section-2-elements-sub-headline);
-    --detail-form-input-background: var(--color-palette-#{$i}-section-4-newsletter-form-input);
-    --detail-form-input-color: var(--color-palette-#{$i}-section-4-newsletter-label-placeholder);
-    --detail-form-input-button-background: var(--color-palette-#{$i}-section-4-newsletter-form-button);
-    --detail-form-input-button-color: var(--color-palette-#{$i}-section-4-newsletter-form-button-text);
+    --detail-headline-color: var(
+      --color-palette-#{$i}-section-2-elements-headline
+    );
+    --detail-paragraph-color: var(
+      --color-palette-#{$i}-section-2-elements-sub-headline
+    );
+    --detail-form-input-background: var(
+      --color-palette-#{$i}-section-4-newsletter-form-input
+    );
+    --detail-form-input-color: var(
+      --color-palette-#{$i}-section-4-newsletter-label-placeholder
+    );
+    --detail-form-input-button-background: var(
+      --color-palette-#{$i}-section-4-newsletter-form-button
+    );
+    --detail-form-input-button-color: var(
+      --color-palette-#{$i}-section-4-newsletter-form-button-text
+    );
   }
 
-  body[data-palette='#{$i}'] {
-    --semi-color-text-0: var(--paragraph-color);
-    --semi-color-primary: var(--color-primary);
-    --semi-color-success: var(--color-secondary);
-    --semi-color-primary-hover: var(--color-primary);
-    --semi-color-focus-border: var(--color-primary);
-    --semi-color-focus-border: var(--detail-form-input-background);
-
+  body[data-palette="#{$i}"] {
     --tw-prose-quotes: var(--detail-paragraph-color);
     --tw-prose-bold: var(--detail-paragraph-color);
     --tw-prose-headings: var(--detail-headline-color);
   }
-
-  body[data-palette='#{$i}'] {
-    .semi-button-primary {
-      color: var(--color-palette-#{$i}-section-1-elements-button-text);
-    }
-  }
 }
-

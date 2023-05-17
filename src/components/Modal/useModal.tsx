@@ -5,11 +5,13 @@ export const useModal = () => {
   const showModal = () => setShowStatus(true);
   const hideModal = () => setShowStatus(false);
   const toggleModal = () => setShowStatus(!showStatus);
+  const setModalStatus = (v: boolean) => setShowStatus(v);
 
   return {
     showStatus,
     showModal,
     hideModal,
     toggleModal,
+    setModalStatus,
   };
 };

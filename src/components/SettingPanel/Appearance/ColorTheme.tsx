@@ -21,7 +21,7 @@ export const ColorTheme = () => {
 
   const handleSaveTheme = (theme: string) => {
     dataAgent.updateTheme(theme).then((res) => {
-      document.body.dataset.palette = theme;
+      // document.body.dataset.palette = theme;
 
       // keep in localStorage for first load
       window.localStorage.setItem("palette", theme);

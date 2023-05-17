@@ -22,6 +22,7 @@ module.exports = {
       button: "var(--button-bg-color)",
       "button-text": "var(--button-text-color)",
       stroke: "var(--color-stroke)",
+      "icon-hover": "var(--icon-hover-bg)",
 
       "feed-list-bg": "var(--feed-list-bg-color)",
       "feed-headline": "var(--feed-headline-color)",

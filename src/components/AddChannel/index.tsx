@@ -1,26 +1,35 @@
-import React, { useEffect, useImperativeHandle, useRef, useState } from "react";
-import { useModal } from "../Modal/useModal";
-import { Input, TextArea, Modal, Button, Toast } from "@douyinfe/semi-ui";
+import React, {
+  ChangeEvent,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { Toast } from "@douyinfe/semi-ui";
 import * as dataAgent from "../../helpers/dataAgent";
-import styles from "./index.module.css";
 import { busChannel } from "../../helpers/busChannel";
+import { useModal } from "../Modal/useModal";
+
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { ArrowLeft, Plus } from "lucide-react";
+
 export const AddFeedChannel = (props: any) => {
-  const { showStatus, showModal, hideModal, toggleModal } = useModal();
+  const { showStatus, toggleModal } = useModal();
   const [step, setStep] = useState(1);
   const [feedUrl, setFeedUrl] = useState("https://feeds.appinn.com/appinns/");
   const [feed, setFeed] = useState<any>({});
   const [loading, setLoading] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  useImperativeHandle(props.Aref, () => {
-    return {
-      status: showStatus,
-      showModal,
-      hideModal,
-      toggleModal,
-    };
-  });
 
   const handleLoad = async () => {
     setLoading(true);
@@ -60,6 +69,10 @@ export const AddFeedChannel = (props: any) => {
     toggleModal();
   };
 
+  const handleStatusChange = () => {
+    handleCancel();
+  }
+
   const handleSave = async () => {
     setConfirming(true);
 
@@ -83,64 +96,69 @@ export const AddFeedChannel = (props: any) => {
   }, [showStatus]);
 
   return (
-    <Modal
-      visible={showStatus}
-      title="添加订阅"
-      footer={false}
-      width={460}
-      confirmLoading={confirming}
-      onOk={handleSave}
-      onCancel={handleCancel}
-    >
-      <div className="pb-8">
-        {step === 1 && (
-          <div>
-            <div className="mb-3">
-              <Input
-                type="text"
-                placeholder={""}
-                ref={inputRef}
-                disabled={loading}
-                value={feedUrl}
-                onChange={handleInputChange}
-              />
-            </div>
+    <Dialog open={showStatus} onOpenChange={handleStatusChange}>
+      <DialogTrigger asChild>
+        <span className="w-8 h-8 flex items-center justify-center rounded">
+          <Plus size={16} />
+        </span>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle className="text-2xl flex items-center">
+            {step === 2 && <span
+              className="flex items-center justify-center rounded p-1 mr-2 hover:bg-icon-hover"
+              onClick={() => setStep(1)}
+            >
+              <ArrowLeft size={16} />
+            </span>}
+            Subscribe
+          </DialogTitle>
+          <DialogDescription>
+            Follow your favorite sources and never miss a story
+          </DialogDescription>
+        </DialogHeader>
+        <div className="pb-5">
+          {step === 1 && (
             <div>
-              <Button
-                block
-                type={"primary"}
-                loading={loading}
-                onClick={handleLoad}
-              >
-                {loading ? "Loading" : "Load"}
-              </Button>
-            </div>
-          </div>
-        )}
-        {step === 2 && (
-          <div>
-            <div className="border rounded p-3 mb-3">
-              <div>
-                <div>{feed.title}</div>
-                <div>{feedUrl}</div>
+              <div className="mb-3">
+                <Input
+                  type="text"
+                  placeholder={""}
+                  ref={inputRef}
+                  disabled={loading}
+                  value={feedUrl}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                    handleInputChange(e.target.value)
+                  }
+                />
               </div>
               <div>
-                <div>{feed.description}</div>
+                <Button className="w-full" onClick={handleLoad}>
+                  {loading ? "Loading" : "Load"}
+                </Button>
               </div>
             </div>
+          )}
+          {step === 2 && (
             <div>
-              <Button
-                block
-                type={"primary"}
-                loading={loading}
-                onClick={handleSave}
-              >
-                Subscribe
-              </Button>
+              <div className="border rounded p-3 mb-3">
+                <div>
+                  <div>{feed.title}</div>
+                  <div>{feedUrl}</div>
+                </div>
+                <div>
+                  <div>{feed.description}</div>
+                </div>
+              </div>
+              <div>
+                <Button className="w-full" onClick={handleSave}>
+                  Subscribe
+                </Button>
+              </div>
             </div>
-          </div>
-        )}
-      </div>
-    </Modal>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 };
