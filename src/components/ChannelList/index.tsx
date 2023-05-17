@@ -239,11 +239,11 @@ const ChannelList = (): JSX.Element => {
       >
         <span
           className={`w-full flex items-center h-8 px-2 py-3 rounded-md cursor-pointer mt-[2px]
-             text-feed-headline group hover:text-feed-active-headline
+          bg-secondary text-secondary-foreground hover:bg-secondary/80 group
              ${
                isActive
-                 ? "bg-feed-active-bg text-feed-active-headline font-bold hover:bg-feed-active-bg"
-                 : "hover:bg-feed-active-bg hover:opacity-80"
+                 ? "hover:bg-accent hover:text-accent-foreground font-bold"
+                 : "hover:bg-secondary/80"
              } ${level ? "pl-8" : ""}
             active:opacity-70`}
         >
