@@ -6,7 +6,7 @@ import { Channel } from "../../db";
 import { getChannelFavicon } from "../../helpers/parseXML";
 import * as dataAgent from "../../helpers/dataAgent";
 import { busChannel } from "../../helpers/busChannel";
-import { AddFeedChannel } from "../AddChannel";
+import { AddFeedChannel } from "../AddFeed";
 import { AddFolder } from "../AddFolder";
 import pLimit from "p-limit";
 import { useBearStore } from "../../hooks/useBearStore";
