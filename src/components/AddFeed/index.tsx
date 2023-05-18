@@ -37,6 +37,7 @@ export const AddFeedChannel = (props: any) => {
         console.log("res from rust", res);
         const [feed, message] = res;
         if (!feed) {
+          console.log("%c Line:40 🥤 !feed", "color:#f5ce50", !feed);
           toast({
             variant: "destructive",
             title: "Unable to subscribe",
