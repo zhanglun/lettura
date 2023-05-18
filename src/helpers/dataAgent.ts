@@ -63,7 +63,7 @@ export const getArticleList = async (uuid: string, filter: any) => {
 
 export const fetchFeed = async (
   url: string,
-): Promise<{ Atom?: any; RSS?: any }> => {
+): Promise<[any, string]> => {
   return invoke("fetch_feed", { url });
 };
 

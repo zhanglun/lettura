@@ -1,7 +1,6 @@
 import React, { ChangeEvent, useEffect, useRef, useState } from "react";
-import { Toast } from "@douyinfe/semi-ui";
-import * as dataAgent from "../../helpers/dataAgent";
-import { busChannel } from "../../helpers/busChannel";
+import * as dataAgent from "@/helpers/dataAgent";
+import { busChannel } from "@/helpers/busChannel";
 import { useModal } from "../Modal/useModal";
 
 import { Button } from "@/components/ui/button";
@@ -15,8 +14,9 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Loader2, Plus } from "lucide-react";
 import { Icon } from "../Icon";
+import { ArrowLeft, Loader2, Plus } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
 export const AddFeedChannel = (props: any) => {
   const { showStatus, toggleModal } = useModal();
@@ -26,6 +26,7 @@ export const AddFeedChannel = (props: any) => {
   const [loading, setLoading] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
 
   const handleLoad = async () => {
     setLoading(true);
@@ -34,11 +35,13 @@ export const AddFeedChannel = (props: any) => {
       .fetchFeed(feedUrl)
       .then((res) => {
         console.log("res from rust", res);
-        if (!res) {
-          Toast.error({
-            content: "Cant find any feed, please check url",
+        const [feed, message] = res;
+        if (!feed) {
+          toast({
+            variant: "destructive",
+            title: "Unable to subscribe",
+            description: message,
             duration: 2,
-            theme: "light",
           });
 
           return;
@@ -102,10 +105,7 @@ export const AddFeedChannel = (props: any) => {
         <DialogHeader>
           <DialogTitle className="text-2xl flex items-center">
             {step === 2 && (
-              <Icon
-                className="w-6 h-6 p-1 mr-2"
-                onClick={() => setStep(1)}
-              >
+              <Icon className="w-6 h-6 p-1 mr-2" onClick={() => setStep(1)}>
                 <ArrowLeft size={16} />
               </Icon>
             )}

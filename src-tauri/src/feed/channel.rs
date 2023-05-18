@@ -484,6 +484,7 @@ pub struct ChannelQueryResult {
 
 pub fn get_channels() -> ChannelQueryResult {
   let mut connection = db::establish_connection();
+  // let mut query = diesel::sql_query("").into_boxed();
   let sql_channels = "
     SELECT
       C.id as id,

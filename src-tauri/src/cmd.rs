@@ -66,7 +66,7 @@ pub fn create_client() -> reqwest::Client {
   client
 }
 
-/// reuqest feed, parse Feeds
+/// request feed, parse Feeds
 ///
 /// # Examples
 /// ```
@@ -100,7 +100,11 @@ pub async fn fetch_feed_item(url: &str) -> Result<Feed, String> {
           }
         }
       }
+      reqwest::StatusCode::NOT_FOUND => {
+        Err(String::from("Could not find a feed at the location."))
+      }
       _ => {
+        println!("o {:?}", response);
         Err("Not 200 OK".to_string())
       }
     },
@@ -115,31 +119,23 @@ pub async fn fetch_feed_item(url: &str) -> Result<Feed, String> {
 
 #[derive(Debug, Serialize)]
 pub struct FeedFetchResponse {
-  title: String,
-  description: String,
+  feed: models::NewChannel,
+  message: String,
 }
 
 #[command]
-pub async fn fetch_feed(url: String) -> Option<FeedFetchResponse> {
-  let r = fetch_feed_item(&url).await;
+pub async fn fetch_feed(url: String) -> (Option<models::NewChannel>, String) {
+  let res = fetch_feed_item(&url).await;
 
-  match r {
-    Ok(res) => match res {
-      Feed::Atom(res) => {
-        let title = res.title.to_string();
-        let description = match &res.subtitle {
-          Some(title) => title.value.to_string(),
-          None => String::from(""),
-        };
-
-        Some(FeedFetchResponse { title, description })
-      }
-      Feed::RSS(res) => Some(FeedFetchResponse {
-        title: res.title.to_string(),
-        description: res.description.to_string(),
-      }),
+  match res {
+    Ok(res) => {
+      let channel_uuid = Uuid::new_v4().hyphenated().to_string();
+      let channel = create_channel_model(&channel_uuid, &url, &res).clone();
+      (Some(channel), String::from(""))
+    }
+    Err(err) => {
+      (None, err)
     },
-    Err(_) => None,
   }
 }
 
@@ -174,7 +170,7 @@ pub async fn move_channel_into_folder(channel_uuid: String, folder_uuid: String,
   result
 }
 
-pub fn create_channel_model(uuid: &String, url: &String, res: &Feed) -> Box<models::NewChannel> {
+pub fn create_channel_model(uuid: &String, url: &String, res: &Feed) -> models::NewChannel {
   match res {
     Feed::Atom(res) => {
       let image = String::from("");
@@ -199,7 +195,7 @@ pub fn create_channel_model(uuid: &String, url: &String, res: &Feed) -> Box<mode
         pub_date: date,
       };
 
-      return Box::new(channel);
+      return channel;
     }
     Feed::RSS(res) => {
       let image = match &res.image {
@@ -220,7 +216,8 @@ pub fn create_channel_model(uuid: &String, url: &String, res: &Feed) -> Box<mode
         pub_date: date,
       };
 
-      return Box::new(channel);
+      // return Box::new(channel);
+      channel
     }
   }
 }
@@ -314,7 +311,7 @@ pub async fn add_channel(url: String) -> (usize, String) {
       let channel_uuid = Uuid::new_v4().hyphenated().to_string();
       let channel = create_channel_model(&channel_uuid, &url, &res);
       let articles = create_article_models(&channel_uuid, &url, &res);
-      let res = feed::channel::add_channel(*channel, articles);
+      let res = feed::channel::add_channel(channel, articles);
 
       (res, String::from(""))
     }
@@ -536,23 +533,20 @@ mod tests {
 
   #[tokio::test]
   async fn test_create_article_models() {
-    let url = "https://rsshub.app/bing".to_string();
+    let url = "https://tympanus.net/codrops/feed".to_string();
     println!("{:?}", url);
     let res = fetch_feed_item(&url).await;
 
     match res {
       Ok(res) => {
         let channel_uuid = Uuid::new_v4().hyphenated().to_string();
-        let articles = create_article_models(&channel_uuid, &url, &res);
-
-        println!("{:?}", articles.get(0));
-        1
+        let channel = create_channel_model(&channel_uuid, &url, &res).clone();
+        println!("{:?}", (Some(channel), String::from("")));
       }
       Err(err) => {
-        println!("{:?}", err);
-        0
+        println!("err {:?}", (None::<models::NewChannel>, err));
       },
-    };
+    }
 
     ()
   }

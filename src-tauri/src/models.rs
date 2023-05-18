@@ -32,7 +32,7 @@ pub struct Channel {
   pub update_date: String,
 }
 
-#[derive(Debug, Clone, Insertable)]
+#[derive(Debug, Clone, Serialize, Insertable)]
 #[diesel(table_name = channels)]
 pub struct NewChannel {
   pub uuid: String,

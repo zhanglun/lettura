@@ -87,6 +87,7 @@ export const General = () => {
         subTitle="set the concurrent number of requests (from 1 to 10)"
       >
         <Input
+          className="w-[200px]"
           type="number"
           step={1}
           min={1}

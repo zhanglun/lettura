@@ -62,7 +62,7 @@ function SettingPanel() {
               }
             >
               <Database size={16} />
-              Feed Manager
+              Content
             </NavLink>
           </li>
           <li>
