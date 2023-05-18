@@ -138,7 +138,7 @@ impl Article {
 
     match filter.cursor {
       Some(cursor) => {
-        query = query.sql(" adn A.id > ?").bind::<Integer, _>(cursor);
+        query = query.sql(" and A.id > ?").bind::<Integer, _>(cursor);
       }
       None => {
         1;

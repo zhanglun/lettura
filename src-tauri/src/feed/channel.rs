@@ -139,7 +139,8 @@ pub fn get_unread_total() -> HashMap<String, i32> {
   let record = diesel::sql_query(SQL_QUERY_UNREAD_TOTAL)
     .load::<UnreadTotal>(&mut connection)
     .unwrap_or(vec![]);
-  let total_map = record.clone()
+  let total_map = record
+    .clone()
     .into_iter()
     .map(|r| (r.channel_uuid.clone(), r.unread_count.clone()))
     .collect::<HashMap<String, i32>>();
@@ -240,7 +241,6 @@ pub fn get_feeds() -> Vec<FeedItem> {
       F.parent_uuid as parent_uuid FROM channels as C
     LEFT JOIN feed_metas AS F
     ON C.uuid = F.child_uuid
-    WHERE F.parent_uuid is not Null
     ORDER BY F.sort ASC;";
 
   let mut connection = db::establish_connection();
@@ -255,8 +255,6 @@ pub fn get_feeds() -> Vec<FeedItem> {
   let mut folder_channel_map: HashMap<String, Vec<ChildItem>> = HashMap::new();
   let mut result: Vec<FeedItem> = Vec::new();
   let mut filter_uuids: Vec<String> = Vec::new();
-
-  println!("channels_in_folder :{:?}", &channels_in_folder);
 
   for channel in channels_in_folder {
     let p_uuid = String::from(&channel.parent_uuid);
@@ -424,23 +422,21 @@ pub fn update_feed_sort(sorts: Vec<FeedSort>) -> usize {
     }
 
     if item.parent_uuid.len() == 0 && item.item_type == "channel" {
-        diesel::update(
-          schema::channels::dsl::channels
-            .filter(schema::channels::uuid.eq(&item.child_uuid)),
-        )
-        .set(schema::channels::sort.eq(item.sort))
-        .execute(&mut connection)
-        .expect("msg");
+      diesel::update(
+        schema::channels::dsl::channels.filter(schema::channels::uuid.eq(&item.child_uuid)),
+      )
+      .set(schema::channels::sort.eq(item.sort))
+      .execute(&mut connection)
+      .expect("msg");
     }
 
     if item.parent_uuid.len() == 0 && item.item_type == "folder" {
-        diesel::update(
-          schema::folders::dsl::folders
-            .filter(schema::folders::uuid.eq(&item.child_uuid)),
-        )
-        .set(schema::folders::sort.eq(item.sort))
-        .execute(&mut connection)
-        .expect("msg");
+      diesel::update(
+        schema::folders::dsl::folders.filter(schema::folders::uuid.eq(&item.child_uuid)),
+      )
+      .set(schema::folders::sort.eq(item.sort))
+      .execute(&mut connection)
+      .expect("msg");
     }
 
     println!(" update sort {:?}", item);
@@ -474,7 +470,7 @@ pub struct ChannelQuery {
   #[diesel(sql_type = diesel::sql_types::Text)]
   pub update_date: String,
   #[diesel(sql_type = diesel::sql_types::Text)]
-  parent_uuid: String,
+  pub parent_uuid: String,
 }
 
 #[derive(Debug, Serialize)]
@@ -484,32 +480,37 @@ pub struct ChannelQueryResult {
 
 pub fn get_channels() -> ChannelQueryResult {
   let mut connection = db::establish_connection();
-  // let mut query = diesel::sql_query("").into_boxed();
-  let sql_channels = "
-    SELECT
-      C.id as id,
-      C.uuid AS uuid,
-      C.title AS title,
-      C.link AS link,
-      C.feed_url AS feed_url,
-      C.image AS image,
-      C.description AS description,
-      C.pub_date as pub_date,
-      C.sort as sort,
-      C.create_date as create_date,
-      C.update_date as update_date,
-      F.parent_uuid as parent_uuid
-    FROM channels AS C LEFT JOIN feed_metas AS F
-    ORDER BY create_date DESC
-  ";
+  let channels = schema::channels::dsl::channels
+    .load::<models::Channel>(&mut connection)
+    .unwrap();
+  let relations = schema::feed_metas::dsl::feed_metas
+          .load::<models::FeedMeta>(&mut connection)
+          .unwrap_or(vec![]);
+  let mut folder_channel_map: HashMap<String, String> = HashMap::new();
 
-  let channels = diesel::sql_query(sql_channels)
-    .load::<ChannelQuery>(&mut connection)
-    .unwrap_or(vec![]);
+  for r in relations {
+    folder_channel_map.insert(r.child_uuid.clone(), r.parent_uuid);
+  }
 
-  println!("channels: {:?}", channels);
+  let result: Vec<ChannelQuery> = channels.into_iter().map(|channel| {
+    ChannelQuery {
+      id: channel.id,
+      uuid: String::from(&channel.uuid),
+      title: channel.title,
+      link: channel.link,
+      feed_url: channel.feed_url,
+      image: channel.image,
+      description: channel.description,
+      pub_date: channel.pub_date,
+      sort: channel.sort,
+      create_date: channel.create_date,
+      update_date: channel.update_date,
+      parent_uuid: String::from(
+        folder_channel_map.get(&String::from(&channel.uuid)).unwrap_or(&String::from(""))),
+    }
+  }).collect::<Vec<ChannelQuery>>();
 
-  ChannelQueryResult { list: channels }
+  ChannelQueryResult { list: result }
 }
 
 #[cfg(test)]
@@ -520,6 +521,12 @@ mod tests {
   fn test_get_feeds() {
     let result = get_feeds();
     println!("{:?}", result)
+  }
+
+  #[test]
+  fn test_get_channels() {
+    let result = get_channels();
+    println!("result {:?}", result)
   }
 
   #[test]
