@@ -53,7 +53,7 @@ export const ArticleList = forwardRef(
       console.time("getList 2")
       const filter: { read_status?: number; limit?: number } = {};
 
-      filter.read_status = store.currentFilter.id;
+      filter.read_status = store.currentFilter.id * 1;
 
       setLoading(true);
 

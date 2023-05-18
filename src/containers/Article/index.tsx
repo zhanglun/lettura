@@ -340,12 +340,12 @@ export const ArticleContainer = (): JSX.Element => {
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuRadioGroup
-                  value={store.currentFilter.id}
+                  value={store.currentFilter.id + ''}
                   onValueChange={changeFilter}
                 >
                   {store.filterList.map((item) => {
                     return (
-                      <DropdownMenuRadioItem key={item.id + ""} value={item.id}>
+                      <DropdownMenuRadioItem key={item.id + ""} value={item.id + ''}>
                         {item.title}
                       </DropdownMenuRadioItem>
                     );

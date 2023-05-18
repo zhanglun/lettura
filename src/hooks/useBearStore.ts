@@ -20,8 +20,8 @@ interface BearStore {
   currentIdx: number;
   setCurrentIdx: (idx: number) => void;
 
-  currentFilter: { id: string; title: string };
-  filterList: { id: string; title: string }[];
+  currentFilter: { id: number; title: string };
+  filterList: { id: number; title: string }[];
   setFilter: any;
 
   userConfig: UserConfig;
@@ -130,15 +130,15 @@ export const useBearStore = create<BearStore>()(
 
       filterList: [
         {
-          id: '0',
+          id: 0,
           title: "All",
         },
         {
-          id: '1',
+          id: 1,
           title: "Unread",
         },
         {
-          id: '2',
+          id: 2,
           title: "Read",
         },
       ],
@@ -146,7 +146,7 @@ export const useBearStore = create<BearStore>()(
         id: '1',
         title: "Unread",
       },
-      setFilter: (filter: { id: string; title: string }) => {
+      setFilter: (filter: { id: number; title: string }) => {
         set(() => ({
           currentFilter: filter,
         }));
