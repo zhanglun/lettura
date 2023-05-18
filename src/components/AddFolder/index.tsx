@@ -1,32 +1,32 @@
-import React, { useEffect, useImperativeHandle, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, ChangeEvent } from "react";
 import { useModal } from "../Modal/useModal";
-import { Input, Modal } from "@douyinfe/semi-ui";
 import * as dataAgent from "../../helpers/dataAgent";
-import styles from "./index.module.css";
 import { busChannel } from "../../helpers/busChannel";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Icon } from "../Icon";
+import { Folder, Loader2 } from "lucide-react";
+import { Button } from "../ui/button";
 
 export const AddFolder = (props: any) => {
   const { showStatus, showModal, hideModal, toggleModal } = useModal();
   const [name, setName] = useState("");
-  const [loading, setLoading] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  useImperativeHandle(props.Aref, () => {
-    return {
-      status: showStatus,
-      showModal,
-      hideModal,
-      toggleModal,
-    };
-  });
 
   const handleNameChange = (value: string) => {
     setName(value);
   };
 
   const handleCancel = () => {
-    setLoading(false);
     setConfirming(false);
     setName("");
     toggleModal();
@@ -55,28 +55,44 @@ export const AddFolder = (props: any) => {
   }, [showStatus]);
 
   return (
-    <Modal
-      visible={showStatus}
-      title="Create Folder"
-      width="340"
-      confirmLoading={confirming}
-      onOk={handleSave}
-      onCancel={handleCancel}
-    >
-      <div className={styles.box}>
-        <div className={styles.item}>
-          <div className={styles.label}>Name</div>
-          <div className={styles.formItem}>
+    <Dialog open={showStatus} onOpenChange={handleCancel}>
+      <DialogTrigger asChild>
+        <Icon>
+          <Folder size={16} />
+        </Icon>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle className="text-2xl flex items-center">
+            Create Folder
+          </DialogTitle>
+          <DialogDescription>Organize your subscribes</DialogDescription>
+        </DialogHeader>
+        <div className="pb-5">
+          <div className="mb-3">
             <Input
               type="text"
-              style={{ width: "300px" }}
               value={name}
-              onChange={handleNameChange}
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                handleNameChange(e.target.value)
+              }
               ref={inputRef}
             />
           </div>
+          <div>
+            <Button className="w-full" onClick={handleSave} disabled={confirming}>
+              {confirming ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Saving
+                </>
+              ) : (
+                "Save"
+              )}
+            </Button>
+          </div>
         </div>
-      </div>
-    </Modal>
+      </DialogContent>
+    </Dialog>
   );
 };

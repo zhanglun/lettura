@@ -29,8 +29,6 @@ function useQuery() {
 
 const ChannelList = (): JSX.Element => {
   const navigate = useNavigate();
-  const addFeedButtonRef = useRef(null);
-  const addFolderButtonRef = useRef(null);
   const [refreshing, setRefreshing] = useState(false);
   const [channelList, setChannelList] = useState<Channel[]>([]);
   const [treeData, setTreeData] = useState<any>([]);
@@ -416,12 +414,6 @@ const ChannelList = (): JSX.Element => {
     );
   };
 
-  const addFolder = () => {
-    if (addFolderButtonRef?.current) {
-      (addFolderButtonRef.current as any).showModal();
-    }
-  };
-
   const listRef = useRef<HTMLDivElement>(null);
   const handleListScroll = useCallback(() => {
     if (listRef.current) {
@@ -465,10 +457,7 @@ const ChannelList = (): JSX.Element => {
         <div />
         <div className={styles.toolbar}>
           <AddFeedChannel />
-          <AddFolder Aref={addFolderButtonRef} />
-          <Icon onClick={addFolder}>
-            <Folder size={16} />
-          </Icon>
+          <AddFolder />
           <Icon onClick={refreshList}>
             <RefreshCw
               size={16}
