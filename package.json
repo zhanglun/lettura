@@ -1,5 +1,5 @@
 {
-  "name": "Lettura",
+  "name": "lettura",
   "version": "0.1.2",
   "private": true,
   "scripts": {
@@ -20,6 +20,7 @@
     "@radix-ui/react-slot": "^1.0.1",
     "@radix-ui/react-tabs": "^1.0.3",
     "@radix-ui/react-toast": "^1.1.3",
+    "@tailwindcss/line-clamp": "^0.4.4",
     "@tanstack/react-table": "^8.9.1",
     "@tauri-apps/api": "^1.3.0",
     "class-variance-authority": "^0.6.0",

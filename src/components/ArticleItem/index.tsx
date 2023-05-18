@@ -2,7 +2,6 @@ import React, { ForwardedRef, useEffect, useState } from "react";
 import classnames from "classnames";
 import Dayjs from "dayjs";
 import { useBearStore } from "../../hooks/useBearStore";
-import styles from "./articleitem.module.scss";
 import { getChannelFavicon } from "../../helpers/parseXML";
 
 export const ArticleItem = React.forwardRef(
@@ -43,43 +42,53 @@ export const ArticleItem = React.forwardRef(
 
     return (
       <li
-        className={classnames(styles.item, "group hover:bg-article-active-bg", {
-          [styles.read]: readStatus === 2,
-          [styles.current]: highlight,
-          "bg-article-active-bg": highlight,
-        })}
+        className={classnames(
+          "list-none rounded-sm p-3 pl-6 grid gap-1 relative",
+          "group hover:bg-article-active-bg hover:cursor-pointer",
+          {
+            "text-[hsl(var(--foreground)_/_80%)]": readStatus === 2,
+            "bg-article-active-bg": highlight,
+          }
+        )}
         onClick={handleClick}
         aria-current="page"
         ref={ref}
         id={article.uuid}
         tabIndex={1}
       >
-        {readStatus === 1 && <div className={styles.dot} />}
-        <div className={styles.title}>
-          <div
-            className={classnames(
-              `${highlight ? "text-article-active-headline" : "text-article-headline"}`,
-              "font-bold text-sm group-hover:text-article-active-headline",
-            )}
-          >
-            {article.title}
-          </div>
+        {readStatus === 1 && (
+          <div className="absolute left-2 top-4 w-2 h-2 rounded-full bg-primary" />
+        )}
+        <div
+          className={classnames(
+            `${
+              highlight
+                ? "text-article-active-headline"
+                : "text-article-headline"
+            }`,
+            "font-bold text-sm group-hover:text-article-active-headline"
+          )}
+        >
+          {article.title}
         </div>
         <div
           className={classnames(
-            styles.description,
+            "text-xs line-clamp-2",
             "text-article-paragraph group-hover:text-article-active-paragraph",
             {
-            "text-article-active-paragraph": highlight,
+              "text-article-active-paragraph": highlight,
             }
           )}
         >
           {(article.description || "").replace(/<[^<>]+>/g, "")}
         </div>
         <div
-          className={classnames(styles.meta, "text-article-paragraph group-hover:text-article-active-paragraph", {
-            "text-article-active-paragraph": highlight,
-          })}
+          className={classnames(
+            "flex justify-between items-center text-xs text-article-paragraph group-hover:text-article-active-paragraph",
+            {
+              "text-article-active-paragraph": highlight,
+            }
+          )}
         >
           <div className={classnames("flex items-center")}>
             <img src={ico} alt="" className="rounded w-4 mr-1" />
