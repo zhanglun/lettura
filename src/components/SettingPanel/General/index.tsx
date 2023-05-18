@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { Input, InputNumber } from "@douyinfe/semi-ui";
+import React, {useEffect, useState} from "react";
 import * as dataAgent from "../../../helpers/dataAgent";
-import styles from "../setting.module.scss";
-import { Panel, PanelSection } from "../Panel";
+import {Panel, PanelSection} from "../Panel";
+import {Input} from '@/components/ui/input';
 
 export const General = () => {
   const [localProxyConfig, setLocalProxyConfig] = useState<LocalProxy>({
@@ -17,12 +16,13 @@ export const General = () => {
       .updateProxy({
         ...cfg,
       })
-      .then((res) => {});
+      .then((res) => {
+      });
   };
 
   const handleLocalProxyChange = (key: string, val: string) => {
     const cfg = Object.assign(
-      { ...localProxyConfig },
+      {...localProxyConfig},
       {
         [key]: val,
       }
@@ -43,7 +43,7 @@ export const General = () => {
     dataAgent.getUserConfig().then((cfg: any) => {
       console.log("update use config", cfg);
 
-      const { local_proxy, threads } = cfg as UserConfig;
+      const {local_proxy, threads} = cfg as UserConfig;
 
       if (local_proxy) {
         setLocalProxyConfig({
@@ -67,14 +67,14 @@ export const General = () => {
             type="text"
             value={localProxyConfig.ip}
             className="tracking-wide"
-            onChange={(ip) => handleLocalProxyChange("ip", ip)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleLocalProxyChange("ip", e.target.value)}
           />
           <span className="text-center">:</span>
           <Input
             type="text"
             className="tracking-wide"
             value={localProxyConfig.port}
-            onChange={(port) => handleLocalProxyChange("port", port)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleLocalProxyChange("port", e.target.value)}
           />
         </div>
       </PanelSection>
@@ -86,13 +86,14 @@ export const General = () => {
         title="Thread"
         subTitle="set the concurrent number of requests (from 1 to 10)"
       >
-        <InputNumber
+        <Input
+          type="number"
           step={1}
           min={1}
           max={10}
           value={threads}
-          onChange={(thread: number | string) =>
-            handleThreadsChange(thread as number)
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            handleThreadsChange(e.target.value as unknown as number)
           }
         />
       </PanelSection>

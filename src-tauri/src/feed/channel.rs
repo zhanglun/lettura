@@ -499,13 +499,14 @@ pub fn get_channels() -> ChannelQueryResult {
       C.update_date as update_date,
       F.parent_uuid as parent_uuid
     FROM channels AS C LEFT JOIN feed_metas AS F
-    ON F.child_uuid = C.uuid
     ORDER BY create_date DESC
   ";
 
   let channels = diesel::sql_query(sql_channels)
     .load::<ChannelQuery>(&mut connection)
     .unwrap_or(vec![]);
+
+  println!("channels: {:?}", channels);
 
   ChannelQueryResult { list: channels }
 }

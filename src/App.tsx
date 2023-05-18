@@ -17,7 +17,6 @@ import { FeedManager } from "./components/SettingPanel/FeedManager";
 import { ImportAndExport } from "./components/SettingPanel/ImportAndExport";
 import { WelcomePage } from "./components/WelcomePage";
 
-import "./styles/happyhues/css/variables.css";
 import "./styles/index.global.scss";
 import { Appearance } from "./components/SettingPanel/Appearance";
 

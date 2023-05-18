@@ -1,20 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { Input, InputNumber, RadioGroup, Radio } from "@douyinfe/semi-ui";
-import * as ThemeVariables from "../../../styles/happyhues/ts/variables";
+// import * as ThemeVariables from "../../../styles/happyhues/ts/variables";
 import * as dataAgent from "../../../helpers/dataAgent";
 import styles from "../setting.module.scss";
 
 const ThemeMap: { [key: string]: { [key2: string]: string } } = {};
 
-Object.keys(ThemeVariables).forEach((key) => {
-  const group = key.split(/(ColorPalette\d*)(Section.*)/);
+// Object.keys(ThemeVariables || {}).forEach((key) => {
+//   const group = key.split(/(ColorPalette\d*)(Section.*)/);
 
-  if (group[1] && group[2]) {
-    ThemeMap[group[1]] = ThemeMap[group[1]] || {};
-    // @ts-ignore
-    ThemeMap[group[1]][group[2]] = ThemeVariables[key];
-  }
-});
+//   if (group[1] && group[2]) {
+//     ThemeMap[group[1]] = ThemeMap[group[1]] || {};
+//     // @ts-ignore
+//     ThemeMap[group[1]][group[2]] = ThemeVariables[key];
+//   }
+// });
 
 export const ColorTheme = () => {
   const [theme, setTheme] = useState("1");

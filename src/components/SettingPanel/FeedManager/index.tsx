@@ -1,9 +1,20 @@
-import React, { useEffect, useState } from "react";
-import { Modal, Table, Input, Select, Tabs, TabPane } from "@douyinfe/semi-ui";
+import React, { ChangeEvent, useEffect, useState } from "react";
+import { Modal, Table } from "@douyinfe/semi-ui";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Edit, Folder as FolderIcon, Trash2 } from "lucide-react";
-import { Channel, Folder } from "../../../db";
-import * as dataAgent from "../../../helpers/dataAgent";
-import { busChannel } from "../../../helpers/busChannel";
+import { Channel, Folder } from "@/db";
+import * as dataAgent from "@/helpers/dataAgent";
+import { busChannel } from "@/helpers/busChannel";
 import styles from "../setting.module.scss";
 
 export const FeedManager = () => {
@@ -112,7 +123,7 @@ export const FeedManager = () => {
       render(text: string, record: Channel) {
         return (
           <div className={styles.nameCol}>
-            <FolderIcon size={16}/>
+            <FolderIcon size={16} />
             <span>{text}</span>
           </div>
         );
@@ -129,7 +140,7 @@ export const FeedManager = () => {
               className={styles.actionBtn}
               onClick={() => handleEditFolder(record)}
             >
-              <Edit size={16}/>
+              <Edit size={16} />
             </span>
             <span
               className={styles.actionBtn}
@@ -159,6 +170,7 @@ export const FeedManager = () => {
 
   const getList = async (params = {}) => {
     dataAgent.getChannels(params).then((res) => {
+      console.log("%c Line:173 🍬 res", "color:#ea7e5c", res);
       setList(res.list || []);
       setRenderList(res.list || []);
     });
@@ -208,30 +220,43 @@ export const FeedManager = () => {
   return (
     <div className={styles.panel}>
       <h1 className={styles.panelTitle}>Feed Manager</h1>
-      <Tabs type="line" onChange={handleTabChange}>
-        <TabPane tab="Feeds" itemKey={"1"}>
+      <Tabs defaultValue="1" onValueChange={handleTabChange}>
+        <TabsList className="grid w-[240px] grid-cols-2">
+          <TabsTrigger value="1">Feeds</TabsTrigger>
+          <TabsTrigger value="2">Folders</TabsTrigger>
+        </TabsList>
+        <TabsContent value="1">
           <div className={styles.panelBody}>
             <div className={styles.feedManagerFields}>
               <Input
+                className="h-8"
                 placeholder="Search Feed"
-                showClear={true}
                 value={filterParams.searchText}
-                onChange={handleSearch}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  handleSearch(e.target.value)
+                }
               />
               <Select
                 value={filterParams.folderUuid}
-                showClear={true}
-                placeholder="All Folder"
-                onFocus={getFolderList}
-                onChange={(v) => handleFolderChange(v as string)}
+                onValueChange={(v: string) => handleFolderChange(v)}
               >
-                {folderList.map((folder) => {
-                  return (
-                    <Select.Option key={folder.uuid} value={folder.uuid}>
-                      {folder.name}
-                    </Select.Option>
-                  );
-                })}
+                <SelectTrigger className="w-[180px] h-8">
+                  <SelectValue placeholder="All Folder" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem key=" " value="">
+                      All Folder
+                    </SelectItem>
+                    {folderList.map((folder) => {
+                      return (
+                        <SelectItem key={folder.uuid} value={folder.uuid}>
+                          {folder.name}
+                        </SelectItem>
+                      );
+                    })}
+                  </SelectGroup>
+                </SelectContent>
               </Select>
             </div>
             <Table
@@ -241,8 +266,8 @@ export const FeedManager = () => {
               size="small"
             />
           </div>
-        </TabPane>
-        <TabPane tab="Folders" itemKey={"2"}>
+        </TabsContent>
+        <TabsContent value={"2"}>
           <div className={styles.panelBody}>
             <Table
               // @ts-ignore
@@ -252,7 +277,7 @@ export const FeedManager = () => {
               size="small"
             />
           </div>
-        </TabPane>
+        </TabsContent>
       </Tabs>
     </div>
   );

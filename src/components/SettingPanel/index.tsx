@@ -37,7 +37,7 @@ function SettingPanel() {
               General
             </NavLink>
           </li>
-          <li>
+          {/* <li>
             <NavLink
               to={RouteConfig.SETTINGS_APPEARANCE}
               className={({ isActive }) =>
@@ -50,7 +50,7 @@ function SettingPanel() {
               <Palette size={16} />
               Appearance
             </NavLink>
-          </li>
+          </li> */}
           <li>
             <NavLink
               to={RouteConfig.SETTINGS_FEED_MANAGER}
