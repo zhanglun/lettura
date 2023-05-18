@@ -393,12 +393,12 @@ export const ArticleContainer = (): JSX.Element => {
               <ChevronDown size={16} />
             </Icon>
             <Popover>
-              <PopoverTrigger asChild>
+              <PopoverTrigger>
                 <Icon>
                   <Paintbrush size={16} />
                 </Icon>
               </PopoverTrigger>
-              <PopoverContent className="bg-detail-bg">
+              <PopoverContent className="w-[340px]">
                 <CustomizeStyle
                   styleConfig={store.userConfig.customize_style}
                 />

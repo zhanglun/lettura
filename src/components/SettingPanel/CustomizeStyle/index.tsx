@@ -63,7 +63,7 @@ export const CustomizeStyle = (props: CustomizeStyleProps) => {
             }
           />
         </div>
-        <div className="bg-button text-button-text rounded text-center text-xs py-[2px]">
+        <div className="bg-foreground text-background rounded text-center text-xs py-[2px]">
           {cfg.font_size}
         </div>
       </div>
@@ -80,7 +80,7 @@ export const CustomizeStyle = (props: CustomizeStyleProps) => {
             }
           />
         </div>
-        <div className="bg-button text-button-text rounded text-center">
+        <div className="bg-foreground text-background rounded text-center text-xs py-[2px]">
           {cfg.line_height}
         </div>
       </div>
@@ -97,7 +97,7 @@ export const CustomizeStyle = (props: CustomizeStyleProps) => {
             }
           />
         </div>
-        <div className="bg-button text-button-text rounded text-center">
+        <div className="bg-foreground text-background rounded text-center text-xs py-[2px]">
           {cfg.line_width}
         </div>
       </div>
