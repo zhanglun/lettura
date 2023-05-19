@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Progress, Tree } from "@douyinfe/semi-ui";
+import { Tree } from "@douyinfe/semi-ui";
 import { RouteConfig } from "../../config";
 import { Channel } from "../../db";
 import { getChannelFavicon } from "../../helpers/parseXML";
@@ -10,6 +10,7 @@ import { AddFeedChannel } from "../AddFeed";
 import { AddFolder } from "../AddFolder";
 import pLimit from "p-limit";
 import { useBearStore } from "../../hooks/useBearStore";
+import { Progress } from "@/components/ui/progress"
 
 import styles from "./channel.module.scss";
 import {
@@ -479,9 +480,9 @@ const ChannelList = (): JSX.Element => {
         <div className="sticky left-0 right-0 bottom-0 grid grid-flow-col items-center gap-3 p-3">
           <span>
             {/* @ts-ignore */}
-            <Progress percent={Math.ceil((done / channelList.length) * 100)} />
+            <Progress value={Math.ceil((done / channelList.length) / 100 * 100)} />
           </span>
-          <span className="text-sm text-feed-headline">
+          <span className="text-sm text-foreground">
             {done}/{channelList.length}
           </span>
         </div>

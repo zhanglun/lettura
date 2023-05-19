@@ -11,11 +11,24 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Edit, Folder as FolderIcon, Trash2 } from "lucide-react";
 import { Channel, Folder } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
 import { busChannel } from "@/helpers/busChannel";
 import styles from "../setting.module.scss";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
 
 export const FeedManager = () => {
   const [list, setList] = useState<(Channel & { parent_uuid: String })[]>([]);
@@ -30,19 +43,35 @@ export const FeedManager = () => {
   const okText = "Sounds great!";
   const cancelText = "No, thanks.";
 
-  const handleDeleteFeed = (channel: Channel) => {
+  const { toast } = useToast();
+
+  const [currentFeed, setCurrentFeed] = useState<Channel | null>(null);
+  const [unsubscribeDialogStatus, setUnsubscribeDialogStatus] = useState(false);
+
+  const handleUnSubscribe = (channel: Channel) => {
     if (channel?.uuid) {
-      Modal.confirm({
-        title: "Do you want to unfollow this feed？",
-        content: channel.title,
-        okText,
-        cancelText,
-        onOk: async () => {
-          await dataAgent.deleteChannel(channel.uuid);
+      setCurrentFeed(channel);
+      setUnsubscribeDialogStatus(true);
+    }
+  };
+
+  const confirmUnsubscribe = () => {
+    if (currentFeed?.uuid) {
+      dataAgent
+        .deleteChannel(currentFeed.uuid)
+        .then(() => {
           busChannel.emit("getChannels");
           getList();
-        },
-      });
+          setUnsubscribeDialogStatus(false);
+        })
+        .catch((err) => {
+          toast({
+            variant: "destructive",
+            title: "Ops! Something wrong~",
+            description: err.message,
+            duration: 2,
+          });
+        });
     }
   };
 
@@ -106,7 +135,7 @@ export const FeedManager = () => {
           <div>
             <span
               className={styles.actionBtn}
-              onClick={() => handleDeleteFeed(record)}
+              onClick={() => handleUnSubscribe(record)}
             >
               <Trash2 size={16} />
             </span>
@@ -265,6 +294,32 @@ export const FeedManager = () => {
               pagination={false}
               size="small"
             />
+            <AlertDialog
+              open={unsubscribeDialogStatus}
+              onOpenChange={setUnsubscribeDialogStatus}
+            >
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete
+                    the data relates with
+                    <span className="text-primary font-bold ml-1">
+                      {currentFeed?.title}
+                    </span>
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <Button
+                    className="text-destructive-foreground bg-destructive hover:bg-[hsl(var(--destructive)/0.9)]"
+                    onClick={() => confirmUnsubscribe()}
+                  >
+                    Unsubscribe
+                  </Button>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </TabsContent>
         <TabsContent value={"2"}>

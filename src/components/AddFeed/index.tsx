@@ -48,7 +48,7 @@ export const AddFeedChannel = (props: any) => {
           return;
         }
 
-        setFeed(res);
+        setFeed(feed);
         setStep(2);
       })
       .finally(() => {
