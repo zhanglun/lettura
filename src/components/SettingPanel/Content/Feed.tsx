@@ -1,5 +1,4 @@
 import React, { ChangeEvent, useEffect, useState } from "react";
-import { Table } from "@douyinfe/semi-ui";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -25,6 +24,8 @@ import { busChannel } from "@/helpers/busChannel";
 import styles from "../setting.module.scss";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
+import { DataTable } from "./DataTable";
+import { CellContext, createColumnHelper } from "@tanstack/react-table";
 
 export const Feed = () => {
   const [list, setList] = useState<(Channel & { parent_uuid: String })[]>([]);
@@ -71,22 +72,21 @@ export const Feed = () => {
     }
   };
 
-  const handleEditFolder = (folder: Folder) => {
-    if (folder?.uuid) {
-    }
-  };
-
+  const columnHelper = createColumnHelper<Channel>();
   const columns = [
     {
-      title: "name",
-      dataIndex: "title",
-      render(text: string, record: Channel) {
+      accessorKey: "title",
+      header: "name",
+      cell(props: CellContext<Channel, string>): JSX.Element {
+        const { title, link } = props.row.original;
+
         return (
           <div>
-            <div>{text}</div>
             <div>
-              <a href={record.link} target={"_blank"} rel="noreferrer">
-                {record.link}
+              <a
+              className="font-bold hover:underline"
+               href={link} target={"_blank"} rel="noreferrer">
+                {title}
               </a>
             </div>
           </div>
@@ -94,35 +94,35 @@ export const Feed = () => {
       },
     },
     {
-      title: "Feed url",
-      dataIndex: "feed_url",
-      render(text: string, record: Channel): JSX.Element {
+      accessorKey: "feed_url",
+      header: "Feed url",
+      cell(props: CellContext<Channel, string>): JSX.Element {
+        const { feed_url } = props.row.original;
         return (
           <div>
-            <a href={text} target={"_blank"} rel="noreferrer">
-              {text}
+            <a href={feed_url} target={"_blank"} rel="noreferrer">
+              {feed_url}
             </a>
           </div>
         );
       },
     },
-    {
-      title: "Action",
-      dataIndex: "opt",
-      width: 100,
-      render(text: string, record: Channel): JSX.Element {
+    columnHelper.accessor((row) => `${row.uuid}-opt`, {
+      id: "opt",
+      header: "Action",
+      cell(props: CellContext<Channel, string>): JSX.Element {
         return (
           <div>
             <span
               className={styles.actionBtn}
-              onClick={() => handleUnSubscribe(record)}
+              onClick={() => handleUnSubscribe(props.row.original)}
             >
               <Trash2 size={16} />
             </span>
           </div>
         );
       },
-    },
+    }),
   ];
 
   const handleSearch = (v: string) => {
@@ -147,6 +147,12 @@ export const Feed = () => {
     });
   };
 
+  const getFolderList = () => {
+    dataAgent.getFolders().then((res) => {
+      setFolderList(res || []);
+    });
+  };
+
 
   useEffect(() => {
     const { searchText = "", folderUuid = "" } = filterParams;
@@ -163,6 +169,7 @@ export const Feed = () => {
 
   useEffect(() => {
     getList();
+    getFolderList();
 
     const unsubscribeGetChannels = busChannel.on("getChannels", () => {
       getList();
@@ -207,12 +214,7 @@ export const Feed = () => {
           </SelectContent>
         </Select>
       </div>
-      <Table
-        columns={columns}
-        dataSource={renderList}
-        pagination={false}
-        size="small"
-      />
+      <DataTable columns={columns} data={renderList} />
       <AlertDialog
         open={unsubscribeDialogStatus}
         onOpenChange={setUnsubscribeDialogStatus}

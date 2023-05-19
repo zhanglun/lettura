@@ -81,7 +81,7 @@ function SettingPanel() {
           </NavLink>
         </div>
       </div>
-      <div className="px-12 py-16">
+      <div className="px-12 py-16 overflow-y-auto">
         <Outlet />
       </div>
     </div>
