@@ -1,11 +1,12 @@
 import React, { ChangeEvent, useEffect, useState } from "react";
 import { Modal, Table } from "@douyinfe/semi-ui";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { DataTable } from "./DataTable";
 import { Edit, Folder as FolderIcon, Trash2 } from "lucide-react";
 import { Channel, Folder } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
 import { busChannel } from "@/helpers/busChannel";
 import styles from "../setting.module.scss";
+import { CellContext, createColumnHelper } from "@tanstack/react-table";
 
 export const FolderList = () => {
   const [folderList, setFolderList] = useState<Folder[]>([]);
@@ -33,34 +34,37 @@ export const FolderList = () => {
     }
   };
 
-  const folderColumns = [
+  const columnHelper = createColumnHelper<Folder>();
+
+  const columns = [
     {
-      title: "name",
-      dataIndex: "name",
-      render(text: string, record: Channel) {
+      accessorKey: "name",
+      header: "name",
+      size: 'auto',
+      cell(props: CellContext<Folder, string>): JSX.Element {
         return (
-          <div className={styles.nameCol}>
-            <FolderIcon size={16} />
-            <span>{text}</span>
+          <div className="flex items-center">
+            <FolderIcon size={16} className="mr-3" />
+            <span>{props.row.original.name}</span>
           </div>
         );
       },
     },
-    {
-      title: "Action",
-      dataIndex: "opt",
-      width: 100,
-      render(text: string, record: Folder): JSX.Element {
+    columnHelper.accessor((row) => `${row.uuid}-opt`, {
+      id: "opt",
+      header: "Action",
+      size: 100,
+      cell(props: CellContext<Folder, string>): JSX.Element {
+        const record = props.row.original;
+
         return (
-          <div className={styles.actionCol}>
+          <div className="grid grid-flow-col col-span-3">
             <span
-              className={styles.actionBtn}
               onClick={() => handleEditFolder(record)}
             >
               <Edit size={16} />
             </span>
             <span
-              className={styles.actionBtn}
               onClick={() => handleDeleteFolder(record)}
             >
               <Trash2 size={16} />
@@ -68,7 +72,7 @@ export const FolderList = () => {
           </div>
         );
       },
-    },
+    }),
   ];
 
   const getFolderList = () => {
@@ -82,12 +86,9 @@ export const FolderList = () => {
   }, []);
 
   return (
-    <Table
-      // @ts-ignore
-      columns={folderColumns}
-      dataSource={folderList}
-      pagination={false}
-      size="small"
+    <DataTable
+      columns={columns}
+      data={folderList}
     />
   );
 };

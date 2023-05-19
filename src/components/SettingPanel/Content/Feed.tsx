@@ -26,6 +26,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { DataTable } from "./DataTable";
 import { CellContext, createColumnHelper } from "@tanstack/react-table";
+import { getChannelFavicon } from "@/helpers/parseXML";
 
 export const Feed = () => {
   const [list, setList] = useState<(Channel & { parent_uuid: String })[]>([]);
@@ -82,10 +83,18 @@ export const Feed = () => {
 
         return (
           <div>
-            <div>
+            <div className="flex items-center">
+              <img
+                src={getChannelFavicon(link)}
+                alt=""
+                className="w-6 h-6 rounded-full mr-2"
+              />
               <a
-              className="font-bold hover:underline"
-               href={link} target={"_blank"} rel="noreferrer">
+                className="font-bold hover:underline"
+                href={link}
+                target={"_blank"}
+                rel="noreferrer"
+              >
                 {title}
               </a>
             </div>
@@ -152,7 +161,6 @@ export const Feed = () => {
       setFolderList(res || []);
     });
   };
-
 
   useEffect(() => {
     const { searchText = "", folderUuid = "" } = filterParams;
