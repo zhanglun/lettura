@@ -1,67 +1,8 @@
 .container {
-  flex: 1;
   display: grid;
-  grid-template-columns: var(--app-setting-sidebar-width) 1fr;
-  // grid-template-rows: var(--app-toolbar-height) 1fr;
-  position: relative;
-  padding-top: var(--app-toolbar-height);
+  grid-template-columns: 260px 1fr;
   height: 100vh;
-  background-color: var(--app-main-bg-color);
-}
-
-.title {
-  height: var(--app-toolbar-height);
-  display: flex;
-  align-items: center;
-  font-weight: var(--font-weight-bold);
-  width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.sidebar {
-  border-right: 1px solid var(--line-color);
-  grid-column: 1/1;
-  padding: 2rem 10px;
-}
-
-.menuItem {
-  display: grid;
-  grid-auto-flow: column;
-  align-items: center;
-  justify-content: start;
-  grid-gap: 10px;
-  margin: 2px 0;
-  height: 30px;
-  line-height: 30px;
-  padding: 0 8px;
-  font-size: 14px;
-}
-
-.subTitle {
-  margin: 0;
-  font-size: 20px;
-  color: var(--title-color);
-  padding: var(--block-padding);
-}
-
-.panelContainer {
-  display: grid;
-  padding: var(--block-padding);
-  height: calc(100% - var(--app-toolbar-height));
-  overflow-y: scroll;
-}
-
-.panelTitle {
-  margin: 0 0 3rem;
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--detail-headline-color);
-}
-
-.panelBody {
-  margin-bottom: 30px;
+  padding-top: 1rem;
 }
 
 .description {
@@ -69,10 +10,6 @@
   color: var(--detail-paragraph-color);
   font-weight: normal;
   margin-left: 14px;
-}
-
-.inputField {
-  margin: 12px 0;
 }
 
 .section {
@@ -135,19 +72,6 @@
   color: var(--title-color);
 }
 
-.main {
-  padding: 2rem 14px;
-  overflow-y: auto;
-}
-
-.actionBtn {
-  color: var(--text-color);
-  cursor: pointer;
-
-  &:hover {
-    color: var(--semi-color-text-0);
-  }
-}
 
 .actionCol {
   display: grid;
@@ -162,12 +86,6 @@
   grid-gap: 0.5rem;
   grid-template-columns: 1rem;
   align-items: center;
-}
-
-.proxyFields {
-  display: grid;
-  grid-template-columns: 100px 200px 200px;
-  grid-gap: 14px;
 }
 
 .uploadBox {
