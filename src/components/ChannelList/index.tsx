@@ -32,6 +32,7 @@ function useQuery() {
 const ChannelList = (): JSX.Element => {
   const navigate = useNavigate();
   const [refreshing, setRefreshing] = useState(false);
+  const [refreshProgress, setRefreshProgress] = useState(0);
   const [channelList, setChannelList] = useState<Channel[]>([]);
   const [treeData, setTreeData] = useState<any>([]);
   const [done, setDone] = useState(0);
@@ -479,12 +480,9 @@ const ChannelList = (): JSX.Element => {
         {renderTree()}
       </div>
       {refreshing && (
-        <div className="sticky left-0 right-0 bottom-0 grid grid-flow-col items-center gap-3 p-3">
-          <span>
-            {/* @ts-ignore */}
-            <Progress value={Math.ceil((done / channelList.length) / 100 * 100)} />
-          </span>
-          <span className="text-sm text-foreground">
+        <div className="sticky left-0 right-0 bottom-0 p-2 text-right">
+          <span className="text-xs mr-3">Syncing...</span>
+          <span className="text-xs text-foreground">
             {done}/{channelList.length}
           </span>
         </div>
