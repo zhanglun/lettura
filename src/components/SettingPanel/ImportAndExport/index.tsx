@@ -1,8 +1,10 @@
 import React, { useRef, useState } from "react";
-import { Button, Radio, RadioGroup, TextArea } from "@douyinfe/semi-ui";
 import styles from "../setting.module.scss";
 import * as dataAgent from "../../../helpers/dataAgent";
 import { promisePool } from "../../../helpers/promisePool";
+import { Panel, PanelSection } from "../Panel";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 export interface ImportItem {
   title: string;
@@ -94,96 +96,29 @@ export const ImportAndExport = (props: any) => {
     }
   };
 
-  const handleChangeSourceType = (value: string) => {
-    const type = value;
-
-    setSourceType(type);
-  };
-
-  const handleTextSourceChange = (text: string) => {
-    if (text) {
-      const list = parserOPML(text);
-
-      setImportedList(list);
-    }
-  };
-
   const exportToOPML = () => {};
 
   return (
-    <div className={styles.panel}>
-      <h1 className={styles.panelTitle}>
-        导入
-        <span className={styles.description}>从别处导入您的订阅源</span>
-      </h1>
-      <div className={styles.panelBody}>
-        <div className={styles.section}>
-          <p className={styles.options}>OPML 导入</p>
-          <div className={styles.radios}>
-            <RadioGroup
-              onChange={(e) => handleChangeSourceType(e.target.value)}
-              value={sourceType}
-              aria-label="单选组合示例"
-              name="radio-group"
-            >
-              <Radio value={"file"}>File</Radio>
-              <Radio value={"text"}>Text</Radio>
-            </RadioGroup>
-          </div>
-          {sourceType === "file" && (
-            <div className={styles.inputField}>
-              <div className={styles.uploadBox}>
-                <div className={styles.uploadBoxInner}>
-                  <div className={styles.text}>
-                    {file ? "Selected file" : "Click to Select file"}
-                  </div>
-                  {file && <p className={styles.additionText}>{file?.name}</p>}
-                </div>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept=".opml,.xml"
-                  onChange={(e) => {
-                    handleFileChange(e);
-                  }}
-                  className={styles.uploadInput}
-                />
-              </div>
-            </div>
-          )}
-          {sourceType === "text" && (
-            <div className={styles.inputField}>
-              <TextArea
-                autosize
-                onChange={(value) => handleTextSourceChange(value)}
-              />
-            </div>
-          )}
-          <Button
-            theme="solid"
-            type="primary"
-            onClick={importFromOPML}
-            loading={importing}
-          >
-            导入
+    <Panel title="Import/Export">
+      <PanelSection title="OPML Import">
+        <div className="flex w-full max-w-sm items-center space-x-2">
+          <Input
+            ref={fileInputRef}
+            type="file"
+            accept=".opml,.xml"
+            onChange={(e) => {
+              handleFileChange(e);
+            }}
+          />
+          <Button onClick={importFromOPML} disabled={importing}>
+            Import
             <>{importing ? `${done}/${importedList.length}` : ""}</>
           </Button>
         </div>
-      </div>
-      <h1 className={styles.panelTitle}>
-        导出
-        <span className={styles.description}>
-          你可以导出订阅源以便在其他阅读器中使用
-        </span>
-      </h1>
-      <div className={styles.panelBody}>
-        <div className={styles.section}>
-          <div className={styles.options}>OPML 导出</div>
-          <Button theme="solid" type="primary" onClick={exportToOPML}>
-            导出
-          </Button>
-        </div>
-      </div>
-    </div>
+      </PanelSection>
+      <PanelSection title="OPML Export">
+        <Button onClick={exportToOPML}>Download OPML subscriptions file</Button>
+      </PanelSection>
+    </Panel>
   );
 };

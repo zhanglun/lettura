@@ -38,8 +38,6 @@ export const Feed = () => {
     searchText?: string;
     folderUuid?: string;
   }>({});
-  const okText = "Sounds great!";
-  const cancelText = "No, thanks.";
 
   const { toast } = useToast();
 
@@ -78,6 +76,7 @@ export const Feed = () => {
     {
       accessorKey: "title",
       header: "name",
+      size: "fix-content",
       cell(props: CellContext<Channel, string>): JSX.Element {
         const { title, link } = props.row.original;
 
@@ -105,6 +104,7 @@ export const Feed = () => {
     {
       accessorKey: "feed_url",
       header: "Feed url",
+      size: "fix-content",
       cell(props: CellContext<Channel, string>): JSX.Element {
         const { feed_url } = props.row.original;
         return (
@@ -119,6 +119,7 @@ export const Feed = () => {
     columnHelper.accessor((row) => `${row.uuid}-opt`, {
       id: "opt",
       header: "Action",
+      size: 120,
       cell(props: CellContext<Channel, string>): JSX.Element {
         return (
           <div>
@@ -222,7 +223,11 @@ export const Feed = () => {
           </SelectContent>
         </Select>
       </div>
-      <DataTable columns={columns} data={renderList} />
+      <DataTable
+        // @ts-ignore
+        columns={columns}
+        data={renderList}
+      />
       <AlertDialog
         open={unsubscribeDialogStatus}
         onOpenChange={setUnsubscribeDialogStatus}

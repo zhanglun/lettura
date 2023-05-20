@@ -11,7 +11,7 @@ function SettingPanel() {
     <div className={styles.container}>
       <div>
         <div
-          className={"flex items-center p-4 font-semibold text-2xl"}
+          className={"flex items-center p-4 font-semibold text-2xl tracking-tight"}
         >
           <Icon className="mr-3">
             <ArrowLeft size={22} />
