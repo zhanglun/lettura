@@ -248,11 +248,11 @@ const ChannelList = (): JSX.Element => {
         }}
       >
         <span
-          className={`w-full flex items-center h-8 px-2 py-3 rounded-md cursor-pointer mt-[2px]
+          className={`w-full flex items-center h-8 px-2 rounded-md cursor-pointer mt-[2px]
            text-primary group
              ${
                isActive
-                 ? "bg-primary text-primary-foreground font-bold"
+                 ? "bg-primary text-primary-foreground"
                  : "hover:bg-primary hover:text-primary-foreground"
              } ${level ? "pl-8" : ""}`}
         >
