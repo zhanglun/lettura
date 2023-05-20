@@ -5,7 +5,17 @@ import { ArticleView } from "../../components/ArticleView";
 import * as dataAgent from "../../helpers/dataAgent";
 import { useBearStore } from "../../hooks/useBearStore";
 import styles from "./index.module.scss";
-import { Filter, CheckCheck, RefreshCw, ChevronUp, ChevronDown, ExternalLink, Paintbrush, Link, Ghost } from "lucide-react";
+import {
+  Filter,
+  CheckCheck,
+  RefreshCw,
+  ChevronUp,
+  ChevronDown,
+  ExternalLink,
+  Paintbrush,
+  Link,
+  Ghost,
+} from "lucide-react";
 import { busChannel } from "../../helpers/busChannel";
 import { Article } from "../../db";
 import { CustomizeStyle } from "@/components/SettingPanel/CustomizeStyle";
@@ -23,8 +33,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { ToastAction } from "@/components/ui/toast"
-import { useToast } from "@/components/ui/use-toast"
+import { ToastAction } from "@/components/ui/toast";
+import { useToast } from "@/components/ui/use-toast";
 import { Icon } from "@/components/Icon";
 
 function useQuery() {
@@ -145,7 +155,7 @@ export const ArticleContainer = (): JSX.Element => {
               action: (
                 <ToastAction altText="Goto schedule to undo">Close</ToastAction>
               ),
-            })
+            });
           } else {
             getArticleList();
             busChannel.emit("updateChannelUnreadCount", {
@@ -175,11 +185,9 @@ export const ArticleContainer = (): JSX.Element => {
 
     navigator.clipboard.writeText(link).then(
       function () {
-        toast(
-          {
-            description: "Copied",
-          }
-        )
+        toast({
+          description: "Copied",
+        });
       },
       function (err) {
         console.error("Async: Could not copy text: ", err);
@@ -202,8 +210,10 @@ export const ArticleContainer = (): JSX.Element => {
   };
 
   const changeFilter = (id: any) => {
-    if (store.filterList.some(_ => _.id === id)) {
-      store.setFilter({...store.filterList.filter(_ => _.id === id)[0]});
+    if (store.filterList.some((_) => _.id === parseInt(id, 10))) {
+      store.setFilter({
+        ...store.filterList.filter((_) => _.id === parseInt(id, 10))[0],
+      });
     }
   };
 
@@ -340,12 +350,15 @@ export const ArticleContainer = (): JSX.Element => {
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuRadioGroup
-                  value={store.currentFilter.id + ''}
+                  value={store.currentFilter.id + ""}
                   onValueChange={changeFilter}
                 >
                   {store.filterList.map((item) => {
                     return (
-                      <DropdownMenuRadioItem key={item.id + ""} value={item.id + ''}>
+                      <DropdownMenuRadioItem
+                        key={item.id + ""}
+                        value={item.id + ""}
+                      >
                         {item.title}
                       </DropdownMenuRadioItem>
                     );
@@ -358,10 +371,7 @@ export const ArticleContainer = (): JSX.Element => {
               <CheckCheck size={16} />
             </Icon>
             <Icon onClick={handleRefresh}>
-              <RefreshCw
-                size={16}
-                className={`${syncing ? "spinning" : ""}`}
-              />
+              <RefreshCw size={16} className={`${syncing ? "spinning" : ""}`} />
             </Icon>
           </div>
         </div>
@@ -380,10 +390,7 @@ export const ArticleContainer = (): JSX.Element => {
         <div className={`sticky-header ${styles.viewHeader}`}>
           <div />
           <div className={styles.viewMenu}>
-            <Icon
-              disable={currentIdx <= 0}
-              onClick={handleViewPrevious}
-            >
+            <Icon disable={currentIdx <= 0} onClick={handleViewPrevious}>
               <ChevronUp size={16} />
             </Icon>
             <Icon
