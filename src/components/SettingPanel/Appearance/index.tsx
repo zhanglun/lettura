@@ -1,14 +1,21 @@
 import React, { useEffect, useState } from "react";
 import styles from "../setting.module.scss";
+import { Panel, PanelSection } from "../Panel";
 // import { ColorTheme } from "./ColorTheme";
 
 export const Appearance = () => {
   return (
-    <div className={styles.panel}>
-      <h1 className={styles.panelTitle}>Appearance</h1>
-      <div className={styles.panelBody}>
-        {/* <ColorTheme /> */}
-      </div>
-    </div>
+    <Panel
+      title="Appearance"
+      subTitle="Appearance
+    Customize the appearance of the app. Automatically switch between day and night themes."
+    >
+      <PanelSection title="Font">
+
+      </PanelSection>
+      <PanelSection title="Theme" subTitle="Select the theme for the dashboard.">
+
+      </PanelSection>
+    </Panel>
   );
 };

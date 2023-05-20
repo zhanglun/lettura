@@ -12,8 +12,8 @@ export const Panel = (props: PanelProps) => {
   return (
     <div className="">
       <div className="mb-5">
-        <h2 className="text-2xl font-semibold tracking-tight mb-6">{title}</h2>
-        {subTitle && <p className="text-sm mb-3 text-[hsl(var(--foreground)_/_0.6)]">{subTitle}</p>}
+        <h3 className="text-lg font-medium tracking-tight">{title}</h3>
+        {subTitle && <p className="text-sm mb-3 mt-2 text-[hsl(var(--foreground)_/_0.6)]">{subTitle}</p>}
       </div>
       {children}
     </div>
@@ -28,7 +28,7 @@ export const PanelSection = (props: PanelSectionProps) => {
   return (
     <div className="flex items-center justify-between pb-4 mb-6 mt-4 border-b">
       <div>
-        <h3 className="text-base font-semibold tracking-tight mb-2">{title}</h3>
+        <h3 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">{title}</h3>
         {subTitle && <p className="text-sm mb-2 text-[hsl(var(--foreground)_/_0.6)]">{subTitle}</p>}
       </div>
       <div>{children}</div>

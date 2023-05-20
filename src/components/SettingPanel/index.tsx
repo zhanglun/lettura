@@ -11,11 +11,13 @@ function SettingPanel() {
     <div className={styles.container}>
       <div>
         <div
-          className={"flex items-center p-4 font-semibold text-2xl tracking-tight"}
+          className={
+            "flex items-center p-6 font-semibold text-2xl tracking-tight"
+          }
         >
-          <Icon className="mr-3">
+          {/* <Icon className="mr-3">
             <ArrowLeft size={22} />
-          </Icon>
+          </Icon> */}
           Settings
         </div>
         <div className="px-4 py-2">
@@ -23,10 +25,10 @@ function SettingPanel() {
             to={RouteConfig.SETTINGS_GENERAL}
             className={({ isActive }) =>
               classnames(
-                "flex items-center px-2 h-10 rounded-md cursor-pointer mt-[2px]",
+                "flex items-center px-2 h-8 text-sm rounded-md cursor-pointer mt-[2px]",
                 {
-                  "bg-primary text-primary-foreground font-bold": isActive,
-                  "hover:bg-primary hover:text-primary-foreground": !isActive,
+                  "bg-muted": isActive,
+                  "hover:bg-muted": !isActive,
                 }
               )
             }
@@ -38,10 +40,10 @@ function SettingPanel() {
             to={RouteConfig.SETTINGS_APPEARANCE}
             className={({ isActive }) =>
               classnames(
-                "flex items-center px-2 h-10 rounded-md cursor-pointer mt-[2px]",
+                "flex items-center px-2 h-8 text-sm rounded-md cursor-pointer mt-[2px]",
                 {
-                  "bg-primary text-primary-foreground font-bold": isActive,
-                  "hover:bg-primary hover:text-primary-foreground": !isActive,
+                  "bg-muted": isActive,
+                  "hover:bg-muted": !isActive,
                 }
               )
             }
@@ -53,10 +55,10 @@ function SettingPanel() {
             to={RouteConfig.SETTINGS_FEED_MANAGER}
             className={({ isActive }) =>
               classnames(
-                "flex items-center px-2 h-10 rounded-md cursor-pointer mt-[2px]",
+                "flex items-center px-2 h-8 text-sm rounded-md cursor-pointer mt-[2px]",
                 {
-                  "bg-primary text-primary-foreground font-bold": isActive,
-                  "hover:bg-primary hover:text-primary-foreground": !isActive,
+                  "bg-muted": isActive,
+                  "hover:bg-muted": !isActive,
                 }
               )
             }
@@ -68,10 +70,10 @@ function SettingPanel() {
             to={RouteConfig.SETTINGS_IMPORT}
             className={({ isActive }) =>
               classnames(
-                "flex items-center px-2 h-10 rounded-md cursor-pointer mt-[2px]",
+                "flex items-center px-2 h-8 text-sm rounded-md cursor-pointer mt-[2px]",
                 {
-                  "bg-primary text-primary-foreground font-bold": isActive,
-                  "hover:bg-primary hover:text-primary-foreground": !isActive,
+                  "bg-muted": isActive,
+                  "hover:bg-muted": !isActive,
                 }
               )
             }
@@ -81,7 +83,7 @@ function SettingPanel() {
           </NavLink>
         </div>
       </div>
-      <div className="px-12 py-16 overflow-y-auto">
+      <div className="px-10 py-20 overflow-y-auto">
         <Outlet />
       </div>
     </div>

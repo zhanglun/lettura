@@ -125,21 +125,21 @@ function App() {
         >
           <Route path={"/"} element={<WelcomePage />} />
           <Route path={RouteConfig.CHANNEL} element={<ArticleContainer />} />
-        </Route>
-        <Route path={RouteConfig.SETTINGS} element={<SettingContainer />}>
-          <Route path={RouteConfig.SETTINGS_GENERAL} element={<General />} />
-          <Route
-            path={RouteConfig.SETTINGS_APPEARANCE}
-            element={<Appearance />}
-          />
-          <Route
-            path={RouteConfig.SETTINGS_FEED_MANAGER}
-            element={<FeedManager />}
-          />
-          <Route
-            path={RouteConfig.SETTINGS_IMPORT}
-            element={<ImportAndExport />}
-          />
+          <Route path={RouteConfig.SETTINGS} element={<SettingContainer />}>
+            <Route path={RouteConfig.SETTINGS_GENERAL} element={<General />} />
+            <Route
+              path={RouteConfig.SETTINGS_APPEARANCE}
+              element={<Appearance />}
+            />
+            <Route
+              path={RouteConfig.SETTINGS_FEED_MANAGER}
+              element={<FeedManager />}
+            />
+            <Route
+              path={RouteConfig.SETTINGS_IMPORT}
+              element={<ImportAndExport />}
+            />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>

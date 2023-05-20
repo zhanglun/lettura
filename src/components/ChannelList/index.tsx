@@ -23,6 +23,7 @@ import {
   Settings,
 } from "lucide-react";
 import { Icon } from "../Icon";
+import { SettingDialog } from "../SettingPanel/DialogMode";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -468,6 +469,7 @@ const ChannelList = (): JSX.Element => {
           <Icon onClick={goToSetting}>
             <Settings size={16} />
           </Icon>
+          {/* <SettingDialog /> */}
         </div>
       </div>
       <div
