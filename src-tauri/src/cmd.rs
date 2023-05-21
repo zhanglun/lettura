@@ -249,7 +249,10 @@ pub fn create_article_models(
           Some(person) => person.name.to_string(),
           None => String::from(""),
         };
-        let description = String::from("");
+        let description =  match &item.summary {
+          Some(summary) => summary.to_string(),
+          None => String::from(""),
+        };
         let date = &item.updated;
 
         let s = models::NewArticle {

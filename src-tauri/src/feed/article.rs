@@ -1,7 +1,8 @@
+use std::cmp;
 use diesel::prelude::*;
 use diesel::sql_types::*;
-use serde::{Deserialize, Serialize};
 use regex::Regex;
+use serde::{Deserialize, Serialize};
 
 use crate::db::establish_connection;
 use crate::models;
@@ -71,11 +72,14 @@ impl Article {
               channel_uuids.push(uuid.clone());
             }
           }
+        } else {
+          channel_uuids.push(channel_uuid.clone());
+        }
 
-          let params = format!("?{}", ", ?".repeat(channel_uuids.len() - 1));
-          query = query
-          .sql(format!("
-            select
+        let params = format!("?{}", ", ?".repeat(channel_uuids.len() - 1));
+        query = query.sql(format!(
+          "
+            SELECT
               A.id, A.uuid,
               A.channel_uuid,
               C.title as channel_title,
@@ -86,36 +90,17 @@ impl Article {
               A.description as description,
               A.pub_date,
               A.read_status
-            from
+            FROM
               channels as C
-            Left join
+            LEFT JOIN
               articles as A
-            on C.uuid = A.channel_uuid where C.uuid in ({})", params));
+            ON C.uuid = A.channel_uuid
+            WHERE C.uuid in ({}) AND A.uuid IS NOT NULL",
+          params
+        ));
 
-          for uuid in channel_uuids {
-            query = query.bind::<Text, _>(uuid);
-          }
-        } else {
-          query = query.sql(format!("
-            select
-              A.id,
-              A.uuid,
-              A.channel_uuid,
-              C.title as channel_title,
-              C.link as channel_link,
-              A.title,
-              A.link,
-              A.feed_url,
-              A.description as description,
-              A.pub_date,
-              A.read_status
-            from
-              channels as C
-            Left join
-              articles as A
-            on C.uuid = A.channel_uuid
-            where C.uuid = {}", "?"));
-          query = query.bind::<Text, _>(channel_uuid);
+        for uuid in channel_uuids {
+          query = query.bind::<Text, _>(uuid);
         }
       }
       None => {
@@ -167,16 +152,20 @@ impl Article {
 
     let re = Regex::new(r"<[^>]+>").unwrap();
 
-    let result = result.into_iter().map(|mut a| {
-    //   lazy_static! {
-    //     static ref RE: Regex = Regex::new("...").unwrap();
-    // }
-      a.description = re
-        .replace_all(&a.description, String::from(""))
-        .chars().into_iter().map(|x| x.to_string()).collect::<Vec<_>>()[0..60]
-        .join("");
-      a
-    }).collect();
+    let result = result
+      .into_iter()
+      .map(|mut a| {
+        let summary = re
+          .replace_all(&a.description, String::from(""))
+          .chars()
+          .into_iter()
+          .map(|x| x.to_string())
+          .collect::<Vec<_>>();
+
+        a.description = summary[0..cmp::min(summary.len(), 54)].join("");
+        a
+      })
+      .collect();
 
     ArticleQueryResult { list: result }
   }
