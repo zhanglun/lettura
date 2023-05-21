@@ -117,8 +117,8 @@
     "Liberation Mono", Menlo, Courier, monospace;
 }
 
-:root {
-  --color-primary: 'green';
+:root body {
+  --color-primary: hsl(var(--primary));
   --color-secondary: var(--secondary);
   --color-accent: var(--accent);
 //   --color-tertiary: var(--color-palette-#{$i}-section-1-illustration-tertiary);
