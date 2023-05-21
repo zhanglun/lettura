@@ -1,6 +1,7 @@
 use diesel::prelude::*;
 use diesel::sql_types::*;
 use serde::{Deserialize, Serialize};
+use regex::Regex;
 
 use crate::db::establish_connection;
 use crate::models;
@@ -82,7 +83,7 @@ impl Article {
               A.link,
               A.title,
               A.feed_url,
-              substr(A.description, 0, 70) as description,
+              A.description as description,
               A.pub_date,
               A.read_status
             from
@@ -105,7 +106,7 @@ impl Article {
               A.title,
               A.link,
               A.feed_url,
-              substr(A.description, 0, 70) as description,
+              A.description as description,
               A.pub_date,
               A.read_status
             from
@@ -163,6 +164,19 @@ impl Article {
     let result = query
       .load::<ArticleQueryItem>(&mut connection)
       .expect("Expect loading articles");
+
+    let re = Regex::new(r"<[^>]+>").unwrap();
+
+    let result = result.into_iter().map(|mut a| {
+    //   lazy_static! {
+    //     static ref RE: Regex = Regex::new("...").unwrap();
+    // }
+      a.description = re
+        .replace_all(&a.description, String::from(""))
+        .chars().into_iter().map(|x| x.to_string()).collect::<Vec<_>>()[0..60]
+        .join("");
+      a
+    }).collect();
 
     ArticleQueryResult { list: result }
   }

@@ -242,7 +242,7 @@ pub fn get_feeds() -> Vec<FeedItem> {
     FROM channels as C
     LEFT JOIN feed_metas AS F
     ON C.uuid = F.child_uuid
-    WHERE parent_uuid IS NOT NULL
+    WHERE parent_uuid != '' and parent_uuid IS NOT NULL
     ORDER BY F.sort ASC;";
 
   let mut connection = db::establish_connection();

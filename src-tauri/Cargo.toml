@@ -30,6 +30,7 @@ dotenv = "0.15.0"
 uuid = { version = "1.2.1", features = [ "v4", "fast-rng", "macro-diagnostics" ] }
 toml = "0.7.3"
 scraper = "0.13.0"
+regex = "1"
 
 [features]
 default = [ "custom-protocol" ]
