@@ -2,14 +2,51 @@ import React, {useEffect, useState} from "react";
 import * as dataAgent from "../../../helpers/dataAgent";
 import {Panel, PanelSection} from "../Panel";
 import {Input} from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useBearStore } from "@/hooks/useBearStore";
+
+const intervalOptions = [
+  {
+    value: 0,
+    label: 'Manual',
+  },
+  {
+    value: 1,
+    label: '1 hour',
+  },
+  {
+    value: 6,
+    label: '6 hour',
+  },
+  {
+    value: 12,
+    label: '12 hours',
+  },
+  {
+    value: 24,
+    label: '24 hours',
+  },
+]
 
 export const General = () => {
+  const store = useBearStore((state) => ({
+    userConfig: state.userConfig,
+    updateUserConfig: state.updateUserConfig,
+  }))
   const [localProxyConfig, setLocalProxyConfig] = useState<LocalProxy>({
     protocol: "",
     ip: "",
     port: "",
   });
   const [threads, setThreads] = useState<number>(1);
+  const [updateInterval, setUpdateInterval] = useState<number>(0);
 
   const handleSaveLocalProxy = (cfg: LocalProxy) => {
     dataAgent
@@ -38,6 +75,15 @@ export const General = () => {
       console.log("res ===>", res);
     });
   };
+
+  const handleUpdateIntervalChange = (val: number) => {
+    setUpdateInterval(val);
+
+    store.updateUserConfig({
+      ...store.userConfig,
+      update_interval: val
+    });
+  }
 
   useEffect(() => {
     dataAgent.getUserConfig().then((cfg: any) => {
@@ -81,7 +127,27 @@ export const General = () => {
       <PanelSection
         title="Update Interval"
         subTitle="set the update interval"
-      ></PanelSection>
+      >
+ <Select
+          value={updateInterval.toString()}
+          onValueChange={(v: string) => handleUpdateIntervalChange(parseInt(v, 10))}
+        >
+          <SelectTrigger className="w-[180px] h-8">
+            <SelectValue placeholder="All Folder" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              {intervalOptions.map((opt) => {
+                return (
+                  <SelectItem key={opt.value} value={opt.value.toString()}>
+                    {opt.label}
+                  </SelectItem>
+                );
+              })}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </PanelSection>
       <PanelSection
         title="Thread"
         subTitle="set the concurrent number of requests (from 1 to 10)"

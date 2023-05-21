@@ -40,6 +40,7 @@ impl Default for CustomizeStyle {
 pub struct UserConfig {
   pub threads: i32,
   pub theme: String,
+  pub update_interval: i32,
   pub local_proxy: Option<LocalProxy>,
   pub customize_style: CustomizeStyle,
 }
@@ -49,6 +50,7 @@ impl Default for UserConfig {
     Self {
       threads: 1,
       theme: String::from('1'),
+      update_interval: 0,
       local_proxy: Some(LocalProxy {
         ip: "".to_string(),
         port: "".to_string(),
@@ -165,6 +167,10 @@ pub fn load_or_initial() -> Option<UserConfig> {
 
   if !data.contains_key("customize_style") {
     data.insert(String::from("customize_style"), toml::Value::try_from::<CustomizeStyle>(CustomizeStyle::default()).unwrap());
+  }
+
+  if !data.contains_key("update_interval") {
+    data.insert(String::from("update_interval"), toml::Value::try_from::<i32>(0).unwrap());
   }
 
   println!("data: {:?}", data);

@@ -9,6 +9,7 @@ extern crate diesel_migrations;
 extern crate dotenv;
 
 use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
+use serde::{Serialize, Deserialize};
 use tauri::http::ResponseBuilder;
 use tauri::{GlobalWindowEvent, Manager, WindowEvent, Wry};
 use tokio::sync::mpsc;
@@ -32,7 +33,7 @@ struct Payload {
 
 fn handle_window_event(event: GlobalWindowEvent<Wry>) {
   let window = event.window();
-  let app = window.app_handle();
+  // let app = window.app_handle();
 
   match event.event() {
     WindowEvent::CloseRequested { api, .. } => {
@@ -43,6 +44,12 @@ fn handle_window_event(event: GlobalWindowEvent<Wry>) {
     }
     _ => {}
   }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub enum AsyncProcessMessage {
+  TurnOnAutoUpdateFeed,
+  TurnOffAutoUpdateFeed,
 }
 
 #[tokio::main]
@@ -56,7 +63,15 @@ async fn main() {
     .run_pending_migrations(MIGRATIONS)
     .expect("Error migrating");
 
-  let (async_process_ix, async_process_rx) = mpsc::channel::<String>(32);
+  let (async_process_ix, mut async_process_rx) = mpsc::channel::<AsyncProcessMessage>(32);
+
+  tauri::async_runtime::spawn(async move {
+    loop {
+      if let Some(message) = async_process_rx.recv().await {
+        println!("output: {:?}", message)
+      }
+    }
+  });
 
   tauri::Builder::default()
     .menu(core::menu::AppMenu::get_menu(&context))
