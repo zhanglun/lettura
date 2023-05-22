@@ -10,7 +10,6 @@ import { AddFeedChannel } from "../AddFeed";
 import { AddFolder } from "../AddFolder";
 import pLimit from "p-limit";
 import { useBearStore } from "../../hooks/useBearStore";
-import { Progress } from "@/components/ui/progress"
 
 import styles from "./channel.module.scss";
 import {
@@ -24,6 +23,7 @@ import {
 } from "lucide-react";
 import { Icon } from "../Icon";
 import { SettingDialog } from "../SettingPanel/DialogMode";
+import { FeedItem } from "./Item";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -225,66 +225,19 @@ const ChannelList = (): JSX.Element => {
     expandIcon,
     expandStatus,
   }: any) => {
-    const { unread = 0, link, label, item_type, uuid } = data;
-    const channel = data;
-    const ico = getChannelFavicon(link);
+    const { uuid } = data;
     // const isLeaf = !(data.children && data.children.length);
-    const isFolder = item_type === "folder";
     const isActive = (store?.channel?.uuid || channelUuid) === uuid;
 
     return (
-      <li
-        className={`${className}`}
-        role="treeitem"
-        key={channel.title}
-        onClick={() => {
-          store.setChannel(channel);
-          navigate(
-            `${RouteConfig.CHANNEL.replace(
-              /:uuid/,
-              channel.uuid
-            )}?channelUuid=${channel.uuid}&feedUrl=${channel.feed_url}`
-          );
-        }}
-      >
-        <span
-          className={`w-full flex items-center h-8 px-2 rounded-md cursor-pointer mt-[2px]
-           text-primary group
-             ${
-               isActive
-                 ? "bg-primary text-primary-foreground"
-                 : "hover:bg-primary hover:text-primary-foreground"
-             } ${level ? "pl-8" : ""}`}
-        >
-          {isFolder && renderFolder(expandStatus, onExpand)}
-          {channel.link && (
-            <img
-              src={ico}
-              onError={(e) => {
-                // @ts-ignore
-                e.target.onerror = null;
-
-                // @ts-ignore
-                e.target.src = defaultSiteIcon;
-              }}
-              className="h-4 w-4 rounded mr-3"
-              alt={channel.title}
-            />
-          )}
-          <span className="grow shrink basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-xs">
-            {channel.title}
-          </span>
-          {unread > 0 && (
-            <span
-              className={`px-1 min-w-[1rem] h-4 leading-4 text-center text-[10px] ${
-                isActive ? "text-primary-foreground" : "text-primary"
-              } group-hover:text-primary-foreground`}
-            >
-              {unread}
-            </span>
-          )}
-        </span>
-      </li>
+      <FeedItem
+        feed={data}
+        className={className}
+        isActive={isActive}
+        level={level}
+        expandStatus={expandStatus}
+        onExpand={onExpand}
+      />
     );
   };
 
