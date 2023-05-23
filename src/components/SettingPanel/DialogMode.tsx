@@ -19,7 +19,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { SettingPanel } from "./index";
 
 export const SettingDialog = (props: any) => {
-  const { showStatus, toggleModal } = useModal();
+  const [showStatus, , , toggleModal] = useModal();
 
   const handleCancel = () => {
     toggleModal();

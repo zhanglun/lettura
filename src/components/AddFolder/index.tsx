@@ -17,7 +17,7 @@ import { Folder, Loader2 } from "lucide-react";
 import { Button } from "../ui/button";
 
 export const AddFolder = (props: any) => {
-  const { showStatus, showModal, hideModal, toggleModal } = useModal();
+  const [ showStatus, showModal, hideModal, toggleModal ] = useModal();
   const [name, setName] = useState("");
   const [confirming, setConfirming] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);

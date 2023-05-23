@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
+  ContextMenuSeparator,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import { ChevronDown, ChevronRight, Folder, FolderOpen } from "lucide-react";
@@ -10,6 +11,7 @@ import { getChannelFavicon } from "@/helpers/parseXML";
 import { RouteConfig } from "@/config";
 import { useBearStore } from "@/hooks/useBearStore";
 import { useNavigate } from "react-router-dom";
+import classNames from "classnames";
 
 export interface FeedItemProps {
   feed: any;
@@ -51,6 +53,9 @@ export const FeedItem = (props: FeedItemProps) => {
   const store = useBearStore((state) => ({
     channel: state.channel,
     setChannel: state.setChannel,
+    getFeedList: state.getFeedList,
+    setFeedContextMenuTarget: state.setFeedContextMenuTarget,
+    feedContextMenuTarget: state.feedContextMenuTarget,
   }));
   const { feed, className, isActive, level, expandStatus, onExpand } = props;
   const { unread = 0, link, item_type } = feed;
@@ -71,53 +76,51 @@ export const FeedItem = (props: FeedItemProps) => {
         );
       }}
     >
-      <ContextMenu>
-        <ContextMenuTrigger className="w-full">
-          <span
-            className={`w-full flex items-center h-8 px-2 rounded-md cursor-pointer mt-[2px]
-     text-primary group
-       ${
-         isActive
-           ? "bg-primary text-primary-foreground"
-           : "hover:bg-primary hover:text-primary-foreground"
-       } ${level ? "pl-8" : ""}`}
-          >
-            {isFolder && renderFolder(expandStatus, onExpand)}
-            {feed.link && (
-              <img
-                src={ico}
-                onError={(e) => {
-                  // @ts-ignore
-                  e.target.onerror = null;
+      <span
+        className={classNames(
+          "w-full flex items-center h-8 px-2 rounded-md cursor-pointer mt-[2px] text-primary group",
+          {
+            "bg-primary text-primary-foreground": isActive,
+            "shadow-[inset_0_0_0_2px_var(--color-primary)]": (store.feedContextMenuTarget && store.feedContextMenuTarget.uuid === feed.uuid),
+            "pl-8": level,
+          }
+        )}
+        onContextMenu={() => {
+          store.setFeedContextMenuTarget(feed);
+        }}
+      >
+        {isFolder && renderFolder(expandStatus, onExpand)}
+        {feed.link && (
+          <img
+            src={ico}
+            onError={(e) => {
+              // @ts-ignore
+              e.target.onerror = null;
 
-                  // @ts-ignore
-                  e.target.src = defaultSiteIcon;
-                }}
-                className="h-4 w-4 rounded mr-3"
-                alt={feed.title}
-              />
+              // @ts-ignore
+              e.target.src = defaultSiteIcon;
+            }}
+            className="h-4 w-4 rounded mr-3"
+            alt={feed.title}
+          />
+        )}
+        <span className="grow shrink basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-sm">
+          {feed.title}
+        </span>
+        {unread > 0 && (
+          <span
+            className={classNames(
+              "px-1 min-w-[1rem] h-4 leading-4 text-center text-[10px] text-primary",
+              {
+                "text-primary-foreground": isActive,
+                "text-primary": !isActive,
+              }
             )}
-            <span className="grow shrink basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-sm">
-              {feed.title}
-            </span>
-            {unread > 0 && (
-              <span
-                className={`px-1 min-w-[1rem] h-4 leading-4 text-center text-[10px] ${
-                  isActive ? "text-primary-foreground" : "text-primary"
-                } group-hover:text-primary-foreground`}
-              >
-                {unread}
-              </span>
-            )}
+          >
+            {unread}
           </span>
-        </ContextMenuTrigger>
-        <ContextMenuContent>
-          <ContextMenuItem>Profile</ContextMenuItem>
-          <ContextMenuItem>Billing</ContextMenuItem>
-          <ContextMenuItem>Team</ContextMenuItem>
-          <ContextMenuItem>Subscription</ContextMenuItem>
-        </ContextMenuContent>
-      </ContextMenu>
+        )}
+      </span>
     </li>
   );
 };

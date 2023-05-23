@@ -8,28 +8,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+
 import { Trash2 } from "lucide-react";
 import { Channel, Folder } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
 import { busChannel } from "@/helpers/busChannel";
 import styles from "../setting.module.scss";
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
 import { DataTable } from "./DataTable";
 import { CellContext, createColumnHelper } from "@tanstack/react-table";
 import { getChannelFavicon } from "@/helpers/parseXML";
+import { DialogUnsubscribeFeed } from "./DialogUnsubscribeFeed";
+import { useModal } from "@/components/Modal/useModal";
 
 export const Feed = () => {
   const [list, setList] = useState<(Channel & { parent_uuid: String })[]>([]);
+  const [showStatus, , , , setModalStatus] = useModal();
   const [renderList, setRenderList] = useState<
     (Channel & { parent_uuid: String })[]
   >([]);
@@ -39,38 +32,13 @@ export const Feed = () => {
     folderUuid?: string;
   }>({});
 
-  const { toast } = useToast();
-
   const [currentFeed, setCurrentFeed] = useState<Channel | null>(null);
-  const [unsubscribeDialogStatus, setUnsubscribeDialogStatus] = useState(false);
-
   const handleUnSubscribe = (channel: Channel) => {
     if (channel?.uuid) {
       setCurrentFeed(channel);
-      setUnsubscribeDialogStatus(true);
+      setModalStatus(true);
     }
   };
-
-  const confirmUnsubscribe = () => {
-    if (currentFeed?.uuid) {
-      dataAgent
-        .deleteChannel(currentFeed.uuid)
-        .then(() => {
-          busChannel.emit("getChannels");
-          getList();
-          setUnsubscribeDialogStatus(false);
-        })
-        .catch((err) => {
-          toast({
-            variant: "destructive",
-            title: "Ops! Something wrong~",
-            description: err.message,
-            duration: 2,
-          });
-        });
-    }
-  };
-
   const columnHelper = createColumnHelper<Channel>();
   const columns = [
     {
@@ -228,32 +196,12 @@ export const Feed = () => {
         columns={columns}
         data={renderList}
       />
-      <AlertDialog
-        open={unsubscribeDialogStatus}
-        onOpenChange={setUnsubscribeDialogStatus}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the
-              data relates with
-              <span className="text-primary font-bold ml-1">
-                {currentFeed?.title}
-              </span>
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <Button
-              className="text-destructive-foreground bg-destructive hover:bg-[hsl(var(--destructive)/0.9)]"
-              onClick={() => confirmUnsubscribe()}
-            >
-              Unsubscribe
-            </Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <DialogUnsubscribeFeed
+        dialogStatus={showStatus}
+        setDialogStatus={setModalStatus}
+        feed={currentFeed}
+        afterConfirm={getList}
+      />
     </div>
   );
 };

@@ -40,7 +40,7 @@ export const FolderList = () => {
     {
       accessorKey: "name",
       header: "name",
-      size: 'auto',
+      size: "auto",
       cell(props: CellContext<Folder, string>): JSX.Element {
         return (
           <div className="flex items-center">
@@ -59,14 +59,10 @@ export const FolderList = () => {
 
         return (
           <div className="grid grid-flow-col col-span-3">
-            <span
-              onClick={() => handleEditFolder(record)}
-            >
+            <span onClick={() => handleEditFolder(record)}>
               <Edit size={16} />
             </span>
-            <span
-              onClick={() => handleDeleteFolder(record)}
-            >
+            <span onClick={() => handleDeleteFolder(record)}>
               <Trash2 size={16} />
             </span>
           </div>
@@ -87,6 +83,7 @@ export const FolderList = () => {
 
   return (
     <DataTable
+      // @ts-ignore
       columns={columns}
       data={folderList}
     />

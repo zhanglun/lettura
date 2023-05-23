@@ -21,9 +21,19 @@ import {
   RefreshCw,
   Settings,
 } from "lucide-react";
+
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 import { Icon } from "../Icon";
 import { SettingDialog } from "../SettingPanel/DialogMode";
 import { FeedItem } from "./Item";
+import { DialogUnsubscribeFeed } from "../SettingPanel/Content/DialogUnsubscribeFeed";
+import { useModal } from "../Modal/useModal";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -31,6 +41,7 @@ function useQuery() {
 
 const ChannelList = (): JSX.Element => {
   const navigate = useNavigate();
+  const [showStatus, , , , setModalStatus] = useModal();
   const [refreshing, setRefreshing] = useState(false);
   const [refreshProgress, setRefreshProgress] = useState(0);
   const [channelList, setChannelList] = useState<Channel[]>([]);
@@ -39,6 +50,7 @@ const ChannelList = (): JSX.Element => {
   const store = useBearStore((state) => ({
     channel: state.channel,
     setChannel: state.setChannel,
+    feedContextMenuTarget: state.feedContextMenuTarget,
   }));
   const query = useQuery();
   const channelUuid = query.get("channelUuid");
@@ -383,6 +395,8 @@ const ChannelList = (): JSX.Element => {
     }
   }, []);
 
+  const handleEditFolder = () => {};
+
   useEffect(() => {
     if (listRef.current) {
       const $list = listRef.current as HTMLDivElement;
@@ -430,7 +444,41 @@ const ChannelList = (): JSX.Element => {
         className="overflow-y-auto mt-[var(--app-toolbar-height)] pb-3 pl-3 height-[calc(100% - var(--app-toolbar-height))]"
         ref={listRef}
       >
-        {renderTree()}
+        <ContextMenu>
+          <ContextMenuTrigger className="w-full">
+            {renderTree()}
+          </ContextMenuTrigger>
+          <ContextMenuContent>
+            {store.feedContextMenuTarget?.item_type === "folder" && (
+              <>
+                <ContextMenuItem onSelect={handleEditFolder}>
+                  Edit
+                </ContextMenuItem>
+              </>
+            )}
+            {store.feedContextMenuTarget && (
+              <>
+                {store.feedContextMenuTarget?.item_type !== "folder" && (
+                  <>
+                    <ContextMenuItem>
+                      Open {new URL(store.feedContextMenuTarget?.link).host}
+                    </ContextMenuItem>
+                    <ContextMenuSeparator />
+                    <ContextMenuItem onClick={() => setModalStatus(true)}>
+                      Unsubscribe
+                    </ContextMenuItem>
+                  </>
+                )}
+              </>
+            )}
+          </ContextMenuContent>
+        </ContextMenu>
+        <DialogUnsubscribeFeed
+          feed={store.feedContextMenuTarget}
+          dialogStatus={showStatus}
+          setDialogStatus={setModalStatus}
+          afterConfirm={getList}
+        ></DialogUnsubscribeFeed>
       </div>
       {refreshing && (
         <div className="sticky left-0 right-0 bottom-0 p-2 text-right">

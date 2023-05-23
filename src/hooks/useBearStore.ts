@@ -7,6 +7,10 @@ import * as dataAgent from "../helpers/dataAgent";
 interface BearStore {
   channel: Channel | null;
   setChannel: (channel: Channel) => void;
+  getFeedList: () => any;
+
+  feedContextMenuTarget: Channel | null;
+  setFeedContextMenuTarget: (target: Channel) => void;
 
   article: Article | null;
   setArticle: (article: Article) => void;
@@ -37,6 +41,17 @@ export const useBearStore = create<BearStore>()(
         set(() => ({
           channel: channel,
         }));
+      },
+      getFeedList: () => {
+        dataAgent.getChannels({}).then((res) => {
+          console.log("%c Line:44 🍕 res", "color:#7f2b82", res);
+        })
+      },
+      feedContextMenuTarget: null,
+      setFeedContextMenuTarget: (target: Channel) => {
+        set(() =>({
+          feedContextMenuTarget: target,
+        }))
       },
 
       article: null,
@@ -143,7 +158,7 @@ export const useBearStore = create<BearStore>()(
         },
       ],
       currentFilter: {
-        id: '1',
+        id: 1,
         title: "Unread",
       },
       setFilter: (filter: { id: number; title: string }) => {
