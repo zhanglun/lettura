@@ -37,6 +37,8 @@ import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/use-toast";
 import { Icon } from "@/components/Icon";
 
+import { open } from '@tauri-apps/api/shell';
+
 function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
@@ -414,14 +416,9 @@ export const ArticleContainer = (): JSX.Element => {
             <Icon onClick={handleViewSourcePage}>
               <Ghost size={16} />
             </Icon>
-            <a
-              className={styles.menuIcon}
-              target="_blank"
-              rel="noreferrer"
-              href={store.article?.link as string}
-            >
+            <Icon onClick={() => store.article && open(store.article?.link)}>
               <ExternalLink size={16} />
-            </a>
+            </Icon>
             <Icon onClick={handleCopyLink}>
               <Link size={16} />
             </Icon>

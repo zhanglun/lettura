@@ -3,7 +3,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Tree } from "@douyinfe/semi-ui";
 import { RouteConfig } from "../../config";
 import { Channel } from "../../db";
-import { getChannelFavicon } from "../../helpers/parseXML";
 import * as dataAgent from "../../helpers/dataAgent";
 import { busChannel } from "../../helpers/busChannel";
 import { AddFeedChannel } from "../AddFeed";
@@ -17,7 +16,6 @@ import {
   ChevronRight,
   Folder,
   FolderOpen,
-  Plus,
   RefreshCw,
   Settings,
 } from "lucide-react";
@@ -30,10 +28,10 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import { Icon } from "../Icon";
-import { SettingDialog } from "../SettingPanel/DialogMode";
 import { FeedItem } from "./Item";
 import { DialogUnsubscribeFeed } from "../SettingPanel/Content/DialogUnsubscribeFeed";
 import { useModal } from "../Modal/useModal";
+import { open } from "@tauri-apps/api/shell";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -460,7 +458,11 @@ const ChannelList = (): JSX.Element => {
               <>
                 {store.feedContextMenuTarget?.item_type !== "folder" && (
                   <>
-                    <ContextMenuItem>
+                    <ContextMenuItem
+                      onClick={() =>
+                        store.feedContextMenuTarget?.link && open(store.feedContextMenuTarget?.link)
+                      }
+                    >
                       Open {new URL(store.feedContextMenuTarget?.link).host}
                     </ContextMenuItem>
                     <ContextMenuSeparator />
