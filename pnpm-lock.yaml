@@ -12,6 +12,7 @@ specifiers:
   '@radix-ui/react-popover': ^1.0.5
   '@radix-ui/react-progress': ^1.0.2
   '@radix-ui/react-select': ^1.2.1
+  '@radix-ui/react-separator': ^1.0.2
   '@radix-ui/react-slider': ^1.1.1
   '@radix-ui/react-slot': ^1.0.1
   '@radix-ui/react-tabs': ^1.0.3
@@ -62,6 +63,7 @@ dependencies:
   '@radix-ui/react-popover': 1.0.5_ib3m5ricvtkl2cll7qpr2f6lvq
   '@radix-ui/react-progress': 1.0.2_biqbaboplfbrettd7655fr4n2y
   '@radix-ui/react-select': 1.2.1_ib3m5ricvtkl2cll7qpr2f6lvq
+  '@radix-ui/react-separator': 1.0.2_biqbaboplfbrettd7655fr4n2y
   '@radix-ui/react-slider': 1.1.1_biqbaboplfbrettd7655fr4n2y
   '@radix-ui/react-slot': 1.0.1_react@18.2.0
   '@radix-ui/react-tabs': 1.0.3_biqbaboplfbrettd7655fr4n2y
@@ -1311,6 +1313,18 @@ packages:
       react-remove-scroll: 2.5.5_kzbn2opkn2327fwg5yzwzya5o4
     transitivePeerDependencies:
       - '@types/react'
+    dev: false
+
+  /@radix-ui/react-separator/1.0.2_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-lZoAG/rS2jzb/OSvyBrpN3dmikw20ewmWx1GkM1VldbDyD0DACCbH9LIXSrqyS/2mE1VYKOHmyq5W90Dx4ryqA==}
+    peerDependencies:
+      react: ^16.8 || ^17.0 || ^18.0
+      react-dom: ^16.8 || ^17.0 || ^18.0
+    dependencies:
+      '@babel/runtime': 7.20.7
+      '@radix-ui/react-primitive': 1.0.2_biqbaboplfbrettd7655fr4n2y
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
     dev: false
 
   /@radix-ui/react-slider/1.1.1_biqbaboplfbrettd7655fr4n2y:
