@@ -1,11 +1,4 @@
 import React, { useState } from "react";
-import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuSeparator,
-  ContextMenuTrigger,
-} from "@/components/ui/context-menu";
 import { ChevronDown, ChevronRight, Folder, FolderOpen } from "lucide-react";
 import { getChannelFavicon } from "@/helpers/parseXML";
 import { RouteConfig } from "@/config";

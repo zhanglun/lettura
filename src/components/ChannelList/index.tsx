@@ -49,6 +49,7 @@ const ChannelList = (): JSX.Element => {
     channel: state.channel,
     setChannel: state.setChannel,
     feedContextMenuTarget: state.feedContextMenuTarget,
+    setFeedContextMenuTarget: state.setFeedContextMenuTarget,
   }));
   const query = useQuery();
   const channelUuid = query.get("channelUuid");
@@ -393,6 +394,12 @@ const ChannelList = (): JSX.Element => {
     }
   }, []);
 
+  const handleContextMenuChange = (status: boolean) => {
+    if (!status) {
+      store.setFeedContextMenuTarget(null);
+    }
+  };
+
   const handleEditFolder = () => {};
 
   useEffect(() => {
@@ -442,7 +449,7 @@ const ChannelList = (): JSX.Element => {
         className="overflow-y-auto mt-[var(--app-toolbar-height)] pb-3 pl-3 height-[calc(100% - var(--app-toolbar-height))]"
         ref={listRef}
       >
-        <ContextMenu>
+        <ContextMenu onOpenChange={handleContextMenuChange}>
           <ContextMenuTrigger className="w-full">
             {renderTree()}
           </ContextMenuTrigger>
