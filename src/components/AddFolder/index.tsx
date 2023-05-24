@@ -13,11 +13,18 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Icon } from "../Icon";
-import { Folder, Loader2 } from "lucide-react";
+import { Folder as Folder2, Loader2 } from "lucide-react";
 import { Button } from "../ui/button";
+import { Folder } from "@/db";
 
-export const AddFolder = (props: any) => {
-  const [ showStatus, showModal, hideModal, toggleModal ] = useModal();
+export interface AddFolderProps {
+  action: "add" | "edit";
+  folder?: Folder;
+}
+
+export const AddFolder = (props: AddFolderProps) => {
+  const { action, folder } = props;
+  const [showStatus, , , toggleModal] = useModal();
   const [name, setName] = useState("");
   const [confirming, setConfirming] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -54,11 +61,18 @@ export const AddFolder = (props: any) => {
     }
   }, [showStatus]);
 
+
+  useEffect(() => {
+    if(action === 'edit' && folder) {
+      setName(folder.name);
+    }
+  }, [action]);
+
   return (
     <Dialog open={showStatus} onOpenChange={handleCancel}>
       <DialogTrigger asChild>
         <Icon>
-          <Folder size={16} />
+          <Folder2 size={16} />
         </Icon>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
@@ -80,7 +94,11 @@ export const AddFolder = (props: any) => {
             />
           </div>
           <div>
-            <Button className="w-full" onClick={handleSave} disabled={confirming}>
+            <Button
+              className="w-full"
+              onClick={handleSave}
+              disabled={confirming}
+            >
               {confirming ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />

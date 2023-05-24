@@ -103,6 +103,7 @@ async fn main() {
       cmd::update_theme,
       cmd::create_folder,
       cmd::delete_folder,
+      cmd::update_folder,
       cmd::get_folders,
       cmd::move_channel_into_folder,
       cmd::init_process,

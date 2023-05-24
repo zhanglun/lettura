@@ -489,8 +489,13 @@ pub fn create_folder(name: String) -> usize {
 }
 
 #[command]
-pub fn delete_folder(uuid: String) -> (usize , usize) {
+pub fn delete_folder(uuid: String) -> (usize, usize) {
   feed::folder::delete_folder(uuid)
+}
+
+#[command]
+pub fn update_folder(uuid: String, name: String) -> (usize, String) {
+  feed::folder::update_folder(uuid, name)
 }
 
 #[command]

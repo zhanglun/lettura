@@ -432,7 +432,7 @@ const ChannelList = (): JSX.Element => {
         <div />
         <div className={styles.toolbar}>
           <AddFeedChannel />
-          <AddFolder />
+          <AddFolder action="add" />
           <Icon onClick={refreshList}>
             <RefreshCw
               size={16}

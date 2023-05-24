@@ -1,3 +1,4 @@
+use diesel::connection;
 use diesel::prelude::*;
 use uuid::Uuid;
 
@@ -114,6 +115,22 @@ pub fn delete_folder(uuid: String) -> (usize, usize) {
   } else {
     return (0, 0);
   }
+}
+
+pub fn update_folder(uuid: String, name: String) -> (usize, String) {
+  let mut connection = db::establish_connection();
+  let folder = schema::folders::dsl::folders
+    .filter(schema::folders::uuid.eq(&uuid))
+    .load::<models::Folder>(&mut connection)
+    .expect("Expect find folder");
+
+  println!(" ===> {:?}", folder);
+
+  if folder.len() == 1 {
+
+  }
+
+  (1, String::from(""))
 }
 
 #[cfg(test)]
