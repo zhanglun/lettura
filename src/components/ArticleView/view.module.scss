@@ -162,6 +162,11 @@
       text-decoration-style: wavy;
     }
   }
+
+  img {
+    margin: 0 auto;
+    border: 2px solid var(--color-primary);
+  }
 }
 
 .placeholder {
