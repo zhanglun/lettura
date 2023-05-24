@@ -15,6 +15,10 @@ export const createFolder = async (name: string): Promise<number> => {
   return invoke("create_folder", { name });
 };
 
+export const updateFolder = async (uuid: string, name: string): Promise<number> => {
+  return invoke("update_folder", { uuid, name });
+};
+
 export const getFolders = async (): Promise<Folder[]> => {
   return invoke("get_folders");
 };

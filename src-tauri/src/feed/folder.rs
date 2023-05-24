@@ -127,7 +127,7 @@ pub fn update_folder(uuid: String, name: String) -> (usize, String) {
   println!(" ===> {:?}", folder);
 
   if folder.len() == 1 {
-
+    (1, String::from("TODO not yet!"))
   }
 
   (1, String::from(""))

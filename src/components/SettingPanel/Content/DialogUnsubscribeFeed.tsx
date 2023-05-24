@@ -21,11 +21,12 @@ export interface DialogProps {
   trigger?: React.ReactNode;
   setDialogStatus: (status: boolean) => void;
   afterConfirm: () => void;
+  afterCancel: () => void;
 }
 
 export const DialogUnsubscribeFeed = React.memo((props: DialogProps) => {
   const { toast } = useToast();
-  const { feed, dialogStatus, setDialogStatus, afterConfirm, trigger } = props;
+  const { feed, dialogStatus, setDialogStatus, afterConfirm, afterCancel, trigger } = props;
 
   const confirmUnsubscribe = () => {
     if (feed?.uuid) {
@@ -47,6 +48,10 @@ export const DialogUnsubscribeFeed = React.memo((props: DialogProps) => {
     }
   };
 
+  const handleCancel = () => {
+    afterCancel();
+  }
+
   return (
     <AlertDialog
       open={dialogStatus}
@@ -65,7 +70,7 @@ export const DialogUnsubscribeFeed = React.memo((props: DialogProps) => {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogCancel onClick={() => handleCancel()}>Cancel</AlertDialogCancel>
           <Button
             className="text-destructive-foreground bg-destructive hover:bg-[hsl(var(--destructive)/0.9)]"
             onClick={() => confirmUnsubscribe()}

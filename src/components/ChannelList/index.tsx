@@ -39,9 +39,10 @@ function useQuery() {
 
 const ChannelList = (): JSX.Element => {
   const navigate = useNavigate();
+  const [addFolderDialogStatus, , , , setAddFolderDialogStatus] = useModal();
+  const [editFolderDialogStatus, , , , setEditFolderDialogStatus] = useModal();
   const [showStatus, , , , setModalStatus] = useModal();
   const [refreshing, setRefreshing] = useState(false);
-  const [refreshProgress, setRefreshProgress] = useState(0);
   const [channelList, setChannelList] = useState<Channel[]>([]);
   const [treeData, setTreeData] = useState<any>([]);
   const [done, setDone] = useState(0);
@@ -395,9 +396,9 @@ const ChannelList = (): JSX.Element => {
   }, []);
 
   const handleContextMenuChange = (status: boolean) => {
-    if (!status) {
-      store.setFeedContextMenuTarget(null);
-    }
+    // if (!status) {
+    //   store.setFeedContextMenuTarget(null);
+    // }
   };
 
   const handleEditFolder = () => {};
@@ -432,7 +433,19 @@ const ChannelList = (): JSX.Element => {
         <div />
         <div className={styles.toolbar}>
           <AddFeedChannel />
-          <AddFolder action="add" />
+          <AddFolder
+            action="add"
+            dialogStatus={addFolderDialogStatus}
+            setDialogStatus={setAddFolderDialogStatus}
+            afterConfirm={getList}
+            afterCancel={() => store.setFeedContextMenuTarget(null)}
+            trigger={
+              <Icon>
+                <Folder size={16} />
+              </Icon>
+            }
+          />
+
           <Icon onClick={refreshList}>
             <RefreshCw
               size={16}
@@ -456,7 +469,7 @@ const ChannelList = (): JSX.Element => {
           <ContextMenuContent>
             {store.feedContextMenuTarget?.item_type === "folder" && (
               <>
-                <ContextMenuItem onSelect={handleEditFolder}>
+                <ContextMenuItem onSelect={() => setEditFolderDialogStatus(true)}>
                   Edit
                 </ContextMenuItem>
               </>
@@ -467,7 +480,8 @@ const ChannelList = (): JSX.Element => {
                   <>
                     <ContextMenuItem
                       onClick={() =>
-                        store.feedContextMenuTarget?.link && open(store.feedContextMenuTarget?.link)
+                        store.feedContextMenuTarget?.link &&
+                        open(store.feedContextMenuTarget?.link)
                       }
                     >
                       Open {new URL(store.feedContextMenuTarget?.link).host}
@@ -487,7 +501,16 @@ const ChannelList = (): JSX.Element => {
           dialogStatus={showStatus}
           setDialogStatus={setModalStatus}
           afterConfirm={getList}
+          afterCancel={() => store.setFeedContextMenuTarget(null)}
         ></DialogUnsubscribeFeed>
+        <AddFolder
+          action="edit"
+          folder={store.feedContextMenuTarget}
+          dialogStatus={editFolderDialogStatus}
+          setDialogStatus={setEditFolderDialogStatus}
+          afterConfirm={getList}
+          afterCancel={() => store.setFeedContextMenuTarget(null)}
+        />
       </div>
       {refreshing && (
         <div className="sticky left-0 right-0 bottom-0 p-2 text-right">
