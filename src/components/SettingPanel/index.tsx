@@ -33,7 +33,7 @@ function SettingPanel() {
               )
             }
           >
-            <Cog size={16} className="mr-4" />
+            <Cog size={16} className="mr-3" />
             General
           </NavLink>
           <NavLink

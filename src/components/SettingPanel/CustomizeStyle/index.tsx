@@ -3,15 +3,16 @@ import { Slider } from "@/components/ui/slider"
 import { useBearStore } from "../../../hooks/useBearStore";
 
 export interface CustomizeStyleProps {
+  className?: string,
   styleConfig: CustomizeStyle | undefined;
 }
 
 export const CustomizeStyle = (props: CustomizeStyleProps) => {
+  const { className, styleConfig } = props;
   const store = useBearStore((state) => ({
     userConfig: state.userConfig,
     updateUserConfig: state.updateUserConfig,
   }));
-  const { styleConfig } = props;
   console.log("%c Line:15 🍿 styleConfig", "color:#3f7cff", styleConfig);
   const [cfg, setCfg] = useState({
     typeface: "",
@@ -48,7 +49,7 @@ export const CustomizeStyle = (props: CustomizeStyleProps) => {
   }
 
   return (
-    <div className="w-full max-w-xs bg-detail-bg px-1 grid gap-2">
+    <div className={`w-full max-w-xs bg-detail-bg px-1 grid gap-2 ${className}`}>
       <div className="grid gap-2 grid-flow-col grid-cols-[74px_auto_42px] items-center">
         <div className="text-sm">Font Size</div>
         <div>
