@@ -1,4 +1,3 @@
-use diesel::connection;
 use diesel::prelude::*;
 use uuid::Uuid;
 
@@ -124,13 +123,21 @@ pub fn update_folder(uuid: String, name: String) -> (usize, String) {
     .load::<models::Folder>(&mut connection)
     .expect("Expect find folder");
 
-  println!(" ===> {:?}", folder);
-
   if folder.len() == 1 {
-    (1, String::from("TODO not yet!"))
+    let res = diesel::update(schema::folders::dsl::folders.filter(schema::folders::uuid.eq(&uuid)))
+      .set(schema::folders::name.eq(name))
+      .execute(&mut connection);
+    match res {
+      Ok(r) => {
+        return (r, String::from(""));
+      }
+      Err(error) => {
+        return (0, error.to_string());
+      }
+    }
+  } else {
+    (0, String::from("No Folder Found!"))
   }
-
-  (1, String::from(""))
 }
 
 #[cfg(test)]

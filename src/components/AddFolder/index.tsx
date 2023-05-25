@@ -58,7 +58,7 @@ export const AddFolder = (props: AddFolderProps) => {
     }
 
     p.then((res) => {
-      if (res > 0) {
+      if (res[0] > 0) {
         busChannel.emit("getChannels");
 
         afterConfirm();
