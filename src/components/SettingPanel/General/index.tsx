@@ -1,7 +1,7 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import * as dataAgent from "../../../helpers/dataAgent";
-import {Panel, PanelSection} from "../Panel";
-import {Input} from '@/components/ui/input';
+import { Panel, PanelSection } from "../Panel";
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -40,13 +40,13 @@ export const General = () => {
     userConfig: state.userConfig,
     updateUserConfig: state.updateUserConfig,
   }))
-  const [localProxyConfig, setLocalProxyConfig] = useState<LocalProxy>({
+  const [ localProxyConfig, setLocalProxyConfig ] = useState<LocalProxy>({
     protocol: "",
     ip: "",
     port: "",
   });
-  const [threads, setThreads] = useState<number>(1);
-  const [updateInterval, setUpdateInterval] = useState<number>(0);
+  const [ threads, setThreads ] = useState<number>(1);
+  const [ updateInterval, setUpdateInterval ] = useState<number>(0);
 
   const handleSaveLocalProxy = (cfg: LocalProxy) => {
     dataAgent
@@ -59,7 +59,7 @@ export const General = () => {
 
   const handleLocalProxyChange = (key: string, val: string) => {
     const cfg = Object.assign(
-      {...localProxyConfig},
+      { ...localProxyConfig },
       {
         [key]: val,
       }
@@ -89,7 +89,7 @@ export const General = () => {
     dataAgent.getUserConfig().then((cfg: any) => {
       console.log("update use config", cfg);
 
-      const {local_proxy, threads} = cfg as UserConfig;
+      const { local_proxy, threads } = cfg as UserConfig;
 
       if (local_proxy) {
         setLocalProxyConfig({
@@ -111,16 +111,16 @@ export const General = () => {
         <div className="grid gap-1 grid-cols-[120px_10px_60px] items-center">
           <Input
             type="text"
-            value={localProxyConfig.ip}
+            value={ localProxyConfig.ip }
             className="tracking-wide"
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleLocalProxyChange("ip", e.target.value)}
+            onChange={ (e: React.ChangeEvent<HTMLInputElement>) => handleLocalProxyChange("ip", e.target.value) }
           />
           <span className="text-center">:</span>
           <Input
             type="text"
             className="tracking-wide"
-            value={localProxyConfig.port}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleLocalProxyChange("port", e.target.value)}
+            value={ localProxyConfig.port }
+            onChange={ (e: React.ChangeEvent<HTMLInputElement>) => handleLocalProxyChange("port", e.target.value) }
           />
         </div>
       </PanelSection>
@@ -128,22 +128,22 @@ export const General = () => {
         title="Update Interval"
         subTitle="set the update interval"
       >
- <Select
-          value={updateInterval.toString()}
-          onValueChange={(v: string) => handleUpdateIntervalChange(parseInt(v, 10))}
+        <Select
+          value={ updateInterval.toString() }
+          onValueChange={ (v: string) => handleUpdateIntervalChange(parseInt(v, 10)) }
         >
           <SelectTrigger className="w-[180px] h-8">
-            <SelectValue placeholder="All Folder" />
+            <SelectValue placeholder="All Folder"/>
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              {intervalOptions.map((opt) => {
+              { intervalOptions.map((opt) => {
                 return (
-                  <SelectItem key={opt.value} value={opt.value.toString()}>
-                    {opt.label}
+                  <SelectItem key={ opt.value } value={ opt.value.toString() }>
+                    { opt.label }
                   </SelectItem>
                 );
-              })}
+              }) }
             </SelectGroup>
           </SelectContent>
         </Select>
@@ -155,11 +155,11 @@ export const General = () => {
         <Input
           className="w-[200px]"
           type="number"
-          step={1}
-          min={1}
-          max={10}
-          value={threads}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+          step={ 1 }
+          min={ 1 }
+          max={ 10 }
+          value={ threads }
+          onChange={ (e: React.ChangeEvent<HTMLInputElement>) =>
             handleThreadsChange(e.target.value as unknown as number)
           }
         />

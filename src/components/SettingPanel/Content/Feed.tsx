@@ -201,6 +201,7 @@ export const Feed = () => {
         setDialogStatus={setModalStatus}
         feed={currentFeed}
         afterConfirm={getList}
+        afterCancel={() => {}}
       />
     </div>
   );
