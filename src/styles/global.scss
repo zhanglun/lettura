@@ -1,7 +1,7 @@
 :root {
   --sans-font: "Helvetica Neue", Helvetica, Arial, "PingFang SC",
-    "Hiragino Sans GB", "Heiti SC", "Microsoft YaHei", "WenQuanYi Micro Hei",
-    sans-serif;
+  "Hiragino Sans GB", "Heiti SC", "Microsoft YaHei", "WenQuanYi Micro Hei",
+  sans-serif;
   --serif-font: "Noto Serif", "Noto Serif TC", "Noto Sans TC", serif !important;
   --inline-code-font: monospace !important;
   --mono-font: "JetBrains Mono", monospace !important;
@@ -29,7 +29,7 @@
   );
   --reading-base-line-height: calc(
     var(--reading-editable-line-height) /
-      calc(var(--reading-root-size) * var(--reading-p-fs))
+    calc(var(--reading-root-size) * var(--reading-p-fs))
   );
   --reading-base-margin: calc(
     var(--reading-editable-font-size) / var(--reading-root-size) * 1rem
@@ -37,7 +37,7 @@
 
   --reading-base-margin-v: calc(
     (var(--reading-editable-line-height) / 32) *
-      (var(--reading-editable-font-size) / var(--reading-root-size) * 1em)
+    (var(--reading-editable-font-size) / var(--reading-root-size) * 1em)
   ); /* added as a variable margin size that factors in line-height and font-size */
 
   /* Caption = table divided by scale */
@@ -47,11 +47,11 @@
   --reading-caption-font-size: calc(var(--reading-caption-fs) * 1rem);
   --reading-caption-line-height: calc(
     var(--reading-editable-line-height) /
-      calc(var(--reading-root-size) * var(--reading-p-fs))
+    calc(var(--reading-root-size) * var(--reading-p-fs))
   );
   --reading-caption-margin: calc(
     var(--reading-editable-line-height) /
-      calc(var(--reading-root-size) * var(--reading-p-fs)) * 1em
+    calc(var(--reading-root-size) * var(--reading-p-fs)) * 1em
   );
 
   /* Table = base size divided by scale */
@@ -64,7 +64,7 @@
   );
   --reading-table-margin: calc(
     var(--reading-editable-line-height) /
-      calc(var(--reading-root-size) * var(--reading-p-fs)) * 1em
+    calc(var(--reading-root-size) * var(--reading-p-fs)) * 1em
   );
 
   /* P = base size */
@@ -72,7 +72,7 @@
   --reading-p-font-size: calc(var(--reading-base-fs) * 1rem);
   --reading-p-line-height: calc(
     var(--reading-editable-line-height) /
-      calc(var(--reading-root-size) * var(--reading-p-fs))
+    calc(var(--reading-root-size) * var(--reading-p-fs))
   );
   --reading-p-margin: calc(
     var(--reading-editable-font-size) / var(--reading-root-size) * 1rem
@@ -83,7 +83,7 @@
   --reading-h3-font-size: calc(var(--reading-p-fs) * 1rem);
   --reading-h3-line-height: calc(
     var(--reading-editable-line-height) /
-      calc(var(--reading-root-size) * var(--reading-h3-fs))
+    calc(var(--reading-root-size) * var(--reading-h3-fs))
   );
   --reading-h3-margin: calc(var(--reading-h3-line-height) * 1em);
 
@@ -94,7 +94,7 @@
   );
   --reading-h2-line-height: calc(
     var(--reading-editable-line-height) /
-      calc(var(--reading-h2-fs) * var(--reading-root-size))
+    calc(var(--reading-h2-fs) * var(--reading-root-size))
   );
 
   /* H1 = H2 size x scale */
@@ -104,7 +104,7 @@
   );
   --reading-h1-line-height: calc(
     var(--reading-editable-line-height) /
-      calc(var(--reading-h1-fs) * var(--reading-root-size))
+    calc(var(--reading-h1-fs) * var(--reading-root-size))
   );
   --reading-h1-margin: calc(var(--reading-h1-line-height) * 1em);
 
@@ -114,7 +114,7 @@
   --reading-font-caption: "Inter VF", sans-serif;
 
   --reading-font-monospace: "Roboto Mono VF", "SFMono-Regular", Consolas,
-    "Liberation Mono", Menlo, Courier, monospace;
+  "Liberation Mono", Menlo, Courier, monospace;
 }
 
 :root body {
@@ -215,3 +215,117 @@
 //     --tw-prose-headings: var(--detail-headline-color);
 //   }
 // }
+
+.reading-content {
+  font-weight: 400;
+  line-height: var(--reading-p-line-height);
+  font-family: var(--reading-font-body);
+  font-size: var(--reading-p-font-size);
+
+  * {
+    max-width: 100%;
+  }
+
+  ::selection {
+    background-color: var(--text-selection-background-color) !important;
+  }
+
+  p {
+    font-family: var(--reading-font-body);
+    font-size: var(--reading-p-font-size);
+    margin-bottom: var(--reading-p-margin);
+    margin-top: var(--reading-p-margin);
+    line-height: var(--reading-p-line-height);
+    color: var(--reading-text-primary);
+  }
+
+  h1 {
+    font-family: var(--reading-font-title);
+    font-weight: 600;
+    font-size: var(--reading-h1-font-size);
+    margin-top: calc(var(--reading-base-margin) * 3);
+    margin-bottom: var(--reading-base-margin);
+    line-height: var(--reading-h1-line-height);
+    letter-spacing: -0.019em;
+    font-variation-settings: "opsz" calc(var(--reading-h1-fs) * 16 + 1);
+    color: var(--reading-text-title);
+  }
+
+  h2 {
+    font-family: var(--reading-font-title);
+    font-weight: 600;
+    font-size: var(--reading-h2-font-size);
+    margin-top: calc(var(--reading-base-margin) * 2);
+    margin-bottom: var(--reading-base-margin);
+    line-height: var(--reading-h2-line-height);
+    letter-spacing: -0.011em;
+    font-variation-settings: "opsz" calc(var(--reading-h2-fs) * 16 + 1);
+    color: var(--reading-text-title);
+  }
+
+  h3 {
+    font-family: var(--reading-font-title);
+    font-weight: 600;
+    font-size: var(--reading-h3-font-size);
+    margin-top: calc(var(--reading-base-margin) * 1.5);
+    margin-bottom: calc(var(--reading-base-margin) * .5);
+    line-height: var(--reading-h3-line-height);
+    letter-spacing: -0.011em;
+    font-variation-settings: "opsz" calc(var(--reading-h3-fs) * 16 + 1);
+    color: var(--reading-text-title);
+  }
+
+  h4,
+  h5,
+  h6 {
+    font-family: var(--reading-font-body);
+    font-weight: 600;
+    font-size: var(--reading-p-font-size);
+    margin-top: var(--reading-p-margin);
+    margin-bottom: calc(var(--reading-p-margin) * 0.5);
+    line-height: var(--reading-p-line-height);
+    color: var(--reading-text-title);
+  }
+
+  h2 + * {
+    margin-top: 0;
+  }
+
+  h3 + * {
+    margin-top: 0;
+  }
+
+  h4 + * {
+    margin-top: 0;
+  }
+
+  h1 code,
+  h2 code,
+  h3 code,
+  h4 code,
+  h5 code,
+  h6 code {
+    font-size: .9em;
+  }
+
+  h4 code {
+    font-size: .9em;
+    font-weight: 600;
+  }
+
+  a {
+    text-decoration: underline;
+    text-decoration-style: dashed;
+    transition: all 0.3s;
+    color: var(--color-primary);
+
+    &:hover {
+      text-decoration-style: wavy;
+    }
+  }
+
+  img {
+    margin: 0 auto;
+    border: 2px solid var(--color-primary);
+  }
+}

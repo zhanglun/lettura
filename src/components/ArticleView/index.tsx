@@ -18,8 +18,8 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
   const { article, userConfig } = props;
   const containerRef = useRef<HTMLDivElement>(null);
   const helpBarRef = useRef<HTMLDivElement>(null);
-  const [pageContent, setPageContent] = useState("");
-  const [showBanner, setShowBanner] = useState(false);
+  const [ pageContent, setPageContent ] = useState("");
+  const [ showBanner, setShowBanner ] = useState(false);
 
   const renderPlaceholder = () => {
     return "Please Select Some read";
@@ -34,41 +34,41 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
     const ico = getChannelFavicon(channel_link);
 
     return (
-      <div ref={containerRef}>
+      <div ref={ containerRef }>
         <div className="m-auto">
           <div className="pb-4 border-b border-slate-100">
             <div className="mt-6 mb-5 text-4xl font-bold text-detail-headline">
-              {article.title}
+              { article.title }
             </div>
-            <div className={classnames(styles.meta)}>
+            <div className={ classnames(styles.meta) }>
               <span
-                className={classnames(styles.time, "text-detail-paragraph")}
+                className={ classnames(styles.time, "text-detail-paragraph") }
               >
-                {Dayjs(pub_date.replace(/-/gi, "/")).format("YYYY-MM-DD HH:mm")}
+                { Dayjs(pub_date.replace(/-/gi, "/")).format("YYYY-MM-DD HH:mm") }
               </span>
-              <span className={styles.channelInfo}>
-                <img src={ico} alt="" className="rounded" />
-                {article.channel_title}
+              <span className={ styles.channelInfo }>
+                <img src={ ico } alt="" className="rounded"/>
+                { article.channel_title }
               </span>
-              {article.author && (
+              { article.author && (
                 <span
-                  className={classnames(styles.author, "text-detail-paragraph")}
+                  className={ classnames(styles.author, "text-detail-paragraph") }
                 >
-                  {article.author}
+                  { article.author }
                 </span>
-              )}
+              ) }
             </div>
           </div>
           <div className="m-auto pt-1 mt-6">
-            {showBanner && article.image && (
-              <div className={styles.banner}>
-                <img src={article.image} alt="" />
+            { showBanner && article.image && (
+              <div className={ styles.banner }>
+                <img src={ article.image } alt=""/>
               </div>
-            )}
+            ) }
             <div
-              className={classnames(styles.content, "text-detail-paragraph")}
+              className={ classnames('reading-content', "text-detail-paragraph") }
               // eslint-disable-next-line react/no-danger
-              dangerouslySetInnerHTML={createMarkup(pageContent)}
+              dangerouslySetInnerHTML={ createMarkup(pageContent) }
             />
           </div>
         </div>
@@ -87,10 +87,10 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
       }).then((res: any) => {
         const data = new Uint8Array(res.data as number[]);
         const blobUrl = URL.createObjectURL(
-          new Blob([data.buffer], { type: "image/png" })
+          new Blob([ data.buffer ], { type: "image/png" })
         );
         (
-          document.querySelector(`img[src="${img.src}"]`) as HTMLImageElement
+          document.querySelector(`img[src="${ img.src }"]`) as HTMLImageElement
         ).src = blobUrl;
       });
     });
@@ -124,7 +124,7 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
         // parseImages(content);
       });
     }
-  }, [article]);
+  }, [ article ]);
 
   useEffect(() => {
     if (!containerRef?.current) {
@@ -152,9 +152,9 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
 
   return (
     // eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions
-    <div className={`${styles.container} ${styles.bgDot}`}>
-      {/* {loading && <Loading />} */}
-      {article ? renderDetail() : renderPlaceholder()}
+    <div className={ `${ styles.container } ${ styles.bgDot }` }>
+      {/* {loading && <Loading />} */ }
+      { article ? renderDetail() : renderPlaceholder() }
     </div>
   );
 };
