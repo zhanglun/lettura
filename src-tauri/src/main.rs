@@ -87,7 +87,7 @@ async fn main() {
       cmd::fetch_feed,
       cmd::get_feeds,
       cmd::get_channels,
-      cmd::add_channel,
+      cmd::add_feed,
       cmd::delete_channel,
       cmd::update_feed_sort,
       cmd::get_articles,

@@ -239,9 +239,9 @@ impl Article {
 
   pub fn add_articles(channel_uuid: String, articles: Vec<models::NewArticle>) -> usize {
     let mut connection = establish_connection();
-    let channel = schema::channels::dsl::channels
-      .filter(schema::channels::uuid.eq(&channel_uuid))
-      .load::<models::Channel>(&mut connection)
+    let channel = schema::feeds::dsl::feeds
+      .filter(schema::feeds::uuid.eq(&channel_uuid))
+      .load::<models::Feed>(&mut connection)
       .expect("Expect find channel");
 
     if channel.len() == 1 {

@@ -19,24 +19,6 @@ diesel::table! {
 }
 
 diesel::table! {
-    channels (id) {
-        id -> Integer,
-        uuid -> Text,
-        title -> Text,
-        link -> Text,
-        feed_url -> Text,
-        image -> Text,
-        description -> Text,
-        pub_date -> Timestamp,
-        sync_interval -> Integer,
-        last_sync_date -> Timestamp,
-        sort -> Integer,
-        create_date -> Timestamp,
-        update_date -> Timestamp,
-    }
-}
-
-diesel::table! {
     feed_metas (id) {
         id -> Integer,
         child_uuid -> Text,
@@ -44,6 +26,27 @@ diesel::table! {
         sort -> Integer,
         create_date -> Timestamp,
         update_date -> Timestamp,
+    }
+}
+
+diesel::table! {
+    feeds (id) {
+        id -> Integer,
+        uuid -> Text,
+        feed_type -> Text,
+        title -> Text,
+        link -> Text,
+        feed_url -> Text,
+        image -> Text,
+        logo -> Text,
+        description -> Text,
+        pub_date -> Timestamp,
+        sync_interval -> Integer,
+        last_sync_date -> Timestamp,
+        sort -> Integer,
+        create_date -> Timestamp,
+        update_date -> Timestamp,
+        updated -> Timestamp,
     }
 }
 
@@ -69,8 +72,8 @@ diesel::table! {
 
 diesel::allow_tables_to_appear_in_same_query!(
     articles,
-    channels,
     feed_metas,
+    feeds,
     folder_channel_relations,
     folders,
 );

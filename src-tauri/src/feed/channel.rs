@@ -9,11 +9,11 @@ use crate::db;
 use crate::models;
 use crate::schema;
 
-pub fn get_channel_by_uuid(channel_uuid: String) -> Option<models::Channel> {
+pub fn get_channel_by_uuid(channel_uuid: String) -> Option<models::Feed> {
   let mut connection = db::establish_connection();
-  let mut channel = schema::channels::dsl::channels
-    .filter(schema::channels::uuid.eq(&channel_uuid))
-    .load::<models::Channel>(&mut connection)
+  let mut channel = schema::feeds::dsl::feeds
+    .filter(schema::feeds::uuid.eq(&channel_uuid))
+    .load::<models::Feed>(&mut connection)
     .expect("Expect find channel");
 
   return if channel.len() == 1 {
@@ -33,14 +33,14 @@ pub fn get_channel_by_uuid(channel_uuid: String) -> Option<models::Channel> {
 /// ```
 pub fn delete_channel(uuid: String) -> usize {
   let mut connection = db::establish_connection();
-  let channel = schema::channels::dsl::channels
-    .filter(schema::channels::uuid.eq(&uuid))
-    .load::<models::Channel>(&mut connection)
+  let channel = schema::feeds::dsl::feeds
+    .filter(schema::feeds::uuid.eq(&uuid))
+    .load::<models::Feed>(&mut connection)
     .expect("Expect find channel");
 
   return if channel.len() == 1 {
     let result =
-      diesel::delete(schema::channels::dsl::channels.filter(schema::channels::uuid.eq(&uuid)))
+      diesel::delete(schema::feeds::dsl::feeds.filter(schema::feeds::uuid.eq(&uuid)))
         .execute(&mut connection)
         .expect("Expect delete channel");
 
@@ -65,7 +65,7 @@ pub fn delete_channel(uuid: String) -> usize {
 pub fn batch_delete_channel(channel_uuids: Vec<String>) -> usize {
   let mut connection = db::establish_connection();
   let result = diesel::delete(
-    schema::channels::dsl::channels.filter(schema::channels::uuid.eq_any(&channel_uuids)),
+    schema::feeds::dsl::feeds.filter(schema::feeds::uuid.eq_any(&channel_uuids)),
   )
   .execute(&mut connection)
   .expect("Expect delete channel");
@@ -291,11 +291,11 @@ pub fn get_feeds() -> Vec<FeedItem> {
 
   println!("filter_uuids :{:?}", &filter_uuids);
 
-  let channels = schema::channels::dsl::channels
+  let channels = schema::feeds::dsl::feeds
     .filter(diesel::dsl::not(
-      schema::channels::uuid.eq_any(&filter_uuids),
+      schema::feeds::uuid.eq_any(&filter_uuids),
     ))
-    .load::<models::Channel>(&mut connection)
+    .load::<models::Feed>(&mut connection)
     .unwrap();
 
   for channel in channels {
@@ -334,9 +334,9 @@ pub fn get_last_sort(connection: &mut diesel::SqliteConnection) -> i32 {
   last_sort
 }
 
-pub fn add_channel(channel: models::NewChannel, articles: Vec<models::NewArticle>) -> usize {
+pub fn add_feed(channel: models::NewFeed, articles: Vec<models::NewArticle>) -> usize {
   let mut connection = db::establish_connection();
-  let result = diesel::insert_or_ignore_into(schema::channels::dsl::channels)
+  let result = diesel::insert_or_ignore_into(schema::feeds::dsl::feeds)
     .values(&channel)
     .execute(&mut connection);
   let result = match result {
@@ -425,9 +425,9 @@ pub fn update_feed_sort(sorts: Vec<FeedSort>) -> usize {
 
     if item.parent_uuid.len() == 0 && item.item_type == "channel" {
       diesel::update(
-        schema::channels::dsl::channels.filter(schema::channels::uuid.eq(&item.child_uuid)),
+        schema::feeds::dsl::feeds.filter(schema::feeds::uuid.eq(&item.child_uuid)),
       )
-      .set(schema::channels::sort.eq(item.sort))
+      .set(schema::feeds::sort.eq(item.sort))
       .execute(&mut connection)
       .expect("msg");
     }
@@ -482,8 +482,8 @@ pub struct ChannelQueryResult {
 
 pub fn get_channels() -> ChannelQueryResult {
   let mut connection = db::establish_connection();
-  let channels = schema::channels::dsl::channels
-    .load::<models::Channel>(&mut connection)
+  let channels = schema::feeds::dsl::feeds
+    .load::<models::Feed>(&mut connection)
     .unwrap();
   let relations = schema::feed_metas::dsl::feed_metas
           .load::<models::FeedMeta>(&mut connection)

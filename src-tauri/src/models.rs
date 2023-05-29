@@ -1,13 +1,15 @@
-use super::schema::{articles, channels, feed_metas, folder_channel_relations, folders};
+use super::schema::{articles, feeds, feed_metas, folder_channel_relations, folders};
 use diesel::sql_types::*;
 use serde::Serialize;
 
 #[derive(Debug, Clone, Queryable, Serialize, QueryableByName)]
-pub struct Channel {
+pub struct Feed {
   #[diesel(sql_type = Integer)]
   pub id: i32,
   #[diesel(sql_type = Text)]
   pub uuid: String,
+  #[diesel(sql_type = Text)]
+  pub feed_type: String,
   #[diesel(sql_type = Text)]
   pub title: String,
   #[diesel(sql_type = Text)]
@@ -16,6 +18,8 @@ pub struct Channel {
   pub feed_url: String,
   #[diesel(sql_type = Text)]
   pub image: String,
+  #[diesel(sql_type = Text)]
+  pub logo: String,
   #[diesel(sql_type = Text)]
   pub description: String,
   #[diesel(sql_type = Text)]
@@ -30,18 +34,22 @@ pub struct Channel {
   pub create_date: String,
   #[diesel(sql_type = Text)]
   pub update_date: String,
+  #[diesel(sql_type = Text)]
+  pub updated: String,
 }
 
 #[derive(Debug, Clone, Serialize, Insertable)]
-#[diesel(table_name = channels)]
-pub struct NewChannel {
+#[diesel(table_name = feeds)]
+pub struct NewFeed {
   pub uuid: String,
+  pub feed_type: String,
   pub title: String,
   pub link: String,
-  pub image: String,
+  pub logo: String,
   pub feed_url: String,
   pub description: String,
   pub pub_date: String,
+  pub updated: String,
 }
 
 #[derive(Debug, Queryable, Serialize, QueryableByName)]
@@ -69,7 +77,7 @@ pub struct NewFeedMeta {
 }
 
 #[derive(Debug, Queryable, Serialize, Associations, QueryableByName)]
-#[diesel(belongs_to(Channel, foreign_key = uuid))]
+#[diesel(belongs_to(Feed, foreign_key = uuid))]
 pub struct Article {
   #[diesel(sql_type = Integer)]
   pub id: i32,

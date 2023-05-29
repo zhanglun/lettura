@@ -72,7 +72,7 @@ export const fetchFeed = async (
 };
 
 export const addChannel = async (url: string): Promise<[number, string]> => {
-  return invoke("add_channel", { url });
+  return invoke("add_feed", { url });
 };
 
 export const syncArticlesWithChannelUuid = async (
