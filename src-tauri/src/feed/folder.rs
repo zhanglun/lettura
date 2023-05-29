@@ -104,7 +104,7 @@ pub fn delete_folder(uuid: String) -> (usize, usize) {
 
     println!("{:?}", channel_uuids);
 
-    let channels = feed::channel::batch_delete_channel(channel_uuids);
+    let channels = feed::channel::batch_delete_feed(channel_uuids);
 
     diesel::delete(schema::folders::dsl::folders.filter(schema::folders::uuid.eq(&uuid)))
       .execute(&mut connection)

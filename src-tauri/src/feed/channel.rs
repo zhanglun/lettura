@@ -27,11 +27,11 @@ pub fn get_channel_by_uuid(channel_uuid: String) -> Option<models::Feed> {
 /// # Example
 /// ```
 /// let uuid = String::from("123456");
-/// let result = delete_channel(uuid);
+/// let result = delete_feed(uuid);
 ///
 /// assert_eq!(1, result);
 /// ```
-pub fn delete_channel(uuid: String) -> usize {
+pub fn delete_feed(uuid: String) -> usize {
   let mut connection = db::establish_connection();
   let channel = schema::feeds::dsl::feeds
     .filter(schema::feeds::uuid.eq(&uuid))
@@ -62,7 +62,7 @@ pub fn delete_channel(uuid: String) -> usize {
   };
 }
 
-pub fn batch_delete_channel(channel_uuids: Vec<String>) -> usize {
+pub fn batch_delete_feed(channel_uuids: Vec<String>) -> usize {
   let mut connection = db::establish_connection();
   let result = diesel::delete(
     schema::feeds::dsl::feeds.filter(schema::feeds::uuid.eq_any(&channel_uuids)),
@@ -316,9 +316,9 @@ pub fn get_feeds() -> Vec<FeedItem> {
 }
 
 pub fn get_last_sort(connection: &mut diesel::SqliteConnection) -> i32 {
-  let last_sort = schema::feed_metas::dsl::feed_metas
-    .select(schema::feed_metas::sort)
-    .filter(schema::feed_metas::dsl::parent_uuid.is(""))
+  let last_sort = schema::feeds::dsl::feeds
+    .select(schema::feeds::sort)
+    .order(schema::feeds::sort.desc())
     .get_results::<i32>(connection);
 
   let last_sort = match last_sort {
@@ -541,5 +541,13 @@ mod tests {
     let record = get_unread_total();
 
     println!("{:?}", record);
+  }
+
+  #[test]
+  fn test_get_last_sort() {
+    let mut connection = db::establish_connection();
+    let sort = get_last_sort(&mut connection);
+
+    println!("sort {:?}", sort);
   }
 }

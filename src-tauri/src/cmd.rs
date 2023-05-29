@@ -292,8 +292,8 @@ pub fn get_articles(uuid: String, filter: feed::article::ArticleFilter) -> feed:
 }
 
 #[command]
-pub fn delete_channel(uuid: String) -> usize {
-  let result = feed::channel::delete_channel(uuid);
+pub fn delete_feed(uuid: String) -> usize {
+  let result = feed::channel::delete_feed(uuid);
 
   result
 }
@@ -517,9 +517,9 @@ mod tests {
   use super::*;
 
   #[test]
-  fn test_delete_channel() {
-    let url = "9a6ca3f0-41f2-4486-a50a-1a41f1e80b56";
-    delete_channel(String::from(url));
+  fn test_delete_feed() {
+    let url = "2d1f4fee-ce02-408a-b832-cf175a1244f0";
+    delete_feed(String::from(url));
   }
 
   #[test]
@@ -568,7 +568,7 @@ mod tests {
 
   #[tokio::test]
   async fn test_add_feed () {
-    let url = "https://post.smzdm.com/feed".to_string();
+    let url = "http://www.ximalaya.com/album/39643321.xml".to_string();
     // let url = "http://www.smashingmagazine.com/feed/".to_string();
     let result = add_feed(url).await;
 
