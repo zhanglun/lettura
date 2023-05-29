@@ -183,6 +183,7 @@ pub fn create_feed_model(uuid: &String, url: &String, res: &feed_rs::model::Feed
     description,
     pub_date: pub_date,
     updated: updated,
+    sort: 0,
   }
 }
 
@@ -518,7 +519,7 @@ mod tests {
 
   #[test]
   fn test_delete_feed() {
-    let url = "2d1f4fee-ce02-408a-b832-cf175a1244f0";
+    let url = "ee323999-8302-41de-afb4-e0929cebf5a6";
     delete_feed(String::from(url));
   }
 

@@ -336,28 +336,19 @@ pub fn get_last_sort(connection: &mut diesel::SqliteConnection) -> i32 {
 
 pub fn add_feed(feed: models::NewFeed, articles: Vec<models::NewArticle>) -> (usize, String) {
   let mut connection = db::establish_connection();
+  let last_sort = get_last_sort(&mut connection);
+  let record = models::NewFeed {
+    sort: last_sort + 1,
+    ..feed
+  };
   let result = diesel::insert_into(schema::feeds::dsl::feeds)
-    .values(&feed)
+    .values(&record)
     .execute(&mut connection);
 
   println!("result ===> {:?}", result);
 
   let result = match result {
     Ok(r) => {
-      if r == 1 {
-        let last_sort = get_last_sort(&mut connection);
-        let meta_record = models::NewFeedMeta {
-          child_uuid: String::from(feed.uuid),
-          parent_uuid: "".to_string(),
-          sort: last_sort + 1,
-        };
-
-        diesel::insert_or_ignore_into(schema::feed_metas::dsl::feed_metas)
-          .values(meta_record)
-          .execute(&mut connection)
-          .expect("Expect create feed meta");
-      }
-
       (r, String::from(""))
     }
     Err(error) => {

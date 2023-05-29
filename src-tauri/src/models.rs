@@ -48,6 +48,7 @@ pub struct NewFeed {
   pub description: String,
   pub pub_date: String,
   pub updated: String,
+  pub sort: i32,
 }
 
 #[derive(Debug, Queryable, Serialize, QueryableByName)]
