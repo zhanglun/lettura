@@ -91,7 +91,7 @@ impl Article {
               A.pub_date,
               A.read_status
             FROM
-              channels as C
+              feeds as C
             LEFT JOIN
               articles as A
             ON C.uuid = A.channel_uuid

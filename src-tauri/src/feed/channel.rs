@@ -239,7 +239,7 @@ pub fn get_feeds() -> Vec<FeedItem> {
       F.child_uuid AS uuid,
       F.sort, C.link,
       F.parent_uuid as parent_uuid
-    FROM channels as C
+    FROM feeds as C
     LEFT JOIN feed_metas AS F
     ON C.uuid = F.child_uuid
     WHERE parent_uuid != '' and parent_uuid IS NOT NULL
