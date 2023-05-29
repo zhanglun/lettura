@@ -17,7 +17,7 @@ import {
   Folder,
   FolderOpen,
   RefreshCw,
-  Settings,
+  Settings
 } from "lucide-react";
 
 import {
@@ -25,13 +25,14 @@ import {
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuSeparator,
-  ContextMenuTrigger,
+  ContextMenuTrigger
 } from "@/components/ui/context-menu";
 import { Icon } from "../Icon";
 import { FeedItem } from "./Item";
 import { DialogUnsubscribeFeed } from "../SettingPanel/Content/DialogUnsubscribeFeed";
 import { useModal } from "../Modal/useModal";
 import { open } from "@tauri-apps/api/shell";
+import { DialogEditFeed } from "@/components/SettingPanel/Content/DialogEditFeed";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -41,6 +42,7 @@ const ChannelList = (): JSX.Element => {
   const navigate = useNavigate();
   const [addFolderDialogStatus, , , , setAddFolderDialogStatus] = useModal();
   const [editFolderDialogStatus, , , , setEditFolderDialogStatus] = useModal();
+  const [editFeedStatus, , , , setEditFeedStatus] = useModal();
   const [showStatus, , , , setModalStatus] = useModal();
   const [refreshing, setRefreshing] = useState(false);
   const [channelList, setChannelList] = useState<Channel[]>([]);
@@ -50,7 +52,7 @@ const ChannelList = (): JSX.Element => {
     channel: state.channel,
     setChannel: state.setChannel,
     feedContextMenuTarget: state.feedContextMenuTarget,
-    setFeedContextMenuTarget: state.setFeedContextMenuTarget,
+    setFeedContextMenuTarget: state.setFeedContextMenuTarget
   }));
   const query = useQuery();
   const channelUuid = query.get("channelUuid");
@@ -230,13 +232,13 @@ const ChannelList = (): JSX.Element => {
   };
 
   const renderLabel = ({
-    className,
-    onExpand,
-    data,
-    level,
-    expandIcon,
-    expandStatus,
-  }: any) => {
+                         className,
+                         onExpand,
+                         data,
+                         level,
+                         expandIcon,
+                         expandStatus
+                       }: any) => {
     const { uuid } = data;
     // const isLeaf = !(data.children && data.children.length);
     const isActive = (store?.channel?.uuid || channelUuid) === uuid;
@@ -340,14 +342,14 @@ const ChannelList = (): JSX.Element => {
               parent_uuid,
               child_uuid: item.uuid,
               sort: idx,
-              item_type: item.item_type,
+              item_type: item.item_type
             });
           } else {
             res.push({
               parent_uuid: "",
               child_uuid: item.uuid,
               sort: idx,
-              item_type: item.item_type,
+              item_type: item.item_type
             });
           }
 
@@ -401,7 +403,8 @@ const ChannelList = (): JSX.Element => {
     // }
   };
 
-  const handleEditFolder = () => {};
+  const handleEditFolder = () => {
+  };
 
   useEffect(() => {
     if (listRef.current) {
@@ -428,7 +431,8 @@ const ChannelList = (): JSX.Element => {
   }, [channelList]);
 
   return (
-    <div className="relative flex flex-col w-[var(--app-channel-width)] h-full select-none border-r border-slate-100 bg-feed-list-bg">
+    <div
+      className="relative flex flex-col w-[var(--app-channel-width)] h-full select-none border-r border-slate-100 bg-feed-list-bg">
       <div className={`sticky-header ${styles.header}`}>
         <div />
         <div className={styles.toolbar}>
@@ -487,6 +491,7 @@ const ChannelList = (): JSX.Element => {
                       Open {new URL(store.feedContextMenuTarget?.link).host}
                     </ContextMenuItem>
                     <ContextMenuSeparator />
+                    <ContextMenuItem onClick={() => setEditFeedStatus(true)}>Detail</ContextMenuItem>
                     <ContextMenuItem onClick={() => setModalStatus(true)}>
                       Unsubscribe
                     </ContextMenuItem>
@@ -503,6 +508,9 @@ const ChannelList = (): JSX.Element => {
           afterConfirm={getList}
           afterCancel={() => store.setFeedContextMenuTarget(null)}
         ></DialogUnsubscribeFeed>
+        <DialogEditFeed feed={store.feedContextMenuTarget} dialogStatus={editFeedStatus}
+                        setDialogStatus={setEditFeedStatus} afterConfirm={getList}
+                        afterCancel={() => store.setFeedContextMenuTarget(null)}></DialogEditFeed>
         <AddFolder
           action="edit"
           folder={store.feedContextMenuTarget}

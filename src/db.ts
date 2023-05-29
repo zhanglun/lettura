@@ -10,6 +10,7 @@ export interface Channel {
   pub_date?: Date;
   unread: number;
   sort?: number;
+  create_date?: Date,
 }
 export interface Article {
   id?: number;

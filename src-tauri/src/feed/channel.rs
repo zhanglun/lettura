@@ -205,6 +205,9 @@ pub struct ChildItem {
   pub title: String,
   pub sort: i32,
   pub link: Option<String>,
+  pub feed_url: String,
+  pub description: String,
+  pub create_date: String,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -216,6 +219,9 @@ pub struct FeedItem {
   pub children: Option<Vec<ChildItem>>,
   pub parent_uuid: String,
   pub link: Option<String>,
+  pub feed_url: String,
+  pub description: String,
+  pub create_date: String,
 }
 
 #[derive(Debug, Queryable, Serialize, QueryableByName)]
@@ -230,6 +236,12 @@ pub struct FeedJoinRecord {
   pub parent_uuid: String,
   #[diesel(sql_type = diesel::sql_types::Text)]
   pub link: String,
+  #[diesel(sql_type = diesel::sql_types::Text)]
+  pub feed_url: String,
+  #[diesel(sql_type = diesel::sql_types::Text)]
+  pub description: String,
+  #[diesel(sql_type = diesel::sql_types::Text)]
+  pub create_date: String,
 }
 
 pub fn get_feeds() -> Vec<FeedItem> {
@@ -237,7 +249,11 @@ pub fn get_feeds() -> Vec<FeedItem> {
     SELECT
       C.title AS title,
       F.child_uuid AS uuid,
-      F.sort, C.link,
+      F.sort,
+      C.link,
+      C.feed_url,
+      C.description,
+      C.create_date,
       F.parent_uuid as parent_uuid
     FROM feeds as C
     LEFT JOIN feed_metas AS F
@@ -268,6 +284,9 @@ pub fn get_feeds() -> Vec<FeedItem> {
       title: channel.title,
       sort: channel.sort,
       link: Some(channel.link),
+      feed_url: channel.feed_url,
+      description: channel.description,
+      create_date: channel.create_date,
     });
 
     filter_uuids.push(channel.uuid);
@@ -286,6 +305,9 @@ pub fn get_feeds() -> Vec<FeedItem> {
       link: Some(String::from("")),
       parent_uuid: "".to_string(),
       children: Some(c_uuids.to_vec()),
+      feed_url: "".to_string(),
+      description: "".to_string(),
+      create_date: folder.create_date,
     });
   }
 
@@ -305,6 +327,9 @@ pub fn get_feeds() -> Vec<FeedItem> {
       title: channel.title,
       sort: channel.sort,
       link: Some(channel.link),
+      feed_url: channel.feed_url,
+      description: channel.description,
+      create_date: channel.create_date,
       parent_uuid: String::from(""),
       children: Some(Vec::new()),
     });
