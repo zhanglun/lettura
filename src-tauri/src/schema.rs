@@ -37,7 +37,7 @@ diesel::table! {
         title -> Text,
         link -> Text,
         feed_url -> Text,
-        image -> Text,
+
         logo -> Text,
         description -> Text,
         pub_date -> Timestamp,

@@ -262,11 +262,11 @@ pub async fn add_feed(url: String) -> (usize, String) {
   match res {
     Ok(res) => {
       let channel_uuid = Uuid::new_v4().hyphenated().to_string();
-      let channel = create_feed_model(&channel_uuid, &url, &res);
+      let feed = create_feed_model(&channel_uuid, &url, &res);
+      println!("feed {:?}", feed);
       let articles = create_article_models(&channel_uuid, &url, &res);
-      let res = feed::channel::add_feed(channel, articles);
 
-      (res, String::from(""))
+      feed::channel::add_feed(feed, articles)
     }
     Err(err) => {
       (0, err)
@@ -569,6 +569,7 @@ mod tests {
   #[tokio::test]
   async fn test_add_feed () {
     let url = "https://post.smzdm.com/feed".to_string();
+    // let url = "http://www.smashingmagazine.com/feed/".to_string();
     let result = add_feed(url).await;
 
     println!("result: {:?}", result);

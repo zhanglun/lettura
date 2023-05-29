@@ -17,8 +17,6 @@ pub struct Feed {
   #[diesel(sql_type = Text)]
   pub feed_url: String,
   #[diesel(sql_type = Text)]
-  pub image: String,
-  #[diesel(sql_type = Text)]
   pub logo: String,
   #[diesel(sql_type = Text)]
   pub description: String,

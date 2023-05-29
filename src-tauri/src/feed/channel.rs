@@ -334,17 +334,20 @@ pub fn get_last_sort(connection: &mut diesel::SqliteConnection) -> i32 {
   last_sort
 }
 
-pub fn add_feed(channel: models::NewFeed, articles: Vec<models::NewArticle>) -> usize {
+pub fn add_feed(feed: models::NewFeed, articles: Vec<models::NewArticle>) -> (usize, String) {
   let mut connection = db::establish_connection();
-  let result = diesel::insert_or_ignore_into(schema::feeds::dsl::feeds)
-    .values(&channel)
+  let result = diesel::insert_into(schema::feeds::dsl::feeds)
+    .values(&feed)
     .execute(&mut connection);
+
+  println!("result ===> {:?}", result);
+
   let result = match result {
     Ok(r) => {
       if r == 1 {
         let last_sort = get_last_sort(&mut connection);
         let meta_record = models::NewFeedMeta {
-          child_uuid: String::from(channel.uuid),
+          child_uuid: String::from(feed.uuid),
           parent_uuid: "".to_string(),
           sort: last_sort + 1,
         };
@@ -355,14 +358,16 @@ pub fn add_feed(channel: models::NewFeed, articles: Vec<models::NewArticle>) -> 
           .expect("Expect create feed meta");
       }
 
-      r
+      (r, String::from(""))
     }
-    Err(_) => 0,
+    Err(error) => {
+      (0, error.to_string())
+    },
   };
 
   println!(" new result {:?}", result);
 
-  if result == 1 {
+  if result.0 == 1 {
     println!("start insert articles");
 
     let articles = diesel::insert_or_ignore_into(schema::articles::dsl::articles)
@@ -460,7 +465,7 @@ pub struct ChannelQuery {
   #[diesel(sql_type = diesel::sql_types::Text)]
   pub feed_url: String,
   #[diesel(sql_type = diesel::sql_types::Text)]
-  pub image: String,
+  pub logo: String,
   #[diesel(sql_type = diesel::sql_types::Text)]
   pub description: String,
   #[diesel(sql_type = diesel::sql_types::Text)]
@@ -501,7 +506,7 @@ pub fn get_channels() -> ChannelQueryResult {
       title: channel.title,
       link: channel.link,
       feed_url: channel.feed_url,
-      image: channel.image,
+      logo: channel.logo,
       description: channel.description,
       pub_date: channel.pub_date,
       sort: channel.sort,
