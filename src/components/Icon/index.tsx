@@ -9,14 +9,13 @@ export interface IconProps {
 }
 
 export const Icon = (props: IconProps) => {
-  const { onClick = () => {}, disable, children, className } = props;
+  const { onClick = () => {}, disable, children, className = 'w-8 h-8' } = props;
 
   return (
     <span
       onClick={onClick}
       className={classNames(
         "flex items-center justify-center rounded hover:text-accent-foreground hover:bg-accent",
-        `w-8 h-8`,
         { "bg-muted cursor-not-allowed" : disable},
         className
       )}

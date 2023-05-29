@@ -1,10 +1,7 @@
 import React from "react";
-import { NavLink, Outlet } from "react-router-dom";
-import classnames from "classnames";
-import { ArrowLeft, Cog, Database, Palette, Rss } from "lucide-react";
+import { Outlet } from "react-router-dom";
+import { Cog, Database, Palette, Rss } from "lucide-react";
 import { RouteConfig } from "../../config";
-import styles from "./setting.module.scss";
-import { Icon } from "../Icon";
 import { Link } from "@/components/SettingPanel/Link";
 import { Separator } from "@/components/ui/separator";
 

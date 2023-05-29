@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
-import { ArticleList, ArticleListRefType } from "../../components/ArticleList";
-import { ArticleView } from "../../components/ArticleView";
+import { ArticleList, ArticleListRefType } from "@/components/ArticleList";
+import { ArticleView } from "@/components/ArticleView";
 import * as dataAgent from "../../helpers/dataAgent";
-import { useBearStore } from "../../hooks/useBearStore";
+import { useBearStore } from "@/hooks/useBearStore";
 import styles from "./index.module.scss";
 import {
   Filter,
@@ -16,8 +16,8 @@ import {
   Link,
   Ghost,
 } from "lucide-react";
-import { busChannel } from "../../helpers/busChannel";
-import { Article } from "../../db";
+import { busChannel } from "@/helpers/busChannel";
+import { Article } from "@/db";
 import { CustomizeStyle } from "@/components/SettingPanel/CustomizeStyle";
 import {
   Popover,
@@ -68,7 +68,7 @@ export const ArticleContainer = (): JSX.Element => {
   const feedUrl = query.get("feedUrl");
   const type = query.get("type");
   const channelUuid = query.get("channelUuid");
-  const [syncing, setSyncing] = useState(false);
+  const [ syncing, setSyncing ] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<HTMLDivElement>(null);
   const articleListRef = useRef<ArticleListRefType>(null);
@@ -92,7 +92,7 @@ export const ArticleContainer = (): JSX.Element => {
       const $list = viewRef.current as HTMLDivElement;
       $list.addEventListener("scroll", handleViewScroll);
     }
-  }, [store.articleList]);
+  }, [ store.articleList ]);
 
   useEffect(() => {
     if (
@@ -128,7 +128,7 @@ export const ArticleContainer = (): JSX.Element => {
         observer.observe($target);
       }
     }
-  }, [articleListRef.current]);
+  }, [ articleListRef.current ]);
 
   const getArticleList = () => {
     if (articleListRef.current) {
@@ -146,7 +146,7 @@ export const ArticleContainer = (): JSX.Element => {
           channelUuid as string
         )
         .then((res) => {
-          const [num, message] = res;
+          const [ num, message ] = res;
 
           console.log("%c Line:77 🥛 res", "color:#ea7e5c", res);
 
@@ -268,11 +268,11 @@ export const ArticleContainer = (): JSX.Element => {
       console.log("clean!!!!");
       unsub2();
     };
-  }, [store.articleList]);
+  }, [ store.articleList ]);
 
   useEffect(() => {
     resetScrollTop();
-  }, [store.article]);
+  }, [ store.article ]);
 
   useEffect(() => {
     resetScrollTop();
@@ -284,7 +284,7 @@ export const ArticleContainer = (): JSX.Element => {
     }
 
     setCurrentIdx(-1);
-  }, [channelUuid]);
+  }, [ channelUuid ]);
 
   function calculateItemPosition(
     direction: "up" | "down",
@@ -324,9 +324,9 @@ export const ArticleContainer = (): JSX.Element => {
   }
 
   return (
-    <div className={styles.article}>
+    <div className={ styles.article }>
       <div className="relative h-full border-r border-stone-100 bg-article-list-bg">
-        <div className={`sticky-header ${styles.header}`}>
+        <div className={ `sticky-header ${ styles.header }` }>
           <div
             className="
             flex
@@ -341,92 +341,92 @@ export const ArticleContainer = (): JSX.Element => {
             text-article-headline
           "
           >
-            {store.channel ? store.channel.title : ""}
+            { store.channel ? store.channel.title : "" }
           </div>
-          <div className={styles.menu}>
+          <div className={ styles.menu }>
             <DropdownMenu>
               <DropdownMenuTrigger>
                 <Icon>
-                  <Filter size={16}></Filter>
+                  <Filter size={ 16 }></Filter>
                 </Icon>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuRadioGroup
-                  value={store.currentFilter.id + ""}
-                  onValueChange={changeFilter}
+                  value={ store.currentFilter.id + "" }
+                  onValueChange={ changeFilter }
                 >
-                  {store.filterList.map((item) => {
+                  { store.filterList.map((item) => {
                     return (
                       <DropdownMenuRadioItem
-                        key={item.id + ""}
-                        value={item.id + ""}
+                        key={ item.id + "" }
+                        value={ item.id + "" }
                       >
-                        {item.title}
+                        { item.title }
                       </DropdownMenuRadioItem>
                     );
-                  })}
+                  }) }
                 </DropdownMenuRadioGroup>
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <Icon onClick={markAllRead}>
-              <CheckCheck size={16} />
+            <Icon onClick={ markAllRead }>
+              <CheckCheck size={ 16 }/>
             </Icon>
-            <Icon onClick={handleRefresh}>
-              <RefreshCw size={16} className={`${syncing ? "spinning" : ""}`} />
+            <Icon onClick={ handleRefresh }>
+              <RefreshCw size={ 16 } className={ `${ syncing ? "spinning" : "" }` }/>
             </Icon>
           </div>
         </div>
-        {syncing && <div className={styles.syncingBar}>同步中</div>}
-        <div className={styles.scrollList} ref={listRef}>
+        { syncing && <div className={ styles.syncingBar }>同步中</div> }
+        <div className={ styles.scrollList } ref={ listRef }>
           <ArticleList
-            ref={articleListRef}
-            title={params.name}
-            type={type}
-            feedUuid={channelUuid}
-            feedUrl={feedUrl || ""}
+            ref={ articleListRef }
+            title={ params.name }
+            type={ type }
+            feedUuid={ channelUuid }
+            feedUrl={ feedUrl || "" }
           />
         </div>
       </div>
-      <div className={styles.mainView}>
-        <div className={`sticky-header ${styles.viewHeader}`}>
-          <div />
-          <div className={styles.viewMenu}>
-            <Icon disable={currentIdx <= 0} onClick={handleViewPrevious}>
-              <ChevronUp size={16} />
+      <div className={ styles.mainView }>
+        <div className={ `sticky-header ${ styles.viewHeader }` }>
+          <div/>
+          <div className={ styles.viewMenu }>
+            <Icon disable={ currentIdx <= 0 } onClick={ handleViewPrevious }>
+              <ChevronUp size={ 16 }/>
             </Icon>
             <Icon
-              disable={currentIdx >= store.articleList.length - 1}
-              onClick={handleViewNext}
+              disable={ currentIdx >= store.articleList.length - 1 }
+              onClick={ handleViewNext }
             >
-              <ChevronDown size={16} />
+              <ChevronDown size={ 16 }/>
             </Icon>
             <Popover>
               <PopoverTrigger>
                 <Icon>
-                  <Paintbrush size={16} />
+                  <Paintbrush size={ 16 }/>
                 </Icon>
               </PopoverTrigger>
               <PopoverContent className="w-[340px]">
                 <CustomizeStyle
-                  styleConfig={store.userConfig.customize_style}
+                  styleConfig={ store.userConfig.customize_style }
                 />
               </PopoverContent>
             </Popover>
-            <Icon onClick={handleViewSourcePage}>
-              <Ghost size={16} />
+            <Icon onClick={ handleViewSourcePage }>
+              <Ghost size={ 16 }/>
             </Icon>
-            <Icon onClick={() => store.article && open(store.article?.link)}>
-              <ExternalLink size={16} />
+            <Icon onClick={ () => store.article && open(store.article?.link) }>
+              <ExternalLink size={ 16 }/>
             </Icon>
-            <Icon onClick={handleCopyLink}>
-              <Link size={16} />
+            <Icon onClick={ handleCopyLink }>
+              <Link size={ 16 }/>
             </Icon>
           </div>
         </div>
-        <div className={styles.scrollView} ref={viewRef}>
-          {/* <CustomizeStyle styleConfig={store.userConfig.customize_style} /> */}
-          <ArticleView article={store.article} userConfig={store.userConfig} />
+        <div className={ styles.scrollView } ref={ viewRef }>
+          {/* <CustomizeStyle styleConfig={store.userConfig.customize_style} /> */ }
+          <ArticleView article={ store.article } userConfig={ store.userConfig }/>
         </div>
       </div>
     </div>

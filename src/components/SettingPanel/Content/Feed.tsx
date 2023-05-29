@@ -9,7 +9,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { Trash2 } from "lucide-react";
+import { Rss, Trash2 } from "lucide-react";
+import { open } from "@tauri-apps/api/shell";
 import { Channel, Folder } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
 import { busChannel } from "@/helpers/busChannel";
@@ -19,20 +20,21 @@ import { CellContext, createColumnHelper } from "@tanstack/react-table";
 import { getChannelFavicon } from "@/helpers/parseXML";
 import { DialogUnsubscribeFeed } from "./DialogUnsubscribeFeed";
 import { useModal } from "@/components/Modal/useModal";
+import { Icon } from "@/components/Icon";
 
 export const Feed = () => {
-  const [list, setList] = useState<(Channel & { parent_uuid: String })[]>([]);
-  const [showStatus, , , , setModalStatus] = useModal();
-  const [renderList, setRenderList] = useState<
+  const [ list, setList ] = useState<(Channel & { parent_uuid: String })[]>([]);
+  const [ showStatus, , , , setModalStatus ] = useModal();
+  const [ renderList, setRenderList ] = useState<
     (Channel & { parent_uuid: String })[]
   >([]);
-  const [folderList, setFolderList] = useState<Folder[]>([]);
-  const [filterParams, setFilterParams] = useState<{
+  const [ folderList, setFolderList ] = useState<Folder[]>([]);
+  const [ filterParams, setFilterParams ] = useState<{
     searchText?: string;
     folderUuid?: string;
   }>({});
 
-  const [currentFeed, setCurrentFeed] = useState<Channel | null>(null);
+  const [ currentFeed, setCurrentFeed ] = useState<Channel | null>(null);
   const handleUnSubscribe = (channel: Channel) => {
     if (channel?.uuid) {
       setCurrentFeed(channel);
@@ -52,51 +54,41 @@ export const Feed = () => {
           <div>
             <div className="flex items-center">
               <img
-                src={getChannelFavicon(link)}
+                src={ getChannelFavicon(link) }
                 alt=""
                 className="w-6 h-6 rounded-full mr-2"
               />
               <a
                 className="font-bold hover:underline"
-                href={link}
-                target={"_blank"}
+                href={ link }
+                target={ "_blank" }
                 rel="noreferrer"
               >
-                {title}
+                { title }
               </a>
             </div>
           </div>
         );
       },
     },
-    {
-      accessorKey: "feed_url",
-      header: "Feed url",
-      size: "fix-content",
-      cell(props: CellContext<Channel, string>): JSX.Element {
-        const { feed_url } = props.row.original;
-        return (
-          <div>
-            <a href={feed_url} target={"_blank"} rel="noreferrer">
-              {feed_url}
-            </a>
-          </div>
-        );
-      },
-    },
-    columnHelper.accessor((row) => `${row.uuid}-opt`, {
+    columnHelper.accessor((row) => `${ row.uuid }-opt`, {
       id: "opt",
-      header: "Action",
+      header: "",
       size: 120,
       cell(props: CellContext<Channel, string>): JSX.Element {
         return (
-          <div>
-            <span
-              className={styles.actionBtn}
-              onClick={() => handleUnSubscribe(props.row.original)}
+          <div className="flex space-x-1">
+            <Icon
+              className="w-6 h-6"
+              onClick={ () => open(props.row.original.feed_url) }
             >
-              <Trash2 size={16} />
-            </span>
+              <Rss size={ 14 }/>
+            </Icon>
+            <Icon className="w-6 h-6"
+              onClick={ () => handleUnSubscribe(props.row.original) }
+            >
+              <Trash2 size={ 14 }/>
+            </Icon>
           </div>
         );
       },
@@ -142,7 +134,7 @@ export const Feed = () => {
     });
 
     setRenderList(result);
-  }, [filterParams]);
+  }, [ filterParams ]);
 
   useEffect(() => {
     getList();
@@ -163,45 +155,46 @@ export const Feed = () => {
         <Input
           className="h-8"
           placeholder="Search Feed"
-          value={filterParams.searchText}
-          onChange={(e: ChangeEvent<HTMLInputElement>) =>
+          value={ filterParams.searchText }
+          onChange={ (e: ChangeEvent<HTMLInputElement>) =>
             handleSearch(e.target.value)
           }
         />
         <Select
-          value={filterParams.folderUuid}
-          onValueChange={(v: string) => handleFolderChange(v)}
+          value={ filterParams.folderUuid }
+          onValueChange={ (v: string) => handleFolderChange(v) }
         >
           <SelectTrigger className="w-[180px] h-8">
-            <SelectValue placeholder="All Folder" />
+            <SelectValue placeholder="All Folder"/>
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
               <SelectItem key=" " value="">
                 All Folder
               </SelectItem>
-              {folderList.map((folder) => {
+              { folderList.map((folder) => {
                 return (
-                  <SelectItem key={folder.uuid} value={folder.uuid}>
-                    {folder.name}
+                  <SelectItem key={ folder.uuid } value={ folder.uuid }>
+                    { folder.name }
                   </SelectItem>
                 );
-              })}
+              }) }
             </SelectGroup>
           </SelectContent>
         </Select>
       </div>
       <DataTable
         // @ts-ignore
-        columns={columns}
-        data={renderList}
+        columns={ columns }
+        data={ renderList }
       />
       <DialogUnsubscribeFeed
-        dialogStatus={showStatus}
-        setDialogStatus={setModalStatus}
-        feed={currentFeed}
-        afterConfirm={getList}
-        afterCancel={() => {}}
+        dialogStatus={ showStatus }
+        setDialogStatus={ setModalStatus }
+        feed={ currentFeed }
+        afterConfirm={ getList }
+        afterCancel={ () => {
+        } }
       />
     </div>
   );

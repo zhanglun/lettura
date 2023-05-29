@@ -541,7 +541,7 @@ mod tests {
 
   #[tokio::test]
   async fn test_create_article_models() {
-    let url = "https://tympanus.net/codrops/feed".to_string();
+    let url = "https://www.ximalaya.com/album/70501228.xml".to_string();
     println!("{:?}", url);
     let res = fetch_feed_item(&url).await;
 
@@ -550,6 +550,8 @@ mod tests {
         let channel_uuid = Uuid::new_v4().hyphenated().to_string();
         let channel = create_channel_model(&channel_uuid, &url, &res).clone();
         println!("{:?}", (Some(channel), String::from("")));
+        let articles = create_article_models(&channel_uuid, &url, &res);
+        println!("{:?}", articles);
       }
       Err(err) => {
         println!("err {:?}", (None::<models::NewChannel>, err));
