@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
-import { ArticleListRefType } from "@/components/ArticleList";
+import { ArticleList, ArticleListRefType } from "@/components/ArticleList";
+import { ArticleView } from "@/components/ArticleView";
 import * as dataAgent from "../../helpers/dataAgent";
 import { useBearStore } from "@/hooks/useBearStore";
 import styles from "./index.module.scss";
@@ -13,7 +14,7 @@ import {
   ExternalLink,
   Paintbrush,
   Link,
-  Ghost, Share, Layout, LayoutGrid, LayoutList
+  Ghost, Share, Layout, LayoutGrid, LayoutList, LayoutPanelLeft
 } from "lucide-react";
 import { busChannel } from "@/helpers/busChannel";
 import { Article } from "@/db";
@@ -23,6 +24,7 @@ import {
   PopoverContent,
   PopoverTrigger
 } from "@/components/ui/popover";
+import classNames from "classnames";
 
 import {
   DropdownMenu,
@@ -38,15 +40,12 @@ import { Icon } from "@/components/Icon";
 
 import { open } from "@tauri-apps/api/shell";
 import { Separator } from "@/components/ui/separator";
-import { Layout1 } from "@/containers/Article/Layout1";
-import { Layout2 } from "@/containers/Article/Layout2";
-import { Layout3 } from "@/containers/Article/Layout3";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
 
-export const ArticleContainer = (): JSX.Element => {
+export const Layout3 = (): JSX.Element => {
   // @ts-ignore
   const params: { name: string } = useParams();
   const store = useBearStore((state) => ({
@@ -332,117 +331,8 @@ export const ArticleContainer = (): JSX.Element => {
   }
 
   return (
-    <div className={ styles.article }>
-      <div className={ `sticky-header ${ styles.header }` }>
-        <div
-          className="
-            flex
-            items-center
-            px-3
-            text-sm
-            font-bold
-            w-full
-            text-ellipsis
-            overflow-hidden
-            whitespace-nowrap
-            text-article-headline
-          "
-        >
-          { store.channel ? store.channel.title : "" }
-        </div>
-        <div className={ "flex items-center justify-end px-2 space-x-0.5" }>
-          <DropdownMenu>
-            <DropdownMenuTrigger>
-              <Icon>
-                <Filter size={ 16 }></Filter>
-              </Icon>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuRadioGroup
-                value={ store.currentFilter.id + "" }
-                onValueChange={ changeFilter }
-              >
-                { store.filterList.map((item) => {
-                  return (
-                    <DropdownMenuRadioItem
-                      key={ item.id + "" }
-                      value={ item.id + "" }
-                    >
-                      { item.title }
-                    </DropdownMenuRadioItem>
-                  );
-                }) }
-              </DropdownMenuRadioGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <Icon onClick={ markAllRead }>
-            <CheckCheck size={ 16 } />
-          </Icon>
-          <Icon onClick={ handleRefresh }>
-            <RefreshCw size={ 16 } className={ `${ syncing ? "spinning" : "" }` } />
-          </Icon>
-          <span>
-            <Separator orientation="vertical" className="h-4 mx-2" />
-          </span>
-          <Icon onClick={ () => handleSetLayout(1) } active={ layoutType === 1 }>
-            <Layout size={ 16 } />
-          </Icon>
-          <Icon onClick={ () => handleSetLayout(2) } active={ layoutType === 2 }>
-            <LayoutGrid size={ 16 } />
-          </Icon>
-          <Icon onClick={ () => handleSetLayout(3) } active={ layoutType === 3 }>
-            <LayoutList size={ 16 } />
-          </Icon>
-          <span>
-            <Separator orientation="vertical" className="h-4 mx-2" />
-          </span>
-          <Icon disable={ currentIdx <= 0 } onClick={ handleViewPrevious }>
-            <ChevronUp size={ 16 } />
-          </Icon>
-          <Icon
-            disable={ currentIdx >= store.articleList.length - 1 }
-            onClick={ handleViewNext }
-          >
-            <ChevronDown size={ 16 } />
-          </Icon>
-          <span>
-            <Separator orientation="vertical" className="h-4 mx-2" />
-          </span>
-          <Popover>
-            <PopoverTrigger>
-              <Icon>
-                <Paintbrush size={ 16 } />
-              </Icon>
-            </PopoverTrigger>
-            <PopoverContent className="w-[340px]">
-              <CustomizeStyle styleConfig={ store.userConfig.customize_style } />
-            </PopoverContent>
-          </Popover>
-          <Icon onClick={ handleViewSourcePage }>
-            <Ghost size={ 16 } />
-          </Icon>
-          <DropdownMenu>
-            <DropdownMenuTrigger>
-              <Icon>
-                <Share size={ 16 }></Share>
-              </Icon>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem onClick={ () => store.article && open(store.article?.link) }>
-                <ExternalLink size={ 16 } className="mr-2" />
-                Open in browser
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={ handleCopyLink }>
-                <Link size={ 16 } className="mr-2" />
-                Copy link
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </div>
-      { layoutType === 1 && <Layout1 /> }
-      { layoutType === 2 && <Layout2 /> }
-      { layoutType === 3 && <Layout3 /> }
-    </div>
+    <>
+      TODO Layout3.tsx
+    </>
   );
 };

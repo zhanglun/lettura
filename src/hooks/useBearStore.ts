@@ -16,6 +16,7 @@ interface BearStore {
   setArticle: (article: Article) => void;
   articleList: Article[];
   setArticleList: (list: Article[]) => void;
+  getArticleList: (uuid?: string) => any;
 
   updateArticleAndIdx: (article: Article, idx?: number) => void;
   goPreviousArticle: any;
@@ -39,33 +40,51 @@ export const useBearStore = create<BearStore>()(
       channel: null,
       setChannel: (channel: Channel) => {
         set(() => ({
-          channel: channel,
+          channel: channel
         }));
       },
       getFeedList: () => {
         dataAgent.getChannels({}).then((res) => {
           console.log("%c Line:44 🍕 res", "color:#7f2b82", res);
-        })
+        });
       },
       feedContextMenuTarget: null,
       setFeedContextMenuTarget: (target: Channel | null) => {
-        set(() =>({
-          feedContextMenuTarget: target,
-        }))
+        set(() => ({
+          feedContextMenuTarget: target
+        }));
       },
 
       article: null,
       setArticle: (article: Article) => {
         set(() => ({
-          article: article,
+          article: article
         }));
       },
 
       articleList: [],
       setArticleList: (list: Article[]) => {
         set(() => ({
-          articleList: list,
+          articleList: list
         }));
+      },
+
+      getArticleList: (uuid?: string) => {
+        const feed = get().channel;
+        const filter = get().currentFilter;
+
+        if (uuid || feed) {
+          return dataAgent
+            .getArticleList((uuid || feed?.uuid), filter)
+            .then((res) => {
+              const { list } = res as { list: Article[] };
+              get().setArticleList(list);
+              return list;
+            });
+        } else {
+          get().setArticleList([]);
+          return Promise.resolve([]);
+        }
       },
 
       updateArticleAndIdx: (article: Article, idx?: number) => {
@@ -86,14 +105,14 @@ export const useBearStore = create<BearStore>()(
               busChannel.emit("updateChannelUnreadCount", {
                 uuid: article.channel_uuid,
                 action: "decrease",
-                count: 1,
+                count: 1
               });
 
               article.read_status = 2;
 
               set(() => ({
                 article,
-                currentIdx: idx,
+                currentIdx: idx
               }));
             }
           });
@@ -101,7 +120,7 @@ export const useBearStore = create<BearStore>()(
 
         set(() => ({
           article,
-          currentIdx: idx,
+          currentIdx: idx
         }));
       },
 
@@ -139,31 +158,31 @@ export const useBearStore = create<BearStore>()(
       currentIdx: 0,
       setCurrentIdx: (idx: number) => {
         set(() => ({
-          currentIdx: idx,
+          currentIdx: idx
         }));
       },
 
       filterList: [
         {
           id: 0,
-          title: "All",
+          title: "All"
         },
         {
           id: 1,
-          title: "Unread",
+          title: "Unread"
         },
         {
           id: 2,
-          title: "Read",
-        },
+          title: "Read"
+        }
       ],
       currentFilter: {
         id: 1,
-        title: "Unread",
+        title: "Unread"
       },
       setFilter: (filter: { id: number; title: string }) => {
         set(() => ({
-          currentFilter: filter,
+          currentFilter: filter
         }));
       },
 
@@ -172,20 +191,20 @@ export const useBearStore = create<BearStore>()(
       getUserConfig: () => {
         dataAgent.getUserConfig().then((res) => {
           set(() => ({
-            userConfig: res,
+            userConfig: res
           }));
         });
       },
 
       updateUserConfig: (config: UserConfig) => {
-        const cfg = {...get().userConfig, ...config};
+        const cfg = { ...get().userConfig, ...config };
 
         console.log("%c Line:167 🍯 cfg", "color:#fca650", cfg);
 
         dataAgent.updateUserConfig(cfg).then(() => {
           set(() => ({
-            userConfig: cfg,
-          }))
+            userConfig: cfg
+          }));
         });
       }
     };
