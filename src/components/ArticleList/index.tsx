@@ -5,13 +5,13 @@ import React, {
   useRef,
   useImperativeHandle,
   ForwardedRef,
-  createRef,
+  createRef
 } from "react";
 import { ArticleItem } from "../ArticleItem";
-import { Article } from "../../db";
-import { useBearStore } from "../../hooks/useBearStore";
-import * as dataAgent from "../../helpers/dataAgent";
-import { busChannel } from "../../helpers/busChannel";
+import { Article } from "@/db";
+import { useBearStore } from "@/hooks/useBearStore";
+import * as dataAgent from "@/helpers/dataAgent";
+import { busChannel } from "@/helpers/busChannel";
 
 export type ArticleListProps = {
   feedUuid: string | null;
@@ -30,17 +30,19 @@ export interface ArticleListRefType {
 export const ArticleList = forwardRef(
   (
     props: ArticleListProps,
-    ref: ForwardedRef<ArticleListRefType>,
+    ref: ForwardedRef<ArticleListRefType>
   ): JSX.Element => {
     const { feedUuid } = props;
     const store = useBearStore(state => ({
       currentFilter: state.currentFilter,
       setArticleList: state.setArticleList,
+      articleList: state.articleList,
+      getArticleList: state.getArticleList
     }));
-    const [articleList, setArticleList] = useState<Article[]>([]);
-    const [loading, setLoading] = useState(false);
+    const { articleList, setArticleList } = store;
+    const [ loading, setLoading ] = useState(false);
     const innerRef = useRef<HTMLDivElement>(null);
-    const [articlesRef, setArticlesRef] = useState([]);
+    const [ articlesRef, setArticlesRef ] = useState([]);
 
     const resetScrollTop = () => {
       if (innerRef.current !== null) {
@@ -49,27 +51,17 @@ export const ArticleList = forwardRef(
     };
 
     const getList = (feedUuid: string) => {
-      console.time("getList")
-      console.time("getList 2")
-      const filter: { read_status?: number; limit?: number } = {};
-
-      filter.read_status = store.currentFilter.id * 1;
-
+      console.log('props', props);
       setLoading(true);
 
-      dataAgent
-        .getArticleList(feedUuid, filter)
-        .then((res) => {
-          const { list } = res as { list: Article[] };
-          setArticleList(list);
-          console.log("%c Line:66 🍺 list", "color:#e41a6a", list);
-          console.timeEnd("getList 2")
+      store.getArticleList(feedUuid)
+        .then((res: any) => {
+          console.log("%c Line:66 🍺 list", "color:#e41a6a", res);
         })
         .finally(() => {
           setLoading(false);
-          console.timeEnd("getList")
         })
-        .catch((err) => {
+        .catch((err: any) => {
           console.log("%c Line:71 🍎 err", "color:#ffdd4d", err);
         });
     };
@@ -80,12 +72,12 @@ export const ArticleList = forwardRef(
           article.read_status = 2;
         });
 
-        setArticleList([...articleList]);
+        setArticleList([ ...articleList ]);
 
         busChannel.emit("updateChannelUnreadCount", {
           uuid: feedUuid as string,
           action: "set",
-          count: 0,
+          count: 0
         });
       });
     };
@@ -99,21 +91,21 @@ export const ArticleList = forwardRef(
           markAllRead();
         },
         articlesRef,
-        innerRef,
+        innerRef
       };
     });
 
     useEffect(() => {
       getList(feedUuid || "");
-    }, [feedUuid, store.currentFilter]);
+    }, [ feedUuid ]);
 
     const renderList = (): JSX.Element[] => {
-      return articleList.map((article: any, idx: number) => {
+      return (articleList || []).map((article: any, idx: number) => {
         return (
           <ArticleItem
-            ref={articlesRef[article.uuid]}
-            article={article}
-            key={article.id}
+            ref={ articlesRef[article.uuid] }
+            article={ article }
+            key={ article.id }
           />
         );
       });
@@ -125,10 +117,9 @@ export const ArticleList = forwardRef(
 
     useEffect(() => {
       resetScrollTop();
-    }, [feedUuid, articleList]);
+    }, [ feedUuid, articleList ]);
 
     useEffect(() => {
-      store.setArticleList(articleList);
       const refs = articleList.reduce((acc: any, cur) => {
         acc[cur.uuid] = createRef();
 
@@ -136,14 +127,14 @@ export const ArticleList = forwardRef(
       }, {});
 
       setArticlesRef(refs);
-    }, [articleList]);
+    }, [ articleList ]);
 
     return (
       <div className="grid grid-cols-1 pl-2 grid-rows-[calc(100% - var(--app-toolbar-height))]">
-        <div ref={innerRef}>
-          <ul className="m-0 pb-2 grid gap-2">{renderList()}</ul>
+        <div ref={ innerRef }>
+          <ul className="m-0 pb-2 grid gap-2">{ renderList() }</ul>
         </div>
       </div>
     );
-  },
+  }
 );

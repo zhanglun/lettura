@@ -61,7 +61,7 @@ export const importChannels = async (list: string[]) => {
   return invoke("import_channels", { list });
 };
 
-export const getArticleList = async (uuid: string, filter: any) => {
+export const getArticleList = async (uuid: string | undefined, filter: any) => {
   return invoke("get_articles", { uuid, filter });
 };
 
