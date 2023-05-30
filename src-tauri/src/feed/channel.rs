@@ -2,14 +2,15 @@ use std::collections::HashMap;
 
 use diesel::prelude::*;
 use diesel::sql_types::*;
-use serde::Deserialize;
-use serde::Serialize;
+use scraper::{Html, Selector};
+use serde::{Deserialize, Serialize};
 
+use crate::cmd::create_client;
 use crate::db;
 use crate::models;
 use crate::schema;
 
-pub fn get_channel_by_uuid(channel_uuid: String) -> Option<models::Feed> {
+pub fn get_feed_by_uuid(channel_uuid: String) -> Option<models::Feed> {
   let mut connection = db::establish_connection();
   let mut channel = schema::feeds::dsl::feeds
     .filter(schema::feeds::uuid.eq(&channel_uuid))
@@ -39,10 +40,9 @@ pub fn delete_feed(uuid: String) -> usize {
     .expect("Expect find channel");
 
   return if channel.len() == 1 {
-    let result =
-      diesel::delete(schema::feeds::dsl::feeds.filter(schema::feeds::uuid.eq(&uuid)))
-        .execute(&mut connection)
-        .expect("Expect delete channel");
+    let result = diesel::delete(schema::feeds::dsl::feeds.filter(schema::feeds::uuid.eq(&uuid)))
+      .execute(&mut connection)
+      .expect("Expect delete channel");
 
     diesel::delete(
       schema::articles::dsl::articles.filter(schema::articles::channel_uuid.eq(&uuid)),
@@ -64,11 +64,10 @@ pub fn delete_feed(uuid: String) -> usize {
 
 pub fn batch_delete_feed(channel_uuids: Vec<String>) -> usize {
   let mut connection = db::establish_connection();
-  let result = diesel::delete(
-    schema::feeds::dsl::feeds.filter(schema::feeds::uuid.eq_any(&channel_uuids)),
-  )
-  .execute(&mut connection)
-  .expect("Expect delete channel");
+  let result =
+    diesel::delete(schema::feeds::dsl::feeds.filter(schema::feeds::uuid.eq_any(&channel_uuids)))
+      .execute(&mut connection)
+      .expect("Expect delete channel");
 
   diesel::delete(
     schema::articles::dsl::articles.filter(schema::articles::channel_uuid.eq_any(&channel_uuids)),
@@ -205,6 +204,7 @@ pub struct ChildItem {
   pub title: String,
   pub sort: i32,
   pub link: Option<String>,
+  pub logo: String,
   pub feed_url: String,
   pub description: String,
   pub create_date: String,
@@ -219,6 +219,7 @@ pub struct FeedItem {
   pub children: Option<Vec<ChildItem>>,
   pub parent_uuid: String,
   pub link: Option<String>,
+  pub logo: String,
   pub feed_url: String,
   pub description: String,
   pub create_date: String,
@@ -237,6 +238,8 @@ pub struct FeedJoinRecord {
   #[diesel(sql_type = diesel::sql_types::Text)]
   pub link: String,
   #[diesel(sql_type = diesel::sql_types::Text)]
+  pub logo: String,
+  #[diesel(sql_type = diesel::sql_types::Text)]
   pub feed_url: String,
   #[diesel(sql_type = diesel::sql_types::Text)]
   pub description: String,
@@ -251,6 +254,7 @@ pub fn get_feeds() -> Vec<FeedItem> {
       F.child_uuid AS uuid,
       F.sort,
       C.link,
+      C.logo,
       C.feed_url,
       C.description,
       C.create_date,
@@ -284,6 +288,7 @@ pub fn get_feeds() -> Vec<FeedItem> {
       title: channel.title,
       sort: channel.sort,
       link: Some(channel.link),
+      logo: channel.logo,
       feed_url: channel.feed_url,
       description: channel.description,
       create_date: channel.create_date,
@@ -303,6 +308,7 @@ pub fn get_feeds() -> Vec<FeedItem> {
       title: folder.name,
       sort: folder.sort,
       link: Some(String::from("")),
+      logo: String::from(""),
       parent_uuid: "".to_string(),
       children: Some(c_uuids.to_vec()),
       feed_url: "".to_string(),
@@ -314,9 +320,7 @@ pub fn get_feeds() -> Vec<FeedItem> {
   println!("filter_uuids :{:?}", &filter_uuids);
 
   let channels = schema::feeds::dsl::feeds
-    .filter(diesel::dsl::not(
-      schema::feeds::uuid.eq_any(&filter_uuids),
-    ))
+    .filter(diesel::dsl::not(schema::feeds::uuid.eq_any(&filter_uuids)))
     .load::<models::Feed>(&mut connection)
     .unwrap();
 
@@ -327,6 +331,7 @@ pub fn get_feeds() -> Vec<FeedItem> {
       title: channel.title,
       sort: channel.sort,
       link: Some(channel.link),
+      logo: channel.logo,
       feed_url: channel.feed_url,
       description: channel.description,
       create_date: channel.create_date,
@@ -373,12 +378,8 @@ pub fn add_feed(feed: models::NewFeed, articles: Vec<models::NewArticle>) -> (us
   println!("result ===> {:?}", result);
 
   let result = match result {
-    Ok(r) => {
-      (r, String::from(""))
-    }
-    Err(error) => {
-      (0, error.to_string())
-    },
+    Ok(r) => (r, String::from("")),
+    Err(error) => (0, error.to_string()),
   };
 
   println!(" new result {:?}", result);
@@ -445,12 +446,10 @@ pub fn update_feed_sort(sorts: Vec<FeedSort>) -> usize {
     }
 
     if item.parent_uuid.len() == 0 && item.item_type == "channel" {
-      diesel::update(
-        schema::feeds::dsl::feeds.filter(schema::feeds::uuid.eq(&item.child_uuid)),
-      )
-      .set(schema::feeds::sort.eq(item.sort))
-      .execute(&mut connection)
-      .expect("msg");
+      diesel::update(schema::feeds::dsl::feeds.filter(schema::feeds::uuid.eq(&item.child_uuid)))
+        .set(schema::feeds::sort.eq(item.sort))
+        .execute(&mut connection)
+        .expect("msg");
     }
 
     if item.parent_uuid.len() == 0 && item.item_type == "folder" {
@@ -507,16 +506,17 @@ pub fn get_channels() -> ChannelQueryResult {
     .load::<models::Feed>(&mut connection)
     .unwrap();
   let relations = schema::feed_metas::dsl::feed_metas
-          .load::<models::FeedMeta>(&mut connection)
-          .unwrap_or(vec![]);
+    .load::<models::FeedMeta>(&mut connection)
+    .unwrap_or(vec![]);
   let mut folder_channel_map: HashMap<String, String> = HashMap::new();
 
   for r in relations {
     folder_channel_map.insert(r.child_uuid.clone(), r.parent_uuid);
   }
 
-  let result: Vec<ChannelQuery> = channels.into_iter().map(|channel| {
-    ChannelQuery {
+  let result: Vec<ChannelQuery> = channels
+    .into_iter()
+    .map(|channel| ChannelQuery {
       id: channel.id,
       uuid: String::from(&channel.uuid),
       title: channel.title,
@@ -529,16 +529,100 @@ pub fn get_channels() -> ChannelQueryResult {
       create_date: channel.create_date,
       update_date: channel.update_date,
       parent_uuid: String::from(
-        folder_channel_map.get(&String::from(&channel.uuid)).unwrap_or(&String::from(""))),
-    }
-  }).collect::<Vec<ChannelQuery>>();
+        folder_channel_map
+          .get(&String::from(&channel.uuid))
+          .unwrap_or(&String::from("")),
+      ),
+    })
+    .collect::<Vec<ChannelQuery>>();
 
   ChannelQueryResult { list: result }
+}
+
+pub async fn update_icon(uuid: &str, url: &str) -> usize {
+  let mut connection = db::establish_connection();
+
+  match schema::feeds::dsl::feeds
+      .filter(schema::feeds::uuid.eq(uuid))
+      .first::<models::Feed>(&mut connection)
+  {
+      Ok(feed) => {
+          if let Some(url) = fetch_site_favicon(url).await {
+              println!("url {:?}", url);
+
+              let update_row = diesel::update(schema::feeds::dsl::feeds
+                .filter(schema::feeds::uuid.eq(uuid)))
+                  .set(schema::feeds::logo.eq(url))
+                  .execute(&mut connection);
+
+              match update_row {
+                Ok(r) => r,
+                Err(err) => {
+                  println!("{:?}", err);
+                  0
+                },
+              }
+          } else {
+              0
+          }
+      }
+      Err(_) => 0,
+  }
+}
+
+pub async fn fetch_site_favicon(url: &str) -> Option<String> {
+  let client = create_client();
+  let response = client.get(url).send().await.unwrap();
+  let html = response.text().await.unwrap();
+  let url = String::from(url);
+  let document = Html::parse_document(&html);
+  let selector = Selector::parse("link[rel='icon'], link[rel='shortcut icon']").unwrap();
+  let mut favicon_url: Option<String> = None;
+
+  for element in document.select(&selector) {
+    if let Some(href) = element.value().attr("href") {
+      if href.starts_with("http") {
+        favicon_url = Some(href.to_string());
+      } else {
+        let base_url = url::Url::parse(&url).unwrap();
+        let mut absolute_url = base_url.join(href).unwrap();
+        absolute_url.set_fragment(None);
+        favicon_url = Some(absolute_url.as_str().to_string());
+      };
+
+      break;
+    }
+  }
+
+  favicon_url
+
+  // if let Some(favicon_url) = favicon_url {
+  //   let response = client.get(&favicon_url).send().await?;
+  //   let content = response.bytes().await.unwrap();
+  //   let src = "data:image/png;base64,".to_owned() + &base64::encode(content);
+
+  //   println!("The path part of the CONTENT is: {:?}", src);
+
+  //   Ok(Some(src))
+  // } else {
+  //   println!("无法找到站点的favicon");
+  //   Ok(None)
+  // }
 }
 
 #[cfg(test)]
 mod tests {
   use super::*;
+
+  #[tokio::test]
+  async fn test_fetch_site_favicon() {
+    // let url = "https://anyway.fm/now/";
+    let url = "/feed.xml";
+
+    let res = fetch_site_favicon(url).await;
+
+    println!("res {:?}", res);
+  }
 
   #[test]
   fn test_get_feeds() {

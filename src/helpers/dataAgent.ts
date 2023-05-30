@@ -139,3 +139,7 @@ export const getArticleDetail = async (uuid: string): Promise<Article> => {
 export const getPageSources = async (url: string): Promise<string> => {
   return invoke("get_web_source", { url })
 }
+
+export const updateIcon = async (uuid: String, url: string): Promise<string> => {
+  return invoke("update_icon", { uuid, url })
+}

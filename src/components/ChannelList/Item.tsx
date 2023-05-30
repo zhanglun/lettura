@@ -51,8 +51,8 @@ export const FeedItem = (props: FeedItemProps) => {
     feedContextMenuTarget: state.feedContextMenuTarget,
   }));
   const { feed, className, isActive, level, expandStatus, onExpand } = props;
-  const { unread = 0, link, item_type } = feed;
-  const ico = getChannelFavicon(link);
+  const { unread = 0, link, item_type, logo } = feed;
+  const ico = logo || getChannelFavicon(link);
   const isFolder = item_type === "folder";
 
   return (

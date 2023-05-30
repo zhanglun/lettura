@@ -134,6 +134,13 @@ const ChannelList = (): JSX.Element => {
     );
   };
 
+  const reloadFeedIcon = (feed: Channel | null) => {
+    feed && dataAgent.updateIcon(feed.uuid, feed.link).then((res) => {
+      console.log("%c Line:139 🍷 res", "color:#ea7e5c", res);
+      feed.icon = res;
+    });
+  }
+
   useEffect(() => {
     getList();
 
@@ -490,6 +497,8 @@ const ChannelList = (): JSX.Element => {
                     >
                       Open {new URL(store.feedContextMenuTarget?.link).host}
                     </ContextMenuItem>
+                    <ContextMenuSeparator />
+                    <ContextMenuItem onClick={() => reloadFeedIcon(store.feedContextMenuTarget)}>Reload Icon</ContextMenuItem>
                     <ContextMenuSeparator />
                     <ContextMenuItem onClick={() => setEditFeedStatus(true)}>Detail</ContextMenuItem>
                     <ContextMenuItem onClick={() => setModalStatus(true)}>

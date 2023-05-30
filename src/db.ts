@@ -6,6 +6,7 @@ export interface Channel {
   title: string;
   link: string;
   feed_url: string;
+  icon?: string;
   description: string;
   pub_date?: Date;
   unread: number;

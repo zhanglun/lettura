@@ -11,7 +11,7 @@ extern crate dotenv;
 use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 use serde::{Serialize, Deserialize};
 use tauri::http::ResponseBuilder;
-use tauri::{GlobalWindowEvent, Manager, WindowEvent, Wry};
+use tauri::{GlobalWindowEvent, WindowEvent, Wry};
 use tokio::sync::mpsc;
 
 mod cmd;
@@ -108,6 +108,7 @@ async fn main() {
       cmd::move_channel_into_folder,
       cmd::init_process,
       cmd::get_article_detail,
+      cmd::update_icon,
       cmd::get_web_source,
     ])
     .register_uri_scheme_protocol("lettura", move |app, request| {

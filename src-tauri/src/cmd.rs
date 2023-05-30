@@ -1,13 +1,14 @@
 use std::collections::HashMap;
 
+use feed_rs::parser;
 use reqwest;
-use serde::{Serialize};
+use serde::Serialize;
 use tauri::{command, Window};
 use uuid::Uuid;
 
 use crate::core;
-use crate::db;
 use crate::core::config;
+use crate::db;
 use crate::feed;
 use crate::models;
 
@@ -40,51 +41,51 @@ pub fn create_client() -> reqwest::Client {
 /// # Examples
 /// ```
 /// let url = "https://sspai.com/feed".to_string();
-/// let res = fetch_feed_item(&url).await;
+/// let res = parse_feed(&url).await;
 /// ```
-// pub async fn fetch_feed_item(url: &str) -> Result<Feed, String> {
-//   let client = create_client();
-//   let result = client.get(url).send().await;
+pub async fn parse_feed(url: &str) -> Result<feed_rs::model::Feed, String> {
+  let client = create_client();
+  let result = client.get(url).send().await;
 
-//   match result {
-//     Ok(response) => match response.status() {
-//       reqwest::StatusCode::OK => {
-//         let content = response.text().await;
+  let a = match result {
+    Ok(response) => match response.status() {
+      reqwest::StatusCode::OK => {
+        let content = response.text().await;
 
-//         match content {
-//           Ok(content) => {
-//             let res = content[..].parse::<Feed>();
+        match content {
+          Ok(content) => {
+            let res = parser::parse(content.as_bytes());
 
-//             match res {
-//               Ok(res) => Ok(res),
-//               Err(error) => {
-//                 println!("content parse error{:?}", error);
-//                 Err(error.to_string())
-//               }
-//             }
-//           }
-//           Err(error) => {
-//             println!("response not OK {:?}", error);
-//             Err(error.to_string())
-//           }
-//         }
-//       }
-//       reqwest::StatusCode::NOT_FOUND => {
-//         Err(String::from("Could not find a feed at the location."))
-//       }
-//       _ => {
-//         println!("o {:?}", response);
-//         Err("Not 200 OK".to_string())
-//       }
-//     },
-//     Err(error) => {
-//       println!("ERROR: {:?}", error);
-//       println!("URL: {:?}", url);
+            match res {
+              Ok(res) => Ok(res),
+              Err(error) => {
+                println!("content parse error{:?}", error);
+                Err(error.to_string())
+              }
+            }
+          }
+          Err(error) => {
+            println!("response not OK {:?}", error);
+            Err(error.to_string())
+          }
+        }
+      }
+      reqwest::StatusCode::NOT_FOUND => Err(String::from("Could not find a feed at the location.")),
+      _ => {
+        println!("o {:?}", response);
+        Err("Not 200 OK".to_string())
+      }
+    },
+    Err(error) => {
+      println!("ERROR: {:?}", error);
+      println!("URL: {:?}", url);
 
-//       Err(error.to_string())
-//     },
-//   }
-// }
+      Err(error.to_string())
+    }
+  };
+
+  a
+}
 
 #[derive(Debug, Serialize)]
 pub struct FeedFetchResponse {
@@ -102,9 +103,7 @@ pub async fn fetch_feed(url: String) -> (Option<models::NewFeed>, String) {
       let channel = create_feed_model(&channel_uuid, &url, &res).clone();
       (Some(channel), String::from(""))
     }
-    Err(err) => {
-      (None, err)
-    },
+    Err(err) => (None, err),
   }
 }
 
@@ -130,16 +129,27 @@ pub async fn update_feed_sort(sorts: Vec<feed::channel::FeedSort>) -> usize {
 }
 
 #[command]
-pub async fn move_channel_into_folder(channel_uuid: String, folder_uuid: String, sort: i32) -> usize {
-  let result = feed::channel::update_feed_meta(channel_uuid, feed::channel::FeedMetaUpdateRequest {
-    parent_uuid: folder_uuid,
-    sort,
-  });
+pub async fn move_channel_into_folder(
+  channel_uuid: String,
+  folder_uuid: String,
+  sort: i32,
+) -> usize {
+  let result = feed::channel::update_feed_meta(
+    channel_uuid,
+    feed::channel::FeedMetaUpdateRequest {
+      parent_uuid: folder_uuid,
+      sort,
+    },
+  );
 
   result
 }
 
-pub fn create_feed_model(uuid: &String, url: &String, res: &feed_rs::model::Feed) -> models::NewFeed {
+pub fn create_feed_model(
+  uuid: &String,
+  url: &String,
+  res: &feed_rs::model::Feed,
+) -> models::NewFeed {
   println!("res{:?}", res);
   let feed_type = res.feed_type.clone();
 
@@ -184,7 +194,7 @@ pub fn create_feed_model(uuid: &String, url: &String, res: &feed_rs::model::Feed
     pub_date: pub_date,
     updated: updated,
     sort: 0,
-  }
+  };
 }
 
 pub fn create_article_models(
@@ -269,14 +279,15 @@ pub async fn add_feed(url: String) -> (usize, String) {
 
       feed::channel::add_feed(feed, articles)
     }
-    Err(err) => {
-      (0, err)
-    },
+    Err(err) => (0, err),
   }
 }
 
 #[command]
-pub fn get_articles(uuid: String, filter: feed::article::ArticleFilter) -> feed::article::ArticleQueryResult {
+pub fn get_articles(
+  uuid: String,
+  filter: feed::article::ArticleFilter,
+) -> feed::article::ArticleQueryResult {
   println!("get articles from rust");
   use std::time::Instant;
 
@@ -300,7 +311,7 @@ pub fn delete_feed(uuid: String) -> usize {
 }
 
 pub async fn sync_articles(uuid: String) -> (usize, String) {
-  let channel = feed::channel::get_channel_by_uuid(String::from(&uuid));
+  let channel = feed::channel::get_feed_by_uuid(String::from(&uuid));
 
   match channel {
     Some(channel) => {
@@ -315,9 +326,7 @@ pub async fn sync_articles(uuid: String) -> (usize, String) {
 
           (result, String::from(""))
         }
-        Err(err) => {
-          (0, err)
-        },
+        Err(err) => (0, err),
       }
     }
     None => (0, String::from("feed not found")),
@@ -367,17 +376,20 @@ struct Payload {
   message: String,
 }
 
-
 #[command]
 pub fn init_process(window: Window) {
   println!("asdfasdf");
-  std::thread::spawn(move || {
-    loop {
-      window.emit("event-name", Payload { message: "Tauri is awesome!".into() }).unwrap();
-    }
+  std::thread::spawn(move || loop {
+    window
+      .emit(
+        "event-name",
+        Payload {
+          message: "Tauri is awesome!".into(),
+        },
+      )
+      .unwrap();
   });
 }
-
 
 #[command]
 pub fn get_unread_total() -> HashMap<String, i32> {
@@ -455,64 +467,24 @@ pub fn get_folders() -> Vec<models::Folder> {
 }
 
 #[command]
-pub async fn get_article_detail (uuid: String) -> Option<models::Article> {
+pub async fn get_article_detail(uuid: String) -> Option<models::Article> {
   let res: Option<models::Article> = feed::article::Article::get_article_with_uuid(uuid);
   res
 }
 
 #[command]
-pub async fn get_web_source (url: String) -> Option<String> {
+pub async fn update_icon(uuid: String, url: String) -> usize {
+  let favicon = feed::channel::update_icon(&uuid, &url).await;
+
+  favicon
+}
+
+#[command]
+pub async fn get_web_source(url: String) -> Option<String> {
   let res = core::scraper::PageScraper::fetch_page(&url).await;
   res
 }
 
-use feed_rs::parser;
-
-pub async fn parse_feed(url: &str) -> Result<feed_rs::model::Feed, String> {
-  let client = create_client();
-  let result = client.get(url).send().await;
-
-  let a = match result {
-    Ok(response) => match response.status() {
-      reqwest::StatusCode::OK => {
-        let content = response.text().await;
-
-        match content {
-          Ok(content) => {
-            let res = parser::parse(content.as_bytes());
-
-            match res {
-              Ok(res) => Ok(res),
-              Err(error) => {
-                println!("content parse error{:?}", error);
-                Err(error.to_string())
-              }
-            }
-          }
-          Err(error) => {
-            println!("response not OK {:?}", error);
-            Err(error.to_string())
-          }
-        }
-      }
-      reqwest::StatusCode::NOT_FOUND => {
-        Err(String::from("Could not find a feed at the location."))
-      }
-      _ => {
-        println!("o {:?}", response);
-        Err("Not 200 OK".to_string())
-      }
-    },
-    Err(error) => {
-      println!("ERROR: {:?}", error);
-      println!("URL: {:?}", url);
-
-      Err(error.to_string())
-    },
-  };
-
-  a
-}
 #[cfg(test)]
 mod tests {
   use super::*;
@@ -560,15 +532,14 @@ mod tests {
       }
       Err(err) => {
         println!("err {:?}", (None::<models::NewFeed>, err));
-      },
+      }
     }
 
     ()
   }
 
-
   #[tokio::test]
-  async fn test_add_feed () {
+  async fn test_add_feed() {
     let url = "http://www.ximalaya.com/album/39643321.xml".to_string();
     // let url = "http://www.smashingmagazine.com/feed/".to_string();
     let result = add_feed(url).await;

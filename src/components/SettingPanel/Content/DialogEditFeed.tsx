@@ -8,15 +8,13 @@ import {
   DialogTitle,
   DialogTrigger
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { Channel } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
 import { busChannel } from "@/helpers/busChannel";
 import { useToast } from "@/components/ui/use-toast";
 import Dayjs from "dayjs";
 import { Separator } from "@/components/ui/separator";
-import { Icon } from "@/components/Icon";
-import { ExternalLink, Link2 } from "lucide-react";
+import { Link2 } from "lucide-react";
 
 export interface DialogEditFeedProps {
   feed: Channel | null;
@@ -73,7 +71,7 @@ export const DialogEditFeed = (props: DialogEditFeedProps) => {
               <p className="mt-2 text-sm text-muted-foreground">{feed?.description}</p>
               <div className="mt-3 space-y-0.5">
                 <a
-                  className="text-sm text-muted-foreground hover:text-primary hover:underline flex items-center space-x-1"
+                  className="text-sm text-muted-foreground hover:text-primary hover:underline flex items-top space-x-1"
                   href={feed?.link}>
                   <Link2 className="w-4 h-4" />
                   <span>{feed?.link}</span>
