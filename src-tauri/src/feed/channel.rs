@@ -589,25 +589,10 @@ pub async fn fetch_site_favicon(url: &str) -> Option<String> {
         absolute_url.set_fragment(None);
         favicon_url = Some(absolute_url.as_str().to_string());
       };
-
-      break;
     }
   }
 
   favicon_url
-
-  // if let Some(favicon_url) = favicon_url {
-  //   let response = client.get(&favicon_url).send().await?;
-  //   let content = response.bytes().await.unwrap();
-  //   let src = "data:image/png;base64,".to_owned() + &base64::encode(content);
-
-  //   println!("The path part of the CONTENT is: {:?}", src);
-
-  //   Ok(Some(src))
-  // } else {
-  //   println!("无法找到站点的favicon");
-  //   Ok(None)
-  // }
 }
 
 #[cfg(test)]

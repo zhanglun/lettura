@@ -4,8 +4,10 @@
   flex: 1;
   height: 100vh;
   display: grid;
-  grid-template-columns: 360px 1fr;
+  grid-template-columns: var(--app-article-width) 1fr;
   background-color: var(--app-main-bg-color);
+  // padding-top: var(--app-toolbar-height);
+  position: relative;
 }
 
 :global(.sticky-header) {
@@ -19,16 +21,36 @@
   grid-template-columns: 1fr 1fr;
   align-items: center;
   justify-content: space-between;
+
+  // &::before {
+  //   --playerBGFill: rgba(255, 255, 255, 0.88);
+  //   --playerGradientTop: rgb(221 210 210 / 25%);
+  //   --playerGradientBottom: rgba(255, 255, 255, 0);
+  //   content: "";
+  //   width: 100%;
+  //   height: 100%;
+  //   display: block;
+  //   position: absolute;
+  //   top: 0px;
+  //   left: 0px;
+  //   z-index: -1;
+  //   background-color: var(--playerBGFill);
+  //   background-image: linear-gradient(to bottom, var(--playerGradientTop) 0, var(--playerGradientBottom) 100%);
+  //   backdrop-filter: saturate(50%) blur(20px);
+  // }
+  // backdrop-filter: saturate(180%) blur(20px);
+  // background: rgba(255, 255, 255, 0.88);
+  // --playerDropShadow2: rgba(0, 0, 0, .07);
+  // --playerInnerShadow: rgba(255, 255, 255, .45);
+  // box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05), 0 1px 3px var(--playerDropShadow2), inset 0 1px 1px var(--playerInnerShadow);
 }
 
 :global(.is-scroll .sticky-header) {
   backdrop-filter: saturate(180%) blur(20px);
-  --sticky-background-color: hsl(from var(--article-list-bg-color) h s l /80%);
-  background: var(--sticky-background-color);
-  --playerDropShadow2: rgba(0, 0, 0, 0.07);
-  --playerInnerShadow: hsl(from var(--article-list-bg-color) h s l / 45%);
+  background: rgba(255, 255, 255, 0.88);
+  --playerDropShadow2: rgba(0, 0, 0, .07);
+  --playerInnerShadow: rgba(255, 255, 255, .45);
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05), 0 1px 3px var(--playerDropShadow2), inset 0 1px 1px var(--playerInnerShadow);
-  border-bottom: 1px solid hsl(var(--border));
 }
 
 .title {
@@ -69,47 +91,10 @@
   background-color: hsl(var(--muted));
 }
 
-.menuIcon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  line-height: 34px;
-  font-size: 20px;
-  color: var(--article-headline-color);
-  cursor: pointer;
-  margin-left: 4px;
-  user-select: none;
-  border-radius: 4px;
-
-  &:hover {
-    color: var(--article-headline-color);
-  }
-}
-
-.menuIcon:not(.menuIconDisabled):hover {
-  color: var(--icon-stroke);
-  background-color: var(--color-primary);
-}
-
-.menuIconDisabled {
-  cursor: not-allowed;
-  --icon-stroke-gray: hsl(from var(--article-headline-color) h s calc(l + 60%));
-  --bg-gray: hsl(from var(--detail-bg-color) h calc(s - 35%) calc(l + 5%));
-  color: var(--icon-stroke-gray);
-  background-color: var(--bg-gray);
-
-  &:hover {
-    color: var(--icon-stroke-gray);
-    background-color: var(--bg-gray);
-  }
-}
-
 .scrollList {
   overflow-y: auto;
   height: 100vh;
-  padding-top: var(--app-toolbar-height);
+  padding-top: calc(var(--app-toolbar-height) + 8px);
 }
 
 .scrollView {
@@ -120,29 +105,27 @@
 
 .mainView {
   position: relative;
-  height: 100%;
-  overflow-y: auto;
   display: grid;
-  grid-auto-flow: row;
-  grid-template-rows: var(--app-toolbar-height) 1fr;
+  grid-auto-flow: column;
+  grid-template-columns: var(--app-article-width) 1fr;
   background-color: var(--detail-bg-color);
 }
 
-.viewHeader {
+.header {
   height: var(--app-toolbar-height);
   display: grid;
   grid-template-columns: 1fr 1fr;
   align-items: center;
   justify-content: space-between;
-}
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 3;
 
-.header {
-  background: var(--article-list-bg-color);
-}
-
-.viewMenu {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding: 0 12px;
+  backdrop-filter: saturate(180%) blur(20px);
+  background: rgba(255, 255, 255, 0.88);
+  --playerDropShadow2: rgba(0, 0, 0, .07);
+  --playerInnerShadow: rgba(255, 255, 255, .45);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05), 0 1px 3px var(--playerDropShadow2), inset 0 1px 1px var(--playerInnerShadow);
 }
