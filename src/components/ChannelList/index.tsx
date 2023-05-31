@@ -40,10 +40,10 @@ function useQuery() {
 
 const ChannelList = (): JSX.Element => {
   const navigate = useNavigate();
-  const [addFolderDialogStatus, , , , setAddFolderDialogStatus] = useModal();
-  const [editFolderDialogStatus, , , , setEditFolderDialogStatus] = useModal();
-  const [editFeedStatus, , , , setEditFeedStatus] = useModal();
-  const [showStatus, , , , setModalStatus] = useModal();
+  const [addFolderDialogStatus, setAddFolderDialogStatus] = useModal();
+  const [editFolderDialogStatus, setEditFolderDialogStatus] = useModal();
+  const [editFeedStatus, setEditFeedStatus] = useModal();
+  const [showStatus, setModalStatus] = useModal();
   const [refreshing, setRefreshing] = useState(false);
   const [channelList, setChannelList] = useState<Channel[]>([]);
   const [treeData, setTreeData] = useState<any>([]);

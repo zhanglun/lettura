@@ -16,7 +16,7 @@ interface BearStore {
   setArticle: (article: Article) => void;
   articleList: Article[];
   setArticleList: (list: Article[]) => void;
-  getArticleList: (uuid?: string) => any;
+  getArticleList: (uuid: string, filter: any) => any;
 
   updateArticleAndIdx: (article: Article, idx?: number) => void;
   goPreviousArticle: any;
@@ -24,6 +24,9 @@ interface BearStore {
 
   currentIdx: number;
   setCurrentIdx: (idx: number) => void;
+
+  articleDialogViewStatus: boolean;
+  setArticleDialogViewStatus: (status: boolean) => void;
 
   currentFilter: { id: number; title: string };
   filterList: { id: number; title: string }[];
@@ -40,7 +43,7 @@ export const useBearStore = create<BearStore>()(
       channel: null,
       setChannel: (channel: Channel) => {
         set(() => ({
-          channel: channel
+          channel: channel,
         }));
       },
       getFeedList: () => {
@@ -51,40 +54,32 @@ export const useBearStore = create<BearStore>()(
       feedContextMenuTarget: null,
       setFeedContextMenuTarget: (target: Channel | null) => {
         set(() => ({
-          feedContextMenuTarget: target
+          feedContextMenuTarget: target,
         }));
       },
 
       article: null,
       setArticle: (article: Article) => {
         set(() => ({
-          article: article
+          article: article,
         }));
       },
 
       articleList: [],
       setArticleList: (list: Article[]) => {
         set(() => ({
-          articleList: list
+          articleList: list,
         }));
       },
 
-      getArticleList: (uuid?: string) => {
-        const feed = get().channel;
-        const filter = get().currentFilter;
+      getArticleList: (uuid: string, filter: any) => {
+        console.log("%c Line:75 🍰 filter", "color:#fca650", filter);
 
-        if (uuid || feed) {
-          return dataAgent
-            .getArticleList((uuid || feed?.uuid), filter)
-            .then((res) => {
-              const { list } = res as { list: Article[] };
-              get().setArticleList(list);
-              return list;
-            });
-        } else {
-          get().setArticleList([]);
-          return Promise.resolve([]);
-        }
+        return dataAgent.getArticleList(uuid, filter).then((res) => {
+          const { list } = res as { list: Article[] };
+          get().setArticleList(list);
+          return list;
+        });
       },
 
       updateArticleAndIdx: (article: Article, idx?: number) => {
@@ -105,14 +100,14 @@ export const useBearStore = create<BearStore>()(
               busChannel.emit("updateChannelUnreadCount", {
                 uuid: article.channel_uuid,
                 action: "decrease",
-                count: 1
+                count: 1,
               });
 
               article.read_status = 2;
 
               set(() => ({
                 article,
-                currentIdx: idx
+                currentIdx: idx,
               }));
             }
           });
@@ -120,7 +115,7 @@ export const useBearStore = create<BearStore>()(
 
         set(() => ({
           article,
-          currentIdx: idx
+          currentIdx: idx,
         }));
       },
 
@@ -158,31 +153,38 @@ export const useBearStore = create<BearStore>()(
       currentIdx: 0,
       setCurrentIdx: (idx: number) => {
         set(() => ({
-          currentIdx: idx
+          currentIdx: idx,
         }));
+      },
+
+      articleDialogViewStatus: false,
+      setArticleDialogViewStatus: (status: boolean) => {
+        set(() => ({
+          articleDialogViewStatus: status
+        }))
       },
 
       filterList: [
         {
           id: 0,
-          title: "All"
+          title: "All",
         },
         {
           id: 1,
-          title: "Unread"
+          title: "Unread",
         },
         {
           id: 2,
-          title: "Read"
-        }
+          title: "Read",
+        },
       ],
       currentFilter: {
         id: 1,
-        title: "Unread"
+        title: "Unread",
       },
       setFilter: (filter: { id: number; title: string }) => {
         set(() => ({
-          currentFilter: filter
+          currentFilter: filter,
         }));
       },
 
@@ -191,7 +193,7 @@ export const useBearStore = create<BearStore>()(
       getUserConfig: () => {
         dataAgent.getUserConfig().then((res) => {
           set(() => ({
-            userConfig: res
+            userConfig: res,
           }));
         });
       },
@@ -203,10 +205,10 @@ export const useBearStore = create<BearStore>()(
 
         dataAgent.updateUserConfig(cfg).then(() => {
           set(() => ({
-            userConfig: cfg
+            userConfig: cfg,
           }));
         });
-      }
+      },
     };
   })
 );

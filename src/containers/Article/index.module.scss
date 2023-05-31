@@ -4,7 +4,7 @@
   flex: 1;
   height: 100vh;
   display: grid;
-  grid-template-columns: var(--app-article-width) 1fr;
+  //grid-template-columns: var(--app-article-width) 1fr;
   background-color: var(--app-main-bg-color);
   // padding-top: var(--app-toolbar-height);
   position: relative;
@@ -46,6 +46,14 @@
 }
 
 :global(.is-scroll .sticky-header) {
+  backdrop-filter: saturate(180%) blur(20px);
+  background: rgba(255, 255, 255, 0.88);
+  --playerDropShadow2: rgba(0, 0, 0, .07);
+  --playerInnerShadow: rgba(255, 255, 255, .45);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05), 0 1px 3px var(--playerDropShadow2), inset 0 1px 1px var(--playerInnerShadow);
+}
+
+:global(.blur) {
   backdrop-filter: saturate(180%) blur(20px);
   background: rgba(255, 255, 255, 0.88);
   --playerDropShadow2: rgba(0, 0, 0, .07);

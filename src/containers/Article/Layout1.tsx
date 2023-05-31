@@ -180,7 +180,7 @@ export const Layout1 = (): JSX.Element => {
   }
 
   return (
-    <>
+    <div className="grid grid-cols-[var(--app-article-width)_1fr]">
       <div className="relative h-full border-r border-stone-100">
         { syncing && <div className={ styles.syncingBar }>同步中</div> }
         <div className={ styles.scrollList } ref={ listRef }>
@@ -196,6 +196,6 @@ export const Layout1 = (): JSX.Element => {
       <div className={ styles.scrollView } ref={ viewRef }>
         <ArticleView article={ store.article } userConfig={ store.userConfig } />
       </div>
-    </>
+    </div>
   );
 };

@@ -24,7 +24,7 @@ import { Icon } from "@/components/Icon";
 
 export const Feed = () => {
   const [ list, setList ] = useState<(Channel & { parent_uuid: String })[]>([]);
-  const [ showStatus, , , , setModalStatus ] = useModal();
+  const [ showStatus, setModalStatus ] = useModal();
   const [ renderList, setRenderList ] = useState<
     (Channel & { parent_uuid: String })[]
   >([]);

@@ -72,7 +72,9 @@ export const DialogEditFeed = (props: DialogEditFeedProps) => {
               <div className="mt-3 space-y-0.5">
                 <a
                   className="text-sm text-muted-foreground hover:text-primary hover:underline flex items-top space-x-1"
-                  href={feed?.link}>
+                  href={feed?.link}
+                  target="_blank"
+                >
                   <Link2 className="w-4 h-4" />
                   <span>{feed?.link}</span>
                 </a>
@@ -86,7 +88,9 @@ export const DialogEditFeed = (props: DialogEditFeedProps) => {
             <p className="text-sm font-medium leading-none">Feed Address</p>
             <a
               className="text-sm font-normal leading-snug text-muted-foreground hover:text-primary hover:underline flex items-center space-x-1"
-              href={feed?.feed_url}>
+              href={feed?.feed_url}
+              target="_blank"
+            >
               <Link2 className="w-4 h-4" />
               <span>{feed?.feed_url}</span>
             </a>

@@ -4,34 +4,23 @@ import { ArticleList, ArticleListRefType } from "@/components/ArticleList";
 import { ArticleView } from "@/components/ArticleView";
 import * as dataAgent from "../../helpers/dataAgent";
 import { useBearStore } from "@/hooks/useBearStore";
-import styles from "./index.module.scss";
-import {
-  Filter,
-  CheckCheck,
-  RefreshCw,
-  ChevronUp,
-  ChevronDown,
-  ExternalLink,
-  Paintbrush,
-  Link,
-  Ghost, Share, Layout, LayoutGrid, LayoutList, LayoutPanelLeft
-} from "lucide-react";
 import { busChannel } from "@/helpers/busChannel";
 import { Article } from "@/db";
 import { CustomizeStyle } from "@/components/SettingPanel/CustomizeStyle";
 import {
   Popover,
   PopoverContent,
-  PopoverTrigger
+  PopoverTrigger,
 } from "@/components/ui/popover";
 import classNames from "classnames";
 
 import {
   DropdownMenu,
-  DropdownMenuContent, DropdownMenuItem,
+  DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
 import { ToastAction } from "@/components/ui/toast";
@@ -40,6 +29,7 @@ import { Icon } from "@/components/Icon";
 
 import { open } from "@tauri-apps/api/shell";
 import { Separator } from "@/components/ui/separator";
+import { ArticleLineList } from "@/components/ArticleList/LineList";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -61,12 +51,10 @@ export const Layout2 = (): JSX.Element => {
 
     currentIdx: state.currentIdx,
     setCurrentIdx: state.setCurrentIdx,
-    userConfig: state.userConfig
+    userConfig: state.userConfig,
   }));
 
   const { toast } = useToast();
-  const [ layoutType, setLayoutType ] = useState(1);
-
   const query = useQuery();
   const feedUrl = query.get("feedUrl");
   const type = query.get("type");
@@ -108,7 +96,7 @@ export const Layout2 = (): JSX.Element => {
       const options = {
         root: $rootElem,
         rootMargin: "0px",
-        threshold: 1
+        threshold: 1,
       };
 
       const callback = (
@@ -159,14 +147,14 @@ export const Layout2 = (): JSX.Element => {
               description: message,
               action: (
                 <ToastAction altText="Goto schedule to undo">Close</ToastAction>
-              )
+              ),
             });
           } else {
             getArticleList();
             busChannel.emit("updateChannelUnreadCount", {
               uuid: channelUuid as string,
               action: "increase",
-              count: num || 0
+              count: num || 0,
             });
           }
         })
@@ -176,85 +164,9 @@ export const Layout2 = (): JSX.Element => {
     }
   };
 
-  const handleViewSourcePage = () => {
-    const { link } = store.article as Article;
-
-    dataAgent.getPageSources(link).then((res) => {
-      console.log(res);
-    });
-    // TODO: parse web content
-  };
-
-  const handleCopyLink = () => {
-    const { link } = store.article as Article;
-
-    navigator.clipboard.writeText(link).then(
-      function() {
-        toast({
-          description: "Copied"
-        });
-      },
-      function(err) {
-        console.error("Async: Could not copy text: ", err);
-      }
-    );
-  };
-
-  const handleRefresh = () => {
-    syncArticles();
-  };
-
-  const handleSetLayout = (type: number) => {
-    setLayoutType(type);
-  };
-
-  const markAllRead = () => {
-    if (feedUrl && articleListRef.current) {
-      console.log("🚀 ~ file: index.tsx:148 ~ markAllRead ~ feedUrl", feedUrl);
-      articleListRef.current.markAllRead();
-      // TODO
-    }
-
-    return Promise.resolve();
-  };
-
-  const changeFilter = (id: any) => {
-    if (store.filterList.some((_) => _.id === parseInt(id, 10))) {
-      store.setFilter({
-        ...store.filterList.filter((_) => _.id === parseInt(id, 10))[0]
-      });
-    }
-  };
-
   const resetScrollTop = () => {
     if (viewRef.current !== null) {
       viewRef.current.scroll(0, 0);
-    }
-  };
-
-  const handleViewPrevious = () => {
-    let cur = -1;
-
-    if (currentIdx <= 0) {
-      cur = 0;
-    } else {
-      cur = currentIdx - 1;
-    }
-
-    calculateItemPosition("up", store.articleList[cur] || null);
-
-    store.updateArticleAndIdx(store.articleList[cur] || null, cur);
-  };
-
-  const handleViewNext = () => {
-    let cur = -1;
-
-    if (currentIdx < store.articleList.length - 1) {
-      cur = currentIdx + 1;
-
-      calculateItemPosition("down", store.articleList[cur] || null);
-
-      store.updateArticleAndIdx(store.articleList[cur] || null, cur);
     }
   };
 
@@ -331,8 +243,13 @@ export const Layout2 = (): JSX.Element => {
   }
 
   return (
-    <>
-      TODO Layout2
-    </>
+    <div className="overflow-y-auto h-[100vh] pt-[var(--app-toolbar-height)]">
+      <ArticleLineList
+        feedUuid={ channelUuid }
+        type={ type }
+        feedUrl={ feedUrl || "" }
+        title={ params.name }
+      />
+    </div>
   );
 };

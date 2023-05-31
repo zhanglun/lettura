@@ -8,26 +8,13 @@ import React, {
   createRef
 } from "react";
 import { ArticleItem } from "../ArticleItem";
-import { Article } from "@/db";
 import { useBearStore } from "@/hooks/useBearStore";
 import * as dataAgent from "@/helpers/dataAgent";
 import { busChannel } from "@/helpers/busChannel";
+import { ArticleListRefType, ArticleListProps} from "@/components/ArticleList/index";
+import { ArticleLineItem } from "@/components/ArticleItem/Line";
 
-export type ArticleListProps = {
-  feedUuid: string | null;
-  type: string | null;
-  feedUrl: string | null;
-  title: string | null;
-};
-
-export interface ArticleListRefType {
-  getList: () => void;
-  markAllRead: () => void;
-  articlesRef: any;
-  innerRef: React.RefObject<HTMLDivElement>;
-}
-
-export const ArticleList = forwardRef(
+export const ArticleLineList = forwardRef(
   (
     props: ArticleListProps,
     ref: ForwardedRef<ArticleListRefType>
@@ -51,11 +38,11 @@ export const ArticleList = forwardRef(
     };
 
     const getList = (feedUuid: string) => {
-      console.log('props', props);
-      setLoading(true);
       const filter: { read_status?: number; limit?: number } = {};
 
-      filter.read_status = store.currentFilter.id * 1;
+      filter.read_status = store.currentFilter.id;
+
+      setLoading(true);
 
       store.getArticleList(feedUuid, filter)
         .then((res: any) => {
@@ -69,29 +56,12 @@ export const ArticleList = forwardRef(
         });
     };
 
-    const markAllRead = () => {
-      dataAgent.markAllRead(feedUuid as string).then((res) => {
-        articleList.forEach((article) => {
-          article.read_status = 2;
-        });
-
-        setArticleList([ ...articleList ]);
-
-        busChannel.emit("updateChannelUnreadCount", {
-          uuid: feedUuid as string,
-          action: "set",
-          count: 0
-        });
-      });
-    };
-
     useImperativeHandle(ref, () => {
       return {
         getList() {
           getList(feedUuid || "");
         },
         markAllRead() {
-          markAllRead();
         },
         articlesRef,
         innerRef
@@ -105,7 +75,7 @@ export const ArticleList = forwardRef(
     const renderList = (): JSX.Element[] => {
       return (articleList || []).map((article: any, idx: number) => {
         return (
-          <ArticleItem
+          <ArticleLineItem
             ref={ articlesRef[article.uuid] }
             article={ article }
             key={ article.id }
@@ -133,9 +103,9 @@ export const ArticleList = forwardRef(
     }, [ articleList ]);
 
     return (
-      <div className="grid grid-cols-1 pl-2 grid-rows-[calc(100%_-_var(--app-toolbar-height))]">
+      <div className="grid grid-cols-1 pl-2 grid-rows-[calc(100% - var(--app-toolbar-height))]">
         <div ref={ innerRef }>
-          <ul className="m-0 pb-2 grid gap-2">{ renderList() }</ul>
+          <ul className="m-0 pb-2 grid">{ renderList() }</ul>
         </div>
       </div>
     );

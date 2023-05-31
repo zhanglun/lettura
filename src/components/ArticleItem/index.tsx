@@ -1,8 +1,8 @@
 import React, { ForwardedRef, useEffect, useState } from "react";
 import classnames from "classnames";
 import Dayjs from "dayjs";
-import { useBearStore } from "../../hooks/useBearStore";
-import { getChannelFavicon } from "../../helpers/parseXML";
+import { useBearStore } from "@/hooks/useBearStore";
+import { getChannelFavicon } from "@/helpers/parseXML";
 
 export const ArticleItem = React.forwardRef(
   (props: any, ref: ForwardedRef<HTMLLIElement>) => {

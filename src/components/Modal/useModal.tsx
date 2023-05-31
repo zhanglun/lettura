@@ -2,10 +2,10 @@ import { useState } from "react";
 
 export const useModal = (): [
   status: boolean,
+  setStatus: (status: boolean) => void,
   showModal: () => void,
   hideModal: () => void,
   toggleStatus: () => void,
-  setStatus: (status: boolean) => void
  ] => {
   const [showStatus, setShowStatus] = useState(false);
   const showModal = () => setShowStatus(true);
@@ -15,8 +15,9 @@ export const useModal = (): [
 
   return [
     showStatus,
+    setModalStatus,
     showModal,
     hideModal,
     toggleModal,
-    setModalStatus];
+  ];
 };

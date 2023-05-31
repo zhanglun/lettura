@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { busChannel } from "@/helpers/busChannel";
 import { Article } from "@/db";
+import { open } from "@tauri-apps/api/shell";
 import { CustomizeStyle } from "@/components/SettingPanel/CustomizeStyle";
 import {
   Popover,
@@ -35,12 +36,13 @@ import {
 import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/use-toast";
 import { Icon } from "@/components/Icon";
-
-import { open } from "@tauri-apps/api/shell";
 import { Separator } from "@/components/ui/separator";
 import { Layout1 } from "@/containers/Article/Layout1";
 import { Layout2 } from "@/containers/Article/Layout2";
 import { Layout3 } from "@/containers/Article/Layout3";
+import { ArticleDialogView } from "@/components/ArticleView/DialogView";
+import { useModal } from "@/components/Modal/useModal";
+import { ToolbarItemNavigator } from "@/containers/Article/ToolBar";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -56,6 +58,9 @@ export const ArticleContainer = (): JSX.Element => {
     updateArticleAndIdx: state.updateArticleAndIdx,
     channel: state.channel,
 
+    articleDialogViewStatus: state.articleDialogViewStatus,
+    setArticleDialogViewStatus: state.setArticleDialogViewStatus,
+
     filterList: state.filterList,
     currentFilter: state.currentFilter,
     setFilter: state.setFilter,
@@ -65,13 +70,15 @@ export const ArticleContainer = (): JSX.Element => {
     userConfig: state.userConfig
   }));
 
-  const { toast } = useToast();
-  const [ layoutType, setLayoutType ] = useState(1);
+  console.log("store.articleDialogViewStatus", store.articleDialogViewStatus);
 
+  const { toast } = useToast();
+  const [ layoutType, setLayoutType ] = useState(2);
   const query = useQuery();
   const feedUrl = query.get("feedUrl");
   const type = query.get("type");
   const channelUuid = query.get("channelUuid");
+  const [ dialogViewStatus, setDialogViewStatus ] = useModal();
   const [ syncing, setSyncing ] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<HTMLDivElement>(null);
@@ -190,12 +197,12 @@ export const ArticleContainer = (): JSX.Element => {
     const { link } = store.article as Article;
 
     navigator.clipboard.writeText(link).then(
-      function() {
+      function () {
         toast({
           description: "Copied"
         });
       },
-      function(err) {
+      function (err) {
         console.error("Async: Could not copy text: ", err);
       }
     );
@@ -233,51 +240,6 @@ export const ArticleContainer = (): JSX.Element => {
     }
   };
 
-  const handleViewPrevious = () => {
-    let cur = -1;
-
-    if (currentIdx <= 0) {
-      cur = 0;
-    } else {
-      cur = currentIdx - 1;
-    }
-
-    calculateItemPosition("up", store.articleList[cur] || null);
-
-    store.updateArticleAndIdx(store.articleList[cur] || null, cur);
-  };
-
-  const handleViewNext = () => {
-    let cur = -1;
-
-    if (currentIdx < store.articleList.length - 1) {
-      cur = currentIdx + 1;
-
-      calculateItemPosition("down", store.articleList[cur] || null);
-
-      store.updateArticleAndIdx(store.articleList[cur] || null, cur);
-    }
-  };
-
-  useEffect(() => {
-    const unsub2 = useBearStore.subscribe(
-      (state) => state.currentIdx,
-      (idx, previousIdx) => {
-        if (idx <= previousIdx) {
-          calculateItemPosition("up", store.articleList[idx]);
-        } else {
-          console.log("往下", store.articleList[idx]);
-          calculateItemPosition("down", store.articleList[idx]);
-        }
-      }
-    );
-
-    return () => {
-      console.log("clean!!!!");
-      unsub2();
-    };
-  }, [ store.articleList ]);
-
   useEffect(() => {
     resetScrollTop();
   }, [ store.article ]);
@@ -294,42 +256,7 @@ export const ArticleContainer = (): JSX.Element => {
     setCurrentIdx(-1);
   }, [ channelUuid ]);
 
-  function calculateItemPosition(
-    direction: "up" | "down",
-    article: Article | null
-  ) {
-    if (!article || !article.uuid) {
-      return;
-    }
 
-    const $li = document.getElementById(article.uuid);
-    const bounding = $li?.getBoundingClientRect();
-    const winH = window.innerHeight;
-
-    if (
-      (direction === "up" || direction === "down") &&
-      bounding &&
-      bounding.top < 58
-    ) {
-      const offset = 58 - bounding.top;
-      const scrollTop = (listRef?.current?.scrollTop || 0) - offset;
-
-      listRef?.current?.scrollTo(0, scrollTop);
-    } else if (
-      (direction === "up" || direction === "down") &&
-      bounding &&
-      bounding.bottom > winH
-    ) {
-      const offset = bounding.bottom - winH;
-      const scrollTop = (listRef?.current?.scrollTop || 0) + offset;
-
-      console.log(
-        "🚀 ~ file: index.tsx:324 ~ ArticleContainer ~ scrollTop:",
-        scrollTop
-      );
-      listRef?.current?.scrollTo(0, scrollTop);
-    }
-  }
 
   return (
     <div className={ styles.article }>
@@ -376,50 +303,43 @@ export const ArticleContainer = (): JSX.Element => {
             </DropdownMenuContent>
           </DropdownMenu>
           <Icon onClick={ markAllRead }>
-            <CheckCheck size={ 16 } />
+            <CheckCheck size={ 16 }/>
           </Icon>
           <Icon onClick={ handleRefresh }>
-            <RefreshCw size={ 16 } className={ `${ syncing ? "spinning" : "" }` } />
+            <RefreshCw size={ 16 } className={ `${ syncing ? "spinning" : "" }` }/>
           </Icon>
           <span>
-            <Separator orientation="vertical" className="h-4 mx-2" />
+            <Separator orientation="vertical" className="h-4 mx-2"/>
           </span>
           <Icon onClick={ () => handleSetLayout(1) } active={ layoutType === 1 }>
-            <Layout size={ 16 } />
+            <Layout size={ 16 }/>
           </Icon>
           <Icon onClick={ () => handleSetLayout(2) } active={ layoutType === 2 }>
-            <LayoutGrid size={ 16 } />
+            <LayoutGrid size={ 16 }/>
           </Icon>
           <Icon onClick={ () => handleSetLayout(3) } active={ layoutType === 3 }>
-            <LayoutList size={ 16 } />
+            <LayoutList size={ 16 }/>
           </Icon>
           <span>
-            <Separator orientation="vertical" className="h-4 mx-2" />
+            <Separator orientation="vertical" className="h-4 mx-2"/>
           </span>
-          <Icon disable={ currentIdx <= 0 } onClick={ handleViewPrevious }>
-            <ChevronUp size={ 16 } />
-          </Icon>
-          <Icon
-            disable={ currentIdx >= store.articleList.length - 1 }
-            onClick={ handleViewNext }
-          >
-            <ChevronDown size={ 16 } />
-          </Icon>
+          <ToolbarItemNavigator listRef={listRef} />
           <span>
-            <Separator orientation="vertical" className="h-4 mx-2" />
+            <Separator orientation="vertical" className="h-4 mx-2"/>
+            {store.articleDialogViewStatus}
           </span>
           <Popover>
             <PopoverTrigger>
               <Icon>
-                <Paintbrush size={ 16 } />
+                <Paintbrush size={ 16 }/>
               </Icon>
             </PopoverTrigger>
             <PopoverContent className="w-[340px]">
-              <CustomizeStyle styleConfig={ store.userConfig.customize_style } />
+              <CustomizeStyle styleConfig={ store.userConfig.customize_style }/>
             </PopoverContent>
           </Popover>
           <Icon onClick={ handleViewSourcePage }>
-            <Ghost size={ 16 } />
+            <Ghost size={ 16 }/>
           </Icon>
           <DropdownMenu>
             <DropdownMenuTrigger>
@@ -429,20 +349,32 @@ export const ArticleContainer = (): JSX.Element => {
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuItem onClick={ () => store.article && open(store.article?.link) }>
-                <ExternalLink size={ 16 } className="mr-2" />
+                <ExternalLink size={ 16 } className="mr-2"/>
                 Open in browser
               </DropdownMenuItem>
               <DropdownMenuItem onClick={ handleCopyLink }>
-                <Link size={ 16 } className="mr-2" />
+                <Link size={ 16 } className="mr-2"/>
                 Copy link
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
       </div>
-      { layoutType === 1 && <Layout1 /> }
-      { layoutType === 2 && <Layout2 /> }
-      { layoutType === 3 && <Layout3 /> }
+      <div>
+        { layoutType === 1 && <Layout1/> }
+        { layoutType === 2 && <Layout2/> }
+        { layoutType === 3 && <Layout3/> }
+      </div>
+      <ArticleDialogView
+        article={ store.article }
+        userConfig={ store.userConfig }
+        dialogStatus={ store.articleDialogViewStatus }
+        setDialogStatus={ store.setArticleDialogViewStatus }
+        afterConfirm={ () => {
+        } }
+        afterCancel={ () => {
+        } }
+      />
     </div>
   );
 };
