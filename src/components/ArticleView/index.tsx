@@ -4,6 +4,7 @@ import classnames from "classnames";
 import styles from "./view.module.scss";
 import { getChannelFavicon } from "@/helpers/parseXML";
 import * as dataAgent from "@/helpers/dataAgent";
+import { useBearStore } from "@/hooks/useBearStore";
 
 type ArticleViewProps = {
   article: any | null;
@@ -15,6 +16,9 @@ function createMarkup(html: string) {
 }
 
 export const ArticleView = (props: ArticleViewProps): JSX.Element => {
+  const store = useBearStore((state) => ({
+    channel: state.channel
+  }));
   const { article, userConfig } = props;
   const containerRef = useRef<HTMLDivElement>(null);
   const helpBarRef = useRef<HTMLDivElement>(null);
@@ -47,7 +51,7 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
                 { Dayjs(pub_date.replace(/-/gi, "/")).format("YYYY-MM-DD HH:mm") }
               </span>
               <span className={ styles.channelInfo }>
-                <img src={ ico } alt="" className="rounded"/>
+                <img src={ store.channel?.logo || ico } alt="" className="rounded"/>
                 { article.channel_title }
               </span>
               { article.author && (

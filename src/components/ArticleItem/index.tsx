@@ -9,6 +9,7 @@ export const ArticleItem = React.forwardRef(
     const store = useBearStore((state) => ({
       updateArticleAndIdx: state.updateArticleAndIdx,
       article: state.article,
+      channel: state.channel,
     }));
     const { article, onSelect } = props;
     const [highlight, setHighlight] = useState<boolean>();
@@ -91,7 +92,7 @@ export const ArticleItem = React.forwardRef(
           )}
         >
           <div className={classnames("flex items-center")}>
-            <img src={ico} alt="" className="rounded w-4 mr-1" />
+            <img src={store.channel?.logo || ico} alt="" className="rounded w-4 mr-1" />
             {article.author || article.channel_title}
           </div>
           <div>

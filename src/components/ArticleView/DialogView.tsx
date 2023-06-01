@@ -142,7 +142,7 @@ export const ArticleDialogView = (
     setBanner("");
     setPageContent("");
 
-    Promise.all([
+    article && Promise.all([
       dataAgent.getArticleDetail(article.uuid),
       dataAgent.getBestImage(article.link),
     ]).then(([res, image]) => {
