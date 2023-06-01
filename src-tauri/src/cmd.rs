@@ -207,10 +207,11 @@ pub fn create_article_models(
   for entry in &res.entries {
     let article_uuid = Uuid::new_v4().hyphenated().to_string();
 
-    let title = match &res.title {
+    let title = match &entry.title {
       Some(link) => link.content.to_string(),
       None => String::from(""),
     };
+
     let link = match entry.links.get(0) {
       Some(link) => link.href.to_string(),
       None => String::from(""),
@@ -477,6 +478,12 @@ pub async fn update_icon(uuid: String, url: String) -> usize {
   let favicon = feed::channel::update_icon(&uuid, &url).await;
 
   favicon
+}
+
+#[command]
+pub async fn get_web_best_image(url: String) -> Option<String> {
+  let res = core::scraper::PageScraper::get_first_image_or_og_image(&url).await;
+  res
 }
 
 #[command]
