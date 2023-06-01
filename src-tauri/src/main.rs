@@ -109,6 +109,7 @@ async fn main() {
       cmd::init_process,
       cmd::get_article_detail,
       cmd::update_icon,
+      cmd::get_web_best_image,
       cmd::get_web_source,
     ])
     .register_uri_scheme_protocol("lettura", move |app, request| {

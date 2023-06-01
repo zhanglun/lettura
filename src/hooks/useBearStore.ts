@@ -13,7 +13,7 @@ interface BearStore {
   setFeedContextMenuTarget: (target: Channel | null) => void;
 
   article: Article | null;
-  setArticle: (article: Article) => void;
+  setArticle: (article: Article | null) => void;
   articleList: Article[];
   setArticleList: (list: Article[]) => void;
   getArticleList: (uuid: string, filter: any) => any;
@@ -59,7 +59,7 @@ export const useBearStore = create<BearStore>()(
       },
 
       article: null,
-      setArticle: (article: Article) => {
+      setArticle: (article: Article | null) => {
         set(() => ({
           article: article,
         }));

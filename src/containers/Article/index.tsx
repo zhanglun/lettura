@@ -71,8 +71,6 @@ export const ArticleContainer = (): JSX.Element => {
     userConfig: state.userConfig
   }));
 
-  console.log("store.articleDialogViewStatus", store.articleDialogViewStatus);
-
   const { toast } = useToast();
   const [ layoutType, setLayoutType ] = useState(2);
   const query = useQuery();
@@ -319,6 +317,8 @@ export const ArticleContainer = (): JSX.Element => {
         afterConfirm={ () => {
         } }
         afterCancel={ () => {
+          store.setArticle(null);
+          console.log('store.article', store.article)
         } }
       />
     </div>
