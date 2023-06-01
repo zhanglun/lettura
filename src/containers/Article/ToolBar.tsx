@@ -31,7 +31,6 @@ export const ToolbarItemNavigator = (props: NavigatorProps) => {
 
   const { currentIdx, setCurrentIdx } = store;
 
-
   const handleViewPrevious = () => {
     let cur = -1;
 

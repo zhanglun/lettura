@@ -95,7 +95,7 @@ export const ArticleItem = React.forwardRef(
             {article.author || article.channel_title}
           </div>
           <div>
-            {Dayjs(article.pub_date.replace(/-/gi, "/")).format(
+            {Dayjs(new Date(article.pub_date || article.create_date)).format(
               "YYYY-MM-DD HH:mm"
             )}
           </div>

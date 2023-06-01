@@ -43,6 +43,7 @@ import { Layout3 } from "@/containers/Article/Layout3";
 import { ArticleDialogView } from "@/components/ArticleView/DialogView";
 import { useModal } from "@/components/Modal/useModal";
 import { ToolbarItemNavigator } from "@/containers/Article/ToolBar";
+import { ReadingOptions } from "@/containers/Article/ReadingOptions";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -78,7 +79,6 @@ export const ArticleContainer = (): JSX.Element => {
   const feedUrl = query.get("feedUrl");
   const type = query.get("type");
   const channelUuid = query.get("channelUuid");
-  const [ dialogViewStatus, setDialogViewStatus ] = useModal();
   const [ syncing, setSyncing ] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<HTMLDivElement>(null);
@@ -182,30 +182,6 @@ export const ArticleContainer = (): JSX.Element => {
           setSyncing(false);
         });
     }
-  };
-
-  const handleViewSourcePage = () => {
-    const { link } = store.article as Article;
-
-    dataAgent.getPageSources(link).then((res) => {
-      console.log(res);
-    });
-    // TODO: parse web content
-  };
-
-  const handleCopyLink = () => {
-    const { link } = store.article as Article;
-
-    navigator.clipboard.writeText(link).then(
-      function () {
-        toast({
-          description: "Copied"
-        });
-      },
-      function (err) {
-        console.error("Async: Could not copy text: ", err);
-      }
-    );
   };
 
   const handleRefresh = () => {
@@ -326,38 +302,8 @@ export const ArticleContainer = (): JSX.Element => {
           <ToolbarItemNavigator listRef={listRef} />
           <span>
             <Separator orientation="vertical" className="h-4 mx-2"/>
-            {store.articleDialogViewStatus}
           </span>
-          <Popover>
-            <PopoverTrigger>
-              <Icon>
-                <Paintbrush size={ 16 }/>
-              </Icon>
-            </PopoverTrigger>
-            <PopoverContent className="w-[340px]">
-              <CustomizeStyle styleConfig={ store.userConfig.customize_style }/>
-            </PopoverContent>
-          </Popover>
-          <Icon onClick={ handleViewSourcePage }>
-            <Ghost size={ 16 }/>
-          </Icon>
-          <DropdownMenu>
-            <DropdownMenuTrigger>
-              <Icon>
-                <Share size={ 16 }></Share>
-              </Icon>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem onClick={ () => store.article && open(store.article?.link) }>
-                <ExternalLink size={ 16 } className="mr-2"/>
-                Open in browser
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={ handleCopyLink }>
-                <Link size={ 16 } className="mr-2"/>
-                Copy link
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <ReadingOptions />
         </div>
       </div>
       <div>

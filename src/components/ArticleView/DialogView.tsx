@@ -5,9 +5,11 @@ import styles from "./view.module.scss";
 import { getChannelFavicon } from "../../helpers/parseXML";
 import * as dataAgent from "../../helpers/dataAgent";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import classNames from "classnames";
 import { X } from "lucide-react";
 import { ToolbarItemNavigator } from "@/containers/Article/ToolBar";
+import { Icon } from "../Icon";
+import { Separator } from "@/components/ui/separator";
+import { ReadingOptions } from "@/containers/Article/ReadingOptions";
 
 type ArticleDialogViewProps = {
   article: any | null;
@@ -27,12 +29,27 @@ export const ArticleDialogView = (props: ArticleDialogViewProps): JSX.Element =>
   const { article, userConfig, dialogStatus, setDialogStatus, afterConfirm, afterCancel, trigger } = props;
   const containerRef = useRef<HTMLDivElement>(null);
   const helpBarRef = useRef<HTMLDivElement>(null);
+  const viewRef = useRef<HTMLDivElement>(null);
   const [ pageContent, setPageContent ] = useState("");
   const [ showBanner, setShowBanner ] = useState(false);
 
   const renderPlaceholder = () => {
     return "Please Select Some read";
   };
+
+  const resetScrollTop = () => {
+    if (viewRef.current !== null) {
+      viewRef.current.scroll(0, 0);
+    }
+  };
+
+  useEffect(() => {
+    resetScrollTop();
+  }, [ article ]);
+
+  useEffect(() => {
+    resetScrollTop();
+  }, []);
 
   const renderDetail = () => {
     if (!article) {
@@ -164,14 +181,23 @@ export const ArticleDialogView = (props: ArticleDialogViewProps): JSX.Element =>
     >
       { trigger && <DialogTrigger>{ trigger }</DialogTrigger> }
       <DialogContent className="p-0 top-8 bottom-8 min-w-[860px] is-scroll">
-        <div className="overflow-y-auto">
-          <div className="sticky left-20 right-20 top-2 z-[3]">
-            <div className="flex items-center justify-end px-20 space-x-0.5 rounded-tl-lg rounded-tr-lg">
+        <div className="overflow-y-auto" ref={ viewRef }>
+          <div className="sticky left-0 right-0 top-0 z-[3]">
+            <div
+              className="flex items-center justify-end px-20 py-2 space-x-0.5 rounded-tl-lg rounded-tr-lg  view-blur-bar">
               <ToolbarItemNavigator/>
+              <span>
+                <Separator orientation="vertical" className="h-4 mx-2"/>
+              </span>
+              <ReadingOptions/>
             </div>
-            {/*<X size={ 16 }/>*/}
+            <span className="absolute right-2 top-[50%] mt-[-16px]">
+            <Icon onClick={ () => setDialogStatus(false) }>
+              <X size={ 16 }/>
+            </Icon>
+            </span>
           </div>
-          <div className="relative h-full px-20 pt-14">
+          <div className="relative px-20 py-10">
             { article ? renderDetail() : renderPlaceholder() }
           </div>
         </div>

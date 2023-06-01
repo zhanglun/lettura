@@ -46,7 +46,7 @@ export const ArticleLineItem = React.forwardRef(
     return (
       <li
         className={ classnames(
-          "bg-green-50 grid grid-cols-[30px_1fr_120px] items-center list-none rounded-sm p-3 pl-6 relative",
+          "grid grid-cols-[30px_1fr_120px] items-center list-none rounded-sm p-2 pl-6 relative",
           "group hover:bg-article-active-bg hover:cursor-pointer",
           {
             "text-[hsl(var(--foreground)_/_80%)]": readStatus === 2,
@@ -97,7 +97,7 @@ export const ArticleLineItem = React.forwardRef(
           ) }
         >
           <div>
-            { Dayjs(article.pub_date.replace(/-/gi, "/")).format(
+            { Dayjs(article.pub_date || article.create_date).format(
               "YYYY-MM-DD HH:mm"
             ) }
           </div>
