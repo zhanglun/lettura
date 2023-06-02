@@ -7,10 +7,10 @@ import React, {
 } from "react";
 import { useBearStore } from "@/hooks/useBearStore";
 import { ArticleListProps } from "@/components/ArticleList/index";
-import { ArticleLineItem } from "@/components/ArticleItem/Line";
 import { useArticleListHook } from "@/components/ArticleList/hooks";
+import { ArticleCardItem } from "@/components/ArticleItem/Card";
 
-export const ArticleLineList = (props: ArticleListProps): JSX.Element => {
+export const ArticleCardList = (props: ArticleListProps): JSX.Element => {
   const { feedUuid } = props;
   const store = useBearStore(state => ({
     currentFilter: state.currentFilter,
@@ -23,7 +23,7 @@ export const ArticleLineList = (props: ArticleListProps): JSX.Element => {
   const renderList = (): JSX.Element[] => {
     return (store.articleList || []).map((article: any, idx: number) => {
       return (
-        <ArticleLineItem
+        <ArticleCardItem
           article={ article }
           key={ article.id }
         />
@@ -32,8 +32,8 @@ export const ArticleLineList = (props: ArticleListProps): JSX.Element => {
   };
 
   return (
-    <div className="grid grid-cols-1 pl-2 grid-rows-[calc(100% - var(--app-toolbar-height))]">
-      <ul className="m-0 pb-2">{ renderList() }</ul>
+    <div className="">
+      <ul className="m-[0_auto] py-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:max-w-3xl lg:max-w-5xl">{ renderList() }</ul>
     </div>
   );
 };

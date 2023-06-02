@@ -8,23 +8,9 @@ import {
   Filter,
   CheckCheck,
   RefreshCw,
-  ChevronUp,
-  ChevronDown,
-  ExternalLink,
-  Paintbrush,
-  Link,
-  Ghost, Share, Layout, LayoutGrid, LayoutList
+  Layout, LayoutGrid, LayoutList
 } from "lucide-react";
 import { busChannel } from "@/helpers/busChannel";
-import { Article } from "@/db";
-import { open } from "@tauri-apps/api/shell";
-import { CustomizeStyle } from "@/components/SettingPanel/CustomizeStyle";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger
-} from "@/components/ui/popover";
-
 import {
   DropdownMenu,
   DropdownMenuContent, DropdownMenuItem,
@@ -41,7 +27,6 @@ import { Layout1 } from "@/containers/Article/Layout1";
 import { Layout2 } from "@/containers/Article/Layout2";
 import { Layout3 } from "@/containers/Article/Layout3";
 import { ArticleDialogView } from "@/components/ArticleView/DialogView";
-import { useModal } from "@/components/Modal/useModal";
 import { ToolbarItemNavigator } from "@/containers/Article/ToolBar";
 import { ReadingOptions } from "@/containers/Article/ReadingOptions";
 

@@ -519,7 +519,7 @@ mod tests {
   #[tokio::test]
   async fn test_parse_feed() {
     // let url = "https://www.ximalaya.com/album/70501228.xml".to_string();
-    let url = "https://post.smzdm.com/feed".to_string();
+    let url = "http://www.youtube.com/feeds/videos.xml?channel_id=UCpVm7bg6pXKo1Pr6k5kxG9A".to_string();
     // let url = "https://medium.com/feed/google-design".to_string();
     // let url = "https://www.ximalaya.com/album/70501228.xml".to_string();
     // let url = "https://sspai.com/feed".to_string();

@@ -32,13 +32,14 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
     setPageContent("");
 
     // try to get the best banner if there is no image in article content
-    if (
-      article && (article.content || article.description).search(/<img[^>]+>/gi) === -1
-    ) {
-      dataAgent.getBestImage(article.link).then((image) => {
-        setBanner(image);
-      });
-    }
+    // it will make render slower
+    // if (
+    //   article && (article.content || article.description).search(/<img[^>]+>/gi) === -1
+    // ) {
+    //   dataAgent.getBestImage(article.link).then((image) => {
+    //     setBanner(image);
+    //   });
+    // }
 
     article &&
     dataAgent.getArticleDetail(article.uuid).then((res) => {
