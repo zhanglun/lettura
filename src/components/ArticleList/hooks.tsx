@@ -1,5 +1,5 @@
 import { useBearStore } from "@/hooks/useBearStore";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export const useArticleListHook = (props: {
   feedUuid: string | null
@@ -12,9 +12,14 @@ export const useArticleListHook = (props: {
     articleList: state.articleList,
     getArticleList: state.getArticleList
   }));
+
+  const listRef = useRef<HTMLDivElement>(null);
+  const [cursor, setCursor] = useState(1);
   const getList = (feedUuid: string) => {
-    const filter: { read_status?: number; limit?: number } = {
-      read_status: store.currentFilter.id
+    const filter: { read_status?: number; cursor: number, limit?: number } = {
+      read_status: store.currentFilter.id,
+      cursor,
+      limit: 12
     };
 
     setLoading(true);
@@ -31,13 +36,28 @@ export const useArticleListHook = (props: {
       });
   };
 
+  const handleListScroll = () => {
+    if (listRef.current) {
+      const scrollTop = listRef.current.scrollTop;
+      console.log("%c Line:42 🎂 scrollTop", "color:#3f7cff", scrollTop);
+    }
+  }
+
   useEffect(() => {
     getList(feedUuid || "");
   }, [ feedUuid, store.currentFilter ]);
+
+  useEffect(() => {
+    if (listRef.current) {
+      const $list = listRef.current as HTMLDivElement;
+      $list.addEventListener("scroll", handleListScroll);
+    }
+  }, []);
 
   return {
     getList,
     loading,
     setLoading,
+    listRef,
   }
 }

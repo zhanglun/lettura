@@ -47,7 +47,6 @@ pub struct ArticleQueryItem {
 #[derive(Debug, Serialize)]
 pub struct ArticleQueryResult {
   list: Vec<ArticleQueryItem>,
-  // pub count: i32,
 }
 
 impl Article {
@@ -55,6 +54,7 @@ impl Article {
   pub fn get_article(filter: ArticleFilter) -> ArticleQueryResult {
     let mut connection = establish_connection();
     let mut query = diesel::sql_query("").into_boxed();
+    let mut limit = 12;
 
     match filter.channel_uuid {
       Some(channel_uuid) => {
@@ -122,25 +122,27 @@ impl Article {
       }
     }
 
-    match filter.cursor {
-      Some(cursor) => {
-        query = query.sql(" and A.id > ?").bind::<Integer, _>(cursor);
-      }
-      None => {
-        1;
-      }
-    }
+    query = query.sql(" order by A.pub_date DESC ");
 
     match filter.limit {
-      Some(limit) => {
-        query = query.sql(" limit ?").bind::<Integer, _>(limit);
+      Some(l) => {
+        query = query.sql(" limit ?").bind::<Integer, _>(l);
+        limit = l;
       }
       None => {
         1;
       }
     }
 
-    query = query.sql(" order by A.pub_date DESC");
+    match filter.cursor {
+      Some(c) => {
+        // query = query.sql(" and A.id >= ?").bind::<Integer, _>(c + 1);
+        query = query.sql(" OFFSET ?").bind::<Integer, _>((c- 1) * limit);
+      }
+      None => {
+        1;
+      }
+    }
 
     let debug = diesel::debug_query::<diesel::sqlite::Sqlite, _>(&query);
 
