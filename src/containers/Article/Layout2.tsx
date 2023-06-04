@@ -13,18 +13,15 @@ export const Layout2 = (): JSX.Element => {
   const feedUrl = query.get("feedUrl");
   const type = query.get("type");
   const channelUuid = query.get("channelUuid");
-  const listRef = useRef<HTMLDivElement>(null);
 
   // TODO: reuse scroll to top
 
   return (
-    <div className="overflow-y-auto h-[100vh] pt-[var(--app-toolbar-height)]" ref={listRef}>
-      <ArticleLineList
-        feedUuid={ channelUuid }
-        type={ type }
-        feedUrl={ feedUrl || "" }
-        title={ params.name }
-      />
-    </div>
+    <ArticleLineList
+      feedUuid={ channelUuid }
+      type={ type }
+      feedUrl={ feedUrl || "" }
+      title={ params.name }
+    />
   );
 };

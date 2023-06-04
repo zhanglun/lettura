@@ -18,7 +18,7 @@ export const ArticleLineList = (props: ArticleListProps): JSX.Element => {
     articleList: state.articleList,
     getArticleList: state.getArticleList
   }));
-  useArticleListHook({ feedUuid })
+  const { listRef, loadRef } = useArticleListHook({ feedUuid });
 
   const renderList = (): JSX.Element[] => {
     return (store.articleList || []).map((article: any, idx: number) => {
@@ -32,8 +32,12 @@ export const ArticleLineList = (props: ArticleListProps): JSX.Element => {
   };
 
   return (
-    <div className="grid grid-cols-1 pl-2 grid-rows-[calc(100% - var(--app-toolbar-height))]">
-      <ul className="m-0 pb-2">{ renderList() }</ul>
+    <div className="overflow-y-auto h-[100vh] pt-[var(--app-toolbar-height)]" ref={ listRef }>
+      {/*<div className="grid grid-cols-1 pl-2 pt-2 grid-rows-[calc(100% - var(--app-toolbar-height))]">*/}
+        <ul className="m-0 pb-2">{ renderList() }</ul>
+        <div className="h-[600px]"></div>
+        <div ref={loadRef}>loading</div>
+      {/*</div>*/}
     </div>
   );
 };

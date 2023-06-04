@@ -33,8 +33,6 @@ export const Layout1 = (): JSX.Element => {
     userConfig: state.userConfig
   }));
 
-  const { toast } = useToast();
-
   const query = useQuery();
   const feedUrl = query.get("feedUrl");
   const type = query.get("type");
