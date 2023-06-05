@@ -74,10 +74,13 @@ export const useBearStore = create<BearStore>()(
 
       getArticleList: (uuid: string, filter: any) => {
         console.log("%c Line:75 🍰 filter", "color:#fca650", filter);
+        const currentList = get().articleList;
 
         return dataAgent.getArticleList(uuid, filter).then((res) => {
           const { list } = res as { list: Article[] };
-          get().setArticleList(list);
+
+          get().setArticleList([...currentList, ...list]);
+
           return list;
         });
       },

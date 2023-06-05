@@ -3,7 +3,6 @@ import { useEffect, useRef, useState } from "react";
 
 export const useArticleListHook = (props: { feedUuid: string | null }) => {
   const { feedUuid } = props;
-  const [loading, setLoading] = useState(false);
   const store = useBearStore((state) => ({
     currentFilter: state.currentFilter,
     setArticleList: state.setArticleList,
@@ -11,22 +10,30 @@ export const useArticleListHook = (props: { feedUuid: string | null }) => {
     getArticleList: state.getArticleList,
   }));
 
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
   const listRef = useRef<HTMLDivElement>(null);
   const loadRef = useRef<HTMLDivElement>(null);
   const [cursor, setCursor] = useState(1);
-  const getList = (feedUuid: string) => {
+  const getList = () => {
     const filter: { read_status?: number; cursor: number; limit?: number } = {
       read_status: store.currentFilter.id,
       cursor,
       limit: 12,
     };
 
+    if (feedUuid === null) {
+      return;
+    }
+
     setLoading(true);
 
     store
       .getArticleList(feedUuid, filter)
       .then((res: any) => {
-        console.log("%c Line:66 🍺 list", "color:#e41a6a", res);
+        if (res.length === 0) {
+          setHasMore(false)
+        }
       })
       .finally(() => {
         setLoading(false);
@@ -36,53 +43,58 @@ export const useArticleListHook = (props: { feedUuid: string | null }) => {
       });
   };
 
-  const handleListScroll = () => {
-    if (listRef.current) {
-      const scrollTop = listRef.current.scrollTop;
-      console.log("%c Line:42 🎂 scrollTop", "color:#3f7cff", scrollTop);
-    }
-  };
-
   useEffect(() => {
-    getList(feedUuid || "");
+    if (feedUuid) {
+      store.setArticleList([]);
+      setCursor(1);
+      setHasMore(true);
+      getList();
+    }
   }, [feedUuid, store.currentFilter]);
 
   useEffect(() => {
-    if (listRef.current) {
-      console.log("🚀 ~ file: hooks.tsx:52 ~ useEffect ~ loadRef.current:", loadRef.current)
-      const $rootElem = listRef.current as HTMLDivElement;
-      const $ul = $rootElem.querySelector("ul") as any;
-      let $target = loadRef.current as HTMLDivElement;
+    getList();
+  }, [cursor]);
 
-      console.log("🚀 ~ file: hooks.tsx:56 ~ useEffect ~ $target:", $target)
+  useEffect(() => {
+    const $rootElem = listRef.current as HTMLDivElement;
+    const $target = loadRef.current as HTMLDivElement;
 
-      const options = {
-        root: $rootElem,
-        rootMargin:"0px 0px 50px 0px",
-        threshold: 1,
-      };
+    const options = {
+      root: $rootElem,
+      rootMargin: "0px 0px 50px 0px",
+      threshold: 1,
+    };
 
-      const callback = (
-        entries: IntersectionObserverEntry[],
-        observer: IntersectionObserver
-      ) => {
-        entries.forEach((entry) => {
-          console.log(entry);
-          if (entry.intersectionRatio > 0.1) {
-            getList();
-          }
-        });
-      };
+    const callback = (
+      entries: IntersectionObserverEntry[],
+      observer: IntersectionObserver
+    ) => {
+      entries.forEach((entry) => {
+        console.log(entry);
 
-      const observer = new IntersectionObserver(callback, options);
+        if (entry.isIntersecting && !loading && hasMore) {
+          setCursor((cursor) => cursor + 1);
+        }
+      });
+    };
 
-      $target && observer.observe($target);
-    }
-  }, [listRef.current]);
+    const observer = new IntersectionObserver(callback, options);
+
+    $target && observer.observe($target);
+
+    return () => {
+      if ($target) {
+        observer.unobserve($target);
+      }
+    };
+  }, [loading]);
 
   return {
     getList,
     loading,
+    hasMore,
+    articleList: store.articleList,
     setLoading,
     listRef,
     loadRef,

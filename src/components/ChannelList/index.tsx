@@ -137,7 +137,7 @@ const ChannelList = (): JSX.Element => {
   const reloadFeedIcon = (feed: Channel | null) => {
     feed && dataAgent.updateIcon(feed.uuid, feed.link).then((res) => {
       console.log("%c Line:139 🍷 res", "color:#ea7e5c", res);
-      feed.icon = res;
+      feed.logo = res;
     });
   }
 
