@@ -41,9 +41,7 @@ export const ArticleCardItem = (props: any) => {
     setHighlight(store.article?.id === article.id);
 
     if (article) {
-      console.log("%c Line:45 🍷 (article.content || article.description)", "color:#ed9ec7", (article.content || article.description));
-
-      let match_img = (article.content || article.description).match(
+      let match_img = (article.description || article.description).match(
         /<img.*?src="(.*?)"/
       );
 
@@ -52,9 +50,9 @@ export const ArticleCardItem = (props: any) => {
       if (match_img && match_img[1]) {
         setBanner(match_img[1]);
       } else {
-        dataAgent.getBestImage(article.link).then((res) => {
-          setBanner(res);
-        });
+        // dataAgent.getBestImage(article.link).then((res) => {
+        //   setBanner(res);
+        // });
       }
     }
   }, [article]);
@@ -77,7 +75,7 @@ export const ArticleCardItem = (props: any) => {
       {/*  <div className="absolute left-2 top-50% mt-[-1] w-2 h-2 rounded-full bg-primary"/>*/}
       {/*) }*/}
       <div className="relative h-0 before:content-[''] before:inline-block pt-[60%] overflow-hidden bg-muted">
-        <img src={banner} alt="..." className="absolute" />
+        <img src={banner} alt="..." className="absolute top-0 left-0 w-full" />
       </div>
       <div className="p-4 space-y-2">
         <div

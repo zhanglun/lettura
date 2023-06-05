@@ -32,26 +32,28 @@ export const ArticleCardList = (props: ArticleListProps): JSX.Element => {
         {renderList()}
       </ul>
       <div ref={loadRef}>
-        <div className="m-[0_auto] py-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:max-w-3xl lg:max-w-5xl">
-          {Object.keys(Array.from({ length: 4 })).map((_) => (
-            <div
-              key={_}
-              className="rounded-md border border-border overflow-hidden"
-            >
-              <div className="relative h-0 before:content-[''] before:inline-block pt-[60%] overflow-hidden bg-muted"></div>
-              <div className="p-4 space-y-2">
-                <Skeleton className="h-[20px]" />
-                <Skeleton className="h-[14px] w-2/5" />
-                <div className="space-y-1">
-                  <Skeleton className="h-[14px]" />
-                  <Skeleton className="h-[14px]" />
-                  <Skeleton className="h-[14px]" />
+        {hasMore && (
+          <div className="m-[0_auto] py-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:max-w-3xl lg:max-w-5xl">
+            {Object.keys(Array.from({ length: 4 })).map((_) => (
+              <div
+                key={_}
+                className="rounded-md border border-border overflow-hidden"
+              >
+                <div className="relative h-0 before:content-[''] before:inline-block pt-[60%] overflow-hidden bg-muted"></div>
+                <div className="p-4 space-y-2">
+                  <Skeleton className="h-[20px]" />
                   <Skeleton className="h-[14px] w-2/5" />
+                  <div className="space-y-1">
+                    <Skeleton className="h-[14px]" />
+                    <Skeleton className="h-[14px]" />
+                    <Skeleton className="h-[14px]" />
+                    <Skeleton className="h-[14px] w-2/5" />
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

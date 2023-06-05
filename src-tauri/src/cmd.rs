@@ -482,8 +482,9 @@ pub async fn update_icon(uuid: String, url: String) -> usize {
 
 #[command]
 pub async fn get_web_best_image(url: String) -> Option<String> {
-  let res = core::scraper::PageScraper::get_first_image_or_og_image(&url).await;
-  res
+  let res = core::scraper::PageScraper::get_first_image_or_og_image(&url).await.unwrap_or("".to_string());
+
+  Some(res)
 }
 
 #[command]
