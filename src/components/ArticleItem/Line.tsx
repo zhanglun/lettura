@@ -88,7 +88,7 @@ export const ArticleLineItem = (props: any) => {
       </div>
       <div
         className={ classnames(
-          "flex justify-between items-center text-xs text-article-paragraph group-hover:text-article-active-paragraph",
+          "flex justify-end items-center text-xs text-article-paragraph group-hover:text-article-active-paragraph",
           {
             "text-article-active-paragraph": highlight,
           }

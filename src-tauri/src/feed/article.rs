@@ -152,22 +152,22 @@ impl Article {
       .load::<ArticleQueryItem>(&mut connection)
       .expect("Expect loading articles");
 
-    let re = Regex::new(r"<[^>]+>").unwrap();
+    // let re = Regex::new(r"<[^>]+>").unwrap();
 
-    let result = result
-      .into_iter()
-      .map(|mut a| {
-        let summary = re
-          .replace_all(&a.description, String::from(""))
-          .chars()
-          .into_iter()
-          .map(|x| x.to_string())
-          .collect::<Vec<_>>();
+    // let result = result
+    //   .into_iter()
+    //   .map(|mut a| {
+    //     let summary = re
+    //       .replace_all(&a.description, String::from(""))
+    //       .chars()
+    //       .into_iter()
+    //       .map(|x| x.to_string())
+    //       .collect::<Vec<_>>();
 
-        a.description = summary[0..cmp::min(summary.len(), 54)].join("");
-        a
-      })
-      .collect();
+    //     a.description = summary[0..cmp::min(summary.len(), 54)].join("");
+    //     a
+    //   })
+    //   .collect();
 
     ArticleQueryResult { list: result }
   }

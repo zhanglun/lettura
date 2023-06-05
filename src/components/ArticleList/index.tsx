@@ -1,15 +1,8 @@
-import React, {
-  useEffect,
-  useState,
-  forwardRef,
-  useRef,
-  useImperativeHandle,
-  ForwardedRef,
-  createRef,
-} from "react";
+import React from "react";
 import { ArticleItem } from "../ArticleItem";
 import { useBearStore } from "@/hooks/useBearStore";
 import { useArticleListHook } from "./hooks";
+import { Skeleton } from "../ui/skeleton";
 
 export type ArticleListProps = {
   feedUuid: string | null;
@@ -25,35 +18,47 @@ export interface ArticleListRefType {
   innerRef: React.RefObject<HTMLDivElement>;
 }
 
-export const ArticleList = forwardRef(
-  (
-    props: ArticleListProps,
-    ref: ForwardedRef<ArticleListRefType>
-  ): JSX.Element => {
-    const { feedUuid } = props;
-    const store = useBearStore((state) => ({
-      currentFilter: state.currentFilter,
-      setArticleList: state.setArticleList,
-      articleList: state.articleList,
-      getArticleList: state.getArticleList,
-    }));
+export const ArticleList = (props: ArticleListProps): JSX.Element => {
+  const { feedUuid } = props;
+  const store = useBearStore((state) => ({
+    currentFilter: state.currentFilter,
+    setArticleList: state.setArticleList,
+    articleList: state.articleList,
+    getArticleList: state.getArticleList,
+  }));
 
-    const { listRef } = useArticleListHook({ feedUuid });
+  const { listRef, loadRef, loading, hasMore } = useArticleListHook({
+    feedUuid,
+  });
 
-    console.log("%c Line:42 🍧 listRef", "color:#4fff4B", listRef);
+  const renderList = (): JSX.Element[] => {
+    return (store.articleList || []).map((article: any, idx: number) => {
+      return <ArticleItem article={article} key={article.id} />;
+    });
+  };
 
-    const renderList = (): JSX.Element[] => {
-      return (store.articleList || []).map((article: any, idx: number) => {
-        return <ArticleItem article={article} key={article.id} />;
-      });
-    };
-
-    return (
-      <div className="grid grid-cols-1 pl-2 grid-rows-[calc(100%_-_var(--app-toolbar-height))]">
-        <div ref={listRef}>
-          <ul className="m-0 pb-2 grid gap-2">{renderList()}</ul>
-        </div>
+  return (
+    <div
+      className="overflow-y-auto h-[100vh] pt-[var(--app-toolbar-height)]"
+      ref={listRef}
+    >
+      <ul className="m-0 pb-2 grid gap-2">{renderList()}</ul>
+      <div ref={loadRef}>
+        {hasMore && (
+          <div className="p-3 pl-6 grid gap-1 relative">
+            <Skeleton className="h-5 w-full" />
+            <div>
+              <Skeleton className="h-3 w-full" />
+            </div>
+            <div>
+              <Skeleton className="h-3 w-full m-[-2px]" />
+            </div>
+            <div>
+              <Skeleton className="h-3 w-32" />
+            </div>
+          </div>
+        )}
       </div>
-    );
-  }
-);
+    </div>
+  );
+};

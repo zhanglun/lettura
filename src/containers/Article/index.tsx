@@ -57,7 +57,7 @@ export const ArticleContainer = (): JSX.Element => {
   }));
 
   const { toast } = useToast();
-  const [ layoutType, setLayoutType ] = useState(2);
+  const [ layoutType, setLayoutType ] = useState(1);
   const query = useQuery();
   const feedUrl = query.get("feedUrl");
   const type = query.get("type");
