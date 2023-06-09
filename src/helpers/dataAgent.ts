@@ -127,6 +127,10 @@ export const updateTheme = async (theme: string): Promise<any> => {
   return invoke("update_theme", { theme });
 };
 
+export const updateInterval = async (interval: number): Promise<any> => {
+  return invoke("update_interval", { interval });
+};
+
 export const initProcess = async (): Promise<any> => {
   return invoke("init_process", {});
 };

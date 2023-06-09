@@ -77,12 +77,18 @@ export const General = () => {
   };
 
   const handleUpdateIntervalChange = (val: number) => {
+    console.log("%c Line:80 🍯 val", "color:#7f2b82", val);
     setUpdateInterval(val);
-
-    store.updateUserConfig({
-      ...store.userConfig,
-      update_interval: val
+    dataAgent
+    .updateInterval(val)
+    .then((res) => {
+      console.log("%c Line:84 🍬 res", "color:#42b983", res);
     });
+
+    // store.updateUserConfig({
+    //   ...store.userConfig,
+    //   update_interval: val
+    // });
   }
 
   useEffect(() => {
@@ -133,7 +139,7 @@ export const General = () => {
           onValueChange={ (v: string) => handleUpdateIntervalChange(parseInt(v, 10)) }
         >
           <SelectTrigger className="w-[180px] h-8">
-            <SelectValue placeholder="All Folder"/>
+            <SelectValue placeholder="Change update interval"/>
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>

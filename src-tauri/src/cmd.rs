@@ -4,6 +4,7 @@ use feed_rs::parser;
 use reqwest;
 use serde::Serialize;
 use tauri::{command, Window};
+use tokio::sync::{mpsc, Mutex};
 use uuid::Uuid;
 
 use crate::core;
@@ -11,6 +12,11 @@ use crate::core::config;
 use crate::db;
 use crate::feed;
 use crate::models;
+use crate::{AsyncProcessMessage, CHANNEL};
+
+pub struct AsyncProcInputTx {
+  pub sender: Mutex<mpsc::Sender<AsyncProcessMessage>>,
+}
 
 pub fn create_client() -> reqwest::Client {
   let user_config = config::get_user_config();
@@ -439,6 +445,32 @@ pub fn update_theme(theme: String) -> usize {
 }
 
 #[command]
+pub async fn update_interval(
+  interval: u64,
+  state: tauri::State<'_, AsyncProcInputTx>,
+) -> Result<(), ()> {
+  config::update_interval(interval);
+
+  print!("asdfasdfasdfdfs\n");
+
+  let sender = state.sender.lock().await;
+
+  if interval > 0 {
+    sender
+      .send(AsyncProcessMessage::TurnOnAutoUpdateFeed)
+      .await
+      .map_err(|e| e.to_string());
+  } else {
+    sender
+      .send(AsyncProcessMessage::TurnOffAutoUpdateFeed)
+      .await
+      .map_err(|e| e.to_string());
+  }
+
+  Ok(())
+}
+
+#[command]
 pub fn update_user_config(user_cfg: config::UserConfig) -> usize {
   println!("user_cfg {:?}", user_cfg);
 
@@ -482,7 +514,9 @@ pub async fn update_icon(uuid: String, url: String) -> usize {
 
 #[command]
 pub async fn get_web_best_image(url: String) -> Option<String> {
-  let res = core::scraper::PageScraper::get_first_image_or_og_image(&url).await.unwrap_or("".to_string());
+  let res = core::scraper::PageScraper::get_first_image_or_og_image(&url)
+    .await
+    .unwrap_or("".to_string());
 
   Some(res)
 }
@@ -520,7 +554,8 @@ mod tests {
   #[tokio::test]
   async fn test_parse_feed() {
     // let url = "https://www.ximalaya.com/album/70501228.xml".to_string();
-    let url = "http://www.youtube.com/feeds/videos.xml?channel_id=UCpVm7bg6pXKo1Pr6k5kxG9A".to_string();
+    let url =
+      "http://www.youtube.com/feeds/videos.xml?channel_id=UCpVm7bg6pXKo1Pr6k5kxG9A".to_string();
     // let url = "https://medium.com/feed/google-design".to_string();
     // let url = "https://www.ximalaya.com/album/70501228.xml".to_string();
     // let url = "https://sspai.com/feed".to_string();

@@ -30,10 +30,10 @@ const renderFolder = (expandStatus: { expanded: boolean }, onExpand: any) => {
   } else {
     return (
       <>
-        <span className="h-4 w-4 rounded mr-2" onClick={onExpand}>
+        <span className="h-4 w-4 rounded mr-1" onClick={onExpand}>
           <ChevronRight size={16} />
         </span>
-        <span className="h-4 w-4 rounded mr-3">
+        <span className="h-4 w-4 rounded mr-1">
           <Folder size={16} />
         </span>
       </>
@@ -93,7 +93,7 @@ export const FeedItem = React.forwardRef((props: FeedItemProps, ref: any) => {
               // @ts-ignore
               e.target.src = defaultSiteIcon;
             }}
-            className="h-4 w-4 rounded mr-3"
+            className="h-4 w-4 rounded mr-2"
             alt={feed.title}
           />
         )}

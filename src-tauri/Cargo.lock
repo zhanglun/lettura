@@ -1577,6 +1577,7 @@ dependencies = [
  "dotenv",
  "feed-rs",
  "libsqlite3-sys",
+ "once_cell",
  "regex",
  "reqwest",
  "scraper",

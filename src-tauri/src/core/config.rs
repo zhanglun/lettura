@@ -40,7 +40,7 @@ impl Default for CustomizeStyle {
 pub struct UserConfig {
   pub threads: i32,
   pub theme: String,
-  pub update_interval: i32,
+  pub update_interval: u64,
   pub local_proxy: Option<LocalProxy>,
   pub customize_style: CustomizeStyle,
 }
@@ -70,6 +70,12 @@ impl UserConfig {
 
   fn update_theme(&mut self, theme: String) -> &mut UserConfig {
     self.theme = theme;
+
+    self
+  }
+
+  fn update_interval(&mut self, interval: u64) -> &mut UserConfig {
+    self.update_interval = interval;
 
     self
   }
@@ -230,6 +236,27 @@ pub fn update_theme(theme: String) -> usize {
   let content = toml::to_string(a).unwrap();
 
   fs::write(user_config_path, content).expect("update threads error");
+
+  return 1;
+}
+
+pub fn update_interval(interval: u64) -> usize {
+  let data = get_user_config();
+
+  let mut data = match data {
+    Some(data) => data,
+    None => UserConfig::default(),
+  };
+
+  let user_config_path = get_user_config_path();
+
+  println!("data {:?}", data);
+
+  let a = data.update_interval(interval);
+
+  let content = toml::to_string(a).unwrap();
+
+  fs::write(user_config_path, content).expect("update interval error");
 
   return 1;
 }
