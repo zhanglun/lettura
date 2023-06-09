@@ -9,7 +9,7 @@ export interface IconProps {
   active?: boolean;
 }
 
-export const Icon = (props: IconProps) => {
+export const Icon = React.forwardRef((props: IconProps, ref: any) => {
   const { onClick = () => {}, disable, active, children, className = 'w-8 h-8' } = props;
 
   return (
@@ -25,4 +25,4 @@ export const Icon = (props: IconProps) => {
       {children}
     </span>
   );
-};
+});

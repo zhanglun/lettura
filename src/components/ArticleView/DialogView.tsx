@@ -1,16 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
-import Dayjs from "dayjs";
-import classnames from "classnames";
-import styles from "./view.module.scss";
-import { getChannelFavicon } from "../../helpers/parseXML";
-import * as dataAgent from "../../helpers/dataAgent";
+import React, { useRef } from "react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { X } from "lucide-react";
 import { ToolbarItemNavigator } from "@/containers/Article/ToolBar";
 import { Icon } from "../Icon";
 import { Separator } from "@/components/ui/separator";
 import { ReadingOptions } from "@/containers/Article/ReadingOptions";
-import { fetch } from '@tauri-apps/api/http';
 import { ArticleDetail } from "@/components/ArticleView/Detail";
 
 type ArticleDialogViewProps = {
@@ -22,10 +16,6 @@ type ArticleDialogViewProps = {
   afterConfirm: () => void;
   afterCancel: () => void;
 };
-
-function createMarkup(html: string) {
-  return { __html: html };
-}
 
 export const ArticleDialogView = (
   props: ArticleDialogViewProps
@@ -40,10 +30,6 @@ export const ArticleDialogView = (
     trigger,
   } = props;
   const viewRef = useRef<HTMLDivElement>(null);
-
-  const renderPlaceholder = () => {
-    return "Please Select Some read";
-  };
 
   const handleDialogChange = (status: boolean) => {
     setDialogStatus(status);
@@ -74,7 +60,7 @@ export const ArticleDialogView = (
             </span>
           </div>
           <div className="relative px-20 py-10">
-            { article ? <ArticleDetail article={ article }/> : renderPlaceholder() }
+            { article ? <ArticleDetail article={ article }/> : '' }
           </div>
         </div>
       </DialogContent>

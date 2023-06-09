@@ -41,7 +41,7 @@ const renderFolder = (expandStatus: { expanded: boolean }, onExpand: any) => {
   }
 };
 
-export const FeedItem = (props: FeedItemProps) => {
+export const FeedItem = React.forwardRef((props: FeedItemProps, ref: any) => {
   const navigate = useNavigate();
   const store = useBearStore((state) => ({
     channel: state.channel,
@@ -116,4 +116,4 @@ export const FeedItem = (props: FeedItemProps) => {
       </span>
     </li>
   );
-};
+});

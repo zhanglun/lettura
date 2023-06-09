@@ -42,7 +42,7 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
       className="overflow-y-auto h-[100vh] pt-[var(--app-toolbar-height)]"
       ref={listRef}
     >
-      <ul className="m-0 pb-2 pl-2 grid gap-2">{renderList()}</ul>
+      <ul className="m-0 pb-2 pl-2 pt-2 grid gap-2">{renderList()}</ul>
       <div ref={loadRef}>
         {hasMore && (
           <div className="p-3 pl-6 grid gap-1 relative">

@@ -28,7 +28,7 @@ export const ArticleLineList = (props: ArticleListProps): JSX.Element => {
       className="overflow-y-auto h-[100vh] pt-[var(--app-toolbar-height)]"
       ref={listRef}
     >
-      <ul className="m-0 pb-2 pl-2">{renderList()}</ul>
+      <ul className="m-0 pb-2 pl-2 py-2">{renderList()}</ul>
       <div ref={loadRef}>
         {hasMore && (
           <div className="grid grid-cols-[30px_1fr_120px] items-center p-2 pl-6">

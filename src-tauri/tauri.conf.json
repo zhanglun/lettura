@@ -21,7 +21,8 @@
         "scope": ["https://**", "http://**", "http://lettura./"]
       },
       "fs": {
-        "all": true
+        "all": true,
+        "scope": ["$DOWNLOAD/*"]
       },
       "dialog": {
         "all": true

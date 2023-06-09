@@ -1,10 +1,13 @@
 import React, { useRef, useState } from "react";
-import styles from "../setting.module.scss";
-import * as dataAgent from "../../../helpers/dataAgent";
-import { promisePool } from "../../../helpers/promisePool";
+import * as dataAgent from "@/helpers/dataAgent";
+import { promisePool } from "@/helpers/promisePool";
 import { Panel, PanelSection } from "../Panel";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
+import { Channel } from '@/db';
+import { writeTextFile, BaseDirectory } from '@tauri-apps/api/fs';
+import { save } from '@tauri-apps/api/dialog';
 
 export interface ImportItem {
   title: string;
@@ -14,11 +17,11 @@ export interface ImportItem {
 
 export const ImportAndExport = (props: any) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [sourceType, setSourceType] = useState("file");
-  const [file, setFile] = useState<File>();
-  const [importing, setImporting] = useState(false);
-  const [importedList, setImportedList] = useState<ImportItem[]>([]);
-  const [done, setDone] = useState(0);
+  const [ file, setFile ] = useState<File>();
+  const [ importing, setImporting ] = useState(false);
+  const [ exporting, setExporting ] = useState(false);
+  const [ importedList, setImportedList ] = useState<ImportItem[]>([]);
+  const [ done, setDone ] = useState(0);
 
   const uploadOPMLFile = () => {
     if (fileInputRef?.current) {
@@ -96,28 +99,101 @@ export const ImportAndExport = (props: any) => {
     }
   };
 
-  const exportToOPML = () => {};
+  const createOPMLObj = (feeds: Channel[]) => {
+    const xmlDoc = document.implementation.createDocument(null, "opml");
+    const root = xmlDoc.getElementsByTagName('opml')[0];
+
+    root.setAttribute('version', '1.0')
+    root.innerHTML = '<head><title>Subscriptions in Lettura</title></head>';
+
+    const createOutline = (data: Channel) => {
+      const outline = document.createElement("outline");
+
+      outline.setAttribute('text', data.title);
+      outline.setAttribute('title', data.title);
+
+      if (data.item_type === 'channel') {
+        outline.setAttributeNS(null, 'xmlUrl', data.feed_url);
+        outline.setAttributeNS(null, 'htmlUrl', data.link);
+      }
+
+      if (data.children) {
+        const fragment = document.createDocumentFragment();
+
+        data.children.forEach((child: Channel) => {
+          fragment.appendChild(createOutline(child));
+        });
+
+        outline.appendChild(fragment);
+      }
+
+      return outline;
+    }
+
+    const body = document.createElement("body");
+
+    feeds.forEach((feed) => {
+      body.appendChild(createOutline(feed));
+    });
+
+    root.appendChild(body);
+
+    return xmlDoc;
+  };
+
+  const exportToOPML = () => {
+    setExporting(true);
+    dataAgent.getFeeds().then((feeds) => {
+      const doc = createOPMLObj(feeds);
+      const serializer = new XMLSerializer();
+      const xmlString = serializer.serializeToString(doc);
+
+      return xmlString;
+    }).then((result) => {
+      return save({
+        filters: [ {
+          name: 'Opml',
+          extensions: ['opml']
+        } ],
+      }).then((dir) => {
+        return [result, dir];
+      });
+    }).then(([ str, filePath ]) => {
+      console.log("%c Line:163 🍞 dir", "color:#f5ce50", filePath);
+
+      if (str && filePath) {
+        return writeTextFile(filePath, str);
+      }
+    })
+      .finally(() => {
+        setExporting(false);
+      })
+  };
 
   return (
     <Panel title="Import/Export">
       <PanelSection title="OPML Import">
         <div className="flex w-full max-w-sm items-center space-x-2">
           <Input
-            ref={fileInputRef}
+            ref={ fileInputRef }
             type="file"
             accept=".opml,.xml"
-            onChange={(e) => {
+            onChange={ (e) => {
               handleFileChange(e);
-            }}
+            } }
           />
-          <Button onClick={importFromOPML} disabled={importing}>
+          <Button onClick={ importFromOPML } disabled={ importing }>
             Import
-            <>{importing ? `${done}/${importedList.length}` : ""}</>
+            <>{ importing ? `${ done }/${ importedList.length }` : "" }</>
           </Button>
         </div>
       </PanelSection>
       <PanelSection title="OPML Export">
-        <Button onClick={exportToOPML}>Download OPML subscriptions file</Button>
+        <Button onClick={ exportToOPML }>
+          { exporting ? (<>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin"/>
+            Exporting
+          </>) : (<>Download OPML subscriptions file</>) }</Button>
       </PanelSection>
     </Panel>
   );
