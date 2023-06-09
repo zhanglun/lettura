@@ -3,6 +3,7 @@ import { Panel, PanelSection } from "../Panel";
 import { CustomizeStyle } from "@/components/SettingPanel/CustomizeStyle";
 import { useBearStore } from "@/hooks/useBearStore";
 import classNames from "classnames";
+import { Theme } from "./Theme";
 // import { ColorTheme } from "./ColorTheme";
 
 export const Appearance = () => {
@@ -77,7 +78,8 @@ export const Appearance = () => {
           <p>忧思在我的心里平静下去，正如暮色降临在寂静的山林中。</p>
         </div>
       </PanelSection>
-      <PanelSection title="Theme" subTitle="Select the theme for the dashboard.">
+      <PanelSection title="Theme" subTitle="Select your interface color scheme">
+        <Theme />
       </PanelSection>
     </Panel>
   );

@@ -19,10 +19,10 @@ const renderFolder = (expandStatus: { expanded: boolean }, onExpand: any) => {
   if (expandStatus.expanded) {
     return (
       <>
-        <span className="h-4 w-4 rounded mr-2" onClick={onExpand}>
+        <span className="h-4 w-4 rounded mr-1" onClick={onExpand}>
           <ChevronDown size={16} />
         </span>
-        <span className="h-4 w-4 rounded mr-3">
+        <span className="h-4 w-4 rounded mr-1">
           <FolderOpen size={16} />
         </span>
       </>
@@ -71,7 +71,7 @@ export const FeedItem = React.forwardRef((props: FeedItemProps, ref: any) => {
     >
       <span
         className={classNames(
-          "w-full flex items-center h-8 px-2 rounded-md cursor-pointer mt-[2px] text-primary group",
+          "w-full h-8 px-2 flex items-center rounded-md cursor-pointer mt-[2px] group",
           {
             "bg-primary text-primary-foreground": isActive,
             "shadow-[inset_0_0_0_2px_var(--color-primary)]": (store.feedContextMenuTarget && store.feedContextMenuTarget.uuid === feed.uuid),
@@ -103,10 +103,9 @@ export const FeedItem = React.forwardRef((props: FeedItemProps, ref: any) => {
         {unread > 0 && (
           <span
             className={classNames(
-              "px-1 min-w-[1rem] h-4 leading-4 text-center text-[10px] text-primary",
+              "px-1 min-w-[1rem] h-4 leading-4 text-center text-[10px]",
               {
                 "text-primary-foreground": isActive,
-                "text-primary": !isActive,
               }
             )}
           >

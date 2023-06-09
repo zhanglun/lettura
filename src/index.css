@@ -84,6 +84,20 @@
   }
 }
 
+@layer base {
+  :root[data-color-scheme="luckin"] {
+    --primary: 214 100% 18%;
+  }
+
+  :root[data-color-scheme="starbucks"] {
+    --primary: 160 100% 22%;
+  }
+
+  :root[data-color-scheme="tims"] {
+    --primary: 350 85% 42%;
+  }
+}
+
 body {
   margin: 0;
   /*font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",*/
