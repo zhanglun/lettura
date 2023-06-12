@@ -3,11 +3,8 @@ import { useLocation, useParams } from "react-router-dom";
 import { ArticleList } from "@/components/ArticleList";
 import { ArticleView } from "@/components/ArticleView";
 import { useBearStore } from "@/hooks/useBearStore";
+import { useQuery } from "@/helpers/parseXML";
 import styles from "./index.module.scss";
-
-function useQuery() {
-  return new URLSearchParams(useLocation().search);
-}
 
 export const Layout1 = (): JSX.Element => {
   // @ts-ignore
@@ -28,10 +25,7 @@ export const Layout1 = (): JSX.Element => {
     userConfig: state.userConfig,
   }));
 
-  const query = useQuery();
-  const feedUrl = query.get("feedUrl");
-  const type = query.get("type");
-  const channelUuid = query.get("channelUuid");
+  const [ feedUrl, type, channelUuid ] = useQuery();
   const [syncing, setSyncing] = useState(false);
   const viewRef = useRef<HTMLDivElement>(null);
   const { currentIdx, setCurrentIdx } = store;

@@ -26,10 +26,7 @@ import { DialogUnsubscribeFeed } from "../SettingPanel/Content/DialogUnsubscribe
 import { useModal } from "../Modal/useModal";
 import { open } from "@tauri-apps/api/shell";
 import { DialogEditFeed } from "@/components/SettingPanel/Content/DialogEditFeed";
-
-function useQuery() {
-  return new URLSearchParams(useLocation().search);
-}
+import { useQuery } from "@/helpers/parseXML";
 
 const ChannelList = (): JSX.Element => {
   const navigate = useNavigate();
@@ -48,8 +45,7 @@ const ChannelList = (): JSX.Element => {
     feedContextMenuTarget: state.feedContextMenuTarget,
     setFeedContextMenuTarget: state.setFeedContextMenuTarget,
   }));
-  const query = useQuery();
-  const channelUuid = query.get("channelUuid");
+  const [ feedUrl, type, channelUuid ] = useQuery();
 
   const updateCount = (
     channelList: Channel[],
@@ -138,7 +134,6 @@ const ChannelList = (): JSX.Element => {
 
   useEffect(() => {
     getList();
-
     const unsubscribeGetChannels = busChannel.on("getChannels", () => {
       getList();
     });
@@ -147,6 +142,16 @@ const ChannelList = (): JSX.Element => {
       unsubscribeGetChannels();
     };
   }, []);
+
+  useEffect(() => {
+    console.log("%c Line:154 🍒 channelUuid", "color:#465975", channelUuid);
+    channelList.forEach((feed) => {
+      if (feed.uuid === channelUuid) {
+        store.setChannel(feed);
+        console.log("%c Line:150 🌭 feed", "color:#ea7e5c", feed);
+      }
+    })
+  }, [channelUuid]);
 
   useEffect(() => {
     const unsubscribeUpdateCount = busChannel.on(

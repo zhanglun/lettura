@@ -107,6 +107,8 @@ function App() {
     return () => {
       document.removeEventListener("keydown", (e) => handleKeyPress(e));
     };
+
+
   }, []);
 
   return (

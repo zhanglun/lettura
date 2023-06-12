@@ -1,3 +1,5 @@
+import { useLocation } from "react-router-dom";
+
 export const getChannelFavicon = (url: string) => {
   try {
     const hostname = url ? new URL(url).hostname : "";
@@ -9,3 +11,12 @@ export const getChannelFavicon = (url: string) => {
     return ''
   }
 };
+
+export const useQuery = () => {
+  const query = new URLSearchParams(useLocation().search);
+  const feedUrl = query.get("feedUrl");
+  const type = query.get("type");
+  const channelUuid = query.get("channelUuid");
+
+  return [feedUrl, type, channelUuid];
+}

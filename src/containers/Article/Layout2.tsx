@@ -1,18 +1,12 @@
-import React, { useRef } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import React from "react";
+import { useParams } from "react-router-dom";
 import { ArticleLineList } from "@/components/ArticleList/LineList";
-
-function useQuery() {
-  return new URLSearchParams(useLocation().search);
-}
+import { useQuery } from "@/helpers/parseXML";
 
 export const Layout2 = (): JSX.Element => {
   // @ts-ignore
   const params: { name: string } = useParams();
-  const query = useQuery();
-  const feedUrl = query.get("feedUrl");
-  const type = query.get("type");
-  const channelUuid = query.get("channelUuid");
+  const [ feedUrl, type, channelUuid ] = useQuery();
 
   // TODO: reuse scroll to top
 

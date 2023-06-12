@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { ArticleListRefType } from "@/components/ArticleList";
 import * as dataAgent from "../../helpers/dataAgent";
 import { useBearStore } from "@/hooks/useBearStore";
@@ -29,10 +29,7 @@ import { Layout3 } from "@/containers/Article/Layout3";
 import { ArticleDialogView } from "@/components/ArticleView/DialogView";
 import { ToolbarItemNavigator } from "@/containers/Article/ToolBar";
 import { ReadingOptions } from "@/containers/Article/ReadingOptions";
-
-function useQuery() {
-  return new URLSearchParams(useLocation().search);
-}
+import { useQuery } from "@/helpers/parseXML";
 
 export const ArticleContainer = (): JSX.Element => {
   // @ts-ignore
@@ -58,10 +55,7 @@ export const ArticleContainer = (): JSX.Element => {
 
   const { toast } = useToast();
   const [ layoutType, setLayoutType ] = useState(1);
-  const query = useQuery();
-  const feedUrl = query.get("feedUrl");
-  const type = query.get("type");
-  const channelUuid = query.get("channelUuid");
+  const [ feedUrl ] = useQuery();
   const [ syncing, setSyncing ] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<HTMLDivElement>(null);
@@ -131,16 +125,16 @@ export const ArticleContainer = (): JSX.Element => {
   };
 
   const syncArticles = () => {
-    if (channelUuid) {
+    if (store.channel?.uuid) {
       setSyncing(true);
 
       dataAgent
         .syncArticlesWithChannelUuid(
           store.channel?.item_type as string,
-          channelUuid as string
+          store.channel?.uuid as string
         )
         .then((res) => {
-          const [ num, message ] = res;
+          const [ num, uuid, message ] = res[0];
 
           console.log("%c Line:77 🥛 res", "color:#ea7e5c", res);
 
@@ -155,7 +149,7 @@ export const ArticleContainer = (): JSX.Element => {
           } else {
             getArticleList();
             busChannel.emit("updateChannelUnreadCount", {
-              uuid: channelUuid as string,
+              uuid: store.channel?.uuid as string,
               action: "increase",
               count: num || 0
             });
@@ -208,12 +202,14 @@ export const ArticleContainer = (): JSX.Element => {
   }, []);
 
   useEffect(() => {
+  console.log("%c Line:211 🥤 store.channel?.uuid", "color:#fca650", store.channel?.uuid);
+
     if (listRef.current !== null) {
       listRef.current.scroll(0, 0);
     }
 
     setCurrentIdx(-1);
-  }, [ channelUuid ]);
+  }, [ store.channel?.uuid ]);
 
 
 
