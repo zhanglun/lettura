@@ -317,53 +317,49 @@ pub fn delete_feed(uuid: String) -> usize {
   result
 }
 
-pub async fn sync_articles(uuid: String) -> (usize, String) {
-  let channel = feed::channel::get_feed_by_uuid(String::from(&uuid));
+pub async fn sync_articles(uuid: String) -> Vec<(usize, String, String)> {
+  let channel = match feed::channel::get_feed_by_uuid(uuid.clone()) {
+    Some(channel) => channel,
+    None => return vec![(0, uuid, "feed not found".to_string())],
+  };
 
-  match channel {
-    Some(channel) => {
-      let res = parse_feed(&channel.feed_url).await;
-      match res {
-        Ok(res) => {
-          let articles = create_article_models(&channel.uuid, &channel.feed_url, &res);
+  let res = match parse_feed(&channel.feed_url).await {
+    Ok(res) => res,
+    Err(err) => return vec![(0, uuid, err.to_string())],
+  };
 
-          println!("{:?}", &articles.len());
+  let articles = create_article_models(&channel.uuid, &channel.feed_url, &res);
+  let result = feed::article::Article::add_articles(channel.uuid, articles);
 
-          let result = feed::article::Article::add_articles(String::from(&channel.uuid), articles);
-
-          (result, String::from(""))
-        }
-        Err(err) => (0, err),
-      }
-    }
-    None => (0, String::from("feed not found")),
-  }
+  vec![(result, uuid, "".to_string())]
 }
 
-pub async fn sync_article_in_folder(uuid: String) -> usize {
+pub async fn sync_article_in_folder(uuid: String) -> Vec<(usize, String, String)> {
   let connection = db::establish_connection();
   let channels = feed::folder::get_channels_in_folders(connection, vec![uuid]);
 
   println!("{:?}", channels);
+  let mut res = vec![];
 
   for channel in channels {
-    sync_articles(channel.child_uuid).await;
+    res.extend(sync_articles(channel.child_uuid).await);
   }
 
-  1
+  res
 }
 
 #[command]
-pub async fn sync_articles_with_channel_uuid(feed_type: String, uuid: String) -> (usize, String) {
-  println!("{:?}", feed_type);
-
+pub async fn sync_articles_with_channel_uuid(
+  feed_type: String,
+  uuid: String,
+) -> Vec<(usize, String, String)> {
   if feed_type == "folder" {
     let res = sync_article_in_folder(uuid).await;
-    println!("{:?}", res);
-    (res, String::from(""))
+    println!("res folder {:?}", res);
+    res
   } else {
     let res = sync_articles(uuid).await;
-    println!("{:?}", res);
+    println!("res {:?}", res);
     res
   }
 }
@@ -450,9 +446,6 @@ pub async fn update_interval(
   state: tauri::State<'_, AsyncProcInputTx>,
 ) -> Result<(), ()> {
   config::update_interval(interval);
-
-  print!("asdfasdfasdfdfs\n");
-
   let sender = state.sender.lock().await;
 
   if interval > 0 {

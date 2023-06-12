@@ -11,14 +11,7 @@ import pLimit from "p-limit";
 import { useBearStore } from "../../hooks/useBearStore";
 
 import styles from "./channel.module.scss";
-import {
-  ChevronDown,
-  ChevronRight,
-  Folder,
-  FolderOpen,
-  RefreshCw,
-  Settings,
-} from "lucide-react";
+import { Folder, RefreshCw, Settings } from "lucide-react";
 
 import {
   ContextMenu,
@@ -51,6 +44,7 @@ const ChannelList = (): JSX.Element => {
   const store = useBearStore((state) => ({
     channel: state.channel,
     setChannel: state.setChannel,
+    updateFeed: state.updateFeed,
     feedContextMenuTarget: state.feedContextMenuTarget,
     setFeedContextMenuTarget: state.setFeedContextMenuTarget,
   }));
@@ -171,12 +165,18 @@ const ChannelList = (): JSX.Element => {
     };
   }, [channelList]);
 
-  const loadAndUpdate = (type: string, uuid: string) => {
+  const loadAndUpdate = (type: string, uuid: string, unread: number) => {
     return dataAgent
       .syncArticlesWithChannelUuid(type, uuid)
       .then((res) => {
-        // getList();
-        console.log(res);
+        res.forEach((item) => {
+          const [count, uuid, _msg] = item;
+
+          count > 0 && store.updateFeed(uuid, {
+            unread: unread + count,
+          });
+        })
+
         return res;
       })
       .catch(() => {
@@ -194,7 +194,9 @@ const ChannelList = (): JSX.Element => {
       const { threads = 5 } = config;
       const limit = pLimit(threads);
       const fns = (channelList || []).map((channel: any) => {
-        return limit(() => loadAndUpdate(channel.item_type, channel.uuid));
+        return limit(() =>
+          loadAndUpdate(channel.item_type, channel.uuid, channel.unread)
+        );
       });
 
       console.log("fns.length ===> ", fns.length);

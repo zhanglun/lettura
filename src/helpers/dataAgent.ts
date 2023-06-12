@@ -78,7 +78,7 @@ export const addChannel = async (url: string): Promise<[number, string]> => {
 export const syncArticlesWithChannelUuid = async (
   feedType: string,
   uuid: string,
-): Promise<[number, string]> => {
+): Promise<[[number, string, string]]> => {
   return invoke("sync_articles_with_channel_uuid", { feedType, uuid });
 };
 
