@@ -13,6 +13,9 @@ import { useBearStore } from "../../hooks/useBearStore";
 import styles from "./channel.module.scss";
 import { Folder, RefreshCw, Settings } from "lucide-react";
 
+import { listen } from "@tauri-apps/api/event";
+import { invoke } from "@tauri-apps/api/tauri";
+
 import {
   ContextMenu,
   ContextMenuContent,
@@ -45,7 +48,7 @@ const ChannelList = (): JSX.Element => {
     feedContextMenuTarget: state.feedContextMenuTarget,
     setFeedContextMenuTarget: state.setFeedContextMenuTarget,
   }));
-  const [ feedUrl, type, channelUuid ] = useQuery();
+  const [feedUrl, type, channelUuid] = useQuery();
 
   const updateCount = (
     channelList: Channel[],
@@ -150,7 +153,7 @@ const ChannelList = (): JSX.Element => {
         store.setChannel(feed);
         console.log("%c Line:150 🌭 feed", "color:#ea7e5c", feed);
       }
-    })
+    });
   }, [channelUuid]);
 
   useEffect(() => {
@@ -177,10 +180,11 @@ const ChannelList = (): JSX.Element => {
         res.forEach((item) => {
           const [count, uuid, _msg] = item;
 
-          count > 0 && store.updateFeed(uuid, {
-            unread: unread + count,
-          });
-        })
+          count > 0 &&
+            store.updateFeed(uuid, {
+              unread: unread + count,
+            });
+        });
 
         return res;
       })
@@ -399,6 +403,16 @@ const ChannelList = (): JSX.Element => {
       const $list = listRef.current as HTMLDivElement;
       $list.addEventListener("scroll", handleListScroll);
     }
+
+    const listener = async () => {
+      await listen("start-auto-async", (event) => {
+        console.log("%c Line:409 🍑 event", "color:#ea7e5c", event);
+        let input = event.payload;
+        console.log("%c Line:409 🍊 input", "color:#7f2b82", input);
+      });
+    };
+
+    listener();
   }, []);
 
   useEffect(() => {

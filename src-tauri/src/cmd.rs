@@ -12,7 +12,7 @@ use crate::core::config;
 use crate::db;
 use crate::feed;
 use crate::models;
-use crate::{AsyncProcessMessage, CHANNEL};
+use crate::{AsyncProcessMessage};
 
 pub struct AsyncProcInputTx {
   pub sender: Mutex<mpsc::Sender<AsyncProcessMessage>>,
