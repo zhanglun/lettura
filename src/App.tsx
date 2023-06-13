@@ -49,12 +49,12 @@ function App() {
     store.getUserConfig();
 
     dataAgent.getUserConfig().then((cfg: any) => {
-      console.log("update use config", cfg);
+      console.log("%c Line:52 🍢 cfg", "color:#93c0a4", cfg);
 
       const { theme, customize_style } = cfg as UserConfig;
 
       if (theme) {
-        // document.body.dataset.palette = theme;
+        document.documentElement.dataset.colorScheme = theme;
       }
 
       customize_style &&

@@ -14,7 +14,6 @@ export const CustomizeStyle = (props: CustomizeStyleProps) => {
     userConfig: state.userConfig,
     updateUserConfig: state.updateUserConfig,
   }));
-  console.log("%c Line:15 🍿 styleConfig", "color:#3f7cff", styleConfig);
   const [ cfg, setCfg ] = useState({
     typeface: "",
     font_size: 12,

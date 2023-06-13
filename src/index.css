@@ -86,14 +86,20 @@
 
 @layer base {
   :root[data-color-scheme="luckin"] {
+    --foreground: 214 100% 18%;
+
     --primary: 214 100% 18%;
   }
 
   :root[data-color-scheme="starbucks"] {
+    --foreground: 160 100% 22%;
+
     --primary: 160 100% 22%;
   }
 
   :root[data-color-scheme="tims"] {
+    --foreground: 350 85% 42%;
+
     --primary: 350 85% 42%;
   }
 }

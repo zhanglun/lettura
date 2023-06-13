@@ -27,6 +27,9 @@ export const Appearance = () => {
       title="Appearance"
       subTitle="Customize the appearance of the app. Automatically switch between day and night themes."
     >
+      <PanelSection title="Theme" subTitle="Select your interface color scheme">
+        <Theme />
+      </PanelSection>
       <PanelSection title="Style" subTitle="Set the view styles you want to use when you are reading.">
         <div className="mt-4">
           <CustomizeStyle className={ "w-[500px]" } styleConfig={ store.userConfig.customize_style }/>
@@ -77,9 +80,6 @@ export const Appearance = () => {
 
           <p>忧思在我的心里平静下去，正如暮色降临在寂静的山林中。</p>
         </div>
-      </PanelSection>
-      <PanelSection title="Theme" subTitle="Select your interface color scheme">
-        <Theme />
       </PanelSection>
     </Panel>
   );

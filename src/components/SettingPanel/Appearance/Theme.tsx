@@ -23,7 +23,7 @@ export const Theme = (props: any) => {
     document.documentElement.dataset.colorScheme = value;
   }
   return  <Select
-  value={ theme }
+  value={ store.userConfig.theme }
   onValueChange={ (v: string) => handleThemeChange(v) }
 >
   <SelectTrigger className="w-[180px] h-8">

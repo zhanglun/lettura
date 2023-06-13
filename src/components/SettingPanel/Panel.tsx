@@ -14,7 +14,7 @@ export const Panel = (props: PanelProps) => {
     <div className="space-y-6">
       <div className="mb-5">
         <h3 className="text-lg font-medium tracking-tight">{ title }</h3>
-        { subTitle && <p className="text-sm mb-3 mt-2 text-[hsl(var(--foreground)_/_0.6)]">{ subTitle }</p> }
+        { subTitle && <p className="text-sm mb-3 mt-2 text-[hsl(var(--foreground)_/_0.6)] text-muted-foreground">{ subTitle }</p> }
       </div>
       <Separator className="mt-6"/>
       <div className="space-y-8">

@@ -235,7 +235,9 @@ pub fn update_theme(theme: String) -> usize {
 
   let content = toml::to_string(a).unwrap();
 
-  fs::write(user_config_path, content).expect("update threads error");
+  println!("content {:?}", content);
+
+  fs::write(user_config_path, content).expect("update theme error");
 
   return 1;
 }
