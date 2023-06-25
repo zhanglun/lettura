@@ -211,8 +211,6 @@ export const ArticleContainer = (): JSX.Element => {
     setCurrentIdx(-1);
   }, [ store.channel?.uuid ]);
 
-
-
   return (
     <div className={ styles.article }>
       <div className={ `sticky-header ${ styles.header }` }>

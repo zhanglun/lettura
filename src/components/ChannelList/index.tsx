@@ -147,14 +147,12 @@ const ChannelList = (): JSX.Element => {
   }, []);
 
   useEffect(() => {
-    console.log("%c Line:154 🍒 channelUuid", "color:#465975", channelUuid);
     channelList.forEach((feed) => {
       if (feed.uuid === channelUuid) {
         store.setChannel(feed);
-        console.log("%c Line:150 🌭 feed", "color:#ea7e5c", feed);
       }
     });
-  }, [channelUuid]);
+  }, [channelUuid, channelList]);
 
   useEffect(() => {
     const unsubscribeUpdateCount = busChannel.on(
