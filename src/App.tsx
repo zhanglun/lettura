@@ -49,8 +49,6 @@ function App() {
     store.getUserConfig();
 
     dataAgent.getUserConfig().then((cfg: any) => {
-      console.log("%c Line:52 🍢 cfg", "color:#93c0a4", cfg);
-
       const { theme, customize_style } = cfg as UserConfig;
 
       if (theme) {
@@ -68,48 +66,46 @@ function App() {
     });
   }, []);
 
-  const goPrev = (elem: HTMLElement, tagName: string) => {
-    if (tagName === "a") {
-    } else if (tagName === "li") {
-      store.goPreviousArticle();
-    }
-  };
+  // const goPrev = (elem: HTMLElement, tagName: string) => {
+  //   if (tagName === "a") {
+  //   } else if (tagName === "li") {
+  //     store.goPreviousArticle();
+  //   }
+  // };
+  //
+  // const goNext = (elem: HTMLElement, tagName: string) => {
+  //   if (tagName === "a") {
+  //   } else if (tagName === "li") {
+  //     store.goNextArticle();
+  //   }
+  // };
+  //
+  // const handleKeyPress = (event: KeyboardEvent) => {
+  //   const activeElement = document.activeElement as HTMLElement;
+  //   const tagName = activeElement.tagName.toLowerCase();
+  //
+  //   switch (event.key) {
+  //     case "ArrowDown":
+  //     case "j":
+  //       goNext(activeElement, tagName);
+  //       event.preventDefault();
+  //       break;
+  //     case "ArrowUp":
+  //     case "k":
+  //       goPrev(activeElement, tagName);
+  //       event.preventDefault();
+  //       break;
+  //     default:
+  //       break;
+  //   }
+  // };
 
-  const goNext = (elem: HTMLElement, tagName: string) => {
-    if (tagName === "a") {
-    } else if (tagName === "li") {
-      store.goNextArticle();
-    }
-  };
-
-  const handleKeyPress = (event: KeyboardEvent) => {
-    const activeElement = document.activeElement as HTMLElement;
-    const tagName = activeElement.tagName.toLowerCase();
-
-    switch (event.key) {
-      case "ArrowDown":
-      case "j":
-        goNext(activeElement, tagName);
-        event.preventDefault();
-        break;
-      case "ArrowUp":
-      case "k":
-        goPrev(activeElement, tagName);
-        event.preventDefault();
-        break;
-      default:
-        break;
-    }
-  };
-
-  useEffect(() => {
-    document.addEventListener("keydown", (e) => handleKeyPress(e));
-    return () => {
-      document.removeEventListener("keydown", (e) => handleKeyPress(e));
-    };
-
-
-  }, []);
+  // useEffect(() => {
+  //   document.addEventListener("keydown", (e) => handleKeyPress(e));
+  //   return () => {
+  //     document.removeEventListener("keydown", (e) => handleKeyPress(e));
+  //   };
+  // }, []);
 
   return (
     <BrowserRouter>

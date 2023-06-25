@@ -33,7 +33,7 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
 
   const renderList = (): JSX.Element[] => {
     return (store.articleList || []).map((article: any, idx: number) => {
-      return <ArticleItem article={article} key={article.id} />;
+      return <ArticleItem article={article} key={article.title} />;
     });
   };
 

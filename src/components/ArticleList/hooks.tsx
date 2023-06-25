@@ -1,5 +1,6 @@
-import { useBearStore } from "@/hooks/useBearStore";
 import { useEffect, useRef, useState } from "react";
+import { useBearStore } from "@/hooks/useBearStore";
+import { useShortcut } from "@/hooks/useShortcut";
 
 export const useArticleListHook = (props: { feedUuid: string | null }) => {
   const { feedUuid } = props;
@@ -8,7 +9,11 @@ export const useArticleListHook = (props: { feedUuid: string | null }) => {
     setArticleList: state.setArticleList,
     articleList: state.articleList,
     getArticleList: state.getArticleList,
+
+    goPreviousArticle: state.goPreviousArticle,
+    goNextArticle: state.goNextArticle,
   }));
+  const { registerShortcut, unregisterShortcut } = useShortcut();
 
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -89,6 +94,63 @@ export const useArticleListHook = (props: { feedUuid: string | null }) => {
       }
     };
   }, [loading]);
+
+  // const goPrev = (elem: HTMLElement, tagName: string) => {
+  //   if (tagName === "a") {
+  //   } else if (tagName === "li") {
+  //     store.goPreviousArticle();
+  //   }
+  // };
+  //
+  // const goNext = (elem: HTMLElement, tagName: string) => {
+  //   if (tagName === "a") {
+  //   } else if (tagName === "li") {
+  //     store.goNextArticle();
+  //   }
+  // };
+  //
+  // const handleKeyPress = (event: KeyboardEvent) => {
+  //   const activeElement = document.activeElement as HTMLElement;
+  //   const tagName = activeElement.tagName.toLowerCase();
+  //
+  //   console.log("event.key", event.key);
+  //
+  //   switch (event.key) {
+  //     case "ArrowDown":
+  //     case "n":
+  //       goNext(activeElement, tagName);
+  //       event.preventDefault();
+  //       break;
+  //     case "ArrowUp":
+  //     case "N":
+  //       goPrev(activeElement, tagName);
+  //       event.preventDefault();
+  //       break;
+  //     default:
+  //       break;
+  //   }
+  // };
+
+  function goPrev() {
+    console.warn('goPrev')
+    store.goPreviousArticle();
+  }
+
+  function goNext() {
+    console.warn('goNext')
+    store.goNextArticle();
+  }
+
+  useEffect(() => {
+    registerShortcut('n', goNext)
+    registerShortcut('Shift+n', goPrev)
+
+    return () => {
+      unregisterShortcut('n');
+      unregisterShortcut('Shift+n');
+    }
+
+  }, []);
 
   return {
     getList,
