@@ -4,6 +4,7 @@ import { ArticleListProps } from "@/components/ArticleList/index";
 import { useArticleListHook } from "@/components/ArticleList/hooks";
 import { ArticleCardItem } from "@/components/ArticleItem/Card";
 import { Skeleton } from "../ui/skeleton";
+import { useAutoScroll } from "@/hooks/useAutoScroll";
 
 export const ArticleCardList = (props: ArticleListProps): JSX.Element => {
   const { feedUuid } = props;
@@ -16,6 +17,8 @@ export const ArticleCardList = (props: ArticleListProps): JSX.Element => {
   const { listRef, loadRef, loading, hasMore } = useArticleListHook({
     feedUuid,
   });
+
+  useAutoScroll({ listRef });
 
   const renderList = (): JSX.Element[] => {
     return (store.articleList || []).map((article: any, idx: number) => {

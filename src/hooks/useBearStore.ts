@@ -153,11 +153,6 @@ export const useBearStore = create<BearStore>()(
       },
 
       goNextArticle() {
-        console.log(
-          "%c Line:108 🍐 goNextArticle",
-          "color:#6ec1c2",
-          "goNextArticle"
-        );
         let cur = -1;
         let currentIdx = get().currentIdx;
         let articleList = get().articleList;

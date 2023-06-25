@@ -3,6 +3,7 @@ import { ArticleItem } from "../ArticleItem";
 import { useBearStore } from "@/hooks/useBearStore";
 import { useArticleListHook } from "./hooks";
 import { Skeleton } from "../ui/skeleton";
+import { useAutoScroll } from "@/hooks/useAutoScroll";
 
 export type ArticleListProps = {
   feedUuid: string | null;
@@ -30,6 +31,8 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
   const { listRef, loadRef, loading, hasMore } = useArticleListHook({
     feedUuid,
   });
+
+  useAutoScroll({ listRef });
 
   const renderList = (): JSX.Element[] => {
     return (store.articleList || []).map((article: any, idx: number) => {

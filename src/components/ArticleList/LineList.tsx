@@ -4,6 +4,7 @@ import { ArticleListProps } from "@/components/ArticleList/index";
 import { ArticleLineItem } from "@/components/ArticleItem/Line";
 import { useArticleListHook } from "@/components/ArticleList/hooks";
 import { Skeleton } from "../ui/skeleton";
+import { useAutoScroll } from "@/hooks/useAutoScroll";
 
 export const ArticleLineList = (props: ArticleListProps): JSX.Element => {
   const { feedUuid } = props;
@@ -16,6 +17,8 @@ export const ArticleLineList = (props: ArticleListProps): JSX.Element => {
   const { listRef, loadRef, loading, hasMore } = useArticleListHook({
     feedUuid,
   });
+
+  useAutoScroll({ listRef });
 
   const renderList = (): JSX.Element[] => {
     return (store.articleList || []).map((article: any, idx: number) => {

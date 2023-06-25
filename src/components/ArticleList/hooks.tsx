@@ -95,42 +95,6 @@ export const useArticleListHook = (props: { feedUuid: string | null }) => {
     };
   }, [loading]);
 
-  // const goPrev = (elem: HTMLElement, tagName: string) => {
-  //   if (tagName === "a") {
-  //   } else if (tagName === "li") {
-  //     store.goPreviousArticle();
-  //   }
-  // };
-  //
-  // const goNext = (elem: HTMLElement, tagName: string) => {
-  //   if (tagName === "a") {
-  //   } else if (tagName === "li") {
-  //     store.goNextArticle();
-  //   }
-  // };
-  //
-  // const handleKeyPress = (event: KeyboardEvent) => {
-  //   const activeElement = document.activeElement as HTMLElement;
-  //   const tagName = activeElement.tagName.toLowerCase();
-  //
-  //   console.log("event.key", event.key);
-  //
-  //   switch (event.key) {
-  //     case "ArrowDown":
-  //     case "n":
-  //       goNext(activeElement, tagName);
-  //       event.preventDefault();
-  //       break;
-  //     case "ArrowUp":
-  //     case "N":
-  //       goPrev(activeElement, tagName);
-  //       event.preventDefault();
-  //       break;
-  //     default:
-  //       break;
-  //   }
-  // };
-
   function goPrev() {
     console.warn('goPrev')
     store.goPreviousArticle();
