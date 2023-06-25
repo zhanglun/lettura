@@ -106,12 +106,12 @@ export const useArticleListHook = (props: { feedUuid: string | null }) => {
   }
 
   useEffect(() => {
-    registerShortcut('n', goNext)
-    registerShortcut('Shift+n', goPrev)
+    registerShortcut(['n'], goNext)
+    registerShortcut(['Shift+n', 'N'], goPrev)
 
     return () => {
       unregisterShortcut('n');
-      unregisterShortcut('Shift+n');
+      unregisterShortcut(['Shift+n', 'N']);
     }
 
   }, []);
