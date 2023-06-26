@@ -1,14 +1,22 @@
 import { useEffect, useRef, useState } from "react";
+import { useMatch } from "react-router-dom";
 import { useBearStore } from "@/hooks/useBearStore";
 import { useShortcut } from "@/hooks/useShortcut";
+import { RouteConfig } from "@/config";
 
 export const useArticleListHook = (props: { feedUuid: string | null }) => {
   const { feedUuid } = props;
+
+  const isToday = useMatch(RouteConfig.TODAY);
+  const isAll = useMatch(RouteConfig.ALL);
+
   const store = useBearStore((state) => ({
     currentFilter: state.currentFilter,
     setArticleList: state.setArticleList,
     articleList: state.articleList,
     getArticleList: state.getArticleList,
+    getTodayArticleList: state.getTodayArticleList,
+    getAllArticleList: state.getAllArticleList,
 
     goPreviousArticle: state.goPreviousArticle,
     goNextArticle: state.goNextArticle,
@@ -27,19 +35,26 @@ export const useArticleListHook = (props: { feedUuid: string | null }) => {
       limit: 12,
     };
 
-    if (feedUuid === null) {
+    let fn = Promise.resolve();
+
+    if (feedUuid) {
+      fn = store.getArticleList(feedUuid, filter);
+    } else if (isToday) {
+      fn = store.getTodayArticleList(filter);
+    } else if (isAll) {
+      fn = store.getAllArticleList(filter);
+    } else {
       return;
     }
 
     setLoading(true);
 
-    store
-      .getArticleList(feedUuid, filter)
-      .then((res: any) => {
-        if (res.length === 0) {
-          setHasMore(false)
-        }
-      })
+    fn.then((res: any) => {
+      console.log("%c Line:54 🍿 res", "color:#b03734", res);
+      if (res.length === 0) {
+        setHasMore(false);
+      }
+    })
       .finally(() => {
         setLoading(false);
       })
@@ -49,13 +64,13 @@ export const useArticleListHook = (props: { feedUuid: string | null }) => {
   };
 
   useEffect(() => {
-    if (feedUuid) {
+    if (feedUuid || isToday || isAll) {
       store.setArticleList([]);
       setCursor(1);
       setHasMore(true);
       getList();
     }
-  }, [feedUuid, store.currentFilter]);
+  }, [feedUuid, store.currentFilter, isToday, isAll]);
 
   useEffect(() => {
     getList();
@@ -96,24 +111,23 @@ export const useArticleListHook = (props: { feedUuid: string | null }) => {
   }, [loading]);
 
   function goPrev() {
-    console.warn('goPrev')
+    console.warn("goPrev");
     store.goPreviousArticle();
   }
 
   function goNext() {
-    console.warn('goNext')
+    console.warn("goNext");
     store.goNextArticle();
   }
 
   useEffect(() => {
-    registerShortcut(['n'], goNext)
-    registerShortcut(['Shift+n', 'N'], goPrev)
+    registerShortcut(["n"], goNext);
+    registerShortcut(["Shift+n", "N"], goPrev);
 
     return () => {
-      unregisterShortcut('n');
-      unregisterShortcut(['Shift+n', 'N']);
-    }
-
+      unregisterShortcut("n");
+      unregisterShortcut(["Shift+n", "N"]);
+    };
   }, []);
 
   return {

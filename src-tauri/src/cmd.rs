@@ -157,8 +157,6 @@ pub fn create_feed_model(
   res: &feed_rs::model::Feed,
 ) -> models::NewFeed {
   println!("res{:?}", res);
-  let feed_type = res.feed_type.clone();
-
   let title = match &res.title {
     Some(link) => link.content.to_string(),
     None => String::from(""),
@@ -308,6 +306,16 @@ pub fn get_articles(
 
   println!("Elapsed time: {:.2?}", before.elapsed());
   res
+}
+
+#[command]
+pub async fn get_today_articles(filter: feed::article::ArticleFilter) -> feed::article::ArticleQueryResult {
+  feed::article::Article::get_today_articles(filter)
+}
+
+#[command]
+pub async fn get_all_articles(filter: feed::article::ArticleFilter) -> feed::article::ArticleQueryResult {
+  feed::article::Article::get_all_articles(filter)
 }
 
 #[command]

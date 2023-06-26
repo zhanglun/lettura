@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
 import { ArticleListRefType } from "@/components/ArticleList";
 import * as dataAgent from "../../helpers/dataAgent";
 import { useBearStore } from "@/hooks/useBearStore";
@@ -33,7 +32,6 @@ import { useQuery } from "@/helpers/parseXML";
 
 export const ArticleContainer = (): JSX.Element => {
   // @ts-ignore
-  const params: { name: string } = useParams();
   const store = useBearStore((state) => ({
     article: state.article,
     articleList: state.articleList,
@@ -65,7 +63,6 @@ export const ArticleContainer = (): JSX.Element => {
   const handleViewScroll = () => {
     if (viewRef.current) {
       const scrollTop = viewRef.current.scrollTop;
-      console.log("scrolling", scrollTop);
 
       if (scrollTop > 0) {
         viewRef.current?.parentElement?.classList.add("is-scroll");
@@ -202,7 +199,7 @@ export const ArticleContainer = (): JSX.Element => {
   }, []);
 
   useEffect(() => {
-  console.log("%c Line:211 🥤 store.channel?.uuid", "color:#fca650", store.channel?.uuid);
+    console.log("%c Line:211 🥤 store.channel?.uuid", "color:#fca650", store.channel?.uuid);
 
     if (listRef.current !== null) {
       listRef.current.scroll(0, 0);

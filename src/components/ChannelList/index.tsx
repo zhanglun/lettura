@@ -1,20 +1,18 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Tree } from "@douyinfe/semi-ui";
-import { RouteConfig } from "../../config";
-import { Channel } from "../../db";
-import * as dataAgent from "../../helpers/dataAgent";
-import { busChannel } from "../../helpers/busChannel";
+import { Folder, RefreshCw, Settings } from "lucide-react";
+import { listen } from "@tauri-apps/api/event";
+import { RouteConfig } from "@/config";
+import { Channel } from "@/db";
+import * as dataAgent from "@/helpers/dataAgent";
+import { busChannel } from "@/helpers/busChannel";
+import { useBearStore } from "@/hooks/useBearStore";
 import { AddFeedChannel } from "../AddFeed";
 import { AddFolder } from "../AddFolder";
 import pLimit from "p-limit";
-import { useBearStore } from "../../hooks/useBearStore";
 
 import styles from "./channel.module.scss";
-import { Folder, RefreshCw, Settings } from "lucide-react";
-
-import { listen } from "@tauri-apps/api/event";
-import { invoke } from "@tauri-apps/api/tauri";
 
 import {
   ContextMenu,
@@ -394,8 +392,6 @@ const ChannelList = (): JSX.Element => {
     // }
   };
 
-  const handleEditFolder = () => {};
-
   useEffect(() => {
     if (listRef.current) {
       const $list = listRef.current as HTMLDivElement;
@@ -458,11 +454,26 @@ const ChannelList = (): JSX.Element => {
           <Icon onClick={goToSetting}>
             <Settings size={16} />
           </Icon>
-          {/* <SettingDialog /> */}
+        </div>
+      </div>
+      <div className="mt-[var(--app-toolbar-height)] pl-3">
+        <div
+          onClick={() => {
+            navigate(RouteConfig.TODAY);
+          }}
+        >
+          Today
+        </div>
+        <div
+          onClick={() => {
+            navigate(RouteConfig.ALL);
+          }}
+        >
+          All Items
         </div>
       </div>
       <div
-        className="overflow-y-auto mt-[var(--app-toolbar-height)] pb-3 pl-3 height-[calc(100% - var(--app-toolbar-height))]"
+        className="overflow-y-auto mt-8 pb-3 pl-3 height-[calc(100% - var(--app-toolbar-height))]"
         ref={listRef}
       >
         <ContextMenu onOpenChange={handleContextMenuChange}>

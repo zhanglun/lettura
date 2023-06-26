@@ -71,7 +71,7 @@ export const General = () => {
 
   const handleThreadsChange = (val: number) => {
     setThreads(val);
-    
+
     dataAgent.updateThreads(val).then((res) => {
       console.log("res ===>", res);
     });

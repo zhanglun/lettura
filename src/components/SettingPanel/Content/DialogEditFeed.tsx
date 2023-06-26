@@ -25,7 +25,7 @@ export interface DialogEditFeedProps {
   afterCancel: () => void;
 }
 
-export const DialogEditFeed = (props: DialogEditFeedProps) => {
+export const DialogEditFeed = React.memo((props: DialogEditFeedProps) => {
   const { toast } = useToast();
   const { feed, dialogStatus, setDialogStatus, afterConfirm, afterCancel, trigger } = props;
 
@@ -118,4 +118,4 @@ export const DialogEditFeed = (props: DialogEditFeedProps) => {
     </Dialog>
   )
     ;
-};
+});

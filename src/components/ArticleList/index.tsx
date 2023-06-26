@@ -25,7 +25,6 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
     currentFilter: state.currentFilter,
     setArticleList: state.setArticleList,
     articleList: state.articleList,
-    getArticleList: state.getArticleList,
   }));
 
   const { listRef, loadRef, loading, hasMore } = useArticleListHook({
@@ -36,7 +35,7 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
 
   const renderList = (): JSX.Element[] => {
     return (store.articleList || []).map((article: any, idx: number) => {
-      return <ArticleItem article={article} key={article.title} />;
+      return <ArticleItem article={article} key={article.title + idx} />;
     });
   };
 

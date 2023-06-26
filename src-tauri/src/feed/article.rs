@@ -56,29 +56,28 @@ impl Article {
     let mut query = diesel::sql_query("").into_boxed();
     let mut limit = 12;
 
-    match filter.channel_uuid {
-      Some(channel_uuid) => {
-        let relations = schema::feed_metas::dsl::feed_metas
-          .filter(schema::feed_metas::parent_uuid.eq(&channel_uuid))
-          .load::<models::FeedMeta>(&mut connection)
-          .expect("Expect find channel");
-        let mut channel_uuids: Vec<String> = vec![];
+    if let Some(channel_uuid) = filter.channel_uuid {
+      let relations = schema::feed_metas::dsl::feed_metas
+        .filter(schema::feed_metas::parent_uuid.eq(&channel_uuid))
+        .load::<models::FeedMeta>(&mut connection)
+        .expect("Expect find channel");
+      let mut channel_uuids: Vec<String> = vec![];
 
-        if relations.len() > 0 {
-          for relation in relations {
-            if relation.parent_uuid == channel_uuid {
-              let uuid = String::from(relation.child_uuid);
+      if relations.len() > 0 {
+        for relation in relations {
+          if relation.parent_uuid == channel_uuid {
+            let uuid = String::from(relation.child_uuid);
 
-              channel_uuids.push(uuid.clone());
-            }
+            channel_uuids.push(uuid.clone());
           }
-        } else {
-          channel_uuids.push(channel_uuid.clone());
         }
+      } else {
+        channel_uuids.push(channel_uuid.clone());
+      }
 
-        let params = format!("?{}", ", ?".repeat(channel_uuids.len() - 1));
-        query = query.sql(format!(
-          "
+      let params = format!("?{}", ", ?".repeat(channel_uuids.len() - 1));
+      query = query.sql(format!(
+        "
             SELECT
               A.id, A.uuid,
               A.channel_uuid,
@@ -96,52 +95,29 @@ impl Article {
               articles as A
             ON C.uuid = A.channel_uuid
             WHERE C.uuid in ({}) AND A.uuid IS NOT NULL",
-          params
-        ));
+        params
+      ));
 
-        for uuid in channel_uuids {
-          query = query.bind::<Text, _>(uuid);
-        }
-      }
-      None => {
-        1;
+      for uuid in channel_uuids {
+        query = query.bind::<Text, _>(uuid);
       }
     }
 
-    match filter.read_status {
-      Some(0) => {
-        1;
-      }
-      Some(status) => {
-        query = query
-          .sql(" and A.read_status = ?")
-          .bind::<Integer, _>(status);
-      }
-      None => {
-        1;
-      }
+    if let Some(status) = filter.read_status {
+      query = query
+        .sql(" and A.read_status = ?")
+        .bind::<Integer, _>(status);
     }
 
-    query = query.sql(" order by A.pub_date DESC ");
+    query = query.sql(" ORDER BY A.pub_date DESC ");
 
-    match filter.limit {
-      Some(l) => {
-        query = query.sql(" limit ?").bind::<Integer, _>(l);
-        limit = l;
-      }
-      None => {
-        1;
-      }
+    if let Some(l) = filter.limit {
+      query = query.sql(" limit ?").bind::<Integer, _>(l);
+      limit = l;
     }
 
-    match filter.cursor {
-      Some(c) => {
-        // query = query.sql(" and A.id >= ?").bind::<Integer, _>(c + 1);
-        query = query.sql(" OFFSET ?").bind::<Integer, _>((c- 1) * limit);
-      }
-      None => {
-        1;
-      }
+    if let Some(c) = filter.cursor {
+      query = query.sql(" OFFSET ?").bind::<Integer, _>((c - 1) * limit);
     }
 
     let debug = diesel::debug_query::<diesel::sqlite::Sqlite, _>(&query);
@@ -152,22 +128,107 @@ impl Article {
       .load::<ArticleQueryItem>(&mut connection)
       .expect("Expect loading articles");
 
-    // let re = Regex::new(r"<[^>]+>").unwrap();
+    ArticleQueryResult { list: result }
+  }
 
-    // let result = result
-    //   .into_iter()
-    //   .map(|mut a| {
-    //     let summary = re
-    //       .replace_all(&a.description, String::from(""))
-    //       .chars()
-    //       .into_iter()
-    //       .map(|x| x.to_string())
-    //       .collect::<Vec<_>>();
+  /// get today articles
+  pub fn get_today_articles(filter: ArticleFilter) -> ArticleQueryResult {
+    let mut connection = establish_connection();
+    let mut query = diesel::sql_query("").into_boxed();
+    let mut limit = 12;
 
-    //     a.description = summary[0..cmp::min(summary.len(), 54)].join("");
-    //     a
-    //   })
-    //   .collect();
+    query = query.sql(
+      "
+        SELECT
+          A.id, A.uuid,
+          A.channel_uuid,
+          C.title as channel_title,
+          C.link as channel_link,
+          A.link,
+          A.title,
+          A.feed_url,
+          A.description as description,
+          A.pub_date,
+          A.create_date,
+          A.read_status
+        FROM
+          feeds as C
+        LEFT JOIN
+          articles as A
+        ON C.uuid = A.channel_uuid
+        WHERE DATE(A.create_date) = DATE('now')",
+    );
+
+    if let Some(status) = filter.read_status {
+      query = query
+        .sql(" AND A.read_status = ?")
+        .bind::<Integer, _>(status);
+    }
+
+    query = query.sql(" ORDER BY A.pub_date DESC ");
+
+    if let Some(l) = filter.limit {
+      query = query.sql(" limit ?").bind::<Integer, _>(l);
+      limit = l;
+    }
+
+    if let Some(c) = filter.cursor {
+      query = query.sql(" OFFSET ?").bind::<Integer, _>((c - 1) * limit);
+    }
+
+    let result = query
+      .load::<ArticleQueryItem>(&mut connection)
+      .expect("Expect loading articles");
+
+    ArticleQueryResult { list: result }
+  }
+
+  pub fn get_all_articles(filter: ArticleFilter) -> ArticleQueryResult {
+    let mut connection = establish_connection();
+    let mut query = diesel::sql_query("").into_boxed();
+    let mut limit = 12;
+
+    query = query.sql(
+      "
+        SELECT
+          A.id, A.uuid,
+          A.channel_uuid,
+          C.title as channel_title,
+          C.link as channel_link,
+          A.link,
+          A.title,
+          A.feed_url,
+          A.description as description,
+          A.pub_date,
+          A.create_date,
+          A.read_status
+        FROM
+          feeds as C
+        LEFT JOIN
+          articles as A
+        ON C.uuid = A.channel_uuid ",
+    );
+
+    if let Some(status) = filter.read_status {
+      query = query
+        .sql(" AND A.read_status = ?")
+        .bind::<Integer, _>(status);
+    }
+
+    query = query.sql(" ORDER BY A.pub_date DESC ");
+
+    if let Some(l) = filter.limit {
+      query = query.sql(" limit ?").bind::<Integer, _>(l);
+      limit = l;
+    }
+
+    if let Some(c) = filter.cursor {
+      query = query.sql(" OFFSET ?").bind::<Integer, _>((c - 1) * limit);
+    }
+
+    let result = query
+      .load::<ArticleQueryItem>(&mut connection)
+      .expect("Expect loading articles");
 
     ArticleQueryResult { list: result }
   }

@@ -19,6 +19,8 @@ interface BearStore {
   articleList: Article[];
   setArticleList: (list: Article[]) => void;
   getArticleList: (uuid: string, filter: any) => any;
+  getTodayArticleList: (filter: any) => any;
+  getAllArticleList: (filter: any) => any;
 
   updateArticleAndIdx: (article: Article, idx?: number) => void;
   goPreviousArticle: any;
@@ -100,6 +102,31 @@ export const useBearStore = create<BearStore>()(
           return list;
         });
       },
+
+      getTodayArticleList: (filter: any) => {
+        const currentList = get().articleList;
+
+        return dataAgent.getTodayArticleList(filter).then((res) => {
+          const { list } = res as { list: Article[] };
+
+          get().setArticleList([...currentList, ...list]);
+
+          return list;
+        });
+      },
+
+      getAllArticleList: (filter: any) => {
+        const currentList = get().articleList;
+
+        return dataAgent.getAllArticleList(filter).then((res) => {
+          const { list } = res as { list: Article[] };
+
+          get().setArticleList([...currentList, ...list]);
+
+          return list;
+        });
+      },
+
 
       updateArticleAndIdx: (article: Article, idx?: number) => {
         console.log("update Article and Idx", idx);

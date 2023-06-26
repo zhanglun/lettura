@@ -65,6 +65,16 @@ export const getArticleList = async (uuid: string | undefined, filter: any) => {
   return invoke("get_articles", { uuid, filter });
 };
 
+export const getTodayArticleList = async (filter: any) => {
+  console.warn("%c Line:70 🥔 get_today_articles", "color:#7f2b82");
+  return invoke("get_today_articles", { filter });
+};
+
+export const getAllArticleList = async (filter: any) => {
+  console.warn("%c Line:74 🍬 getAllArticleList", "color:#93c0a4");
+  return invoke("get_all_articles", { filter });
+};
+
 export const fetchFeed = async (
   url: string,
 ): Promise<[any, string]> => {

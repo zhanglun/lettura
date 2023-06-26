@@ -12,7 +12,6 @@ export const ArticleLineList = (props: ArticleListProps): JSX.Element => {
     currentFilter: state.currentFilter,
     setArticleList: state.setArticleList,
     articleList: state.articleList,
-    getArticleList: state.getArticleList,
   }));
   const { listRef, loadRef, loading, hasMore } = useArticleListHook({
     feedUuid,

@@ -16,17 +16,11 @@ import { General } from "./components/SettingPanel/General";
 import { FeedManager } from "./components/SettingPanel/Content";
 import { ImportAndExport } from "./components/SettingPanel/ImportAndExport";
 import { WelcomePage } from "./components/WelcomePage";
-
-import "./styles/index.global.scss";
 import { Appearance } from "./components/SettingPanel/Appearance";
 
-let a = 0;
+import "./styles/index.global.scss";
 
 function App() {
-  a += 1;
-  // fetch('http://lettura./').then((res) => {
-  //   console.log(res);
-  // })
   const store = useBearStore((state) => ({
     goPreviousArticle: state.goPreviousArticle,
     goNextArticle: state.goNextArticle,
@@ -66,47 +60,6 @@ function App() {
     });
   }, []);
 
-  // const goPrev = (elem: HTMLElement, tagName: string) => {
-  //   if (tagName === "a") {
-  //   } else if (tagName === "li") {
-  //     store.goPreviousArticle();
-  //   }
-  // };
-  //
-  // const goNext = (elem: HTMLElement, tagName: string) => {
-  //   if (tagName === "a") {
-  //   } else if (tagName === "li") {
-  //     store.goNextArticle();
-  //   }
-  // };
-  //
-  // const handleKeyPress = (event: KeyboardEvent) => {
-  //   const activeElement = document.activeElement as HTMLElement;
-  //   const tagName = activeElement.tagName.toLowerCase();
-  //
-  //   switch (event.key) {
-  //     case "ArrowDown":
-  //     case "j":
-  //       goNext(activeElement, tagName);
-  //       event.preventDefault();
-  //       break;
-  //     case "ArrowUp":
-  //     case "k":
-  //       goPrev(activeElement, tagName);
-  //       event.preventDefault();
-  //       break;
-  //     default:
-  //       break;
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   document.addEventListener("keydown", (e) => handleKeyPress(e));
-  //   return () => {
-  //     document.removeEventListener("keydown", (e) => handleKeyPress(e));
-  //   };
-  // }, []);
-
   return (
     <BrowserRouter>
       <Routes>
@@ -122,6 +75,8 @@ function App() {
           }
         >
           <Route path={"/"} element={<WelcomePage />} />
+          <Route path={RouteConfig.TODAY} element={<ArticleContainer />} />
+          <Route path={RouteConfig.ALL} element={<ArticleContainer />} />
           <Route path={RouteConfig.CHANNEL} element={<ArticleContainer />} />
           <Route path={RouteConfig.SETTINGS} element={<SettingContainer />}>
             <Route path={RouteConfig.SETTINGS_GENERAL} element={<General />} />

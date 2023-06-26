@@ -155,6 +155,8 @@ async fn main() {
       cmd::delete_feed,
       cmd::update_feed_sort,
       cmd::get_articles,
+      cmd::get_today_articles,
+      cmd::get_all_articles,
       cmd::sync_articles_with_channel_uuid,
       cmd::import_channels,
       cmd::get_unread_total,
