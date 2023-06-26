@@ -96,6 +96,10 @@ export const getUnreadTotal = async (): Promise<{ [key: string]: number }> => {
   return invoke("get_unread_total");
 };
 
+export const getCollectionMetas = async (): Promise<{ [key: string]: number }> => {
+  return invoke("get_collection_metas");
+};
+
 export const updateArticleReadStatus = async (
   article_uuid: string,
   read_status: number,

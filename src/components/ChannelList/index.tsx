@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useLocation, useMatch, useNavigate } from "react-router-dom";
+import { useMatch, useNavigate } from "react-router-dom";
 import { Tree } from "@douyinfe/semi-ui";
-import { Coffee, Folder, Haze, RefreshCw, Settings } from "lucide-react";
+import { Folder, RefreshCw, Settings } from "lucide-react";
 import pLimit from "p-limit";
 import classNames from "classnames";
 import { listen } from "@tauri-apps/api/event";
@@ -12,8 +12,6 @@ import { busChannel } from "@/helpers/busChannel";
 import { useBearStore } from "@/hooks/useBearStore";
 import { AddFeedChannel } from "../AddFeed";
 import { AddFolder } from "../AddFolder";
-
-import styles from "./channel.module.scss";
 
 import {
   ContextMenu,
@@ -29,6 +27,9 @@ import { useModal } from "../Modal/useModal";
 import { open } from "@tauri-apps/api/shell";
 import { DialogEditFeed } from "@/components/SettingPanel/Content/DialogEditFeed";
 import { useQuery } from "@/helpers/parseXML";
+
+import styles from "./channel.module.scss";
+import { Collection } from "./Collection";
 
 const ChannelList = (): JSX.Element => {
   const isToday = useMatch(RouteConfig.TODAY);
@@ -49,7 +50,7 @@ const ChannelList = (): JSX.Element => {
     feedContextMenuTarget: state.feedContextMenuTarget,
     setFeedContextMenuTarget: state.setFeedContextMenuTarget,
   }));
-  const [feedUrl, type, channelUuid] = useQuery();
+  const [channelUuid] = useQuery();
 
   const updateCount = (
     channelList: Channel[],
@@ -457,46 +458,7 @@ const ChannelList = (): JSX.Element => {
           </Icon>
         </div>
       </div>
-      <div className="mt-[var(--app-toolbar-height)] pl-3">
-        <div
-          className={classNames(
-            "w-full h-8 px-2 flex items-center rounded-md cursor-pointer mt-[2px] group",
-            {
-              "bg-primary text-primary-foreground": isToday,
-            }
-          )}
-          onClick={() => {
-            store.setChannel(null);
-            navigate(RouteConfig.TODAY);
-          }}
-        >
-            <span className="h-4 w-4 rounded mr-2">
-              <Haze size={16} />
-            </span>
-            <span className="grow shrink basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-sm">
-              Today
-            </span>
-        </div>
-        <div
-          className={classNames(
-            "w-full h-8 px-2 flex items-center rounded-md cursor-pointer mt-[2px] group",
-            {
-              "bg-primary text-primary-foreground": isAll,
-            }
-          )}
-          onClick={() => {
-            store.setChannel(null);
-            navigate(RouteConfig.ALL);
-          }}
-        >
-          <span className="h-4 w-4 rounded mr-2">
-            <Coffee size={16} />
-          </span>
-          <span className="grow shrink basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-sm">
-            All Items
-          </span>
-        </div>
-      </div>
+          <Collection />
       <div
         className="overflow-y-auto mt-8 pb-3 pl-3 height-[calc(100% - var(--app-toolbar-height))]"
         ref={listRef}

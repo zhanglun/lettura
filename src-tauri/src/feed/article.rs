@@ -49,6 +49,14 @@ pub struct ArticleQueryResult {
   list: Vec<ArticleQueryItem>,
 }
 
+#[derive(Debug, Queryable, Serialize, QueryableByName)]
+pub struct CollectionMeta {
+  #[diesel(sql_type=Integer)]
+  total: i32,
+  #[diesel(sql_type=Integer)]
+  today: i32,
+}
+
 impl Article {
   /// get articles
   pub fn get_article(filter: ArticleFilter) -> ArticleQueryResult {
@@ -127,7 +135,7 @@ impl Article {
     ArticleQueryResult { list: result }
   }
 
-  /// get today articles
+  /// get today articles for Today collection
   pub fn get_today_articles(filter: ArticleFilter) -> ArticleQueryResult {
     let mut connection = establish_connection();
     let mut query = diesel::sql_query("").into_boxed();
@@ -179,6 +187,7 @@ impl Article {
     ArticleQueryResult { list: result }
   }
 
+  /// get all articles for All Items collection
   pub fn get_all_articles(filter: ArticleFilter) -> ArticleQueryResult {
     let mut connection = establish_connection();
     let mut query = diesel::sql_query("").into_boxed();
@@ -227,6 +236,25 @@ impl Article {
       .expect("Expect loading articles");
 
     ArticleQueryResult { list: result }
+  }
+
+  pub fn get_collection_metas() -> Vec<CollectionMeta> {
+    let mut connection = establish_connection();
+    let mut query = diesel::sql_query("").into_boxed();
+
+    query = query.sql("
+      SELECT
+        COUNT(1) AS today,
+        (SELECT COUNT(1) FROM articles WHERE read_status = 1) AS total
+      FROM articles
+      WHERE DATE(create_date) = DATE('now') AND read_status = 1"
+    );
+
+    let result: Vec<CollectionMeta> = query
+    .load::<CollectionMeta>(&mut connection)
+    .expect("Expect loading articles");
+
+    result
   }
 
   pub fn get_article_with_uuid(uuid: String) -> Option<models::Article> {

@@ -149,27 +149,20 @@ pub fn get_unread_total() -> HashMap<String, i32> {
   let mut result_map: HashMap<String, i32> = HashMap::new();
 
   for group in meta_group {
-    match total_map.get(&group.child_uuid) {
-      Some(count) => {
-        if group.parent_uuid != "".to_string() {
-          let c = result_map.entry(group.parent_uuid).or_insert(0);
+    if let Some(count) = total_map.get(&group.child_uuid) {
+      if group.parent_uuid != "".to_string() {
+        let c = result_map.entry(group.parent_uuid).or_insert(0);
 
-          *c += count;
-        }
-
-        result_map.entry(group.child_uuid).or_insert(count.clone());
+        *c += count;
       }
-      None => {}
-    };
+
+      result_map.entry(group.child_uuid).or_insert(count.clone());
+    }
   }
 
   for i in record {
-    match total_map.get(&i.channel_uuid) {
-      Some(count) => {
-        result_map.entry(i.channel_uuid).or_insert(count.clone());
-      }
-
-      None => {}
+    if let Some(count) = total_map.get(&i.channel_uuid) {
+      result_map.entry(i.channel_uuid).or_insert(count.clone());
     }
   }
 
