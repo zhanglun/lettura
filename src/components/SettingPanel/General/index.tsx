@@ -71,6 +71,7 @@ export const General = () => {
 
   const handleThreadsChange = (val: number) => {
     setThreads(val);
+    
     dataAgent.updateThreads(val).then((res) => {
       console.log("res ===>", res);
     });
@@ -166,7 +167,7 @@ export const General = () => {
           max={ 10 }
           value={ threads }
           onChange={ (e: React.ChangeEvent<HTMLInputElement>) =>
-            handleThreadsChange(e.target.value as unknown as number)
+            handleThreadsChange(parseInt(e.target.value, 10) as unknown as number)
           }
         />
       </PanelSection>

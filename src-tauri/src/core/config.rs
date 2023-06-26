@@ -175,13 +175,21 @@ pub fn load_or_initial() -> Option<UserConfig> {
     data.insert(String::from("customize_style"), toml::Value::try_from::<CustomizeStyle>(CustomizeStyle::default()).unwrap());
   }
 
+  if !data.contains_key("threads") {
+    data.insert(String::from("threads"), toml::Value::try_from::<i32>(5).unwrap());
+  }
+
+  if !data.contains_key("theme") {
+    data.insert(String::from("theme"), toml::Value::try_from::<String>(String::from("system")).unwrap());
+  }
+
   if !data.contains_key("update_interval") {
     data.insert(String::from("update_interval"), toml::Value::try_from::<i32>(0).unwrap());
   }
 
   println!("data: {:?}", data);
 
-  Some(data.try_into::<UserConfig>().expect("asdfasdfasdfasdf"))
+  Some(data.try_into::<UserConfig>().expect("config data error"))
 }
 
 pub fn update_proxy(ip: String, port: String) -> usize {
