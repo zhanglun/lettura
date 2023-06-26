@@ -138,5 +138,7 @@ export const useArticleListHook = (props: { feedUuid: string | null }) => {
     setLoading,
     listRef,
     loadRef,
+    isToday,
+    isAll,
   };
 };

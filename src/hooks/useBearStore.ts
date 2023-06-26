@@ -6,7 +6,7 @@ import * as dataAgent from "../helpers/dataAgent";
 
 interface BearStore {
   channel: Channel | null;
-  setChannel: (channel: Channel) => void;
+  setChannel: (channel: Channel | null) => void;
   updateFeed: (uuid: string, updater: any) => void;
   feedList: Channel[],
   getFeedList: () => any;
@@ -45,7 +45,7 @@ export const useBearStore = create<BearStore>()(
   subscribeWithSelector((set, get) => {
     return {
       channel: null,
-      setChannel: (channel: Channel) => {
+      setChannel: (channel: Channel | null) => {
         set(() => ({
           channel: channel,
         }));

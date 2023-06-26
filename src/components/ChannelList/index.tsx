@@ -1,7 +1,9 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useMatch, useNavigate } from "react-router-dom";
 import { Tree } from "@douyinfe/semi-ui";
-import { Folder, RefreshCw, Settings } from "lucide-react";
+import { Coffee, Folder, Haze, RefreshCw, Settings } from "lucide-react";
+import pLimit from "p-limit";
+import classNames from "classnames";
 import { listen } from "@tauri-apps/api/event";
 import { RouteConfig } from "@/config";
 import { Channel } from "@/db";
@@ -10,7 +12,6 @@ import { busChannel } from "@/helpers/busChannel";
 import { useBearStore } from "@/hooks/useBearStore";
 import { AddFeedChannel } from "../AddFeed";
 import { AddFolder } from "../AddFolder";
-import pLimit from "p-limit";
 
 import styles from "./channel.module.scss";
 
@@ -30,6 +31,8 @@ import { DialogEditFeed } from "@/components/SettingPanel/Content/DialogEditFeed
 import { useQuery } from "@/helpers/parseXML";
 
 const ChannelList = (): JSX.Element => {
+  const isToday = useMatch(RouteConfig.TODAY);
+  const isAll = useMatch(RouteConfig.ALL);
   const navigate = useNavigate();
   const [addFolderDialogStatus, setAddFolderDialogStatus] = useModal();
   const [editFolderDialogStatus, setEditFolderDialogStatus] = useModal();
@@ -203,8 +206,6 @@ const ChannelList = (): JSX.Element => {
           loadAndUpdate(channel.item_type, channel.uuid, channel.unread)
         );
       });
-
-      console.log("fns.length ===> ", fns.length);
 
       Promise.all(fns).then((res) => {
         window.setTimeout(() => {
@@ -458,18 +459,42 @@ const ChannelList = (): JSX.Element => {
       </div>
       <div className="mt-[var(--app-toolbar-height)] pl-3">
         <div
+          className={classNames(
+            "w-full h-8 px-2 flex items-center rounded-md cursor-pointer mt-[2px] group",
+            {
+              "bg-primary text-primary-foreground": isToday,
+            }
+          )}
           onClick={() => {
+            store.setChannel(null);
             navigate(RouteConfig.TODAY);
           }}
         >
-          Today
+            <span className="h-4 w-4 rounded mr-2">
+              <Haze size={16} />
+            </span>
+            <span className="grow shrink basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-sm">
+              Today
+            </span>
         </div>
         <div
+          className={classNames(
+            "w-full h-8 px-2 flex items-center rounded-md cursor-pointer mt-[2px] group",
+            {
+              "bg-primary text-primary-foreground": isAll,
+            }
+          )}
           onClick={() => {
+            store.setChannel(null);
             navigate(RouteConfig.ALL);
           }}
         >
-          All Items
+          <span className="h-4 w-4 rounded mr-2">
+            <Coffee size={16} />
+          </span>
+          <span className="grow shrink basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-sm">
+            All Items
+          </span>
         </div>
       </div>
       <div
