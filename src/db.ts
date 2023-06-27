@@ -25,6 +25,7 @@ export interface Article {
   description: string;
   content?: string;
   pub_date?: Date;
+  create_date?: Date;
   read_status: number;
 }
 

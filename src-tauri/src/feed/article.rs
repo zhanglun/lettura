@@ -49,7 +49,7 @@ pub struct ArticleQueryResult {
   list: Vec<ArticleQueryItem>,
 }
 
-#[derive(Debug, Queryable, Serialize, QueryableByName)]
+#[derive(Debug, Clone, Queryable, Serialize, QueryableByName)]
 pub struct CollectionMeta {
   #[diesel(sql_type=Integer)]
   total: i32,

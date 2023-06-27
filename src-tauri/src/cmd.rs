@@ -410,12 +410,12 @@ pub fn get_unread_total() -> HashMap<String, i32> {
 }
 
 #[command]
-pub fn get_collection_metas() {
+pub fn get_collection_metas() -> Option<feed::article::CollectionMeta> {
   let result = feed::article::Article::get_collection_metas();
 
-
   println!("result :{:?}", result);
-  // result
+
+  result.get(0).cloned()
 }
 
 #[command]

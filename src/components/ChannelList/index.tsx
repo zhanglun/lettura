@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useMatch, useNavigate } from "react-router-dom";
 import { Tree } from "@douyinfe/semi-ui";
-import { Folder, RefreshCw, Settings } from "lucide-react";
+import { Folder, RefreshCw, Settings, Coffee, Haze } from "lucide-react";
 import pLimit from "p-limit";
 import classNames from "classnames";
 import { listen } from "@tauri-apps/api/event";
 import { RouteConfig } from "@/config";
-import { Channel } from "@/db";
+import { Article, Channel } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
 import { busChannel } from "@/helpers/busChannel";
 import { useBearStore } from "@/hooks/useBearStore";
@@ -29,7 +29,7 @@ import { DialogEditFeed } from "@/components/SettingPanel/Content/DialogEditFeed
 import { useQuery } from "@/helpers/parseXML";
 
 import styles from "./channel.module.scss";
-import { Collection } from "./Collection";
+import dayjs from "dayjs";
 
 const ChannelList = (): JSX.Element => {
   const isToday = useMatch(RouteConfig.TODAY);
@@ -51,13 +51,55 @@ const ChannelList = (): JSX.Element => {
     setFeedContextMenuTarget: state.setFeedContextMenuTarget,
   }));
   const [channelUuid] = useQuery();
+  const [meta, setMeta] = useState<{
+    [key: string]: { [key: string]: number };
+  }>({
+    total: { unread: 0 },
+    today: { unread: 0 },
+  });
+
+  useEffect(() => {
+    dataAgent.getCollectionMetas().then((res) => {
+      console.log("%c Line:19 🍅 res", "color:#ed9ec7", res);
+      setMeta({
+        today: { unread: res.today },
+        total: { unread: res.total },
+      });
+    });
+  }, []);
 
   const updateCount = (
     channelList: Channel[],
     uuid: string,
+    article: Article,
     action: string,
     count: number
   ) => {
+    const strategy = (action: string, target: any) => {
+      switch (action) {
+        case "increase": {
+          target ? (target.unread += count) : null;
+          break;
+        }
+        case "decrease": {
+          target ? (target.unread -= count) : null;
+          break;
+        }
+        case "upgrade": {
+          // TODO
+          break;
+        }
+
+        case "set": {
+          target ? (target.unread = count) : null;
+          break;
+        }
+        default: {
+          // TODO
+        }
+      }
+    };
+
     channelList.forEach((channel) => {
       let target: any = channel.uuid === uuid ? channel : null;
       let child: any =
@@ -71,38 +113,31 @@ const ChannelList = (): JSX.Element => {
         return channel;
       }
 
-      switch (action) {
-        case "increase": {
-          target ? (target.unread += count) : null;
-          child ? (child.unread += count) : null;
-          break;
-        }
-        case "decrease": {
-          target ? (target.unread -= count) : null;
-          child ? (child.unread -= count) : null;
-          break;
-        }
-        case "upgrade": {
-          // TODO
-          break;
-        }
-
-        case "set": {
-          target ? (target.unread = count) : null;
-          child ? (child.unread = count) : null;
-          break;
-        }
-        default: {
-          // TODO
-        }
-      }
+      strategy(action, target);
+      strategy(action, child);
 
       channel.unread = Math.max(0, channel.unread);
 
       return channel;
     });
 
+    function isToday(create_date: Date) {
+      const today = dayjs().format("YYYY-MM-DD");
+      const date = dayjs(create_date).format("YYYY-MM-DD");
+      return dayjs(date).isSame(today);
+    }
+
     setChannelList([...channelList]);
+
+    strategy(action, meta.total);
+
+    if (article.create_date && isToday(article.create_date)) {
+      strategy(action, meta.today);
+    }
+
+    console.log("%c Line:137 🥚 meta", "color:#7f2b82", meta);
+
+    setMeta(meta);
   };
 
   const getList = () => {
@@ -159,11 +194,11 @@ const ChannelList = (): JSX.Element => {
   useEffect(() => {
     const unsubscribeUpdateCount = busChannel.on(
       "updateChannelUnreadCount",
-      ({ uuid, action, count }) => {
+      ({ uuid, article, action, count }) => {
         console.log(
           "🚀 ~ file: index.tsx:138 ~ useEffect ~ updateChannelUnreadCount"
         );
-        updateCount(channelList, uuid, action, count);
+        updateCount(channelList, uuid, article, action, count);
         unsubscribeUpdateCount();
       }
     );
@@ -458,11 +493,75 @@ const ChannelList = (): JSX.Element => {
           </Icon>
         </div>
       </div>
-          <Collection />
+
       <div
         className="overflow-y-auto mt-8 pb-3 pl-3 height-[calc(100% - var(--app-toolbar-height))]"
         ref={listRef}
       >
+        <div className="mt-[var(--app-toolbar-height)] pl-3">
+          <div
+            className={classNames(
+              "w-full h-8 px-2 flex items-center rounded-md cursor-pointer mt-[2px] group",
+              {
+                "bg-primary text-primary-foreground": isToday,
+              }
+            )}
+            onClick={() => {
+              store.setChannel(null);
+              navigate(RouteConfig.TODAY);
+            }}
+          >
+            <span className="h-4 w-4 rounded mr-2">
+              <Haze size={16} />
+            </span>
+            <span className="grow shrink basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-sm">
+              Today
+            </span>
+            {meta.today.unread > 0 && (
+              <span
+                className={classNames(
+                  "px-1 min-w-[1rem] h-4 leading-4 text-center text-[10px]",
+                  {
+                    "text-primary-foreground": isToday,
+                  }
+                )}
+              >
+                {meta.today.unread}
+              </span>
+            )}
+          </div>
+          <div
+            className={classNames(
+              "w-full h-8 px-2 flex items-center rounded-md cursor-pointer mt-[2px] group",
+              {
+                "bg-primary text-primary-foreground": isAll,
+              }
+            )}
+            onClick={() => {
+              store.setChannel(null);
+              navigate(RouteConfig.ALL);
+            }}
+          >
+            <span className="h-4 w-4 rounded mr-2">
+              <Coffee size={16} />
+            </span>
+            <span className="grow shrink basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-sm">
+              All Items
+            </span>
+            {meta.total.unread > 0 && (
+              <span
+                className={classNames(
+                  "px-1 min-w-[1rem] h-4 leading-4 text-center text-[10px]",
+                  {
+                    "text-primary-foreground": isAll,
+                  }
+                )}
+              >
+                {meta.total.unread}
+              </span>
+            )}
+          </div>
+        </div>
         <ContextMenu onOpenChange={handleContextMenuChange}>
           <ContextMenuTrigger className="w-full">
             {renderTree()}

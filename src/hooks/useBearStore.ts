@@ -145,6 +145,7 @@ export const useBearStore = create<BearStore>()(
             if (res) {
               busChannel.emit("updateChannelUnreadCount", {
                 uuid: article.channel_uuid,
+                article: article,
                 action: "decrease",
                 count: 1,
               });
