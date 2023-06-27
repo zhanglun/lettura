@@ -30,6 +30,7 @@ import { useQuery } from "@/helpers/parseXML";
 
 import styles from "./channel.module.scss";
 import dayjs from "dayjs";
+import { Separator } from "../ui/separator";
 
 const ChannelList = (): JSX.Element => {
   const isToday = useMatch(RouteConfig.TODAY);
@@ -71,7 +72,7 @@ const ChannelList = (): JSX.Element => {
   const updateCount = (
     channelList: Channel[],
     uuid: string,
-    article: Article,
+    isToday: boolean,
     action: string,
     count: number
   ) => {
@@ -121,17 +122,11 @@ const ChannelList = (): JSX.Element => {
       return channel;
     });
 
-    function isToday(create_date: Date) {
-      const today = dayjs().format("YYYY-MM-DD");
-      const date = dayjs(create_date).format("YYYY-MM-DD");
-      return dayjs(date).isSame(today);
-    }
-
     setChannelList([...channelList]);
 
     strategy(action, meta.total);
 
-    if (article.create_date && isToday(article.create_date)) {
+    if (isToday) {
       strategy(action, meta.today);
     }
 
@@ -194,11 +189,11 @@ const ChannelList = (): JSX.Element => {
   useEffect(() => {
     const unsubscribeUpdateCount = busChannel.on(
       "updateChannelUnreadCount",
-      ({ uuid, article, action, count }) => {
+      ({ uuid, isToday, action, count }) => {
         console.log(
           "🚀 ~ file: index.tsx:138 ~ useEffect ~ updateChannelUnreadCount"
         );
-        updateCount(channelList, uuid, article, action, count);
+        updateCount(channelList, uuid, isToday, action, count);
         unsubscribeUpdateCount();
       }
     );
@@ -499,10 +494,11 @@ const ChannelList = (): JSX.Element => {
       </div>
 
       <div
-        className="overflow-y-auto mt-8 pb-3 pl-3 height-[calc(100% - var(--app-toolbar-height))]"
+        className="overflow-y-auto mt-[var(--app-toolbar-height)] pb-3 pl-3 height-[calc(100% - var(--app-toolbar-height))]"
         ref={listRef}
       >
-        <div className="mt-[var(--app-toolbar-height)] pl-3">
+        <h2 className="mt-8 mb-2 px-4 text-lg font-semibold tracking-tight">Collections</h2>
+        <div>
           <div
             className={classNames(
               "w-full h-8 px-2 flex items-center rounded-md cursor-pointer mt-[2px] group",
@@ -566,6 +562,7 @@ const ChannelList = (): JSX.Element => {
             )}
           </div>
         </div>
+        <h2 className="mt-8 mb-2 px-4 text-lg font-semibold tracking-tight">Feeds</h2>
         <ContextMenu onOpenChange={handleContextMenuChange}>
           <ContextMenuTrigger className="w-full">
             {renderTree()}
