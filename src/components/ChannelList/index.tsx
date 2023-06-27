@@ -215,10 +215,14 @@ const ChannelList = (): JSX.Element => {
         res.forEach((item) => {
           const [count, uuid, _msg] = item;
 
-          count > 0 &&
-            store.updateFeed(uuid, {
-              unread: unread + count,
-            });
+          count > 0 && setChannelList((list) => {
+            return list.map((item) => {
+              return item.uuid === uuid ? {
+                ...item,
+                unread: unread + count,
+              } : item
+            })
+          });
         });
 
         return res;
