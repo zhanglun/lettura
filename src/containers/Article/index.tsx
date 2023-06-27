@@ -147,6 +147,7 @@ export const ArticleContainer = (): JSX.Element => {
             getArticleList();
             busChannel.emit("updateChannelUnreadCount", {
               uuid: store.channel?.uuid as string,
+              isToday: true,
               action: "increase",
               count: num || 0
             });

@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
+import dayjs from "dayjs";
 import { Article, Channel } from "../db";
 import { busChannel } from "../helpers/busChannel";
 import * as dataAgent from "../helpers/dataAgent";
@@ -145,7 +146,7 @@ export const useBearStore = create<BearStore>()(
             if (res) {
               busChannel.emit("updateChannelUnreadCount", {
                 uuid: article.channel_uuid,
-                article: article,
+                isToday: dayjs(dayjs(article.create_date).format("YYYY-MM_DD")).isSame( dayjs().format("YYYY-MM-DD")),
                 action: "decrease",
                 count: 1,
               });
