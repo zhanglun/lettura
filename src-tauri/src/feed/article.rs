@@ -111,10 +111,18 @@ impl Article {
       }
     }
 
-    if let Some(status) = filter.read_status {
-      query = query
-        .sql(" and A.read_status = ?")
-        .bind::<Integer, _>(status);
+    match filter.read_status {
+      Some(0) => {
+        1;
+      }
+      Some(status) => {
+        query = query
+          .sql(" AND A.read_status = ?")
+          .bind::<Integer, _>(status);
+      }
+      None => {
+        1;
+      }
     }
 
     query = query.sql(" ORDER BY A.pub_date DESC ");
@@ -127,6 +135,11 @@ impl Article {
     if let Some(c) = filter.cursor {
       query = query.sql(" OFFSET ?").bind::<Integer, _>((c - 1) * limit);
     }
+
+
+    let debug = diesel::debug_query::<diesel::sqlite::Sqlite, _>(&query);
+
+    println!("The insert query: {:?}", debug);
 
     let result = query
       .load::<ArticleQueryItem>(&mut connection)
@@ -163,10 +176,18 @@ impl Article {
         WHERE DATE(A.create_date) = DATE('now')",
     );
 
-    if let Some(status) = filter.read_status {
-      query = query
-        .sql(" AND A.read_status = ?")
-        .bind::<Integer, _>(status);
+    match filter.read_status {
+      Some(0) => {
+        1;
+      }
+      Some(status) => {
+        query = query
+          .sql(" AND A.read_status = ?")
+          .bind::<Integer, _>(status);
+      }
+      None => {
+        1;
+      }
     }
 
     query = query.sql(" ORDER BY A.pub_date DESC ");
@@ -214,10 +235,18 @@ impl Article {
         ON C.uuid = A.channel_uuid ",
     );
 
-    if let Some(status) = filter.read_status {
-      query = query
-        .sql(" AND A.read_status = ?")
-        .bind::<Integer, _>(status);
+    match filter.read_status {
+      Some(0) => {
+        1;
+      }
+      Some(status) => {
+        query = query
+          .sql(" AND A.read_status = ?")
+          .bind::<Integer, _>(status);
+      }
+      None => {
+        1;
+      }
     }
 
     query = query.sql(" ORDER BY A.pub_date DESC ");
