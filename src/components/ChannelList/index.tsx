@@ -59,7 +59,7 @@ const ChannelList = (): JSX.Element => {
     today: { unread: 0 },
   });
 
-  useEffect(() => {
+  const initCollectionMetas = () => {
     dataAgent.getCollectionMetas().then((res) => {
       console.log("%c Line:19 🍅 res", "color:#ed9ec7", res);
       setMeta({
@@ -67,6 +67,10 @@ const ChannelList = (): JSX.Element => {
         total: { unread: res.total },
       });
     });
+  }
+
+  useEffect(() => {
+    initCollectionMetas();
   }, []);
 
   const updateCount = (
@@ -198,8 +202,13 @@ const ChannelList = (): JSX.Element => {
       }
     );
 
+    const updateCollectionMeta = busChannel.on("updateCollectionMeta", () => {
+      initCollectionMetas();
+    })
+
     return () => {
       unsubscribeUpdateCount();
+      updateCollectionMeta();
     };
   }, [channelList]);
 

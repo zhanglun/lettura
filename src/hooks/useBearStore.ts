@@ -146,7 +146,7 @@ export const useBearStore = create<BearStore>()(
             if (res) {
               busChannel.emit("updateChannelUnreadCount", {
                 uuid: article.channel_uuid,
-                isToday: dayjs(dayjs(article.create_date).format("YYYY-MM_DD")).isSame( dayjs().format("YYYY-MM-DD")),
+                isToday: dayjs(dayjs(article.create_date).format("YYYY-MM-DD")).isSame( dayjs().format("YYYY-MM-DD")),
                 action: "decrease",
                 count: 1,
               });
@@ -243,8 +243,6 @@ export const useBearStore = create<BearStore>()(
 
       updateUserConfig: (config: UserConfig) => {
         const cfg = { ...get().userConfig, ...config };
-
-        console.log("%c Line:167 🍯 cfg", "color:#fca650", cfg);
 
         dataAgent.updateUserConfig(cfg).then(() => {
           set(() => ({

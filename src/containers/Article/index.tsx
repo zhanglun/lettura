@@ -31,7 +31,6 @@ import { ReadingOptions } from "@/containers/Article/ReadingOptions";
 import { useQuery } from "@/helpers/parseXML";
 
 export const ArticleContainer = (): JSX.Element => {
-  // @ts-ignore
   const store = useBearStore((state) => ({
     article: state.article,
     articleList: state.articleList,
@@ -168,10 +167,20 @@ export const ArticleContainer = (): JSX.Element => {
   };
 
   const markAllRead = () => {
-    if (feedUrl && articleListRef.current) {
-      console.log("🚀 ~ file: index.tsx:148 ~ markAllRead ~ feedUrl", feedUrl);
-      articleListRef.current.markAllRead();
-      // TODO
+    console.log("%c Line:172 🍡 store.channel", "color:#e41a6a", store.channel);
+
+    if (store.channel) {
+      return dataAgent.markAllRead(store.channel.uuid)
+        .then((res) => {
+          console.log("%c Line:176 🍖 res", "color:#93c0a4", res);
+          busChannel.emit("updateChannelUnreadCount", {
+            uuid: store.channel?.uuid as string,
+            isToday: false,
+            action: "set",
+            count: 0,
+          });
+          busChannel.emit("updateCollectionMeta")
+        });
     }
 
     return Promise.resolve();
