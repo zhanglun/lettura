@@ -50,6 +50,8 @@ const ChannelList = (): JSX.Element => {
     updateFeed: state.updateFeed,
     feedContextMenuTarget: state.feedContextMenuTarget,
     setFeedContextMenuTarget: state.setFeedContextMenuTarget,
+
+    setViewMeta: state.setViewMeta,
   }));
   const [channelUuid] = useQuery();
   const [meta, setMeta] = useState<{
@@ -517,6 +519,11 @@ const ChannelList = (): JSX.Element => {
             )}
             onClick={() => {
               store.setChannel(null);
+              store.setViewMeta({
+                title: 'Today',
+                isToday: true,
+                isAll: false,
+              });
               navigate(RouteConfig.TODAY);
             }}
           >
@@ -548,6 +555,11 @@ const ChannelList = (): JSX.Element => {
             )}
             onClick={() => {
               store.setChannel(null);
+              store.setViewMeta({
+                title: 'All Items',
+                isToday: false,
+                isAll: true,
+              })
               navigate(RouteConfig.ALL);
             }}
           >

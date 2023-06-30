@@ -6,6 +6,16 @@ import { busChannel } from "../helpers/busChannel";
 import * as dataAgent from "../helpers/dataAgent";
 
 interface BearStore {
+
+  viewMeta: {
+    title: string,
+    unread: number,
+    isToday: boolean,
+    isAll: boolean,
+  };
+
+  setViewMeta: (meta: any) => void;
+
   channel: Channel | null;
   setChannel: (channel: Channel | null) => void;
   updateFeed: (uuid: string, updater: any) => void;
@@ -22,6 +32,8 @@ interface BearStore {
   getArticleList: (uuid: string, filter: any) => any;
   getTodayArticleList: (filter: any) => any;
   getAllArticleList: (filter: any) => any;
+  cursor: number;
+  setCursor: (c: number) => number;
 
   updateArticleAndIdx: (article: Article, idx?: number) => void;
   goPreviousArticle: any;
@@ -45,11 +57,34 @@ interface BearStore {
 export const useBearStore = create<BearStore>()(
   subscribeWithSelector((set, get) => {
     return {
+      viewMeta: {
+        title: '',
+        unread: 0,
+        isToday: false,
+        isAll: false,
+      },
+      setViewMeta(meta) {
+        set(() => ({
+          viewMeta: meta,
+        }))
+      },
+
       channel: null,
       setChannel: (channel: Channel | null) => {
         set(() => ({
           channel: channel,
         }));
+
+        if (channel) {
+          set(() => ({
+            viewMeta: {
+              title: channel.title,
+              unread: channel.unread,
+              isToday: false,
+              isAll: false,
+            }
+          }));
+        }
       },
       feedList: [],
       updateFeed: (uuid: string, updater: any) => {
@@ -167,6 +202,15 @@ export const useBearStore = create<BearStore>()(
         }));
       },
 
+      cursor: 1,
+      setCursor: (c: number) =>{
+        set(() => ({
+          cursor: c
+        }));
+
+        return c
+      },
+
       goPreviousArticle() {
         let cur = -1;
         let currentIdx = get().currentIdx;
@@ -190,7 +234,16 @@ export const useBearStore = create<BearStore>()(
           cur = currentIdx + 1;
         }
 
-        get().updateArticleAndIdx(articleList[cur], cur);
+          console.log("%c Line:205 🍕 articleList.length", "color:#e41a6a", articleList.length);
+          console.log("%c Line:205 🌶 cur", "color:#3f7cff", cur);
+
+        if (cur === articleList.length - 1) {
+          console.error("%c Line:194 🥖 cur", "color:#ed9ec7", '到底了');
+          get().setCursor(get().cursor + 1);
+        } else {
+          get().updateArticleAndIdx(articleList[cur], cur);
+        }
+
       },
 
       currentIdx: 0,

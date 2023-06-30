@@ -32,6 +32,7 @@ import { useQuery } from "@/helpers/parseXML";
 
 export const ArticleContainer = (): JSX.Element => {
   const store = useBearStore((state) => ({
+    viewMeta: state.viewMeta,
     article: state.article,
     articleList: state.articleList,
     setArticle: state.setArticle,
@@ -226,7 +227,7 @@ export const ArticleContainer = (): JSX.Element => {
             flex
             items-center
             px-3
-            text-sm
+            text-lg
             font-bold
             w-full
             text-ellipsis
@@ -235,7 +236,7 @@ export const ArticleContainer = (): JSX.Element => {
             text-article-headline
           "
         >
-          { store.channel ? store.channel.title : "" }
+          { store.viewMeta ? store.viewMeta.title : "" }
         </div>
         <div className={ "flex items-center justify-end px-2 space-x-0.5" }>
           <DropdownMenu>

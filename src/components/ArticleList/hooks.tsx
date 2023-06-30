@@ -20,6 +20,9 @@ export const useArticleListHook = (props: { feedUuid: string | null }) => {
 
     goPreviousArticle: state.goPreviousArticle,
     goNextArticle: state.goNextArticle,
+    currentIdx: state.currentIdx,
+    cursor: state.cursor,
+    setCursor: state.setCursor
   }));
   const { registerShortcut, unregisterShortcut } = useShortcut();
 
@@ -27,11 +30,10 @@ export const useArticleListHook = (props: { feedUuid: string | null }) => {
   const [hasMore, setHasMore] = useState(true);
   const listRef = useRef<HTMLDivElement>(null);
   const loadRef = useRef<HTMLDivElement>(null);
-  const [cursor, setCursor] = useState(1);
   const getList = () => {
     const filter: { read_status?: number; cursor: number; limit?: number } = {
       read_status: store.currentFilter.id,
-      cursor,
+      cursor: store.cursor,
       limit: 12,
     };
 
@@ -66,7 +68,8 @@ export const useArticleListHook = (props: { feedUuid: string | null }) => {
   useEffect(() => {
     if (feedUuid || isToday || isAll) {
       store.setArticleList([]);
-      setCursor(1);
+      store.setCursor(1);
+
       setHasMore(true);
       getList();
     }
@@ -74,7 +77,7 @@ export const useArticleListHook = (props: { feedUuid: string | null }) => {
 
   useEffect(() => {
     getList();
-  }, [cursor]);
+  }, [store.cursor]);
 
   useEffect(() => {
     const $rootElem = listRef.current as HTMLDivElement;
@@ -94,7 +97,7 @@ export const useArticleListHook = (props: { feedUuid: string | null }) => {
         console.log(entry);
 
         if (entry.isIntersecting && !loading && hasMore) {
-          setCursor((cursor) => cursor + 1);
+          store.setCursor(store.cursor + 1);
         }
       });
     };
