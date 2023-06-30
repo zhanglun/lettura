@@ -41,6 +41,7 @@ export const ArticleContainer = (): JSX.Element => {
 
     articleDialogViewStatus: state.articleDialogViewStatus,
     setArticleDialogViewStatus: state.setArticleDialogViewStatus,
+    markArticleListAsRead: state.markArticleListAsRead,
 
     filterList: state.filterList,
     currentFilter: state.currentFilter,
@@ -171,8 +172,8 @@ export const ArticleContainer = (): JSX.Element => {
     console.log("%c Line:172 🍡 store.channel", "color:#e41a6a", store.channel);
 
     if (store.channel) {
-      return dataAgent.markAllRead(store.channel.uuid)
-        .then((res) => {
+      return store.markArticleListAsRead(store.channel.uuid)
+        .then((res: any) => {
           console.log("%c Line:176 🍖 res", "color:#93c0a4", res);
           busChannel.emit("updateChannelUnreadCount", {
             uuid: store.channel?.uuid as string,
@@ -180,7 +181,7 @@ export const ArticleContainer = (): JSX.Element => {
             action: "set",
             count: 0,
           });
-          busChannel.emit("updateCollectionMeta")
+          busChannel.emit("updateCollectionMeta");
         });
     }
 

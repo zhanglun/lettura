@@ -12,6 +12,7 @@ export const busChannel = eventbus<{
   }) => void;
 
   updateCollectionMeta: () => void;
+  reloadArticleList: () => void;
 
   goPreviousArticle: () => void;
   goNextArticle: () => void;

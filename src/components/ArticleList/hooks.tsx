@@ -3,6 +3,7 @@ import { useMatch } from "react-router-dom";
 import { useBearStore } from "@/hooks/useBearStore";
 import { useShortcut } from "@/hooks/useShortcut";
 import { RouteConfig } from "@/config";
+import { busChannel } from "@/helpers/busChannel";
 
 export const useArticleListHook = (props: { feedUuid: string | null }) => {
   const { feedUuid } = props;

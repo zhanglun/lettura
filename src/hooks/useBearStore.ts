@@ -34,6 +34,7 @@ interface BearStore {
   getAllArticleList: (filter: any) => any;
   cursor: number;
   setCursor: (c: number) => number;
+  markArticleListAsRead: (uuid: string) => any;
 
   updateArticleAndIdx: (article: Article, idx?: number) => void;
   goPreviousArticle: any;
@@ -209,6 +210,17 @@ export const useBearStore = create<BearStore>()(
         }));
 
         return c
+      },
+
+      markArticleListAsRead(uuid: string) {
+        return dataAgent.markAllRead(uuid).then(() => {
+          set(() => ({
+            articleList: get().articleList.map((_) => {
+              _.read_status = 2;
+              return _;
+            })
+          }))
+        });
       },
 
       goPreviousArticle() {
