@@ -97,7 +97,7 @@ export const FeedItem = React.forwardRef((props: FeedItemProps, ref: any) => {
             alt={feed.title}
           />
         )}
-        <span className="grow shrink basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-sm">
+        <span className="grow shrink basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-sm text-[hsl(var(--foreground))]">
           {feed.title}
         </span>
         {unread > 0 && (

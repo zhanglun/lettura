@@ -6,8 +6,8 @@ body {
     "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: var(--body-color);
-  background-color: var(--body-bg-color);
+  color: hsl(var(--foreground));
+  background-color: hsl(var(--background));
   overflow: hidden;
 }
 

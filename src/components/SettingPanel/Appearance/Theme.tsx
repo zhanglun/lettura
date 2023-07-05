@@ -32,7 +32,7 @@ export const Theme = (props: any) => {
   <SelectContent>
     <SelectItem value="system">System</SelectItem>
     <SelectItem value="light">Light</SelectItem>
-    <SelectItem value="Dark">Dark</SelectItem>
+    <SelectItem value="dark">Dark</SelectItem>
     <SelectItem value="luckin">Luckin</SelectItem>
     <SelectItem value="starbucks">StarBucks</SelectItem>
     <SelectItem value="tims">Tims</SelectItem>
