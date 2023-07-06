@@ -19,22 +19,22 @@ const renderFolder = (expandStatus: { expanded: boolean }, onExpand: any) => {
   if (expandStatus.expanded) {
     return (
       <>
-        <span className="h-4 w-4 rounded mr-1" onClick={onExpand}>
-          <ChevronDown size={16} />
+        <span className="h-4 w-4 rounded mr-1" onClick={ onExpand }>
+          <ChevronDown size={ 16 }/>
         </span>
         <span className="h-4 w-4 rounded mr-1">
-          <FolderOpen size={16} />
+          <FolderOpen size={ 16 }/>
         </span>
       </>
     );
   } else {
     return (
       <>
-        <span className="h-4 w-4 rounded mr-1" onClick={onExpand}>
-          <ChevronRight size={16} />
+        <span className="h-4 w-4 rounded mr-1" onClick={ onExpand }>
+          <ChevronRight size={ 16 }/>
         </span>
         <span className="h-4 w-4 rounded mr-1">
-          <Folder size={16} />
+          <Folder size={ 16 }/>
         </span>
       </>
     );
@@ -57,61 +57,66 @@ export const FeedItem = React.forwardRef((props: FeedItemProps, ref: any) => {
 
   return (
     <li
-      className={`${className}`}
+      className={ `${ className }` }
       role="treeitem"
-      key={feed.title}
-      onClick={() => {
+      key={ feed.title }
+      onClick={ () => {
         store.setChannel(feed);
         navigate(
-          `${RouteConfig.CHANNEL.replace(/:uuid/, feed.uuid)}?channelUuid=${
+          `${ RouteConfig.CHANNEL.replace(/:uuid/, feed.uuid) }?channelUuid=${
             feed.uuid
-          }&feedUrl=${feed.feed_url}`
+          }&feedUrl=${ feed.feed_url }`
         );
-      }}
+      } }
     >
       <span
-        className={classNames(
+        className={ classNames(
           "w-full h-8 px-2 flex items-center rounded-md cursor-pointer mt-[2px] group",
           {
             "bg-primary text-primary-foreground": isActive,
             "shadow-[inset_0_0_0_2px_var(--color-primary)]": (store.feedContextMenuTarget && store.feedContextMenuTarget.uuid === feed.uuid),
             "pl-8": level,
           }
-        )}
-        onContextMenu={() => {
+        ) }
+        onContextMenu={ () => {
           store.setFeedContextMenuTarget(feed);
-        }}
+        } }
       >
-        {isFolder && renderFolder(expandStatus, onExpand)}
-        {feed.link && (
+        { isFolder && renderFolder(expandStatus, onExpand) }
+        { feed.link && (
           <img
-            src={ico}
-            onError={(e) => {
+            src={ ico }
+            onError={ (e) => {
               // @ts-ignore
               e.target.onerror = null;
 
               // @ts-ignore
               e.target.src = defaultSiteIcon;
-            }}
+            } }
             className="h-4 w-4 rounded mr-2"
-            alt={feed.title}
+            alt={ feed.title }
           />
-        )}
-        <span className="grow shrink basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-sm text-[hsl(var(--foreground))]">
-          {feed.title}
+        ) }
+        <span className={ classNames(
+          "grow shrink basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-sm",
+          {
+            "text-primary-foreground": isActive,
+          }
+        ) }>
+          { feed.title }
         </span>
-        {unread > 0 && (
+        { unread > 0 && (
           <span
-            className={classNames(
+            className={ classNames(
               "px-1 min-w-[1rem] h-4 leading-4 text-center text-[10px]",
               {
                 "text-primary-foreground": isActive,
               }
-            )}
+            ) }
           >
-            {unread}
+            { unread }
           </span>
-        )}
+        ) }
       </span>
     </li>
   );

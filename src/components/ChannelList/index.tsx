@@ -434,9 +434,9 @@ const ChannelList = (): JSX.Element => {
   }, []);
 
   const handleContextMenuChange = (status: boolean) => {
-    if (!status) {
-      store.setFeedContextMenuTarget(null);
-    }
+    // if (!status) {
+    //   store.setFeedContextMenuTarget(null);
+    // }
   };
 
   useEffect(() => {
