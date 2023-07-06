@@ -85,13 +85,15 @@
 }
 
 @layer base {
-  :root[data-color-scheme="light"] {
+  :root[data-color-scheme="light"],
+  [data-color-scheme="light"] {
     --foreground: 214 100% 18%;
 
     --primary: 214 100% 18%;
   }
 
-  :root[data-color-scheme="dark"] {
+  :root[data-color-scheme="dark"] ,
+  [data-color-scheme="dark"] {
     --background: 234 16.7% 11.8%;
     --foreground: 213 31% 91%;
 
@@ -124,19 +126,22 @@
     --radius: 0.5rem;
   }
 
-  :root[data-color-scheme="luckin"] {
+  :root[data-color-scheme="luckin"],
+  [data-color-scheme="luckin"] {
     /*--foreground: 214 100% 18%;*/
 
     --primary: 214 100% 18%;
   }
 
-  :root[data-color-scheme="starbucks"] {
+  :root[data-color-scheme="starbucks"],
+  [data-color-scheme="starbucks"] {
     /*--foreground: 160 100% 22%;*/
 
     --primary: 160 100% 22%;
   }
 
-  :root[data-color-scheme="tims"] {
+  :root[data-color-scheme="tims"],
+  [data-color-scheme="tims"] {
     /*--foreground: 350 85% 42%;*/
 
     --primary: 350 85% 42%;

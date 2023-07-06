@@ -22,20 +22,34 @@ export const Theme = (props: any) => {
 
     document.documentElement.dataset.colorScheme = value;
   }
-  return  <Select
-  value={ store.userConfig.theme }
-  onValueChange={ (v: string) => handleThemeChange(v) }
->
-  <SelectTrigger className="w-[180px] h-8">
-    <SelectValue placeholder="Font"/>
-  </SelectTrigger>
-  <SelectContent>
-    <SelectItem value="system">System</SelectItem>
-    <SelectItem value="light">Light</SelectItem>
-    <SelectItem value="dark">Dark</SelectItem>
-    <SelectItem value="luckin">Luckin</SelectItem>
-    <SelectItem value="starbucks">StarBucks</SelectItem>
-    <SelectItem value="tims">Tims</SelectItem>
-  </SelectContent>
-</Select>
+
+  return <Select
+    value={ store.userConfig.theme }
+    onValueChange={ (v: string) => handleThemeChange(v) }
+  >
+    <SelectTrigger className="w-[180px]">
+    <span className="
+    flex items-center h-8 px-2 border border-border rounded-md bg-background text-foreground
+    before:content-['•']
+    before:text-[2rem]
+    before:leading-8
+    before:mr-2
+    before:text-primary">Aa</span>
+      <SelectValue placeholder="Font"/>
+    </SelectTrigger>
+    <SelectContent>
+      <SelectItem value="system">System</SelectItem>
+      <SelectItem value="light">
+        <span className="border-border rounded-md bg-background text-foreground" data-color-scheme="light">Aa</span>
+        Light</SelectItem>
+      <SelectItem value="dark">
+        <span className="border-border rounded-md bg-background text-foreground" data-color-scheme="dark">Aa</span>
+        Dark</SelectItem>
+      <SelectItem value="luckin">
+        <span className="border-border rounded-md bg-background text-foreground" data-color-scheme="luckin">Aa</span>
+        Luckin</SelectItem>
+      <SelectItem value="starbucks">StarBucks</SelectItem>
+      <SelectItem value="tims">Tims</SelectItem>
+    </SelectContent>
+  </Select>
 }
