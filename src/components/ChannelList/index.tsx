@@ -474,7 +474,7 @@ const ChannelList = (): JSX.Element => {
   }, [channelList]);
 
   return (
-    <div className="relative flex flex-col w-[var(--app-channel-width)] h-full select-none border-r border-slate-100 text-[hsl(var(--foreground))]
+    <div className="relative flex flex-col w-[var(--app-channel-width)] h-full select-none border-r border-border text-[hsl(var(--foreground))]
   bg-[hsl(var(--background))]">
       <div className={`sticky-header ${styles.header}`}>
         <div />

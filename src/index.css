@@ -92,10 +92,10 @@
   }
 
   :root[data-color-scheme="dark"] {
-    --background: 224 71% 4%;
+    --background: 234 16.7% 11.8%;
     --foreground: 213 31% 91%;
 
-    --muted: 223 47% 11%;
+    --muted: 236 17.4% 18.0%;
     --muted-foreground: 215.4 16.3% 56.9%;
 
     --popover: 224 71% 4%;
@@ -104,7 +104,7 @@
     --card: 224 71% 4%;
     --card-foreground: 213 31% 91%;
 
-    --border: 216 34% 17%;
+    --border: 235 18.1% 28.2%;
     --input: 216 34% 17%;
 
     --primary: 210 40% 98%;
@@ -125,19 +125,19 @@
   }
 
   :root[data-color-scheme="luckin"] {
-    --foreground: 214 100% 18%;
+    /*--foreground: 214 100% 18%;*/
 
     --primary: 214 100% 18%;
   }
 
   :root[data-color-scheme="starbucks"] {
-    --foreground: 160 100% 22%;
+    /*--foreground: 160 100% 22%;*/
 
     --primary: 160 100% 22%;
   }
 
   :root[data-color-scheme="tims"] {
-    --foreground: 350 85% 42%;
+    /*--foreground: 350 85% 42%;*/
 
     --primary: 350 85% 42%;
   }
