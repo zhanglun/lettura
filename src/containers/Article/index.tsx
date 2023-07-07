@@ -292,7 +292,7 @@ export const ArticleContainer = (): JSX.Element => {
           <ReadingOptions />
         </div>
       </div>
-      <div>
+      <div className="pt-[var(--app-toolbar-height)]">
         { layoutType === 1 && <Layout1/> }
         { layoutType === 2 && <Layout2/> }
         { layoutType === 3 && <Layout3/> }

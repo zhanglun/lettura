@@ -27,7 +27,7 @@ export const ArticleCardList = (props: ArticleListProps): JSX.Element => {
 
   return (
     <div
-      className="overflow-y-auto h-[100vh] pt-[var(--app-toolbar-height)]"
+      className="overflow-y-auto h-[100vh]"
       ref={listRef}
     >
       <ul className="m-[0_auto] py-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:max-w-3xl lg:max-w-5xl">

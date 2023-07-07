@@ -67,11 +67,6 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
             { article.title }
           </div>
           <div className={ classnames(styles.meta) }>
-            <span className={ classnames(styles.time, "text-detail-paragraph") }>
-              { Dayjs(new Date(pub_date || new Date())).format(
-                "YYYY-MM-DD HH:mm"
-              ) }
-            </span>
             <span className={ styles.channelInfo }>
               <img
                 src={ store.channel?.logo || ico }
@@ -87,6 +82,11 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
                 { article.author }
               </span>
             ) }
+            <span className={ classnames(styles.time, "text-detail-paragraph") }>
+              { Dayjs(new Date(pub_date || new Date())).format(
+                "YYYY-MM-DD HH:mm"
+              ) }
+            </span>
           </div>
         </div>
         <div className="m-auto pt-1 mt-6">

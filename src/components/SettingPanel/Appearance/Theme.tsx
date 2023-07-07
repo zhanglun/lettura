@@ -28,13 +28,16 @@ export const Theme = (props: any) => {
     onValueChange={ (v: string) => handleThemeChange(v) }
   >
     <SelectTrigger className="w-[180px]">
-    <span className="
-    flex items-center h-8 px-2 border border-border rounded-md bg-background text-foreground
-    before:content-['•']
-    before:text-[2rem]
-    before:leading-8
-    before:mr-2
-    before:text-primary">Aa</span>
+      <span className="
+        flex items-center h-8 px-2 border border-border rounded-md bg-background text-foreground
+        before:content-['']
+        before:block
+        before:w-2
+        before:h-2
+        before:rounded-full
+        before:mr-2
+        before:bg-primary
+        before:text-primary">Aa</span>
       <SelectValue placeholder="Font"/>
     </SelectTrigger>
     <SelectContent>
