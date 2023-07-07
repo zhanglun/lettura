@@ -127,9 +127,9 @@ async fn main() {
   let context = tauri::generate_context!();
   let mut connection = db::establish_connection();
 
-  connection
-    .run_pending_migrations(MIGRATIONS)
-    .expect("Error migrating");
+  // connection
+  //   .run_pending_migrations(MIGRATIONS)
+  //   .expect("Error migrating");
 
   let (async_process_input_tx, async_process_input_rx) = mpsc::channel::<AsyncProcessMessage>(32);
 

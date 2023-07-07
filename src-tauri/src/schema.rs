@@ -24,6 +24,8 @@ diesel::table! {
         child_uuid -> Text,
         parent_uuid -> Text,
         sort -> Integer,
+        health_status -> Integer,
+        failure_reason -> Text,
         create_date -> Timestamp,
         update_date -> Timestamp,
     }
@@ -37,25 +39,15 @@ diesel::table! {
         title -> Text,
         link -> Text,
         feed_url -> Text,
-
         logo -> Text,
         description -> Text,
         pub_date -> Timestamp,
         sync_interval -> Integer,
         last_sync_date -> Timestamp,
         sort -> Integer,
+        updated -> Timestamp,
         create_date -> Timestamp,
         update_date -> Timestamp,
-        updated -> Timestamp,
-    }
-}
-
-diesel::table! {
-    folder_channel_relations (id) {
-        id -> Integer,
-        folder_uuid -> Text,
-        channel_uuid -> Text,
-        create_date -> Timestamp,
     }
 }
 
@@ -74,6 +66,5 @@ diesel::allow_tables_to_appear_in_same_query!(
     articles,
     feed_metas,
     feeds,
-    folder_channel_relations,
     folders,
 );

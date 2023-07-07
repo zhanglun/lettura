@@ -1,4 +1,4 @@
-use super::schema::{articles, feeds, feed_metas, folder_channel_relations, folders};
+use super::schema::{articles, feeds, feed_metas, folders};
 use diesel::sql_types::*;
 use serde::Serialize;
 
@@ -61,6 +61,10 @@ pub struct FeedMeta {
   pub parent_uuid: String,
   #[diesel(sql_type = Integer)]
   pub sort: i32,
+  #[diesel(sql_type = Integer)]
+  pub health_status: i32,
+  #[diesel(sql_type = Text)]
+  pub failure_reason: String,
   #[diesel(sql_type = Text)]
   pub create_date: String,
   #[diesel(sql_type = Text)]
@@ -142,22 +146,4 @@ pub struct NewFolder {
   pub uuid: String,
   pub name: String,
   pub sort: i32,
-}
-
-#[derive(Debug, Queryable, Clone)]
-pub struct FolderChannelRelation {
-  #[diesel(sql_type = Integer)]
-  pub id: i32,
-  #[diesel(sql_type = Text)]
-  pub folder_uuid: String,
-  #[diesel(sql_type = Text)]
-  pub channel_uuid: String,
-  #[diesel(sql_type = Text)]
-  pub create_date: String,
-}
-#[derive(Debug, Insertable, Clone)]
-#[diesel(table_name = folder_channel_relations)]
-pub struct NewFolderChannelRelation {
-  pub channel_uuid: String,
-  pub folder_uuid: String,
 }
