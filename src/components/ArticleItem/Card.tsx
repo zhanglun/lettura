@@ -74,8 +74,8 @@ export const ArticleCardItem = (props: any) => {
       {/*{ readStatus === 1 && (*/}
       {/*  <div className="absolute left-2 top-50% mt-[-1] w-2 h-2 rounded-full bg-primary"/>*/}
       {/*) }*/}
-      <div className="relative h-0 before:content-[''] before:inline-block pt-[60%] overflow-hidden bg-muted">
-        <img src={banner} alt="..." className="absolute top-0 left-0 w-full" />
+      <div className="relative h-0 before:content-[''] before:inline-block pt-[55%] overflow-hidden bg-muted">
+        <img src={banner} alt="..." className="absolute top-0 left-0 object-cover" />
       </div>
       <div className="p-4 space-y-2">
         <div

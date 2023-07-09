@@ -42,7 +42,7 @@ export const ArticleDialogView = (
   return (
     <Dialog open={ dialogStatus } onOpenChange={ handleDialogChange }>
       { trigger && <DialogTrigger>{ trigger }</DialogTrigger> }
-      <DialogContent className="p-0 top-8 bottom-8 min-w-[860px] is-scroll">
+      <DialogContent className="p-0 top-8 bottom-8 min-w-[960px] is-scroll">
         <div className="overflow-y-auto">
           <div className="sticky left-0 right-0 top-0 z-[3]">
             <div

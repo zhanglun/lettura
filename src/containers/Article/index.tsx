@@ -29,6 +29,7 @@ import { ArticleDialogView } from "@/components/ArticleView/DialogView";
 import { ToolbarItemNavigator } from "@/containers/Article/ToolBar";
 import { ReadingOptions } from "@/containers/Article/ReadingOptions";
 import { useQuery } from "@/helpers/parseXML";
+import classNames from "classnames";
 
 export const ArticleContainer = (): JSX.Element => {
   const store = useBearStore((state) => ({
@@ -221,8 +222,8 @@ export const ArticleContainer = (): JSX.Element => {
   }, [ store.channel?.uuid ]);
 
   return (
-    <div className={ styles.article }>
-      <div className={ `sticky-header ${ styles.header }` }>
+    <div className={classNames(styles.article)}>
+      <div className={ `${ styles.header }` }>
         <div
           className="
             flex
@@ -292,7 +293,7 @@ export const ArticleContainer = (): JSX.Element => {
           <ReadingOptions />
         </div>
       </div>
-      <div className="pt-[var(--app-toolbar-height)]">
+      <div className="h-[100vh_-_var(--app-toolbar-height)]">
         { layoutType === 1 && <Layout1/> }
         { layoutType === 2 && <Layout2/> }
         { layoutType === 3 && <Layout3/> }

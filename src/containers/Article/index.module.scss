@@ -4,9 +4,9 @@
   flex: 1;
   height: 100vh;
   display: grid;
-  //grid-template-columns: var(--app-article-width) 1fr;
+  grid-template-rows: var(--app-toolbar-height) calc(100vh - var(--app-toolbar-height));
   background-color: var(--app-main-bg-color);
-  // padding-top: var(--app-toolbar-height);
+  //padding-top: var(--app-toolbar-height);
   position: relative;
 }
 
@@ -37,11 +37,11 @@
   //backdrop-filter: saturate(180%) blur(20px);
   backdrop-filter: saturate(50%) blur(8px);
   background: hsl(var(--background)/8%);
-//rgba(255, 255, 255, 0.88);
+  //rgba(255, 255, 255, 0.88);
   --playerDropShadow2: hsl(var(--foreground)/7%);
-//rgba(0, 0, 0, .07);
+  //rgba(0, 0, 0, .07);
   --playerInnerShadow: hsl(var(--background)/45%);
-    //rgba(255, 255, 255, .45);
+  //rgba(255, 255, 255, .45);
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05), 0 1px 3px var(--playerDropShadow2), inset 0 1px 1px var(--playerInnerShadow);
 }
 
@@ -103,8 +103,8 @@
 
 .scrollView {
   overflow-y: auto;
-  height: 100vh;
-  padding-top: var(--app-toolbar-height);
+  //height: 100vh;
+  //padding-top: var(--app-toolbar-height);
 }
 
 .mainView {
@@ -121,15 +121,15 @@
   grid-template-columns: 1fr 1fr;
   align-items: center;
   justify-content: space-between;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 3;
+  //position: absolute;
+  //top: 0;
+  //left: 0;
+  //right: 0;
+  //z-index: 3;
   //
-  //backdrop-filter: saturate(180%) blur(20px);
-  //background: rgba(255, 255, 255, 0.88);
-  //--playerDropShadow2: rgba(0, 0, 0, .07);
-  //--playerInnerShadow: rgba(255, 255, 255, .45);
-  //box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05), 0 1px 3px var(--playerDropShadow2), inset 0 1px 1px var(--playerInnerShadow);
+  backdrop-filter: saturate(180%) blur(20px);
+  background: rgba(255, 255, 255, 0.88);
+  --playerDropShadow2: rgba(0, 0, 0, .07);
+  --playerInnerShadow: rgba(255, 255, 255, .45);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05), 0 1px 3px var(--playerDropShadow2), inset 0 1px 1px var(--playerInnerShadow);
 }
