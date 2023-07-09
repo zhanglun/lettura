@@ -1,6 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useBearStore } from '@/hooks/useBearStore';
+import React, { useState, useEffect } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useBearStore } from "@/hooks/useBearStore";
+import { ThemeTag } from "./ThemeTag";
 
 export const Theme = (props: any) => {
   const { className, styleConfig } = props;
@@ -8,11 +15,9 @@ export const Theme = (props: any) => {
     userConfig: state.userConfig,
     updateUserConfig: state.updateUserConfig,
   }));
-  const [ theme, setTheme ] = useState("light");
+  const [theme, setTheme] = useState("light");
 
-  function handleThemeChange(
-    value: string
-  ) {
+  function handleThemeChange(value: string) {
     setTheme(value);
 
     store.updateUserConfig({
@@ -23,36 +28,32 @@ export const Theme = (props: any) => {
     document.documentElement.dataset.colorScheme = value;
   }
 
-  return <Select
-    value={ store.userConfig.theme }
-    onValueChange={ (v: string) => handleThemeChange(v) }
-  >
-    <SelectTrigger className="w-[180px]">
-      <span className="
-        flex items-center h-8 px-2 border border-border rounded-md bg-background text-foreground
-        before:content-['']
-        before:block
-        before:w-2
-        before:h-2
-        before:rounded-full
-        before:mr-2
-        before:bg-primary
-        before:text-primary">Aa</span>
-      <SelectValue placeholder="Font"/>
-    </SelectTrigger>
-    <SelectContent>
-      <SelectItem value="system">System</SelectItem>
-      <SelectItem value="light">
-        <span className="border-border rounded-md bg-background text-foreground" data-color-scheme="light">Aa</span>
-        Light</SelectItem>
-      <SelectItem value="dark">
-        <span className="border-border rounded-md bg-background text-foreground" data-color-scheme="dark">Aa</span>
-        Dark</SelectItem>
-      <SelectItem value="luckin">
-        <span className="border-border rounded-md bg-background text-foreground" data-color-scheme="luckin">Aa</span>
-        Luckin</SelectItem>
-      <SelectItem value="starbucks">StarBucks</SelectItem>
-      <SelectItem value="tims">Tims</SelectItem>
-    </SelectContent>
-  </Select>
-}
+  return (
+    <Select
+      value={store.userConfig.theme}
+      onValueChange={(v: string) => handleThemeChange(v)}
+    >
+      <SelectTrigger className="w-[180px]">
+        <SelectValue placeholder="Font" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="system">System</SelectItem>
+        <SelectItem value="light">
+          <ThemeTag scheme="light" name="Light" />
+        </SelectItem>
+        <SelectItem value="dark">
+          <ThemeTag scheme="dark" name="Dark" />
+        </SelectItem>
+        <SelectItem value="luckin">
+          <ThemeTag scheme="luckin" name="Luckin" />
+        </SelectItem>
+        <SelectItem value="starbucks">
+          <ThemeTag scheme="starbucks" name="StarBucks" />
+        </SelectItem>
+        <SelectItem value="tims">
+          <ThemeTag scheme="tims" name="Tims" />
+        </SelectItem>
+      </SelectContent>
+    </Select>
+  );
+};

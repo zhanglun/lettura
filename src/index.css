@@ -87,7 +87,8 @@
 @layer base {
   :root[data-color-scheme="light"],
   [data-color-scheme="light"] {
-    --foreground: 214 100% 18%;
+    --background: 0 0% 100%;
+    --foreground: 222.2 47.4% 11.2%;
 
     --primary: 214 100% 18%;
   }
@@ -128,21 +129,24 @@
 
   :root[data-color-scheme="luckin"],
   [data-color-scheme="luckin"] {
-    /*--foreground: 214 100% 18%;*/
+    --background: 0 0% 100%;
+    --foreground: 222.2 47.4% 11.2%;
 
     --primary: 214 100% 18%;
   }
 
   :root[data-color-scheme="starbucks"],
   [data-color-scheme="starbucks"] {
-    /*--foreground: 160 100% 22%;*/
+    --background: 0 0% 100%;
+    --foreground: 222.2 47.4% 11.2%;
 
     --primary: 160 100% 22%;
   }
 
   :root[data-color-scheme="tims"],
   [data-color-scheme="tims"] {
-    /*--foreground: 350 85% 42%;*/
+    --background: 0 0% 100%;
+    --foreground: 222.2 47.4% 11.2%;
 
     --primary: 350 85% 42%;
   }
