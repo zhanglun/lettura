@@ -8,6 +8,7 @@ use serde::{Deserialize, Serialize};
 use crate::cmd::create_client;
 use crate::db;
 use crate::models;
+use crate::feed;
 use crate::schema;
 
 pub fn get_feed_by_uuid(channel_uuid: String) -> Option<models::Feed> {
@@ -96,6 +97,26 @@ pub fn get_all_feed_meta() -> Vec<models::FeedMeta> {
     .expect("Expect get feed meta");
 
   result
+}
+
+pub fn update_health_status(uuid: String, health_status: i32, failure_reason: String) -> (usize, String, String) {
+  let mut connection = db::establish_connection();
+  let channel = match feed::channel::get_feed_by_uuid(uuid.clone()) {
+    Some(channel) => channel,
+    None => return (0, uuid, "feed not found".to_string()),
+  };
+
+  let updated_row = diesel::update(
+    schema::feed_metas::dsl::feed_metas.filter(schema::feed_metas::child_uuid.eq(uuid)),
+  )
+    .set((
+      schema::feed_metas::health_status.eq(health_status),
+      schema::feed_metas::failure_reason.eq(failure_reason),
+    ))
+    .execute(&mut connection)
+    .expect("update feed meta");
+
+  (updated_row, String::from(""), String::from(""))
 }
 
 #[derive(Debug, Clone, Queryable, Serialize, QueryableByName)]

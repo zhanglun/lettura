@@ -1,5 +1,5 @@
 -- Your SQL goes here
-CREATE TABLE feeds (
+CREATE TABLE IF NOT EXISTS feeds (
   id INTEGER NOT NULL PRIMARY KEY,
   uuid VARCHAR NOT NULL UNIQUE,
   title VARCHAR NOT NULL,
@@ -18,7 +18,10 @@ CREATE TABLE feeds (
   UNIQUE("link", "title")
 )
 
-CREATE TABLE articles (
+ALTER TABLE feeds ADD COLUMN IF NOT EXISTS health_status INTEGER NOT NULL DEFAULT 0;  -- 0: source is health 1: source is not health
+ALTER TABLE feeds ADD COLUMN IF NOT EXISTS failure_reason VARCHAR NOT NULL DEFAULT "";
+
+CREATE TABLE IF NOT EXISTS articles (
   id INTEGER NOT NULL PRIMARY KEY,
   uuid VARCHAR NOT NULL UNIQUE,
   channel_uuid VARCHAR NOT NULL,
@@ -37,7 +40,7 @@ CREATE TABLE articles (
 CREATE INDEX IF NOT EXISTS idx_channel_uuid_and_read_status ON "articles" ("channel_uuid", "read_status");
 CREATE INDEX IF NOT EXISTS idx_channel_uuid_and_read_status_and_pub_date ON "articles" ("channel_uuid", "read_status", "pub_date");
 
-CREATE TABLE folders (
+CREATE TABLE IF NOT EXISTS  folders (
   id INTEGER NOT NULL PRIMARY KEY,
   uuid VARCHAR NOT NULL UNIQUE,
   name VARCHAR NOT NULL,
@@ -46,13 +49,11 @@ CREATE TABLE folders (
   update_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 )
 
-CREATE TABLE feed_metas (
+CREATE TABLE IF NOT EXISTS feed_metas (
   id INTEGER NOT NULL PRIMARY KEY,
   child_uuid VARCHAR NOT NULL,
   parent_uuid VARCHAR NOT NULL,
   sort INTEGER NOT NULL DEFAULT 0,
-  health_status INTEGER NOT NULL DEFAULT 0,  -- 0: source is health 1: source is not health
-  failure_reason VARCHAR NOT NULL DEFAULT "",
   create_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   update_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 )
