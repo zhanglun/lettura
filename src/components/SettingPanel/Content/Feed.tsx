@@ -14,7 +14,6 @@ import { open } from "@tauri-apps/api/shell";
 import { Channel, Folder } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
 import { busChannel } from "@/helpers/busChannel";
-import styles from "../setting.module.scss";
 import { DataTable } from "./DataTable";
 import { CellContext, createColumnHelper } from "@tanstack/react-table";
 import { getChannelFavicon } from "@/helpers/parseXML";
@@ -71,6 +70,20 @@ export const Feed = () => {
         );
       },
     },
+    columnHelper.accessor((row) => `${ row.uuid }-health`, {
+      id: "health_status",
+      header: "Health Status",
+      cell(props: CellContext<Channel, string>): JSX.Element {
+        const { health_status, failure_reason } = props.row.original;
+
+        return (
+          <div className="flex justify-center">
+            { health_status === 0 && <div className="w-4 h-4 rounded-full bg-green-600"></div>}
+            { health_status === 1 && <div className="w-4 h-4 rounded-full bg-red-600"></div>}
+          </div>
+        )
+      }
+    }),
     columnHelper.accessor((row) => `${ row.uuid }-opt`, {
       id: "opt",
       header: "",

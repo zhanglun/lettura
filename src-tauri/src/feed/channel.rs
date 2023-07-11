@@ -505,7 +505,15 @@ pub struct ChannelQuery {
   #[diesel(sql_type = diesel::sql_types::Text)]
   pub pub_date: String,
   #[diesel(sql_type = diesel::sql_types::Integer)]
+  pub health_status: i32,
+  #[diesel(sql_type = diesel::sql_types::Text)]
+  pub failure_reason: String,
+  #[diesel(sql_type = diesel::sql_types::Integer)]
   pub sort: i32,
+  #[diesel(sql_type = diesel::sql_types::Integer)]
+  pub sync_interval: i32,
+  #[diesel(sql_type = diesel::sql_types::Text)]
+  pub last_sync_date: String,
   #[diesel(sql_type = diesel::sql_types::Text)]
   pub create_date: String,
   #[diesel(sql_type = diesel::sql_types::Text)]
@@ -544,7 +552,11 @@ pub fn get_channels() -> ChannelQueryResult {
       logo: channel.logo,
       description: channel.description,
       pub_date: channel.pub_date,
+      health_status: channel.health_status,
+      failure_reason: channel.failure_reason,
       sort: channel.sort,
+      sync_interval: channel.sync_interval,
+      last_sync_date: channel.last_sync_date,
       create_date: channel.create_date,
       update_date: channel.update_date,
       parent_uuid: String::from(

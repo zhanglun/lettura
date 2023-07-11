@@ -9,9 +9,12 @@ export interface Channel {
   logo?: string;
   description: string;
   pub_date?: Date;
+  health_status: number,
+  failure_reason: string,
   unread: number;
   sort?: number;
   create_date?: Date,
+  update_date?: Date,
 }
 export interface Article {
   id?: number;
