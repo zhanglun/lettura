@@ -12,7 +12,7 @@ use crate::core::config;
 use crate::db;
 use crate::feed;
 use crate::models;
-use crate::{AsyncProcessMessage};
+use crate::AsyncProcessMessage;
 
 pub struct AsyncProcInputTx {
   pub sender: Mutex<mpsc::Sender<AsyncProcessMessage>>,
@@ -335,7 +335,7 @@ pub async fn sync_articles(uuid: String) -> Vec<(usize, String, String)> {
     Ok(res) => res,
     Err(err) => {
       println!("update health status {:?}", err.to_string());
-      // feed::channel::update_health_status(uuid.clone(), 1, err.to_string());
+      feed::channel::update_health_status(uuid.clone(), 1, err.to_string());
       return vec![(0, uuid, err.to_string())];
     },
   };

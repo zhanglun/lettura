@@ -53,7 +53,7 @@ export const Layout1 = (): JSX.Element => {
           feedUrl={feedUrl || ""}
         />
       </div>
-      <div className={styles.scrollView} ref={viewRef}>
+      <div className="overflow-y-auto h-[calc(100vh_-_var(--app-toolbar-height))]" ref={viewRef}>
         <ArticleView article={store.article} userConfig={store.userConfig} />
       </div>
     </div>
