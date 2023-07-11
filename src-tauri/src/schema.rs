@@ -24,10 +24,10 @@ diesel::table! {
         child_uuid -> Text,
         parent_uuid -> Text,
         sort -> Integer,
-        health_status -> Integer,
-        failure_reason -> Text,
         create_date -> Timestamp,
         update_date -> Timestamp,
+        health_status -> Integer,
+        failure_reason -> Text,
     }
 }
 
@@ -35,17 +35,19 @@ diesel::table! {
     feeds (id) {
         id -> Integer,
         uuid -> Text,
-        feed_type -> Text,
         title -> Text,
         link -> Text,
         feed_url -> Text,
-        logo -> Text,
+        feed_type -> Text,
         description -> Text,
         pub_date -> Timestamp,
+        updated -> Timestamp,
+        logo -> Text,
+        health_status -> Integer,
+        failure_reason -> Text,
+        sort -> Integer,
         sync_interval -> Integer,
         last_sync_date -> Timestamp,
-        sort -> Integer,
-        updated -> Timestamp,
         create_date -> Timestamp,
         update_date -> Timestamp,
     }

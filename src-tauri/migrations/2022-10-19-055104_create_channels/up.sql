@@ -18,9 +18,6 @@ CREATE TABLE IF NOT EXISTS feeds (
   UNIQUE("link", "title")
 )
 
-ALTER TABLE feeds ADD COLUMN IF NOT EXISTS health_status INTEGER NOT NULL DEFAULT 0;  -- 0: source is health 1: source is not health
-ALTER TABLE feeds ADD COLUMN IF NOT EXISTS failure_reason VARCHAR NOT NULL DEFAULT "";
-
 CREATE TABLE IF NOT EXISTS articles (
   id INTEGER NOT NULL PRIMARY KEY,
   uuid VARCHAR NOT NULL UNIQUE,
