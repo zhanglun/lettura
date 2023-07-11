@@ -326,7 +326,7 @@ pub fn delete_feed(uuid: String) -> usize {
 }
 
 pub async fn sync_articles(uuid: String) -> Vec<(usize, String, String)> {
-  let channel = match feed::channel::get_feed_by_uuid(uuid.clone()) {
+  let channel = match feed::channel::get_feed_by_uuid(&uuid) {
     Some(channel) => channel,
     None => return vec![(0, uuid, "feed not found".to_string())],
   };
@@ -335,7 +335,7 @@ pub async fn sync_articles(uuid: String) -> Vec<(usize, String, String)> {
     Ok(res) => res,
     Err(err) => {
       println!("update health status {:?}", err.to_string());
-      feed::channel::update_health_status(uuid.clone(), 1, err.to_string());
+      feed::channel::update_health_status(&uuid, 1, err.to_string());
       return vec![(0, uuid, err.to_string())];
     },
   };

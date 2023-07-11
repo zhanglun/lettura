@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+use chrono::Local;
 use diesel::prelude::*;
 use diesel::sql_types::*;
 use scraper::{Html, Selector};
@@ -11,7 +12,7 @@ use crate::models;
 use crate::feed;
 use crate::schema;
 
-pub fn get_feed_by_uuid(channel_uuid: String) -> Option<models::Feed> {
+pub fn get_feed_by_uuid(channel_uuid: &str) -> Option<models::Feed> {
   let mut connection = db::establish_connection();
   let mut channel = schema::feeds::dsl::feeds
     .filter(schema::feeds::uuid.eq(&channel_uuid))
@@ -99,24 +100,28 @@ pub fn get_all_feed_meta() -> Vec<models::FeedMeta> {
   result
 }
 
-pub fn update_health_status(uuid: String, health_status: i32, failure_reason: String) -> (usize, String, String) {
+pub fn update_health_status(uuid: &str, health_status: i32, failure_reason: String) -> (usize, String, String) {
   let mut connection = db::establish_connection();
-  let channel = match feed::channel::get_feed_by_uuid(uuid.clone()) {
-    Some(channel) => channel,
-    None => return (0, uuid, "feed not found".to_string()),
-  };
 
-  let updated_row = diesel::update(
-    schema::feed_metas::dsl::feed_metas.filter(schema::feed_metas::child_uuid.eq(uuid)),
-  )
-    .set((
-      schema::feed_metas::health_status.eq(health_status),
-      schema::feed_metas::failure_reason.eq(failure_reason),
-    ))
-    .execute(&mut connection)
-    .expect("update feed meta");
+  match feed::channel::get_feed_by_uuid(uuid) {
+    Some(channel) => {
+      let sync_date = Local::now();
 
-  (updated_row, String::from(""), String::from(""))
+    let updated_row = diesel::update(
+      schema::feeds::dsl::feeds.filter(schema::feeds::uuid.eq(uuid)),
+    )
+      .set((
+        schema::feeds::health_status.eq(health_status),
+        schema::feeds::failure_reason.eq(failure_reason),
+        schema::feeds::last_sync_date.eq(sync_date.format("%Y-%m-%d %H:%M:%S").to_string()),
+      ))
+      .execute(&mut connection)
+      .expect("update feed meta");
+
+      return (updated_row, String::from(""), String::from(""));
+    },
+    None => return (0, String::from(uuid), "feed not found".to_string()),
+  }
 }
 
 #[derive(Debug, Clone, Queryable, Serialize, QueryableByName)]

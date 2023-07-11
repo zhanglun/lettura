@@ -26,8 +26,6 @@ diesel::table! {
         sort -> Integer,
         create_date -> Timestamp,
         update_date -> Timestamp,
-        health_status -> Integer,
-        failure_reason -> Text,
     }
 }
 

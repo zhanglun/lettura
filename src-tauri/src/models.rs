@@ -1,4 +1,4 @@
-use super::schema::{articles, feeds, feed_metas, folders};
+use super::schema::{articles, feed_metas, feeds, folders};
 use diesel::sql_types::*;
 use serde::Serialize;
 
@@ -6,34 +6,54 @@ use serde::Serialize;
 pub struct Feed {
   #[diesel(sql_type = Integer)]
   pub id: i32,
+
   #[diesel(sql_type = Text)]
   pub uuid: String,
-  #[diesel(sql_type = Text)]
-  pub feed_type: String,
+
   #[diesel(sql_type = Text)]
   pub title: String,
+
   #[diesel(sql_type = Text)]
   pub link: String,
+
   #[diesel(sql_type = Text)]
   pub feed_url: String,
+
   #[diesel(sql_type = Text)]
-  pub logo: String,
+  pub feed_type: String,
+
   #[diesel(sql_type = Text)]
   pub description: String,
+
   #[diesel(sql_type = Text)]
   pub pub_date: String,
-  #[diesel(sql_type = Integer)]
-  pub sync_interval: i32,
-  #[diesel(sql_type = Text)]
-  pub last_sync_date: String,
-  #[diesel(sql_type = Integer)]
-  pub sort: i32,
-  #[diesel(sql_type = Text)]
-  pub create_date: String,
-  #[diesel(sql_type = Text)]
-  pub update_date: String,
+
   #[diesel(sql_type = Text)]
   pub updated: String,
+
+  #[diesel(sql_type = Text)]
+  pub logo: String,
+
+  #[diesel(sql_type = Integer)]
+  pub health_status: i32,
+
+  #[diesel(sql_type = Text)]
+  pub failure_reason: String,
+
+  #[diesel(sql_type = Integer)]
+  pub sort: i32,
+
+  #[diesel(sql_type = Integer)]
+  pub sync_interval: i32,
+
+  #[diesel(sql_type = Text)]
+  pub last_sync_date: String,
+
+  #[diesel(sql_type = Text)]
+  pub create_date: String,
+
+  #[diesel(sql_type = Text)]
+  pub update_date: String,
 }
 
 #[derive(Debug, Clone, Serialize, Insertable)]
@@ -61,10 +81,6 @@ pub struct FeedMeta {
   pub parent_uuid: String,
   #[diesel(sql_type = Integer)]
   pub sort: i32,
-  #[diesel(sql_type = Integer)]
-  pub health_status: i32,
-  #[diesel(sql_type = Text)]
-  pub failure_reason: String,
   #[diesel(sql_type = Text)]
   pub create_date: String,
   #[diesel(sql_type = Text)]
