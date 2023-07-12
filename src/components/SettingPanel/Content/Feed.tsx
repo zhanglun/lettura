@@ -102,7 +102,7 @@ export const Feed = () => {
     }),
     columnHelper.accessor((row) => `${row.uuid}-opt`, {
       id: "opt",
-      header: "",
+      header: "Action",
       size: 120,
       cell(props: CellContext<Channel, string>): JSX.Element {
         return (

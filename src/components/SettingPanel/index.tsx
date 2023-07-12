@@ -14,7 +14,7 @@ function SettingPanel() {
       </div>
       <Separator />
       <div className="flex flex-col space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0 pb-16">
-        <aside className="-mx-4 lg:w-1/5">
+        <aside className="-mx-4 lg:w-1/6">
           <nav className="flex space-x-2 lg:flex-col lg:space-x-0 lg:space-y-1">
             <Link
               to={ RouteConfig.SETTINGS_GENERAL }
@@ -42,7 +42,7 @@ function SettingPanel() {
             </Link>
           </nav>
         </aside>
-        <div className="flex-1 lg:max-w-2xl w-full">
+        <div className="flex-1 lg:max-w-4xl w-full">
           <Outlet/>
         </div>
       </div>
