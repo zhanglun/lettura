@@ -15,6 +15,7 @@ export interface Channel {
   sort?: number;
   create_date?: Date,
   update_date?: Date,
+  last_sync_date?: string,
 }
 export interface Article {
   id?: number;

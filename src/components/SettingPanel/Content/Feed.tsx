@@ -100,10 +100,24 @@ export const Feed = () => {
         );
       },
     }),
+    columnHelper.accessor((row) => `${row.uuid}-sync-date`, {
+      id: "last_sync_date",
+      header: "Last sync date",
+      size: 160,
+      cell(props: CellContext<Channel, string>): JSX.Element {
+        const { last_sync_date = "" } = props.row.original;
+
+        return (
+          <div className="flex justify-center">
+            {last_sync_date}
+          </div>
+        );
+      },
+    }),
     columnHelper.accessor((row) => `${row.uuid}-opt`, {
       id: "opt",
       header: "Action",
-      size: 120,
+      size: 110,
       cell(props: CellContext<Channel, string>): JSX.Element {
         return (
           <div className="flex space-x-1">
