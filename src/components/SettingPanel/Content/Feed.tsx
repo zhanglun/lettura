@@ -9,7 +9,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { Rss, Trash2 } from "lucide-react";
+import { PlusCircle, Rss, Trash2 } from "lucide-react";
 import { open } from "@tauri-apps/api/shell";
 import { Channel, Folder } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
@@ -25,6 +25,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import { Button } from "@/components/ui/button";
 
 export const Feed = () => {
   const [list, setList] = useState<(Channel & { parent_uuid: String })[]>([]);
@@ -49,7 +50,7 @@ export const Feed = () => {
   const columns = [
     {
       accessorKey: "title",
-      header: "Name",
+      header: "Title",
       size: "fix-content",
       cell(props: CellContext<Channel, string>): JSX.Element {
         const { title, link } = props.row.original;
@@ -75,8 +76,8 @@ export const Feed = () => {
         );
       },
     },
-    columnHelper.accessor((row) => `${row.uuid}-health`, {
-      id: "health_status",
+    {
+      accessorKey: 'health_status',
       header: "Health Status",
       cell(props: CellContext<Channel, string>): JSX.Element {
         const { health_status, failure_reason } = props.row.original;
@@ -99,8 +100,11 @@ export const Feed = () => {
           </div>
         );
       },
-    }),
-    columnHelper.accessor((row) => `${row.uuid}-sync-date`, {
+      filterFn: (row: any, id: string, value: number[]) => {
+        return value.includes(row.getValue(id))
+      },
+    },
+    columnHelper.accessor((row) => 'last-sync-date', {
       id: "last_sync_date",
       header: "Last sync date",
       size: 160,
@@ -156,6 +160,10 @@ export const Feed = () => {
   const getList = async (params = {}) => {
     dataAgent.getChannels(params).then((res) => {
       console.log("%c Line:173 🍬 res", "color:#ea7e5c", res);
+      res.list.forEach((item) => {
+        //@ts-ignore
+        item.health_status_text = item.health_status === 0 ? 'good' : 'bad'
+      })
       setList(res.list || []);
       setRenderList(res.list || []);
     });
@@ -195,15 +203,7 @@ export const Feed = () => {
 
   return (
     <div>
-      <div className="grid grid-flow-col grid-cols-[260px_140px] gap-3 pt-2 pb-4">
-        <Input
-          className="h-8"
-          placeholder="Search Feed"
-          value={filterParams.searchText}
-          onChange={(e: ChangeEvent<HTMLInputElement>) =>
-            handleSearch(e.target.value)
-          }
-        />
+      <div className="flex flex-1 items-center space-x-2 pt-2 pb-4">
         <Select
           value={filterParams.folderUuid}
           onValueChange={(v: string) => handleFolderChange(v)}
