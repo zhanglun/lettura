@@ -12,6 +12,8 @@ use crate::models;
 use crate::feed;
 use crate::schema;
 
+use super::folder;
+
 pub fn get_feed_by_uuid(channel_uuid: &str) -> Option<models::Feed> {
   let mut connection = db::establish_connection();
   let mut channel = schema::feeds::dsl::feeds
@@ -520,6 +522,10 @@ pub struct ChannelQuery {
   pub update_date: String,
   #[diesel(sql_type = diesel::sql_types::Text)]
   pub parent_uuid: String,
+  #[diesel(sql_type = diesel::sql_types::Text)]
+  pub folder_uuid: String,
+  #[diesel(sql_type = diesel::sql_types::Text)]
+  pub folder_name: String,
 }
 
 #[derive(Debug, Serialize)]
@@ -535,36 +541,56 @@ pub fn get_channels() -> ChannelQueryResult {
   let relations = schema::feed_metas::dsl::feed_metas
     .load::<models::FeedMeta>(&mut connection)
     .unwrap_or(vec![]);
-  let mut folder_channel_map: HashMap<String, String> = HashMap::new();
+  let folders = schema::folders::dsl::folders
+    .load::<models::Folder>(&mut connection)
+    .unwrap_or(vec![]);
+  let mut folder_channel_map: HashMap<String, (String, String)> = HashMap::new();
+  let mut folder_name_map: HashMap<String, String> = HashMap::new();
+
+  for f in folders {
+    folder_name_map.insert(f.uuid.clone(), String::from(f.name));
+  }
 
   for r in relations {
-    folder_channel_map.insert(r.child_uuid.clone(), r.parent_uuid);
+    folder_channel_map.insert(
+      r.child_uuid.clone(),
+      (r.parent_uuid.clone(), folder_name_map.get(&r.parent_uuid).unwrap_or(&"".to_string()).to_string())
+    );
   }
 
   let result: Vec<ChannelQuery> = channels
     .into_iter()
-    .map(|channel| ChannelQuery {
-      id: channel.id,
-      uuid: String::from(&channel.uuid),
-      title: channel.title,
-      link: channel.link,
-      feed_url: channel.feed_url,
-      logo: channel.logo,
-      description: channel.description,
-      pub_date: channel.pub_date,
-      health_status: channel.health_status,
-      failure_reason: channel.failure_reason,
-      sort: channel.sort,
-      sync_interval: channel.sync_interval,
-      last_sync_date: channel.last_sync_date,
-      create_date: channel.create_date,
-      update_date: channel.update_date,
-      parent_uuid: String::from(
-        folder_channel_map
-          .get(&String::from(&channel.uuid))
-          .unwrap_or(&String::from("")),
-      ),
-    })
+    .map(|channel|  {
+      let mut folder_uuid = "".to_string();
+      let mut folder_name = "".to_string();
+
+      if let Some((uuid, name)) = folder_channel_map.get(&channel.uuid).cloned() {
+        folder_uuid = uuid;
+        folder_name = name;
+      }
+
+      ChannelQuery {
+        id: channel.id,
+        uuid: String::from(&channel.uuid),
+        title: channel.title,
+        link: channel.link,
+        feed_url: channel.feed_url,
+        logo: channel.logo,
+        description: channel.description,
+        pub_date: channel.pub_date,
+        health_status: channel.health_status,
+        failure_reason: channel.failure_reason,
+        sort: channel.sort,
+        sync_interval: channel.sync_interval,
+        last_sync_date: channel.last_sync_date,
+        create_date: channel.create_date,
+        update_date: channel.update_date,
+        parent_uuid: folder_uuid.clone(),
+        folder_uuid: folder_uuid,
+        folder_name: folder_name,
+      }
+    }
+    )
     .collect::<Vec<ChannelQuery>>();
 
   ChannelQueryResult { list: result }

@@ -1,15 +1,6 @@
-import React, { ChangeEvent, useEffect, useState } from "react";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import React, { useEffect, useState } from "react";
 
-import { PlusCircle, Rss, Trash2 } from "lucide-react";
+import { Folder as FolderIcon, Rss, Trash2 } from "lucide-react";
 import { open } from "@tauri-apps/api/shell";
 import { Channel, Folder } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
@@ -25,7 +16,6 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { Button } from "@/components/ui/button";
 
 export const Feed = () => {
   const [list, setList] = useState<(Channel & { parent_uuid: String })[]>([]);
@@ -33,7 +23,6 @@ export const Feed = () => {
   const [renderList, setRenderList] = useState<
     (Channel & { parent_uuid: String })[]
   >([]);
-  const [folderList, setFolderList] = useState<Folder[]>([]);
   const [filterParams, setFilterParams] = useState<{
     searchText?: string;
     folderUuid?: string;
@@ -77,7 +66,24 @@ export const Feed = () => {
       },
     },
     {
-      accessorKey: 'health_status',
+      accessorKey: "folder",
+      header: "Folder",
+      size: "fix-content",
+      cell(props: CellContext<Channel, string>): JSX.Element {
+        return (
+          <>
+            {props.row.original.folder_name && (
+              <div className="flex space-x-2 items-center">
+                <FolderIcon size={16} />{" "}
+                <span>{props.row.original.folder_name}</span>
+              </div>
+            )}
+          </>
+        );
+      },
+    },
+    {
+      accessorKey: "health_status",
       header: "Health Status",
       cell(props: CellContext<Channel, string>): JSX.Element {
         const { health_status, failure_reason } = props.row.original;
@@ -101,21 +107,17 @@ export const Feed = () => {
         );
       },
       filterFn: (row: any, id: string, value: number[]) => {
-        return value.includes(row.getValue(id))
+        return value.includes(row.getValue(id));
       },
     },
-    columnHelper.accessor((row) => 'last-sync-date', {
+    columnHelper.accessor((row) => "last-sync-date", {
       id: "last_sync_date",
       header: "Last sync date",
       size: 160,
       cell(props: CellContext<Channel, string>): JSX.Element {
         const { last_sync_date = "" } = props.row.original;
 
-        return (
-          <div className="flex justify-center">
-            {last_sync_date}
-          </div>
-        );
+        return <div className="flex justify-center">{last_sync_date}</div>;
       },
     }),
     columnHelper.accessor((row) => `${row.uuid}-opt`, {
@@ -150,28 +152,10 @@ export const Feed = () => {
     });
   };
 
-  const handleFolderChange = (v: string) => {
-    setFilterParams({
-      ...filterParams,
-      folderUuid: v,
-    });
-  };
-
   const getList = async (params = {}) => {
     dataAgent.getChannels(params).then((res) => {
-      console.log("%c Line:173 🍬 res", "color:#ea7e5c", res);
-      res.list.forEach((item) => {
-        //@ts-ignore
-        item.health_status_text = item.health_status === 0 ? 'good' : 'bad'
-      })
       setList(res.list || []);
       setRenderList(res.list || []);
-    });
-  };
-
-  const getFolderList = () => {
-    dataAgent.getFolders().then((res) => {
-      setFolderList(res || []);
     });
   };
 
@@ -190,7 +174,6 @@ export const Feed = () => {
 
   useEffect(() => {
     getList();
-    getFolderList();
 
     const unsubscribeGetChannels = busChannel.on("getChannels", () => {
       getList();
@@ -203,30 +186,6 @@ export const Feed = () => {
 
   return (
     <div>
-      <div className="flex flex-1 items-center space-x-2 pt-2 pb-4">
-        <Select
-          value={filterParams.folderUuid}
-          onValueChange={(v: string) => handleFolderChange(v)}
-        >
-          <SelectTrigger className="w-[180px] h-8">
-            <SelectValue placeholder="All Folder" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectItem key=" " value="">
-                All Folder
-              </SelectItem>
-              {folderList.map((folder) => {
-                return (
-                  <SelectItem key={folder.uuid} value={folder.uuid}>
-                    {folder.name}
-                  </SelectItem>
-                );
-              })}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-      </div>
       <DataTable
         // @ts-ignore
         columns={columns}

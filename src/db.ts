@@ -6,6 +6,8 @@ export interface Channel {
   title: string;
   link: string;
   feed_url: string;
+  folder_name?: string,
+  folder?: string,
   logo?: string;
   description: string;
   pub_date?: Date;

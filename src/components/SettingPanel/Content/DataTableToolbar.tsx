@@ -1,16 +1,16 @@
-"use client"
+"use client";
 
-import { X, Frown, Laugh } from "lucide-react"
-import { Table } from "@tanstack/react-table"
-
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-// import { DataTableViewOptions } from "@/app/examples/tasks/components/data-table-view-options"
-
-import { DataTableFacetedFilter } from "./DataTableFacetedFilter"
+import { X, Frown, Laugh, FolderIcon } from "lucide-react";
+import { Table } from "@tanstack/react-table";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import * as dataAgent from "@/helpers/dataAgent";
+import { DataTableFacetedFilter } from "./DataTableFacetedFilter";
+import { useEffect, useState } from "react";
+import { Folder } from "@/db";
 
 interface DataTableToolbarProps<TData> {
-  table: Table<TData>
+  table: Table<TData>;
 }
 
 const statuses = [
@@ -24,12 +24,23 @@ const statuses = [
     label: "Bad",
     icon: Frown,
   },
-]
+];
 
 export function DataTableToolbar<TData>({
   table,
 }: DataTableToolbarProps<TData>) {
-  const isFiltered = table.getState().columnFilters.length > 0
+  const isFiltered = table.getState().columnFilters.length > 0;
+  const [folderList, setFolderList] = useState<Folder[]>([]);
+
+  const getFolderList = () => {
+    dataAgent.getFolders().then((res) => {
+      setFolderList(res || []);
+    });
+  };
+
+  useEffect(() => {
+    getFolderList();
+  }, []);
 
   return (
     <div className="flex items-center justify-between">
@@ -42,6 +53,19 @@ export function DataTableToolbar<TData>({
           }
           className="h-8 w-[150px] lg:w-[250px]"
         />
+        {table.getColumn("folder") && (
+          <DataTableFacetedFilter
+            column={table.getColumn("health_status")}
+            title="Folder"
+            options={folderList.map((folder) => {
+              return {
+                value: folder.name,
+                label: folder.name,
+                icon: FolderIcon,
+              }
+            })}
+          />
+        )}
         {table.getColumn("health_status") && (
           <DataTableFacetedFilter
             column={table.getColumn("health_status")}
@@ -61,5 +85,5 @@ export function DataTableToolbar<TData>({
         )}
       </div>
     </div>
-  )
+  );
 }
