@@ -12,6 +12,7 @@ import { busChannel } from "@/helpers/busChannel";
 import { useBearStore } from "@/hooks/useBearStore";
 import { AddFeedChannel } from "../AddFeed";
 import { AddFolder } from "../AddFolder";
+import { TestTree } from "./TestTree";
 
 import {
   ContextMenu,
@@ -585,6 +586,7 @@ const ChannelList = (): JSX.Element => {
           </div>
         </div>
         <h2 className="mt-8 mb-2 px-4 text-lg font-semibold tracking-tight">Feeds</h2>
+        <TestTree />
         <ContextMenu onOpenChange={handleContextMenuChange}>
           <ContextMenuTrigger className="w-full">
             {renderTree()}

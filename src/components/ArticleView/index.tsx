@@ -14,7 +14,11 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
   }));
   const { article, userConfig } = props;
   const renderPlaceholder = () => {
-    return "Please Select Some read";
+    return (
+      <div className="py-10 text-xl">
+        <p>Let's read something</p>
+      </div>
+    );
   };
 
   return (
