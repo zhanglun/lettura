@@ -157,14 +157,14 @@ export const General = () => {
       </PanelSection>
       <PanelSection
         title="Thread"
-        subTitle="set the concurrent number of requests (from 1 to 10)"
+        subTitle="set the concurrent number of requests (from 1 to 5)"
       >
         <Input
           className="w-[200px]"
           type="number"
           step={ 1 }
           min={ 1 }
-          max={ 10 }
+          max={ 5 }
           value={ threads }
           onChange={ (e: React.ChangeEvent<HTMLInputElement>) =>
             handleThreadsChange(parseInt(e.target.value, 10) as unknown as number)

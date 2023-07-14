@@ -1,18 +1,17 @@
-import React, { ChangeEvent, useEffect, useState } from "react";
-import { Modal  } from "@douyinfe/semi-ui";
+import React, { useEffect, useState } from "react";
 import { DataTable } from "./DataTable";
 import { Edit, Folder as FolderIcon, Trash2 } from "lucide-react";
-import { Channel, Folder } from "@/db";
+import { Folder } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
-import { busChannel } from "@/helpers/busChannel";
-import styles from "../setting.module.scss";
+import { useModal } from "@/components/Modal/useModal";
 import { CellContext, createColumnHelper } from "@tanstack/react-table";
 import { Icon } from "@/components/Icon";
+import { DialogDeleteFolder } from "./DialogDeleteFolder";
 
 export const FolderList = () => {
   const [ folderList, setFolderList ] = useState<Folder[]>([]);
-  const okText = "Sounds great!";
-  const cancelText = "No, thanks.";
+  const [showStatus, setModalStatus] = useModal();
+  const [currentFolder, setCurrentFolder] = useState<Folder | null>(null);
 
   const handleEditFolder = (folder: Folder) => {
     if (folder?.uuid) {
@@ -21,26 +20,16 @@ export const FolderList = () => {
 
   const handleDeleteFolder = (folder: Folder) => {
     if (folder?.uuid) {
-      Modal.confirm({
-        title: "Are you sure you want to delete this folder?？",
-        content: folder.name,
-        okText,
-        cancelText,
-        onOk: async () => {
-          await dataAgent.deleteFolder(folder.uuid);
-          await getFolderList();
-          busChannel.emit("getChannels");
-        },
-      });
+      setCurrentFolder(folder);
+      setModalStatus(true);
     }
   };
 
   const columnHelper = createColumnHelper<Folder>();
-
   const columns = [
     {
       accessorKey: "name",
-      header: "name",
+      header: "Name",
       size: "auto",
       cell(props: CellContext<Folder, string>): JSX.Element {
         return (
@@ -83,10 +72,19 @@ export const FolderList = () => {
   }, []);
 
   return (
+    <div>
     <DataTable
       // @ts-ignore
       columns={ columns }
       data={ folderList }
     />
+    <DialogDeleteFolder
+      dialogStatus={showStatus}
+      setDialogStatus={setModalStatus}
+      folder={currentFolder}
+      afterConfirm={getFolderList}
+      afterCancel={() => {}}
+    />
+    </div>
   );
 };

@@ -32,9 +32,6 @@ export const DialogEditFeed = React.memo((props: DialogEditFeedProps) => {
     setFeedContextMenuTarget: state.setFeedContextMenuTarget,
   }))
   const { feed, dialogStatus, setDialogStatus, afterConfirm, afterCancel, trigger } = props;
-
-  console.log(feed);
-
   const confirmUnsubscribe = () => {
     if (feed?.uuid) {
       dataAgent

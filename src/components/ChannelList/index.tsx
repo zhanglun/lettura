@@ -219,6 +219,7 @@ const ChannelList = (): JSX.Element => {
     return dataAgent
       .syncArticlesWithChannelUuid(type, uuid)
       .then((res) => {
+        console.log("%c Line:222 🍬 res", "color:#7f2b82", res);
         res.forEach((item) => {
           const [count, uuid, _msg] = item;
 
@@ -234,10 +235,12 @@ const ChannelList = (): JSX.Element => {
 
         return res;
       })
-      .catch(() => {
+      .catch((err) => {
+        console.log("%c Line:239 🍬 err", "color:#2eafb0", err);
         return Promise.resolve();
       })
       .finally(() => {
+        console.log("%c Line:243 🍭 finally", "color:#4fff4B");
         setDone((done) => done + 1);
       });
   };
