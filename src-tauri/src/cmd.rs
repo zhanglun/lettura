@@ -332,9 +332,11 @@ pub async fn sync_articles(uuid: String) -> Vec<(usize, String, String)> {
   };
 
   let res = match parse_feed(&channel.feed_url).await {
-    Ok(res) => res,
+    Ok(res) => {
+      feed::channel::update_health_status(&uuid, 0, "".to_string());
+      res
+    },
     Err(err) => {
-      println!("update health status {:?}", err.to_string());
       feed::channel::update_health_status(&uuid, 1, err.to_string());
       return vec![(0, uuid, err.to_string())];
     },
