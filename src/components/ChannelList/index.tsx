@@ -270,157 +270,6 @@ const ChannelList = (): JSX.Element => {
     navigate(RouteConfig.SETTINGS_GENERAL);
   };
 
-  const renderLabel = ({
-                         className,
-                         onExpand,
-                         data,
-                         level,
-                         expandIcon,
-                         expandStatus
-                       }: any) => {
-    const { uuid } = data;
-    // const isLeaf = !(data.children && data.children.length);
-    const isActive = (store?.channel?.uuid || channelUuid) === uuid;
-
-    return (
-      <FeedItem
-        feed={ data }
-        className={ className }
-        isActive={ isActive }
-        level={ level }
-      />
-    );
-  };
-
-  const renderTree = (): JSX.Element => {
-    function onDrop(info: any) {
-      const { dropToGap, node, dragNode } = info;
-      const dropKey = node.key;
-      const dragKey = dragNode.key;
-      const dropPos = node.pos.split("-");
-      const dropPosition =
-        info.dropPosition - Number(dropPos[dropPos.length - 1]);
-
-      let data = [ ...treeData ];
-      const loop = (
-        data: Channel[],
-        key: string,
-        callback: (item: Channel, idx: number, arr: Channel[]) => void
-      ) => {
-        data.forEach((item, ind, arr) => {
-          // @ts-ignore
-          if (item.key === key) return callback(item, ind, arr);
-          if (item.children) return loop(item.children, key, callback);
-        });
-      };
-      let dragObj: any;
-      loop(data, dragKey, (item, ind, arr) => {
-        arr.splice(ind, 1);
-        dragObj = item;
-      });
-
-      if (!dropToGap) {
-        // inset into the dropPosition
-        loop(data, dropKey, (item, ind, arr) => {
-          if (item.item_type === "folder") {
-            item.children = item.children || [];
-            item.children.push(dragObj);
-          }
-        });
-      } else if (dropPosition === 1 && node.children && node.expanded) {
-        // has children && expanded and drop into the node bottom gap
-        // insert to the top
-        loop(data, dropKey, (item: Channel) => {
-          item.children = item.children || [];
-          item.children.unshift(dragObj);
-        });
-      } else {
-        let dropNodeInd: number = 0;
-        let dropNodePosArr: Channel[] = [];
-
-        loop(data, dropKey, (item, ind, arr) => {
-          dropNodePosArr = arr;
-          dropNodeInd = ind;
-        });
-
-        if (dropPosition === -1) {
-          // insert to top
-          dropNodePosArr.splice(dropNodeInd, 0, dragObj);
-        } else {
-          // insert to bottom
-          dropNodePosArr.splice(dropNodeInd + 1, 0, dragObj);
-        }
-      }
-
-      setTreeData(data);
-
-      const updateSort = (list: any[]) => {
-        return list.map((channel: Channel, idx: number) => {
-          channel.sort = idx;
-
-          if (channel.children) {
-            channel.children = updateSort(channel.children);
-          }
-          return channel;
-        });
-      };
-
-      console.log("updateSort(data)", data);
-
-      let res: any[] = [];
-      const createSortsMeta = (
-        parent_uuid: string,
-        list: Channel[],
-        res: any[]
-      ) => {
-        list.forEach((item, idx) => {
-          if (parent_uuid) {
-            res.push({
-              parent_uuid,
-              child_uuid: item.uuid,
-              sort: idx,
-              item_type: item.item_type
-            });
-          } else {
-            res.push({
-              parent_uuid: "",
-              child_uuid: item.uuid,
-              sort: idx,
-              item_type: item.item_type
-            });
-          }
-
-          if (item.children) {
-            createSortsMeta(item.uuid, item.children, res);
-          }
-        });
-      };
-
-      createSortsMeta("", updateSort(data), res);
-      // setChannelList(updateSort(data));
-      setTreeData(data);
-
-      console.log("res", res);
-
-      dataAgent.updateFeedSort(res).then(() => {
-        console.log("====>after sort", data);
-      });
-    }
-
-    return (
-      <div>
-        {/* <Tree
-          treeData={ treeData }
-          draggable={ true }
-          onDrop={ onDrop }
-          renderFullLabel={ renderLabel }
-          directory
-          aria-label={ "tree" }
-        ></Tree> */}
-      </div>
-    );
-  };
-
   const listRef = useRef<HTMLDivElement>(null);
   const handleListScroll = useCallback(() => {
     if (listRef.current) {
@@ -458,19 +307,6 @@ const ChannelList = (): JSX.Element => {
   }, []);
 
   useEffect(() => {
-  //   const format = (item: any) => {
-  //     item.label = item.title;
-  //     item.key = item.uuid;
-  //     item.value = item.uuid;
-  //     if (item.children) {
-  //       (item.children || []).map((child: Channel) => {
-  //         return format(child);
-  //       });
-  //
-  //       return item;
-  //     }
-  //   };
-  //
     const treeData = channelList.reduce(
       (acu, cur) => {
         // @ts-ignore
@@ -621,7 +457,6 @@ const ChannelList = (): JSX.Element => {
         <ContextMenu onOpenChange={ handleContextMenuChange }>
           <ContextMenuTrigger className="w-full">
             <TestTree treeData={ treeData } />
-            {/*{ renderTree() }*/}
           </ContextMenuTrigger>
           <ContextMenuContent>
             { store.feedContextMenuTarget?.item_type === "folder" && (

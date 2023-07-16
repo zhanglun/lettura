@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   ControlledTreeEnvironment,
   Tree,
@@ -55,10 +55,92 @@ export const TestTree = (props: TestTreeProps) => {
     );
   }
 
-  function handleDrop<T>(items: TreeItem<T>[], target: DraggingPosition) {
-    console.log(items);
+  // const onDrop = useCallback(() => {
+  //   return async (items:TreeItem[], target: DraggingPosition) => {
+  //     const promises: Promise<void>[] = [];
+  //     for (const item of items) {
+  //       // @ts-ignore
+  //       const parent: TreeItem = Object.values(treeData).find((potentialParent: any) =>
+  //         potentialParent.children?.includes(item.index)
+  //       );
+  //
+  //       if (!parent) {
+  //         throw Error(`Could not find parent of item "${item.index}"`);
+  //       }
+  //
+  //       if (!parent.children) {
+  //         throw Error(
+  //           `Parent "${parent.index}" of item "${item.index}" did not have any children`
+  //         );
+  //       }
+  //
+  //       if (target.targetType === "item" || target.targetType === "root") {
+  //         if (target.targetItem === parent.index) {
+  //           // NOOP
+  //         } else {
+  //           promises.push(
+  //             dataProvider.onChangeItemChildren(
+  //               parent.index,
+  //               parent.children.filter((child) => child !== item.index)
+  //             )
+  //           );
+  //           promises.push(
+  //             dataProvider.onChangeItemChildren(target.targetItem, [
+  //               ...(treeData[target.targetItem].children ?? []),
+  //               item.index
+  //             ])
+  //           );
+  //         }
+  //       } else {
+  //         const newParent = treeData[target.parentItem];
+  //         const newParentChildren = [...(newParent.children ?? [])].filter(
+  //           (child) => child !== item.index
+  //         );
+  //
+  //         if (target.parentItem === item.index) {
+  //           // Trying to drop inside itself
+  //           return;
+  //         }
+  //
+  //         if (target.parentItem === parent.index) {
+  //           const isOldItemPriorToNewItem =
+  //             ((newParent.children ?? []).findIndex(
+  //               (child) => child === item.index
+  //             ) ?? Infinity) < target.childIndex;
+  //           newParentChildren.splice(
+  //             target.childIndex - (isOldItemPriorToNewItem ? 1 : 0),
+  //             0,
+  //             item.index
+  //           );
+  //           promises.push(
+  //             dataProvider.onChangeItemChildren(
+  //               target.parentItem,
+  //               newParentChildren
+  //             )
+  //           );
+  //         } else {
+  //           newParentChildren.splice(target.childIndex, 0, item.index);
+  //           promises.push(
+  //             dataProvider.onChangeItemChildren(
+  //               parent.index,
+  //               parent.children.filter((child) => child !== item.index)
+  //             )
+  //           );
+  //           promises.push(
+  //             dataProvider.onChangeItemChildren(
+  //               target.parentItem,
+  //               newParentChildren
+  //             )
+  //           );
+  //         }
+  //       }
+  //     }
+  //     await Promise.all(promises);
+  //     props.onDrop?.(items, target);
+  //   };
+  // }, [treeData]);
 
-  }
+  const onDrop = () => {}
 
   return (
     <ControlledTreeEnvironment
@@ -76,7 +158,7 @@ export const TestTree = (props: TestTreeProps) => {
       canReorderItems={ true }
       canDropOnFolder={ true }
       canDropOnNonFolder={ true }
-      // onDrop={ handleDrop }
+      onDrop={ onDrop }
       // @ts-ignore
       onFocusItem={ item => setFocusedItem(item.index) }
       // @ts-ignore
