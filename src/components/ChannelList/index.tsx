@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useMatch, useNavigate } from "react-router-dom";
-import { Tree } from "@douyinfe/semi-ui";
 import { Folder, RefreshCw, Settings, Coffee, Haze } from "lucide-react";
 import pLimit from "p-limit";
 import classNames from "classnames";
@@ -19,7 +18,7 @@ import {
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuSeparator,
-  ContextMenuTrigger,
+  ContextMenuTrigger
 } from "@/components/ui/context-menu";
 import { Icon } from "../Icon";
 import { FeedItem } from "./Item";
@@ -37,14 +36,14 @@ const ChannelList = (): JSX.Element => {
   const isToday = useMatch(RouteConfig.TODAY);
   const isAll = useMatch(RouteConfig.ALL);
   const navigate = useNavigate();
-  const [addFolderDialogStatus, setAddFolderDialogStatus] = useModal();
-  const [editFolderDialogStatus, setEditFolderDialogStatus] = useModal();
-  const [editFeedStatus, setEditFeedStatus] = useModal();
-  const [showStatus, setModalStatus] = useModal();
-  const [refreshing, setRefreshing] = useState(false);
-  const [channelList, setChannelList] = useState<Channel[]>([]);
-  const [treeData, setTreeData] = useState<any>([]);
-  const [done, setDone] = useState(0);
+  const [ addFolderDialogStatus, setAddFolderDialogStatus ] = useModal();
+  const [ editFolderDialogStatus, setEditFolderDialogStatus ] = useModal();
+  const [ editFeedStatus, setEditFeedStatus ] = useModal();
+  const [ showStatus, setModalStatus ] = useModal();
+  const [ refreshing, setRefreshing ] = useState(false);
+  const [ channelList, setChannelList ] = useState<Channel[]>([]);
+  const [ treeData, setTreeData ] = useState<any>([]);
+  const [ done, setDone ] = useState(0);
   const store = useBearStore((state) => ({
     channel: state.channel,
     setChannel: state.setChannel,
@@ -52,14 +51,14 @@ const ChannelList = (): JSX.Element => {
     feedContextMenuTarget: state.feedContextMenuTarget,
     setFeedContextMenuTarget: state.setFeedContextMenuTarget,
 
-    setViewMeta: state.setViewMeta,
+    setViewMeta: state.setViewMeta
   }));
-  const [channelUuid] = useQuery();
-  const [meta, setMeta] = useState<{
+  const [ channelUuid ] = useQuery();
+  const [ meta, setMeta ] = useState<{
     [key: string]: { [key: string]: number };
   }>({
     total: { unread: 0 },
-    today: { unread: 0 },
+    today: { unread: 0 }
   });
 
   const initCollectionMetas = () => {
@@ -67,10 +66,10 @@ const ChannelList = (): JSX.Element => {
       console.log("%c Line:19 🍅 res", "color:#ed9ec7", res);
       setMeta({
         today: { unread: res.today },
-        total: { unread: res.total },
+        total: { unread: res.total }
       });
     });
-  }
+  };
 
   useEffect(() => {
     initCollectionMetas();
@@ -129,7 +128,7 @@ const ChannelList = (): JSX.Element => {
       return channel;
     });
 
-    setChannelList([...channelList]);
+    setChannelList([ ...channelList ]);
 
     strategy(action, meta.total);
 
@@ -157,8 +156,8 @@ const ChannelList = (): JSX.Element => {
         return item;
       });
     };
-    return Promise.all([dataAgent.getFeeds(), dataAgent.getUnreadTotal()]).then(
-      ([channel, unreadTotal]) => {
+    return Promise.all([ dataAgent.getFeeds(), dataAgent.getUnreadTotal() ]).then(
+      ([ channel, unreadTotal ]) => {
         channel = initUnreadCount(channel, unreadTotal);
         console.log("channel", channel);
         setChannelList(channel);
@@ -168,10 +167,10 @@ const ChannelList = (): JSX.Element => {
 
   const reloadFeedIcon = (feed: Channel | null) => {
     feed &&
-      dataAgent.updateIcon(feed.uuid, feed.link).then((res) => {
-        console.log("%c Line:139 🍷 res", "color:#ea7e5c", res);
-        feed.logo = res;
-      });
+    dataAgent.updateIcon(feed.uuid, feed.link).then((res) => {
+      console.log("%c Line:139 🍷 res", "color:#ea7e5c", res);
+      feed.logo = res;
+    });
   };
 
   useEffect(() => {
@@ -191,7 +190,7 @@ const ChannelList = (): JSX.Element => {
         store.setChannel(feed);
       }
     });
-  }, [channelUuid, channelList]);
+  }, [ channelUuid, channelList ]);
 
   useEffect(() => {
     const unsubscribeUpdateCount = busChannel.on(
@@ -207,13 +206,13 @@ const ChannelList = (): JSX.Element => {
 
     const updateCollectionMeta = busChannel.on("updateCollectionMeta", () => {
       initCollectionMetas();
-    })
+    });
 
     return () => {
       unsubscribeUpdateCount();
       updateCollectionMeta();
     };
-  }, [channelList]);
+  }, [ channelList ]);
 
   const loadAndUpdate = (type: string, uuid: string, unread: number) => {
     return dataAgent
@@ -221,15 +220,15 @@ const ChannelList = (): JSX.Element => {
       .then((res) => {
         console.log("%c Line:222 🍬 res", "color:#7f2b82", res);
         res.forEach((item) => {
-          const [count, uuid, _msg] = item;
+          const [ count, uuid, _msg ] = item;
 
           count > 0 && setChannelList((list) => {
             return list.map((item) => {
               return item.uuid === uuid ? {
                 ...item,
-                unread: unread + count,
-              } : item
-            })
+                unread: unread + count
+              } : item;
+            });
           });
         });
 
@@ -272,25 +271,23 @@ const ChannelList = (): JSX.Element => {
   };
 
   const renderLabel = ({
-    className,
-    onExpand,
-    data,
-    level,
-    expandIcon,
-    expandStatus,
-  }: any) => {
+                         className,
+                         onExpand,
+                         data,
+                         level,
+                         expandIcon,
+                         expandStatus
+                       }: any) => {
     const { uuid } = data;
     // const isLeaf = !(data.children && data.children.length);
     const isActive = (store?.channel?.uuid || channelUuid) === uuid;
 
     return (
       <FeedItem
-        feed={data}
-        className={className}
-        isActive={isActive}
-        level={level}
-        expandStatus={expandStatus}
-        onExpand={onExpand}
+        feed={ data }
+        className={ className }
+        isActive={ isActive }
+        level={ level }
       />
     );
   };
@@ -304,7 +301,7 @@ const ChannelList = (): JSX.Element => {
       const dropPosition =
         info.dropPosition - Number(dropPos[dropPos.length - 1]);
 
-      let data = [...treeData];
+      let data = [ ...treeData ];
       const loop = (
         data: Channel[],
         key: string,
@@ -382,14 +379,14 @@ const ChannelList = (): JSX.Element => {
               parent_uuid,
               child_uuid: item.uuid,
               sort: idx,
-              item_type: item.item_type,
+              item_type: item.item_type
             });
           } else {
             res.push({
               parent_uuid: "",
               child_uuid: item.uuid,
               sort: idx,
-              item_type: item.item_type,
+              item_type: item.item_type
             });
           }
 
@@ -412,14 +409,14 @@ const ChannelList = (): JSX.Element => {
 
     return (
       <div>
-        <Tree
-          treeData={treeData}
-          draggable={true}
-          onDrop={onDrop}
-          renderFullLabel={renderLabel}
+        {/* <Tree
+          treeData={ treeData }
+          draggable={ true }
+          onDrop={ onDrop }
+          renderFullLabel={ renderLabel }
           directory
-          aria-label={"tree"}
-        ></Tree>
+          aria-label={ "tree" }
+        ></Tree> */}
       </div>
     );
   };
@@ -461,213 +458,245 @@ const ChannelList = (): JSX.Element => {
   }, []);
 
   useEffect(() => {
-    const format = (item: any) => {
-      item.label = item.title;
-      item.key = item.uuid;
-      item.value = item.uuid;
-      if (item.children) {
-        (item.children || []).map((child: Channel) => {
-          return format(child);
+  //   const format = (item: any) => {
+  //     item.label = item.title;
+  //     item.key = item.uuid;
+  //     item.value = item.uuid;
+  //     if (item.children) {
+  //       (item.children || []).map((child: Channel) => {
+  //         return format(child);
+  //       });
+  //
+  //       return item;
+  //     }
+  //   };
+  //
+    const treeData = channelList.reduce(
+      (acu, cur) => {
+        // @ts-ignore
+        acu.root.children.push(cur.uuid);
+        acu[cur.uuid] = {
+          index: cur.uuid,
+          isFolder: cur.item_type === "folder",
+          children: cur.children.map((c: Channel) => c.uuid),
+          title: cur.title,
+          data: cur
+        };
+
+        cur.children.forEach((child: Channel) => {
+          acu[child.uuid] = {
+            index: child.uuid,
+            children: [],
+            title: child.title,
+            data: child
+          };
         });
 
-        return item;
-      }
-    };
+        return acu;
+      },
+      {
+        root: {
+          index: "root",
+          isFolder: true,
+          children: [],
+          data: "Root item"
+        }
+      } as any
+    );
 
-    setTreeData(channelList.map((item) => format(item)));
-  }, [channelList]);
+    setTreeData(treeData);
+  }, [ channelList ]);
 
   return (
     <div className="relative flex flex-col w-[var(--app-channel-width)] h-full select-none border-r border-border text-[hsl(var(--foreground))]
   bg-[hsl(var(--background))]">
-      <div className={`sticky-header ${styles.header}`}>
+      <div className={ `sticky-header ${ styles.header }` }>
         <div />
-        <div className={styles.toolbar}>
+        <div className={ styles.toolbar }>
           <AddFeedChannel />
           <AddFolder
             action="add"
-            dialogStatus={addFolderDialogStatus}
-            setDialogStatus={setAddFolderDialogStatus}
-            afterConfirm={getList}
-            afterCancel={() => store.setFeedContextMenuTarget(null)}
+            dialogStatus={ addFolderDialogStatus }
+            setDialogStatus={ setAddFolderDialogStatus }
+            afterConfirm={ getList }
+            afterCancel={ () => store.setFeedContextMenuTarget(null) }
             trigger={
               <Icon>
-                <Folder size={16} />
+                <Folder size={ 16 } />
               </Icon>
             }
           />
 
-          <Icon onClick={refreshList}>
+          <Icon onClick={ refreshList }>
             <RefreshCw
-              size={16}
-              className={`${refreshing ? "spinning" : ""}`}
+              size={ 16 }
+              className={ `${ refreshing ? "spinning" : "" }` }
             />
           </Icon>
-          <Icon onClick={goToSetting}>
-            <Settings size={16} />
+          <Icon onClick={ goToSetting }>
+            <Settings size={ 16 } />
           </Icon>
         </div>
       </div>
-
       <div
         className="overflow-y-auto mt-[var(--app-toolbar-height)] pb-3 pl-3 height-[calc(100% - var(--app-toolbar-height))]"
-        ref={listRef}
+        ref={ listRef }
       >
         <h2 className="mt-8 mb-2 px-4 text-lg font-semibold tracking-tight">Collections</h2>
         <div>
           <div
-            className={classNames(
+            className={ classNames(
               "w-full h-8 px-2 flex items-center rounded-md cursor-pointer mt-[2px] group",
               {
-                "bg-primary text-primary-foreground": isToday,
+                "bg-primary text-primary-foreground": isToday
               }
-            )}
-            onClick={() => {
+            ) }
+            onClick={ () => {
               store.setChannel(null);
               store.setViewMeta({
-                title: 'Today',
+                title: "Today",
                 isToday: true,
-                isAll: false,
+                isAll: false
               });
               navigate(RouteConfig.TODAY);
-            }}
+            } }
           >
             <span className="h-4 w-4 rounded mr-2">
-              <Haze size={16} />
+              <Haze size={ 16 } />
             </span>
             <span className="grow shrink basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-sm">
               Today
             </span>
-            {meta.today.unread > 0 && (
+            { meta.today.unread > 0 && (
               <span
-                className={classNames(
+                className={ classNames(
                   "px-1 min-w-[1rem] h-4 leading-4 text-center text-[10px]",
                   {
-                    "text-primary-foreground": isToday,
+                    "text-primary-foreground": isToday
                   }
-                )}
+                ) }
               >
-                {meta.today.unread}
+                { meta.today.unread }
               </span>
-            )}
+            ) }
           </div>
           <div
-            className={classNames(
+            className={ classNames(
               "w-full h-8 px-2 flex items-center rounded-md cursor-pointer mt-[2px] group",
               {
-                "bg-primary text-primary-foreground": isAll,
+                "bg-primary text-primary-foreground": isAll
               }
-            )}
-            onClick={() => {
+            ) }
+            onClick={ () => {
               store.setChannel(null);
               store.setViewMeta({
-                title: 'All Items',
+                title: "All Items",
                 isToday: false,
-                isAll: true,
-              })
+                isAll: true
+              });
               navigate(RouteConfig.ALL);
-            }}
+            } }
           >
             <span className="h-4 w-4 rounded mr-2">
-              <Coffee size={16} />
+              <Coffee size={ 16 } />
             </span>
             <span className="grow shrink basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-sm">
               All Items
             </span>
-            {meta.total.unread > 0 && (
+            { meta.total.unread > 0 && (
               <span
-                className={classNames(
+                className={ classNames(
                   "px-1 min-w-[1rem] h-4 leading-4 text-center text-[10px]",
                   {
-                    "text-primary-foreground": isAll,
+                    "text-primary-foreground": isAll
                   }
-                )}
+                ) }
               >
-                {meta.total.unread}
+                { meta.total.unread }
               </span>
-            )}
+            ) }
           </div>
         </div>
         <h2 className="mt-8 mb-2 px-4 text-lg font-semibold tracking-tight">Feeds</h2>
-        <TestTree />
-        <ContextMenu onOpenChange={handleContextMenuChange}>
+        <ContextMenu onOpenChange={ handleContextMenuChange }>
           <ContextMenuTrigger className="w-full">
-            {renderTree()}
+            <TestTree treeData={ treeData } />
+            {/*{ renderTree() }*/}
           </ContextMenuTrigger>
           <ContextMenuContent>
-            {store.feedContextMenuTarget?.item_type === "folder" && (
+            { store.feedContextMenuTarget?.item_type === "folder" && (
               <>
                 <ContextMenuItem
-                  onSelect={() => setEditFolderDialogStatus(true)}
+                  onSelect={ () => setEditFolderDialogStatus(true) }
                 >
                   Edit
                 </ContextMenuItem>
               </>
-            )}
-            {store.feedContextMenuTarget && (
+            ) }
+            { store.feedContextMenuTarget && (
               <>
-                {store.feedContextMenuTarget?.item_type !== "folder" && (
+                { store.feedContextMenuTarget?.item_type !== "folder" && (
                   <>
                     <ContextMenuItem
-                      onClick={() =>
+                      onClick={ () =>
                         store.feedContextMenuTarget?.link &&
                         open(store.feedContextMenuTarget?.link)
                       }
                     >
-                      Open {new URL(store.feedContextMenuTarget?.link).host}
+                      Open { new URL(store.feedContextMenuTarget?.link).host }
                     </ContextMenuItem>
                     <ContextMenuSeparator />
                     <ContextMenuItem
-                      onClick={() =>
+                      onClick={ () =>
                         reloadFeedIcon(store.feedContextMenuTarget)
                       }
                     >
                       Reload Icon
                     </ContextMenuItem>
                     <ContextMenuSeparator />
-                    <ContextMenuItem onClick={() => setEditFeedStatus(true)}>
+                    <ContextMenuItem onClick={ () => setEditFeedStatus(true) }>
                       Detail
                     </ContextMenuItem>
-                    <ContextMenuItem onClick={() => setModalStatus(true)}>
+                    <ContextMenuItem onClick={ () => setModalStatus(true) }>
                       Unsubscribe
                     </ContextMenuItem>
                   </>
-                )}
+                ) }
               </>
-            )}
+            ) }
           </ContextMenuContent>
         </ContextMenu>
         <DialogUnsubscribeFeed
-          feed={store.feedContextMenuTarget}
-          dialogStatus={showStatus}
-          setDialogStatus={setModalStatus}
-          afterConfirm={getList}
-          afterCancel={() => store.setFeedContextMenuTarget(null)}
+          feed={ store.feedContextMenuTarget }
+          dialogStatus={ showStatus }
+          setDialogStatus={ setModalStatus }
+          afterConfirm={ getList }
+          afterCancel={ () => store.setFeedContextMenuTarget(null) }
         ></DialogUnsubscribeFeed>
         <DialogEditFeed
-          feed={store.feedContextMenuTarget}
-          dialogStatus={editFeedStatus}
-          setDialogStatus={setEditFeedStatus}
-          afterConfirm={getList}
-          afterCancel={() => store.setFeedContextMenuTarget(null)}
+          feed={ store.feedContextMenuTarget }
+          dialogStatus={ editFeedStatus }
+          setDialogStatus={ setEditFeedStatus }
+          afterConfirm={ getList }
+          afterCancel={ () => store.setFeedContextMenuTarget(null) }
         ></DialogEditFeed>
         <AddFolder
           action="edit"
-          folder={store.feedContextMenuTarget}
-          dialogStatus={editFolderDialogStatus}
-          setDialogStatus={setEditFolderDialogStatus}
-          afterConfirm={getList}
-          afterCancel={() => store.setFeedContextMenuTarget(null)}
+          folder={ store.feedContextMenuTarget }
+          dialogStatus={ editFolderDialogStatus }
+          setDialogStatus={ setEditFolderDialogStatus }
+          afterConfirm={ getList }
+          afterCancel={ () => store.setFeedContextMenuTarget(null) }
         />
       </div>
-      {refreshing && (
+      { refreshing && (
         <div className="sticky left-0 right-0 bottom-0 p-2 text-right">
           <span className="text-xs mr-3">Syncing...</span>
           <span className="text-xs text-foreground">
-            {done}/{channelList.length}
+            { done }/{ channelList.length }
           </span>
         </div>
-      )}
+      ) }
     </div>
   );
 };
