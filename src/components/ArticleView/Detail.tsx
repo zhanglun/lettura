@@ -22,10 +22,8 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
   }));
   const { pub_date, channel_link } = article;
   const ico = getChannelFavicon(channel_link);
-
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [ pageContent, setPageContent ] = useState("");
-  const [ banner, setBanner ] = useState("");
+  const [pageContent, setPageContent] = useState("");
+  const [banner, setBanner] = useState("");
 
   useEffect(() => {
     setBanner("");
@@ -42,65 +40,57 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
     // }
 
     article &&
-    dataAgent.getArticleDetail(article.uuid).then((res) => {
-      console.log("%c Line:102 🥓 res", "color:#33a5ff", res);
-      const content = (res.content || res.description || "").replace(
-        /<a[^>]+>/gi,
-        (a: string) => {
-          if (!/\starget\s*=/gi.test(a)) {
-            return a.replace(/^<a\s/, '<a target="_blank"');
+      dataAgent.getArticleDetail(article.uuid).then((res) => {
+        console.log("%c Line:102 🥓 res", "color:#33a5ff", res);
+        const content = (res.content || res.description || "").replace(
+          /<a[^>]+>/gi,
+          (a: string) => {
+            if (!/\starget\s*=/gi.test(a)) {
+              return a.replace(/^<a\s/, '<a target="_blank"');
+            }
+
+            return a;
           }
+        );
 
-          return a;
-        }
-      );
-
-      setPageContent(content);
-    });
-  }, [ article ]);
+        setPageContent(content);
+      });
+  }, [article]);
 
   return (
-    <div ref={ containerRef }>
-      <div className="m-auto">
-        <div className="pb-4 border-b border-border">
-          <div className="mt-6 mb-5 text-4xl font-bold text-detail-headline">
-            { article.title }
-          </div>
-          <div className={ classnames(styles.meta) }>
-            <span className={ styles.channelInfo }>
-              <img
-                src={ store.channel?.logo || ico }
-                alt=""
-                className="rounded"
-              />
-              { article.channel_title }
-            </span>
-            { article.author && (
-              <span
-                className={ classnames(styles.author, "text-detail-paragraph") }
-              >
-                { article.author }
-              </span>
-            ) }
-            <span className={ classnames(styles.time, "text-detail-paragraph") }>
-              { Dayjs(new Date(pub_date || new Date())).format(
-                "YYYY-MM-DD HH:mm"
-              ) }
-            </span>
-          </div>
+    <div className="m-auto">
+      <div className="pb-4 border-b border-border">
+        <div className="mt-6 mb-5 text-4xl font-bold text-detail-headline">
+          {article.title}
         </div>
-        <div className="m-auto pt-1 mt-6">
-          { banner && (
-            <div className={ styles.banner }>
-              <img src={ banner } alt=""/>
-            </div>
-          ) }
-          <div
-            className={ classnames("reading-content", "text-detail-paragraph") }
-            // eslint-disable-next-line react/no-danger
-            dangerouslySetInnerHTML={ createMarkup(pageContent) }
-          />
+        <div className={classnames(styles.meta)}>
+          <span className={styles.channelInfo}>
+            <img src={store.channel?.logo || ico} alt="" className="rounded" />
+            {article.channel_title}
+          </span>
+          {article.author && (
+            <span
+              className={classnames(styles.author, "text-detail-paragraph")}
+            >
+              {article.author}
+            </span>
+          )}
+          <span className={classnames(styles.time, "text-detail-paragraph")}>
+            {Dayjs(new Date(pub_date || new Date())).format("YYYY-MM-DD HH:mm")}
+          </span>
         </div>
+      </div>
+      <div className="m-auto pt-1 mt-6">
+        {banner && (
+          <div className={styles.banner}>
+            <img src={banner} alt="" />
+          </div>
+        )}
+        <div
+          className={classnames("reading-content", "text-detail-paragraph")}
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={createMarkup(pageContent)}
+        />
       </div>
     </div>
   );

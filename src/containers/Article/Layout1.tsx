@@ -5,6 +5,7 @@ import { ArticleView } from "@/components/ArticleView";
 import { useBearStore } from "@/hooks/useBearStore";
 import { useQuery } from "@/helpers/parseXML";
 import styles from "./index.module.scss";
+import { ScrollBox } from "@/components/ArticleView/ScrollBox";
 
 export const Layout1 = (): JSX.Element => {
   // @ts-ignore
@@ -53,9 +54,12 @@ export const Layout1 = (): JSX.Element => {
           feedUrl={feedUrl || ""}
         />
       </div>
-      <div className="overflow-y-auto h-[calc(100vh_-_var(--app-toolbar-height))]" ref={viewRef}>
+      <ScrollBox
+        className="h-[calc(100vh_-_var(--app-toolbar-height))]"
+        ref={viewRef}
+      >
         <ArticleView article={store.article} userConfig={store.userConfig} />
-      </div>
+      </ScrollBox>
     </div>
   );
 };
