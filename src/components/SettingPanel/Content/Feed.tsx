@@ -185,7 +185,7 @@ export const Feed = () => {
   }, []);
 
   return (
-    <div>
+    <div className="pt-2">
       <DataTable
         // @ts-ignore
         columns={columns}

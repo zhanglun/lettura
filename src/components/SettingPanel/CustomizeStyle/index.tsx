@@ -57,7 +57,7 @@ export const CustomizeStyle = (props: CustomizeStyleProps) => {
             value={ cfg.typeface.toString() }
             onValueChange={ (v: string) => handleCustomizeStyleChange("typeface", v) }
           >
-            <SelectTrigger className="w-[180px] h-8">
+            <SelectTrigger className="w-[180px] h-9">
               <SelectValue placeholder="Font"/>
             </SelectTrigger>
             <SelectContent>

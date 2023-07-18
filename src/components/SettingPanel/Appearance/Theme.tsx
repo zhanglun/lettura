@@ -10,16 +10,12 @@ import { useBearStore } from "@/hooks/useBearStore";
 import { ThemeTag } from "./ThemeTag";
 
 export const Theme = (props: any) => {
-  const { className, styleConfig } = props;
   const store = useBearStore((state) => ({
     userConfig: state.userConfig,
     updateUserConfig: state.updateUserConfig,
   }));
-  const [theme, setTheme] = useState("light");
 
   function handleThemeChange(value: string) {
-    setTheme(value);
-
     store.updateUserConfig({
       ...store.userConfig,
       theme: value,
@@ -33,11 +29,13 @@ export const Theme = (props: any) => {
       value={store.userConfig.theme}
       onValueChange={(v: string) => handleThemeChange(v)}
     >
-      <SelectTrigger className="w-[180px]">
+      <SelectTrigger className="w-[220px] h-9">
         <SelectValue placeholder="Font" />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="system">System</SelectItem>
+        <SelectItem value="system">
+          <ThemeTag scheme="system" name="System preference" />
+        </SelectItem>
         <SelectItem value="light">
           <ThemeTag scheme="light" name="Light" />
         </SelectItem>
