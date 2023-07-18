@@ -91,12 +91,12 @@ export const Feed = () => {
         return (
           <div className="flex justify-center">
             {health_status === 0 && (
-              <div className="w-3 h-3 rounded-full bg-green-600"></div>
+              <div className="w-3 h-3 rounded-full bg-green-600" />
             )}
             {health_status === 1 && (
               <HoverCard>
                 <HoverCardTrigger>
-                  <div className="w-3 h-3 rounded-full bg-red-600"></div>
+                  <div className="w-3 h-3 rounded-full bg-red-600" />
                 </HoverCardTrigger>
                 <HoverCardContent>
                   <p>{failure_reason}</p>

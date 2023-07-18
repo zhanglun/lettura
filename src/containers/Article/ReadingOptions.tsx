@@ -88,7 +88,7 @@ export const ReadingOptions = (props: NavigatorProps) => {
       <DropdownMenu>
         <DropdownMenuTrigger>
           <Icon>
-            <Share size={16}></Share>
+            <Share size={16} />
           </Icon>
         </DropdownMenuTrigger>
         <DropdownMenuContent>

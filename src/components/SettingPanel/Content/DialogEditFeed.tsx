@@ -78,7 +78,7 @@ export const DialogEditFeed = React.memo((props: DialogEditFeedProps) => {
                 <a
                   className="text-sm text-muted-foreground hover:text-primary hover:underline flex items-top space-x-1"
                   href={ feed?.link }
-                  target="_blank"
+                  target="_blank" rel="noreferrer"
                 >
                   <Link2 className="w-4 h-4"/>
                   <span>{ feed?.link }</span>
@@ -94,7 +94,7 @@ export const DialogEditFeed = React.memo((props: DialogEditFeedProps) => {
             <a
               className="text-sm font-normal leading-snug text-muted-foreground hover:text-primary hover:underline flex items-center space-x-1"
               href={ feed?.feed_url }
-              target="_blank"
+              target="_blank" rel="noreferrer"
             >
               <Link2 className="w-4 h-4"/>
               <span>{ feed?.feed_url }</span>

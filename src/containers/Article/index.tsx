@@ -260,19 +260,19 @@ export const ArticleContainer = (): JSX.Element => {
           <DropdownMenu>
             <DropdownMenuTrigger>
               <Icon>
-                <Filter size={ 16 }></Filter>
+                <Filter size={ 16 } />
               </Icon>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuRadioGroup
-                value={ store.currentFilter.id + "" }
+                value={ `${store.currentFilter.id}` }
                 onValueChange={ changeFilter }
               >
                 { store.filterList.map((item) => {
                   return (
                     <DropdownMenuRadioItem
-                      key={ item.id + "" }
-                      value={ item.id + "" }
+                      key={ `${item.id}` }
+                      value={ `${item.id}` }
                     >
                       { item.title }
                     </DropdownMenuRadioItem>

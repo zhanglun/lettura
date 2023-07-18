@@ -37,7 +37,7 @@ export const SettingDialog = (props: any) => {
         </Icon>
       </DialogTrigger>
       <DialogContent className="w-[90%]">
-        <SettingPanel></SettingPanel>
+        <SettingPanel />
       </DialogContent>
     </Dialog>
   );

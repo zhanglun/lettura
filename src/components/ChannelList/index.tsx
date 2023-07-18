@@ -116,7 +116,7 @@ const ChannelList = (): JSX.Element => {
         target = channel;
       }
 
-      if (!target && !child) {
+      if (!(target || child)) {
         return channel;
       }
 
@@ -507,14 +507,14 @@ const ChannelList = (): JSX.Element => {
           setDialogStatus={ setModalStatus }
           afterConfirm={ getList }
           afterCancel={ () => store.setFeedContextMenuTarget(null) }
-        ></DialogUnsubscribeFeed>
+        />
         <DialogEditFeed
           feed={ store.feedContextMenuTarget }
           dialogStatus={ editFeedStatus }
           setDialogStatus={ setEditFeedStatus }
           afterConfirm={ getList }
           afterCancel={ () => store.setFeedContextMenuTarget(null) }
-        ></DialogEditFeed>
+        />
         <AddFolder
           action="edit"
           folder={ store.feedContextMenuTarget }

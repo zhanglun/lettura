@@ -47,7 +47,7 @@ export const ArticleCardItem = (props: any) => {
 
       console.log("%c Line:45 🍔 match_img", "color:#93c0a4", match_img);
 
-      if (match_img && match_img[1]) {
+      if (match_img?.[1]) {
         setBanner(match_img[1]);
       } else {
         // dataAgent.getBestImage(article.link).then((res) => {

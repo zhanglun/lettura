@@ -41,7 +41,7 @@ export const ArticleCardList = (props: ArticleListProps): JSX.Element => {
                 key={_}
                 className="rounded-md border border-border overflow-hidden"
               >
-                <div className="relative h-0 before:content-[''] before:inline-block pt-[60%] overflow-hidden bg-muted"></div>
+                <div className="relative h-0 before:content-[''] before:inline-block pt-[60%] overflow-hidden bg-muted" />
                 <div className="p-4 space-y-2">
                   <Skeleton className="h-[20px]" />
                   <Skeleton className="h-[14px] w-2/5" />

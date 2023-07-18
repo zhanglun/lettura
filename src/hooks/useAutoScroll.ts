@@ -16,7 +16,7 @@ export const useAutoScroll = (props: UseAutoScrollProps) => {
     direction: "up" | "down",
     article: Article | null
   ) {
-    if (!article || !article.uuid) {
+    if (!(article?.uuid)) {
       return;
     }
 
