@@ -31,6 +31,7 @@ import { useQuery } from "@/helpers/parseXML";
 import styles from "./channel.module.scss";
 import dayjs from "dayjs";
 import { Separator } from "../ui/separator";
+import { useRefresh } from "./useRefresh";
 
 const ChannelList = (): JSX.Element => {
   const isToday = useMatch(RouteConfig.TODAY);
@@ -40,10 +41,9 @@ const ChannelList = (): JSX.Element => {
   const [ editFolderDialogStatus, setEditFolderDialogStatus ] = useModal();
   const [ editFeedStatus, setEditFeedStatus ] = useModal();
   const [ showStatus, setModalStatus ] = useModal();
-  const [ refreshing, setRefreshing ] = useState(false);
   const [ channelList, setChannelList ] = useState<Channel[]>([]);
   const [ treeData, setTreeData ] = useState<any>([]);
-  const [ done, setDone ] = useState(0);
+  const [refreshing, setRefreshing, done, setDone] = useRefresh({ feedList: [] });
   const store = useBearStore((state) => ({
     channel: state.channel,
     setChannel: state.setChannel,
