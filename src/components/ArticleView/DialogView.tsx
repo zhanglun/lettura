@@ -47,7 +47,7 @@ export const ArticleDialogView = (
         <ScrollBox>
           {/* <div className="overflow-y-auto"> */}
           <>
-            <div className="sticky left-0 right-0 top-0 z-[3]">
+            <div className="sticky left-0 right-0 top-0 z-[3] supports-backdrop-blur:bg-background/60">
               <div className="flex items-center justify-end px-20 py-2 space-x-0.5 rounded-tl-lg rounded-tr-lg  view-blur-bar">
                 <ToolbarItemNavigator />
                 <span>

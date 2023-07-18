@@ -5,7 +5,7 @@ import { useBearStore } from "@/hooks/useBearStore";
 import { getChannelFavicon } from "@/helpers/parseXML";
 
 export const ArticleLineItem = (props: any) => {
-  const { article, onSelect } = props;
+  const { article } = props;
   const store = useBearStore((state) => ({
     updateArticleAndIdx: state.updateArticleAndIdx,
     article: state.article,
@@ -23,10 +23,6 @@ export const ArticleLineItem = (props: any) => {
   };
 
   const handleClick = async (e: React.MouseEvent) => {
-    if (onSelect) {
-      onSelect(article);
-    }
-
     store.setArticleDialogViewStatus(true);
 
     updateCurrentArticle(article);

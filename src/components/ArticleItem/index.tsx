@@ -11,7 +11,7 @@ export const ArticleItem = React.forwardRef(
       article: state.article,
       channel: state.channel,
     }));
-    const { article, onSelect } = props;
+    const { article } = props;
     const [highlight, setHighlight] = useState<boolean>();
     const [readStatus, setReadStatus] = useState(article.read_status);
 
@@ -24,9 +24,7 @@ export const ArticleItem = React.forwardRef(
     };
 
     const handleClick = async (e: React.MouseEvent) => {
-      if (onSelect) {
-        onSelect(article);
-      }
+      console.log("%c Line:32 🍡 article", "color:#ffdd4d", article);
 
       updateCurrentArticle(article);
     };

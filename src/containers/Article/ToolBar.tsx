@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { Icon } from "@/components/Icon";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useBearStore } from "@/hooks/useBearStore";
-import { Article } from "@/db";
 
 export interface NavigatorProps {
   listRef?: any,

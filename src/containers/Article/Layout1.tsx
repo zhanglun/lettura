@@ -29,9 +29,6 @@ export const Layout1 = (): JSX.Element => {
   const [ feedUrl, type, channelUuid ] = useQuery();
   const [syncing, setSyncing] = useState(false);
   const viewRef = useRef<HTMLDivElement>(null);
-  const { currentIdx, setCurrentIdx } = store;
-
-  console.warn("layout1 render");
 
   const resetScrollTop = () => {
     if (viewRef.current !== null) {

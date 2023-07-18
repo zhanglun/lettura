@@ -53,7 +53,6 @@ export const useArticleListHook = (props: { feedUuid: string | null }) => {
     setLoading(true);
 
     fn.then((res: any) => {
-      console.log("%c Line:54 🍿 res", "color:#b03734", res);
       if (res.length === 0) {
         setHasMore(false);
       }

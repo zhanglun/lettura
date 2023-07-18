@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import classNames from "classnames";
 import { ArticleListRefType } from "@/components/ArticleList";
 import * as dataAgent from "../../helpers/dataAgent";
 import { useBearStore } from "@/hooks/useBearStore";
@@ -29,7 +30,9 @@ import { ArticleDialogView } from "@/components/ArticleView/DialogView";
 import { ToolbarItemNavigator } from "@/containers/Article/ToolBar";
 import { ReadingOptions } from "@/containers/Article/ReadingOptions";
 import { useQuery } from "@/helpers/parseXML";
-import classNames from "classnames";
+import { useShortcut } from "@/hooks/useShortcut";
+import { open } from "@tauri-apps/api/shell";
+import { Article } from "@/db";
 
 export const ArticleContainer = (): JSX.Element => {
   const store = useBearStore((state) => ({
@@ -61,6 +64,7 @@ export const ArticleContainer = (): JSX.Element => {
   const viewRef = useRef<HTMLDivElement>(null);
   const articleListRef = useRef<ArticleListRefType>(null);
   const { currentIdx, setCurrentIdx } = store;
+  const { registerShortcut, unregisterShortcut } = useShortcut();
 
   const handleViewScroll = () => {
     if (viewRef.current) {
@@ -73,6 +77,18 @@ export const ArticleContainer = (): JSX.Element => {
       }
     }
   };
+
+  const openInBrowser = () => {
+    store.article && open(store.article.link);
+  };
+
+  useEffect(() => {
+    registerShortcut("o", () => openInBrowser());
+
+    return () => {
+      unregisterShortcut("o");
+    };
+  }, [store.article]);
 
   useEffect(() => {
     if (viewRef.current) {
