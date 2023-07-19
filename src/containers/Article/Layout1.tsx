@@ -26,7 +26,7 @@ export const Layout1 = (): JSX.Element => {
     userConfig: state.userConfig,
   }));
 
-  const [ feedUrl, type, channelUuid ] = useQuery();
+  const [feedUrl, type, channelUuid] = useQuery();
   const [syncing, setSyncing] = useState(false);
   const viewRef = useRef<HTMLDivElement>(null);
 

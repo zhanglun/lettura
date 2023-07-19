@@ -23,7 +23,7 @@ export const useArticleListHook = (props: { feedUuid: string | null }) => {
     goNextArticle: state.goNextArticle,
     currentIdx: state.currentIdx,
     cursor: state.cursor,
-    setCursor: state.setCursor
+    setCursor: state.setCursor,
   }));
   const { registerShortcut, unregisterShortcut } = useShortcut();
 
@@ -91,7 +91,7 @@ export const useArticleListHook = (props: { feedUuid: string | null }) => {
 
     const callback = (
       entries: IntersectionObserverEntry[],
-      observer: IntersectionObserver
+      observer: IntersectionObserver,
     ) => {
       entries.forEach((entry) => {
         console.log(entry);

@@ -3,10 +3,10 @@ import { useEffect, useRef } from "react";
 type ShortcutCallback = (event: KeyboardEvent) => void;
 
 type ShortcutEntry = {
-  keys: string | string[],
+  keys: string | string[];
   callback: ShortcutCallback;
   context?: any;
-}
+};
 
 type ShortcutMap = Map<string, ShortcutEntry>;
 
@@ -17,7 +17,7 @@ export const useShortcut = () => {
     const handleKeyDown = (event: KeyboardEvent) => {
       const shortcut = getShortcut(event);
 
-      console.log('====> shortcut', shortcut, event.key);
+      console.log("====> shortcut", shortcut, event.key);
 
       if (shortcut) {
         const matchedShortcut = shortcutsRef.current.get(shortcut);
@@ -30,17 +30,17 @@ export const useShortcut = () => {
       }
     };
 
-    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener("keydown", handleKeyDown);
 
     return () => {
-      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
 
   function normalizeKey(key: string) {
     const isUpperCase = key === key.toUpperCase() && key !== key.toLowerCase();
 
-    return isUpperCase ? `_${ key.toLowerCase() }` : key.toLowerCase();
+    return isUpperCase ? `_${key.toLowerCase()}` : key.toLowerCase();
   }
 
   function getShortcut(event: KeyboardEvent) {
@@ -52,16 +52,24 @@ export const useShortcut = () => {
 
     parts.push(normalizeKey(event.key));
 
-    return parts.join('+');
+    return parts.join("+");
   }
 
-  function registerShortcut(shortcut: string | string[], callback: ShortcutCallback, context?: any) {
+  function registerShortcut(
+    shortcut: string | string[],
+    callback: ShortcutCallback,
+    context?: any,
+  ) {
     shortcut = Array.isArray(shortcut) ? shortcut : [shortcut];
     shortcut.forEach((key) => {
-      shortcutsRef.current.set(normalizeKey(key), { keys: shortcut, callback, context });
+      shortcutsRef.current.set(normalizeKey(key), {
+        keys: shortcut,
+        callback,
+        context,
+      });
     });
 
-    console.log('shortcutsRef.current', shortcutsRef.current);
+    console.log("shortcutsRef.current", shortcutsRef.current);
   }
 
   function unregisterShortcut(shortcut: string | string[]) {
@@ -72,4 +80,4 @@ export const useShortcut = () => {
   }
 
   return { registerShortcut, unregisterShortcut };
-}
+};

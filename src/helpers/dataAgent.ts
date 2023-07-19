@@ -15,7 +15,10 @@ export const createFolder = async (name: string): Promise<number> => {
   return invoke("create_folder", { name });
 };
 
-export const updateFolder = async (uuid: string, name: string): Promise<number> => {
+export const updateFolder = async (
+  uuid: string,
+  name: string,
+): Promise<number> => {
   return invoke("update_folder", { uuid, name });
 };
 
@@ -24,7 +27,12 @@ export const getFolders = async (): Promise<Folder[]> => {
 };
 
 export const updateFeedSort = async (
-  sorts: { item_type: string; parent_uuid: string; child_uuid: string, sort: number }[],
+  sorts: {
+    item_type: string;
+    parent_uuid: string;
+    child_uuid: string;
+    sort: number;
+  }[],
 ): Promise<any> => {
   return invoke("update_feed_sort", { sorts });
 };
@@ -75,9 +83,7 @@ export const getAllArticleList = async (filter: any) => {
   return invoke("get_all_articles", { filter });
 };
 
-export const fetchFeed = async (
-  url: string,
-): Promise<[any, string]> => {
+export const fetchFeed = async (url: string): Promise<[any, string]> => {
   return invoke("fetch_feed", { url });
 };
 
@@ -96,7 +102,9 @@ export const getUnreadTotal = async (): Promise<{ [key: string]: number }> => {
   return invoke("get_unread_total");
 };
 
-export const getCollectionMetas = async (): Promise<{ [key: string]: number }> => {
+export const getCollectionMetas = async (): Promise<{
+  [key: string]: number;
+}> => {
   return invoke("get_collection_metas");
 };
 
@@ -150,17 +158,20 @@ export const initProcess = async (): Promise<any> => {
 };
 
 export const getArticleDetail = async (uuid: string): Promise<Article> => {
-  return invoke("get_article_detail", { uuid })
-}
+  return invoke("get_article_detail", { uuid });
+};
 
 export const getBestImage = async (url: String): Promise<string> => {
-  return invoke("get_web_best_image", { url })
-}
+  return invoke("get_web_best_image", { url });
+};
 
 export const getPageSources = async (url: string): Promise<string> => {
-  return invoke("get_web_source", { url })
-}
+  return invoke("get_web_source", { url });
+};
 
-export const updateIcon = async (uuid: String, url: string): Promise<string> => {
-  return invoke("update_icon", { uuid, url })
-}
+export const updateIcon = async (
+  uuid: String,
+  url: string,
+): Promise<string> => {
+  return invoke("update_icon", { uuid, url });
+};

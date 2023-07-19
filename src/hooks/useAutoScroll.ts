@@ -1,22 +1,22 @@
-import React, { useEffect } from 'react';
+import React, { useEffect } from "react";
 import { useBearStore } from "@/hooks/useBearStore";
 import { Article } from "@/db";
 
 export interface UseAutoScrollProps {
-  listRef?: any,
+  listRef?: any;
 }
 
 export const useAutoScroll = (props: UseAutoScrollProps) => {
   const { listRef } = props;
-  const store = useBearStore(state => ({
+  const store = useBearStore((state) => ({
     articleList: state.articleList,
   }));
 
   function calculateItemPosition(
     direction: "up" | "down",
-    article: Article | null
+    article: Article | null,
   ) {
-    if (!(article?.uuid)) {
+    if (!article?.uuid) {
       return;
     }
 
@@ -43,7 +43,7 @@ export const useAutoScroll = (props: UseAutoScrollProps) => {
 
       console.log(
         "🚀 ~ file: index.tsx:324 ~ ArticleContainer ~ scrollTop:",
-        scrollTop
+        scrollTop,
       );
       listRef?.current?.scrollTo(0, scrollTop);
     }
@@ -61,12 +61,12 @@ export const useAutoScroll = (props: UseAutoScrollProps) => {
           console.log("往下", store.articleList[idx]);
           calculateItemPosition("down", store.articleList[idx]);
         }
-      }
+      },
     );
 
     return () => {
       console.log("clean!!!!");
       unsub2();
     };
-  }, [ store.articleList ]);
-}
+  }, [store.articleList]);
+};

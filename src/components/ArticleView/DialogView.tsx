@@ -19,7 +19,7 @@ type ArticleDialogViewProps = {
 };
 
 export const ArticleDialogView = (
-  props: ArticleDialogViewProps
+  props: ArticleDialogViewProps,
 ): JSX.Element => {
   const {
     article,

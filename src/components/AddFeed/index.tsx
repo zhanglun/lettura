@@ -19,7 +19,7 @@ import { ArrowLeft, Loader2, Plus } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 
 export const AddFeedChannel = (props: any) => {
-  const [showStatus, , , ,toggleModal] = useModal();
+  const [showStatus, , , , toggleModal] = useModal();
   const [step, setStep] = useState(1);
   const [feedUrl, setFeedUrl] = useState("");
   const [feed, setFeed] = useState<any>({});

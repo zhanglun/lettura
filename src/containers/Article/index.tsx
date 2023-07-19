@@ -8,15 +8,18 @@ import {
   Filter,
   CheckCheck,
   RefreshCw,
-  Layout, LayoutGrid, LayoutList
+  Layout,
+  LayoutGrid,
+  LayoutList,
 } from "lucide-react";
 import { busChannel } from "@/helpers/busChannel";
 import {
   DropdownMenu,
-  DropdownMenuContent, DropdownMenuItem,
+  DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
 import { ToastAction } from "@/components/ui/toast";
@@ -53,13 +56,13 @@ export const ArticleContainer = (): JSX.Element => {
 
     currentIdx: state.currentIdx,
     setCurrentIdx: state.setCurrentIdx,
-    userConfig: state.userConfig
+    userConfig: state.userConfig,
   }));
 
   const { toast } = useToast();
-  const [ layoutType, setLayoutType ] = useState(1);
-  const [ feedUrl ] = useQuery();
-  const [ syncing, setSyncing ] = useState(false);
+  const [layoutType, setLayoutType] = useState(1);
+  const [feedUrl] = useQuery();
+  const [syncing, setSyncing] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<HTMLDivElement>(null);
   const articleListRef = useRef<ArticleListRefType>(null);
@@ -95,7 +98,7 @@ export const ArticleContainer = (): JSX.Element => {
       const $list = viewRef.current as HTMLDivElement;
       $list.addEventListener("scroll", handleViewScroll);
     }
-  }, [ store.articleList ]);
+  }, [store.articleList]);
 
   useEffect(() => {
     if (
@@ -108,12 +111,12 @@ export const ArticleContainer = (): JSX.Element => {
       const options = {
         root: $rootElem,
         rootMargin: "0px",
-        threshold: 1
+        threshold: 1,
       };
 
       const callback = (
         entries: IntersectionObserverEntry[],
-        observer: IntersectionObserver
+        observer: IntersectionObserver,
       ) => {
         if (entries[0].intersectionRatio < 1) {
           listRef.current?.parentElement?.classList.add("is-scroll");
@@ -131,7 +134,7 @@ export const ArticleContainer = (): JSX.Element => {
         observer.observe($target);
       }
     }
-  }, [ articleListRef.current ]);
+  }, [articleListRef.current]);
 
   const getArticleList = () => {
     if (articleListRef.current) {
@@ -146,10 +149,10 @@ export const ArticleContainer = (): JSX.Element => {
       dataAgent
         .syncArticlesWithChannelUuid(
           store.channel?.item_type as string,
-          store.channel?.uuid as string
+          store.channel?.uuid as string,
         )
         .then((res) => {
-          const [ num, uuid, message ] = res[0];
+          const [num, uuid, message] = res[0];
 
           console.log("%c Line:77 🥛 res", "color:#ea7e5c", res);
 
@@ -159,7 +162,7 @@ export const ArticleContainer = (): JSX.Element => {
               description: message,
               action: (
                 <ToastAction altText="Goto schedule to undo">Close</ToastAction>
-              )
+              ),
             });
           } else {
             getArticleList();
@@ -167,7 +170,7 @@ export const ArticleContainer = (): JSX.Element => {
               uuid: store.channel?.uuid as string,
               isToday: true,
               action: "increase",
-              count: num || 0
+              count: num || 0,
             });
           }
         })
@@ -189,7 +192,8 @@ export const ArticleContainer = (): JSX.Element => {
     console.log("%c Line:172 🍡 store.channel", "color:#e41a6a", store.channel);
 
     if (store.channel) {
-      return store.markArticleListAsRead(store.channel.uuid)
+      return store
+        .markArticleListAsRead(store.channel.uuid)
         .then((res: any) => {
           console.log("%c Line:176 🍖 res", "color:#93c0a4", res);
           busChannel.emit("updateChannelUnreadCount", {
@@ -208,7 +212,7 @@ export const ArticleContainer = (): JSX.Element => {
   const changeFilter = (id: any) => {
     if (store.filterList.some((_) => _.id === parseInt(id, 10))) {
       store.setFilter({
-        ...store.filterList.filter((_) => _.id === parseInt(id, 10))[0]
+        ...store.filterList.filter((_) => _.id === parseInt(id, 10))[0],
       });
     }
   };
@@ -221,25 +225,29 @@ export const ArticleContainer = (): JSX.Element => {
 
   useEffect(() => {
     resetScrollTop();
-  }, [ store.article ]);
+  }, [store.article]);
 
   useEffect(() => {
     resetScrollTop();
   }, []);
 
   useEffect(() => {
-    console.log("%c Line:211 🥤 store.channel?.uuid", "color:#fca650", store.channel?.uuid);
+    console.log(
+      "%c Line:211 🥤 store.channel?.uuid",
+      "color:#fca650",
+      store.channel?.uuid,
+    );
 
     if (listRef.current !== null) {
       listRef.current.scroll(0, 0);
     }
 
     setCurrentIdx(-1);
-  }, [ store.channel?.uuid ]);
+  }, [store.channel?.uuid]);
 
   return (
     <div className={classNames(styles.article)}>
-      <div className={ `${ styles.header }` }>
+      <div className={`${styles.header}`}>
         <div
           className="
             flex
@@ -254,77 +262,76 @@ export const ArticleContainer = (): JSX.Element => {
             text-article-headline
           "
         >
-          { store.viewMeta ? store.viewMeta.title : "" }
+          {store.viewMeta ? store.viewMeta.title : ""}
         </div>
-        <div className={ "flex items-center justify-end px-2 space-x-0.5" }>
+        <div className={"flex items-center justify-end px-2 space-x-0.5"}>
           <DropdownMenu>
             <DropdownMenuTrigger>
               <Icon>
-                <Filter size={ 16 } />
+                <Filter size={16} />
               </Icon>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuRadioGroup
-                value={ `${store.currentFilter.id}` }
-                onValueChange={ changeFilter }
+                value={`${store.currentFilter.id}`}
+                onValueChange={changeFilter}
               >
-                { store.filterList.map((item) => {
+                {store.filterList.map((item) => {
                   return (
                     <DropdownMenuRadioItem
-                      key={ `${item.id}` }
-                      value={ `${item.id}` }
+                      key={`${item.id}`}
+                      value={`${item.id}`}
                     >
-                      { item.title }
+                      {item.title}
                     </DropdownMenuRadioItem>
                   );
-                }) }
+                })}
               </DropdownMenuRadioGroup>
             </DropdownMenuContent>
           </DropdownMenu>
-          <Icon onClick={ markAllRead }>
-            <CheckCheck size={ 16 }/>
+          <Icon onClick={markAllRead}>
+            <CheckCheck size={16} />
           </Icon>
-          <Icon onClick={ handleRefresh }>
-            <RefreshCw size={ 16 } className={ `${ syncing ? "spinning" : "" }` }/>
+          <Icon onClick={handleRefresh}>
+            <RefreshCw size={16} className={`${syncing ? "spinning" : ""}`} />
           </Icon>
           <span>
-            <Separator orientation="vertical" className="h-4 mx-2"/>
+            <Separator orientation="vertical" className="h-4 mx-2" />
           </span>
-          <Icon onClick={ () => handleSetLayout(1) } active={ layoutType === 1 }>
-            <Layout size={ 16 }/>
+          <Icon onClick={() => handleSetLayout(1)} active={layoutType === 1}>
+            <Layout size={16} />
           </Icon>
-          <Icon onClick={ () => handleSetLayout(2) } active={ layoutType === 2 }>
-            <LayoutGrid size={ 16 }/>
+          <Icon onClick={() => handleSetLayout(2)} active={layoutType === 2}>
+            <LayoutGrid size={16} />
           </Icon>
-          <Icon onClick={ () => handleSetLayout(3) } active={ layoutType === 3 }>
-            <LayoutList size={ 16 }/>
+          <Icon onClick={() => handleSetLayout(3)} active={layoutType === 3}>
+            <LayoutList size={16} />
           </Icon>
           <span>
-            <Separator orientation="vertical" className="h-4 mx-2"/>
+            <Separator orientation="vertical" className="h-4 mx-2" />
           </span>
           <ToolbarItemNavigator listRef={listRef} />
           <span>
-            <Separator orientation="vertical" className="h-4 mx-2"/>
+            <Separator orientation="vertical" className="h-4 mx-2" />
           </span>
           <ReadingOptions />
         </div>
       </div>
       <div className="h-[100vh_-_var(--app-toolbar-height)]">
-        { layoutType === 1 && <Layout1/> }
-        { layoutType === 2 && <Layout2/> }
-        { layoutType === 3 && <Layout3/> }
+        {layoutType === 1 && <Layout1 />}
+        {layoutType === 2 && <Layout2 />}
+        {layoutType === 3 && <Layout3 />}
       </div>
       <ArticleDialogView
-        article={ store.article }
-        userConfig={ store.userConfig }
-        dialogStatus={ store.articleDialogViewStatus }
-        setDialogStatus={ store.setArticleDialogViewStatus }
-        afterConfirm={ () => {
-        } }
-        afterCancel={ () => {
+        article={store.article}
+        userConfig={store.userConfig}
+        dialogStatus={store.articleDialogViewStatus}
+        setDialogStatus={store.setArticleDialogViewStatus}
+        afterConfirm={() => {}}
+        afterCancel={() => {
           store.setArticle(null);
-          console.log('store.article', store.article)
-        } }
+          console.log("store.article", store.article);
+        }}
       />
     </div>
   );

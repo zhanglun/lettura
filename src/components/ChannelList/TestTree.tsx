@@ -8,7 +8,7 @@ import {
   TreeItem,
   TreeItemRenderContext,
   TreeInformation,
-  DraggingPosition
+  DraggingPosition,
 } from "react-complex-tree";
 import "react-complex-tree/lib/style-modern.css";
 
@@ -17,16 +17,17 @@ import { FeedItem, renderItemArrow } from "./Item";
 import { useBearStore } from "@/hooks/useBearStore";
 
 export interface TestTreeProps {
-  treeData: any,
+  treeData: any;
+  activeUuid?: string;
 }
 
 export const TestTree = (props: TestTreeProps) => {
-  const { treeData } = props;
-  const [ focusedItem, setFocusedItem ] = useState();
-  const [ expandedItems, setExpandedItems ] = useState([]);
-  const [ selectedItems, setSelectedItems ] = useState([]);
+  const { treeData, activeUuid } = props;
+  const [focusedItem, setFocusedItem] = useState();
+  const [expandedItems, setExpandedItems] = useState([]);
+  const [selectedItems, setSelectedItems] = useState([]);
   const store = useBearStore((state) => ({
-    channel: state.channel
+    channel: state.channel,
   }));
 
   function renderItem<T>(props: {
@@ -40,17 +41,19 @@ export const TestTree = (props: TestTreeProps) => {
   }) {
     const { item, depth, context, children, title, arrow } = props;
     const { uuid } = item.data as Channel;
-    const isActive = store?.channel?.uuid === uuid;
+    // const isActive = store?.channel?.uuid === uuid;
+    const isActive = activeUuid === uuid;
+    console.log("%c Line:46 🍻 isActive", "color:#4fff4B", isActive);
 
     return (
       <FeedItem
-        { ...context }
-        feed={ item.data }
-        arrow={ arrow }
-        children={ children }
-        isActive={ isActive }
-        className={ "" }
-        level={ depth }
+        {...context}
+        feed={item.data}
+        arrow={arrow}
+        children={children}
+        isActive={isActive}
+        className={""}
+        level={depth}
       />
     );
   }
@@ -140,42 +143,46 @@ export const TestTree = (props: TestTreeProps) => {
   //   };
   // }, [treeData]);
 
-  const onDrop = () => {}
+  const onDrop = () => {};
 
   return (
     <ControlledTreeEnvironment
-      items={ treeData }
-      getItemTitle={ (item) => item.data.title }
-      viewState={ {
+      items={treeData}
+      getItemTitle={(item) => item.data.title}
+      viewState={{
         ["feeds"]: {
           focusedItem,
           expandedItems,
-          selectedItems
-        }
-      } }
-      defaultInteractionMode={ InteractionMode.ClickArrowToExpand }
-      canDragAndDrop={ true }
-      canReorderItems={ true }
-      canDropOnFolder={ true }
-      canDropOnNonFolder={ true }
-      onDrop={ onDrop }
+          selectedItems,
+        },
+      }}
+      defaultInteractionMode={InteractionMode.ClickArrowToExpand}
+      canDragAndDrop={true}
+      canReorderItems={true}
+      canDropOnFolder={true}
+      canDropOnNonFolder={true}
+      onDrop={onDrop}
       // @ts-ignore
-      onFocusItem={ item => setFocusedItem(item.index) }
+      onFocusItem={(item) => setFocusedItem(item.index)}
       // @ts-ignore
-      onExpandItem={ item => setExpandedItems([ ...expandedItems, item.index ]) }
-      onCollapseItem={ item =>
-        setExpandedItems(expandedItems.filter(expandedItemIndex => expandedItemIndex !== item.index))
+      onExpandItem={(item) => setExpandedItems([...expandedItems, item.index])}
+      onCollapseItem={(item) =>
+        setExpandedItems(
+          expandedItems.filter(
+            (expandedItemIndex) => expandedItemIndex !== item.index,
+          ),
+        )
       }
       // @ts-ignore
-      onSelectItems={ items => setSelectedItems(items) }
+      onSelectItems={(items) => setSelectedItems(items)}
     >
       <Tree
         treeId="feeds"
         rootItem="root"
         treeLabel="Feed Tree"
-        renderItemTitle={ ({ title }) => <span>{ title }</span> }
-        renderItemArrow={ renderItemArrow }
-        renderItem={ renderItem }
+        renderItemTitle={({ title }) => <span>{title}</span>}
+        renderItemArrow={renderItemArrow}
+        renderItem={renderItem}
       />
     </ControlledTreeEnvironment>
   );

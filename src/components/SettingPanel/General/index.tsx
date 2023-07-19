@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import * as dataAgent from "../../../helpers/dataAgent";
 import { Panel, PanelSection } from "../Panel";
-import { Input } from '@/components/ui/input';
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -15,46 +15,45 @@ import { useBearStore } from "@/hooks/useBearStore";
 const intervalOptions = [
   {
     value: 0,
-    label: 'Manual',
+    label: "Manual",
   },
   {
     value: 1,
-    label: '1 hour',
+    label: "1 hour",
   },
   {
     value: 6,
-    label: '6 hour',
+    label: "6 hour",
   },
   {
     value: 12,
-    label: '12 hours',
+    label: "12 hours",
   },
   {
     value: 24,
-    label: '24 hours',
+    label: "24 hours",
   },
-]
+];
 
 export const General = () => {
   const store = useBearStore((state) => ({
     userConfig: state.userConfig,
     updateUserConfig: state.updateUserConfig,
-  }))
-  const [ localProxyConfig, setLocalProxyConfig ] = useState<LocalProxy>({
+  }));
+  const [localProxyConfig, setLocalProxyConfig] = useState<LocalProxy>({
     protocol: "",
     ip: "",
     port: "",
   });
-  const [ threads, setThreads ] = useState<number>(1);
-  const [ updateInterval, setUpdateInterval ] = useState<number>(0);
+  const [threads, setThreads] = useState<number>(1);
+  const [updateInterval, setUpdateInterval] = useState<number>(0);
 
   const handleSaveLocalProxy = (cfg: LocalProxy) => {
     dataAgent
       .updateProxy({
         ...cfg,
       })
-      .then((res) => {
-      });
+      .then((res) => {});
   };
 
   const handleLocalProxyChange = (key: string, val: string) => {
@@ -62,7 +61,7 @@ export const General = () => {
       { ...localProxyConfig },
       {
         [key]: val,
-      }
+      },
     );
 
     setLocalProxyConfig(cfg);
@@ -80,9 +79,7 @@ export const General = () => {
   const handleUpdateIntervalChange = (val: number) => {
     console.log("%c Line:80 🍯 val", "color:#7f2b82", val);
     setUpdateInterval(val);
-    dataAgent
-    .updateInterval(val)
-    .then((res) => {
+    dataAgent.updateInterval(val).then((res) => {
       console.log("%c Line:84 🍬 res", "color:#42b983", res);
     });
 
@@ -90,7 +87,7 @@ export const General = () => {
     //   ...store.userConfig,
     //   update_interval: val
     // });
-  }
+  };
 
   useEffect(() => {
     dataAgent.getUserConfig().then((cfg: any) => {
@@ -118,39 +115,42 @@ export const General = () => {
         <div className="grid gap-1 grid-cols-[120px_10px_60px] items-center">
           <Input
             type="text"
-            value={ localProxyConfig.ip }
+            value={localProxyConfig.ip}
             className="tracking-wide"
-            onChange={ (e: React.ChangeEvent<HTMLInputElement>) => handleLocalProxyChange("ip", e.target.value) }
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              handleLocalProxyChange("ip", e.target.value)
+            }
           />
           <span className="text-center">:</span>
           <Input
             type="text"
             className="tracking-wide"
-            value={ localProxyConfig.port }
-            onChange={ (e: React.ChangeEvent<HTMLInputElement>) => handleLocalProxyChange("port", e.target.value) }
+            value={localProxyConfig.port}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              handleLocalProxyChange("port", e.target.value)
+            }
           />
         </div>
       </PanelSection>
-      <PanelSection
-        title="Update Interval"
-        subTitle="set the update interval"
-      >
+      <PanelSection title="Update Interval" subTitle="set the update interval">
         <Select
-          value={ updateInterval.toString() }
-          onValueChange={ (v: string) => handleUpdateIntervalChange(parseInt(v, 10)) }
+          value={updateInterval.toString()}
+          onValueChange={(v: string) =>
+            handleUpdateIntervalChange(parseInt(v, 10))
+          }
         >
           <SelectTrigger className="w-[180px] h-8">
-            <SelectValue placeholder="Change update interval"/>
+            <SelectValue placeholder="Change update interval" />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              { intervalOptions.map((opt) => {
+              {intervalOptions.map((opt) => {
                 return (
-                  <SelectItem key={ opt.value } value={ opt.value.toString() }>
-                    { opt.label }
+                  <SelectItem key={opt.value} value={opt.value.toString()}>
+                    {opt.label}
                   </SelectItem>
                 );
-              }) }
+              })}
             </SelectGroup>
           </SelectContent>
         </Select>
@@ -162,12 +162,14 @@ export const General = () => {
         <Input
           className="w-[200px]"
           type="number"
-          step={ 1 }
-          min={ 1 }
-          max={ 5 }
-          value={ threads }
-          onChange={ (e: React.ChangeEvent<HTMLInputElement>) =>
-            handleThreadsChange(parseInt(e.target.value, 10) as unknown as number)
+          step={1}
+          min={1}
+          max={5}
+          value={threads}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            handleThreadsChange(
+              parseInt(e.target.value, 10) as unknown as number,
+            )
           }
         />
       </PanelSection>

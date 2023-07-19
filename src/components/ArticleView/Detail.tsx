@@ -50,7 +50,7 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
             }
 
             return a;
-          }
+          },
         );
 
         setPageContent(content);

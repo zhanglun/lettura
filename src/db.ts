@@ -6,18 +6,18 @@ export interface Channel {
   title: string;
   link: string;
   feed_url: string;
-  folder_name?: string,
-  folder?: string,
+  folder_name?: string;
+  folder?: string;
   logo?: string;
   description: string;
   pub_date?: Date;
-  health_status: number,
-  failure_reason: string,
+  health_status: number;
+  failure_reason: string;
   unread: number;
   sort?: number;
-  create_date?: Date,
-  update_date?: Date,
-  last_sync_date?: string,
+  create_date?: Date;
+  update_date?: Date;
+  last_sync_date?: string;
 }
 export interface Article {
   id?: number;

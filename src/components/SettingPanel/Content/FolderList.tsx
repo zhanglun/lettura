@@ -9,7 +9,7 @@ import { Icon } from "@/components/Icon";
 import { DialogDeleteFolder } from "./DialogDeleteFolder";
 
 export const FolderList = () => {
-  const [ folderList, setFolderList ] = useState<Folder[]>([]);
+  const [folderList, setFolderList] = useState<Folder[]>([]);
   const [showStatus, setModalStatus] = useModal();
   const [currentFolder, setCurrentFolder] = useState<Folder | null>(null);
 
@@ -34,13 +34,13 @@ export const FolderList = () => {
       cell(props: CellContext<Folder, string>): JSX.Element {
         return (
           <div className="flex items-center">
-            <FolderIcon size={ 16 } className="mr-3"/>
-            <span>{ props.row.original.name }</span>
+            <FolderIcon size={16} className="mr-3" />
+            <span>{props.row.original.name}</span>
           </div>
         );
       },
     },
-    columnHelper.accessor((row) => `${ row.uuid }-opt`, {
+    columnHelper.accessor((row) => `${row.uuid}-opt`, {
       id: "opt",
       header: "Action",
       size: 100,
@@ -49,11 +49,14 @@ export const FolderList = () => {
 
         return (
           <div className="flex space-x-1">
-            <Icon className="w-6 h-6" onClick={ () => handleEditFolder(record) }>
-              <Edit size={ 14 }/>
+            <Icon className="w-6 h-6" onClick={() => handleEditFolder(record)}>
+              <Edit size={14} />
             </Icon>
-            <Icon className="w-6 h-6" onClick={ () => handleDeleteFolder(record) }>
-              <Trash2 size={ 14 }/>
+            <Icon
+              className="w-6 h-6"
+              onClick={() => handleDeleteFolder(record)}
+            >
+              <Trash2 size={14} />
             </Icon>
           </div>
         );
@@ -73,18 +76,18 @@ export const FolderList = () => {
 
   return (
     <div>
-    <DataTable
-      // @ts-ignore
-      columns={ columns }
-      data={ folderList }
-    />
-    <DialogDeleteFolder
-      dialogStatus={showStatus}
-      setDialogStatus={setModalStatus}
-      folder={currentFolder}
-      afterConfirm={getFolderList}
-      afterCancel={() => {}}
-    />
+      <DataTable
+        // @ts-ignore
+        columns={columns}
+        data={folderList}
+      />
+      <DialogDeleteFolder
+        dialogStatus={showStatus}
+        setDialogStatus={setModalStatus}
+        folder={currentFolder}
+        afterConfirm={getFolderList}
+        afterCancel={() => {}}
+      />
     </div>
   );
 };

@@ -1,11 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useMatch, useNavigate } from "react-router-dom";
 import { Folder, RefreshCw, Settings, Coffee, Haze } from "lucide-react";
-import pLimit from "p-limit";
 import classNames from "classnames";
 import { listen } from "@tauri-apps/api/event";
 import { RouteConfig } from "@/config";
-import { Article, Channel } from "@/db";
+import { Channel } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
 import { busChannel } from "@/helpers/busChannel";
 import { useBearStore } from "@/hooks/useBearStore";
@@ -18,7 +17,7 @@ import {
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuSeparator,
-  ContextMenuTrigger
+  ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import { Icon } from "../Icon";
 import { FeedItem } from "./Item";
@@ -27,22 +26,28 @@ import { useModal } from "../Modal/useModal";
 import { open } from "@tauri-apps/api/shell";
 import { DialogEditFeed } from "@/components/SettingPanel/Content/DialogEditFeed";
 import { useQuery } from "@/helpers/parseXML";
-
 import styles from "./channel.module.scss";
-import dayjs from "dayjs";
-import { Separator } from "../ui/separator";
 import { useRefresh } from "./useRefresh";
 
 const ChannelList = (): JSX.Element => {
   const isToday = useMatch(RouteConfig.TODAY);
   const isAll = useMatch(RouteConfig.ALL);
   const navigate = useNavigate();
-  const [ addFolderDialogStatus, setAddFolderDialogStatus ] = useModal();
-  const [ editFolderDialogStatus, setEditFolderDialogStatus ] = useModal();
-  const [ editFeedStatus, setEditFeedStatus ] = useModal();
-  const [ showStatus, setModalStatus ] = useModal();
-  const [ treeData, setTreeData ] = useState<any>([]);
-  const [feedList, setFeedList, getFeedList, refreshing, setRefreshing, done, setDone, startFresh] = useRefresh({ feedList: [] });
+  const [addFolderDialogStatus, setAddFolderDialogStatus] = useModal();
+  const [editFolderDialogStatus, setEditFolderDialogStatus] = useModal();
+  const [editFeedStatus, setEditFeedStatus] = useModal();
+  const [showStatus, setModalStatus] = useModal();
+  const [treeData, setTreeData] = useState<any>([]);
+  const [
+    feedList,
+    setFeedList,
+    getFeedList,
+    refreshing,
+    setRefreshing,
+    done,
+    setDone,
+    startFresh,
+  ] = useRefresh({ feedList: [] });
   const store = useBearStore((state) => ({
     channel: state.channel,
     setChannel: state.setChannel,
@@ -50,14 +55,14 @@ const ChannelList = (): JSX.Element => {
     feedContextMenuTarget: state.feedContextMenuTarget,
     setFeedContextMenuTarget: state.setFeedContextMenuTarget,
 
-    setViewMeta: state.setViewMeta
+    setViewMeta: state.setViewMeta,
   }));
-  const [ channelUuid ] = useQuery();
-  const [ meta, setMeta ] = useState<{
+  const [channelUuid] = useQuery();
+  const [meta, setMeta] = useState<{
     [key: string]: { [key: string]: number };
   }>({
     total: { unread: 0 },
-    today: { unread: 0 }
+    today: { unread: 0 },
   });
 
   const initCollectionMetas = () => {
@@ -65,7 +70,7 @@ const ChannelList = (): JSX.Element => {
       console.log("%c Line:19 🍅 res", "color:#ed9ec7", res);
       setMeta({
         today: { unread: res.today },
-        total: { unread: res.total }
+        total: { unread: res.total },
       });
     });
   };
@@ -79,7 +84,7 @@ const ChannelList = (): JSX.Element => {
     uuid: string,
     isToday: boolean,
     action: string,
-    count: number
+    count: number,
   ) => {
     const strategy = (action: string, target: any) => {
       switch (action) {
@@ -127,7 +132,7 @@ const ChannelList = (): JSX.Element => {
       return channel;
     });
 
-    setFeedList([ ...feedList ]);
+    setFeedList([...feedList]);
 
     strategy(action, meta.total);
 
@@ -153,10 +158,10 @@ const ChannelList = (): JSX.Element => {
 
   const reloadFeedIcon = (feed: Channel | null) => {
     feed &&
-    dataAgent.updateIcon(feed.uuid, feed.link).then((res) => {
-      console.log("%c Line:139 🍷 res", "color:#ea7e5c", res);
-      feed.logo = res;
-    });
+      dataAgent.updateIcon(feed.uuid, feed.link).then((res) => {
+        console.log("%c Line:139 🍷 res", "color:#ea7e5c", res);
+        feed.logo = res;
+      });
   };
 
   useEffect(() => {
@@ -164,11 +169,11 @@ const ChannelList = (): JSX.Element => {
       "updateChannelUnreadCount",
       ({ uuid, isToday, action, count }) => {
         console.log(
-          "🚀 ~ file: index.tsx:138 ~ useEffect ~ updateChannelUnreadCount"
+          "🚀 ~ file: index.tsx:138 ~ useEffect ~ updateChannelUnreadCount",
         );
         updateCount(feedList, uuid, isToday, action, count);
         unsubscribeUpdateCount();
-      }
+      },
     );
 
     const updateCollectionMeta = busChannel.on("updateCollectionMeta", () => {
@@ -179,7 +184,7 @@ const ChannelList = (): JSX.Element => {
       unsubscribeUpdateCount();
       updateCollectionMeta();
     };
-  }, [ feedList ]);
+  }, [feedList]);
 
   useEffect(() => {
     feedList.forEach((feed) => {
@@ -187,8 +192,7 @@ const ChannelList = (): JSX.Element => {
         store.setChannel(feed);
       }
     });
-  }, [ channelUuid, feedList ]);
-
+  }, [channelUuid, feedList]);
 
   const goToSetting = () => {
     navigate(RouteConfig.SETTINGS_GENERAL);
@@ -240,7 +244,7 @@ const ChannelList = (): JSX.Element => {
           isFolder: cur.item_type === "folder",
           children: cur.children.map((c: Channel) => c.uuid),
           title: cur.title,
-          data: cur
+          data: cur,
         };
 
         cur.children.forEach((child: Channel) => {
@@ -248,7 +252,7 @@ const ChannelList = (): JSX.Element => {
             index: child.uuid,
             children: [],
             title: child.title,
-            data: child
+            data: child,
           };
         });
 
@@ -259,203 +263,209 @@ const ChannelList = (): JSX.Element => {
           index: "root",
           isFolder: true,
           children: [],
-          data: "Root item"
-        }
-      } as any
+          data: "Root item",
+        },
+      } as any,
     );
 
     setTreeData(treeData);
-  }, [ feedList ]);
+  }, [feedList]);
 
   return (
-    <div className="relative flex flex-col w-[var(--app-channel-width)] h-full select-none border-r border-border text-[hsl(var(--foreground))]
-  bg-[hsl(var(--background))]">
-      <div className={ `sticky-header ${ styles.header }` }>
+    <div
+      className="relative flex flex-col w-[var(--app-channel-width)] h-full select-none border-r border-border text-[hsl(var(--foreground))]
+  bg-[hsl(var(--background))]"
+    >
+      <div className={`sticky-header ${styles.header}`}>
         <div />
-        <div className={ styles.toolbar }>
+        <div className={styles.toolbar}>
           <AddFeedChannel />
           <AddFolder
             action="add"
-            dialogStatus={ addFolderDialogStatus }
-            setDialogStatus={ setAddFolderDialogStatus }
-            afterConfirm={ getFeedList }
-            afterCancel={ () => store.setFeedContextMenuTarget(null) }
+            dialogStatus={addFolderDialogStatus}
+            setDialogStatus={setAddFolderDialogStatus}
+            afterConfirm={getFeedList}
+            afterCancel={() => store.setFeedContextMenuTarget(null)}
             trigger={
               <Icon>
-                <Folder size={ 16 } />
+                <Folder size={16} />
               </Icon>
             }
           />
 
-          <Icon onClick={ startFresh }>
+          <Icon onClick={startFresh}>
             <RefreshCw
-              size={ 16 }
-              className={ `${ refreshing ? "spinning" : "" }` }
+              size={16}
+              className={`${refreshing ? "spinning" : ""}`}
             />
           </Icon>
-          <Icon onClick={ goToSetting }>
-            <Settings size={ 16 } />
+          <Icon onClick={goToSetting}>
+            <Settings size={16} />
           </Icon>
         </div>
       </div>
       <div
         className="overflow-y-auto mt-[var(--app-toolbar-height)] pb-3 pl-3 height-[calc(100% - var(--app-toolbar-height))]"
-        ref={ listRef }
+        ref={listRef}
       >
-        <h2 className="mt-8 mb-2 px-4 text-lg font-semibold tracking-tight">Collections</h2>
+        <h2 className="mt-8 mb-2 px-4 text-lg font-semibold tracking-tight">
+          Collections
+        </h2>
         <div>
           <div
-            className={ classNames(
+            className={classNames(
               "w-full h-8 px-2 flex items-center rounded-md cursor-pointer mt-[2px] group",
               {
-                "bg-primary text-primary-foreground": isToday
-              }
-            ) }
-            onClick={ () => {
+                "bg-primary text-primary-foreground": isToday,
+              },
+            )}
+            onClick={() => {
               store.setChannel(null);
               store.setViewMeta({
                 title: "Today",
                 isToday: true,
-                isAll: false
+                isAll: false,
               });
               navigate(RouteConfig.TODAY);
-            } }
+            }}
           >
             <span className="h-4 w-4 rounded mr-2">
-              <Haze size={ 16 } />
+              <Haze size={16} />
             </span>
             <span className="grow shrink basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-sm">
               Today
             </span>
-            { meta.today.unread > 0 && (
+            {meta.today.unread > 0 && (
               <span
-                className={ classNames(
+                className={classNames(
                   "px-1 min-w-[1rem] h-4 leading-4 text-center text-[10px]",
                   {
-                    "text-primary-foreground": isToday
-                  }
-                ) }
+                    "text-primary-foreground": isToday,
+                  },
+                )}
               >
-                { meta.today.unread }
+                {meta.today.unread}
               </span>
-            ) }
+            )}
           </div>
           <div
-            className={ classNames(
+            className={classNames(
               "w-full h-8 px-2 flex items-center rounded-md cursor-pointer mt-[2px] group",
               {
-                "bg-primary text-primary-foreground": isAll
-              }
-            ) }
-            onClick={ () => {
+                "bg-primary text-primary-foreground": isAll,
+              },
+            )}
+            onClick={() => {
               store.setChannel(null);
               store.setViewMeta({
                 title: "All Items",
                 isToday: false,
-                isAll: true
+                isAll: true,
               });
               navigate(RouteConfig.ALL);
-            } }
+            }}
           >
             <span className="h-4 w-4 rounded mr-2">
-              <Coffee size={ 16 } />
+              <Coffee size={16} />
             </span>
             <span className="grow shrink basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-sm">
               All Items
             </span>
-            { meta.total.unread > 0 && (
+            {meta.total.unread > 0 && (
               <span
-                className={ classNames(
+                className={classNames(
                   "px-1 min-w-[1rem] h-4 leading-4 text-center text-[10px]",
                   {
-                    "text-primary-foreground": isAll
-                  }
-                ) }
+                    "text-primary-foreground": isAll,
+                  },
+                )}
               >
-                { meta.total.unread }
+                {meta.total.unread}
               </span>
-            ) }
+            )}
           </div>
         </div>
-        <h2 className="mt-8 mb-2 px-4 text-lg font-semibold tracking-tight">Feeds</h2>
-        <ContextMenu onOpenChange={ handleContextMenuChange }>
+        <h2 className="mt-8 mb-2 px-4 text-lg font-semibold tracking-tight">
+          Feeds
+        </h2>
+        <ContextMenu onOpenChange={handleContextMenuChange}>
           <ContextMenuTrigger className="w-full">
-            <TestTree treeData={ treeData } />
+            <TestTree treeData={treeData} activeUuid={store?.channel?.uuid} />
           </ContextMenuTrigger>
           <ContextMenuContent>
-            { store.feedContextMenuTarget?.item_type === "folder" && (
+            {store.feedContextMenuTarget?.item_type === "folder" && (
               <>
                 <ContextMenuItem
-                  onSelect={ () => setEditFolderDialogStatus(true) }
+                  onSelect={() => setEditFolderDialogStatus(true)}
                 >
                   Edit
                 </ContextMenuItem>
               </>
-            ) }
-            { store.feedContextMenuTarget && (
+            )}
+            {store.feedContextMenuTarget && (
               <>
-                { store.feedContextMenuTarget?.item_type !== "folder" && (
+                {store.feedContextMenuTarget?.item_type !== "folder" && (
                   <>
                     <ContextMenuItem
-                      onClick={ () =>
+                      onClick={() =>
                         store.feedContextMenuTarget?.link &&
                         open(store.feedContextMenuTarget?.link)
                       }
                     >
-                      Open { new URL(store.feedContextMenuTarget?.link).host }
+                      Open {new URL(store.feedContextMenuTarget?.link).host}
                     </ContextMenuItem>
                     <ContextMenuSeparator />
                     <ContextMenuItem
-                      onClick={ () =>
+                      onClick={() =>
                         reloadFeedIcon(store.feedContextMenuTarget)
                       }
                     >
                       Reload Icon
                     </ContextMenuItem>
                     <ContextMenuSeparator />
-                    <ContextMenuItem onClick={ () => setEditFeedStatus(true) }>
+                    <ContextMenuItem onClick={() => setEditFeedStatus(true)}>
                       Detail
                     </ContextMenuItem>
-                    <ContextMenuItem onClick={ () => setModalStatus(true) }>
+                    <ContextMenuItem onClick={() => setModalStatus(true)}>
                       Unsubscribe
                     </ContextMenuItem>
                   </>
-                ) }
+                )}
               </>
-            ) }
+            )}
           </ContextMenuContent>
         </ContextMenu>
         <DialogUnsubscribeFeed
-          feed={ store.feedContextMenuTarget }
-          dialogStatus={ showStatus }
-          setDialogStatus={ setModalStatus }
-          afterConfirm={ getFeedList }
-          afterCancel={ () => store.setFeedContextMenuTarget(null) }
+          feed={store.feedContextMenuTarget}
+          dialogStatus={showStatus}
+          setDialogStatus={setModalStatus}
+          afterConfirm={getFeedList}
+          afterCancel={() => store.setFeedContextMenuTarget(null)}
         />
         <DialogEditFeed
-          feed={ store.feedContextMenuTarget }
-          dialogStatus={ editFeedStatus }
-          setDialogStatus={ setEditFeedStatus }
-          afterConfirm={ getFeedList }
-          afterCancel={ () => store.setFeedContextMenuTarget(null) }
+          feed={store.feedContextMenuTarget}
+          dialogStatus={editFeedStatus}
+          setDialogStatus={setEditFeedStatus}
+          afterConfirm={getFeedList}
+          afterCancel={() => store.setFeedContextMenuTarget(null)}
         />
         <AddFolder
           action="edit"
-          folder={ store.feedContextMenuTarget }
-          dialogStatus={ editFolderDialogStatus }
-          setDialogStatus={ setEditFolderDialogStatus }
-          afterConfirm={ getFeedList }
-          afterCancel={ () => store.setFeedContextMenuTarget(null) }
+          folder={store.feedContextMenuTarget}
+          dialogStatus={editFolderDialogStatus}
+          setDialogStatus={setEditFolderDialogStatus}
+          afterConfirm={getFeedList}
+          afterCancel={() => store.setFeedContextMenuTarget(null)}
         />
       </div>
-      { refreshing && (
+      {refreshing && (
         <div className="sticky left-0 right-0 bottom-0 p-2 text-right">
           <span className="text-xs mr-3">Syncing...</span>
           <span className="text-xs text-foreground">
-            { done }/{ feedList.length }
+            {done}/{feedList.length}
           </span>
         </div>
-      ) }
+      )}
     </div>
   );
 };

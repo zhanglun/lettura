@@ -54,7 +54,7 @@ function App() {
         Object.keys(customize_style).forEach((key: string) => {
           document.documentElement.style.setProperty(
             `--reading-editable-${key.replace(/_/gi, "-")}`,
-            customize_style[key as keyof CustomizeStyle] as string
+            customize_style[key as keyof CustomizeStyle] as string,
           );
         });
     });

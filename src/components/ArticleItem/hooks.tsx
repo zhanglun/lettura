@@ -1,3 +1,1 @@
-export const useArticleItemHook = (props: any) => {
-
-}
+export const useArticleItemHook = (props: any) => {};

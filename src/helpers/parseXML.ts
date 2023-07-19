@@ -6,9 +6,9 @@ export const getChannelFavicon = (url: string) => {
 
     return hostname ? `https://icons.duckduckgo.com/ip3/${hostname}.ico` : "";
   } catch (err) {
-    console.log('error url', url);
+    console.log("error url", url);
     console.error(err);
-    return ''
+    return "";
   }
 };
 
@@ -19,4 +19,4 @@ export const useQuery = () => {
   const channelUuid = query.get("channelUuid");
 
   return [feedUrl, type, channelUuid];
-}
+};

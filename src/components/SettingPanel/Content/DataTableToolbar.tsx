@@ -62,7 +62,7 @@ export function DataTableToolbar<TData>({
                 value: folder.name,
                 label: folder.name,
                 icon: FolderIcon,
-              }
+              };
             })}
           />
         )}

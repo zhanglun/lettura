@@ -6,12 +6,11 @@ import { busChannel } from "../helpers/busChannel";
 import * as dataAgent from "../helpers/dataAgent";
 
 interface BearStore {
-
   viewMeta: {
-    title: string,
-    unread: number,
-    isToday: boolean,
-    isAll: boolean,
+    title: string;
+    unread: number;
+    isToday: boolean;
+    isAll: boolean;
   };
 
   setViewMeta: (meta: any) => void;
@@ -19,7 +18,7 @@ interface BearStore {
   channel: Channel | null;
   setChannel: (channel: Channel | null) => void;
   updateFeed: (uuid: string, updater: any) => void;
-  feedList: Channel[],
+  feedList: Channel[];
   getFeedList: () => any;
 
   feedContextMenuTarget: Channel | null;
@@ -59,7 +58,7 @@ export const useBearStore = create<BearStore>()(
   subscribeWithSelector((set, get) => {
     return {
       viewMeta: {
-        title: '',
+        title: "",
         unread: 0,
         isToday: false,
         isAll: false,
@@ -67,7 +66,7 @@ export const useBearStore = create<BearStore>()(
       setViewMeta(meta) {
         set(() => ({
           viewMeta: meta,
-        }))
+        }));
       },
 
       channel: null,
@@ -83,7 +82,7 @@ export const useBearStore = create<BearStore>()(
               unread: channel.unread,
               isToday: false,
               isAll: false,
-            }
+            },
           }));
         }
       },
@@ -91,12 +90,14 @@ export const useBearStore = create<BearStore>()(
       updateFeed: (uuid: string, updater: any) => {
         set((state) => ({
           feedList: state.feedList.map((feed) => {
-            return feed.uuid === uuid ? {
-              ...feed,
-              ...updater
-            } : feed
+            return feed.uuid === uuid
+              ? {
+                  ...feed,
+                  ...updater,
+                }
+              : feed;
           }),
-        }))
+        }));
       },
       getFeedList: () => {
         dataAgent.getChannels({}).then((res) => {
@@ -164,7 +165,6 @@ export const useBearStore = create<BearStore>()(
         });
       },
 
-
       updateArticleAndIdx: (article: Article, idx?: number) => {
         console.log("update Article and Idx", idx);
         let articleList = get().articleList;
@@ -173,7 +173,7 @@ export const useBearStore = create<BearStore>()(
           idx = articleList.findIndex((item) => item.uuid === article.uuid);
           console.log(
             "🚀 ~ file: useBearStore.ts:57 ~ useBearStore ~ idx:",
-            idx
+            idx,
           );
         }
 
@@ -182,7 +182,9 @@ export const useBearStore = create<BearStore>()(
             if (res) {
               busChannel.emit("updateChannelUnreadCount", {
                 uuid: article.channel_uuid,
-                isToday: dayjs(dayjs(article.create_date).format("YYYY-MM-DD")).isSame( dayjs().format("YYYY-MM-DD")),
+                isToday: dayjs(
+                  dayjs(article.create_date).format("YYYY-MM-DD"),
+                ).isSame(dayjs().format("YYYY-MM-DD")),
                 action: "decrease",
                 count: 1,
               });
@@ -204,12 +206,12 @@ export const useBearStore = create<BearStore>()(
       },
 
       cursor: 1,
-      setCursor: (c: number) =>{
+      setCursor: (c: number) => {
         set(() => ({
-          cursor: c
+          cursor: c,
         }));
 
-        return c
+        return c;
       },
 
       markArticleListAsRead(uuid: string) {
@@ -218,8 +220,8 @@ export const useBearStore = create<BearStore>()(
             articleList: get().articleList.map((_) => {
               _.read_status = 2;
               return _;
-            })
-          }))
+            }),
+          }));
         });
       },
 
@@ -246,16 +248,19 @@ export const useBearStore = create<BearStore>()(
           cur = currentIdx + 1;
         }
 
-          console.log("%c Line:205 🍕 articleList.length", "color:#e41a6a", articleList.length);
-          console.log("%c Line:205 🌶 cur", "color:#3f7cff", cur);
+        console.log(
+          "%c Line:205 🍕 articleList.length",
+          "color:#e41a6a",
+          articleList.length,
+        );
+        console.log("%c Line:205 🌶 cur", "color:#3f7cff", cur);
 
         if (cur === articleList.length - 1) {
-          console.error("%c Line:194 🥖 cur", "color:#ed9ec7", '到底了');
+          console.error("%c Line:194 🥖 cur", "color:#ed9ec7", "到底了");
           get().setCursor(get().cursor + 1);
         } else {
           get().updateArticleAndIdx(articleList[cur], cur);
         }
-
       },
 
       currentIdx: 0,
@@ -268,8 +273,8 @@ export const useBearStore = create<BearStore>()(
       articleDialogViewStatus: false,
       setArticleDialogViewStatus: (status: boolean) => {
         set(() => ({
-          articleDialogViewStatus: status
-        }))
+          articleDialogViewStatus: status,
+        }));
       },
 
       filterList: [
@@ -316,5 +321,5 @@ export const useBearStore = create<BearStore>()(
         });
       },
     };
-  })
+  }),
 );

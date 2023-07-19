@@ -1,10 +1,10 @@
-import * as React from "react"
-import { Column } from "@tanstack/react-table"
-import { Check, LucideIcon, PlusCircle } from "lucide-react"
+import * as React from "react";
+import { Column } from "@tanstack/react-table";
+import { Check, LucideIcon, PlusCircle } from "lucide-react";
 
-import { cn } from "@/helpers/cn"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
+import { cn } from "@/helpers/cn";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Command,
   CommandEmpty,
@@ -13,22 +13,22 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-} from "@/components/ui/command"
+} from "@/components/ui/command";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
-import { Separator } from "@/components/ui/separator"
+} from "@/components/ui/popover";
+import { Separator } from "@/components/ui/separator";
 
 interface DataTableFacetedFilter<TData, TValue> {
-  column?: Column<TData, TValue>
-  title?: string
+  column?: Column<TData, TValue>;
+  title?: string;
   options: {
-    label: string | number,
-    value: string
-    icon?: React.ComponentType<{ className?: string }>
-  }[]
+    label: string | number;
+    value: string;
+    icon?: React.ComponentType<{ className?: string }>;
+  }[];
 }
 
 export function DataTableFacetedFilter<TData, TValue>({
@@ -36,13 +36,17 @@ export function DataTableFacetedFilter<TData, TValue>({
   title,
   options,
 }: DataTableFacetedFilter<TData, TValue>) {
-  const facets = column?.getFacetedUniqueValues()
-  const selectedValues = new Set(column?.getFilterValue() as string[])
+  const facets = column?.getFacetedUniqueValues();
+  const selectedValues = new Set(column?.getFilterValue() as string[]);
 
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" size="sm" className="h-8 text-xs border-dashed">
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-8 text-xs border-dashed"
+        >
           <PlusCircle className="mr-2 h-4 w-4" />
           {title}
           {selectedValues?.size > 0 && (
@@ -87,20 +91,20 @@ export function DataTableFacetedFilter<TData, TValue>({
             <CommandEmpty>No results found.</CommandEmpty>
             <CommandGroup>
               {options.map((option) => {
-                const isSelected = selectedValues.has(option.value)
+                const isSelected = selectedValues.has(option.value);
                 return (
                   <CommandItem
                     key={option.value}
                     onSelect={() => {
                       if (isSelected) {
-                        selectedValues.delete(option.value)
+                        selectedValues.delete(option.value);
                       } else {
-                        selectedValues.add(option.value)
+                        selectedValues.add(option.value);
                       }
-                      const filterValues = Array.from(selectedValues)
+                      const filterValues = Array.from(selectedValues);
                       column?.setFilterValue(
-                        filterValues.length ? filterValues : undefined
-                      )
+                        filterValues.length ? filterValues : undefined,
+                      );
                     }}
                   >
                     <div
@@ -108,7 +112,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                         "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
                         isSelected
                           ? "bg-primary text-primary-foreground"
-                          : "opacity-50 [&_svg]:invisible"
+                          : "opacity-50 [&_svg]:invisible",
                       )}
                     >
                       <Check className={cn("h-4 w-4")} />
@@ -123,7 +127,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                       </span>
                     )}
                   </CommandItem>
-                )
+                );
               })}
             </CommandGroup>
             {selectedValues.size > 0 && (
@@ -143,5 +147,5 @@ export function DataTableFacetedFilter<TData, TValue>({
         </Command>
       </PopoverContent>
     </Popover>
-  )
+  );
 }

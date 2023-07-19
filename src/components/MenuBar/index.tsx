@@ -1,6 +1,6 @@
-import React from 'react';
+import React from "react";
 export const MenuBar = () => {
-  return  (
+  return (
     <div data-tauri-drag-region className="titlebar">
       <div className="titlebar-button" id="titlebar-minimize">
         <img
@@ -18,6 +18,5 @@ export const MenuBar = () => {
         <img src="https://api.iconify.design/mdi:close.svg" alt="close" />
       </div>
     </div>
-
-  )
-}
+  );
+};

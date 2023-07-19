@@ -1,11 +1,11 @@
-import { useShortcut } from '@/hooks/useShortcut';
-import classNames from 'classnames';
-import React, { useEffect, useRef } from 'react';
+import { useShortcut } from "@/hooks/useShortcut";
+import classNames from "classnames";
+import React, { useEffect, useRef } from "react";
 
 export interface ScrollBoxProps {
-  children: React.ReactNode,
-  className?: string,
-  ref?: React.Ref<any>,
+  children: React.ReactNode;
+  className?: string;
+  ref?: React.Ref<any>;
 }
 
 export const ScrollBox = (props: ScrollBoxProps) => {
@@ -17,13 +17,13 @@ export const ScrollBox = (props: ScrollBoxProps) => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop += 100;
     }
-  }
+  };
 
   const scrollUp = () => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop -= 100;
     }
-  }
+  };
 
   useEffect(() => {
     registerShortcut("j", scrollDown);
@@ -34,5 +34,5 @@ export const ScrollBox = (props: ScrollBoxProps) => {
     <div className={classNames("overflow-y-auto", className)} ref={scrollRef}>
       {children}
     </div>
-  )
-}
+  );
+};

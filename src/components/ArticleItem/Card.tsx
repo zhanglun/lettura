@@ -42,7 +42,7 @@ export const ArticleCardItem = (props: any) => {
 
     if (article) {
       let match_img = (article.description || article.description).match(
-        /<img.*?src="(.*?)"/
+        /<img.*?src="(.*?)"/,
       );
 
       console.log("%c Line:45 🍔 match_img", "color:#93c0a4", match_img);
@@ -64,7 +64,7 @@ export const ArticleCardItem = (props: any) => {
         {
           "text-[hsl(var(--foreground)_/_80%)]": readStatus === 2,
           "bg-article-active-bg": highlight,
-        }
+        },
       )}
       onClick={handleClick}
       aria-current="page"
@@ -75,7 +75,11 @@ export const ArticleCardItem = (props: any) => {
       {/*  <div className="absolute left-2 top-50% mt-[-1] w-2 h-2 rounded-full bg-primary"/>*/}
       {/*) }*/}
       <div className="relative h-0 before:content-[''] before:inline-block pt-[55%] overflow-hidden bg-muted">
-        <img src={banner} alt="..." className="absolute top-0 left-0 object-cover" />
+        <img
+          src={banner}
+          alt="..."
+          className="absolute top-0 left-0 object-cover"
+        />
       </div>
       <div className="p-4 space-y-2">
         <div
@@ -85,7 +89,7 @@ export const ArticleCardItem = (props: any) => {
                 ? "text-article-active-headline"
                 : "text-article-headline"
             }`,
-            "font-bold text-sm group-hover:text-article-active-headline"
+            "font-bold text-sm group-hover:text-article-active-headline",
           )}
         >
           {article.title}
@@ -106,7 +110,7 @@ export const ArticleCardItem = (props: any) => {
               "text-xs text-article-paragraph group-hover:text-article-active-paragraph",
               {
                 "text-article-active-paragraph": highlight,
-              }
+              },
             )}
           >
             {(article.description || "").replace(/<[^<>]+>/g, "")}
@@ -117,12 +121,12 @@ export const ArticleCardItem = (props: any) => {
             "flex justify-between items-center text-xs text-article-paragraph group-hover:text-article-active-paragraph",
             {
               "text-article-active-paragraph": highlight,
-            }
+            },
           )}
         >
           <div>
             {Dayjs(article.pub_date || article.create_date).format(
-              "YYYY-MM-DD HH:mm"
+              "YYYY-MM-DD HH:mm",
             )}
           </div>
         </div>

@@ -19,7 +19,7 @@ declare interface CustomizeStyle {
 declare interface UserConfig {
   threads?: number;
   theme?: string;
-  update_interval?: number,
+  update_interval?: number;
   local_proxy?: LocalProxy;
   customize_style?: CustomizeStyle;
 }

@@ -47,7 +47,7 @@ export const ArticleItem = React.forwardRef(
           {
             "text-[hsl(var(--foreground)_/_80%)]": readStatus === 2,
             "bg-article-active-bg": highlight,
-          }
+          },
         )}
         onClick={handleClick}
         aria-current="page"
@@ -65,7 +65,7 @@ export const ArticleItem = React.forwardRef(
                 ? "text-article-active-headline"
                 : "text-article-headline"
             }`,
-            "font-bold text-sm group-hover:text-article-active-headline"
+            "font-bold text-sm group-hover:text-article-active-headline",
           )}
         >
           {article.title}
@@ -76,7 +76,7 @@ export const ArticleItem = React.forwardRef(
             "text-article-paragraph group-hover:text-article-active-paragraph",
             {
               "text-article-active-paragraph": highlight,
-            }
+            },
           )}
         >
           {(article.description || "").replace(/<[^<>]+>/g, "")}
@@ -86,20 +86,24 @@ export const ArticleItem = React.forwardRef(
             "flex justify-between items-center text-xs text-article-paragraph group-hover:text-article-active-paragraph",
             {
               "text-article-active-paragraph": highlight,
-            }
+            },
           )}
         >
           <div className={classnames("flex items-center")}>
-            <img src={store.channel?.logo || ico} alt="" className="rounded w-4 mr-1" />
+            <img
+              src={store.channel?.logo || ico}
+              alt=""
+              className="rounded w-4 mr-1"
+            />
             {article.author || article.channel_title}
           </div>
           <div>
             {Dayjs(new Date(article.pub_date || article.create_date)).format(
-              "YYYY-MM-DD HH:mm"
+              "YYYY-MM-DD HH:mm",
             )}
           </div>
         </div>
       </li>
     );
-  }
+  },
 );

@@ -10,16 +10,22 @@ export interface IconProps {
 }
 
 export const Icon = React.forwardRef((props: IconProps, ref: any) => {
-  const { onClick = () => {}, disable, active, children, className = 'w-8 h-8' } = props;
+  const {
+    onClick = () => {},
+    disable,
+    active,
+    children,
+    className = "w-8 h-8",
+  } = props;
 
   return (
     <span
       onClick={onClick}
       className={classNames(
         "flex items-center justify-center rounded hover:text-accent-foreground hover:bg-accent",
-        { "bg-muted cursor-not-allowed" : disable},
-        { "bg-muted" : active},
-        className
+        { "bg-muted cursor-not-allowed": disable },
+        { "bg-muted": active },
+        className,
       )}
     >
       {children}

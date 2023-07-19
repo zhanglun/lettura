@@ -53,7 +53,7 @@ export const ReadingOptions = (props: NavigatorProps) => {
 
   const openInBrowser = () => {
     store.article && open(store.article?.link);
-  }
+  };
 
   const handleCopyLink = () => {
     const { link } = store.article as Article;
@@ -66,7 +66,7 @@ export const ReadingOptions = (props: NavigatorProps) => {
       },
       function (err) {
         console.error("Async: Could not copy text: ", err);
-      }
+      },
     );
   };
 
