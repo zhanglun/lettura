@@ -93,7 +93,7 @@ export const General = () => {
     dataAgent.getUserConfig().then((cfg: any) => {
       console.log("update use config", cfg);
 
-      const { local_proxy, threads } = cfg as UserConfig;
+      const { local_proxy, threads, update_interval } = cfg as UserConfig;
 
       if (local_proxy) {
         setLocalProxyConfig({
@@ -105,6 +105,10 @@ export const General = () => {
 
       if (threads) {
         setThreads(threads);
+      }
+
+      if (update_interval) {
+        setUpdateInterval(update_interval);
       }
     });
   }, []);

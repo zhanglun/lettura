@@ -41,9 +41,8 @@ export const TestTree = (props: TestTreeProps) => {
   }) {
     const { item, depth, context, children, title, arrow } = props;
     const { uuid } = item.data as Channel;
-    // const isActive = store?.channel?.uuid === uuid;
-    const isActive = activeUuid === uuid;
-    console.log("%c Line:46 🍻 isActive", "color:#4fff4B", isActive);
+    const isActive = store?.channel?.uuid === uuid;
+    // const isActive = activeUuid === uuid;
 
     return (
       <FeedItem

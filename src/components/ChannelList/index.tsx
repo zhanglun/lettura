@@ -47,7 +47,7 @@ const ChannelList = (): JSX.Element => {
     done,
     setDone,
     startFresh,
-  ] = useRefresh({ feedList: [] });
+  ] = useRefresh();
   const store = useBearStore((state) => ({
     channel: state.channel,
     setChannel: state.setChannel,
@@ -57,7 +57,7 @@ const ChannelList = (): JSX.Element => {
 
     setViewMeta: state.setViewMeta,
   }));
-  const [channelUuid] = useQuery();
+  const [, , channelUuid] = useQuery();
   const [meta, setMeta] = useState<{
     [key: string]: { [key: string]: number };
   }>({

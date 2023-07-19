@@ -1,12 +1,18 @@
-import React, { useEffect, useState } from "react";
-import * as dataAgent from "@/helpers/dataAgent";
+import React, { useEffect, useRef, useState } from "react";
 import pLimit from "p-limit";
 import { Channel } from "@/db";
+import * as dataAgent from "@/helpers/dataAgent";
+import { useBearStore } from "@/hooks/useBearStore";
 
-export const useRefresh = (props: { feedList: Channel[] }) => {
+export const useRefresh = () => {
+  const store = useBearStore((state) => ({
+    userConfig: state.userConfig,
+  }));
   const [feedList, setFeedList] = useState<Channel[]>([]);
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [done, setDone] = useState<number>(0);
+
+  const timeRef = useRef<any>();
 
   const getFeedList = () => {
     const initUnreadCount = (
@@ -66,6 +72,10 @@ export const useRefresh = (props: { feedList: Channel[] }) => {
   };
 
   const startRefresh = () => {
+    if (refreshing) {
+      return false;
+    }
+
     setRefreshing(true);
 
     dataAgent.getUserConfig().then((config) => {
@@ -78,14 +88,26 @@ export const useRefresh = (props: { feedList: Channel[] }) => {
       });
 
       Promise.all(fns).then((res) => {
-        window.setTimeout(() => {
-          setRefreshing(false);
-          setDone(0);
-          getFeedList();
-        }, 500);
+        // window.setTimeout(() => {
+        setRefreshing(false);
+        setDone(0);
+        getFeedList();
+        // }, 500);
       });
     });
   };
+
+  // useEffect(() => {
+  //   if (timeRef.current) {
+  //     clearInterval(timeRef.current)
+  //   }
+
+  //   if (store.userConfig.update_interval) {
+  //     timeRef.current = setInterval(() => {
+  //       startRefresh();
+  //     }, store.userConfig.update_interval * 60 * 60);
+  //   }
+  // }, [store.userConfig.update_interval]);
 
   return [
     feedList,
