@@ -41,9 +41,8 @@ const ChannelList = (): JSX.Element => {
   const [ editFolderDialogStatus, setEditFolderDialogStatus ] = useModal();
   const [ editFeedStatus, setEditFeedStatus ] = useModal();
   const [ showStatus, setModalStatus ] = useModal();
-  const [ channelList, setChannelList ] = useState<Channel[]>([]);
   const [ treeData, setTreeData ] = useState<any>([]);
-  const [refreshing, setRefreshing, done, setDone] = useRefresh({ feedList: [] });
+  const [feedList, setFeedList, getFeedList, refreshing, setRefreshing, done, setDone, startFresh] = useRefresh({ feedList: [] });
   const store = useBearStore((state) => ({
     channel: state.channel,
     setChannel: state.setChannel,
@@ -76,7 +75,7 @@ const ChannelList = (): JSX.Element => {
   }, []);
 
   const updateCount = (
-    channelList: Channel[],
+    feedList: Channel[],
     uuid: string,
     isToday: boolean,
     action: string,
@@ -107,7 +106,7 @@ const ChannelList = (): JSX.Element => {
       }
     };
 
-    channelList.forEach((channel) => {
+    feedList.forEach((channel) => {
       let target: any = channel.uuid === uuid ? channel : null;
       let child: any =
         channel.children.find((item) => item.uuid === uuid) || null;
@@ -128,7 +127,7 @@ const ChannelList = (): JSX.Element => {
       return channel;
     });
 
-    setChannelList([ ...channelList ]);
+    setFeedList([ ...feedList ]);
 
     strategy(action, meta.total);
 
@@ -141,29 +140,16 @@ const ChannelList = (): JSX.Element => {
     setMeta(meta);
   };
 
-  const getList = () => {
-    const initUnreadCount = (
-      list: any[],
-      countCache: { [key: string]: number }
-    ) => {
-      return list.map((item) => {
-        item.unread = countCache[item.uuid] || 0;
+  useEffect(() => {
+    getFeedList();
+    const unsubscribeGetChannels = busChannel.on("getChannels", () => {
+      getFeedList();
+    });
 
-        if (item.children) {
-          item.children = initUnreadCount(item.children, countCache);
-        }
-
-        return item;
-      });
+    return () => {
+      unsubscribeGetChannels();
     };
-    return Promise.all([ dataAgent.getFeeds(), dataAgent.getUnreadTotal() ]).then(
-      ([ channel, unreadTotal ]) => {
-        channel = initUnreadCount(channel, unreadTotal);
-        console.log("channel", channel);
-        setChannelList(channel);
-      }
-    );
-  };
+  }, []);
 
   const reloadFeedIcon = (feed: Channel | null) => {
     feed &&
@@ -174,32 +160,13 @@ const ChannelList = (): JSX.Element => {
   };
 
   useEffect(() => {
-    getList();
-    const unsubscribeGetChannels = busChannel.on("getChannels", () => {
-      getList();
-    });
-
-    return () => {
-      unsubscribeGetChannels();
-    };
-  }, []);
-
-  useEffect(() => {
-    channelList.forEach((feed) => {
-      if (feed.uuid === channelUuid) {
-        store.setChannel(feed);
-      }
-    });
-  }, [ channelUuid, channelList ]);
-
-  useEffect(() => {
     const unsubscribeUpdateCount = busChannel.on(
       "updateChannelUnreadCount",
       ({ uuid, isToday, action, count }) => {
         console.log(
           "🚀 ~ file: index.tsx:138 ~ useEffect ~ updateChannelUnreadCount"
         );
-        updateCount(channelList, uuid, isToday, action, count);
+        updateCount(feedList, uuid, isToday, action, count);
         unsubscribeUpdateCount();
       }
     );
@@ -212,59 +179,16 @@ const ChannelList = (): JSX.Element => {
       unsubscribeUpdateCount();
       updateCollectionMeta();
     };
-  }, [ channelList ]);
+  }, [ feedList ]);
 
-  const loadAndUpdate = (type: string, uuid: string, unread: number) => {
-    return dataAgent
-      .syncArticlesWithChannelUuid(type, uuid)
-      .then((res) => {
-        console.log("%c Line:222 🍬 res", "color:#7f2b82", res);
-        res.forEach((item) => {
-          const [ count, uuid, _msg ] = item;
-
-          count > 0 && setChannelList((list) => {
-            return list.map((item) => {
-              return item.uuid === uuid ? {
-                ...item,
-                unread: unread + count
-              } : item;
-            });
-          });
-        });
-
-        return res;
-      })
-      .catch((err) => {
-        console.log("%c Line:239 🍬 err", "color:#2eafb0", err);
-        return Promise.resolve();
-      })
-      .finally(() => {
-        console.log("%c Line:243 🍭 finally", "color:#4fff4B");
-        setDone((done) => done + 1);
-      });
-  };
-
-  const refreshList = () => {
-    setRefreshing(true);
-
-    dataAgent.getUserConfig().then((config) => {
-      const { threads = 5 } = config;
-      const limit = pLimit(threads);
-      const fns = (channelList || []).map((channel: any) => {
-        return limit(() =>
-          loadAndUpdate(channel.item_type, channel.uuid, channel.unread)
-        );
-      });
-
-      Promise.all(fns).then((res) => {
-        window.setTimeout(() => {
-          setRefreshing(false);
-          setDone(0);
-          getList();
-        }, 500);
-      });
+  useEffect(() => {
+    feedList.forEach((feed) => {
+      if (feed.uuid === channelUuid) {
+        store.setChannel(feed);
+      }
     });
-  };
+  }, [ channelUuid, feedList ]);
+
 
   const goToSetting = () => {
     navigate(RouteConfig.SETTINGS_GENERAL);
@@ -307,7 +231,7 @@ const ChannelList = (): JSX.Element => {
   }, []);
 
   useEffect(() => {
-    const treeData = channelList.reduce(
+    const treeData = feedList.reduce(
       (acu, cur) => {
         // @ts-ignore
         acu.root.children.push(cur.uuid);
@@ -341,7 +265,7 @@ const ChannelList = (): JSX.Element => {
     );
 
     setTreeData(treeData);
-  }, [ channelList ]);
+  }, [ feedList ]);
 
   return (
     <div className="relative flex flex-col w-[var(--app-channel-width)] h-full select-none border-r border-border text-[hsl(var(--foreground))]
@@ -354,7 +278,7 @@ const ChannelList = (): JSX.Element => {
             action="add"
             dialogStatus={ addFolderDialogStatus }
             setDialogStatus={ setAddFolderDialogStatus }
-            afterConfirm={ getList }
+            afterConfirm={ getFeedList }
             afterCancel={ () => store.setFeedContextMenuTarget(null) }
             trigger={
               <Icon>
@@ -363,7 +287,7 @@ const ChannelList = (): JSX.Element => {
             }
           />
 
-          <Icon onClick={ refreshList }>
+          <Icon onClick={ startFresh }>
             <RefreshCw
               size={ 16 }
               className={ `${ refreshing ? "spinning" : "" }` }
@@ -505,14 +429,14 @@ const ChannelList = (): JSX.Element => {
           feed={ store.feedContextMenuTarget }
           dialogStatus={ showStatus }
           setDialogStatus={ setModalStatus }
-          afterConfirm={ getList }
+          afterConfirm={ getFeedList }
           afterCancel={ () => store.setFeedContextMenuTarget(null) }
         />
         <DialogEditFeed
           feed={ store.feedContextMenuTarget }
           dialogStatus={ editFeedStatus }
           setDialogStatus={ setEditFeedStatus }
-          afterConfirm={ getList }
+          afterConfirm={ getFeedList }
           afterCancel={ () => store.setFeedContextMenuTarget(null) }
         />
         <AddFolder
@@ -520,7 +444,7 @@ const ChannelList = (): JSX.Element => {
           folder={ store.feedContextMenuTarget }
           dialogStatus={ editFolderDialogStatus }
           setDialogStatus={ setEditFolderDialogStatus }
-          afterConfirm={ getList }
+          afterConfirm={ getFeedList }
           afterCancel={ () => store.setFeedContextMenuTarget(null) }
         />
       </div>
@@ -528,7 +452,7 @@ const ChannelList = (): JSX.Element => {
         <div className="sticky left-0 right-0 bottom-0 p-2 text-right">
           <span className="text-xs mr-3">Syncing...</span>
           <span className="text-xs text-foreground">
-            { done }/{ channelList.length }
+            { done }/{ feedList.length }
           </span>
         </div>
       ) }

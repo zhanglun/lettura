@@ -98,7 +98,6 @@ export function DataTableFacetedFilter<TData, TValue>({
                         selectedValues.add(option.value)
                       }
                       const filterValues = Array.from(selectedValues)
-                      console.log("%c Line:101 🍯 filterValues", "color:#93c0a4", filterValues);
                       column?.setFilterValue(
                         filterValues.length ? filterValues : undefined
                       )
