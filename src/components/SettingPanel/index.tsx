@@ -1,6 +1,6 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
-import { Cog, Database, Palette, Rss } from "lucide-react";
+import { Cog, Database, Keyboard, Palette, Rss } from "lucide-react";
 import { RouteConfig } from "../../config";
 import { Link } from "@/components/SettingPanel/Link";
 import { Separator } from "@/components/ui/separator";
@@ -27,6 +27,10 @@ function SettingPanel() {
             <Link to={RouteConfig.SETTINGS_APPEARANCE}>
               <Palette size={16} className="mr-3" />
               Appearance
+            </Link>
+            <Link to={RouteConfig.SETTINGS_SHORTCUT}>
+              <Keyboard size={16} className="mr-3" />
+              Shortcut
             </Link>
             <Link to={RouteConfig.SETTINGS_FEED_MANAGER}>
               <Database size={16} className="mr-3" />

@@ -19,6 +19,7 @@ import { WelcomePage } from "./components/WelcomePage";
 import { Appearance } from "./components/SettingPanel/Appearance";
 
 import "./styles/index.global.scss";
+import { Shortcut } from "./components/SettingPanel/ShortCut";
 
 function App() {
   const store = useBearStore((state) => ({
@@ -83,6 +84,10 @@ function App() {
             <Route
               path={RouteConfig.SETTINGS_APPEARANCE}
               element={<Appearance />}
+            />
+            <Route
+              path={RouteConfig.SETTINGS_SHORTCUT}
+              element={<Shortcut />}
             />
             <Route
               path={RouteConfig.SETTINGS_FEED_MANAGER}
