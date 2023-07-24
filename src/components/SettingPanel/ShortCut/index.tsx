@@ -19,11 +19,11 @@ export const KeyBox = (props: {
               group.push(
                 <span
                   className={classNames(
-                    "inline-block text-[0.75em] px-1 py-0 align-text-top"
+                    "inline-block text-[0.75em] px-1 py-0 align-text-top",
                   )}
                 >
                   +
-                </span>
+                </span>,
               );
             } else {
               group.push(
@@ -45,7 +45,7 @@ export const KeyBox = (props: {
               "
                 >
                   {s}
-                </kbd>
+                </kbd>,
               );
             }
           });

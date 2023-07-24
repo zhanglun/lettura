@@ -5,7 +5,7 @@ import { ArticleView } from "@/components/ArticleView";
 import { useBearStore } from "@/hooks/useBearStore";
 import { useQuery } from "@/helpers/parseXML";
 import styles from "./index.module.scss";
-import { ScrollBox } from "@/components/ArticleView/ScrollBox";
+import { ScrollBox, ScrollBoxRefObject } from "@/components/ArticleView/ScrollBox";
 
 export const Layout1 = (): JSX.Element => {
   // @ts-ignore
@@ -28,16 +28,10 @@ export const Layout1 = (): JSX.Element => {
 
   const [feedUrl, type, channelUuid] = useQuery();
   const [syncing, setSyncing] = useState(false);
-  const viewRef = useRef<HTMLDivElement>(null);
-
-  const resetScrollTop = () => {
-    if (viewRef.current !== null) {
-      viewRef.current.scroll(0, 0);
-    }
-  };
+  const scrollBoxRef = useRef<ScrollBoxRefObject>(null);
 
   useEffect(() => {
-    resetScrollTop();
+    scrollBoxRef.current?.scrollToTop();
   }, [store.article]);
 
   return (
@@ -53,7 +47,7 @@ export const Layout1 = (): JSX.Element => {
       </div>
       <ScrollBox
         className="h-[calc(100vh_-_var(--app-toolbar-height))]"
-        ref={viewRef}
+        ref={scrollBoxRef}
       >
         <ArticleView article={store.article} userConfig={store.userConfig} />
       </ScrollBox>

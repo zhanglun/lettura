@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import styles from "./view.module.scss";
 import { useBearStore } from "@/hooks/useBearStore";
 import { ArticleDetail } from "@/components/ArticleView/Detail";
-import { ScrollBox } from "./ScrollBox";
 
 type ArticleViewProps = {
   article: any | null;

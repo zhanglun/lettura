@@ -5,6 +5,7 @@ import Dayjs from "dayjs";
 import { getChannelFavicon } from "@/helpers/parseXML";
 import { useBearStore } from "@/hooks/useBearStore";
 import * as dataAgent from "@/helpers/dataAgent";
+import { motion, AnimatePresence } from "framer-motion";
 import { fetch } from "@tauri-apps/api/http";
 
 function createMarkup(html: string) {
@@ -58,40 +59,58 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
   }, [article]);
 
   return (
-    <div className="m-auto">
-      <div className="pb-4 border-b border-border">
-        <div className="mt-6 mb-5 text-4xl font-bold text-detail-headline">
-          {article.title}
-        </div>
-        <div className={classnames(styles.meta)}>
-          <span className={styles.channelInfo}>
-            <img src={store.channel?.logo || ico} alt="" className="rounded" />
-            {article.channel_title}
-          </span>
-          {article.author && (
-            <span
-              className={classnames(styles.author, "text-detail-paragraph")}
-            >
-              {article.author}
-            </span>
-          )}
-          <span className={classnames(styles.time, "text-detail-paragraph")}>
-            {Dayjs(new Date(pub_date || new Date())).format("YYYY-MM-DD HH:mm")}
-          </span>
-        </div>
-      </div>
-      <div className="m-auto pt-1 mt-6">
-        {banner && (
-          <div className={styles.banner}>
-            <img src={banner} alt="" />
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={article.uuid}
+        initial={{ y: 10, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: -10, opacity: 0 }}
+        transition={{ duration: 0.2 }}
+      >
+        <div className="m-auto">
+          <div className="pb-4 border-b border-border">
+            <div className="mt-6 mb-5 text-4xl font-bold text-detail-headline">
+              {article.title}
+            </div>
+            <div className={classnames(styles.meta)}>
+              <span className={styles.channelInfo}>
+                <img
+                  src={store.channel?.logo || ico}
+                  alt=""
+                  className="rounded"
+                />
+                {article.channel_title}
+              </span>
+              {article.author && (
+                <span
+                  className={classnames(styles.author, "text-detail-paragraph")}
+                >
+                  {article.author}
+                </span>
+              )}
+              <span
+                className={classnames(styles.time, "text-detail-paragraph")}
+              >
+                {Dayjs(new Date(pub_date || new Date())).format(
+                  "YYYY-MM-DD HH:mm",
+                )}
+              </span>
+            </div>
           </div>
-        )}
-        <div
-          className={classnames("reading-content", "text-detail-paragraph")}
-          // eslint-disable-next-line react/no-danger
-          dangerouslySetInnerHTML={createMarkup(pageContent)}
-        />
-      </div>
-    </div>
+          <div className="m-auto pt-1 mt-6">
+            {banner && (
+              <div className={styles.banner}>
+                <img src={banner} alt="" />
+              </div>
+            )}
+            <div
+              className={classnames("reading-content", "text-detail-paragraph")}
+              // eslint-disable-next-line react/no-danger
+              dangerouslySetInnerHTML={createMarkup(pageContent)}
+            />
+          </div>
+        </div>
+      </motion.div>
+    </AnimatePresence>
   );
 };

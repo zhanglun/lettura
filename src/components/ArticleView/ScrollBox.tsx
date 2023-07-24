@@ -1,6 +1,10 @@
 import { useShortcut } from "@/hooks/useShortcut";
 import classNames from "classnames";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useImperativeHandle, useRef } from "react";
+
+export interface ScrollBoxRefObject {
+  scrollToTop: () => void,
+}
 
 export interface ScrollBoxProps {
   children: React.ReactNode;
@@ -8,7 +12,7 @@ export interface ScrollBoxProps {
   ref?: React.Ref<any>;
 }
 
-export const ScrollBox = (props: ScrollBoxProps) => {
+export const ScrollBox = React.forwardRef((props: ScrollBoxProps, ref: any) => {
   const { className, children } = props;
   const scrollRef = useRef<HTMLDivElement>(null);
   const { registerShortcut, unregisterShortcut } = useShortcut();
@@ -25,9 +29,26 @@ export const ScrollBox = (props: ScrollBoxProps) => {
     }
   };
 
+  const scrollToTop = () => {
+    if (scrollRef.current !== null) {
+      scrollRef.current.scroll(0, 0);
+    }
+  }
+
+  useImperativeHandle(ref, () => {
+    return {
+      scrollToTop,
+    }
+  });
+
   useEffect(() => {
     registerShortcut("j", scrollDown);
     registerShortcut("k", scrollUp);
+
+    return () => {
+      unregisterShortcut("j");
+      unregisterShortcut("k");
+    }
   }, []);
 
   return (
@@ -35,4 +56,4 @@ export const ScrollBox = (props: ScrollBoxProps) => {
       {children}
     </div>
   );
-};
+});
