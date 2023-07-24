@@ -3,7 +3,7 @@ import classNames from "classnames";
 import React, { useEffect, useImperativeHandle, useRef } from "react";
 
 export interface ScrollBoxRefObject {
-  scrollToTop: () => void,
+  scrollToTop: () => void;
 }
 
 export interface ScrollBoxProps {
@@ -33,12 +33,12 @@ export const ScrollBox = React.forwardRef((props: ScrollBoxProps, ref: any) => {
     if (scrollRef.current !== null) {
       scrollRef.current.scroll(0, 0);
     }
-  }
+  };
 
   useImperativeHandle(ref, () => {
     return {
       scrollToTop,
-    }
+    };
   });
 
   useEffect(() => {
@@ -48,7 +48,7 @@ export const ScrollBox = React.forwardRef((props: ScrollBoxProps, ref: any) => {
     return () => {
       unregisterShortcut("j");
       unregisterShortcut("k");
-    }
+    };
   }, []);
 
   return (

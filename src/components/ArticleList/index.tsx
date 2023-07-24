@@ -4,6 +4,7 @@ import { useBearStore } from "@/hooks/useBearStore";
 import { useArticleListHook } from "./hooks";
 import { Skeleton } from "../ui/skeleton";
 import { useAutoScroll } from "@/hooks/useAutoScroll";
+import { motion } from "framer-motion";
 
 export type ArticleListProps = {
   feedUuid: string | null;
@@ -35,7 +36,15 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
 
   const renderList = (): JSX.Element[] => {
     return (store.articleList || []).map((article: any, idx: number) => {
-      return <ArticleItem article={article} key={article.title + idx} />;
+      return (
+        <motion.div
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          initial={{ opacity: 0, y: 30 }}
+        >
+          <ArticleItem article={article} key={article.title + idx} />
+        </motion.div>
+      );
     });
   };
 

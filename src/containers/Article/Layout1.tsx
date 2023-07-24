@@ -5,7 +5,10 @@ import { ArticleView } from "@/components/ArticleView";
 import { useBearStore } from "@/hooks/useBearStore";
 import { useQuery } from "@/helpers/parseXML";
 import styles from "./index.module.scss";
-import { ScrollBox, ScrollBoxRefObject } from "@/components/ArticleView/ScrollBox";
+import {
+  ScrollBox,
+  ScrollBoxRefObject,
+} from "@/components/ArticleView/ScrollBox";
 
 export const Layout1 = (): JSX.Element => {
   // @ts-ignore
