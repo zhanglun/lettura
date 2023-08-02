@@ -84,7 +84,7 @@
       }
     ],
     "systemTray": {
-      "iconPath": "icons/icon.png",
+      "iconPath": "icons/tray-mac.png",
       "iconAsTemplate": true
     }
   }

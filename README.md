@@ -1,6 +1,6 @@
 
 <p align="center">
-  <img src="./icon.svg" width="360px"/>
+  <img src="./logo.svg" width="360px"/>
 </p>
 <h1 align="center">Lettura</h1>
 
@@ -18,6 +18,9 @@ Pre-release version is [here](https://github.com/zhanglun/lettura/releases), you
   <img src="./screenshots/1.png" width="90%"/>
   <img src="./screenshots/2.png" width="90%"/>
   <img src="./screenshots/3.png" width="90%"/>
+  <img src="./screenshots/4.png" width="90%"/>
+  <img src="./screenshots/5.png" width="90%"/>
+  <img src="./screenshots/6.png" width="90%"/>
 </p>
 
 
@@ -46,3 +49,9 @@ pnpm tauri build
 ```
 
 You can get more details about building Tauri app in [here](https://tauri.app/v1/guides/distribution/publishing)
+
+
+### More Projects
+
+* [Pavo: mini desktop wallpaper application. ](https://github.com/zhanglun/pavo)
+* [BookWise: book wise, read wiser](https://github.com/zhanglun/bookwise)
