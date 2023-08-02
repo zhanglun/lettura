@@ -67,9 +67,7 @@ export const ArticleCardItem = (props: any) => {
         },
       )}
       onClick={handleClick}
-      aria-current="page"
       id={article.uuid}
-      tabIndex={1}
     >
       {/*{ readStatus === 1 && (*/}
       {/*  <div className="absolute left-2 top-50% mt-[-1] w-2 h-2 rounded-full bg-primary"/>*/}

@@ -42,7 +42,7 @@ export const ArticleItem = React.forwardRef(
     return (
       <li
         className={classnames(
-          "list-none rounded-sm p-3 pl-6 grid gap-1 relative",
+          "list-none rounded-sm p-3 pl-6 grid gap-1 relative select-none",
           "group hover:bg-article-active-bg hover:cursor-pointer",
           {
             "text-[hsl(var(--foreground)_/_80%)]": readStatus === 2,
@@ -50,10 +50,8 @@ export const ArticleItem = React.forwardRef(
           },
         )}
         onClick={handleClick}
-        aria-current="page"
         ref={ref}
         id={article.uuid}
-        tabIndex={1}
       >
         {readStatus === 1 && (
           <div className="absolute left-2 top-4 w-2 h-2 rounded-full bg-primary" />
