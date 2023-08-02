@@ -133,13 +133,26 @@ async fn main() {
 
   let (async_process_input_tx, async_process_input_rx) = mpsc::channel::<AsyncProcessMessage>(32);
 
-  tauri::Builder::default()
-    .manage(AsyncProcInputTx {
+  let window = tauri::Builder::default();
+
+  window.manage(AsyncProcInputTx {
       sender: Mutex::new(async_process_input_tx),
     })
     .menu(core::menu::AppMenu::get_menu(&context))
     .setup(move |app| {
       let app_handle = app.handle();
+
+      let main_window = app.get_window("main").unwrap();
+
+      let _env = env::var("LETTURA_ENV");
+
+      match _env {
+        Ok(env) => {
+          main_window.set_title("Lettura dev").unwrap();
+        }
+        Err(_) => {}
+      }
+
       after_setup(&app_handle, async_process_input_rx);
       Ok(())
     })
