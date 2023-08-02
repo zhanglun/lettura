@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS feeds (
   create_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- record insert date
   update_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- record update date
   UNIQUE("link", "title")
-)
+);
 
 CREATE TABLE IF NOT EXISTS articles (
   id INTEGER NOT NULL PRIMARY KEY,
@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS articles (
   update_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   read_status INTEGER NOT NULL DEFAULT 1,  -- 1: 未读 2: 已读
   UNIQUE("link", "title")
-)
+);
 CREATE INDEX IF NOT EXISTS idx_channel_uuid_and_read_status ON "articles" ("channel_uuid", "read_status");
 CREATE INDEX IF NOT EXISTS idx_channel_uuid_and_read_status_and_pub_date ON "articles" ("channel_uuid", "read_status", "pub_date");
 
@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS  folders (
   sort INTEGER NOT NULL DEFAULT 0,
   create_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   update_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-)
+);
 
 CREATE TABLE IF NOT EXISTS feed_metas (
   id INTEGER NOT NULL PRIMARY KEY,
@@ -53,4 +53,4 @@ CREATE TABLE IF NOT EXISTS feed_metas (
   sort INTEGER NOT NULL DEFAULT 0,
   create_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   update_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-)
+);
