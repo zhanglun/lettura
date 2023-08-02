@@ -10,44 +10,9 @@
   position: relative;
 }
 
-:global(.sticky-header) {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 3;
-  height: var(--app-toolbar-height);
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  align-items: center;
-  justify-content: space-between;
-
-  //backdrop-filter: saturate(180%) blur(20px);
-  backdrop-filter: saturate(50%) blur(8px);
-  background: hsl(var(--background)/8%);
-  //rgba(255, 255, 255, 0.88);
-  --playerDropShadow2: hsl(var(--foreground)/7%);
-  //rgba(0, 0, 0, .07);
-  --playerInnerShadow: hsl(var(--background)/45%);
-  //rgba(255, 255, 255, .45);
-  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05), 0 1px 3px var(--playerDropShadow2), inset 0 1px 1px var(--playerInnerShadow);
-}
-
-:global(.is-scroll .sticky-header) {
-  //backdrop-filter: saturate(180%) blur(20px);
-  backdrop-filter: saturate(50%) blur(8px);
-  background: hsl(var(--background)/8%);
-  //rgba(255, 255, 255, 0.88);
-  --playerDropShadow2: hsl(var(--foreground)/7%);
-  //rgba(0, 0, 0, .07);
-  --playerInnerShadow: hsl(var(--background)/45%);
-  //rgba(255, 255, 255, .45);
-  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05), 0 1px 3px var(--playerDropShadow2), inset 0 1px 1px var(--playerInnerShadow);
-}
-
 :global(.view-blur-bar) {
-  //backdrop-filter: saturate(180%) blur(20px);
-  backdrop-filter: saturate(50%) blur(8px);
+  backdrop-filter: saturate(180%) blur(20px);
+  // backdrop-filter: saturate(50%) blur(8px);
   background: hsl(var(--background)/8%);
   //rgba(255, 255, 255, 0.88);
   --playerDropShadow2: hsl(var(--foreground)/7%);
@@ -128,8 +93,14 @@
   //z-index: 3;
   //
   backdrop-filter: saturate(180%) blur(20px);
-  background: rgba(255, 255, 255, 0.88);
+  // background: rgba(255, 255, 255, 0.88);
+  background: hsl(var(--background)/88%);
   --playerDropShadow2: rgba(0, 0, 0, .07);
   --playerInnerShadow: rgba(255, 255, 255, .45);
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05), 0 1px 3px var(--playerDropShadow2), inset 0 1px 1px var(--playerInnerShadow);
+
+  --playerDropShadow2: rgba(0, 0, 0, .1);
+  --playerInnerShadow: rgba(255, 255, 255, .1);
+  background-image: none;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05), 0 1px 3px var(--playerDropShadow2), inset 0 -0.5px 0 var(--playerInnerShadow);
 }

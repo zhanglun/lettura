@@ -39,7 +39,7 @@ export const Layout1 = (): JSX.Element => {
 
   return (
     <div className="grid grid-cols-[var(--app-article-width)_1fr]">
-      <div className="relative h-full border-r border-stone-100">
+      <div className="relative h-full border-r">
         {syncing && <div className={styles.syncingBar}>同步中</div>}
         <ArticleList
           title={params.name}

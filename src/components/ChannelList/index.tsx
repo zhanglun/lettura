@@ -84,7 +84,7 @@ const ChannelList = (): JSX.Element => {
     uuid: string,
     isToday: boolean,
     action: string,
-    count: number,
+    count: number
   ) => {
     const strategy = (action: string, target: any) => {
       switch (action) {
@@ -169,11 +169,11 @@ const ChannelList = (): JSX.Element => {
       "updateChannelUnreadCount",
       ({ uuid, isToday, action, count }) => {
         console.log(
-          "🚀 ~ file: index.tsx:138 ~ useEffect ~ updateChannelUnreadCount",
+          "🚀 ~ file: index.tsx:138 ~ useEffect ~ updateChannelUnreadCount"
         );
         updateCount(feedList, uuid, isToday, action, count);
         unsubscribeUpdateCount();
-      },
+      }
     );
 
     const updateCollectionMeta = busChannel.on("updateCollectionMeta", () => {
@@ -265,7 +265,7 @@ const ChannelList = (): JSX.Element => {
           children: [],
           data: "Root item",
         },
-      } as any,
+      } as any
     );
 
     setTreeData(treeData);
@@ -276,7 +276,7 @@ const ChannelList = (): JSX.Element => {
       className="relative flex flex-col w-[var(--app-channel-width)] h-full select-none border-r border-border text-[hsl(var(--foreground))]
   bg-[hsl(var(--background))]"
     >
-      <div className={`sticky-header ${styles.header}`}>
+      <div className={styles.header}>
         <div />
         <div className={styles.toolbar}>
           <AddFeedChannel />
@@ -317,7 +317,7 @@ const ChannelList = (): JSX.Element => {
               "w-full h-8 px-2 flex items-center rounded-md cursor-pointer mt-[2px] group",
               {
                 "bg-primary text-primary-foreground": isToday,
-              },
+              }
             )}
             onClick={() => {
               store.setChannel(null);
@@ -341,7 +341,7 @@ const ChannelList = (): JSX.Element => {
                   "px-1 min-w-[1rem] h-4 leading-4 text-center text-[10px]",
                   {
                     "text-primary-foreground": isToday,
-                  },
+                  }
                 )}
               >
                 {meta.today.unread}
@@ -353,7 +353,7 @@ const ChannelList = (): JSX.Element => {
               "w-full h-8 px-2 flex items-center rounded-md cursor-pointer mt-[2px] group",
               {
                 "bg-primary text-primary-foreground": isAll,
-              },
+              }
             )}
             onClick={() => {
               store.setChannel(null);
@@ -377,7 +377,7 @@ const ChannelList = (): JSX.Element => {
                   "px-1 min-w-[1rem] h-4 leading-4 text-center text-[10px]",
                   {
                     "text-primary-foreground": isAll,
-                  },
+                  }
                 )}
               >
                 {meta.total.unread}
