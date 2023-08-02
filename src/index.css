@@ -13,15 +13,50 @@
 }
 
 @layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 47.4% 11.2%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 47.4% 11.2%;
+
+    --border: 216 18.5% 94.7%;
+    --input: 216 18.5% 94.7%;
+
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 100% 50%;
+    --destructive-foreground: 210 40% 98%;
+
+    --ring: 215 20.2% 65.1%;
+
+    --radius: 0.5rem;
+  }
+
   :root[data-color-scheme="light"],
   [data-color-scheme="light"],
   [data-system-preference="light"] {
     --background: 0 0% 100%;
     --foreground: 222.2 47.4% 11.2%;
 
-    /* --primary: 222.2 47.4% 11.2%; */
-    --primary: 234.15deg 61.19% 60.59%;
+    --primary: 222.2 47.4% 11.2%;
+    /* --primary: 234.15deg 61.19% 60.59%; */
     --primary-foreground: 0 0% 100%;
+    --border: 216 18.5% 94.7%;
+    --input: 216 18.5% 94.7%;
   }
 
   :root[data-color-scheme="dark"],
@@ -33,7 +68,7 @@
     /* --background: 225 6.06% 12.94%; */
     --foreground: 213 31% 91%;
 
-    --muted: 236 17.4% 18.0%;
+    --muted: 236 17.4% 18%;
     --muted-foreground: 215.4 16.3% 56.9%;
 
     --popover: 224 71% 4%;
@@ -42,8 +77,8 @@
     --card: 224 71% 4%;
     --card-foreground: 213 31% 91%;
 
-    --border: 220 5.9% 20.0%;
-    --input: 220 5.9% 20.0%;
+    --border: 220 5.9% 20%;
+    --input: 220 5.9% 20%;
 
     --primary: 210 40% 98%;
     --primary-foreground: 222.2 47.4% 1.2%;
@@ -51,13 +86,13 @@
     --secondary: 222.2 47.4% 11.2%;
     --secondary-foreground: 210 40% 98%;
 
-    --accent: 220 5.9% 20.0%;
+    --accent: 220 5.9% 20%;
     --accent-foreground: 210 40% 98%;
 
     --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
 
-    --ring: 220 5.9% 20.0%;
+    --ring: 220 5.9% 20%;
 
     --radius: 0.5rem;
   }
@@ -102,4 +137,3 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
-

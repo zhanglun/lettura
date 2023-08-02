@@ -21,7 +21,13 @@ export const Theme = (props: any) => {
       theme: value,
     });
 
-    document.documentElement.dataset.colorScheme = value;
+    console.log("🚀 ~ file: Theme.tsx:26 ~ handleThemeChange ~ value:", value)
+
+    if (value === 'system') {
+      document.documentElement.dataset.colorScheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    } else {
+      document.documentElement.dataset.colorScheme = value;
+    }
   }
 
   return (

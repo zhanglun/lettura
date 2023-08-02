@@ -46,7 +46,9 @@ function App() {
     dataAgent.getUserConfig().then((cfg: any) => {
       const { theme, customize_style } = cfg as UserConfig;
 
-      if (theme) {
+      if (theme === 'system') {
+        document.documentElement.dataset.colorScheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      } else {
         document.documentElement.dataset.colorScheme = theme;
       }
 

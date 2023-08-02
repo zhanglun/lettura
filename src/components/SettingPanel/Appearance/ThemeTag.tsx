@@ -1,12 +1,25 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 export interface ThemeTagProps {
-  scheme: String;
-  name: String;
+  scheme: string;
+  name: string;
 }
 
 export const ThemeTag = (props: ThemeTagProps) => {
   const { scheme = "system", name } = props;
+  const [theme, setTheme] = useState("");
+
+  useEffect(() => {
+    if (scheme === "system") {
+      setTheme(
+        window.matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light"
+      );
+    } else {
+      setTheme(scheme);
+    }
+  }, [scheme]);
 
   return (
     <div className="grid grid-flow-col gap-2 items-center">
@@ -21,7 +34,7 @@ export const ThemeTag = (props: ThemeTagProps) => {
         before:mr-1
         before:bg-primary
         before:text-primary"
-        data-color-scheme={scheme}
+        data-color-scheme={theme}
       >
         Aa
       </span>

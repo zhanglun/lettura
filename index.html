@@ -12,7 +12,7 @@
     <div id="root"></div>
     <script type="module" src="/src/index.tsx"></script>
     <script>
-      document.documentElement.dataset.systemPreference = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.dataset.colorScheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     </script>
   </body>
 </html>
