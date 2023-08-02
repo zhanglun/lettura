@@ -17,7 +17,7 @@ export const useRefresh = () => {
   const getFeedList = () => {
     const initUnreadCount = (
       list: any[],
-      countCache: { [key: string]: number },
+      countCache: { [key: string]: number }
     ) => {
       return list.map((item) => {
         item.unread = countCache[item.uuid] || 0;
@@ -34,7 +34,7 @@ export const useRefresh = () => {
         channel = initUnreadCount(channel, unreadTotal);
         console.log("channel", channel);
         setFeedList(channel);
-      },
+      }
     );
   };
 
@@ -83,31 +83,39 @@ export const useRefresh = () => {
       const limit = pLimit(threads);
       const fns = (feedList || []).map((channel: any) => {
         return limit(() =>
-          loadAndUpdate(channel.item_type, channel.uuid, channel.unread),
+          loadAndUpdate(channel.item_type, channel.uuid, channel.unread)
         );
       });
 
-      Promise.all(fns).then((res) => {
-        // window.setTimeout(() => {
-        setRefreshing(false);
-        setDone(0);
-        getFeedList();
-        // }, 500);
-      });
+      Promise.all(fns)
+        .then((res) => {
+        })
+        .finally(() => {
+          setRefreshing(false);
+          setDone(0);
+          getFeedList();
+          loop();
+        });
     });
   };
 
-  // useEffect(() => {
-  //   if (timeRef.current) {
-  //     clearInterval(timeRef.current)
-  //   }
+  function loop() {
+    if (timeRef.current) {
+      clearTimeout(timeRef.current);
+    }
 
-  //   if (store.userConfig.update_interval) {
-  //     timeRef.current = setInterval(() => {
-  //       startRefresh();
-  //     }, store.userConfig.update_interval * 60 * 60);
-  //   }
-  // }, [store.userConfig.update_interval]);
+    if (store.userConfig.update_interval) {
+      timeRef.current = setTimeout(() => {
+        startRefresh();
+        console.log("%c Line:113 🥕 startRefresh", "color:#42b983");
+        loop();
+      }, store?.userConfig?.update_interval * 60 * 60 * 1000);
+    }
+  }
+
+  useEffect(() => {
+    loop();
+  }, [store.userConfig.update_interval]);
 
   return [
     feedList,
