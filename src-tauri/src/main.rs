@@ -13,7 +13,7 @@ use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 use serde::{Deserialize, Serialize};
 use tauri::{App, AppHandle, GlobalWindowEvent, Manager, WindowEvent, Wry};
 use tokio::{self, sync::mpsc, time};
-use tauri_plugin_log::{LogTarget};
+use tauri_plugin_log::{LogTarget, fern};
 
 mod cmd;
 mod core;
@@ -145,7 +145,7 @@ async fn main() {
         LogTarget::Stdout,
         LogTarget::Webview,
       ])
-      // .with_colors(ColoredLevelConfig::default())
+      .with_colors(fern::colors::ColoredLevelConfig::default())
       .build())
     .setup(move |app| {
       let app_handle = app.handle();
