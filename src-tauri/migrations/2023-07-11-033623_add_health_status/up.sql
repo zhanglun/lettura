@@ -1,3 +1,22 @@
+CREATE TABLE IF NOT EXISTS feeds (
+  id INTEGER NOT NULL PRIMARY KEY,
+  uuid VARCHAR NOT NULL UNIQUE,
+  title VARCHAR NOT NULL,
+  link VARCHAR NOT NULL,
+  feed_url VARCHAR NOT NULL,
+  description VARCHAR NOT NULL,
+  pub_date DATETIME NOT NULL,
+  sync_interval INTEGER NOT NULL DEFAULT 0,
+  last_sync_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  sort INTEGER NOT NULL DEFAULT 0,
+  feed_type VARCHAR NOT NULL DEFAULT "",
+  updated DATETIME, -- feed updated date
+  logo TEXT NOT NULL DEFAULT "",
+  create_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- record insert date
+  update_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- record update date
+  UNIQUE("link", "title")
+);
+
 PRAGMA foreign_keys = 0;
 
 CREATE TABLE sqlitestudio_temp_table AS SELECT *
