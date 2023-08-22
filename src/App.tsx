@@ -21,7 +21,10 @@ import { Appearance } from "./components/SettingPanel/Appearance";
 import "./styles/index.global.scss";
 import { Shortcut } from "./components/SettingPanel/ShortCut";
 
+import { info } from "tauri-plugin-log-api";
 function App() {
+  info("Hello world");
+
   const store = useBearStore((state) => ({
     goPreviousArticle: state.goPreviousArticle,
     goNextArticle: state.goNextArticle,

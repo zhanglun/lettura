@@ -108,6 +108,10 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
               // eslint-disable-next-line react/no-danger
               dangerouslySetInnerHTML={createMarkup(pageContent)}
             />
+            {/*<div*/}
+            {/*  className={classnames("reading-content", "text-detail-paragraph")}>*/}
+            {/*    <iframe src={article.link} className="w-full" allowFullScreen></iframe>*/}
+            {/*  </div>*/}
           </div>
         </div>
       </motion.div>

@@ -79,6 +79,10 @@ const ChannelList = (): JSX.Element => {
     initCollectionMetas();
   }, []);
 
+  useEffect(() => {
+    initCollectionMetas();
+  }, [store.channel]);
+
   const updateCount = (
     feedList: Channel[],
     uuid: string,

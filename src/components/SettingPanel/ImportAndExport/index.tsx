@@ -6,8 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { Channel } from "@/db";
-import { writeTextFile, BaseDirectory } from "@tauri-apps/api/fs";
+import { writeTextFile } from "@tauri-apps/api/fs";
 import { save } from "@tauri-apps/api/dialog";
+import { busChannel } from "@/helpers/busChannel";
 
 export interface ImportItem {
   title: string;
@@ -56,6 +57,7 @@ export const ImportAndExport = (props: any) => {
     return dataAgent
       .addChannel(url)
       .then((res) => {
+        busChannel.emit("getChannels");
         return res;
       })
       .catch(() => {
@@ -188,7 +190,7 @@ export const ImportAndExport = (props: any) => {
               handleFileChange(e);
             }}
           />
-          <Button onClick={importFromOPML} disabled={importing}>
+          <Button onClick={importFromOPML} disabled={importing || !file}>
             Import
             <>{importing ? `${done}/${importedList.length}` : ""}</>
           </Button>
