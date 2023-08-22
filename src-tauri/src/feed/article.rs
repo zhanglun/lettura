@@ -1,8 +1,7 @@
-// use std::cmp;
 use diesel::prelude::*;
 use diesel::sql_types::*;
-// use regex::Regex;
 use serde::{Deserialize, Serialize};
+use log;
 
 use crate::db::establish_connection;
 use crate::models;
@@ -139,7 +138,7 @@ impl Article {
 
     let debug = diesel::debug_query::<diesel::sqlite::Sqlite, _>(&query);
 
-    println!("The insert query: {:?}", debug);
+    log::info!("The insert query: {:?}", debug);
 
     let result = query
       .load::<ArticleQueryItem>(&mut connection)

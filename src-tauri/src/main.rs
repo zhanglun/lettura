@@ -1,6 +1,6 @@
 #![cfg_attr(
-  all(not(debug_assertions), target_os = "windows"),
-  windows_subsystem = "windows"
+all(not(debug_assertions), target_os = "windows"),
+windows_subsystem = "windows"
 )]
 
 #[macro_use]
@@ -13,6 +13,7 @@ use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 use serde::{Deserialize, Serialize};
 use tauri::{App, AppHandle, GlobalWindowEvent, Manager, WindowEvent, Wry};
 use tokio::{self, sync::mpsc, time};
+use tauri_plugin_log::{LogTarget};
 
 mod cmd;
 mod core;
@@ -117,7 +118,6 @@ fn after_setup<'a>(app_handle: &'a AppHandle, mut rx: mpsc::Receiver<AsyncProces
   fn get_now_timestamp() -> i64 {
     Utc::now().timestamp()
   }
-
 }
 
 #[tokio::main]
@@ -136,9 +136,17 @@ async fn main() {
   let window = tauri::Builder::default();
 
   window.manage(AsyncProcInputTx {
-      sender: Mutex::new(async_process_input_tx),
-    })
+    sender: Mutex::new(async_process_input_tx),
+  })
     .menu(core::menu::AppMenu::get_menu(&context))
+    .plugin(tauri_plugin_log::Builder::default()
+      .targets([
+        LogTarget::LogDir,
+        LogTarget::Stdout,
+        LogTarget::Webview,
+      ])
+      // .with_colors(ColoredLevelConfig::default())
+      .build())
     .setup(move |app| {
       let app_handle = app.handle();
 
