@@ -49,6 +49,7 @@ export const AddFeedChannel = (props: any) => {
         }
 
         setFeed(feed);
+        console.log("%c Line:52 🥑 feed", "color:#7f2b82", feed);
         setStep(2);
       })
       .finally(() => {
@@ -102,7 +103,7 @@ export const AddFeedChannel = (props: any) => {
           <Plus size={16} />
         </Icon>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[465px]">
         <DialogHeader>
           <DialogTitle className="text-2xl flex items-center">
             {step === 2 && (
@@ -152,12 +153,19 @@ export const AddFeedChannel = (props: any) => {
           {step === 2 && (
             <div>
               <div className="border rounded p-3 mb-3">
-                <div>
-                  <div>{feed.title}</div>
-                  <div>{feedUrl}</div>
+                <div className="mb-4 flex items-start gap-3">
+                  <div className="rounded-lg overflow-hidden flex-0 w-[80px] h-[80px]">
+                    <img src={feed.logo} className=""/>
+                  </div>
+                  <div className="flex-1">
+                    <div className="text-lg font-bold leading-5 mb-3">{feed.title}</div>
+                    <div className="text-sm text-stone-500 break-all">
+                      {feedUrl}
+                    </div>
+                  </div>
                 </div>
                 <div>
-                  <div>{feed.description}</div>
+                  <div className="text-md">{feed.description}</div>
                 </div>
               </div>
               <div>
