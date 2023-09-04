@@ -277,7 +277,7 @@ const ChannelList = (): JSX.Element => {
 
   return (
     <div
-      className="relative flex flex-col w-[var(--app-channel-width)] h-full select-none border-r border-border text-[hsl(var(--foreground))]
+      className="relative grid grid-col w-[var(--app-channel-width)] h-full select-none border-r border-border text-[hsl(var(--foreground))]
   bg-[hsl(var(--background))]"
     >
       <div className={styles.header}>
@@ -312,7 +312,7 @@ const ChannelList = (): JSX.Element => {
         className="overflow-y-auto pb-3 pl-3 height-[calc(100% - var(--app-toolbar-height))]"
         ref={listRef}
       >
-        <h2 className="mt-8 mb-2 px-4 text-lg font-semibold tracking-tight">
+        <h2 className="mt-6 mb-2 px-4 text-lg font-semibold tracking-tight">
           Collections
         </h2>
         <div>
@@ -389,7 +389,7 @@ const ChannelList = (): JSX.Element => {
             )}
           </div>
         </div>
-        <h2 className="mt-8 mb-2 px-4 text-lg font-semibold tracking-tight">
+        <h2 className="mt-6 mb-2 px-4 text-lg font-semibold tracking-tight">
           Feeds
         </h2>
         <ContextMenu onOpenChange={handleContextMenuChange}>

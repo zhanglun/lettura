@@ -53,7 +53,9 @@ export const General = () => {
       .updateProxy({
         ...cfg,
       })
-      .then((res) => {});
+      .then((res) => {
+        console.log("%c Line:57 🥤 res", "color:#3f7cff", res);
+      });
   };
 
   const handleLocalProxyChange = (key: string, val: string) => {
