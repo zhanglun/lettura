@@ -13,9 +13,9 @@ export const ArticleCardItem = (props: any) => {
     setArticleDialogViewStatus: state.setArticleDialogViewStatus,
     channel: state.channel,
   }));
-  const [highlight, setHighlight] = useState<boolean>();
-  const [readStatus, setReadStatus] = useState(article.read_status);
-  const [banner, setBanner] = useState("");
+  const [ highlight, setHighlight ] = useState<boolean>();
+  const [ readStatus, setReadStatus ] = useState(article.read_status);
+  const [ banner, setBanner ] = useState("");
 
   const updateCurrentArticle = (article: any) => {
     if (article.read_status === 1) {
@@ -35,7 +35,7 @@ export const ArticleCardItem = (props: any) => {
 
   useEffect(() => {
     setReadStatus(article.read_status);
-  }, [article.read_status]);
+  }, [ article.read_status ]);
 
   useEffect(() => {
     setHighlight(store.article?.id === article.id);
@@ -55,77 +55,73 @@ export const ArticleCardItem = (props: any) => {
         // });
       }
     }
-  }, [article]);
+  }, [ article ]);
 
   return (
     <li
-      className={classnames(
-        "list-none rounded-md border border-border overflow-hidden hover:cursor-pointer",
+      className={ classnames(
+        "list-none rounded-md border border-border overflow-hidden hover:cursor-pointer group",
         {
           "text-[hsl(var(--foreground)_/_80%)]": readStatus === 2,
           "bg-article-active-bg": highlight,
         },
-      )}
-      onClick={handleClick}
-      id={article.uuid}
+      ) }
+      onClick={ handleClick }
+      id={ article.uuid }
     >
-      {/*{ readStatus === 1 && (*/}
-      {/*  <div className="absolute left-2 top-50% mt-[-1] w-2 h-2 rounded-full bg-primary"/>*/}
-      {/*) }*/}
-      <div className="relative h-0 before:content-[''] before:inline-block pt-[55%] overflow-hidden bg-muted">
-        <img
-          src={banner}
-          alt="..."
-          className="absolute top-0 left-0 object-cover"
-        />
+      {/*{ readStatus === 1 && (*/ }
+      {/*  <div className="absolute left-2 top-50% mt-[-1] w-2 h-2 rounded-full bg-primary"/>*/ }
+      {/*) }*/ }
+      <div className="relative before:content-[''] before:inline-block h-[55%] overflow-hidden bg-muted bg-cover bg-center group-hover:"
+           style={ { backgroundImage: `url(${banner})` } }>
       </div>
       <div className="p-4 space-y-2">
         <div
-          className={classnames(
+          className={ classnames(
             `${
               highlight
                 ? "text-article-active-headline"
                 : "text-article-headline"
             }`,
             "font-bold text-sm group-hover:text-article-active-headline",
-          )}
+          ) }
         >
-          {article.title}
+          { article.title }
         </div>
         <div className="flex items-center space-x-1">
           <img
-            src={store.channel?.logo || ico}
+            src={ store.channel?.logo || ico }
             alt=""
             className="rounded w-4 mr-1"
           />
           <span className="text-xs">
-            {article.author || article.channel_title}
+            { article.author || article.channel_title }
           </span>
         </div>
         <div className="line-clamp-3">
           <p
-            className={classnames(
+            className={ classnames(
               "text-xs text-article-paragraph group-hover:text-article-active-paragraph",
               {
                 "text-article-active-paragraph": highlight,
               },
-            )}
+            ) }
           >
-            {(article.description || "").replace(/<[^<>]+>/g, "")}
+            { (article.description || "").replace(/<[^<>]+>/g, "") }
           </p>
         </div>
         <div
-          className={classnames(
+          className={ classnames(
             "flex justify-between items-center text-xs text-article-paragraph group-hover:text-article-active-paragraph",
             {
               "text-article-active-paragraph": highlight,
             },
-          )}
+          ) }
         >
           <div>
-            {Dayjs(article.pub_date || article.create_date).format(
+            { Dayjs(article.pub_date || article.create_date).format(
               "YYYY-MM-DD HH:mm",
-            )}
+            ) }
           </div>
         </div>
       </div>
