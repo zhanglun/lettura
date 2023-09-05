@@ -72,8 +72,18 @@ export const ArticleCardItem = (props: any) => {
       {/*{ readStatus === 1 && (*/ }
       {/*  <div className="absolute left-2 top-50% mt-[-1] w-2 h-2 rounded-full bg-primary"/>*/ }
       {/*) }*/ }
-      <div className="relative before:content-[''] before:inline-block h-[55%] overflow-hidden bg-muted bg-cover bg-center group-hover:"
-           style={ { backgroundImage: `url(${banner})` } }>
+      {/*<div className="relative h-[140px] overflow-hidden bg-muted bg-cover bg-center">*/}
+      {/*  <div className="w-full h-full transition-all group-hover:scale-[1.5]" style={ { backgroundImage: `url(${ banner })` } }>*/}
+      {/*  </div>*/}
+      {/*</div>*/}
+      <div className="relative overflow-hidden w-full h-[140px] aspect-[1.57] group">
+          <div className="w-full h-full transition-all bg-center bg-cover group-hover:scale-[1.5]" style={ { backgroundImage: `url(${ banner })` } }>
+          </div>
+        <div className="
+            absolute left-0 right-0 bottom-0 top-0 transition-all
+            p-2 bg-gradient-to-r from-black/50 to-black/0 group-hover:from-white/0 group-hover:to-white/0
+          ">
+        </div>
       </div>
       <div className="p-4 space-y-2">
         <div
@@ -83,7 +93,7 @@ export const ArticleCardItem = (props: any) => {
                 ? "text-article-active-headline"
                 : "text-article-headline"
             }`,
-            "font-bold text-sm group-hover:text-article-active-headline",
+            "font-bold text-sm group-hover:text-article-active-headline line-clamp-2",
           ) }
         >
           { article.title }
