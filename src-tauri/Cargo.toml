@@ -35,6 +35,7 @@ base64="*"
 once_cell = "*"
 log="^0.4"
 tauri-plugin-log = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "dev", features = ["colored"]  }
+actix-web = "4"
 
 [features]
 default = [ "custom-protocol" ]
