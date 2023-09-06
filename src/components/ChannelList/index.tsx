@@ -20,7 +20,6 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import { Icon } from "../Icon";
-import { FeedItem } from "./Item";
 import { DialogUnsubscribeFeed } from "../SettingPanel/Content/DialogUnsubscribeFeed";
 import { useModal } from "../Modal/useModal";
 import { open } from "@tauri-apps/api/shell";

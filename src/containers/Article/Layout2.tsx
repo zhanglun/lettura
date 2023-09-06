@@ -1,14 +1,22 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { ArticleLineList } from "@/components/ArticleList/LineList";
 import { useQuery } from "@/helpers/parseXML";
+import { ScrollBoxRefObject } from "@/components/ArticleView/ScrollBox";
+import { useBearStore } from "@/hooks/useBearStore";
 
 export const Layout2 = (): JSX.Element => {
   // @ts-ignore
   const params: { name: string } = useParams();
+  const store = useBearStore((state) => ({
+    article: state.article,
+  }));
   const [feedUrl, type, channelUuid] = useQuery();
+  const scrollBoxRef = useRef<ScrollBoxRefObject>(null);
 
-  // TODO: reuse scroll to top
+  useEffect(() => {
+    scrollBoxRef.current?.scrollToTop();
+  }, [store.article]);
 
   return (
     <ArticleLineList

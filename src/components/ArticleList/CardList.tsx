@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 import { useBearStore } from "@/hooks/useBearStore";
 import { ArticleListProps } from "@/components/ArticleList/index";
 import { useArticleListHook } from "@/components/ArticleList/hooks";
@@ -21,7 +22,13 @@ export const ArticleCardList = (props: ArticleListProps): JSX.Element => {
 
   const renderList = (): JSX.Element[] => {
     return (store.articleList || []).map((article: any, idx: number) => {
-      return <ArticleCardItem article={article} key={article.id} />;
+      return <motion.div
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        initial={{ opacity: 0, y: 30 }}
+      >
+        <ArticleCardItem article={article} key={article.id} />
+      </motion.div>
     });
   };
 
