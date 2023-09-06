@@ -53,6 +53,8 @@ export const useArticleListHook = (props: { feedUuid: string | null }) => {
     setLoading(true);
 
     fn.then((res: any) => {
+      console.log('res ===> ', feedUuid, res);
+
       if (res.length === 0) {
         setHasMore(false);
       }
@@ -71,11 +73,13 @@ export const useArticleListHook = (props: { feedUuid: string | null }) => {
       store.setCursor(1);
 
       setHasMore(true);
+
       getList();
     }
   }, [feedUuid, store.currentFilter, isToday, isAll]);
 
   useEffect(() => {
+    console.log('store.cursor', store.cursor);
     getList();
   }, [store.cursor]);
 
@@ -94,10 +98,11 @@ export const useArticleListHook = (props: { feedUuid: string | null }) => {
       observer: IntersectionObserver,
     ) => {
       entries.forEach((entry) => {
-        console.log(entry);
-
-        if (entry.isIntersecting && !loading && hasMore) {
+        if (entry.isIntersecting && !loading && hasMore && store.articleList.length) {
+          console.log('interaction update cursor ====>')
           store.setCursor(store.cursor + 1);
+        } else if(entry.isIntersecting && store.articleList.length === 0) {
+          store.setCursor(1);
         }
       });
     };
@@ -111,7 +116,7 @@ export const useArticleListHook = (props: { feedUuid: string | null }) => {
         observer.unobserve($target);
       }
     };
-  }, [loading]);
+  }, [loading, store.articleList]);
 
   function goPrev() {
     console.warn("goPrev");

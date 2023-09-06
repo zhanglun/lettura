@@ -26,12 +26,6 @@ use std::env;
 
 pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!("./migrations");
 
-// the payload type must implement `Serialize` and `Clone`.
-#[derive(Clone, serde::Serialize)]
-struct Payload {
-  message: String,
-}
-
 fn handle_window_event(event: GlobalWindowEvent<Wry>) {
   let window = event.window();
   // let app = window.app_handle();
