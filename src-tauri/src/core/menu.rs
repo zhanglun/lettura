@@ -1,4 +1,4 @@
-use tauri::{AppHandle, utils::assets::EmbeddedAssets};
+use tauri::{utils::assets::EmbeddedAssets};
 use tauri::{AboutMetadata, CustomMenuItem, Menu, MenuItem, Submenu, Context, WindowMenuEvent};
 pub struct AppMenu {
 

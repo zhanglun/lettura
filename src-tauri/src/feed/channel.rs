@@ -12,7 +12,7 @@ use crate::models;
 use crate::feed;
 use crate::schema;
 
-use super::folder;
+
 
 pub fn get_feed_by_uuid(channel_uuid: &str) -> Option<models::Feed> {
   let mut connection = db::establish_connection();
@@ -106,7 +106,7 @@ pub fn update_health_status(uuid: &str, health_status: i32, failure_reason: Stri
   let mut connection = db::establish_connection();
 
   match feed::channel::get_feed_by_uuid(uuid) {
-    Some(channel) => {
+    Some(_channel) => {
       let sync_date = Local::now();
 
     let updated_row = diesel::update(
@@ -603,7 +603,7 @@ pub async fn update_icon(uuid: &str, url: &str) -> usize {
       .filter(schema::feeds::uuid.eq(uuid))
       .first::<models::Feed>(&mut connection)
   {
-      Ok(feed) => {
+      Ok(_feed) => {
           if let Some(url) = fetch_site_favicon(url).await {
               println!("url {:?}", url);
 

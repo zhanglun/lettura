@@ -11,8 +11,8 @@ extern crate dotenv;
 use chrono::offset::Utc;
 use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 use serde::{Deserialize, Serialize};
-use tauri::{App, AppHandle, GlobalWindowEvent, Manager, WindowEvent, Wry};
-use tokio::{self, sync::mpsc, time};
+use tauri::{AppHandle, GlobalWindowEvent, Manager, WindowEvent, Wry};
+use tokio::{self, sync::mpsc};
 use tauri_plugin_log::{LogTarget, fern};
 
 mod cmd;
@@ -21,6 +21,7 @@ mod db;
 mod feed;
 mod models;
 mod schema;
+mod server;
 
 use std::env;
 
@@ -63,7 +64,7 @@ fn send_to_webview<R: tauri::Runtime>(
 }
 
 
-fn after_setup<'a>(app_handle: &'a AppHandle, mut rx: mpsc::Receiver<AsyncProcessMessage>) {
+fn after_setup<'a>(_app_handle: &'a AppHandle, _rx: mpsc::Receiver<AsyncProcessMessage>) {
   // fn create_interval_task<'a>(app_handle: &'a AppHandle) -> tauri::async_runtime::JoinHandle<()> {
   //   let interval_task = tauri::async_runtime::spawn(async {
   //     let update_interval = core::config::get_user_config().unwrap().update_interval;
@@ -133,14 +134,14 @@ async fn main() {
     sender: Mutex::new(async_process_input_tx),
   })
     .menu(core::menu::AppMenu::get_menu(&context))
-    .plugin(tauri_plugin_log::Builder::default()
-      .targets([
-        LogTarget::LogDir,
-        LogTarget::Stdout,
-        LogTarget::Webview,
-      ])
-      .with_colors(fern::colors::ColoredLevelConfig::default())
-      .build())
+    // .plugin(tauri_plugin_log::Builder::default()
+    //   .targets([
+    //     LogTarget::LogDir,
+    //     LogTarget::Stdout,
+    //     LogTarget::Webview,
+    //   ])
+    //   .with_colors(fern::colors::ColoredLevelConfig::default())
+    //   .build())
     .setup(move |app| {
       let app_handle = app.handle();
 
@@ -149,13 +150,18 @@ async fn main() {
       let _env = env::var("LETTURA_ENV");
 
       match _env {
-        Ok(env) => {
+        Ok(_env) => {
           main_window.set_title("Lettura dev").unwrap();
         }
         Err(_) => {}
       }
 
-      after_setup(&app_handle, async_process_input_rx);
+      let boxed_handle = Box::new(app_handle);
+
+      std::thread::spawn(move || {
+        server::init(*boxed_handle).unwrap();
+      });
+
       Ok(())
     })
     .on_menu_event(core::menu::AppMenu::on_menu_event)

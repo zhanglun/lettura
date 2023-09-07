@@ -4,7 +4,7 @@ use scraper::{self, Selector};
 use serde::Serialize;
 use tokio::sync::{Mutex};
 use std::sync::Arc;
-use tokio::sync::mpsc::{channel, Sender};
+use tokio::sync::mpsc::{channel};
 
 #[derive(Debug, Default, Serialize)]
 pub struct PageScraper {
@@ -92,7 +92,7 @@ impl PageScraper {
 
   pub async fn get_first_images_or_og_images_async(
     urls: Vec<String>,
-    max_concurrency: usize,
+    _max_concurrency: usize,
   ) -> Vec<(String, Option<String>)> {
     let (tx, mut rx) = channel(urls.len());
     let counter = Arc::new(Mutex::new(0));
@@ -110,7 +110,7 @@ impl PageScraper {
 
     }
 
-    let counter_clone = counter.clone();
+    let _counter_clone = counter.clone();
     let mut image_urls = vec![];
     while let Some((url, image_url)) = rx.recv().await {
       image_urls.push((url, image_url));
