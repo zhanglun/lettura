@@ -138,7 +138,7 @@ impl Article {
 
     let debug = diesel::debug_query::<diesel::sqlite::Sqlite, _>(&query);
 
-    log::info!("The insert query: {:?}", debug);
+    println!("The insert query: {:?}", debug);
 
     let result = query
       .load::<ArticleQueryItem>(&mut connection)

@@ -21,7 +21,7 @@ pub async fn init(app: AppHandle) -> std::io::Result<()> {
     App::new()
       .app_data(tauri_app.clone())
       .wrap(middleware::Logger::default())
-      .service(handlers::article::handle_test)
+      .configure(handlers::article::config)
   })
     .bind(("127.0.0.1", 1105))?
     .run()
