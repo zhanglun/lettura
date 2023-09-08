@@ -1,5 +1,6 @@
 import { invoke } from "@tauri-apps/api";
 import { Article, Channel, Folder } from "../db";
+import { request } from "@/helpers/request";
 
 export const getChannels = async (
   filter: any,
@@ -70,7 +71,20 @@ export const importChannels = async (list: string[]) => {
 };
 
 export const getArticleList = async (uuid: string | undefined, filter: any) => {
-  return invoke("get_articles", { uuid, filter });
+  console.log('ppp: %o', {params: {
+    uuid,
+  ...filter,
+  }});
+  const req = request.get('articles', {
+    params: {
+      channel_uuid: uuid,
+      ...filter,
+    }
+  });
+
+  console.log(req)
+  return req;
+  // return invoke("get_articles", { uuid, filter });
 };
 
 export const getTodayArticleList = async (filter: any) => {

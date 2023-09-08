@@ -133,6 +133,7 @@ export const useBearStore = create<BearStore>()(
         const currentList = get().articleList;
 
         return dataAgent.getArticleList(uuid, filter).then((res) => {
+          console.log('res ====?', res);
           const { list } = res as { list: Article[] };
 
           get().setArticleList([...currentList, ...list]);
