@@ -14,7 +14,7 @@ import "react-complex-tree/lib/style-modern.css";
 
 import { Channel } from "@/db";
 import { FeedItem, renderItemArrow } from "./Item";
-import { useBearStore } from "@/hooks/useBearStore";
+import { useBearStore } from "@/stores";
 
 export interface TestTreeProps {
   treeData: any;
@@ -27,7 +27,7 @@ export const TestTree = (props: TestTreeProps) => {
   const [expandedItems, setExpandedItems] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
   const store = useBearStore((state) => ({
-    channel: state.channel,
+    feed: state.feed,
   }));
 
   function renderItem<T>(props: {
@@ -41,7 +41,7 @@ export const TestTree = (props: TestTreeProps) => {
   }) {
     const { item, depth, context, children, title, arrow } = props;
     const { uuid } = item.data as Channel;
-    const isActive = store?.channel?.uuid === uuid;
+    const isActive = store?.feed?.uuid === uuid;
     // const isActive = activeUuid === uuid;
 
     return (

@@ -1,7 +1,7 @@
 import React, { ForwardedRef, useEffect, useState } from "react";
 import classnames from "classnames";
 import Dayjs from "dayjs";
-import { useBearStore } from "@/hooks/useBearStore";
+import { useBearStore } from "@/stores";
 import { getChannelFavicon } from "@/helpers/parseXML";
 
 export const ArticleItem = React.forwardRef(
@@ -9,7 +9,7 @@ export const ArticleItem = React.forwardRef(
     const store = useBearStore((state) => ({
       updateArticleAndIdx: state.updateArticleAndIdx,
       article: state.article,
-      channel: state.channel,
+      feed: state.feed,
     }));
     const { article } = props;
     const [highlight, setHighlight] = useState<boolean>();
@@ -89,7 +89,7 @@ export const ArticleItem = React.forwardRef(
         >
           <div className={classnames("flex items-center")}>
             <img
-              src={store.channel?.logo || ico}
+              src={store.feed?.logo || ico}
               alt=""
               className="rounded w-4 mr-1"
             />

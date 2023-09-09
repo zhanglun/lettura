@@ -15,7 +15,7 @@ import { useToast } from "@/components/ui/use-toast";
 import Dayjs from "dayjs";
 import { Separator } from "@/components/ui/separator";
 import { Link2 } from "lucide-react";
-import { useBearStore } from "@/hooks/useBearStore";
+import { useBearStore } from "@/stores";
 
 export interface DialogEditFeedProps {
   feed: Channel | null;

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useMatch } from "react-router-dom";
-import { useBearStore } from "@/hooks/useBearStore";
+import { useBearStore } from "@/stores";
 import { useShortcut } from "@/hooks/useShortcut";
 import { RouteConfig } from "@/config";
 import { busChannel } from "@/helpers/busChannel";

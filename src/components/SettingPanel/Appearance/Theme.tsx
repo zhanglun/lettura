@@ -6,7 +6,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useBearStore } from "@/hooks/useBearStore";
+import { useBearStore } from "@/stores";
 import { ThemeTag } from "./ThemeTag";
 
 export const Theme = (props: any) => {

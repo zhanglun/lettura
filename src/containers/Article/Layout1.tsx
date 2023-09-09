@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { ArticleList } from "@/components/ArticleList";
 import { ArticleView } from "@/components/ArticleView";
-import { useBearStore } from "@/hooks/useBearStore";
+import { useBearStore } from "@/stores";
 import { useQuery } from "@/helpers/parseXML";
 import styles from "./index.module.scss";
 import {
@@ -18,7 +18,7 @@ export const Layout1 = (): JSX.Element => {
     articleList: state.articleList,
     setArticle: state.setArticle,
     updateArticleAndIdx: state.updateArticleAndIdx,
-    channel: state.channel,
+    feed: state.feed,
 
     filterList: state.filterList,
     currentFilter: state.currentFilter,

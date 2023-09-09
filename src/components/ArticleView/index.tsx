@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import styles from "./view.module.scss";
-import { useBearStore } from "@/hooks/useBearStore";
+import { useBearStore } from "@/stores";
 import { ArticleDetail } from "@/components/ArticleView/Detail";
 
 type ArticleViewProps = {
@@ -10,7 +10,7 @@ type ArticleViewProps = {
 
 export const ArticleView = (props: ArticleViewProps): JSX.Element => {
   const store = useBearStore((state) => ({
-    channel: state.channel,
+    feed: state.feed,
   }));
   const { article, userConfig } = props;
   const renderPlaceholder = () => {

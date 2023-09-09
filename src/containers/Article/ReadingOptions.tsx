@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Icon } from "@/components/Icon";
 import { ExternalLink, Ghost, Link, Paintbrush, Share } from "lucide-react";
-import { useBearStore } from "@/hooks/useBearStore";
+import { useBearStore } from "@/stores";
 import { Article } from "@/db";
 import {
   Popover,
@@ -30,7 +30,7 @@ export const ReadingOptions = (props: NavigatorProps) => {
     articleList: state.articleList,
     setArticle: state.setArticle,
     updateArticleAndIdx: state.updateArticleAndIdx,
-    channel: state.channel,
+    feed: state.feed,
 
     articleDialogViewStatus: state.articleDialogViewStatus,
     setArticleDialogViewStatus: state.setArticleDialogViewStatus,

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { ChevronDown, ChevronRight, Folder, FolderOpen } from "lucide-react";
 import { getChannelFavicon } from "@/helpers/parseXML";
 import { RouteConfig } from "@/config";
-import { useBearStore } from "@/hooks/useBearStore";
+import { useBearStore } from "@/stores";
 import { useNavigate } from "react-router-dom";
 import classNames from "classnames";
 import { TreeItemRenderContext, TreeItem } from "react-complex-tree";
@@ -54,8 +54,8 @@ export const renderItemArrow = ({
 export const FeedItem = React.forwardRef((props: FeedItemProps, ref: any) => {
   const navigate = useNavigate();
   const store = useBearStore((state) => ({
-    channel: state.channel,
-    setChannel: state.setChannel,
+    feed: state.feed,
+    setFeed: state.setFeed,
     getFeedList: state.getFeedList,
     setFeedContextMenuTarget: state.setFeedContextMenuTarget,
     feedContextMenuTarget: state.feedContextMenuTarget,
@@ -78,7 +78,7 @@ export const FeedItem = React.forwardRef((props: FeedItemProps, ref: any) => {
         {...itemContainerWithChildrenProps}
         key={feed.title}
         onClick={() => {
-          store.setChannel(feed);
+          store.setFeed(feed);
           navigate(
             `${RouteConfig.CHANNEL.replace(/:uuid/, feed.uuid)}?channelUuid=${
               feed.uuid

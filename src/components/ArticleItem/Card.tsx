@@ -1,7 +1,7 @@
 import React, { ForwardedRef, useEffect, useState } from "react";
 import classnames from "classnames";
 import Dayjs from "dayjs";
-import { useBearStore } from "@/hooks/useBearStore";
+import { useBearStore } from "@/stores";
 import { getChannelFavicon } from "@/helpers/parseXML";
 import * as dataAgent from "@/helpers/dataAgent";
 
@@ -11,7 +11,7 @@ export const ArticleCardItem = (props: any) => {
     updateArticleAndIdx: state.updateArticleAndIdx,
     article: state.article,
     setArticleDialogViewStatus: state.setArticleDialogViewStatus,
-    channel: state.channel,
+    feed: state.feed,
   }));
   const [ highlight, setHighlight ] = useState<boolean>();
   const [ readStatus, setReadStatus ] = useState(article.read_status);
@@ -100,7 +100,7 @@ export const ArticleCardItem = (props: any) => {
         </div>
         <div className="flex items-center space-x-1">
           <img
-            src={ store.channel?.logo || ico }
+            src={ store.feed?.logo || ico }
             alt=""
             className="rounded w-4 mr-1"
           />

@@ -4,7 +4,7 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import { appWindow } from "@tauri-apps/api/window";
 import { Outlet } from "react-router-dom";
 import { ChannelList } from "./components/ChannelList";
-import { useBearStore } from "./hooks/useBearStore";
+import { useBearStore } from "@/stores";
 import * as dataAgent from "./helpers/dataAgent";
 
 import { BrowserRouter, Route, Routes } from "react-router-dom";
@@ -21,9 +21,7 @@ import { Appearance } from "./components/SettingPanel/Appearance";
 import "./styles/index.global.scss";
 import { Shortcut } from "./components/SettingPanel/ShortCut";
 
-import { info } from "tauri-plugin-log-api";
 function App() {
-  info("Hello world");
 
   const store = useBearStore((state) => ({
     goPreviousArticle: state.goPreviousArticle,

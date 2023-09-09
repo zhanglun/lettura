@@ -7,7 +7,7 @@ import { RouteConfig } from "@/config";
 import { Channel } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
 import { busChannel } from "@/helpers/busChannel";
-import { useBearStore } from "@/hooks/useBearStore";
+import { useBearStore } from "@/stores";
 import { AddFeedChannel } from "../AddFeed";
 import { AddFolder } from "../AddFolder";
 import { TestTree } from "./TestTree";
@@ -48,8 +48,8 @@ const ChannelList = (): JSX.Element => {
     startFresh,
   ] = useRefresh();
   const store = useBearStore((state) => ({
-    channel: state.channel,
-    setChannel: state.setChannel,
+    feed: state.feed,
+    setFeed: state.setFeed,
     updateFeed: state.updateFeed,
     feedContextMenuTarget: state.feedContextMenuTarget,
     setFeedContextMenuTarget: state.setFeedContextMenuTarget,
@@ -80,7 +80,8 @@ const ChannelList = (): JSX.Element => {
 
   useEffect(() => {
     initCollectionMetas();
-  }, [store.channel]);
+    console.log('store.feed', store.feed)
+  }, [store.feed]);
 
   const updateCount = (
     feedList: Channel[],
@@ -192,7 +193,7 @@ const ChannelList = (): JSX.Element => {
   useEffect(() => {
     feedList.forEach((feed) => {
       if (feed.uuid === channelUuid) {
-        store.setChannel(feed);
+        store.setFeed(feed);
       }
     });
   }, [channelUuid, feedList]);
@@ -323,7 +324,7 @@ const ChannelList = (): JSX.Element => {
               }
             )}
             onClick={() => {
-              store.setChannel(null);
+              store.setFeed(null);
               store.setViewMeta({
                 title: "Today",
                 isToday: true,
@@ -359,7 +360,7 @@ const ChannelList = (): JSX.Element => {
               }
             )}
             onClick={() => {
-              store.setChannel(null);
+              store.setFeed(null);
               store.setViewMeta({
                 title: "All Items",
                 isToday: false,
@@ -393,7 +394,7 @@ const ChannelList = (): JSX.Element => {
         </h2>
         <ContextMenu onOpenChange={handleContextMenuChange}>
           <ContextMenuTrigger className="w-full">
-            <TestTree treeData={treeData} activeUuid={store?.channel?.uuid} />
+            <TestTree treeData={treeData} activeUuid={store?.feed?.uuid} />
           </ContextMenuTrigger>
           <ContextMenuContent>
             {store.feedContextMenuTarget?.item_type === "folder" && (

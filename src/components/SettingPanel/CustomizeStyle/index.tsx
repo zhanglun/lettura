@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Slider } from "@/components/ui/slider";
-import { useBearStore } from "../../../hooks/useBearStore";
+import { useBearStore } from "@/stores";
 import {
   Select,
   SelectContent,

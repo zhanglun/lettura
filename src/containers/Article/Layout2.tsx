@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { ArticleLineList } from "@/components/ArticleList/LineList";
 import { useQuery } from "@/helpers/parseXML";
 import { ScrollBoxRefObject } from "@/components/ArticleView/ScrollBox";
-import { useBearStore } from "@/hooks/useBearStore";
+import { useBearStore } from "@/stores";
 
 export const Layout2 = (): JSX.Element => {
   // @ts-ignore

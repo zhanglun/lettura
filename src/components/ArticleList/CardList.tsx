@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { useBearStore } from "@/hooks/useBearStore";
+import { useBearStore } from "@/stores";
 import { ArticleListProps } from "@/components/ArticleList/index";
 import { useArticleListHook } from "@/components/ArticleList/hooks";
 import { ArticleCardItem } from "@/components/ArticleItem/Card";

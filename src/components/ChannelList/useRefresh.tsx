@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import pLimit from "p-limit";
 import { Channel } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
-import { useBearStore } from "@/hooks/useBearStore";
+import { useBearStore } from "@/stores";
 
 export const useRefresh = () => {
   const store = useBearStore((state) => ({

@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useBearStore } from "@/hooks/useBearStore";
+import { useBearStore } from "@/stores";
 import { Article } from "@/db";
 
 export interface UseAutoScrollProps {

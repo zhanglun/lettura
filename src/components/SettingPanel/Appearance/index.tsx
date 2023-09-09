@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Panel, PanelSection } from "../Panel";
 import { CustomizeStyle } from "@/components/SettingPanel/CustomizeStyle";
-import { useBearStore } from "@/hooks/useBearStore";
+import { useBearStore } from "@/stores";
 import classNames from "classnames";
 import { Theme } from "./Theme";
 // import { ColorTheme } from "./ColorTheme";

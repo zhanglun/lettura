@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import classNames from "classnames";
 import { ArticleListRefType } from "@/components/ArticleList";
 import * as dataAgent from "../../helpers/dataAgent";
-import { useBearStore } from "@/hooks/useBearStore";
+import { useBearStore } from "@/stores";
 import styles from "./index.module.scss";
 import {
   Filter,
@@ -44,7 +44,7 @@ export const ArticleContainer = (): JSX.Element => {
     articleList: state.articleList,
     setArticle: state.setArticle,
     updateArticleAndIdx: state.updateArticleAndIdx,
-    channel: state.channel,
+    feed: state.feed,
 
     articleDialogViewStatus: state.articleDialogViewStatus,
     setArticleDialogViewStatus: state.setArticleDialogViewStatus,
@@ -143,13 +143,13 @@ export const ArticleContainer = (): JSX.Element => {
   };
 
   const syncArticles = () => {
-    if (store.channel?.uuid) {
+    if (store.feed?.uuid) {
       setSyncing(true);
 
       dataAgent
         .syncArticlesWithChannelUuid(
-          store.channel?.item_type as string,
-          store.channel?.uuid as string,
+          store.feed?.item_type as string,
+          store.feed?.uuid as string,
         )
         .then((res) => {
           const [num, uuid, message] = res[0];
@@ -167,7 +167,7 @@ export const ArticleContainer = (): JSX.Element => {
           } else {
             getArticleList();
             busChannel.emit("updateChannelUnreadCount", {
-              uuid: store.channel?.uuid as string,
+              uuid: store.feed?.uuid as string,
               isToday: true,
               action: "increase",
               count: num || 0,
@@ -189,15 +189,15 @@ export const ArticleContainer = (): JSX.Element => {
   };
 
   const markAllRead = () => {
-    console.log("%c Line:172 🍡 store.channel", "color:#e41a6a", store.channel);
+    console.log("%c Line:172 🍡 store.feed", "color:#e41a6a", store.feed);
 
-    if (store.channel) {
+    if (store.feed) {
       return store
-        .markArticleListAsRead(store.channel.uuid)
+        .markArticleListAsRead(store.feed.uuid)
         .then((res: any) => {
           console.log("%c Line:176 🍖 res", "color:#93c0a4", res);
           busChannel.emit("updateChannelUnreadCount", {
-            uuid: store.channel?.uuid as string,
+            uuid: store.feed?.uuid as string,
             isToday: false,
             action: "set",
             count: 0,
@@ -233,9 +233,9 @@ export const ArticleContainer = (): JSX.Element => {
 
   useEffect(() => {
     console.log(
-      "%c Line:211 🥤 store.channel?.uuid",
+      "%c Line:211 🥤 store.feed?.uuid",
       "color:#fca650",
-      store.channel?.uuid,
+      store.feed?.uuid,
     );
 
     if (listRef.current !== null) {
@@ -243,7 +243,7 @@ export const ArticleContainer = (): JSX.Element => {
     }
 
     setCurrentIdx(-1);
-  }, [store.channel?.uuid]);
+  }, [store.feed?.uuid]);
 
   return (
     <div className={classNames(styles.article)}>

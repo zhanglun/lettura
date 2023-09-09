@@ -1,7 +1,7 @@
 import React, { ForwardedRef, useEffect, useState } from "react";
 import classnames from "classnames";
 import Dayjs from "dayjs";
-import { useBearStore } from "@/hooks/useBearStore";
+import { useBearStore } from "@/stores";
 import { getChannelFavicon } from "@/helpers/parseXML";
 
 export const ArticleLineItem = (props: any) => {

@@ -1,6 +1,6 @@
 import React from "react";
 import { ArticleItem } from "../ArticleItem";
-import { useBearStore } from "@/hooks/useBearStore";
+import { useBearStore } from "@/stores";
 import { useArticleListHook } from "./hooks";
 import { Skeleton } from "../ui/skeleton";
 import { useAutoScroll } from "@/hooks/useAutoScroll";

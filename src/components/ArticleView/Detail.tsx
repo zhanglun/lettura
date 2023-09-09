@@ -3,7 +3,7 @@ import classnames from "classnames";
 import styles from "@/components/ArticleView/view.module.scss";
 import Dayjs from "dayjs";
 import { getChannelFavicon } from "@/helpers/parseXML";
-import { useBearStore } from "@/hooks/useBearStore";
+import { useBearStore } from "@/stores";
 import * as dataAgent from "@/helpers/dataAgent";
 import { motion, AnimatePresence } from "framer-motion";
 import { fetch } from "@tauri-apps/api/http";
@@ -19,7 +19,7 @@ export interface ArticleDetailProps {
 export const ArticleDetail = (props: ArticleDetailProps) => {
   const { article } = props;
   const store = useBearStore((state) => ({
-    channel: state.channel,
+    feed: state.feed,
   }));
   const { pub_date, channel_link } = article;
   const ico = getChannelFavicon(channel_link);
@@ -75,7 +75,7 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
             <div className={classnames(styles.meta)}>
               <span className={styles.channelInfo}>
                 <img
-                  src={store.channel?.logo || ico}
+                  src={store.feed?.logo || ico}
                   alt=""
                   className="rounded"
                 />

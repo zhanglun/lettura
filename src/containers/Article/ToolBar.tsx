@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Icon } from "@/components/Icon";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { useBearStore } from "@/hooks/useBearStore";
+import { useBearStore } from "@/stores";
 
 export interface NavigatorProps {
   listRef?: any;
