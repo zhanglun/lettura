@@ -22,7 +22,7 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
   };
 
   return (
-    <div className={styles.container}>
+    <div className=" py-1 px-10 font-[var(--reading-font-body)] min-h-full m-auto sm:px-5 sm:max-w-xl lg:px-10 lg:max-w-5xl">
       {article ? <ArticleDetail article={article} /> : renderPlaceholder()}
     </div>
   );

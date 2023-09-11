@@ -27,6 +27,7 @@ import { DialogEditFeed } from "@/components/SettingPanel/Content/DialogEditFeed
 import { useQuery } from "@/helpers/parseXML";
 import styles from "./channel.module.scss";
 import { useRefresh } from "./useRefresh";
+import { TooltipBox } from "../TooltipBox";
 
 const ChannelList = (): JSX.Element => {
   const isToday = useMatch(RouteConfig.TODAY);
@@ -80,7 +81,7 @@ const ChannelList = (): JSX.Element => {
 
   useEffect(() => {
     initCollectionMetas();
-    console.log('store.feed', store.feed)
+    console.log("store.feed", store.feed);
   }, [store.feed]);
 
   const updateCount = (
@@ -292,7 +293,9 @@ const ChannelList = (): JSX.Element => {
             afterCancel={() => store.setFeedContextMenuTarget(null)}
             trigger={
               <Icon>
-                <Folder size={16} />
+                <TooltipBox message="Add folder">
+                  <Folder size={16} />
+                </TooltipBox>
               </Icon>
             }
           />

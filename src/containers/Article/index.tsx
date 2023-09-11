@@ -159,6 +159,7 @@ export const ArticleContainer = (): JSX.Element => {
           if (message) {
             toast({
               title: "Something wrong!",
+              variant: "destructive",
               description: message,
               action: (
                 <ToastAction altText="Goto schedule to undo">Close</ToastAction>
@@ -171,6 +172,13 @@ export const ArticleContainer = (): JSX.Element => {
               isToday: true,
               action: "increase",
               count: num || 0,
+            });
+            toast({
+              title: "Success",
+              description: message,
+              action: (
+                <ToastAction altText="Goto schedule to undo">Close</ToastAction>
+              ),
             });
           }
         })

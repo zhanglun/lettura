@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Icon } from "../Icon";
 import { ArrowLeft, Loader2, Plus } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { TooltipBox } from "../TooltipBox";
 
 export const AddFeedChannel = (props: any) => {
   const [showStatus, , , , toggleModal] = useModal();
@@ -100,7 +101,9 @@ export const AddFeedChannel = (props: any) => {
     <Dialog open={showStatus} onOpenChange={handleStatusChange}>
       <DialogTrigger asChild>
         <Icon>
-          <Plus size={16} />
+          <TooltipBox message="Add feed">
+            <Plus size={16} />
+          </TooltipBox>
         </Icon>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[465px]">
@@ -155,10 +158,12 @@ export const AddFeedChannel = (props: any) => {
               <div className="border rounded p-3 mb-3">
                 <div className="mb-4 flex items-start gap-3">
                   <div className="rounded-lg overflow-hidden flex-0 w-[80px] h-[80px]">
-                    <img src={feed.logo} className=""/>
+                    <img src={feed.logo} className="" />
                   </div>
                   <div className="flex-1">
-                    <div className="text-lg font-bold leading-5 mb-3">{feed.title}</div>
+                    <div className="text-lg font-bold leading-5 mb-3">
+                      {feed.title}
+                    </div>
                     <div className="text-sm text-stone-500 break-all">
                       {feedUrl}
                     </div>
