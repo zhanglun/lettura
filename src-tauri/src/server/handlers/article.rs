@@ -1,6 +1,5 @@
-use actix_web::{get, post, web, App, HttpResponse, HttpRequest, HttpServer, Responder, Result};
-use serde::{Serialize, Deserialize};
-use log;
+use actix_web::{get, post, web, App, HttpRequest, HttpResponse, HttpServer, Responder, Result};
+use serde::{Deserialize, Serialize};
 
 use crate::feed;
 
@@ -18,8 +17,17 @@ pub async fn handle_test(name: web::Path<String>) -> Result<impl Responder> {
   Ok(web::Json(obj))
 }
 
+#[get("/api/collection-metas")]
+pub async fn handle_collection_metas() -> Result<impl Responder> {
+  let obj = feed::article::Article::get_collection_metas();
+
+  Ok(web::Json(obj))
+}
+
 #[get("/api/articles")]
-pub async fn handle_articles(req: HttpRequest, query: web::Query<feed::article::ArticleFilter>) -> Result<impl Responder> {
+pub async fn handle_articles(
+  query: web::Query<feed::article::ArticleFilter>,
+) -> Result<impl Responder> {
   println!("{:?}", query);
 
   let obj = feed::article::ArticleFilter {
@@ -37,14 +45,15 @@ pub async fn handle_articles(req: HttpRequest, query: web::Query<feed::article::
 #[get("/api/articles/today")]
 pub async fn handle_today_articles() -> Result<impl Responder> {
   let obj = MyObj {
-    name: "hahah".to_string()
+    name: "hahah".to_string(),
   };
 
   Ok(web::Json(obj))
 }
 
-
 pub fn config(cfg: &mut web::ServiceConfig) {
-  cfg.service(handle_test)
+  cfg
+    .service(handle_test)
+    .service(handle_collection_metas)
     .service(handle_articles);
 }

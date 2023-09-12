@@ -11,7 +11,6 @@ export const busChannel = eventbus<{
     count: number;
   }) => void;
 
-  updateCollectionMeta: () => void;
   reloadArticleList: () => void;
 
   goPreviousArticle: () => void;

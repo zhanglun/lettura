@@ -209,7 +209,6 @@ export const ArticleContainer = (): JSX.Element => {
           action: "set",
           count: 0,
         });
-        busChannel.emit("updateCollectionMeta");
       });
     }
 

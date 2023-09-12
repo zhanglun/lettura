@@ -3,6 +3,7 @@ import dayjs from "dayjs";
 import { ArticleResItem } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
 import { busChannel } from "@/helpers/busChannel";
+import { FeedSlice, createFeedSlice } from "./createFeedSlice";
 
 export interface ArticleSlice {
   article: ArticleResItem | null;
@@ -31,7 +32,12 @@ export interface ArticleSlice {
   setFilter: any;
 }
 
-export const createArticleSlice: StateCreator<ArticleSlice> = (set, get) => ({
+export const createArticleSlice: StateCreator<
+  ArticleSlice & FeedSlice,
+  [],
+  [],
+  ArticleSlice
+> = (set, get, ...args) => ({
   article: null,
   setArticle: (ArticleResItem: ArticleResItem | null) => {
     set(() => ({
@@ -51,7 +57,7 @@ export const createArticleSlice: StateCreator<ArticleSlice> = (set, get) => ({
     const currentList = get().articleList;
 
     return dataAgent.getArticleList(uuid, filter).then((res) => {
-      console.log('res ====?', res);
+      console.log("res ====?", res);
       const { list } = res.data as { list: ArticleResItem[] };
 
       get().setArticleList([...currentList, ...list]);
@@ -90,23 +96,28 @@ export const createArticleSlice: StateCreator<ArticleSlice> = (set, get) => ({
 
     if (idx === undefined || idx < 0) {
       idx = articleList.findIndex((item) => item.uuid === article.uuid);
-      console.log(
-        "🚀 ~ file: useBearStore.ts:57 ~ useBearStore ~ idx:",
-        idx,
-      );
+      console.log("🚀 ~ file: useBearStore.ts:57 ~ useBearStore ~ idx:", idx);
     }
 
     if (article.read_status === 1) {
       dataAgent.updateArticleReadStatus(article.uuid, 2).then((res) => {
         if (res) {
-          busChannel.emit("updateChannelUnreadCount", {
-            uuid: article.channel_uuid,
-            isToday: dayjs(
-              dayjs(article.create_date).format("YYYY-MM-DD"),
-            ).isSame(dayjs().format("YYYY-MM-DD")),
-            action: "decrease",
-            count: 1,
+          let isToday = dayjs(
+            dayjs(article.create_date).format("YYYY-MM-DD")
+          ).isSame(dayjs().format("YYYY-MM-DD"));
+
+          get().updateCollectionMeta({
+            total: {
+              unread: get().collectionMeta.total.unread - 1,
+            },
+            today: {
+              unread: isToday
+                ? get().collectionMeta.today.unread - 1
+                : get().collectionMeta.today.unread,
+            },
           });
+
+          get().updateUnreadCount(article.channel_uuid, "decrease", 1);
 
           article.read_status = 2;
 
@@ -170,7 +181,7 @@ export const createArticleSlice: StateCreator<ArticleSlice> = (set, get) => ({
     console.log(
       "%c Line:205 🍕 articleList.length",
       "color:#e41a6a",
-      articleList.length,
+      articleList.length
     );
     console.log("%c Line:205 🌶 cur", "color:#3f7cff", cur);
 
@@ -219,5 +230,4 @@ export const createArticleSlice: StateCreator<ArticleSlice> = (set, get) => ({
       currentFilter: filter,
     }));
   },
-
 });

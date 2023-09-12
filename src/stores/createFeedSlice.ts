@@ -1,6 +1,11 @@
 import { StateCreator } from "zustand";
 import { Channel, FeedResItem } from "@/db";
-import * as dataAgent from '@/helpers/dataAgent';
+import * as dataAgent from "@/helpers/dataAgent";
+
+export type CollectionMeta = {
+  total: { unread: number };
+  today: { unread: number };
+};
 
 export interface FeedSlice {
   viewMeta: {
@@ -9,6 +14,16 @@ export interface FeedSlice {
     isToday: boolean;
     isAll: boolean;
   };
+
+  unreadCount: {
+    [key: string]: number;
+  };
+
+  updateUnreadCount: (uuid: string, action: string, count: number) => void;
+
+  initCollectionMetas: () => void;
+  collectionMeta: CollectionMeta;
+  updateCollectionMeta: (collection: CollectionMeta) => void;
 
   setViewMeta: (meta: any) => void;
 
@@ -22,12 +37,93 @@ export interface FeedSlice {
   setFeedContextMenuTarget: (target: FeedResItem | null) => void;
 }
 
-export const createFeedSlice: StateCreator<FeedSlice> = (set, get) => ({
+export const createFeedSlice: StateCreator<FeedSlice> = (
+  set,
+  get,
+  ...args
+) => ({
   viewMeta: {
     title: "",
     unread: 0,
     isToday: false,
     isAll: false,
+  },
+
+  unreadCount: {},
+
+  updateUnreadCount: (uuid: string, action: string, count: number) => {
+    const strategy = (action: string, target: any) => {
+      switch (action) {
+        case "increase": {
+          target ? (target.unread += count) : null;
+          break;
+        }
+        case "decrease": {
+          target ? (target.unread -= count) : null;
+          break;
+        }
+        case "upgrade": {
+          // TODO
+          break;
+        }
+
+        case "set": {
+          target ? (target.unread = count) : null;
+          break;
+        }
+        default: {
+          // TODO
+        }
+      }
+    };
+
+    let list = get().feedList.map((feed) => {
+      let target: any = feed.uuid === uuid ? feed : null;
+      let child: any = feed.children.find((item) => item.uuid === uuid) || null;
+
+      if (child) {
+        target = feed;
+      }
+
+      if (!(target || child)) {
+        return feed;
+      }
+
+      strategy(action, target);
+      strategy(action, child);
+
+      feed.unread = Math.max(0, feed.unread);
+
+      return feed;
+    });
+
+    console.log("%c Line:102 🍢 list", "color:#ea7e5c", list);
+
+    set({
+      feedList: list,
+    });
+  },
+
+  collectionMeta: {
+    total: { unread: 0 },
+    today: { unread: 0 },
+  },
+
+  initCollectionMetas() {
+    dataAgent.getCollectionMetas().then(({ data }) => {
+      set(() => ({
+        collectionMeta: {
+          today: { unread: data.today },
+          total: { unread: data.total },
+        },
+      }));
+    });
+  },
+
+  updateCollectionMeta(meta: any) {
+    set({
+      collectionMeta: meta,
+    });
   },
 
   setViewMeta(meta) {
@@ -59,20 +155,36 @@ export const createFeedSlice: StateCreator<FeedSlice> = (set, get) => ({
       feedList: state.feedList.map((feed) => {
         return feed.uuid === uuid
           ? {
-            ...feed,
-            ...updater,
-          }
+              ...feed,
+              ...updater,
+            }
           : feed;
       }),
     }));
   },
   getFeedList: () => {
-    dataAgent.getChannels({}).then((res) => {
-      console.log("%c Line:44 🍕 res", "color:#7f2b82", res);
-      set(() => ({
-        feedList: res.list || [],
-      }));
-    });
+    const initUnreadCount = (
+      list: any[],
+      countCache: { [key: string]: number }
+    ) => {
+      return list.map((item) => {
+        item.unread = countCache[item.uuid] || 0;
+
+        if (item.children) {
+          item.children = initUnreadCount(item.children, countCache);
+        }
+
+        return item;
+      });
+    };
+    return Promise.all([dataAgent.getFeeds(), dataAgent.getUnreadTotal()]).then(
+      ([feedList, unreadTotal]) => {
+        feedList = initUnreadCount(feedList, unreadTotal);
+        set(() => ({
+          feedList: feedList || [],
+        }));
+      }
+    );
   },
   feedContextMenuTarget: null,
   setFeedContextMenuTarget: (target: Channel | null) => {
@@ -80,5 +192,4 @@ export const createFeedSlice: StateCreator<FeedSlice> = (set, get) => ({
       feedContextMenuTarget: target,
     }));
   },
-
 });

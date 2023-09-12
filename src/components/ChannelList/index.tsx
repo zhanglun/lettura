@@ -56,93 +56,14 @@ const ChannelList = (): JSX.Element => {
     setFeedContextMenuTarget: state.setFeedContextMenuTarget,
 
     setViewMeta: state.setViewMeta,
+    collectionMeta: state.collectionMeta,
+    initCollectionMetas: state.initCollectionMetas,
   }));
   const [, , channelUuid] = useQuery();
-  const [meta, setMeta] = useState<{
-    [key: string]: { [key: string]: number };
-  }>({
-    total: { unread: 0 },
-    today: { unread: 0 },
-  });
-
-  const initCollectionMetas = () => {
-    dataAgent.getCollectionMetas().then(({ data }) => {
-      setMeta({
-        today: { unread: data.today },
-        total: { unread: data.total },
-      });
-    });
-  };
 
   useEffect(() => {
-    initCollectionMetas();
+    store.initCollectionMetas();
   }, []);
-
-  const updateCount = (
-    feedList: Channel[],
-    uuid: string,
-    isToday: boolean,
-    action: string,
-    count: number
-  ) => {
-    const strategy = (action: string, target: any) => {
-      switch (action) {
-        case "increase": {
-          target ? (target.unread += count) : null;
-          break;
-        }
-        case "decrease": {
-          target ? (target.unread -= count) : null;
-          break;
-        }
-        case "upgrade": {
-          // TODO
-          break;
-        }
-
-        case "set": {
-          target ? (target.unread = count) : null;
-          break;
-        }
-        default: {
-          // TODO
-        }
-      }
-    };
-
-    feedList.forEach((channel) => {
-      let target: any = channel.uuid === uuid ? channel : null;
-      let child: any =
-        channel.children.find((item) => item.uuid === uuid) || null;
-
-      if (child) {
-        target = channel;
-      }
-
-      if (!(target || child)) {
-        return channel;
-      }
-
-      strategy(action, target);
-      strategy(action, child);
-
-      channel.unread = Math.max(0, channel.unread);
-
-      return channel;
-    });
-
-    setFeedList([...feedList]);
-
-    strategy(action, meta.total);
-
-    if (isToday) {
-      strategy(action, meta.today);
-    }
-
-    console.log("%c Line:137 🥚 meta", "color:#7f2b82", meta);
-
-    setMeta(meta);
-  };
 
   useEffect(() => {
     getFeedList();
@@ -163,27 +84,22 @@ const ChannelList = (): JSX.Element => {
       });
   };
 
-  useEffect(() => {
-    const unsubscribeUpdateCount = busChannel.on(
-      "updateChannelUnreadCount",
-      ({ uuid, isToday, action, count }) => {
-        console.log(
-          "🚀 ~ file: index.tsx:138 ~ useEffect ~ updateChannelUnreadCount"
-        );
-        updateCount(feedList, uuid, isToday, action, count);
-        unsubscribeUpdateCount();
-      }
-    );
+  // useEffect(() => {
+  //   const unsubscribeUpdateCount = busChannel.on(
+  //     "updateChannelUnreadCount",
+  //     ({ uuid, isToday, action, count }) => {
+  //       console.log(
+  //         "🚀 ~ file: index.tsx:138 ~ useEffect ~ updateChannelUnreadCount"
+  //       );
+  //       updateCount(feedList, uuid, isToday, action, count);
+  //       unsubscribeUpdateCount();
+  //     }
+  //   );
 
-    const updateCollectionMeta = busChannel.on("updateCollectionMeta", () => {
-      initCollectionMetas();
-    });
-
-    return () => {
-      unsubscribeUpdateCount();
-      updateCollectionMeta();
-    };
-  }, [feedList]);
+  //   return () => {
+  //     unsubscribeUpdateCount();
+  //   };
+  // }, [feedList]);
 
   useEffect(() => {
     feedList.forEach((feed) => {
@@ -341,7 +257,7 @@ const ChannelList = (): JSX.Element => {
             <span className="grow shrink basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-sm">
               Today
             </span>
-            {meta.today.unread > 0 && (
+            {store.collectionMeta.today.unread > 0 && (
               <span
                 className={classNames(
                   "px-1 min-w-[1rem] h-4 leading-4 text-center text-[10px]",
@@ -350,7 +266,7 @@ const ChannelList = (): JSX.Element => {
                   }
                 )}
               >
-                {meta.today.unread}
+                {store.collectionMeta.today.unread}
               </span>
             )}
           </div>
@@ -377,7 +293,7 @@ const ChannelList = (): JSX.Element => {
             <span className="grow shrink basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-sm">
               All Items
             </span>
-            {meta.total.unread > 0 && (
+            {store.collectionMeta.total.unread > 0 && (
               <span
                 className={classNames(
                   "px-1 min-w-[1rem] h-4 leading-4 text-center text-[10px]",
@@ -386,7 +302,7 @@ const ChannelList = (): JSX.Element => {
                   }
                 )}
               >
-                {meta.total.unread}
+                {store.collectionMeta.total.unread}
               </span>
             )}
           </div>

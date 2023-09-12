@@ -266,7 +266,7 @@ impl Article {
     ArticleQueryResult { list: result }
   }
 
-  pub fn get_collection_metas() -> Vec<CollectionMeta> {
+  pub fn get_collection_metas() -> Option<CollectionMeta> {
     let mut connection = establish_connection();
     let mut query = diesel::sql_query("").into_boxed();
 
@@ -278,11 +278,15 @@ impl Article {
       WHERE DATE(create_date) = DATE('now') AND read_status = 1"
     );
 
-    let result: Vec<CollectionMeta> = query
+    let mut result: Vec<CollectionMeta> = query
     .load::<CollectionMeta>(&mut connection)
     .expect("Expect loading articles");
 
-    result
+    if result.len() == 1 {
+      return result.pop();
+    } else {
+      return None;
+    }
   }
 
   pub fn get_article_with_uuid(uuid: String) -> Option<models::Article> {

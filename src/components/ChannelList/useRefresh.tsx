@@ -1,41 +1,24 @@
 import React, { useEffect, useRef, useState } from "react";
 import pLimit from "p-limit";
-import { Channel } from "@/db";
+import { FeedResItem } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
 import { useBearStore } from "@/stores";
 
 export const useRefresh = () => {
   const store = useBearStore((state) => ({
     userConfig: state.userConfig,
+    feedList: state.feedList,
+    getFeedList: state.getFeedList,
+    updateFeed: state.updateFeed,
   }));
-  const [feedList, setFeedList] = useState<Channel[]>([]);
+  // const [feedList, setFeedList] = useState<Channel[]>([]);
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [done, setDone] = useState<number>(0);
 
   const timeRef = useRef<any>();
 
   const getFeedList = () => {
-    const initUnreadCount = (
-      list: any[],
-      countCache: { [key: string]: number }
-    ) => {
-      return list.map((item) => {
-        item.unread = countCache[item.uuid] || 0;
-
-        if (item.children) {
-          item.children = initUnreadCount(item.children, countCache);
-        }
-
-        return item;
-      });
-    };
-    return Promise.all([dataAgent.getFeeds(), dataAgent.getUnreadTotal()]).then(
-      ([channel, unreadTotal]) => {
-        channel = initUnreadCount(channel, unreadTotal);
-        console.log("channel", channel);
-        setFeedList(channel);
-      }
-    );
+    store.getFeedList();
   };
 
   const loadAndUpdate = (type: string, uuid: string, unread: number) => {
@@ -46,17 +29,7 @@ export const useRefresh = () => {
         res.forEach((item) => {
           const [count, uuid, _msg] = item;
 
-          count > 0 &&
-            setFeedList((list) => {
-              return list.map((item) => {
-                return item.uuid === uuid
-                  ? {
-                      ...item,
-                      unread: unread + count,
-                    }
-                  : item;
-              });
-            });
+          count > 0 && store.updateFeed(uuid, { unread: unread + count });
         });
 
         return res;
@@ -81,15 +54,14 @@ export const useRefresh = () => {
     dataAgent.getUserConfig().then((config) => {
       const { threads = 5 } = config;
       const limit = pLimit(threads);
-      const fns = (feedList || []).map((channel: any) => {
+      const fns = (store.feedList || []).map((channel: any) => {
         return limit(() =>
           loadAndUpdate(channel.item_type, channel.uuid, channel.unread)
         );
       });
 
       Promise.all(fns)
-        .then((res) => {
-        })
+        .then((res) => {})
         .finally(() => {
           setRefreshing(false);
           setDone(0);
@@ -118,8 +90,8 @@ export const useRefresh = () => {
   }, [store.userConfig.update_interval]);
 
   return [
-    feedList,
-    setFeedList,
+    store.feedList,
+    store.getFeedList,
     getFeedList,
     refreshing,
     setRefreshing,

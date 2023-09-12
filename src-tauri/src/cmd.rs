@@ -416,15 +416,6 @@ pub fn get_unread_total() -> HashMap<String, i32> {
 }
 
 #[command]
-pub fn get_collection_metas() -> Option<feed::article::CollectionMeta> {
-  let result = feed::article::Article::get_collection_metas();
-
-  println!("result :{:?}", result);
-
-  result.get(0).cloned()
-}
-
-#[command]
 pub fn update_article_read_status(uuid: String, status: i32) -> usize {
   let res = feed::article::Article::update_article_read_status(uuid, status);
 
