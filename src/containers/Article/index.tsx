@@ -35,8 +35,9 @@ import { ReadingOptions } from "@/containers/Article/ReadingOptions";
 import { useQuery } from "@/helpers/parseXML";
 import { useShortcut } from "@/hooks/useShortcut";
 import { open } from "@tauri-apps/api/shell";
-import { Article } from "@/db";
 import { TooltipBox } from "@/components/TooltipBox";
+import { useMatch } from "react-router-dom";
+import { RouteConfig } from "@/config";
 
 export const ArticleContainer = (): JSX.Element => {
   const store = useBearStore((state) => ({
@@ -60,6 +61,8 @@ export const ArticleContainer = (): JSX.Element => {
     userConfig: state.userConfig,
   }));
 
+  const isToday = useMatch(RouteConfig.TODAY);
+  const isAll = useMatch(RouteConfig.ALL);
   const { toast } = useToast();
   const [layoutType, setLayoutType] = useState(1);
   const [feedUrl] = useQuery();
@@ -198,21 +201,23 @@ export const ArticleContainer = (): JSX.Element => {
   };
 
   const markAllRead = () => {
-    console.log("%c Line:172 🍡 store.feed", "color:#e41a6a", store.feed);
+    // if (store.feed) {
+    //   return store.markArticleListAsRead(store.feed.uuid).then((res: any) => {
+    //     console.log("%c Line:176 🍖 res", "color:#93c0a4", res);
+    //     busChannel.emit("updateChannelUnreadCount", {
+    //       uuid: store.feed?.uuid as string,
+    //       isToday: false,
+    //       action: "set",
+    //       count: 0,
+    //     });
+    //   });
+    // }
 
-    if (store.feed) {
-      return store.markArticleListAsRead(store.feed.uuid).then((res: any) => {
-        console.log("%c Line:176 🍖 res", "color:#93c0a4", res);
-        busChannel.emit("updateChannelUnreadCount", {
-          uuid: store.feed?.uuid as string,
-          isToday: false,
-          action: "set",
-          count: 0,
-        });
-      });
-    }
+    console.log("%c Line:216 🍿 store.feed", "color:#7f2b82", store.feed);
+    console.log("%c Line:218 🍻 isToday", "color:#42b983", isToday);
+    console.log("%c Line:219 🍅 isAll", "color:#465975", isAll);
 
-    return Promise.resolve();
+    return store.markArticleListAsRead(!!isToday, !!isAll);
   };
 
   const changeFilter = (id: any) => {

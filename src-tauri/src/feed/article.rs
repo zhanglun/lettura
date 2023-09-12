@@ -1,7 +1,6 @@
 use diesel::prelude::*;
 use diesel::sql_types::*;
 use serde::{Deserialize, Serialize};
-use log;
 
 use crate::db::establish_connection;
 use crate::models;
@@ -15,6 +14,13 @@ pub struct ArticleFilter {
   pub read_status: Option<i32>,
   pub cursor: Option<i32>,
   pub limit: Option<i32>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct MarkAllUnreadParam {
+  pub uuid: Option<String>,
+  pub is_today: Option<bool>,
+  pub is_all: Option<bool>,
 }
 
 #[derive(Debug, Queryable, Serialize, QueryableByName)]
@@ -134,7 +140,6 @@ impl Article {
     if let Some(c) = filter.cursor {
       query = query.sql(" OFFSET ?").bind::<Integer, _>((c - 1) * limit);
     }
-
 
     let debug = diesel::debug_query::<diesel::sqlite::Sqlite, _>(&query);
 
@@ -270,17 +275,18 @@ impl Article {
     let mut connection = establish_connection();
     let mut query = diesel::sql_query("").into_boxed();
 
-    query = query.sql("
+    query = query.sql(
+      "
       SELECT
         COUNT(1) AS today,
         (SELECT COUNT(1) FROM articles WHERE read_status = 1) AS total
       FROM articles
-      WHERE DATE(create_date) = DATE('now') AND read_status = 1"
+      WHERE DATE(create_date) = DATE('now') AND read_status = 1",
     );
 
     let mut result: Vec<CollectionMeta> = query
-    .load::<CollectionMeta>(&mut connection)
-    .expect("Expect loading articles");
+      .load::<CollectionMeta>(&mut connection)
+      .expect("Expect loading articles");
 
     if result.len() == 1 {
       return result.pop();
@@ -301,6 +307,22 @@ impl Article {
     } else {
       return None;
     }
+  }
+
+  pub fn mark_all_as_unread(params: MarkAllUnreadParam) -> usize {
+    if let Some(uuid) = params.uuid {
+      return Self::update_articles_read_status_channel(uuid);
+    }
+
+    if let Some(is_today) = params.is_today {
+      return 10;
+    }
+
+    if let Some(is_all) = params.is_all {
+      return 100;
+    }
+
+    0
   }
 
   pub fn update_article_read_status(uuid: String, status: i32) -> usize {

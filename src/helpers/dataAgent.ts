@@ -4,7 +4,7 @@ import { request } from "@/helpers/request";
 import { AxiosResponse } from "axios";
 
 export const getChannels = async (
-  filter: any,
+  filter: any
 ): Promise<{ list: (Channel & { parent_uuid: String })[] }> => {
   return invoke("get_channels", { filter });
 };
@@ -19,7 +19,7 @@ export const createFolder = async (name: string): Promise<number> => {
 
 export const updateFolder = async (
   uuid: string,
-  name: string,
+  name: string
 ): Promise<number> => {
   return invoke("update_folder", { uuid, name });
 };
@@ -34,7 +34,7 @@ export const updateFeedSort = async (
     parent_uuid: string;
     child_uuid: string;
     sort: number;
-  }[],
+  }[]
 ): Promise<any> => {
   return invoke("update_feed_sort", { sorts });
 };
@@ -42,7 +42,7 @@ export const updateFeedSort = async (
 export const moveChannelIntoFolder = async (
   channelUuid: string,
   folderUuid: string,
-  sort: number,
+  sort: number
 ): Promise<any> => {
   return invoke("move_channel_into_folder", {
     channelUuid,
@@ -72,18 +72,20 @@ export const importChannels = async (list: string[]) => {
 };
 
 export const getArticleList = async (uuid: string | undefined, filter: any) => {
-  console.log('ppp: %o', {params: {
-    uuid,
-  ...filter,
-  }});
-  const req = request.get('articles', {
+  console.log("ppp: %o", {
+    params: {
+      uuid,
+      ...filter,
+    },
+  });
+  const req = request.get("articles", {
     params: {
       channel_uuid: uuid,
       ...filter,
-    }
+    },
   });
 
-  console.log(req)
+  console.log(req);
   return req;
   // return invoke("get_articles", { uuid, filter });
 };
@@ -108,7 +110,7 @@ export const addChannel = async (url: string): Promise<[number, string]> => {
 
 export const syncArticlesWithChannelUuid = async (
   feedType: string,
-  uuid: string,
+  uuid: string
 ): Promise<[[number, string, string]]> => {
   return invoke("sync_articles_with_channel_uuid", { feedType, uuid });
 };
@@ -117,10 +119,12 @@ export const getUnreadTotal = async (): Promise<{ [key: string]: number }> => {
   return invoke("get_unread_total");
 };
 
-export const getCollectionMetas = async (): Promise<AxiosResponse<{
-  [key: string]: number;
-}>> => {
-  const req = request.get('collection-metas');
+export const getCollectionMetas = async (): Promise<
+  AxiosResponse<{
+    [key: string]: number;
+  }>
+> => {
+  const req = request.get("collection-metas");
   console.log("%c Line:123 🍏 req", "color:#ed9ec7", req);
 
   return req;
@@ -128,7 +132,7 @@ export const getCollectionMetas = async (): Promise<AxiosResponse<{
 
 export const updateArticleReadStatus = async (
   article_uuid: string,
-  read_status: number,
+  read_status: number
 ) => {
   return invoke("update_article_read_status", {
     uuid: article_uuid,
@@ -136,10 +140,12 @@ export const updateArticleReadStatus = async (
   });
 };
 
-export const markAllRead = async (uuid: string) => {
-  return invoke("mark_all_read", {
-    channelUuid: uuid,
-  });
+export const markAllRead = async (body: {
+  uuid?: string;
+  isToday?: boolean;
+  isAll?: boolean;
+}) => {
+  return request.post('/mark-all-as-unread', body)
 };
 
 export const getUserConfig = async (): Promise<any> => {
@@ -189,7 +195,7 @@ export const getPageSources = async (url: string): Promise<string> => {
 
 export const updateIcon = async (
   uuid: String,
-  url: string,
+  url: string
 ): Promise<string> => {
   return invoke("update_icon", { uuid, url });
 };

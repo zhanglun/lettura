@@ -423,13 +423,6 @@ pub fn update_article_read_status(uuid: String, status: i32) -> usize {
 }
 
 #[command]
-pub fn mark_all_read(channel_uuid: String) -> usize {
-  let res = feed::article::Article::update_articles_read_status_channel(channel_uuid);
-
-  res
-}
-
-#[command]
 pub fn get_user_config() -> Option<config::UserConfig> {
   let user_config = config::load_or_initial();
 

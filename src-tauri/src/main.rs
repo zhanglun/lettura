@@ -182,7 +182,6 @@ async fn main() {
       cmd::import_channels,
       cmd::get_unread_total,
       cmd::update_article_read_status,
-      cmd::mark_all_read,
       cmd::get_user_config,
       cmd::update_user_config,
       cmd::update_proxy,

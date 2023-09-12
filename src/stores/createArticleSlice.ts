@@ -2,8 +2,7 @@ import { StateCreator } from "zustand";
 import dayjs from "dayjs";
 import { ArticleResItem } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
-import { busChannel } from "@/helpers/busChannel";
-import { FeedSlice, createFeedSlice } from "./createFeedSlice";
+import { FeedSlice } from "./createFeedSlice";
 
 export interface ArticleSlice {
   article: ArticleResItem | null;
@@ -15,7 +14,7 @@ export interface ArticleSlice {
   getAllArticleList: (filter: any) => any;
   cursor: number;
   setCursor: (c: number) => number;
-  markArticleListAsRead: (uuid: string) => any;
+  markArticleListAsRead: (isToday: boolean, isAll: boolean) => any;
 
   updateArticleAndIdx: (ArticleResItem: ArticleResItem, idx?: number) => void;
   goPreviousArticle: any;
@@ -144,14 +143,44 @@ export const createArticleSlice: StateCreator<
     return c;
   },
 
-  markArticleListAsRead(uuid: string) {
-    return dataAgent.markAllRead(uuid).then(() => {
+  markArticleListAsRead(isToday: boolean, isAll: boolean) {
+    const feed = get().feed;
+    console.log(
+      "%c Line:149 🥛 isToday, isAll",
+      "color:#3f7cff",
+      isToday,
+      isAll
+    );
+
+    let params: {
+      uuid?: string;
+      is_today?: boolean;
+      is_all?: boolean;
+    } = {};
+
+    if (isToday) {
+      params.is_today = isToday;
+    }
+
+    if (isAll) {
+      params.is_all = isAll;
+    }
+
+    if (feed) {
+      params.uuid = feed.uuid;
+    }
+
+    return dataAgent.markAllRead(params).then((res) => {
       set(() => ({
         articleList: get().articleList.map((_) => {
           _.read_status = 2;
           return _;
         }),
       }));
+
+      feed && get().updateUnreadCount(feed.uuid, "set", 0);
+
+      // TODO: update today and total
     });
   },
 
