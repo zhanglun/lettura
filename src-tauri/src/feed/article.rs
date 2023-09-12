@@ -309,20 +309,28 @@ impl Article {
     }
   }
 
-  pub fn mark_all_as_unread(params: MarkAllUnreadParam) -> usize {
+  pub fn mark_as_read(params: MarkAllUnreadParam) -> usize {
     if let Some(uuid) = params.uuid {
       return Self::update_articles_read_status_channel(uuid);
     }
 
-    if let Some(is_today) = params.is_today {
-      return 10;
+    if let Some(_is_today) = params.is_today {
+      return Self::mark_today_as_read();
     }
 
-    if let Some(is_all) = params.is_all {
-      return 100;
+    if let Some(_is_all) = params.is_all {
+      return Self::mark_all_as_read();
     }
 
     0
+  }
+
+  pub fn mark_today_as_read() -> usize {
+    return 10;
+  }
+
+  pub fn mark_all_as_read() -> usize {
+    return 100;
   }
 
   pub fn update_article_read_status(uuid: String, status: i32) -> usize {

@@ -25,10 +25,10 @@ pub async fn handle_collection_metas() -> Result<impl Responder> {
 }
 
 #[post("/api/mark-all-as-unread")]
-pub async fn handle_mark_all_as_unread(
+pub async fn handle_mark_as_read(
   body: web::Json<feed::article::MarkAllUnreadParam>,
 ) -> Result<impl Responder> {
-  let res = feed::article::Article::mark_all_as_unread(feed::article::MarkAllUnreadParam{
+  let res = feed::article::Article::mark_as_read(feed::article::MarkAllUnreadParam{
     uuid: body.uuid.clone(),
     is_today: body.is_today,
     is_all: body.is_all
@@ -70,6 +70,6 @@ pub fn config(cfg: &mut web::ServiceConfig) {
   cfg
     .service(handle_test)
     .service(handle_collection_metas)
-    .service(handle_mark_all_as_unread)
+    .service(handle_mark_as_read)
     .service(handle_articles);
 }
