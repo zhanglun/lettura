@@ -100,11 +100,11 @@ export const AddFeedChannel = (props: any) => {
   return (
     <Dialog open={showStatus} onOpenChange={handleStatusChange}>
       <DialogTrigger asChild>
-        <Icon>
-          <TooltipBox message="Add feed">
+        <TooltipBox content="Add feed">
+          <Icon>
             <Plus size={16} />
-          </TooltipBox>
-        </Icon>
+          </Icon>
+        </TooltipBox>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[465px]">
         <DialogHeader>

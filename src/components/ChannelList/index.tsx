@@ -66,11 +66,10 @@ const ChannelList = (): JSX.Element => {
   });
 
   const initCollectionMetas = () => {
-    dataAgent.getCollectionMetas().then((res) => {
-      console.log("%c Line:19 🍅 res", "color:#ed9ec7", res);
+    dataAgent.getCollectionMetas().then(({ data }) => {
       setMeta({
-        today: { unread: res.today },
-        total: { unread: res.total },
+        today: { unread: data.today },
+        total: { unread: data.total },
       });
     });
   };
@@ -78,11 +77,6 @@ const ChannelList = (): JSX.Element => {
   useEffect(() => {
     initCollectionMetas();
   }, []);
-
-  useEffect(() => {
-    initCollectionMetas();
-    console.log("store.feed", store.feed);
-  }, [store.feed]);
 
   const updateCount = (
     feedList: Channel[],
@@ -278,7 +272,7 @@ const ChannelList = (): JSX.Element => {
 
   return (
     <div
-      className="relative grid grid-col w-[var(--app-channel-width)] h-full select-none border-r border-border text-[hsl(var(--foreground))]
+      className="relative flex flex-col w-[var(--app-channel-width)] h-full select-none border-r border-border text-[hsl(var(--foreground))]
   bg-[hsl(var(--background))]"
     >
       <div className={styles.header}>
@@ -292,27 +286,32 @@ const ChannelList = (): JSX.Element => {
             afterConfirm={getFeedList}
             afterCancel={() => store.setFeedContextMenuTarget(null)}
             trigger={
-              <Icon>
-                <TooltipBox message="Add folder">
+              <TooltipBox content="Add folder">
+                <Icon>
                   <Folder size={16} />
-                </TooltipBox>
-              </Icon>
+                </Icon>
+              </TooltipBox>
             }
           />
 
-          <Icon onClick={startFresh}>
-            <RefreshCw
-              size={16}
-              className={`${refreshing ? "spinning" : ""}`}
-            />
-          </Icon>
-          <Icon onClick={goToSetting}>
-            <Settings size={16} />
-          </Icon>
+          <TooltipBox content="Update">
+            <Icon onClick={startFresh}>
+              <RefreshCw
+                size={16}
+                className={`${refreshing ? "spinning" : ""}`}
+              />
+            </Icon>
+          </TooltipBox>
+
+          <TooltipBox content="Go to settings">
+            <Icon onClick={goToSetting}>
+              <Settings size={16} />
+            </Icon>
+          </TooltipBox>
         </div>
       </div>
       <div
-        className="overflow-y-auto pb-3 pl-3 height-[calc(100% - var(--app-toolbar-height))]"
+        className="flex-1 overflow-y-auto pb-2 px-2 height-[calc(100% - var(--app-toolbar-height))]"
         ref={listRef}
       >
         <h2 className="mt-6 mb-2 px-4 text-lg font-semibold tracking-tight">
@@ -321,7 +320,7 @@ const ChannelList = (): JSX.Element => {
         <div>
           <div
             className={classNames(
-              "w-full h-8 px-2 flex items-center rounded-md cursor-pointer mt-[2px] group",
+              "w-full h-8 px-4 flex items-center rounded-md cursor-pointer mt-[2px] group",
               {
                 "bg-primary text-primary-foreground": isToday,
               }
@@ -357,7 +356,7 @@ const ChannelList = (): JSX.Element => {
           </div>
           <div
             className={classNames(
-              "w-full h-8 px-2 flex items-center rounded-md cursor-pointer mt-[2px] group",
+              "w-full h-8 px-4 flex items-center rounded-md cursor-pointer mt-[2px] group",
               {
                 "bg-primary text-primary-foreground": isAll,
               }

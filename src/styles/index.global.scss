@@ -1,16 +1,5 @@
 @import "./global";
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans GB",
-    "MicroSoft YaHei", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell",
-    "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: hsl(var(--foreground));
-  background-color: hsl(var(--background));
-  overflow: hidden;
-}
-
 * {
   box-sizing: border-box;
 }

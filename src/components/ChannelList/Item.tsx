@@ -90,7 +90,7 @@ export const FeedItem = React.forwardRef((props: FeedItemProps, ref: any) => {
           {...props.itemContainerWithoutChildrenProps}
           {...props.interactiveElementProps}
           className={classNames(
-            "w-full h-8 px-2 flex items-center rounded-md cursor-pointer mt-[2px] group text-foreground",
+            "w-full h-8 px-4 flex items-center rounded-md cursor-pointer mt-[2px] group text-foreground",
             {
               "bg-primary text-primary-foreground": isActive,
               "shadow-[inset_0_0_0_2px_var(--color-primary)]":

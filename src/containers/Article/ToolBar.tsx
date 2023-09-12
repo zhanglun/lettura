@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { Icon } from "@/components/Icon";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useBearStore } from "@/stores";
+import { TooltipBox } from "@/components/TooltipBox";
 
 export interface NavigatorProps {
   listRef?: any;
@@ -27,15 +28,19 @@ export const ToolbarItemNavigator = (props: NavigatorProps) => {
 
   return (
     <>
-      <Icon disable={currentIdx <= 0} onClick={handleViewPrevious}>
-        <ChevronUp size={16} />
-      </Icon>
-      <Icon
-        disable={currentIdx >= store.articleList.length - 1}
-        onClick={handleViewNext}
-      >
-        <ChevronDown size={16} />
-      </Icon>
+      <TooltipBox content="Previous article">
+        <Icon disable={currentIdx <= 0} onClick={handleViewPrevious}>
+          <ChevronUp size={16} />
+        </Icon>
+      </TooltipBox>
+      <TooltipBox content="Next article">
+        <Icon
+          disable={currentIdx >= store.articleList.length - 1}
+          onClick={handleViewNext}
+        >
+          <ChevronDown size={16} />
+        </Icon>
+      </TooltipBox>
     </>
   );
 };

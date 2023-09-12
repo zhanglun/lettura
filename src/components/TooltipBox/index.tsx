@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button"
 import {
   Tooltip,
   TooltipContent,
@@ -10,11 +9,11 @@ import {
   return (
     <TooltipProvider>
       <Tooltip>
-        <TooltipTrigger asChild>
+        <TooltipTrigger>
           {props.children}
         </TooltipTrigger>
         <TooltipContent>
-          <p>{props.message}</p>
+          <p>{props.content}</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

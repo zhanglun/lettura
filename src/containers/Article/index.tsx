@@ -36,6 +36,7 @@ import { useQuery } from "@/helpers/parseXML";
 import { useShortcut } from "@/hooks/useShortcut";
 import { open } from "@tauri-apps/api/shell";
 import { Article } from "@/db";
+import { TooltipBox } from "@/components/TooltipBox";
 
 export const ArticleContainer = (): JSX.Element => {
   const store = useBearStore((state) => ({
@@ -116,7 +117,7 @@ export const ArticleContainer = (): JSX.Element => {
 
       const callback = (
         entries: IntersectionObserverEntry[],
-        observer: IntersectionObserver,
+        observer: IntersectionObserver
       ) => {
         if (entries[0].intersectionRatio < 1) {
           listRef.current?.parentElement?.classList.add("is-scroll");
@@ -149,7 +150,7 @@ export const ArticleContainer = (): JSX.Element => {
       dataAgent
         .syncArticlesWithChannelUuid(
           store.feed?.item_type as string,
-          store.feed?.uuid as string,
+          store.feed?.uuid as string
         )
         .then((res) => {
           const [num, uuid, message] = res[0];
@@ -200,18 +201,16 @@ export const ArticleContainer = (): JSX.Element => {
     console.log("%c Line:172 🍡 store.feed", "color:#e41a6a", store.feed);
 
     if (store.feed) {
-      return store
-        .markArticleListAsRead(store.feed.uuid)
-        .then((res: any) => {
-          console.log("%c Line:176 🍖 res", "color:#93c0a4", res);
-          busChannel.emit("updateChannelUnreadCount", {
-            uuid: store.feed?.uuid as string,
-            isToday: false,
-            action: "set",
-            count: 0,
-          });
-          busChannel.emit("updateCollectionMeta");
+      return store.markArticleListAsRead(store.feed.uuid).then((res: any) => {
+        console.log("%c Line:176 🍖 res", "color:#93c0a4", res);
+        busChannel.emit("updateChannelUnreadCount", {
+          uuid: store.feed?.uuid as string,
+          isToday: false,
+          action: "set",
+          count: 0,
         });
+        busChannel.emit("updateCollectionMeta");
+      });
     }
 
     return Promise.resolve();
@@ -243,7 +242,7 @@ export const ArticleContainer = (): JSX.Element => {
     console.log(
       "%c Line:211 🥤 store.feed?.uuid",
       "color:#fca650",
-      store.feed?.uuid,
+      store.feed?.uuid
     );
 
     if (listRef.current !== null) {
@@ -275,9 +274,11 @@ export const ArticleContainer = (): JSX.Element => {
         <div className={"flex items-center justify-end px-2 space-x-0.5"}>
           <DropdownMenu>
             <DropdownMenuTrigger>
-              <Icon>
-                <Filter size={16} />
-              </Icon>
+              <TooltipBox content="Filter">
+                <Icon>
+                  <Filter size={16} />
+                </Icon>
+              </TooltipBox>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuRadioGroup
@@ -297,12 +298,16 @@ export const ArticleContainer = (): JSX.Element => {
               </DropdownMenuRadioGroup>
             </DropdownMenuContent>
           </DropdownMenu>
-          <Icon onClick={markAllRead}>
-            <CheckCheck size={16} />
-          </Icon>
-          <Icon onClick={handleRefresh}>
-            <RefreshCw size={16} className={`${syncing ? "spinning" : ""}`} />
-          </Icon>
+          <TooltipBox content="Mark all as read">
+            <Icon onClick={markAllRead}>
+              <CheckCheck size={16} />
+            </Icon>
+          </TooltipBox>
+          <TooltipBox content="Reload feed">
+            <Icon onClick={handleRefresh}>
+              <RefreshCw size={16} className={`${syncing ? "spinning" : ""}`} />
+            </Icon>
+          </TooltipBox>
           <span>
             <Separator orientation="vertical" className="h-4 mx-2" />
           </span>

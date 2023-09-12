@@ -9,15 +9,10 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { CustomizeStyle } from "@/components/SettingPanel/CustomizeStyle";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { open } from "@tauri-apps/api/shell";
 import * as dataAgent from "@/helpers/dataAgent";
 import { useToast } from "@/components/ui/use-toast";
+import { TooltipBox } from "@/components/TooltipBox";
 
 export interface NavigatorProps {
   listRef?: any;
@@ -66,7 +61,7 @@ export const ReadingOptions = (props: NavigatorProps) => {
       },
       function (err) {
         console.error("Async: Could not copy text: ", err);
-      },
+      }
     );
   };
 
@@ -74,34 +69,31 @@ export const ReadingOptions = (props: NavigatorProps) => {
     <>
       <Popover>
         <PopoverTrigger>
-          <Icon>
-            <Paintbrush size={16} />
-          </Icon>
+          <TooltipBox content="Customize style">
+            <Icon>
+              <Paintbrush size={16} />
+            </Icon>
+          </TooltipBox>
         </PopoverTrigger>
         <PopoverContent className="w-[340px]">
           <CustomizeStyle styleConfig={store.userConfig.customize_style} />
         </PopoverContent>
       </Popover>
-      <Icon onClick={handleViewSourcePage}>
-        <Ghost size={16} />
-      </Icon>
-      <DropdownMenu>
-        <DropdownMenuTrigger>
-          <Icon>
-            <Share size={16} />
-          </Icon>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          <DropdownMenuItem onClick={() => openInBrowser()}>
-            <ExternalLink size={16} className="mr-2" />
-            Open in browser
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={handleCopyLink}>
-            <Link size={16} className="mr-2" />
-            Copy link
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <TooltipBox content="View full page">
+        <Icon onClick={handleViewSourcePage}>
+          <Ghost size={16} />
+        </Icon>
+      </TooltipBox>
+      <TooltipBox content="Open in browser">
+        <Icon onClick={() => openInBrowser()}>
+          <ExternalLink size={16} />
+        </Icon>
+      </TooltipBox>
+      <TooltipBox content="Copy link">
+        <Icon onClick={handleCopyLink}>
+          <Link size={16} />
+        </Icon>
+      </TooltipBox>
     </>
   );
 };

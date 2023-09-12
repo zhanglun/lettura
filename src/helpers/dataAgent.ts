@@ -1,6 +1,7 @@
 import { invoke } from "@tauri-apps/api";
 import { Article, Channel, Folder } from "../db";
 import { request } from "@/helpers/request";
+import { AxiosResponse } from "axios";
 
 export const getChannels = async (
   filter: any,
@@ -116,10 +117,13 @@ export const getUnreadTotal = async (): Promise<{ [key: string]: number }> => {
   return invoke("get_unread_total");
 };
 
-export const getCollectionMetas = async (): Promise<{
+export const getCollectionMetas = async (): Promise<AxiosResponse<{
   [key: string]: number;
-}> => {
-  return invoke("get_collection_metas");
+}>> => {
+  const req = request.get('collection-metas');
+  console.log("%c Line:123 🍏 req", "color:#ed9ec7", req);
+
+  return req;
 };
 
 export const updateArticleReadStatus = async (

@@ -9,7 +9,7 @@ export interface IconProps {
   active?: boolean;
 }
 
-export const Icon = React.forwardRef((props: IconProps, ref: any) => {
+export const Icon = (props: IconProps) => {
   const {
     onClick = () => {},
     disable,
@@ -25,10 +25,10 @@ export const Icon = React.forwardRef((props: IconProps, ref: any) => {
         "flex items-center justify-center rounded hover:text-accent-foreground hover:bg-accent",
         { "bg-muted cursor-not-allowed": disable },
         { "bg-muted": active },
-        className,
+        className
       )}
     >
       {children}
     </span>
   );
-});
+};
