@@ -20,8 +20,9 @@ jobs:
     steps:
       - name: Checkout your repository using git
         uses: actions/checkout@v3
+      - name: Go to Docs
+        run: cd ./docs
       - name: Install, build, and upload your site
-        working-directory: ./docs
         uses: withastro/action@v0
         # with:
             # path: . # The root location of your Astro project inside the repository. (optional)
