@@ -134,14 +134,14 @@ async fn main() {
     sender: Mutex::new(async_process_input_tx),
   })
     .menu(core::menu::AppMenu::get_menu(&context))
-    // .plugin(tauri_plugin_log::Builder::default()
-    //   .targets([
-    //     LogTarget::LogDir,
-    //     LogTarget::Stdout,
-    //     LogTarget::Webview,
-    //   ])
-    //   .with_colors(fern::colors::ColoredLevelConfig::default())
-    //   .build())
+    .plugin(tauri_plugin_log::Builder::default()
+      .targets([
+        LogTarget::LogDir,
+        LogTarget::Stdout,
+        // LogTarget::Webview,
+      ])
+      .with_colors(fern::colors::ColoredLevelConfig::default())
+      .build())
     .setup(move |app| {
       let app_handle = app.handle();
 

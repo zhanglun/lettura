@@ -34,7 +34,7 @@ url="*"
 base64="*"
 once_cell = "*"
 log="^0.4"
-tauri-plugin-log = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "dev", features = ["colored"]  }
+tauri-plugin-log = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1", features = ["colored"]  }
 actix-web = "4.4.0"
 actix-cors = "*"
 
