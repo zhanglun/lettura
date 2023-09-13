@@ -326,11 +326,34 @@ impl Article {
   }
 
   pub fn mark_today_as_read() -> usize {
-    return 10;
+    let mut connection = establish_connection();
+    let result = diesel::update(
+      schema::articles::dsl::articles
+        .filter(schema::articles::create_date.eq(diesel::dsl::now))
+        .filter(schema::articles::read_status.eq(1)),
+    )
+    .set(schema::articles::read_status.eq(2))
+    .execute(&mut connection);
+
+    match result {
+      Ok(r) => r,
+      Err(_) => 0,
+    }
   }
 
   pub fn mark_all_as_read() -> usize {
-    return 100;
+    let mut connection = establish_connection();
+    let result = diesel::update(
+      schema::articles::dsl::articles
+        .filter(schema::articles::read_status.eq(1)),
+    )
+    .set(schema::articles::read_status.eq(2))
+    .execute(&mut connection);
+
+    match result {
+      Ok(r) => r,
+      Err(_) => 0,
+    }
   }
 
   pub fn update_article_read_status(uuid: String, status: i32) -> usize {

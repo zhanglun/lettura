@@ -24,7 +24,7 @@ pub async fn handle_collection_metas() -> Result<impl Responder> {
   Ok(web::Json(obj))
 }
 
-#[post("/api/mark-all-as-unread")]
+#[post("/api/mark-all-as-read")]
 pub async fn handle_mark_as_read(
   body: web::Json<feed::article::MarkAllUnreadParam>,
 ) -> Result<impl Responder> {

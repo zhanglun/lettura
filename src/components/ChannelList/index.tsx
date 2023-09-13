@@ -25,7 +25,6 @@ import { useModal } from "../Modal/useModal";
 import { open } from "@tauri-apps/api/shell";
 import { DialogEditFeed } from "@/components/SettingPanel/Content/DialogEditFeed";
 import { useQuery } from "@/helpers/parseXML";
-import styles from "./channel.module.scss";
 import { useRefresh } from "./useRefresh";
 import { TooltipBox } from "../TooltipBox";
 
@@ -191,9 +190,9 @@ const ChannelList = (): JSX.Element => {
       className="relative flex flex-col w-[var(--app-channel-width)] h-full select-none border-r border-border text-[hsl(var(--foreground))]
   bg-[hsl(var(--background))]"
     >
-      <div className={styles.header}>
+      <div className="flex items-center justify-end h-[var(--app-toolbar-height)] px-2 py-0 bg-[var(--background)]">
         <div />
-        <div className={styles.toolbar}>
+        <div className="flex justify-end">
           <AddFeedChannel />
           <AddFolder
             action="add"

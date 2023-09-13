@@ -201,22 +201,6 @@ export const ArticleContainer = (): JSX.Element => {
   };
 
   const markAllRead = () => {
-    // if (store.feed) {
-    //   return store.markArticleListAsRead(store.feed.uuid).then((res: any) => {
-    //     console.log("%c Line:176 🍖 res", "color:#93c0a4", res);
-    //     busChannel.emit("updateChannelUnreadCount", {
-    //       uuid: store.feed?.uuid as string,
-    //       isToday: false,
-    //       action: "set",
-    //       count: 0,
-    //     });
-    //   });
-    // }
-
-    console.log("%c Line:216 🍿 store.feed", "color:#7f2b82", store.feed);
-    console.log("%c Line:218 🍻 isToday", "color:#42b983", isToday);
-    console.log("%c Line:219 🍅 isAll", "color:#465975", isAll);
-
     return store.markArticleListAsRead(!!isToday, !!isAll);
   };
 

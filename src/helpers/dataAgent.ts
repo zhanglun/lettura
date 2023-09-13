@@ -144,8 +144,8 @@ export const markAllRead = async (body: {
   uuid?: string;
   isToday?: boolean;
   isAll?: boolean;
-}) => {
-  return request.post('/mark-all-as-unread', body)
+}): Promise<AxiosResponse<number>> => {
+  return request.post('/mark-all-as-read', body)
 };
 
 export const getUserConfig = async (): Promise<any> => {

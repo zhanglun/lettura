@@ -18,8 +18,12 @@ import { Icon } from "../Icon";
 import { ArrowLeft, Loader2, Plus } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { TooltipBox } from "../TooltipBox";
+import { useBearStore } from "@/stores";
 
 export const AddFeedChannel = (props: any) => {
+  const store = useBearStore((state) => ({
+    initCollectionMetas: state.initCollectionMetas,
+  }))
   const [showStatus, , , , toggleModal] = useModal();
   const [step, setStep] = useState(1);
   const [feedUrl, setFeedUrl] = useState("");
@@ -82,6 +86,7 @@ export const AddFeedChannel = (props: any) => {
       .addChannel(feedUrl)
       .then((res) => {
         if (res[1] === "") {
+          store.initCollectionMetas();
           busChannel.emit("getChannels");
           handleCancel();
         }

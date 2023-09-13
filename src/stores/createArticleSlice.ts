@@ -145,13 +145,6 @@ export const createArticleSlice: StateCreator<
 
   markArticleListAsRead(isToday: boolean, isAll: boolean) {
     const feed = get().feed;
-    console.log(
-      "%c Line:149 🥛 isToday, isAll",
-      "color:#3f7cff",
-      isToday,
-      isAll
-    );
-
     let params: {
       uuid?: string;
       is_today?: boolean;
@@ -171,6 +164,7 @@ export const createArticleSlice: StateCreator<
     }
 
     return dataAgent.markAllRead(params).then((res) => {
+      const { data } = res;
       set(() => ({
         articleList: get().articleList.map((_) => {
           _.read_status = 2;
@@ -178,9 +172,8 @@ export const createArticleSlice: StateCreator<
         }),
       }));
 
-      feed && get().updateUnreadCount(feed.uuid, "set", 0);
-
-      // TODO: update today and total
+      get().getFeedList();
+      get().initCollectionMetas();
     });
   },
 
