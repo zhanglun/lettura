@@ -1,0 +1,37 @@
+---
+import { Icon } from "astro-icon";
+import type { CompatibilityItem } from "~/types";
+
+export interface Props {
+  items: Array<CompatibilityItem>;
+  title: string;
+  url: string;
+}
+
+const { items, title, url } = Astro.props;
+---
+
+<div class="w-full max-w-6xl space-y-2">
+  <div class="relative border border-default bg-offset px-6 pb-4 pt-8">
+    <h3
+      class="absolute right-4 top-0 -translate-y-1/2 rounded-full border border-current bg-default px-4 py-1 uppercase tracking-tight text-xs"
+    >
+      {title}
+    </h3>
+    <ul class="grid grid-cols-2 gap-8 sm:grid-cols-3 md:grid-cols-6">
+      {
+        items.map((item) => (
+          <li>
+            <a class="flex flex-col items-center gap-2" href={item.url}>
+              <Icon class="h-12" name={item.icon} />
+              <span>{item.title}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+  <p class="text-right text-sm">
+    <a class="text-primary" href={url}> ...and more &rarr;</a>
+  </p>
+</div>

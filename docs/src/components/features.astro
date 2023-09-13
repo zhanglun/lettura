@@ -1,0 +1,66 @@
+---
+import { Icon } from "astro-icon";
+import ContentSection from "~/components/content-section.astro";
+import type { FeatureItem } from "~/types";
+
+const features: Array<FeatureItem> = [
+  {
+    title: "Open-source",
+    description:
+      "Basic functionality open-sourced, Let's build it together!",
+    icon: "mdi:penguin",
+  },
+  {
+    title: "Cross Platform",
+    description:
+      "Support MacOS and Window, and maybe the Linux family too!",
+    icon: "mdi:cellphone-link",
+  },
+  {
+    title: "Keyboard Access",
+    description:
+      "Keyboard shortcuts to access nearly all functions with ease.",
+    icon: "mdi:keyboard",
+  },
+  {
+    title: "Beautify UI",
+    description:
+      "Thanks @shadcn/ui, make lettura simple and clean",
+    icon: "mdi:palette",
+  },
+  {
+    title: "Search Enabled",
+    description:
+      "Search in your data",
+    icon: "mdi:search-web",
+  },
+  {
+    title: "More In evelopment",
+    description:
+      "We are developing constantly!",
+    icon: "mdi:developer-board",
+  },
+];
+---
+
+<ContentSection title="Features" id="features">
+  <Fragment slot="lead">
+    Astro comes <span class="text-primary">batteries included</span>. It takes
+    the best parts of
+    <span class="text-primary">state-of-the-art</span>
+     tools and adds its own <span class="text-primary">innovations</span>.
+  </Fragment>
+  <ul class="grid max-w-6xl grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+    {
+      features.map(({ title, description, icon }) => (
+        <li class="flex flex-col items-center gap-4 border border-default bg-offset p-6">
+          <div class="h-16 w-16 rounded-full border-2 border-current p-3">
+            <Icon name={icon} />
+          </div>
+          <p class="text-center font-extrabold text-xl">{title}</p>
+          <p class="text-center text-offset text-sm">{description}</p>
+        </li>
+      ))
+    }
+  </ul>
+</ContentSection>

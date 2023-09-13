@@ -1,0 +1,30 @@
+---
+import { Icon } from "astro-icon";
+import ContentSection from "~/components/content-section.astro";
+---
+
+<ContentSection title="Free and OpenSource" id="intro">
+  <Icon slot="eyebrow" name="app-icon" class="h-56" />
+  <Fragment slot="lead">
+    <span class="text-primary">Lettura</span> is a free and open-source feed reader for macOS and Window.
+    <span class="text-primary">Lightning-fast</span>
+     performance meets <span class="text-primary">powerful</span> user
+    experience.
+  </Fragment>
+  <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+    <a
+      href="https://github.com/zhanglun/lettura"
+      class="flex items-center justify-center gap-3 border-2 border-current px-6 py-4"
+    >
+      <Icon pack="mdi" name="telescope" class="h-8" />
+      <span>Read the docs</span>
+    </a>
+    <a
+      href="https://github.com/zhanglun/lettura/releases"
+      class="flex items-center justify-center gap-3 border-2 border-current px-6 py-4"
+    >
+      <Icon pack="mdi" name="rocket" class="h-8" />
+      <span>Get Lettura free</span>
+    </a>
+  </div>
+</ContentSection>

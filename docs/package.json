@@ -1,0 +1,34 @@
+{
+  "name": "astro-landing-page",
+  "type": "module",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "format": "prettier --write **/*.astro .",
+    "clean": "rimraf dist .astro node_modules"
+  },
+  "devDependencies": {
+    "@astrojs/image": "^0.17.3",
+    "@astrojs/tailwind": "^4.0.0",
+    "@types/micromodal": "^0.3.3",
+    "astro": "^2.10.12",
+    "astro-icon": "^0.8.1",
+    "prettier": "^3.0.2",
+    "prettier-plugin-astro": "^0.12.0",
+    "prettier-plugin-tailwindcss": "^0.5.3",
+    "rimraf": "^5.0.1",
+    "tailwindcss-fluid-type": "^2.0.3"
+  },
+  "dependencies": {
+    "@fontsource-variable/inter": "^5.0.8",
+    "micromodal": "^0.4.10",
+    "sharp": "^0.32.5",
+    "tailwindcss": "^3.3.3",
+    "tiny-invariant": "^1.3.1"
+  }
+}
