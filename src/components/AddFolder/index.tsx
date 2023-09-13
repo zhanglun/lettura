@@ -81,7 +81,7 @@ export const AddFolder = (props: AddFolderProps) => {
 
   return (
     <Dialog open={dialogStatus} onOpenChange={setDialogStatus}>
-      {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
+      {trigger && <DialogTrigger>{trigger}</DialogTrigger>}
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle className="text-2xl flex items-center">
