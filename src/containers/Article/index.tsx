@@ -51,6 +51,8 @@ export const ArticleContainer = (): JSX.Element => {
     articleDialogViewStatus: state.articleDialogViewStatus,
     setArticleDialogViewStatus: state.setArticleDialogViewStatus,
     markArticleListAsRead: state.markArticleListAsRead,
+    initCollectionMetas: state.initCollectionMetas,
+    getFeedList: state.getFeedList,
 
     filterList: state.filterList,
     currentFilter: state.currentFilter,
@@ -156,9 +158,7 @@ export const ArticleContainer = (): JSX.Element => {
           store.feed?.uuid as string
         )
         .then((res) => {
-          const [num, uuid, message] = res[0];
-
-          console.log("%c Line:77 🥛 res", "color:#ea7e5c", res);
+          const [num, , message] = res[0];
 
           if (message) {
             toast({
@@ -170,13 +170,6 @@ export const ArticleContainer = (): JSX.Element => {
               ),
             });
           } else {
-            getArticleList();
-            busChannel.emit("updateChannelUnreadCount", {
-              uuid: store.feed?.uuid as string,
-              isToday: true,
-              action: "increase",
-              count: num || 0,
-            });
             toast({
               title: "Success",
               description: message,
@@ -184,6 +177,12 @@ export const ArticleContainer = (): JSX.Element => {
                 <ToastAction altText="Goto schedule to undo">Close</ToastAction>
               ),
             });
+          }
+
+          if (num > 0) {
+            getArticleList();
+            store.initCollectionMetas();
+            store.getFeedList();
           }
         })
         .finally(() => {

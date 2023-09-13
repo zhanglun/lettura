@@ -131,7 +131,7 @@ export const FeedItem = React.forwardRef((props: FeedItemProps, ref: any) => {
           {unread > 0 && (
             <span
               className={classNames(
-                "px-1 min-w-[1rem] h-4 leading-4 text-center text-[10px]",
+                "-mr-2 min-w-[1rem] h-4 leading-4 text-center text-[10px]",
                 {
                   "text-primary-foreground": isActive,
                 },

@@ -83,22 +83,9 @@ const ChannelList = (): JSX.Element => {
       });
   };
 
-  // useEffect(() => {
-  //   const unsubscribeUpdateCount = busChannel.on(
-  //     "updateChannelUnreadCount",
-  //     ({ uuid, isToday, action, count }) => {
-  //       console.log(
-  //         "🚀 ~ file: index.tsx:138 ~ useEffect ~ updateChannelUnreadCount"
-  //       );
-  //       updateCount(feedList, uuid, isToday, action, count);
-  //       unsubscribeUpdateCount();
-  //     }
-  //   );
-
-  //   return () => {
-  //     unsubscribeUpdateCount();
-  //   };
-  // }, [feedList]);
+  const reloadFeedData = (feed: Channel | null) => {
+    console.log("TODO");
+  };
 
   useEffect(() => {
     feedList.forEach((feed) => {
@@ -126,9 +113,9 @@ const ChannelList = (): JSX.Element => {
   }, []);
 
   const handleContextMenuChange = (status: boolean) => {
-    // if (!status) {
-    //   store.setFeedContextMenuTarget(null);
-    // }
+    if (!status) {
+      store.setFeedContextMenuTarget(null);
+    }
   };
 
   useEffect(() => {
@@ -259,7 +246,7 @@ const ChannelList = (): JSX.Element => {
             {store.collectionMeta.today.unread > 0 && (
               <span
                 className={classNames(
-                  "px-1 min-w-[1rem] h-4 leading-4 text-center text-[10px]",
+                  "-mr-2 min-w-[1rem] h-4 leading-4 text-center text-[10px]",
                   {
                     "text-primary-foreground": isToday,
                   }
@@ -295,7 +282,7 @@ const ChannelList = (): JSX.Element => {
             {store.collectionMeta.total.unread > 0 && (
               <span
                 className={classNames(
-                  "px-1 min-w-[1rem] h-4 leading-4 text-center text-[10px]",
+                  "-mr-2 min-w-[1rem] h-4 leading-4 text-center text-[10px]",
                   {
                     "text-primary-foreground": isAll,
                   }
@@ -341,13 +328,23 @@ const ChannelList = (): JSX.Element => {
                         reloadFeedIcon(store.feedContextMenuTarget)
                       }
                     >
-                      Reload Icon
+                      Reload icon
+                    </ContextMenuItem>
+                    <ContextMenuItem
+                      onClick={() =>
+                        reloadFeedData(store.feedContextMenuTarget)
+                      }
+                    >
+                      Reload feed
                     </ContextMenuItem>
                     <ContextMenuSeparator />
                     <ContextMenuItem onClick={() => setEditFeedStatus(true)}>
                       Detail
                     </ContextMenuItem>
-                    <ContextMenuItem onClick={() => setModalStatus(true)}>
+                    <ContextMenuItem
+                      onClick={() => setModalStatus(true)}
+                      className="text-red-600"
+                    >
                       Unsubscribe
                     </ContextMenuItem>
                   </>

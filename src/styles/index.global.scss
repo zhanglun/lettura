@@ -174,12 +174,13 @@ $disabled-gray: #ddd;
 * {
   scrollbar-width: thin;
   scrollbar-color: #707070 #ffffff;
+  scrollbar-gutter: stable;
 }
 
 /* Chrome, Edge, and Safari */
 *::-webkit-scrollbar {
   background-color: transparent;
-  width: 0px;
+  width: 4px;
 }
 
 *:hover {
