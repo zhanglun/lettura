@@ -121,6 +121,7 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
   },
 
   updateCollectionMeta(meta: any) {
+    console.log("%c Line:124 🥖 meta", "color:#e41a6a", meta);
     set({
       collectionMeta: meta,
     });

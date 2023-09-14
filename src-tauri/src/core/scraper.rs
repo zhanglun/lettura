@@ -1,10 +1,12 @@
-use crate::cmd::{self, create_client};
 use reqwest::{self};
 use scraper::{self, Selector};
 use serde::Serialize;
 use tokio::sync::{Mutex};
 use std::sync::Arc;
 use tokio::sync::mpsc::{channel};
+
+use crate::feed;
+use crate::cmd;
 
 #[derive(Debug, Default, Serialize)]
 pub struct PageScraper {
@@ -49,7 +51,7 @@ impl PageScraper {
   }
 
   pub async fn fetch_page(url: &str) -> Option<String> {
-    let client = cmd::create_client();
+    let client = feed::create_client();
     let response = client.get(url).send().await;
 
     let result = match response {
@@ -68,7 +70,7 @@ impl PageScraper {
   }
 
   pub async fn get_first_image_or_og_image(url: &str) -> Option<String> {
-    let client = create_client();
+    let client = feed::create_client();
     let res = client.get(url).send().await.ok()?;
     let body = res.text().await.ok()?;
     let document = scraper::Html::parse_document(&body);
@@ -141,7 +143,7 @@ use super::*;
     // let url = "https://anyway.fm/rss.xml";
     println!("request channel {}", &url);
 
-    let res =cmd::parse_feed(&url).await;
+    let res = feed::parse_feed(&url).await;
 
     match res {
       Ok(res) => {

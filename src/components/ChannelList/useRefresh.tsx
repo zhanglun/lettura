@@ -7,11 +7,14 @@ import { useBearStore } from "@/stores";
 export const useRefresh = () => {
   const store = useBearStore((state) => ({
     userConfig: state.userConfig,
+
     feedList: state.feedList,
     getFeedList: state.getFeedList,
     updateFeed: state.updateFeed,
+
+    collectionMeta: state.collectionMeta,
+    updateCollectionMeta: state.updateCollectionMeta,
   }));
-  // const [feedList, setFeedList] = useState<Channel[]>([]);
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [done, setDone] = useState<number>(0);
 
@@ -23,16 +26,29 @@ export const useRefresh = () => {
 
   const loadAndUpdate = (type: string, uuid: string, unread: number) => {
     return dataAgent
-      .syncArticlesWithChannelUuid(type, uuid)
+      .syncFeed(type, uuid)
       .then((res) => {
-        console.log("%c Line:222 🍬 res", "color:#7f2b82", res);
-        res.forEach((item) => {
+        const { data } = res;
+        console.log("%c Line:29 🍌 data", "color:#ffdd4d", data);
+
+        data.forEach((item) => {
           const [count, uuid, _msg] = item;
 
-          count > 0 && store.updateFeed(uuid, { unread: unread + count });
+          if (count) {
+            store.updateCollectionMeta({
+              total: {
+                unread: store.collectionMeta.total.unread + count,
+              },
+              today: {
+                unread: store.collectionMeta.today.unread + count,
+              },
+            });
+
+            store.updateFeed(uuid, { unread: unread + count });
+          }
         });
 
-        return res;
+        return data;
       })
       .catch((err) => {
         console.log("%c Line:239 🍬 err", "color:#2eafb0", err);

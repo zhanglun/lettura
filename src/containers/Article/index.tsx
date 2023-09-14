@@ -153,12 +153,13 @@ export const ArticleContainer = (): JSX.Element => {
       setSyncing(true);
 
       dataAgent
-        .syncArticlesWithChannelUuid(
+        .syncFeed(
           store.feed?.item_type as string,
           store.feed?.uuid as string
         )
-        .then((res) => {
-          const [num, , message] = res[0];
+        .then(({ data }) => {
+          console.log("%c Line:161 🍞 data", "color:#33a5ff", data);
+          const [num, , message] = data[0];
 
           if (message) {
             toast({

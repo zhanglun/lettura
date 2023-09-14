@@ -6,13 +6,11 @@ use diesel::sql_types::*;
 use scraper::{Html, Selector};
 use serde::{Deserialize, Serialize};
 
-use crate::cmd::create_client;
 use crate::db;
 use crate::models;
+use crate::cmd::create_article_models;
 use crate::feed;
 use crate::schema;
-
-
 
 pub fn get_feed_by_uuid(channel_uuid: &str) -> Option<models::Feed> {
   let mut connection = db::establish_connection();
@@ -628,7 +626,7 @@ pub async fn update_icon(uuid: &str, url: &str) -> usize {
 }
 
 pub async fn fetch_site_favicon(url: &str) -> Option<String> {
-  let client = create_client();
+  let client = feed::create_client();
   let response = client.get(url).send().await.unwrap();
   let html = response.text().await.unwrap();
   let url = String::from(url);
@@ -650,6 +648,51 @@ pub async fn fetch_site_favicon(url: &str) -> Option<String> {
   }
 
   favicon_url
+}
+
+pub async fn sync_articles(uuid: String) -> Vec<(usize, String, String)> {
+  let channel = match feed::channel::get_feed_by_uuid(&uuid) {
+    Some(channel) => channel,
+    None => return vec![(0, uuid, "feed not found".to_string())],
+  };
+
+  let res = match feed::parse_feed(&channel.feed_url).await {
+    Ok(res) => {
+      feed::channel::update_health_status(&uuid, 0, "".to_string());
+      res
+    },
+    Err(err) => {
+      feed::channel::update_health_status(&uuid, 1, err.to_string());
+      return vec![(0, uuid, err.to_string())];
+    },
+  };
+
+  let articles = create_article_models(&channel.uuid, &channel.feed_url, &res);
+  let result = feed::article::Article::add_articles(channel.uuid, articles);
+
+  vec![(result, uuid, "".to_string())]
+}
+
+pub async fn sync_article_in_folder(uuid: String) -> Vec<(usize, String, String)> {
+  let connection = db::establish_connection();
+  let channels = feed::folder::get_channels_in_folders(connection, vec![uuid]);
+
+  println!("{:?}", channels);
+  let mut res = vec![];
+
+  for channel in channels {
+    res.extend(sync_articles(channel.child_uuid).await);
+  }
+
+  res
+}
+
+pub async fn sync_feed(uuid: String, feed_type: String) -> Vec<(usize, String, String)> {
+  if feed_type == "folder" {
+    return feed::channel::sync_article_in_folder(uuid.to_string()).await;
+  } else {
+    return feed::channel::sync_articles(uuid.to_string()).await;
+  }
 }
 
 #[cfg(test)]
@@ -691,5 +734,10 @@ mod tests {
     let sort = get_last_sort(&mut connection);
 
     println!("sort {:?}", sort);
+  }
+
+  #[tokio::test]
+  async fn test_sync_feed() {
+    sync_feed("1e2dbbcd-5f44-4811-a907-0b6320b3ee9e".to_string(), "feed".to_string()).await;
   }
 }

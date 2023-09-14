@@ -1,7 +1,5 @@
 use std::collections::HashMap;
 
-use feed_rs::parser;
-use reqwest;
 use serde::Serialize;
 use tauri::{command, Window};
 use tokio::sync::{mpsc, Mutex};
@@ -18,81 +16,6 @@ pub struct AsyncProcInputTx {
   pub sender: Mutex<mpsc::Sender<AsyncProcessMessage>>,
 }
 
-pub fn create_client() -> reqwest::Client {
-  let user_config = config::get_user_config();
-  let client = match user_config {
-    Some(user_config) => match user_config.local_proxy {
-      Some(proxy) => {
-        let mut scheme = String::from("socks5h://");
-
-        scheme.push_str(&proxy.ip.to_string());
-        scheme.push_str(":");
-        scheme.push_str(&proxy.port.to_string());
-
-        reqwest::Client::builder()
-          .proxy(reqwest::Proxy::all(scheme).unwrap())
-          .build()
-          .unwrap()
-      }
-      None => reqwest::Client::builder().build().unwrap(),
-    },
-    None => reqwest::Client::builder().build().unwrap(),
-  };
-
-  client
-}
-
-/// request feed, parse Feeds
-///
-/// # Examples
-/// ```
-/// let url = "https://sspai.com/feed".to_string();
-/// let res = parse_feed(&url).await;
-/// ```
-pub async fn parse_feed(url: &str) -> Result<feed_rs::model::Feed, String> {
-  let client = create_client();
-  let result = client.get(url).send().await;
-
-  let a = match result {
-    Ok(response) => match response.status() {
-      reqwest::StatusCode::OK => {
-        let content = response.text().await;
-
-        match content {
-          Ok(content) => {
-            let res = parser::parse(content.as_bytes());
-
-            match res {
-              Ok(res) => Ok(res),
-              Err(error) => {
-                println!("content parse error{:?}", error);
-                Err(error.to_string())
-              }
-            }
-          }
-          Err(error) => {
-            println!("response not OK {:?}", error);
-            Err(error.to_string())
-          }
-        }
-      }
-      reqwest::StatusCode::NOT_FOUND => Err(String::from("Could not find a feed at the location.")),
-      _ => {
-        println!("o {:?}", response);
-        Err("Not 200 OK".to_string())
-      }
-    },
-    Err(error) => {
-      println!("ERROR: {:?}", error);
-      println!("URL: {:?}", url);
-
-      Err(error.to_string())
-    }
-  };
-
-  a
-}
-
 #[derive(Debug, Serialize)]
 pub struct FeedFetchResponse {
   feed: models::NewFeed,
@@ -101,7 +24,7 @@ pub struct FeedFetchResponse {
 
 #[command]
 pub async fn fetch_feed(url: String) -> (Option<models::NewFeed>, String) {
-  let res = parse_feed(&url).await;
+  let res = feed::parse_feed(&url).await;
 
   match res {
     Ok(res) => {
@@ -273,7 +196,7 @@ pub fn create_article_models(
 pub async fn add_feed(url: String) -> (usize, String) {
   println!("request channel {}", &url);
 
-  let res = parse_feed(&url).await;
+  let res = feed::parse_feed(&url).await;
 
   match res {
     Ok(res) => {
@@ -323,59 +246,6 @@ pub fn delete_feed(uuid: String) -> usize {
   let result = feed::channel::delete_feed(uuid);
 
   result
-}
-
-pub async fn sync_articles(uuid: String) -> Vec<(usize, String, String)> {
-  let channel = match feed::channel::get_feed_by_uuid(&uuid) {
-    Some(channel) => channel,
-    None => return vec![(0, uuid, "feed not found".to_string())],
-  };
-
-  let res = match parse_feed(&channel.feed_url).await {
-    Ok(res) => {
-      feed::channel::update_health_status(&uuid, 0, "".to_string());
-      res
-    },
-    Err(err) => {
-      feed::channel::update_health_status(&uuid, 1, err.to_string());
-      return vec![(0, uuid, err.to_string())];
-    },
-  };
-
-  let articles = create_article_models(&channel.uuid, &channel.feed_url, &res);
-  let result = feed::article::Article::add_articles(channel.uuid, articles);
-
-  vec![(result, uuid, "".to_string())]
-}
-
-pub async fn sync_article_in_folder(uuid: String) -> Vec<(usize, String, String)> {
-  let connection = db::establish_connection();
-  let channels = feed::folder::get_channels_in_folders(connection, vec![uuid]);
-
-  println!("{:?}", channels);
-  let mut res = vec![];
-
-  for channel in channels {
-    res.extend(sync_articles(channel.child_uuid).await);
-  }
-
-  res
-}
-
-#[command]
-pub async fn sync_articles_with_channel_uuid(
-  feed_type: String,
-  uuid: String,
-) -> Vec<(usize, String, String)> {
-  if feed_type == "folder" {
-    let res = sync_article_in_folder(uuid).await;
-    println!("res folder {:?}", res);
-    res
-  } else {
-    let res = sync_articles(uuid).await;
-    println!("res {:?}", res);
-    res
-  }
 }
 
 #[command]
@@ -512,20 +382,20 @@ pub async fn update_icon(uuid: String, url: String) -> usize {
   favicon
 }
 
-#[command]
-pub async fn get_web_best_image(url: String) -> Option<String> {
-  let res = core::scraper::PageScraper::get_first_image_or_og_image(&url)
-    .await
-    .unwrap_or("".to_string());
+// #[command]
+// pub async fn get_web_best_image(url: String) -> Option<String> {
+//   let res = core::scraper::PageScraper::get_first_image_or_og_image(&url)
+//     .await
+//     .unwrap_or("".to_string());
 
-  Some(res)
-}
+//   Some(res)
+// }
 
-#[command]
-pub async fn get_web_source(url: String) -> Option<String> {
-  let res = core::scraper::PageScraper::fetch_page(&url).await;
-  res
-}
+// #[command]
+// pub async fn get_web_source(url: String) -> Option<String> {
+//   let res = core::scraper::PageScraper::fetch_page(&url).await;
+//   res
+// }
 
 #[cfg(test)]
 mod tests {
@@ -562,7 +432,7 @@ mod tests {
 
     println!("{:?}", url);
 
-    let res = parse_feed(&url).await;
+    let res = feed::parse_feed(&url).await;
 
     match res {
       Ok(res) => {
@@ -588,9 +458,5 @@ mod tests {
     let result = add_feed(url).await;
 
     println!("result: {:?}", result);
-  }
-  #[tokio::test]
-  async fn test_sync_() {
-    sync_article_in_folder(String::from("52f4b910-2551-4bce-84cb-5ceae1f3773c")).await;
   }
 }

@@ -108,11 +108,16 @@ export const addChannel = async (url: string): Promise<[number, string]> => {
   return invoke("add_feed", { url });
 };
 
-export const syncArticlesWithChannelUuid = async (
-  feedType: string,
+export const syncFeed = async (
+  feed_type: string,
   uuid: string
-): Promise<[[number, string, string]]> => {
-  return invoke("sync_articles_with_channel_uuid", { feedType, uuid });
+): Promise<AxiosResponse<[[number, string, string]]>> => {
+  return request.get(`/feeds/${uuid}/sync`, {
+    params: {
+      feed_type,
+    }
+  })
+  // return invoke("sync_articles_with_channel_uuid", { feedType, uuid });
 };
 
 export const getUnreadTotal = async (): Promise<{ [key: string]: number }> => {

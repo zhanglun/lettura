@@ -2,12 +2,10 @@ use actix_web::{get, post, web, App, HttpRequest, HttpResponse, HttpServer, Resp
 use serde::{Deserialize, Serialize};
 
 use crate::feed;
-
 #[derive(Serialize)]
 struct MyObj {
   name: String,
 }
-
 #[get("/api/articles/{name}")]
 pub async fn handle_test(name: web::Path<String>) -> Result<impl Responder> {
   let obj = MyObj {
@@ -24,15 +22,30 @@ pub async fn handle_collection_metas() -> Result<impl Responder> {
   Ok(web::Json(obj))
 }
 
+#[derive(Debug, Deserialize, Serialize)]
+pub struct SyncFeedQuery {
+  feed_type: String,
+}
+
+#[get("/api/feeds/{uuid}/sync")]
+pub async fn handle_sync_feed(
+  uuid: web::Path<String>,
+  query: web::Query<SyncFeedQuery>,
+) -> Result<impl Responder> {
+  let res = feed::channel::sync_feed(uuid.to_string(), query.feed_type.to_string()).await;
+
+  Ok(web::Json(res))
+}
+
 #[post("/api/mark-all-as-read")]
 pub async fn handle_mark_as_read(
   body: web::Json<feed::article::MarkAllUnreadParam>,
 ) -> Result<impl Responder> {
-  let res = feed::article::Article::mark_as_read(feed::article::MarkAllUnreadParam{
+  let res = feed::article::Article::mark_as_read(feed::article::MarkAllUnreadParam {
     uuid: body.uuid.clone(),
     is_today: body.is_today,
-    is_all: body.is_all
-   });
+    is_all: body.is_all,
+  });
 
   println!("{:?}", body);
 
@@ -70,6 +83,7 @@ pub fn config(cfg: &mut web::ServiceConfig) {
   cfg
     .service(handle_test)
     .service(handle_collection_metas)
+    .service(handle_sync_feed)
     .service(handle_mark_as_read)
     .service(handle_articles);
 }

@@ -178,7 +178,6 @@ async fn main() {
       cmd::get_articles,
       cmd::get_today_articles,
       cmd::get_all_articles,
-      cmd::sync_articles_with_channel_uuid,
       cmd::import_channels,
       cmd::get_unread_total,
       cmd::update_article_read_status,
@@ -196,8 +195,6 @@ async fn main() {
       cmd::init_process,
       cmd::get_article_detail,
       cmd::update_icon,
-      cmd::get_web_best_image,
-      cmd::get_web_source,
     ])
     .build(context)
     .expect("error while running tauri Application")
