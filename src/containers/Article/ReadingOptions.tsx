@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import clsx from "clsx";
 import { Icon } from "@/components/Icon";
 import { ExternalLink, Ghost, Link, Paintbrush, Share } from "lucide-react";
 import { useBearStore } from "@/stores";
@@ -35,14 +36,39 @@ export const ReadingOptions = (props: NavigatorProps) => {
     setFilter: state.setFilter,
 
     userConfig: state.userConfig,
+    viewOrigin: state.viewOrigin,
+    updateViewOrigin: state.updateViewOrigin,
+    viewOriginLoading: state.viewOriginLoading,
+    updateViewOriginLoading: state.updateViewOriginLoading,
   }));
 
   const handleViewSourcePage = () => {
+    if (!store.article) {
+      return;
+    }
+
     const { link } = store.article as Article;
 
-    dataAgent.getPageSources(link).then((res) => {
-      console.log(res);
-    });
+    if (store.viewOrigin) {
+      store.updateViewOrigin(false);
+
+      return;
+    }
+
+    store.updateViewOrigin(true);
+    store.updateViewOriginLoading(true);
+
+    dataAgent
+      .getPageSources(link)
+      .then((res) => {
+        console.log(res);
+      })
+      .finally(() => {
+        store.updateViewOriginLoading(false);
+      });
+    // .catch((err) => {
+    //   store.updateViewOrigin(false);
+    // });
     // TODO: parse web content
   };
 
@@ -80,8 +106,15 @@ export const ReadingOptions = (props: NavigatorProps) => {
         </PopoverContent>
       </Popover>
       <TooltipBox content="View full page">
-        <Icon onClick={handleViewSourcePage}>
-          <Ghost size={16} />
+        <Icon
+          onClick={handleViewSourcePage}
+          disable={!store.article}
+          active={store.viewOrigin}
+        >
+          <Ghost
+            size={16}
+            className={clsx({ "animate-bounce": store.viewOrigin })}
+          />
         </Icon>
       </TooltipBox>
       <TooltipBox content="Open in browser">

@@ -52,6 +52,11 @@ pub async fn handle_mark_as_read(
   Ok(web::Json(res))
 }
 
+#[get("/api/articles/{uuid}/source")]
+pub async fn handle_get_article_source(uuid: web::Path<String>) -> Result<impl Responder> {
+  Ok(web::Json("hahah".to_string()))
+}
+
 #[get("/api/articles")]
 pub async fn handle_articles(
   query: web::Query<feed::article::ArticleFilter>,
