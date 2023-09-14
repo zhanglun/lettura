@@ -53,7 +53,7 @@ export const DialogEditFeed = React.memo((props: DialogEditFeedProps) => {
             variant: "destructive",
             title: "Ops! Something wrong~",
             description: err.message,
-            duration: 2,
+            duration: 2000,
           });
         });
     }

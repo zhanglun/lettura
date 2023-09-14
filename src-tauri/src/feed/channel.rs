@@ -398,7 +398,13 @@ pub fn add_feed(feed: models::NewFeed, articles: Vec<models::NewArticle>) -> (us
 
   let result = match result {
     Ok(r) => (r, String::from("")),
-    Err(error) => (0, error.to_string()),
+    Err(error) => {
+      if let diesel::result::Error::DatabaseError(diesel::result::DatabaseErrorKind::UniqueViolation, _) = error {
+        return (0, "The feed you are trying to save already exists.".to_string())
+      } else {
+        return (0, error.to_string())
+      }
+    }
   };
 
   println!(" new result {:?}", result);

@@ -49,7 +49,7 @@ export const DialogDeleteFolder = React.memo((props: DialogProps) => {
             variant: "destructive",
             title: "Ops! Something wrong~",
             description: err.message,
-            duration: 2,
+            duration: 2000,
           });
         });
     }

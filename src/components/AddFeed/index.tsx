@@ -47,7 +47,7 @@ export const AddFeedChannel = (props: any) => {
             variant: "destructive",
             title: "Unable to subscribe",
             description: message,
-            duration: 2,
+            duration: 2000,
           });
 
           return;
@@ -85,10 +85,17 @@ export const AddFeedChannel = (props: any) => {
     dataAgent
       .addChannel(feedUrl)
       .then((res) => {
+        console.log("%c Line:88 🥕 res", "color:#4fff4B", res);
         if (res[1] === "") {
           store.initCollectionMetas();
-          busChannel.emit("getChannels");
           handleCancel();
+        } else {
+          toast({
+            variant: "destructive",
+            title: "Unable to subscribe",
+            description: res[1],
+            duration: 2000,
+          });
         }
       })
       .finally(() => {
