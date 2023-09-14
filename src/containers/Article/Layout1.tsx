@@ -52,7 +52,7 @@ export const Layout1 = (): JSX.Element => {
         className="h-[calc(100vh_-_var(--app-toolbar-height))]"
         ref={scrollBoxRef}
       >
-        <ArticleView article={store.article} userConfig={store.userConfig} />
+        <ArticleView userConfig={store.userConfig} />
       </ScrollBox>
     </div>
   );

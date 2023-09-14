@@ -1,9 +1,28 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useMatch } from "react-router-dom";
 import { useBearStore } from "@/stores";
 import { useShortcut } from "@/hooks/useShortcut";
 import { RouteConfig } from "@/config";
-import { busChannel } from "@/helpers/busChannel";
+
+function throttle(fn: any, wait: number) {
+  let previous = 0;
+  let timer: ReturnType<typeof setTimeout>;
+
+  return function (...args: any) {
+    if (Date.now() - previous > wait) {
+      clearTimeout(timer);
+
+      previous = Date.now();
+
+      fn(...args);
+    } else if (!timer) {
+      // 设置下一个定时器
+      timer = setTimeout(() => {
+        fn(...args);
+      }, wait);
+    }
+  };
+}
 
 export const useArticleListHook = (props: { feedUuid: string | null }) => {
   const { feedUuid } = props;
@@ -53,7 +72,7 @@ export const useArticleListHook = (props: { feedUuid: string | null }) => {
     setLoading(true);
 
     fn.then((res: any) => {
-      console.log('res ===> ', feedUuid, res);
+      console.log("res ===> ", feedUuid, res);
 
       if (res.length === 0) {
         setHasMore(false);
@@ -79,7 +98,7 @@ export const useArticleListHook = (props: { feedUuid: string | null }) => {
   }, [feedUuid, store.currentFilter, isToday, isAll]);
 
   useEffect(() => {
-    console.log('store.cursor', store.cursor);
+    console.log("store.cursor", store.cursor);
     getList();
   }, [store.cursor]);
 
@@ -95,13 +114,18 @@ export const useArticleListHook = (props: { feedUuid: string | null }) => {
 
     const callback = (
       entries: IntersectionObserverEntry[],
-      observer: IntersectionObserver,
+      observer: IntersectionObserver
     ) => {
       entries.forEach((entry) => {
-        if (entry.isIntersecting && !loading && hasMore && store.articleList.length) {
-          console.log('interaction update cursor ====>')
+        if (
+          entry.isIntersecting &&
+          !loading &&
+          hasMore &&
+          store.articleList.length
+        ) {
+          console.log("interaction update cursor ====>");
           store.setCursor(store.cursor + 1);
-        } else if(entry.isIntersecting && store.articleList.length === 0) {
+        } else if (entry.isIntersecting && store.articleList.length === 0) {
           store.setCursor(1);
         }
       });
@@ -118,15 +142,15 @@ export const useArticleListHook = (props: { feedUuid: string | null }) => {
     };
   }, [loading, store.articleList]);
 
-  function goPrev() {
+  const goPrev = useCallback(throttle(() => {
     console.warn("goPrev");
     store.goPreviousArticle();
-  }
+  }, 300), []);
 
-  function goNext() {
+  const goNext = useCallback(throttle(() => {
     console.warn("goNext");
     store.goNextArticle();
-  }
+  }, 300), []);
 
   useEffect(() => {
     registerShortcut(["n"], goNext);

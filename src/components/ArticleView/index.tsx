@@ -4,15 +4,14 @@ import { useBearStore } from "@/stores";
 import { ArticleDetail } from "@/components/ArticleView/Detail";
 
 type ArticleViewProps = {
-  article: any | null;
   userConfig: UserConfig;
 };
 
 export const ArticleView = (props: ArticleViewProps): JSX.Element => {
   const store = useBearStore((state) => ({
     feed: state.feed,
+    article: state.article,
   }));
-  const { article, userConfig } = props;
   const renderPlaceholder = () => {
     return (
       <div className="py-10 text-xl">
@@ -21,9 +20,17 @@ export const ArticleView = (props: ArticleViewProps): JSX.Element => {
     );
   };
 
+  useEffect(() => {
+    console.log("%c Line:27 🥓 store.article", "color:#6ec1c2", store.article);
+  }, [store.article]);
+
   return (
     <div className=" py-1 px-10 font-[var(--reading-font-body)] min-h-full m-auto sm:px-5 sm:max-w-xl lg:px-10 lg:max-w-5xl">
-      {article ? <ArticleDetail article={article} /> : renderPlaceholder()}
+      {store.article ? (
+        <ArticleDetail article={store.article} />
+      ) : (
+        renderPlaceholder()
+      )}
     </div>
   );
 };
