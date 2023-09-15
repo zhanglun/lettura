@@ -35,15 +35,7 @@ export const useRefresh = () => {
           const [count, uuid, _msg] = item;
 
           if (count) {
-            store.updateCollectionMeta({
-              total: {
-                unread: store.collectionMeta.total.unread + count,
-              },
-              today: {
-                unread: store.collectionMeta.today.unread + count,
-              },
-            });
-
+            store.updateCollectionMeta(count, count);
             store.updateFeed(uuid, { unread: unread + count });
           }
         });

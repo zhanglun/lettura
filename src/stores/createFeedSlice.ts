@@ -23,7 +23,7 @@ export interface FeedSlice {
 
   initCollectionMetas: () => void;
   collectionMeta: CollectionMeta;
-  updateCollectionMeta: (collection: CollectionMeta) => void;
+  updateCollectionMeta: (c: number, n: number) => void;
 
   setViewMeta: (meta: any) => void;
 
@@ -120,11 +120,13 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
     });
   },
 
-  updateCollectionMeta(meta: any) {
-    console.log("%c Line:124 🥖 meta", "color:#e41a6a", meta);
-    set({
-      collectionMeta: meta,
-    });
+  updateCollectionMeta(today: number, total: number) {
+    set(() => ({
+      collectionMeta: {
+        today: { unread: get().collectionMeta.today.unread + today },
+        total: { unread: get().collectionMeta.total.unread + total },
+      },
+    }));
   },
 
   setViewMeta(meta) {

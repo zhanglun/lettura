@@ -23,7 +23,10 @@ export const Icon = (props: IconProps) => {
       onClick={onClick}
       className={classNames(
         "flex items-center justify-center rounded hover:text-accent-foreground hover:bg-accent",
-        { "bg-muted cursor-not-allowed": disable },
+        {
+          "text-muted cursor-not-allowed hover:bg-transparent hover:text-muted":
+            disable,
+        },
         { "bg-muted": active },
         className
       )}

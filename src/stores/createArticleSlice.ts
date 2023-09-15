@@ -105,17 +105,7 @@ export const createArticleSlice: StateCreator<
             dayjs(article.create_date).format("YYYY-MM-DD")
           ).isSame(dayjs().format("YYYY-MM-DD"));
 
-          get().updateCollectionMeta({
-            total: {
-              unread: get().collectionMeta.total.unread - 1,
-            },
-            today: {
-              unread: isToday
-                ? get().collectionMeta.today.unread - 1
-                : get().collectionMeta.today.unread,
-            },
-          });
-
+          get().updateCollectionMeta(isToday ? -1 : 0, -1);
           get().updateUnreadCount(article.channel_uuid, "decrease", 1);
 
           article.read_status = 2;
