@@ -12,7 +12,6 @@ import {
   LayoutGrid,
   LayoutList,
 } from "lucide-react";
-import { busChannel } from "@/helpers/busChannel";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -153,10 +152,7 @@ export const ArticleContainer = (): JSX.Element => {
       setSyncing(true);
 
       dataAgent
-        .syncFeed(
-          store.feed?.item_type as string,
-          store.feed?.uuid as string
-        )
+        .syncFeed(store.feed?.item_type as string, store.feed?.uuid as string)
         .then(({ data }) => {
           console.log("%c Line:161 🍞 data", "color:#33a5ff", data);
           const [num, , message] = data[0];
@@ -242,7 +238,7 @@ export const ArticleContainer = (): JSX.Element => {
 
   return (
     <div className={classNames(styles.article)}>
-      <div className={`${styles.header}`}>
+      <div className="h-[var(--app-toolbar-height)] grid grid-cols-[1fr_1fr] items-center justify-between border-b">
         <div
           className="
             flex
