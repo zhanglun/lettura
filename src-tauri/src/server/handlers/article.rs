@@ -2,17 +2,40 @@ use actix_web::{get, post, web, App, HttpRequest, HttpResponse, HttpServer, Resp
 use serde::{Deserialize, Serialize};
 
 use crate::feed;
+use crate::core;
+
 #[derive(Serialize)]
 struct MyObj {
   name: String,
 }
-#[get("/api/articles/{name}")]
-pub async fn handle_test(name: web::Path<String>) -> Result<impl Responder> {
-  let obj = MyObj {
-    name: name.to_string(),
-  };
 
-  Ok(web::Json(obj))
+#[get("/api/articles/{uuid}")]
+pub async fn handle_get_article_detail(uuid: web::Path<String>) -> Result<impl Responder> {
+  let res =
+    feed::article::Article::get_article_with_uuid(uuid.to_string());
+
+  Ok(web::Json(res))
+}
+
+#[derive(Debug, Deserialize)]
+pub struct ProxyQuery {
+  url: String
+}
+
+#[get("/api/image-proxy")]
+pub async fn handle_get_article_best_image(query: web::Query<ProxyQuery>) -> Result<impl Responder> {
+  let res = core::scraper::PageScraper::get_first_image_or_og_image(&(query.url.to_string()))
+    .await
+    .unwrap_or("".to_string());
+
+  Ok(web::Json(Some(res)))
+}
+
+#[get("/api/article-proxy")]
+pub async fn handle_get_article_source(query: web::Query<ProxyQuery>) -> Result<impl Responder> {
+  let res = core::scraper::PageScraper::fetch_page(&(query.url.to_string())).await;
+
+  Ok(web::Json(res))
 }
 
 #[get("/api/collection-metas")]
@@ -52,11 +75,6 @@ pub async fn handle_mark_as_read(
   Ok(web::Json(res))
 }
 
-#[get("/api/articles/{uuid}/source")]
-pub async fn handle_get_article_source(uuid: web::Path<String>) -> Result<impl Responder> {
-  Ok(web::Json("hahah".to_string()))
-}
-
 #[get("/api/articles")]
 pub async fn handle_articles(
   query: web::Query<feed::article::ArticleFilter>,
@@ -86,7 +104,9 @@ pub async fn handle_today_articles() -> Result<impl Responder> {
 
 pub fn config(cfg: &mut web::ServiceConfig) {
   cfg
-    .service(handle_test)
+    .service(handle_get_article_best_image)
+    .service(handle_get_article_detail)
+    .service(handle_get_article_source)
     .service(handle_collection_metas)
     .service(handle_sync_feed)
     .service(handle_mark_as_read)

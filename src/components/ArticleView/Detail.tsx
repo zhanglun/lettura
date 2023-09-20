@@ -43,7 +43,8 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
     article &&
       dataAgent.getArticleDetail(article.uuid).then((res) => {
         console.log("%c Line:102 🥓 res", "color:#33a5ff", res);
-        const content = (res.content || res.description || "").replace(
+        const { data } = res;
+        const content = (data.content || data.description || "").replace(
           /<a[^>]+>/gi,
           (a: string) => {
             if (!/\starget\s*=/gi.test(a)) {
@@ -51,7 +52,7 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
             }
 
             return a;
-          },
+          }
         );
 
         setPageContent(content);
@@ -74,11 +75,7 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
             </div>
             <div className={classnames(styles.meta)}>
               <span className={styles.channelInfo}>
-                <img
-                  src={store.feed?.logo || ico}
-                  alt=""
-                  className="rounded"
-                />
+                <img src={store.feed?.logo || ico} alt="" className="rounded" />
                 {article.channel_title}
               </span>
               {article.author && (
@@ -92,7 +89,7 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
                 className={classnames(styles.time, "text-detail-paragraph")}
               >
                 {Dayjs(new Date(pub_date || new Date())).format(
-                  "YYYY-MM-DD HH:mm",
+                  "YYYY-MM-DD HH:mm"
                 )}
               </span>
             </div>

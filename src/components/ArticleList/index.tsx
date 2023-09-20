@@ -41,8 +41,9 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
           initial={{ opacity: 0, y: 30 }}
+          key={article.title + idx}
         >
-          <ArticleItem article={article} key={article.title + idx} />
+          <ArticleItem article={article} />
         </motion.div>
       );
     });

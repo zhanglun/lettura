@@ -59,6 +59,7 @@ export interface Article {
 
 export interface ArticleResItem {
   id?: number;
+  author: string;
   uuid: string;
   channel_uuid: string;
   channel_link: string;

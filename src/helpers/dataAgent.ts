@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api";
-import { Article, Channel, Folder } from "../db";
+import { Article, ArticleResItem, Channel, Folder } from "../db";
 import { request } from "@/helpers/request";
 import { AxiosResponse } from "axios";
 
@@ -186,8 +186,9 @@ export const initProcess = async (): Promise<any> => {
   return invoke("init_process", {});
 };
 
-export const getArticleDetail = async (uuid: string): Promise<Article> => {
-  return invoke("get_article_detail", { uuid });
+export const getArticleDetail = async (uuid: string): Promise<AxiosResponse<ArticleResItem>> => {
+  return request.get(`articles/${uuid}`);
+  // return invoke("get_article_detail", { uuid });
 };
 
 export const getBestImage = async (url: String): Promise<string> => {

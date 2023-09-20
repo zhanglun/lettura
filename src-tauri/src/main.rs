@@ -193,7 +193,6 @@ async fn main() {
       cmd::get_folders,
       cmd::move_channel_into_folder,
       cmd::init_process,
-      cmd::get_article_detail,
       cmd::update_icon,
     ])
     .build(context)

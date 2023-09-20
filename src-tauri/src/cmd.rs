@@ -370,32 +370,11 @@ pub fn get_folders() -> Vec<models::Folder> {
 }
 
 #[command]
-pub async fn get_article_detail(uuid: String) -> Option<models::Article> {
-  let res: Option<models::Article> = feed::article::Article::get_article_with_uuid(uuid);
-  res
-}
-
-#[command]
 pub async fn update_icon(uuid: String, url: String) -> usize {
   let favicon = feed::channel::update_icon(&uuid, &url).await;
 
   favicon
 }
-
-// #[command]
-// pub async fn get_web_best_image(url: String) -> Option<String> {
-//   let res = core::scraper::PageScraper::get_first_image_or_og_image(&url)
-//     .await
-//     .unwrap_or("".to_string());
-
-//   Some(res)
-// }
-
-// #[command]
-// pub async fn get_web_source(url: String) -> Option<String> {
-//   let res = core::scraper::PageScraper::fetch_page(&url).await;
-//   res
-// }
 
 #[cfg(test)]
 mod tests {
