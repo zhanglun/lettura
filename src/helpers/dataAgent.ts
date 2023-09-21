@@ -188,11 +188,14 @@ export const initProcess = async (): Promise<any> => {
 
 export const getArticleDetail = async (uuid: string): Promise<AxiosResponse<ArticleResItem>> => {
   return request.get(`articles/${uuid}`);
-  // return invoke("get_article_detail", { uuid });
 };
 
-export const getBestImage = async (url: String): Promise<string> => {
-  return invoke("get_web_best_image", { url });
+export const getBestImage = async (url: String): Promise<AxiosResponse<string>> => {
+  return request.get(`image-proxy`, {
+    params: {
+      url,
+    }
+  })
 };
 
 export const getPageSources = async (url: string): Promise<string> => {
