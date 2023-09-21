@@ -51,11 +51,7 @@ impl Default for UserConfig {
       threads: 1,
       theme: String::from('1'),
       update_interval: 0,
-      local_proxy: Some(LocalProxy {
-        ip: "".to_string(),
-        port: "".to_string(),
-      }),
-
+      local_proxy: None,
       customize_style: CustomizeStyle::default(),
     }
   }
@@ -81,7 +77,11 @@ impl UserConfig {
   }
 
   fn update_proxy(&mut self, ip: String, port: String) -> &mut UserConfig {
-    self.local_proxy = Some(LocalProxy { ip, port });
+    if ip == "" && port == "" {
+      self.local_proxy = None;
+    } else {
+      self.local_proxy = Some(LocalProxy { ip, port });
+    }
 
     self
   }

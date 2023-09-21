@@ -1,12 +1,12 @@
 use reqwest::{self};
 use scraper::{self, Selector};
 use serde::Serialize;
-use tokio::sync::{Mutex};
 use std::sync::Arc;
-use tokio::sync::mpsc::{channel};
+use tokio::sync::mpsc::channel;
+use tokio::sync::Mutex;
 
-use crate::feed;
 use crate::cmd;
+use crate::feed;
 
 #[derive(Debug, Default, Serialize)]
 pub struct PageScraper {
@@ -105,11 +105,13 @@ impl PageScraper {
         println!("start fetch image : {:?}", &url);
         let image_url = Self::get_first_image_or_og_image(&url).await;
         println!("end fetch image, we get image: {:?}", image_url);
-        tx_clone.send((url.clone().to_string(), image_url)).await.unwrap();
+        tx_clone
+          .send((url.clone().to_string(), image_url))
+          .await
+          .unwrap();
         let mut counter = counter_clone.lock().await;
         *counter += 1;
       });
-
     }
 
     let _counter_clone = counter.clone();
@@ -120,7 +122,6 @@ impl PageScraper {
       println!("counter {:?} len {:?}", *counter, urls.len());
 
       if *counter >= urls.len() {
-
         print!("stop!!!!!!");
         tokio::task::yield_now().await;
         return image_urls;
@@ -135,7 +136,16 @@ impl PageScraper {
 mod tests {
   use uuid::Uuid;
 
-use super::*;
+  use super::*;
+  #[tokio::test]
+  async fn test_get_best_image() {
+    let url = "https://post.smzdm.com/p/akkvmm3e/";
+    let res = PageScraper::get_first_image_or_og_image(url)
+      .await
+      .unwrap_or("".to_string());
+
+    println!("res ==> {:?} ", res);
+  }
 
   #[tokio::test]
   async fn test_from_str() {
@@ -152,7 +162,10 @@ use super::*;
 
         println!("articles: {:?}", articles);
 
-        let urls = articles.into_iter().map(|a| a.link ).collect::<Vec<String>>();
+        let urls = articles
+          .into_iter()
+          .map(|a| a.link)
+          .collect::<Vec<String>>();
         let res = PageScraper::get_first_images_or_og_images_async(urls, 5).await;
 
         println!("res: {:?}", res);

@@ -1,4 +1,5 @@
 use feed_rs::parser;
+use log::info;
 use reqwest;
 
 use crate::core::config;
@@ -9,26 +10,26 @@ pub mod folder;
 
 pub fn create_client() -> reqwest::Client {
   let user_config = config::get_user_config();
-  let client = match user_config {
-    Some(user_config) => match user_config.local_proxy {
-      Some(proxy) => {
-        let mut scheme = String::from("socks5h://");
+  let client_builder = reqwest::Client::builder();
 
-        scheme.push_str(&proxy.ip.to_string());
-        scheme.push_str(":");
-        scheme.push_str(&proxy.port.to_string());
+  if let Some(user_config) = user_config {
+    if let Some(proxy) = user_config.local_proxy {
+      info!("user_config.local_proxy {:?}", proxy);
 
-        reqwest::Client::builder()
-          .proxy(reqwest::Proxy::all(scheme).unwrap())
-          .build()
-          .unwrap()
-      }
-      None => reqwest::Client::builder().build().unwrap(),
-    },
-    None => reqwest::Client::builder().build().unwrap(),
-  };
+      let mut scheme = String::from("socks5h://");
 
-  client
+      scheme.push_str(&proxy.ip.to_string());
+      scheme.push_str(":");
+      scheme.push_str(&proxy.port.to_string());
+
+      return client_builder
+        .proxy(reqwest::Proxy::all(scheme).unwrap())
+        .build()
+        .unwrap();
+    }
+  }
+
+  client_builder.build().unwrap()
 }
 
 /// request feed, parse Feeds
