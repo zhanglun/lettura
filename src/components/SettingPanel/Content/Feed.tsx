@@ -153,9 +153,10 @@ export const Feed = () => {
   };
 
   const getList = async (params = {}) => {
-    dataAgent.getChannels(params).then((res) => {
-      setList(res.list || []);
-      setRenderList(res.list || []);
+    dataAgent.getChannels(params).then(({ data }) => {
+      console.log("%c Line:157 🍢 data", "color:#3f7cff", data);
+      setList(data.list || []);
+      setRenderList(data.list || []);
     });
   };
 

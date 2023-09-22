@@ -53,7 +53,7 @@ export function DataTableToolbar<TData>({
           }
           className="h-8 w-[150px] lg:w-[250px]"
         />
-        {table.getColumn("folder") && (
+        {table.getColumn("folder") && folderList.length > 0 && (
           <DataTableFacetedFilter
             column={table.getColumn("health_status")}
             title="Folder"

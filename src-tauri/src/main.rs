@@ -170,8 +170,6 @@ async fn main() {
     .on_window_event(handle_window_event)
     .invoke_handler(tauri::generate_handler![
       cmd::fetch_feed,
-      cmd::get_feeds,
-      cmd::get_channels,
       cmd::add_feed,
       cmd::delete_feed,
       cmd::update_feed_sort,

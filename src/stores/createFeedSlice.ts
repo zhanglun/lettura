@@ -181,7 +181,7 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
       });
     };
     return Promise.all([dataAgent.getFeeds(), dataAgent.getUnreadTotal()]).then(
-      ([feedList, unreadTotal]) => {
+      ([{ data: feedList }, unreadTotal]) => {
         feedList = initUnreadCount(feedList, unreadTotal);
         set(() => ({
           feedList: feedList || [],

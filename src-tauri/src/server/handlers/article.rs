@@ -1,8 +1,8 @@
 use actix_web::{get, post, web, App, HttpRequest, HttpResponse, HttpServer, Responder, Result};
 use serde::{Deserialize, Serialize};
 
-use crate::feed;
 use crate::core;
+use crate::feed;
 
 #[derive(Serialize)]
 struct MyObj {
@@ -11,19 +11,20 @@ struct MyObj {
 
 #[get("/api/articles/{uuid}")]
 pub async fn handle_get_article_detail(uuid: web::Path<String>) -> Result<impl Responder> {
-  let res =
-    feed::article::Article::get_article_with_uuid(uuid.to_string());
+  let res = feed::article::Article::get_article_with_uuid(uuid.to_string());
 
   Ok(web::Json(res))
 }
 
 #[derive(Debug, Deserialize)]
 pub struct ProxyQuery {
-  url: String
+  url: String,
 }
 
 #[get("/api/image-proxy")]
-pub async fn handle_get_article_best_image(query: web::Query<ProxyQuery>) -> Result<impl Responder> {
+pub async fn handle_get_article_best_image(
+  query: web::Query<ProxyQuery>,
+) -> Result<impl Responder> {
   let res = core::scraper::PageScraper::get_first_image_or_og_image(&(query.url.to_string()))
     .await
     .unwrap_or("".to_string());

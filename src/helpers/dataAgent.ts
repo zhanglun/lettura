@@ -1,16 +1,20 @@
 import { invoke } from "@tauri-apps/api";
-import { Article, ArticleResItem, Channel, Folder } from "../db";
+import { Article, ArticleResItem, Channel, FeedResItem, Folder } from "../db";
 import { request } from "@/helpers/request";
 import { AxiosResponse } from "axios";
 
 export const getChannels = async (
   filter: any
-): Promise<{ list: (Channel & { parent_uuid: String })[] }> => {
-  return invoke("get_channels", { filter });
+): Promise<AxiosResponse<{ list: (Channel & { parent_uuid: String })[] }>> => {
+  return request.get("feeds", {
+    params: {
+      filter,
+    },
+  });
 };
 
-export const getFeeds = async (): Promise<Channel[]> => {
-  return invoke("get_feeds");
+export const getFeeds = async (): Promise<AxiosResponse<FeedResItem[]>> => {
+  return request.get("subscribes");
 };
 
 export const createFolder = async (name: string): Promise<number> => {
@@ -115,8 +119,8 @@ export const syncFeed = async (
   return request.get(`/feeds/${uuid}/sync`, {
     params: {
       feed_type,
-    }
-  })
+    },
+  });
   // return invoke("sync_articles_with_channel_uuid", { feedType, uuid });
 };
 
@@ -150,7 +154,7 @@ export const markAllRead = async (body: {
   isToday?: boolean;
   isAll?: boolean;
 }): Promise<AxiosResponse<number>> => {
-  return request.post('/mark-all-as-read', body)
+  return request.post("/mark-all-as-read", body);
 };
 
 export const getUserConfig = async (): Promise<any> => {
@@ -186,16 +190,20 @@ export const initProcess = async (): Promise<any> => {
   return invoke("init_process", {});
 };
 
-export const getArticleDetail = async (uuid: string): Promise<AxiosResponse<ArticleResItem>> => {
+export const getArticleDetail = async (
+  uuid: string
+): Promise<AxiosResponse<ArticleResItem>> => {
   return request.get(`articles/${uuid}`);
 };
 
-export const getBestImage = async (url: String): Promise<AxiosResponse<string>> => {
+export const getBestImage = async (
+  url: String
+): Promise<AxiosResponse<string>> => {
   return request.get(`image-proxy`, {
     params: {
       url,
-    }
-  })
+    },
+  });
 };
 
 export const getPageSources = async (url: string): Promise<string> => {

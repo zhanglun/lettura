@@ -37,20 +37,6 @@ pub async fn fetch_feed(url: String) -> (Option<models::NewFeed>, String) {
 }
 
 #[command]
-pub async fn get_feeds() -> Vec<feed::channel::FeedItem> {
-  let results = feed::channel::get_feeds();
-
-  return results;
-}
-
-#[command]
-pub async fn get_channels() -> feed::channel::ChannelQueryResult {
-  let results = feed::channel::get_channels();
-
-  return results;
-}
-
-#[command]
 pub async fn update_feed_sort(sorts: Vec<feed::channel::FeedSort>) -> usize {
   println!("update feed sort");
   feed::channel::update_feed_sort(sorts);
