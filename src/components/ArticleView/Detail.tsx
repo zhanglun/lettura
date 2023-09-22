@@ -30,17 +30,6 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
     setBanner("");
     setPageContent("");
 
-    // try to get the best banner if there is no image in article content
-    // it will make render slower
-    if (
-      article && (article.content || article.description).search(/<img[^>]+>/gi) === -1
-    ) {
-      dataAgent.getBestImage(article.link).then(({ data }) => {
-        console.log("%c Line:39 🥖 data", "color:#fca650", data);
-        data && setBanner(data);
-      });
-    }
-
     article &&
       dataAgent.getArticleDetail(article.uuid).then((res) => {
         console.log("%c Line:102 🥓 res", "color:#33a5ff", res);
@@ -55,6 +44,15 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
             return a;
           }
         );
+
+        // try to get the best banner if there is no image in article content
+        // it will make render slower
+        if (content.search(/<img[^>]+>/gi) === -1) {
+          dataAgent.getBestImage(data.link).then(({ data }) => {
+            console.log("%c Line:39 🥖 data", "color:#fca650", data);
+            data && setBanner(data);
+          });
+        }
 
         setPageContent(content);
       });
