@@ -43,6 +43,7 @@ impl AppMenu {
             .add_native_item(MenuItem::Copy)
             .add_native_item(MenuItem::Paste)
             .add_native_item(MenuItem::Cut)
+            .add_native_item(MenuItem::SelectAll)
             .add_item(CustomMenuItem::new("undo".to_string(), "Undo"))
             .add_item(CustomMenuItem::new("redo".to_string(), "Redo")),
     );
