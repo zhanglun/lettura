@@ -3,14 +3,14 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { appWindow } from "@tauri-apps/api/window";
 import { Outlet } from "react-router-dom";
-import { ChannelList } from "./components/ChannelList";
+import { ChannelList } from "./components/Subscribes";
 import { useBearStore } from "@/stores";
 import * as dataAgent from "./helpers/dataAgent";
 
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { RouteConfig } from "./config";
-import { ArticleContainer } from "./containers/Article";
-import { SettingContainer } from "./containers/Setting";
+import { ArticleContainer } from "./layout/Article";
+import { SettingContainer } from "./layout/Setting";
 
 import { General } from "./components/SettingPanel/General";
 import { FeedManager } from "./components/SettingPanel/Content";
@@ -22,7 +22,6 @@ import "./styles/index.global.scss";
 import { Shortcut } from "./components/SettingPanel/ShortCut";
 
 function App() {
-
   const store = useBearStore((state) => ({
     goPreviousArticle: state.goPreviousArticle,
     goNextArticle: state.goNextArticle,

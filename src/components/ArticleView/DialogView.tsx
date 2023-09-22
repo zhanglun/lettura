@@ -1,10 +1,10 @@
 import React, { useEffect, useRef } from "react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { X } from "lucide-react";
-import { ToolbarItemNavigator } from "@/containers/Article/ToolBar";
+import { ToolbarItemNavigator } from "@/layout/Article/ToolBar";
 import { Icon } from "../Icon";
 import { Separator } from "@/components/ui/separator";
-import { ReadingOptions } from "@/containers/Article/ReadingOptions";
+import { ReadingOptions } from "@/layout/Article/ReadingOptions";
 import { ArticleDetail } from "@/components/ArticleView/Detail";
 import { ScrollBox, ScrollBoxRefObject } from "./ScrollBox";
 
