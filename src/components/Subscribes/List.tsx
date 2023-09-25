@@ -5,6 +5,8 @@ import { SubscribeItem } from "./SubscribeItem";
 import { useBearStore } from "@/stores";
 import { FeedResItem } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
+import { Folder } from "./Folder";
+import { ItemView } from "./ItemView";
 
 export interface ContainerState {
   feeds: FeedResItem[];
@@ -64,22 +66,71 @@ export const List = () => {
     });
   }, [feeds]);
 
+  const handleDropIntoFolder = useCallback(
+    (index: number, item: { name: string }) => {
+      const { name } = item;
+      // setDroppedBoxNames(
+      //   update(droppedBoxNames, name ? { $push: [name] } : { $push: [] }),
+      // )
+      // setDustbins(
+      //   update(dustbins, {
+      //     [index]: {
+      //       lastDroppedItem: {
+      //         $set: item,
+      //       },
+      //     },
+      //   }),
+      // )
+    },
+    []
+  );
+
   const renderCard = useCallback(
     (feed: FeedResItem, index: number) => {
       const isActive = store?.feed?.uuid === feed.uuid;
 
-      return (
-        <SubscribeItem
-          key={feed.uuid}
-          index={index}
-          id={feed.uuid}
-          text={feed.title}
-          feed={{ ...feed }}
-          isActive={isActive}
-          moveCard={moveCard}
-          confirmDidDrop={confirmDropOver}
-        />
-      );
+      if (feed.item_type === "channel") {
+        return (
+          <SubscribeItem
+            key={feed.uuid}
+            index={index}
+            id={feed.uuid}
+            text={feed.title}
+            feed={{ ...feed }}
+            isActive={isActive}
+            moveCard={moveCard}
+            confirmDidDrop={confirmDropOver}
+          >
+            <ItemView
+              index={index}
+              id={feed.uuid}
+              text={feed.title}
+              feed={{ ...feed }}
+              isActive={isActive}
+            />
+          </SubscribeItem>
+        );
+      } else {
+        return (
+          <Folder
+            index={index}
+            id={feed.uuid}
+            feed={{ ...feed }}
+            onDrop={(item) => handleDropIntoFolder(index, item)}
+            moveCard={moveCard}
+            confirmDidDrop={confirmDropOver}
+            key={index}
+          >
+            <ItemView
+              index={index}
+              id={feed.uuid}
+              text={feed.title}
+              feed={{ ...feed }}
+              isActive={isActive}
+            />
+          </Folder>
+        );
+      }
     },
     [feeds, store.feed]
   );
@@ -88,7 +139,5 @@ export const List = () => {
     setFeeds([...store.feedList]);
   }, [store.feedList]);
 
-  return (
-    <div className="">{feeds.map((feed, i) => renderCard(feed, i))}</div>
-  );
+  return <div className="">{feeds.map((feed, i) => renderCard(feed, i))}</div>;
 };
