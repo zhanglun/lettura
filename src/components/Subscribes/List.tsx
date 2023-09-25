@@ -6,10 +6,6 @@ import { useBearStore } from "@/stores";
 import { FeedResItem } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
 
-const style = {
-  width: 400,
-};
-
 export interface ContainerState {
   feeds: FeedResItem[];
 }
@@ -18,19 +14,23 @@ export const List = () => {
   const store = useBearStore((state) => ({
     getFeedList: state.getFeedList,
     feedList: state.feedList,
-  }))
+    feed: state.feed,
+  }));
   const [feeds, setFeeds] = useState<FeedResItem[]>([]);
 
-  const moveCard = useCallback((dragIndex: number, hoverIndex: number) => {
-    setFeeds((prevCards: FeedResItem[]) =>
-    update(prevCards, {
-      $splice: [
-        [dragIndex, 1],
-        [hoverIndex, 0, prevCards[dragIndex] as FeedResItem],
-      ],
-    }),
-  )
-  }, [feeds]);
+  const moveCard = useCallback(
+    (dragIndex: number, hoverIndex: number) => {
+      setFeeds((prevCards: FeedResItem[]) =>
+        update(prevCards, {
+          $splice: [
+            [dragIndex, 1],
+            [hoverIndex, 0, prevCards[dragIndex] as FeedResItem],
+          ],
+        })
+      );
+    },
+    [feeds]
+  );
 
   const confirmDropOver = useCallback(() => {
     console.log("%c Line:33 🍏 feeds", "color:#ffdd4d", feeds);
@@ -40,21 +40,22 @@ export const List = () => {
         parent_uuid: feed.parent_uuid,
         child_uuid: feed.uuid,
         sort: idx,
-      }
+      };
 
-      feed.children.length > 0 && feed.children.forEach((child) => {
-        item.child_uuid = child.uuid;
-        acu.push({
-          ...item,
-        })
-      })
+      feed.children.length > 0 &&
+        feed.children.forEach((child) => {
+          item.child_uuid = child.uuid;
+          acu.push({
+            ...item,
+          });
+        });
 
       acu.push({
         ...item,
-      })
+      });
 
       return acu;
-    }, [] as any[])
+    }, [] as any[]);
 
     console.log("%c Line:55 🥚 body", "color:#ffdd4d", body);
 
@@ -65,19 +66,22 @@ export const List = () => {
 
   const renderCard = useCallback(
     (feed: FeedResItem, index: number) => {
+      const isActive = store?.feed?.uuid === feed.uuid;
+
       return (
         <SubscribeItem
           key={feed.uuid}
           index={index}
           id={feed.uuid}
-          text={feed.title }
-          data={{...feed}}
+          text={feed.title}
+          feed={{ ...feed }}
+          isActive={isActive}
           moveCard={moveCard}
           confirmDidDrop={confirmDropOver}
         />
       );
     },
-    [feeds]
+    [feeds, store.feed]
   );
 
   useEffect(() => {
@@ -85,8 +89,6 @@ export const List = () => {
   }, [store.feedList]);
 
   return (
-    <>
-      <div style={style}>{feeds.map((feed, i) => renderCard(feed, i))}</div>
-    </>
+    <div className="">{feeds.map((feed, i) => renderCard(feed, i))}</div>
   );
 };

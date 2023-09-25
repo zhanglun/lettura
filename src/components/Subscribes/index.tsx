@@ -298,7 +298,7 @@ const ChannelList = (): JSX.Element => {
           Feeds
         </h2>
         <ContextMenu onOpenChange={handleContextMenuChange}>
-          <ContextMenuTrigger className="w-full">
+          <ContextMenuTrigger>
             <ListContainer />
             {/* <TestTree treeData={treeData} activeUuid={store?.feed?.uuid} /> */}
           </ContextMenuTrigger>
