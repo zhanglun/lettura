@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { SubscribeItem } from "./SubscribeItem";
 import { useBearStore } from "@/stores";
 import { FeedResItem } from "@/db";
+import * as dataAgent from "@/helpers/dataAgent";
 
 const style = {
   width: 400,
@@ -21,23 +22,46 @@ export const List = () => {
   const [feeds, setFeeds] = useState<FeedResItem[]>([]);
 
   const moveCard = useCallback((dragIndex: number, hoverIndex: number) => {
-    const newOrder = update(feeds, {
+    setFeeds((prevCards: FeedResItem[]) =>
+    update(prevCards, {
       $splice: [
         [dragIndex, 1],
-        [hoverIndex, 0, feeds[dragIndex] as FeedResItem],
+        [hoverIndex, 0, prevCards[dragIndex] as FeedResItem],
       ],
-    })
-
-    console.log("%c Line:31 🍩 newOrder", "color:#42b983", newOrder);
-
-    newOrder && setFeeds(newOrder);
+    }),
+  )
   }, [feeds]);
 
-  const confirmDropOver = () => {
-    console.log("%c Line:36 🍰 confirmDropOver", "color:#ffdd4d");
+  const confirmDropOver = useCallback(() => {
     console.log("%c Line:33 🍏 feeds", "color:#ffdd4d", feeds);
-    // TODO: update sort
-  }
+    const body = feeds.reduce((acu, feed, idx) => {
+      let item = {
+        item_type: feed.item_type,
+        parent_uuid: feed.parent_uuid,
+        child_uuid: feed.uuid,
+        sort: idx,
+      }
+
+      feed.children.length > 0 && feed.children.forEach((child) => {
+        item.child_uuid = child.uuid;
+        acu.push({
+          ...item,
+        })
+      })
+
+      acu.push({
+        ...item,
+      })
+
+      return acu;
+    }, [] as any[])
+
+    console.log("%c Line:55 🥚 body", "color:#ffdd4d", body);
+
+    dataAgent.updateFeedSort(body).then((res) => {
+      console.log("%c Line:47 🥔 res", "color:#b03734", res);
+    });
+  }, [feeds]);
 
   const renderCard = useCallback(
     (feed: FeedResItem, index: number) => {
@@ -53,7 +77,7 @@ export const List = () => {
         />
       );
     },
-    []
+    [feeds]
   );
 
   useEffect(() => {

@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use chrono::Local;
 use diesel::prelude::*;
 use diesel::sql_types::*;
+use log::info;
 use scraper::{Html, Selector};
 use serde::{Deserialize, Serialize};
 
@@ -422,7 +423,7 @@ pub fn add_feed(feed: models::NewFeed, articles: Vec<models::NewArticle>) -> (us
   result
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FeedSort {
   item_type: String,
   parent_uuid: String,
@@ -442,6 +443,8 @@ pub struct FeedSortRes {
 
 pub fn update_feed_sort(sorts: Vec<FeedSort>) -> usize {
   let mut connection = db::establish_connection();
+
+  info!("sorts: {:?}", sorts);
 
   for item in sorts {
     let mut query = diesel::sql_query("").into_boxed();

@@ -172,7 +172,6 @@ async fn main() {
       cmd::fetch_feed,
       cmd::add_feed,
       cmd::delete_feed,
-      cmd::update_feed_sort,
       cmd::get_articles,
       cmd::get_today_articles,
       cmd::get_all_articles,

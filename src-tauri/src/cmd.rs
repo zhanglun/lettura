@@ -37,13 +37,6 @@ pub async fn fetch_feed(url: String) -> (Option<models::NewFeed>, String) {
 }
 
 #[command]
-pub async fn update_feed_sort(sorts: Vec<feed::channel::FeedSort>) -> usize {
-  println!("update feed sort");
-  feed::channel::update_feed_sort(sorts);
-  1
-}
-
-#[command]
 pub async fn move_channel_into_folder(
   channel_uuid: String,
   folder_uuid: String,

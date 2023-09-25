@@ -40,7 +40,7 @@ export const updateFeedSort = async (
     sort: number;
   }[]
 ): Promise<any> => {
-  return invoke("update_feed_sort", { sorts });
+  return request.post("update-feed-sort", sorts);
 };
 
 export const moveChannelIntoFolder = async (

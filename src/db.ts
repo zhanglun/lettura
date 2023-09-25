@@ -40,6 +40,7 @@ export interface FeedResItem {
   create_date?: Date;
   update_date?: Date;
   last_sync_date?: string;
+  parent_uuid: string;
 }
 export interface Article {
   id?: number;
