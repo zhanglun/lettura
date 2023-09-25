@@ -76,6 +76,9 @@ dependencies:
   dayjs:
     specifier: ^1.11.7
     version: 1.11.7
+  dnd-core:
+    specifier: ^16.0.1
+    version: 16.0.1
   framer-motion:
     specifier: ^10.13.0
     version: 10.13.0(react-dom@18.2.0)(react@18.2.0)

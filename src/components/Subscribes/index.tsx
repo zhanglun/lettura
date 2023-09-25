@@ -27,6 +27,7 @@ import { DialogEditFeed } from "@/components/SettingPanel/Content/DialogEditFeed
 import { useQuery } from "@/helpers/parseXML";
 import { useRefresh } from "./useRefresh";
 import { TooltipBox } from "../TooltipBox";
+import { ListContainer } from "./ListContainer";
 
 const ChannelList = (): JSX.Element => {
   const isToday = useMatch(RouteConfig.TODAY);
@@ -298,7 +299,8 @@ const ChannelList = (): JSX.Element => {
         </h2>
         <ContextMenu onOpenChange={handleContextMenuChange}>
           <ContextMenuTrigger className="w-full">
-            <TestTree treeData={treeData} activeUuid={store?.feed?.uuid} />
+            <ListContainer />
+            {/* <TestTree treeData={treeData} activeUuid={store?.feed?.uuid} /> */}
           </ContextMenuTrigger>
           <ContextMenuContent>
             {store.feedContextMenuTarget?.item_type === "folder" && (

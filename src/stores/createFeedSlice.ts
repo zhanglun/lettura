@@ -182,6 +182,7 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
     };
     return Promise.all([dataAgent.getFeeds(), dataAgent.getUnreadTotal()]).then(
       ([{ data: feedList }, unreadTotal]) => {
+        console.log("%c Line:185 🍺 feedList", "color:#7f2b82", feedList);
         feedList = initUnreadCount(feedList, unreadTotal);
         set(() => ({
           feedList: feedList || [],
