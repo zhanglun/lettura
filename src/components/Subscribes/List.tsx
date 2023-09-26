@@ -69,6 +69,7 @@ export const List = () => {
   const handleDropIntoFolder = useCallback(
     (index: number, item: { name: string }) => {
       const { name } = item;
+      console.log("%c Line:72 🍋 item", "color:#3f7cff", item);
       // setDroppedBoxNames(
       //   update(droppedBoxNames, name ? { $push: [name] } : { $push: [] }),
       // )

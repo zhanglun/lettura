@@ -1,13 +1,8 @@
 import { FeedResItem } from '@/db';
 import type { CSSProperties, FC } from 'react'
-import { memo } from 'react'
+import { memo, useRef } from 'react'
 import { useDrag, useDrop } from 'react-dnd'
-
-export const ItemTypes = {
-  Box: "box",
-  Card: "card",
-};
-
+import { ItemTypes } from './ItemTypes';
 export interface DustbinProps {
   id: any;
   index: number;
@@ -29,8 +24,9 @@ export const Folder: FC<DustbinProps> = memo(function Dustbin({
   onDrop,
   ...props
 }) {
+  const ref = useRef<HTMLDivElement>(null);
   const [{ isOver, canDrop }, drop] = useDrop({
-    accept: ItemTypes.Card,
+    accept: ItemTypes.CARD,
     drop: onDrop,
     collect: (monitor) => ({
       isOver: monitor.isOver(),
@@ -47,7 +43,7 @@ export const Folder: FC<DustbinProps> = memo(function Dustbin({
   }
 
   const [{ isDragging }, drag] = useDrag({
-    type: ItemTypes.Box,
+    type: ItemTypes.CARD,
     item: () => {
       return { id, index };
     },
@@ -55,14 +51,17 @@ export const Folder: FC<DustbinProps> = memo(function Dustbin({
       isDragging: monitor.isDragging(),
     }),
     end(item, monitor) {
+      console.log("%c Line:54 🍻 item", "color:#93c0a4", item);
       if (monitor.didDrop()) {
         props.confirmDidDrop();
       }
     },
   });
 
+  drag(drop(ref));
+
   return (
-    <div ref={drop} style={{ backgroundColor }} data-testid="dustbin">
+    <div ref={ref} style={{ backgroundColor }} data-testid="dustbin">
       {props.children}
     </div>
   )

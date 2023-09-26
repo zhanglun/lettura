@@ -1,17 +1,9 @@
 import type { FC } from "react";
 import { useRef } from "react";
 import { useDrag, useDrop } from "react-dnd";
-import { useNavigate } from "react-router-dom";
-import clsx from "clsx";
 import type { Identifier, XYCoord } from "dnd-core";
-import { RouteConfig } from "@/config";
 import { FeedResItem } from "@/db";
-import { useBearStore } from "@/stores";
-import { getChannelFavicon } from "@/helpers/parseXML";
-
-export const ItemTypes = {
-  CARD: "card",
-};
+import { ItemTypes } from "./ItemTypes";
 
 const style = {
   cursor: "move",
@@ -45,23 +37,13 @@ export const SubscribeItem: FC<CardProps> = ({
   moveCard,
   ...props
 }) => {
-  const { isActive, level, arrow, children } = props;
-  const navigate = useNavigate();
-  const store = useBearStore((state) => ({
-    feed: state.feed,
-    setFeed: state.setFeed,
-    getFeedList: state.getFeedList,
-    setFeedContextMenuTarget: state.setFeedContextMenuTarget,
-    feedContextMenuTarget: state.feedContextMenuTarget,
-  }));
-
   const ref = useRef<HTMLDivElement>(null);
   const [{ handlerId }, drop] = useDrop<
     DragItem,
     void,
     { handlerId: Identifier | null }
   >({
-    accept: ItemTypes.CARD,
+    accept: [ItemTypes.CARD, ItemTypes.BOX],
     collect(monitor) {
       return {
         handlerId: monitor.getHandlerId(),
@@ -133,9 +115,6 @@ export const SubscribeItem: FC<CardProps> = ({
   });
 
   const opacity = isDragging ? 0 : 1;
-
-  const { unread = 0, link, logo } = feed;
-  const ico = logo || getChannelFavicon(link);
 
   drag(drop(ref));
 
