@@ -35,6 +35,7 @@ export const Folder: FC<DustbinProps> = memo(function Dustbin({
   })
 
   const isActive = isOver && canDrop
+
   let backgroundColor = 'inherit'
   if (isActive) {
     backgroundColor = 'darkgreen'
@@ -45,7 +46,7 @@ export const Folder: FC<DustbinProps> = memo(function Dustbin({
   const [{ isDragging }, drag] = useDrag({
     type: ItemTypes.CARD,
     item: () => {
-      return { id, index };
+      return { id, index, ...feed };
     },
     collect: (monitor: any) => ({
       isDragging: monitor.isDragging(),

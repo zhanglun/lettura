@@ -190,6 +190,7 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
       }
     );
   },
+
   feedContextMenuTarget: null,
   setFeedContextMenuTarget: (target: Channel | null) => {
     set(() => ({

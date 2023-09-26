@@ -19,14 +19,14 @@ export interface CardProps {
   arrow?: React.ReactNode;
   isActive: Boolean;
   level?: number;
-  moveCard: (dragIndex: number, hoverIndex: number) => void;
+  moveCard: (a:[dragIndex: number, dragItem: FeedResItem], b: [hoverIndex: number, dropResult: FeedResItem]) => void;
   confirmDidDrop: () => void;
+  moveFeedIntoFolder: (feed: Partial<FeedResItem>, folder: Partial<FeedResItem>) => void;
 }
 
 interface DragItem {
   index: number;
   id: string;
-  type: string;
 }
 
 export const SubscribeItem: FC<CardProps> = ({
@@ -39,7 +39,7 @@ export const SubscribeItem: FC<CardProps> = ({
 }) => {
   const ref = useRef<HTMLDivElement>(null);
   const [{ handlerId }, drop] = useDrop<
-    DragItem,
+    DragItem & Partial<FeedResItem>,
     void,
     { handlerId: Identifier | null }
   >({
@@ -49,7 +49,7 @@ export const SubscribeItem: FC<CardProps> = ({
         handlerId: monitor.getHandlerId(),
       };
     },
-    hover(item: DragItem, monitor) {
+    hover(item: DragItem & Partial<FeedResItem>, monitor) {
       if (!ref.current) {
         return;
       }
@@ -89,7 +89,7 @@ export const SubscribeItem: FC<CardProps> = ({
       }
 
       // Time to actually perform the action
-      moveCard(dragIndex, hoverIndex);
+      moveCard([dragIndex, item], [hoverIndex, monitor.getDropResult()]);
 
       // Note: we're mutating the monitor item here!
       // Generally it's better to avoid mutations,
@@ -102,12 +102,23 @@ export const SubscribeItem: FC<CardProps> = ({
   const [{ isDragging }, drag] = useDrag({
     type: ItemTypes.CARD,
     item: () => {
-      return { id, index };
+      return { id, index, ...feed };
     },
     collect: (monitor: any) => ({
       isDragging: monitor.isDragging(),
     }),
     end(item, monitor) {
+      const dropResult = monitor.getDropResult()
+
+      console.log('dropResult ===> ', dropResult)
+      console.log('item ===>', item)
+
+      if (item.id && dropResult && dropResult?.uuid) {
+        alert(`You dropped ${item.title} into ${dropResult.title}! ${monitor.didDrop()}`)
+        // into folder
+        // props.moveFeedIntoFolder(item, dropResult);
+      }
+
       if (monitor.didDrop()) {
         props.confirmDidDrop();
       }
