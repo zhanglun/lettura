@@ -1,14 +1,12 @@
 import update from "immutability-helper";
 import { useCallback, useEffect, useState } from "react";
-
 import { SubscribeItem } from "./SubscribeItem";
 import { useBearStore } from "@/stores";
 import { FeedResItem } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
 import { Folder } from "./Folder";
 import { ItemView } from "./ItemView";
-import { Simulate } from "react-dom/test-utils";
-import drop = Simulate.drop;
+import { DragItem, DropItem } from "./ItemTypes";
 
 export interface ContainerState {
   feeds: FeedResItem[];
@@ -20,97 +18,107 @@ export const List = () => {
     feedList: state.feedList,
     feed: state.feed,
   }));
-  const [ feeds, setFeeds ] = useState<FeedResItem[]>([]);
+  const [feeds, setFeeds] = useState<FeedResItem[]>([]);
 
   const moveCard = useCallback(
-    ([ dragIndex, dragItem ]: [ dragIndex: number, dragItem: FeedResItem ], [ hoverIndex, dropResult ]: [ hoverIndex: number, dropResult: FeedResItem ]) => {
-
-      console.log('dragItem ===> ', dragItem);
+    (
+      [dragIndex, dragItem]: [dragIndex: number, dragItem: DragItem],
+      [hoverIndex, dropResult]: [hoverIndex: number, dropResult: DropItem]
+    ) => {
+      console.log("dragItem ===> ", dragItem);
       console.log("====>", dropResult);
 
       setFeeds((prevCards: FeedResItem[]) =>
         update(prevCards, {
           $splice: [
-            [ dragIndex, 1 ],
-            [ hoverIndex, 0, prevCards[dragIndex] as FeedResItem ],
+            [dragIndex, 1],
+            [hoverIndex, 0, prevCards[dragIndex] as FeedResItem],
           ],
         })
       );
     },
-    [ feeds ]
+    [feeds]
   );
 
-  const confirmDropOver = useCallback(() => {
-    const body = feeds.reduce((acu, feed, idx) => {
-      let item = {
-        item_type: feed.item_type,
-        parent_uuid: feed.parent_uuid,
-        child_uuid: feed.uuid,
-        sort: idx,
-      };
+  const onSubscribeItemDrop = useCallback(() => {
+    requestUpdateOrder(feeds);
+  }, [feeds]);
 
-      feed.children.length > 0 &&
-      feed.children.forEach((child) => {
-        item.child_uuid = child.uuid;
-        acu.push({
-          ...item,
-        });
-      });
+  const requestUpdateOrder = (list: FeedResItem[]) => {
+    const body = list.reduce(
+      (acu, feed, idx) => {
+        let item = {
+          item_type: feed.item_type,
+          parent_uuid: feed.uuid,
+          child_uuid: "",
+          sort: idx,
+        };
 
-      acu.push({
-        ...item,
-      });
+        if (feed.children.length > 0) {
+          feed.children.forEach((child) => {
+            item.child_uuid = child.uuid || "";
+            acu.push({
+              ...item,
+            });
+          });
+        } else {
+          acu.push({
+            ...item,
+          });
+        }
 
-      return acu;
-    }, [] as any[]);
+        return acu;
+      },
+      [] as {
+        item_type: string;
+        parent_uuid: string;
+        child_uuid: string;
+        sort: number;
+      }[]
+    );
 
     console.log("%c Line:55 🥚 body", "color:#ffdd4d", body);
 
     dataAgent.updateFeedSort(body).then((res) => {
       console.log("%c Line:47 🥔 res", "color:#b03734", res);
     });
-  }, [ feeds ]);
+  };
 
   const handleDropIntoFolder = useCallback(
-    (index: number, dragItem: FeedResItem, feed: FeedResItem) => {
-      console.log("%c Line:72 🍋 dragItem", "color:#3f7cff", dragItem);
+    (
+      index: number,
+      dragItem: DragItem,
+      dropItem: FeedResItem,
+    ) => {
+      return {
+        index,
+        ...dropItem,
+      };
+    },
+    [feeds]
+  );
 
-      feed.children.push(dragItem.uuid);
+  const moveIntoFolder = useCallback(
+    (dragItem: DragItem, dropItem: DropItem) => {
+      console.log("%c Line:114 🍷 feeds", "color:#ffdd4d", feeds);
 
-      console.log("%c Line:73 🍋 feed", "color:#3f7cff", feed);
+      dropItem.children.push(dragItem);
 
-      // setFeeds((prevFeeds: FeedResItem[]) => {
-      //   update(prevFeeds, {
-      //     $splice: [
-      //       [dragItem.index, 1],
-      //     ]
-      //   })
-      // })
-      // setDroppedBoxNames(
-      //   update(droppedBoxNames, name ? { $push: [name] } : { $push: [] }),
-      // )
-      // setDustbins(
-      //   update(dustbins, {
-      //     [index]: {
-      //       lastDroppedItem: {
-      //         $set: item,
-      //       },
-      //     },
-      //   }),
-      // )
-      // return {
-      //   ...item,
-      //   feed,
-      // }
+      if (dropItem.uuid === dragItem.uuid || dragItem.item_type === "folder") {
+        return dropItem;
+      }
 
-      setFeeds((prevFeeds: FeedResItem[]) =>
-        update(prevFeeds, {
-          $splice: [
-            [ dragItem.index, 1 ],
-          ],
-        })
-      );
+      const newlist = update(feeds, {
+        $splice: [[dragItem.index, 1]],
+        [dropItem.index]: {
+          $set: { ...dropItem, title: "hahahhahahah" },
+        },
+      });
+      console.log("%c Line:128 🍒 newlist", "color:#6ec1c2", newlist);
 
+      setFeeds(newlist);
+
+      requestUpdateOrder(newlist);
     },
     [feeds]
   );
@@ -122,52 +130,54 @@ export const List = () => {
       if (feed.item_type === "channel") {
         return (
           <SubscribeItem
-            key={ feed.uuid }
-            index={ index }
-            id={ feed.uuid }
-            text={ feed.title }
-            feed={ { ...feed } }
-            isActive={ isActive }
-            moveCard={ moveCard }
-            confirmDidDrop={ confirmDropOver }
+            key={feed.uuid}
+            index={index}
+            uuid={feed.uuid}
+            text={feed.title}
+            feed={{ ...feed }}
+            isActive={isActive}
+            onMove={moveCard}
+            onDrop={() => onSubscribeItemDrop()}
+            onMoveIntoFolder={moveIntoFolder}
           >
             <ItemView
-              index={ index }
-              id={ feed.uuid }
-              text={ feed.title }
-              feed={ { ...feed } }
-              isActive={ isActive }
+              index={index}
+              id={feed.uuid}
+              text={feed.title}
+              feed={{ ...feed }}
+              isActive={isActive}
             />
           </SubscribeItem>
         );
       } else {
         return (
           <Folder
-            index={ index }
-            id={ feed.uuid }
-            feed={ { ...feed } }
-            onDrop={ (dragItem) => handleDropIntoFolder(index, dragItem, feed) }
-            moveCard={ moveCard }
-            confirmDidDrop={ confirmDropOver }
-            key={ index }
+            index={index}
+            id={feed.uuid}
+            feed={{ ...feed }}
+            onDrop={(dragItem: DragItem) =>
+              handleDropIntoFolder(index, dragItem, feed)
+            }
+            onMove={moveCard}
+            key={index}
           >
             <ItemView
-              index={ index }
-              id={ feed.uuid }
-              text={ feed.title }
-              feed={ { ...feed } }
-              isActive={ isActive }
+              index={index}
+              id={feed.uuid}
+              text={feed.title}
+              feed={{ ...feed }}
+              isActive={isActive}
             />
           </Folder>
         );
       }
     },
-    [ feeds, store.feed ]
+    [feeds, store.feed]
   );
 
   useEffect(() => {
-    setFeeds([ ...store.feedList ]);
-  }, [ store.feedList ]);
+    setFeeds([...store.feedList]);
+  }, [store.feedList]);
 
-  return <div className="">{ feeds.map((feed, i) => renderCard(feed, i)) }</div>;
+  return <div className="">{feeds.map((feed, i) => renderCard(feed, i))}</div>;
 };

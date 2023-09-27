@@ -3,14 +3,14 @@ import { useRef } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import type { Identifier, XYCoord } from "dnd-core";
 import { FeedResItem } from "@/db";
-import { ItemTypes } from "./ItemTypes";
+import { DragItem, DropItem, ItemTypes } from "./ItemTypes";
 
 const style = {
   cursor: "move",
 };
 
 export interface CardProps {
-  id: any;
+  uuid: string;
   text: string;
   index: number;
   feed: FeedResItem;
@@ -19,27 +19,23 @@ export interface CardProps {
   arrow?: React.ReactNode;
   isActive: Boolean;
   level?: number;
-  moveCard: (a:[dragIndex: number, dragItem: FeedResItem], b: [hoverIndex: number, dropResult: FeedResItem]) => void;
-  confirmDidDrop: () => void;
-  moveFeedIntoFolder: (feed: Partial<FeedResItem>, folder: Partial<FeedResItem>) => void;
-}
-
-interface DragItem {
-  index: number;
-  id: string;
+  onMove: (a:[dragIndex: number, dragItem: DragItem], b: [hoverIndex: number, dropResult: DropItem]) => void;
+  onDrop: () => void;
+  onMoveIntoFolder: (dragItem: DragItem, dropResult: DropItem) => void;
 }
 
 export const SubscribeItem: FC<CardProps> = ({
-  id,
+  uuid,
   text,
   feed,
   index,
-  moveCard,
+  onMove,
+  onMoveIntoFolder,
   ...props
 }) => {
   const ref = useRef<HTMLDivElement>(null);
   const [{ handlerId }, drop] = useDrop<
-    DragItem & Partial<FeedResItem>,
+    DragItem,
     void,
     { handlerId: Identifier | null }
   >({
@@ -89,7 +85,7 @@ export const SubscribeItem: FC<CardProps> = ({
       }
 
       // Time to actually perform the action
-      moveCard([dragIndex, item], [hoverIndex, monitor.getDropResult()]);
+      onMove([dragIndex, item], [hoverIndex, monitor.getDropResult() as DropItem]);
 
       // Note: we're mutating the monitor item here!
       // Generally it's better to avoid mutations,
@@ -102,25 +98,20 @@ export const SubscribeItem: FC<CardProps> = ({
   const [{ isDragging }, drag] = useDrag({
     type: ItemTypes.CARD,
     item: () => {
-      return { id, index, ...feed };
+      return { index, ...feed };
     },
     collect: (monitor: any) => ({
       isDragging: monitor.isDragging(),
     }),
     end(item, monitor) {
-      const dropResult = monitor.getDropResult()
+      const dropResult = monitor.getDropResult<DropItem>()
 
-      console.log('dropResult ===> ', dropResult)
-      console.log('item ===>', item)
-
-      if (item.id && dropResult && dropResult?.uuid) {
+      if (item.uuid && dropResult?.item_type === 'folder') {
         alert(`You dropped ${item.title} into ${dropResult.title}! ${monitor.didDrop()}`)
-        // into folder
-        // props.moveFeedIntoFolder(item, dropResult);
-      }
 
-      if (monitor.didDrop()) {
-        props.confirmDidDrop();
+        onMoveIntoFolder(item, dropResult);
+      } else if (monitor.didDrop()) {
+        props.onDrop();
       }
     },
   });
@@ -133,7 +124,7 @@ export const SubscribeItem: FC<CardProps> = ({
     <div
       ref={ref}
       style={{ ...style, opacity }}
-      data-handler-id={handlerId}
+      data-handler-uuid={handlerId}
     >
     {props.children}
     </div>
