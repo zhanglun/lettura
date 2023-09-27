@@ -15,11 +15,11 @@ import { Input } from "@/components/ui/input";
 import { Icon } from "../Icon";
 import { Folder as Folder2, Loader2 } from "lucide-react";
 import { Button } from "../ui/button";
-import { Channel } from "@/db";
+import { FeedResItem } from "@/db";
 
 export interface AddFolderProps {
   action: "add" | "edit";
-  folder?: Channel | null;
+  folder?: FeedResItem | null;
   dialogStatus: boolean;
   trigger?: React.ReactNode;
   setDialogStatus: (status: boolean) => void;

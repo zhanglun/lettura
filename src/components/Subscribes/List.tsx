@@ -47,17 +47,17 @@ export const List = () => {
         let item = {
           item_type: feed.item_type,
           uuid: feed.uuid,
-          folder_uuid: feed.item_type === 'folder' ? feed.uuid : "",
+          folder_uuid: feed.item_type === "folder" ? feed.uuid : "",
           sort: idx,
         };
 
         if (feed.children.length > 0) {
           feed.children.forEach((child) => {
             item.uuid = child.uuid || "";
-            item.folder_uuid = feed.uuid,
-            acu.push({
-              ...item,
-            });
+            (item.folder_uuid = feed.uuid),
+              acu.push({
+                ...item,
+              });
           });
         } else {
           acu.push({
@@ -83,11 +83,7 @@ export const List = () => {
   };
 
   const handleDropIntoFolder = useCallback(
-    (
-      index: number,
-      dragItem: DragItem,
-      dropItem: FeedResItem,
-    ) => {
+    (index: number, dragItem: DragItem, dropItem: FeedResItem) => {
       return {
         index,
         ...dropItem,
@@ -109,7 +105,7 @@ export const List = () => {
       const newlist = update(feeds, {
         $splice: [[dragItem.index, 1]],
         [dropItem.index]: {
-          $set: { ...dropItem, title: "hahahhahahah" },
+          $set: { ...dropItem },
         },
       });
       console.log("%c Line:128 🍒 newlist", "color:#6ec1c2", newlist);
@@ -166,6 +162,30 @@ export const List = () => {
               feed={{ ...feed }}
               isActive={isActive}
             />
+            {feed.children && feed.children.map((child, idx) => {
+              return (
+                <SubscribeItem
+                  key={child.uuid}
+                  level={2}
+                  index={idx}
+                  uuid={child.uuid}
+                  text={child.title}
+                  feed={{ ...child }}
+                  isActive={isActive}
+                  onMove={moveCard}
+                  onDrop={() => onSubscribeItemDrop()}
+                  onMoveIntoFolder={moveIntoFolder}
+                >
+                  <ItemView
+                    index={idx}
+                    id={child.uuid}
+                    text={child.title}
+                    feed={{ ...child }}
+                    isActive={isActive}
+                  />
+                </SubscribeItem>
+              );
+            })}
           </Folder>
         );
       }

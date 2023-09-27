@@ -19,7 +19,10 @@ export interface CardProps {
   arrow?: React.ReactNode;
   isActive: Boolean;
   level?: number;
-  onMove: (a:[dragIndex: number, dragItem: DragItem], b: [hoverIndex: number, dropResult: DropItem]) => void;
+  onMove: (
+    a: [dragIndex: number, dragItem: DragItem],
+    b: [hoverIndex: number, dropResult: DropItem]
+  ) => void;
   onDrop: () => void;
   onMoveIntoFolder: (dragItem: DragItem, dropResult: DropItem) => void;
 }
@@ -85,7 +88,10 @@ export const SubscribeItem: FC<CardProps> = ({
       }
 
       // Time to actually perform the action
-      onMove([dragIndex, item], [hoverIndex, monitor.getDropResult() as DropItem]);
+      onMove(
+        [dragIndex, item],
+        [hoverIndex, monitor.getDropResult() as DropItem]
+      );
 
       // Note: we're mutating the monitor item here!
       // Generally it's better to avoid mutations,
@@ -104,11 +110,14 @@ export const SubscribeItem: FC<CardProps> = ({
       isDragging: monitor.isDragging(),
     }),
     end(item, monitor) {
-      const dropResult = monitor.getDropResult<DropItem>()
+      const dropResult = monitor.getDropResult<DropItem>();
 
-      if (item.uuid && dropResult?.item_type === 'folder') {
-        alert(`You dropped ${item.title} into ${dropResult.title}! ${monitor.didDrop()}`)
-
+      if (item.uuid && dropResult?.item_type === "folder") {
+        console.log(
+          `You dropped ${item.title} into ${
+            dropResult.title
+          }! ${monitor.didDrop()}`
+        );
         onMoveIntoFolder(item, dropResult);
       } else if (monitor.didDrop()) {
         props.onDrop();
@@ -121,12 +130,8 @@ export const SubscribeItem: FC<CardProps> = ({
   drag(drop(ref));
 
   return (
-    <div
-      ref={ref}
-      style={{ ...style, opacity }}
-      data-handler-uuid={handlerId}
-    >
-    {props.children}
+    <div ref={ref} style={{ ...style, opacity }} data-handler-uuid={handlerId}>
+      {props.children}
     </div>
   );
 };

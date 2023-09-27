@@ -22,7 +22,7 @@ export interface Channel {
 
 export interface FeedResItem {
   item_type: string;
-  children: Partial<FeedResItem>[];
+  children: FeedResItem[];
   id?: number;
   uuid: string;
   title: string;

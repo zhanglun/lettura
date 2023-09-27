@@ -8,7 +8,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Channel } from "@/db";
+import { FeedResItem } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
 import { busChannel } from "@/helpers/busChannel";
 import { useToast } from "@/components/ui/use-toast";
@@ -18,7 +18,7 @@ import { Link2 } from "lucide-react";
 import { useBearStore } from "@/stores";
 
 export interface DialogEditFeedProps {
-  feed: Channel | null;
+  feed: FeedResItem | null;
   dialogStatus: boolean;
   trigger?: React.ReactNode;
   setDialogStatus: (status: boolean) => void;

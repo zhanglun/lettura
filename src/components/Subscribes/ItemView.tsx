@@ -1,11 +1,11 @@
 import type { FC } from "react";
-import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import clsx from "clsx";
 import { RouteConfig } from "@/config";
 import { FeedResItem } from "@/db";
 import { useBearStore } from "@/stores";
 import { getChannelFavicon } from "@/helpers/parseXML";
+import { SubscribeItem } from "./SubscribeItem";
 
 export interface CardProps {
   id: any;
@@ -16,12 +16,6 @@ export interface CardProps {
   arrow?: React.ReactNode;
   isActive: Boolean;
   level?: number;
-}
-
-interface DragItem {
-  index: number;
-  id: string;
-  type: string;
 }
 
 export const ItemView: FC<CardProps> = ({
@@ -56,7 +50,7 @@ export const ItemView: FC<CardProps> = ({
         );
       }}
     >
-      <span
+      <div
         className={clsx(
           "w-full h-8 px-4 flex items-center rounded-md cursor-pointer mt-[2px] group text-foreground",
           {
@@ -94,7 +88,7 @@ export const ItemView: FC<CardProps> = ({
             }
           )}
         >
-         {index} - {feed.title}
+          {feed.title}
         </span>
         {unread > 0 && (
           <span
@@ -108,7 +102,7 @@ export const ItemView: FC<CardProps> = ({
             {unread}
           </span>
         )}
-      </span>
+      </div>
     </div>
   );
 };

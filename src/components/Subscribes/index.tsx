@@ -4,13 +4,12 @@ import { Folder, RefreshCw, Settings, Coffee, Haze } from "lucide-react";
 import classNames from "classnames";
 import { listen } from "@tauri-apps/api/event";
 import { RouteConfig } from "@/config";
-import { Channel } from "@/db";
+import { FeedResItem } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
 import { busChannel } from "@/helpers/busChannel";
 import { useBearStore } from "@/stores";
 import { AddFeedChannel } from "../AddFeed";
 import { AddFolder } from "../AddFolder";
-import { TestTree } from "./TestTree";
 
 import {
   ContextMenu,
@@ -37,7 +36,6 @@ const ChannelList = (): JSX.Element => {
   const [editFolderDialogStatus, setEditFolderDialogStatus] = useModal();
   const [editFeedStatus, setEditFeedStatus] = useModal();
   const [showStatus, setModalStatus] = useModal();
-  const [treeData, setTreeData] = useState<any>([]);
   const [
     feedList,
     setFeedList,
@@ -76,7 +74,7 @@ const ChannelList = (): JSX.Element => {
     };
   }, []);
 
-  const reloadFeedIcon = (feed: Channel | null) => {
+  const reloadFeedIcon = (feed: FeedResItem | null) => {
     feed &&
       dataAgent.updateIcon(feed.uuid, feed.link).then((res) => {
         console.log("%c Line:139 🍷 res", "color:#ea7e5c", res);
@@ -84,7 +82,7 @@ const ChannelList = (): JSX.Element => {
       });
   };
 
-  const reloadFeedData = (feed: Channel | null) => {
+  const reloadFeedData = (feed: FeedResItem | null) => {
     console.log("TODO");
   };
 
@@ -135,43 +133,6 @@ const ChannelList = (): JSX.Element => {
 
     listener();
   }, []);
-
-  useEffect(() => {
-    const treeData = feedList.reduce(
-      (acu, cur) => {
-        // @ts-ignore
-        acu.root.children.push(cur.uuid);
-        acu[cur.uuid] = {
-          index: cur.uuid,
-          isFolder: cur.item_type === "folder",
-          children: cur.children.map((c: Channel) => c.uuid),
-          title: cur.title,
-          data: cur,
-        };
-
-        cur.children.forEach((child: Channel) => {
-          acu[child.uuid] = {
-            index: child.uuid,
-            children: [],
-            title: child.title,
-            data: child,
-          };
-        });
-
-        return acu;
-      },
-      {
-        root: {
-          index: "root",
-          isFolder: true,
-          children: [],
-          data: "Root item",
-        },
-      } as any
-    );
-
-    setTreeData(treeData);
-  }, [feedList]);
 
   return (
     <div
@@ -300,7 +261,6 @@ const ChannelList = (): JSX.Element => {
         <ContextMenu onOpenChange={handleContextMenuChange}>
           <ContextMenuTrigger>
             <ListContainer />
-            {/* <TestTree treeData={treeData} activeUuid={store?.feed?.uuid} /> */}
           </ContextMenuTrigger>
           <ContextMenuContent>
             {store.feedContextMenuTarget?.item_type === "folder" && (

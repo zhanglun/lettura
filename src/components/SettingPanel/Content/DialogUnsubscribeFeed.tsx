@@ -10,13 +10,13 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { Channel } from "@/db";
+import { FeedResItem } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
 import { busChannel } from "@/helpers/busChannel";
 import { useToast } from "@/components/ui/use-toast";
 
 export interface DialogProps {
-  feed: Channel | null;
+  feed: FeedResItem | null;
   dialogStatus: boolean;
   trigger?: React.ReactNode;
   setDialogStatus: (status: boolean) => void;
