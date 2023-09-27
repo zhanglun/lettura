@@ -4,6 +4,7 @@ use chrono::Local;
 use diesel::prelude::*;
 use diesel::sql_types::*;
 use log::info;
+use log::warn;
 use scraper::{Html, Selector};
 use serde::{Deserialize, Serialize};
 
@@ -231,13 +232,12 @@ pub struct ChildItem {
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
-pub struct FeedItem {
+pub struct SubscribeItem {
   pub item_type: String,
   pub uuid: String,
   pub title: String,
   pub sort: i32,
   pub children: Option<Vec<ChildItem>>,
-  pub parent_uuid: String,
   pub link: Option<String>,
   pub logo: String,
   pub feed_url: String,
@@ -254,7 +254,7 @@ pub struct FeedJoinRecord {
   #[diesel(sql_type = diesel::sql_types::Text)]
   pub uuid: String,
   #[diesel(sql_type = diesel::sql_types::Text)]
-  pub parent_uuid: String,
+  pub folder_uuid: String,
   #[diesel(sql_type = diesel::sql_types::Text)]
   pub link: String,
   #[diesel(sql_type = diesel::sql_types::Text)]
@@ -267,27 +267,27 @@ pub struct FeedJoinRecord {
   pub create_date: String,
 }
 
-pub fn get_feeds() -> Vec<FeedItem> {
-  let sql_channel_in_folder = "
+pub fn get_feeds() -> Vec<SubscribeItem> {
+  let sql_feed_in_folder = "
     SELECT
       C.title AS title,
-      F.child_uuid AS uuid,
+      F.uuid AS uuid,
       F.sort,
       C.link,
       C.logo,
       C.feed_url,
       C.description,
       C.create_date,
-      F.parent_uuid as parent_uuid
+      F.folder_uuid as folder_uuid
     FROM feeds as C
     LEFT JOIN feed_metas AS F
-    ON C.uuid = F.child_uuid
-    WHERE parent_uuid != '' and parent_uuid IS NOT NULL
+    ON C.uuid = F.uuid
+    WHERE folder_uuid != '' and folder_uuid IS NOT NULL
     ORDER BY F.sort ASC;";
 
   let mut connection = db::establish_connection();
 
-  let channels_in_folder = diesel::sql_query(sql_channel_in_folder)
+  let feeds_in_folder = diesel::sql_query(sql_feed_in_folder)
     .load::<FeedJoinRecord>(&mut connection)
     .unwrap_or(vec![]);
   let folders = schema::folders::dsl::folders
@@ -295,11 +295,11 @@ pub fn get_feeds() -> Vec<FeedItem> {
     .unwrap();
 
   let mut folder_channel_map: HashMap<String, Vec<ChildItem>> = HashMap::new();
-  let mut result: Vec<FeedItem> = Vec::new();
+  let mut result: Vec<SubscribeItem> = Vec::new();
   let mut filter_uuids: Vec<String> = Vec::new();
 
-  for channel in channels_in_folder {
-    let p_uuid = String::from(&channel.parent_uuid);
+  for channel in feeds_in_folder {
+    let p_uuid = String::from(&channel.folder_uuid);
     let children = folder_channel_map.entry(p_uuid.clone()).or_insert(vec![]);
 
     children.push(ChildItem {
@@ -322,14 +322,13 @@ pub fn get_feeds() -> Vec<FeedItem> {
       .entry(String::from(&folder.uuid))
       .or_insert(vec![]);
 
-    result.push(FeedItem {
+    result.push(SubscribeItem {
       item_type: String::from("folder"),
       uuid: folder.uuid,
       title: folder.name,
       sort: folder.sort,
       link: Some(String::from("")),
       logo: String::from(""),
-      parent_uuid: "".to_string(),
       children: Some(c_uuids.to_vec()),
       feed_url: "".to_string(),
       description: "".to_string(),
@@ -339,23 +338,22 @@ pub fn get_feeds() -> Vec<FeedItem> {
 
   println!("filter_uuids :{:?}", &filter_uuids);
 
-  let channels = schema::feeds::dsl::feeds
+  let feeds = schema::feeds::dsl::feeds
     .filter(diesel::dsl::not(schema::feeds::uuid.eq_any(&filter_uuids)))
     .load::<models::Feed>(&mut connection)
     .unwrap();
 
-  for channel in channels {
-    result.push(FeedItem {
+  for feed in feeds {
+    result.push(SubscribeItem {
       item_type: String::from("channel"),
-      uuid: channel.uuid,
-      title: channel.title,
-      sort: channel.sort,
-      link: Some(channel.link),
-      logo: channel.logo,
-      feed_url: channel.feed_url,
-      description: channel.description,
-      create_date: channel.create_date,
-      parent_uuid: String::from(""),
+      uuid: feed.uuid,
+      title: feed.title,
+      sort: feed.sort,
+      link: Some(feed.link),
+      logo: feed.logo,
+      feed_url: feed.feed_url,
+      description: feed.description,
+      create_date: feed.create_date,
       children: Some(Vec::new()),
     });
   }
@@ -426,8 +424,8 @@ pub fn add_feed(feed: models::NewFeed, articles: Vec<models::NewArticle>) -> (us
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FeedSort {
   item_type: String,
-  parent_uuid: String,
-  child_uuid: String,
+  uuid: String,
+  folder_uuid: String,
   sort: i32,
 }
 
@@ -444,24 +442,24 @@ pub struct FeedSortRes {
 pub fn update_feed_sort(sorts: Vec<FeedSort>) -> usize {
   let mut connection = db::establish_connection();
 
-  info!("sorts: {:?}", sorts);
+  warn!("sorts: {:?}", sorts);
 
   for item in sorts {
     let mut query = diesel::sql_query("").into_boxed();
 
-    if item.parent_uuid.len() > 0 && item.item_type == "channel" {
+    if item.folder_uuid.len() > 0 && item.uuid.len() > 0 && item.folder_uuid != item.uuid {
       query = query
         .sql(format!(
           "
-          insert into feed_metas (id, parent_uuid, child_uuid, sort) values
-        ((select id from feed_metas where parent_uuid = ? and child_uuid = ? ), ?, ?, ?)
+          insert into feed_metas (id, uuid, folder_uuid, sort) values
+        ((select id from feed_metas where uuid = ? and folder_uuid = ? ), ?, ?, ?)
         ON CONFLICT(id) DO UPDATE SET sort = excluded.sort;
         "
         ))
-        .bind::<Text, _>(&item.parent_uuid)
-        .bind::<Text, _>(&item.child_uuid)
-        .bind::<Text, _>(&item.parent_uuid)
-        .bind::<Text, _>(&item.child_uuid)
+        .bind::<Text, _>(&item.uuid)
+        .bind::<Text, _>(&item.folder_uuid)
+        .bind::<Text, _>(&item.uuid)
+        .bind::<Text, _>(&item.folder_uuid)
         .bind::<Integer, _>(&item.sort);
 
       let debug = diesel::debug_query::<diesel::sqlite::Sqlite, _>(&query);
@@ -473,16 +471,16 @@ pub fn update_feed_sort(sorts: Vec<FeedSort>) -> usize {
         .expect("Expect loading articles");
     }
 
-    if item.parent_uuid.len() == 0 && item.item_type == "channel" {
-      diesel::update(schema::feeds::dsl::feeds.filter(schema::feeds::uuid.eq(&item.child_uuid)))
+    if item.folder_uuid.len() == 0 && item.uuid.len() > 0 {
+      diesel::update(schema::feeds::dsl::feeds.filter(schema::feeds::uuid.eq(&item.uuid)))
         .set(schema::feeds::sort.eq(item.sort))
         .execute(&mut connection)
         .expect("msg");
     }
 
-    if item.parent_uuid.len() == 0 && item.item_type == "folder" {
+    if item.folder_uuid.len() > 0 && item.folder_uuid == item.uuid {
       diesel::update(
-        schema::folders::dsl::folders.filter(schema::folders::uuid.eq(&item.child_uuid)),
+        schema::folders::dsl::folders.filter(schema::folders::uuid.eq(&item.uuid)),
       )
       .set(schema::folders::sort.eq(item.sort))
       .execute(&mut connection)

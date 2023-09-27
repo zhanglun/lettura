@@ -25,9 +25,6 @@ export const List = () => {
       [dragIndex, dragItem]: [dragIndex: number, dragItem: DragItem],
       [hoverIndex, dropResult]: [hoverIndex: number, dropResult: DropItem]
     ) => {
-      console.log("dragItem ===> ", dragItem);
-      console.log("====>", dropResult);
-
       setFeeds((prevCards: FeedResItem[]) =>
         update(prevCards, {
           $splice: [
@@ -49,14 +46,15 @@ export const List = () => {
       (acu, feed, idx) => {
         let item = {
           item_type: feed.item_type,
-          parent_uuid: feed.uuid,
-          child_uuid: "",
+          uuid: feed.uuid,
+          folder_uuid: feed.item_type === 'folder' ? feed.uuid : "",
           sort: idx,
         };
 
         if (feed.children.length > 0) {
           feed.children.forEach((child) => {
-            item.child_uuid = child.uuid || "";
+            item.uuid = child.uuid || "";
+            item.folder_uuid = feed.uuid,
             acu.push({
               ...item,
             });
@@ -71,8 +69,8 @@ export const List = () => {
       },
       [] as {
         item_type: string;
-        parent_uuid: string;
-        child_uuid: string;
+        uuid: string;
+        folder_uuid: string;
         sort: number;
       }[]
     );

@@ -35,8 +35,8 @@ export const getFolders = async (): Promise<Folder[]> => {
 export const updateFeedSort = async (
   sorts: {
     item_type: string;
-    parent_uuid: string;
-    child_uuid: string;
+    uuid: string;
+    folder_uuid: string;
     sort: number;
   }[]
 ): Promise<any> => {
