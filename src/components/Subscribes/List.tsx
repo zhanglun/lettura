@@ -117,32 +117,35 @@ export const List = () => {
     [feeds]
   );
 
+  const renderFeed = (feed: FeedResItem, index: number, isActive: boolean, level: number) => {
+    return  <SubscribeItem
+    key={feed.uuid}
+    index={index}
+    uuid={feed.uuid}
+    text={feed.title}
+    feed={{ ...feed }}
+    isActive={isActive}
+    onMove={moveCard}
+    onDrop={() => onSubscribeItemDrop()}
+    onMoveIntoFolder={moveIntoFolder}
+  >
+    <ItemView
+      index={index}
+      id={feed.uuid}
+      level={level}
+      text={feed.title}
+      feed={{ ...feed }}
+      isActive={isActive}
+    />
+  </SubscribeItem>
+  }
+
   const renderCard = useCallback(
     (feed: FeedResItem, index: number) => {
       const isActive = store?.feed?.uuid === feed.uuid;
 
       if (feed.item_type === "channel") {
-        return (
-          <SubscribeItem
-            key={feed.uuid}
-            index={index}
-            uuid={feed.uuid}
-            text={feed.title}
-            feed={{ ...feed }}
-            isActive={isActive}
-            onMove={moveCard}
-            onDrop={() => onSubscribeItemDrop()}
-            onMoveIntoFolder={moveIntoFolder}
-          >
-            <ItemView
-              index={index}
-              id={feed.uuid}
-              text={feed.title}
-              feed={{ ...feed }}
-              isActive={isActive}
-            />
-          </SubscribeItem>
-        );
+        return renderFeed(feed, index, isActive, 1);
       } else {
         return (
           <Folder
@@ -158,33 +161,15 @@ export const List = () => {
             <ItemView
               index={index}
               id={feed.uuid}
+              level={1}
               text={feed.title}
               feed={{ ...feed }}
               isActive={isActive}
             />
             {feed.children && feed.children.map((child, idx) => {
-              return (
-                <SubscribeItem
-                  key={child.uuid}
-                  level={2}
-                  index={idx}
-                  uuid={child.uuid}
-                  text={child.title}
-                  feed={{ ...child }}
-                  isActive={isActive}
-                  onMove={moveCard}
-                  onDrop={() => onSubscribeItemDrop()}
-                  onMoveIntoFolder={moveIntoFolder}
-                >
-                  <ItemView
-                    index={idx}
-                    id={child.uuid}
-                    text={child.title}
-                    feed={{ ...child }}
-                    isActive={isActive}
-                  />
-                </SubscribeItem>
-              );
+              const isActive = store?.feed?.uuid === child.uuid;
+
+              return renderFeed(child, idx, isActive, 2);
             })}
           </Folder>
         );

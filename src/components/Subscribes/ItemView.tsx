@@ -5,7 +5,6 @@ import { RouteConfig } from "@/config";
 import { FeedResItem } from "@/db";
 import { useBearStore } from "@/stores";
 import { getChannelFavicon } from "@/helpers/parseXML";
-import { SubscribeItem } from "./SubscribeItem";
 
 export interface CardProps {
   id: any;
@@ -58,7 +57,7 @@ export const ItemView: FC<CardProps> = ({
             "shadow-[inset_0_0_0_2px_var(--color-primary)]":
               store.feedContextMenuTarget &&
               store.feedContextMenuTarget.uuid === feed.uuid,
-            "pl-8": level,
+            "pl-8": level === 2,
           }
         )}
         onContextMenu={() => {

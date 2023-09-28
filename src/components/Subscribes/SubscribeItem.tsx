@@ -4,6 +4,7 @@ import { useDrag, useDrop } from "react-dnd";
 import type { Identifier, XYCoord } from "dnd-core";
 import { FeedResItem } from "@/db";
 import { DragItem, DropItem, ItemTypes } from "./ItemTypes";
+import clsx from "clsx";
 
 const style = {
   cursor: "move",
@@ -32,6 +33,7 @@ export const SubscribeItem: FC<CardProps> = ({
   text,
   feed,
   index,
+  level,
   onMove,
   onMoveIntoFolder,
   ...props
