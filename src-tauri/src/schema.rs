@@ -21,8 +21,8 @@ diesel::table! {
 diesel::table! {
     feed_metas (id) {
         id -> Integer,
-        child_uuid -> Text,
-        parent_uuid -> Text,
+        uuid -> Text,
+        folder_uuid -> Text,
         sort -> Integer,
         create_date -> Timestamp,
         update_date -> Timestamp,

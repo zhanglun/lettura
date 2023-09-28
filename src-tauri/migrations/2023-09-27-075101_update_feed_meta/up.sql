@@ -10,7 +10,7 @@ CREATE TABLE feed_metas (
     id          INTEGER  PRIMARY KEY
                          NOT NULL,
     uuid        VARCHAR  NOT NULL,
-    folder_uuid VARCHAR,
+    folder_uuid VARCHAR  NOT NULL,
     sort        INTEGER  NOT NULL
                          DEFAULT (0),
     create_date DATETIME NOT NULL

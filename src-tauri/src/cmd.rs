@@ -5,9 +5,7 @@ use tauri::{command, Window};
 use tokio::sync::{mpsc, Mutex};
 use uuid::Uuid;
 
-use crate::core;
 use crate::core::config;
-use crate::db;
 use crate::feed;
 use crate::models;
 use crate::AsyncProcessMessage;
@@ -45,7 +43,7 @@ pub async fn move_channel_into_folder(
   let result = feed::channel::update_feed_meta(
     channel_uuid,
     feed::channel::FeedMetaUpdateRequest {
-      parent_uuid: folder_uuid,
+      folder_uuid: folder_uuid,
       sort,
     },
   );

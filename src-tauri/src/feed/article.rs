@@ -71,15 +71,15 @@ impl Article {
 
     if let Some(channel_uuid) = filter.channel_uuid {
       let relations = schema::feed_metas::dsl::feed_metas
-        .filter(schema::feed_metas::parent_uuid.eq(&channel_uuid))
+        .filter(schema::feed_metas::uuid.eq(&channel_uuid))
         .load::<models::FeedMeta>(&mut connection)
         .expect("Expect find channel");
       let mut channel_uuids: Vec<String> = vec![];
 
       if relations.len() > 0 {
         for relation in relations {
-          if relation.parent_uuid == channel_uuid {
-            let uuid = String::from(relation.child_uuid);
+          if relation.uuid == channel_uuid {
+            let uuid = String::from(relation.uuid);
 
             channel_uuids.push(uuid.clone());
           }
@@ -380,14 +380,14 @@ impl Article {
     let mut connection = establish_connection();
     let mut channel_uuids: Vec<String> = vec![];
     let relations = schema::feed_metas::dsl::feed_metas
-      .filter(schema::feed_metas::parent_uuid.eq(&uuid))
+      .filter(schema::feed_metas::uuid.eq(&uuid))
       .load::<models::FeedMeta>(&mut connection)
       .expect("Expect find channel");
 
     if relations.len() > 0 {
       for relation in relations {
-        if relation.parent_uuid == uuid {
-          let uuid = String::from(relation.child_uuid);
+        if relation.uuid == uuid {
+          let uuid = String::from(relation.uuid);
 
           channel_uuids.push(uuid.clone());
         }

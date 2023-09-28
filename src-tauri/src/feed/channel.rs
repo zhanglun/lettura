@@ -8,10 +8,10 @@ use log::warn;
 use scraper::{Html, Selector};
 use serde::{Deserialize, Serialize};
 
-use crate::db;
-use crate::models;
 use crate::cmd::create_article_models;
+use crate::db;
 use crate::feed;
+use crate::models;
 use crate::schema;
 
 pub fn get_feed_by_uuid(channel_uuid: &str) -> Option<models::Feed> {
@@ -54,11 +54,9 @@ pub fn delete_feed(uuid: String) -> usize {
     .execute(&mut connection)
     .expect("Expect delete channel");
 
-    diesel::delete(
-      schema::feed_metas::dsl::feed_metas.filter(schema::feed_metas::child_uuid.eq(&uuid)),
-    )
-    .execute(&mut connection)
-    .expect("Expect delete channel");
+    diesel::delete(schema::feed_metas::dsl::feed_metas.filter(schema::feed_metas::uuid.eq(&uuid)))
+      .execute(&mut connection)
+      .expect("Expect delete channel");
 
     result
   } else {
@@ -85,7 +83,7 @@ pub fn batch_delete_feed(channel_uuids: Vec<String>) -> usize {
 pub fn get_feed_meta_with_uuids(channel_uuids: Vec<String>) -> Vec<models::FeedMeta> {
   let mut connection = db::establish_connection();
   let result = schema::feed_metas::dsl::feed_metas
-    .filter(schema::feed_metas::child_uuid.eq_any(&channel_uuids))
+    .filter(schema::feed_metas::uuid.eq_any(&channel_uuids))
     .load::<models::FeedMeta>(&mut connection)
     .expect("Expect get feed meta");
 
@@ -102,26 +100,29 @@ pub fn get_all_feed_meta() -> Vec<models::FeedMeta> {
   result
 }
 
-pub fn update_health_status(uuid: &str, health_status: i32, failure_reason: String) -> (usize, String, String) {
+pub fn update_health_status(
+  uuid: &str,
+  health_status: i32,
+  failure_reason: String,
+) -> (usize, String, String) {
   let mut connection = db::establish_connection();
 
   match feed::channel::get_feed_by_uuid(uuid) {
     Some(_channel) => {
       let sync_date = Local::now();
 
-    let updated_row = diesel::update(
-      schema::feeds::dsl::feeds.filter(schema::feeds::uuid.eq(uuid)),
-    )
-      .set((
-        schema::feeds::health_status.eq(health_status),
-        schema::feeds::failure_reason.eq(failure_reason),
-        schema::feeds::last_sync_date.eq(sync_date.format("%Y-%m-%d %H:%M:%S").to_string()),
-      ))
-      .execute(&mut connection)
-      .expect("update feed meta");
+      let updated_row =
+        diesel::update(schema::feeds::dsl::feeds.filter(schema::feeds::uuid.eq(uuid)))
+          .set((
+            schema::feeds::health_status.eq(health_status),
+            schema::feeds::failure_reason.eq(failure_reason),
+            schema::feeds::last_sync_date.eq(sync_date.format("%Y-%m-%d %H:%M:%S").to_string()),
+          ))
+          .execute(&mut connection)
+          .expect("update feed meta");
 
       return (updated_row, String::from(""), String::from(""));
-    },
+    }
     None => return (0, String::from(uuid), "feed not found".to_string()),
   }
 }
@@ -199,21 +200,20 @@ pub fn get_unread_total() -> HashMap<String, i32> {
 
 #[derive(Deserialize)]
 pub struct FeedMetaUpdateRequest {
-  pub parent_uuid: String,
+  pub folder_uuid: String,
   pub sort: i32,
 }
 
 pub fn update_feed_meta(uuid: String, update: FeedMetaUpdateRequest) -> usize {
   let mut connection = db::establish_connection();
-  let updated_row = diesel::update(
-    schema::feed_metas::dsl::feed_metas.filter(schema::feed_metas::child_uuid.eq(uuid)),
-  )
-  .set((
-    schema::feed_metas::parent_uuid.eq(update.parent_uuid),
-    schema::feed_metas::sort.eq(update.sort),
-  ))
-  .execute(&mut connection)
-  .expect("update feed meta");
+  let updated_row =
+    diesel::update(schema::feed_metas::dsl::feed_metas.filter(schema::feed_metas::uuid.eq(uuid)))
+      .set((
+        schema::feed_metas::folder_uuid.eq(update.folder_uuid),
+        schema::feed_metas::sort.eq(update.sort),
+      ))
+      .execute(&mut connection)
+      .expect("update feed meta");
 
   updated_row
 }
@@ -398,10 +398,17 @@ pub fn add_feed(feed: models::NewFeed, articles: Vec<models::NewArticle>) -> (us
   let result = match result {
     Ok(r) => (r, String::from("")),
     Err(error) => {
-      if let diesel::result::Error::DatabaseError(diesel::result::DatabaseErrorKind::UniqueViolation, _) = error {
-        return (0, "The feed you are trying to save already exists.".to_string())
+      if let diesel::result::Error::DatabaseError(
+        diesel::result::DatabaseErrorKind::UniqueViolation,
+        _,
+      ) = error
+      {
+        return (
+          0,
+          "The feed you are trying to save already exists.".to_string(),
+        );
       } else {
-        return (0, error.to_string())
+        return (0, error.to_string());
       }
     }
   };
@@ -479,12 +486,10 @@ pub fn update_feed_sort(sorts: Vec<FeedSort>) -> usize {
     }
 
     if item.folder_uuid.len() > 0 && item.folder_uuid == item.uuid {
-      diesel::update(
-        schema::folders::dsl::folders.filter(schema::folders::uuid.eq(&item.uuid)),
-      )
-      .set(schema::folders::sort.eq(item.sort))
-      .execute(&mut connection)
-      .expect("msg");
+      diesel::update(schema::folders::dsl::folders.filter(schema::folders::uuid.eq(&item.uuid)))
+        .set(schema::folders::sort.eq(item.sort))
+        .execute(&mut connection)
+        .expect("msg");
     }
 
     println!(" update sort {:?}", item);
@@ -558,14 +563,20 @@ pub fn get_channels() -> ChannelQueryResult {
 
   for r in relations {
     folder_channel_map.insert(
-      r.child_uuid.clone(),
-      (r.parent_uuid.clone(), folder_name_map.get(&r.parent_uuid).unwrap_or(&"".to_string()).to_string())
+      r.uuid.clone(),
+      (
+        r.folder_uuid.clone(),
+        folder_name_map
+          .get(&r.folder_uuid)
+          .unwrap_or(&"".to_string())
+          .to_string(),
+      ),
     );
   }
 
   let result: Vec<ChannelQuery> = channels
     .into_iter()
-    .map(|channel|  {
+    .map(|channel| {
       let mut folder_uuid = "".to_string();
       let mut folder_name = "".to_string();
 
@@ -594,8 +605,7 @@ pub fn get_channels() -> ChannelQueryResult {
         folder_uuid: folder_uuid,
         folder_name: folder_name,
       }
-    }
-    )
+    })
     .collect::<Vec<ChannelQuery>>();
 
   ChannelQueryResult { list: result }
@@ -605,30 +615,30 @@ pub async fn update_icon(uuid: &str, url: &str) -> usize {
   let mut connection = db::establish_connection();
 
   match schema::feeds::dsl::feeds
-      .filter(schema::feeds::uuid.eq(uuid))
-      .first::<models::Feed>(&mut connection)
+    .filter(schema::feeds::uuid.eq(uuid))
+    .first::<models::Feed>(&mut connection)
   {
-      Ok(_feed) => {
-          if let Some(url) = fetch_site_favicon(url).await {
-              println!("url {:?}", url);
+    Ok(_feed) => {
+      if let Some(url) = fetch_site_favicon(url).await {
+        println!("url {:?}", url);
 
-              let update_row = diesel::update(schema::feeds::dsl::feeds
-                .filter(schema::feeds::uuid.eq(uuid)))
-                  .set(schema::feeds::logo.eq(url))
-                  .execute(&mut connection);
+        let update_row =
+          diesel::update(schema::feeds::dsl::feeds.filter(schema::feeds::uuid.eq(uuid)))
+            .set(schema::feeds::logo.eq(url))
+            .execute(&mut connection);
 
-              match update_row {
-                Ok(r) => r,
-                Err(err) => {
-                  println!("{:?}", err);
-                  0
-                },
-              }
-          } else {
-              0
+        match update_row {
+          Ok(r) => r,
+          Err(err) => {
+            println!("{:?}", err);
+            0
           }
+        }
+      } else {
+        0
       }
-      Err(_) => 0,
+    }
+    Err(_) => 0,
   }
 }
 
@@ -667,11 +677,11 @@ pub async fn sync_articles(uuid: String) -> Vec<(usize, String, String)> {
     Ok(res) => {
       feed::channel::update_health_status(&uuid, 0, "".to_string());
       res
-    },
+    }
     Err(err) => {
       feed::channel::update_health_status(&uuid, 1, err.to_string());
       return vec![(0, uuid, err.to_string())];
-    },
+    }
   };
 
   let articles = create_article_models(&channel.uuid, &channel.feed_url, &res);
@@ -682,13 +692,13 @@ pub async fn sync_articles(uuid: String) -> Vec<(usize, String, String)> {
 
 pub async fn sync_article_in_folder(uuid: String) -> Vec<(usize, String, String)> {
   let connection = db::establish_connection();
-  let channels = feed::folder::get_channels_in_folders(connection, vec![uuid]);
+  let feeds = feed::folder::get_channels_in_folders(connection, vec![uuid]);
 
-  println!("{:?}", channels);
+  println!("{:?}", feeds);
   let mut res = vec![];
 
-  for channel in channels {
-    res.extend(sync_articles(channel.child_uuid).await);
+  for feed in feeds {
+    res.extend(sync_articles(feed.uuid).await);
   }
 
   res
@@ -745,6 +755,10 @@ mod tests {
 
   #[tokio::test]
   async fn test_sync_feed() {
-    sync_feed("1e2dbbcd-5f44-4811-a907-0b6320b3ee9e".to_string(), "feed".to_string()).await;
+    sync_feed(
+      "1e2dbbcd-5f44-4811-a907-0b6320b3ee9e".to_string(),
+      "feed".to_string(),
+    )
+    .await;
   }
 }
