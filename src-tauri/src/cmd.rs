@@ -189,26 +189,6 @@ pub async fn add_feed(url: String) -> (usize, String) {
 }
 
 #[command]
-pub fn get_articles(
-  uuid: String,
-  filter: feed::article::ArticleFilter,
-) -> feed::article::ArticleQueryResult {
-  println!("get articles from rust");
-  use std::time::Instant;
-
-  let before = Instant::now();
-  let res = feed::article::Article::get_article(feed::article::ArticleFilter {
-    channel_uuid: Some(uuid),
-    read_status: filter.read_status,
-    cursor: filter.cursor,
-    limit: filter.limit,
-  });
-
-  println!("Elapsed time: {:.2?}", before.elapsed());
-  res
-}
-
-#[command]
 pub async fn get_today_articles(filter: feed::article::ArticleFilter) -> feed::article::ArticleQueryResult {
   feed::article::Article::get_today_articles(filter)
 }

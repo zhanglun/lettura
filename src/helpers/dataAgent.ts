@@ -93,7 +93,6 @@ export const getArticleList = async (uuid: string | undefined, type: string | nu
 
   console.log(req);
   return req;
-  // return invoke("get_articles", { uuid, filter });
 };
 
 export const getTodayArticleList = async (filter: any) => {

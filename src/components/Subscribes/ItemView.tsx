@@ -57,7 +57,7 @@ export const ItemView: FC<CardProps> = ({
         navigate(
           `${RouteConfig.CHANNEL.replace(/:uuid/, feed.uuid)}?channelUuid=${
             feed.uuid
-          }&feedUrl=${feed.feed_url}`
+          }&feedUrl=${feed.feed_url}&type=${feed.item_type}`
         );
       }}
     >

@@ -11,6 +11,7 @@ pub struct Article {}
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ArticleFilter {
   pub channel_uuid: Option<String>,
+  pub item_type: Option<String>,
   pub read_status: Option<i32>,
   pub cursor: Option<i32>,
   pub limit: Option<i32>,
@@ -70,19 +71,34 @@ impl Article {
     let mut limit = 12;
 
     if let Some(channel_uuid) = filter.channel_uuid {
-      let relations = schema::feed_metas::dsl::feed_metas
-        .filter(schema::feed_metas::uuid.eq(&channel_uuid))
-        .load::<models::FeedMeta>(&mut connection)
-        .expect("Expect find channel");
+      let mut relations = vec![];
+
+      if let Some(item_type) = filter.item_type {
+        if item_type == String::from("folder") {
+          relations = schema::feed_metas::dsl::feed_metas
+          .filter(schema::feed_metas::folder_uuid.eq(&channel_uuid))
+          .load::<models::FeedMeta>(&mut connection)
+          .expect("Expect find channel");
+          } else {
+          relations = schema::feed_metas::dsl::feed_metas
+          .filter(schema::feed_metas::uuid.eq(&channel_uuid))
+          .load::<models::FeedMeta>(&mut connection)
+          .expect("Expect find channel");
+        }
+      }
+      // let relations = schema::feed_metas::dsl::feed_metas
+      //   .filter(schema::feed_metas::uuid.eq(&channel_uuid))
+      //   .load::<models::FeedMeta>(&mut connection)
+      //   .expect("Expect find channel");
       let mut channel_uuids: Vec<String> = vec![];
+
+      println!("relations {:?}", relations);
 
       if relations.len() > 0 {
         for relation in relations {
-          if relation.uuid == channel_uuid {
-            let uuid = String::from(relation.uuid);
+          let uuid = String::from(relation.uuid);
 
-            channel_uuids.push(uuid.clone());
-          }
+          channel_uuids.push(uuid.clone());
         }
       } else {
         channel_uuids.push(channel_uuid.clone());
@@ -343,12 +359,10 @@ impl Article {
 
   pub fn mark_all_as_read() -> usize {
     let mut connection = establish_connection();
-    let result = diesel::update(
-      schema::articles::dsl::articles
-        .filter(schema::articles::read_status.eq(1)),
-    )
-    .set(schema::articles::read_status.eq(2))
-    .execute(&mut connection);
+    let result =
+      diesel::update(schema::articles::dsl::articles.filter(schema::articles::read_status.eq(1)))
+        .set(schema::articles::read_status.eq(2))
+        .execute(&mut connection);
 
     match result {
       Ok(r) => r,
