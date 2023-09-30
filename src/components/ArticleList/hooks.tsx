@@ -8,7 +8,7 @@ function throttle(fn: any, wait: number) {
   let previous = 0;
   let timer: ReturnType<typeof setTimeout>;
 
-  return function (...args: any) {
+  return function(...args: any) {
     if (Date.now() - previous > wait) {
       clearTimeout(timer);
 
@@ -24,8 +24,8 @@ function throttle(fn: any, wait: number) {
   };
 }
 
-export const useArticleListHook = (props: { feedUuid: string | null }) => {
-  const { feedUuid } = props;
+export const useArticleListHook = (props: { feedUuid: string | null, type: string | null }) => {
+  const { feedUuid, type } = props;
 
   const isToday = useMatch(RouteConfig.TODAY);
   const isAll = useMatch(RouteConfig.ALL);
@@ -60,7 +60,7 @@ export const useArticleListHook = (props: { feedUuid: string | null }) => {
     let fn = Promise.resolve();
 
     if (feedUuid) {
-      fn = store.getArticleList(feedUuid, filter);
+      fn = store.getArticleList(feedUuid, type, filter);
     } else if (isToday) {
       fn = store.getTodayArticleList(filter);
     } else if (isAll) {

@@ -175,6 +175,9 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
 
         if (item.children) {
           item.children = initUnreadCount(item.children, countCache);
+          item.children.forEach((child: FeedResItem) => {
+            child.folder_uuid = item.uuid;
+          });
         }
 
         return item;

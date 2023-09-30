@@ -75,17 +75,19 @@ export const importChannels = async (list: string[]) => {
   return invoke("import_channels", { list });
 };
 
-export const getArticleList = async (uuid: string | undefined, filter: any) => {
+export const getArticleList = async (uuid: string | undefined, type: string | null, filter: any) => {
   console.log("ppp: %o", {
     params: {
       uuid,
       ...filter,
+      type,
     },
   });
   const req = request.get("articles", {
     params: {
       channel_uuid: uuid,
       ...filter,
+      item_type: type
     },
   });
 

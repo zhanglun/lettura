@@ -1,12 +1,14 @@
 import update from "immutability-helper";
 import { useCallback, useEffect, useState } from "react";
+import type { CSSProperties } from "react";
 import { SubscribeItem } from "./SubscribeItem";
 import { useBearStore } from "@/stores";
 import { FeedResItem } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
 import { Folder } from "./Folder";
 import { ItemView } from "./ItemView";
-import { DragItem, DropItem } from "./ItemTypes";
+import { DragItem, DropItem, ItemTypes } from "./ItemTypes";
+import { useDrop } from "react-dnd";
 
 export interface ContainerState {
   feeds: FeedResItem[];
@@ -117,28 +119,35 @@ export const List = () => {
     [feeds]
   );
 
-  const renderFeed = (feed: FeedResItem, index: number, isActive: boolean, level: number) => {
-    return  <SubscribeItem
-    key={feed.uuid}
-    index={index}
-    uuid={feed.uuid}
-    text={feed.title}
-    feed={{ ...feed }}
-    isActive={isActive}
-    onMove={moveCard}
-    onDrop={() => onSubscribeItemDrop()}
-    onMoveIntoFolder={moveIntoFolder}
-  >
-    <ItemView
-      index={index}
-      id={feed.uuid}
-      level={level}
-      text={feed.title}
-      feed={{ ...feed }}
-      isActive={isActive}
-    />
-  </SubscribeItem>
-  }
+  const renderFeed = (
+    feed: FeedResItem,
+    index: number,
+    isActive: boolean,
+    level: number
+  ) => {
+    return (
+      <SubscribeItem
+        key={feed.uuid}
+        index={index}
+        uuid={feed.uuid}
+        text={feed.title}
+        feed={{ ...feed }}
+        isActive={isActive}
+        onMove={moveCard}
+        onDrop={() => onSubscribeItemDrop()}
+        onMoveIntoFolder={moveIntoFolder}
+      >
+        <ItemView
+          index={index}
+          id={feed.uuid}
+          level={level}
+          text={feed.title}
+          feed={{ ...feed }}
+          isActive={isActive}
+        />
+      </SubscribeItem>
+    );
+  };
 
   const renderCard = useCallback(
     (feed: FeedResItem, index: number) => {
@@ -160,17 +169,18 @@ export const List = () => {
           >
             <ItemView
               index={index}
-              id={feed.uuid}
+              uuid={feed.uuid}
               level={1}
               text={feed.title}
               feed={{ ...feed }}
               isActive={isActive}
             />
-            {feed.children && feed.children.map((child, idx) => {
-              const isActive = store?.feed?.uuid === child.uuid;
+            {feed.children &&
+              feed.children.map((child, idx) => {
+                const isActive = store?.feed?.uuid === child.uuid;
 
-              return renderFeed(child, idx, isActive, 2);
-            })}
+                return renderFeed(child, idx, isActive, 2);
+              })}
           </Folder>
         );
       }
@@ -178,9 +188,42 @@ export const List = () => {
     [feeds, store.feed]
   );
 
+  function getStyle(backgroundColor: string): CSSProperties {
+    return {
+      backgroundColor,
+    };
+  }
+
+  const [{ isOver, isOverCurrent }, drop] = useDrop(
+    () => ({
+      accept: [ItemTypes.BOX, ItemTypes.CARD],
+      drop(_item: unknown, monitor) {
+        const didDrop = monitor.didDrop()
+        if (didDrop) {
+
+        }
+      },
+      collect: (monitor) => ({
+        isOver: monitor.isOver(),
+        isOverCurrent: monitor.isOver({ shallow: true }),
+      }),
+    }),
+    [],
+  )
+
+  let backgroundColor = 'rgba(0, 0, 0, .5)'
+
+  if (isOverCurrent || isOver) {
+    backgroundColor = 'darkgreen'
+  }
+
   useEffect(() => {
     setFeeds([...store.feedList]);
   }, [store.feedList]);
 
-  return <div className="">{feeds.map((feed, i) => renderCard(feed, i))}</div>;
+  return (
+    <div ref={drop} style={getStyle(backgroundColor)}>
+      <div className="">{feeds.map((feed, i) => renderCard(feed, i))}</div>;
+    </div>
+  );
 };

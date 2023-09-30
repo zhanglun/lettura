@@ -21,7 +21,7 @@ export interface ArticleListRefType {
 }
 
 export const ArticleList = (props: ArticleListProps): JSX.Element => {
-  const { feedUuid } = props;
+  const { feedUuid, type } = props;
   const store = useBearStore((state) => ({
     currentFilter: state.currentFilter,
     setArticleList: state.setArticleList,
@@ -30,6 +30,7 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
 
   const { listRef, loadRef, loading, hasMore } = useArticleListHook({
     feedUuid,
+    type,
   });
 
   useAutoScroll({ listRef });

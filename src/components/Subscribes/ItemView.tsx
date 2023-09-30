@@ -5,23 +5,28 @@ import { RouteConfig } from "@/config";
 import { FeedResItem } from "@/db";
 import { useBearStore } from "@/stores";
 import { getChannelFavicon } from "@/helpers/parseXML";
+import { ChevronDown, ChevronRight, Folder, FolderOpen } from "lucide-react";
 
 export interface CardProps {
-  id: any;
+  uuid: any;
   text: string;
   index: number;
   feed: FeedResItem;
   className?: String;
   arrow?: React.ReactNode;
   isActive: Boolean;
+  isExpanded: Boolean;
   level?: number;
+  toggleFolder: (uuid: string) => void;
 }
 
 export const ItemView: FC<CardProps> = ({
-  id,
+  uuid,
   text,
   feed,
   index,
+  isExpanded,
+  toggleFolder,
   ...props
 }) => {
   const { isActive, level, arrow } = props;
@@ -33,6 +38,13 @@ export const ItemView: FC<CardProps> = ({
     setFeedContextMenuTarget: state.setFeedContextMenuTarget,
     feedContextMenuTarget: state.feedContextMenuTarget,
   }));
+
+  const handleToggle = () => {
+    console.log("%c Line:42 🍷 handleToggle", "color:#b03734", feed.item_type);
+    if (feed.item_type === "folder") {
+      toggleFolder(uuid);
+    }
+  };
 
   const { unread = 0, link, logo } = feed;
   const ico = logo || getChannelFavicon(link);
@@ -57,14 +69,30 @@ export const ItemView: FC<CardProps> = ({
             "shadow-[inset_0_0_0_2px_var(--color-primary)]":
               store.feedContextMenuTarget &&
               store.feedContextMenuTarget.uuid === feed.uuid,
-            "pl-8": level === 2,
+            "pl-9": level === 2,
           }
         )}
         onContextMenu={() => {
           store.setFeedContextMenuTarget(feed);
         }}
       >
-        {arrow}
+        <div onClick={handleToggle}>
+          {feed.item_type === "folder" && (
+            <span className="flex items-center">
+              {isExpanded ? (
+                <>
+                  <ChevronDown size={16} className="mr-1" />
+                  <FolderOpen size={16} className="mr-2" />
+                </>
+              ) : (
+                <>
+                  <ChevronRight size={16} className="mr-1"/>
+                  <Folder size={16} className="mr-2" />
+                </>
+              )}
+            </span>
+          )}
+        </div>
         {feed.link && (
           <img
             src={ico}
