@@ -5,6 +5,7 @@ import { FeedResItem } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
 import { useBearStore } from "@/stores";
 import { DragItem, DropItem } from "./ItemTypes";
+import { findItemDeep } from "./utilities";
 
 interface TreeItem extends FeedResItem {
   isExpanded?: boolean;
@@ -61,17 +62,63 @@ const TreeView = () => {
 
   const hoverItem = useCallback(
     (
-      [dragIndex, dragItem]: [dragIndex: number, dragItem: DragItem],
-      [hoverIndex, dropResult]: [hoverIndex: number, dropResult: DropItem]
+      [dragIndex, dragUuid, dragItem]: [
+        dragIndex: number,
+        uuid: string,
+        dragItem: DragItem
+      ],
+      [hoverIndex, hoverUuid, dropResult]: [
+        hoverIndex: number,
+        uuid: string,
+        dropResult: DropItem
+      ]
     ) => {
-      setTreeData((prevCards: FeedResItem[]) =>
-        update(prevCards, {
-          $splice: [
-            [dragIndex, 1],
-            [hoverIndex, 0, prevCards[dragIndex] as FeedResItem],
-          ],
-        })
-      );
+      console.log("%c Line:65 🥪 dragIndex", "color:#ffdd4d", dragIndex);
+      console.log("%c Line:65 🍿 dragItem", "color:#ea7e5c", dragItem);
+      console.log("%c Line:67 🍔 hoverIndex", "color:#93c0a4", hoverIndex);
+      console.log("%c Line:67 🍩 dropResult", "color:#4fff4B", dropResult);
+
+      const hoverItem = findItemDeep(treeData, hoverUuid);
+
+      if (hoverItem?.folder_uuid) {
+        const folderIndex = treeData.findIndex(
+          (item) => item.uuid === hoverItem.folder_uuid
+        );
+        const folder = treeData[folderIndex];
+
+        console.log("%c Line:78 🍪 folder", "color:#93c0a4", folder);
+        console.log("%c Line:78 🌰 folderIndex", "color:#ed9ec7", folderIndex);
+
+        const newfolder = update(folder, {
+          children: {
+            $splice: [
+              // [dragIndex, 1],
+              [hoverIndex, 0, dragItem as FeedResItem],
+            ],
+          },
+        });
+
+        console.log("%c Line:83 🍻 newfolder", "color:#fca650", newfolder);
+        setTreeData((prevCards: FeedResItem[]) =>
+          update(prevCards, {
+            $splice: [
+              [dragIndex, 1],
+              [folderIndex, 1, newfolder],
+            ],
+          })
+        );
+      }
+
+      console.log("%c Line:75 🥛 hoverItem", "color:#ea7e5c", hoverItem);
+
+      // setTreeData((prevCards: FeedResItem[]) =>
+      //   update(prevCards, {
+      //     $splice: [
+      //       [dragIndex, 1],
+      //       [hoverIndex, 0, prevCards[dragIndex] as FeedResItem],
+      //     ],
+      //   })
+      // );
     },
     [treeData]
   );
@@ -112,7 +159,10 @@ const TreeView = () => {
       // Remove dragItem from its original parent
       const removeItem = (items: FeedResItem[]) => {
         for (const item of items) {
-          if (item.uuid === dragItem?.uuid && item.folder_uuid === dragItem?.folder_uuid) {
+          if (
+            item.uuid === dragItem?.uuid &&
+            item.folder_uuid === dragItem?.folder_uuid
+          ) {
             item.folder_uuid = null;
             break;
           } else if (item.children) {
@@ -121,7 +171,11 @@ const TreeView = () => {
         }
       };
 
-      console.log("%c Line:125 🥪 updatedTreeData", "color:#6ec1c2", updatedTreeData);
+      console.log(
+        "%c Line:125 🥪 updatedTreeData",
+        "color:#6ec1c2",
+        updatedTreeData
+      );
 
       removeItem(updatedTreeData);
 
@@ -141,7 +195,7 @@ const TreeView = () => {
         }
       };
 
-      if (hoverItem.item_type === 'folder' && !hoverItem.children) {
+      if (hoverItem.item_type === "folder" && !hoverItem.children) {
         hoverItem.children = [];
       }
 

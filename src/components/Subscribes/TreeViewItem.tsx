@@ -30,8 +30,8 @@ export interface CardProps {
   ) => void; // 修改moveItem函数签名
   toggleFolder: (uuid: string) => void;
   onHover: (
-    a: [dragIndex: number, dragItem: DragItem],
-    b: [hoverIndex: number, dropResult: DropItem]
+    a: [dragIndex: number, uuid: string, dragItem: DragItem],
+    b: [hoverIndex: number, uuid: string, dropResult: DropItem]
   ) => void;
   onDrop: () => void;
   onMoveIntoFolder: (dragItem: DragItem, dropResult: DropItem) => void;
@@ -69,8 +69,7 @@ export const TreeViewItem: FC<CardProps> = ({
 
       if (item.uuid && dropResult?.item_type === "folder") {
         console.log(
-          `You dropped ${item.title} into ${
-            dropResult.title
+          `You dropped ${item.title} into ${dropResult.title
           }! ${monitor.didDrop()}`
         );
         // onMoveIntoFolder(item, dropResult);
@@ -103,10 +102,11 @@ export const TreeViewItem: FC<CardProps> = ({
         return;
       }
 
-      const dragItemId = item.uuid;
-      const hoverItemId = uuid;
+      const dragIndex = item.index
+      const hoverIndex = index
+      const hoverUuid = uuid
 
-      if (dragItemId === hoverItemId) {
+      if (dragIndex === hoverIndex) {
         return;
       }
 
@@ -128,48 +128,36 @@ export const TreeViewItem: FC<CardProps> = ({
       // When dragging upwards, only move when the cursor is above 50%
 
       // // Dragging downwards
-      // if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
-      //   return;
-      // }
-
-      // // Dragging upwards
-      // if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
-      //   return;
-      // }
-
-      if (dragItemId === hoverItemId || dragItemId === folder_uuid) {
+      if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
         return;
       }
 
-      if (feed.item_type === 'folder' && hoverClientY < hoverMiddleY) {
-        moveItem(dragItemId, hoverItemId, folder_uuid);
-        item.folder_uuid = hoverItemId;
-      } else if (feed.item_type === 'folder' && hoverClientY > hoverMiddleY) {
-        moveItem(dragItemId, hoverItemId, uuid);
-        item.folder_uuid = uuid;
+      // // Dragging upwards
+      if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
+        return;
       }
 
-      // // Time to actually perform the action
-      // onHover(
-      //   [dragIndex, item],
-      //   [hoverIndex, monitor.getDropResult() as DropItem]
-      // );
+      // Time to actually perform the action
+      onHover(
+        [dragIndex, item.uuid, item],
+        [hoverIndex, hoverUuid, monitor.getDropResult() as DropItem]
+      );
 
-      // // Note: we're mutating the monitor item here!
-      // // Generally it's better to avoid mutations,
-      // // but it's good here for the sake of performance
-      // // to avoid expensive index searches.
-      // item.index = hoverIndex;
+      // Note: we're mutating the monitor item here!
+      // Generally it's better to avoid mutations,
+      // but it's good here for the sake of performance
+      // to avoid expensive index searches.
+      item.index = hoverIndex;
     },
     drop: (item: DragItem, monitor: DropTargetMonitor) => {
-      console.log("%c Line:115 🥑 item", "color:#93c0a4", item);
-      console.log("%c Line:173 🍷 uuid", "color:#f5ce50", uuid);
+      // console.log("%c Line:115 🥑 item", "color:#93c0a4", item);
+      // console.log("%c Line:173 🍷 uuid", "color:#f5ce50", uuid);
 
       if (item.uuid !== uuid) {
-        moveItem(item.uuid, uuid, folder_uuid); // 传递parentId属性
+        // moveItem(item.uuid, uuid, folder_uuid); // 传递parentId属性
       }
 
-      return item;
+      return { ...item, index };
     },
   });
 
