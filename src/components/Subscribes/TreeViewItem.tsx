@@ -80,7 +80,7 @@ export const TreeViewItem: FC<CardProps> = ({
     },
   });
 
-  const [{ handlerId }, drop] = useDrop<
+  const [{ handlerId, isOver, canDrop }, drop] = useDrop<
     DragItem,
     void,
     { handlerId: Identifier | null }
@@ -97,14 +97,20 @@ export const TreeViewItem: FC<CardProps> = ({
       return dragItem.uuid !== uuid;
     },
     hover(item: DragItem & Partial<FeedResItem>, monitor) {
-      console.log("hover")
+      console.log("🚀 ~ file: TreeViewItem.tsx:100 ~ hover ~ monitor:", monitor)
+      console.log("🚀 ~ file: TreeViewItem.tsx:100 ~ hover ~ item:", item)
+      console.log("🚀 ~ file: TreeViewItem.tsx:100 ~ hover ~ feed:", feed)
+      console.log("hover ==================>>>>>>>>")
       if (!ref.current) {
+        console.log("🚀 ~ file: TreeViewItem.tsx:105 ~ hover ~ !ref.current:", !ref.current)
         return;
       }
 
       const dragIndex = item.index
       const hoverIndex = index
       const hoverUuid = uuid
+
+      console.log("🚀 ~ file: TreeViewItem.tsx:113 ~ hover ~ dragIndex === hoverIndex:", dragIndex, hoverIndex)
 
       if (dragIndex === hoverIndex) {
         return;
@@ -127,12 +133,12 @@ export const TreeViewItem: FC<CardProps> = ({
       // When dragging downwards, only move when the cursor is below 50%
       // When dragging upwards, only move when the cursor is above 50%
 
-      // // Dragging downwards
+      // Dragging downwards
       if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
         return;
       }
 
-      // // Dragging upwards
+      // Dragging upwards
       if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
         return;
       }
@@ -162,12 +168,20 @@ export const TreeViewItem: FC<CardProps> = ({
   });
 
   const opacity = isDragging ? 0 : 1;
+  const isA = isOver && canDrop
+
+  let backgroundColor = 'inherit'
+  if (isA && feed.item_type === 'folder') {
+    backgroundColor = 'darkgreen'
+  } else if (canDrop && feed.item_type === 'folder') {
+    backgroundColor = 'darkkhaki'
+  }
 
   drag(drop(ref));
   // drag(drop(isExpanded ? <div>{children}</div> : null));
 
   return (
-    <div ref={ref} style={{ ...style, opacity }} data-handler-uuid={handlerId}>
+    <div ref={ref} style={{ ...style, opacity, backgroundColor }} data-handler-uuid={handlerId}>
       <ItemView
         index={index}
         uuid={feed.uuid}

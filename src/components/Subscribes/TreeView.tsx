@@ -125,6 +125,7 @@ const TreeView = () => {
           update(prevCards, {
             $splice: [
               [dragIndex, 1],
+              [folderIndex, 1],
               [folderIndex, 1, newFolder],
             ],
           })
