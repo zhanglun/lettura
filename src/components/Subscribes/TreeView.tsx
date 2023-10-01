@@ -89,36 +89,60 @@ const TreeView = () => {
         console.log("%c Line:78 🍪 folder", "color:#93c0a4", folder);
         console.log("%c Line:78 🌰 folderIndex", "color:#ed9ec7", folderIndex);
 
-        const newfolder = update(folder, {
-          children: {
-            $splice: [
-              // [dragIndex, 1],
-              [hoverIndex, 0, dragItem as FeedResItem],
-            ],
-          },
-        });
+        const indexInFolder = folder.children.findIndex(
+          (item) => item.uuid === dragUuid
+        );
+        let newFolder = { ...folder };
 
-        console.log("%c Line:83 🍻 newfolder", "color:#fca650", newfolder);
+        if (indexInFolder > -1) {
+          console.log(
+            "%c Line:95 🍅 indexInFolder",
+            "color:#7f2b82",
+            indexInFolder
+          );
+          console.log("已经存在，需要重新计算");
+          newFolder = update(folder, {
+            children: {
+              $splice: [
+                [indexInFolder, 1],
+                [hoverIndex, 0, dragItem as FeedResItem],
+              ],
+            },
+          });
+        } else {
+          console.log("bu存在，直接插入");
+          newFolder = update(folder, {
+            children: {
+              $splice: [
+                // [dragIndex, 1],
+                [hoverIndex, 0, dragItem as FeedResItem],
+              ],
+            },
+          });
+        }
+
         setTreeData((prevCards: FeedResItem[]) =>
           update(prevCards, {
             $splice: [
               [dragIndex, 1],
-              [folderIndex, 1, newfolder],
+              [folderIndex, 1, newFolder],
+            ],
+          })
+        );
+      } else {
+        console.log("hover no folder");
+
+        setTreeData((prevCards: FeedResItem[]) =>
+          update(prevCards, {
+            $splice: [
+              [dragIndex, 1],
+              [hoverIndex, 0, prevCards[dragIndex] as FeedResItem],
             ],
           })
         );
       }
 
       console.log("%c Line:75 🥛 hoverItem", "color:#ea7e5c", hoverItem);
-
-      // setTreeData((prevCards: FeedResItem[]) =>
-      //   update(prevCards, {
-      //     $splice: [
-      //       [dragIndex, 1],
-      //       [hoverIndex, 0, prevCards[dragIndex] as FeedResItem],
-      //     ],
-      //   })
-      // );
     },
     [treeData]
   );
