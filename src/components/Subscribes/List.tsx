@@ -9,6 +9,7 @@ import { Folder } from "./Folder";
 import { ItemView } from "./ItemView";
 import { DragItem, DropItem, ItemTypes } from "./ItemTypes";
 import { useDrop } from "react-dnd";
+import { findItemDeep } from "./utilities";
 
 export interface ContainerState {
   feeds: FeedResItem[];
@@ -24,17 +25,78 @@ export const List = () => {
 
   const moveCard = useCallback(
     (
-      [dragIndex, dragItem]: [dragIndex: number, dragItem: DragItem],
-      [hoverIndex, dropResult]: [hoverIndex: number, dropResult: DropItem]
+      [dragIndex, dragUuid, dragItem]: [
+        dragIndex: number,
+        uuid: string,
+        dragItem: DragItem
+      ],
+      [hoverIndex, hoverUuid, dropResult]: [
+        hoverIndex: number,
+        uuid: string,
+        dropResult: DropItem
+      ]
     ) => {
-      setFeeds((prevCards: FeedResItem[]) =>
-        update(prevCards, {
-          $splice: [
-            [dragIndex, 1],
-            [hoverIndex, 0, prevCards[dragIndex] as FeedResItem],
-          ],
-        })
-      );
+      const hoverItem = findItemDeep(feeds, hoverUuid);
+      console.log("🚀 ~ file: List.tsx:32 ~ List ~ hoverItem:", hoverItem);
+
+      if (hoverItem?.folder_uuid) {
+        const folderIndex = feeds.findIndex(
+          (item) => item.uuid === hoverItem.folder_uuid
+        );
+        const folder = feeds[folderIndex];
+
+        console.log("%c Line:78 🍪 folder", "color:#93c0a4", folder);
+        console.log("%c Line:78 🌰 folderIndex", "color:#ed9ec7", folderIndex);
+
+        const indexInFolder = folder.children.findIndex(
+          (item) => item.uuid === dragUuid
+        );
+        let newFolder = { ...folder };
+
+        if (indexInFolder > -1) {
+          console.log(
+            "%c Line:95 🍅 indexInFolder",
+            "color:#7f2b82",
+            indexInFolder
+          );
+          console.log("已经存在，需要重新计算");
+          // newFolder = update(folder, {
+          //   children: {
+          //     $splice: [
+          //       [indexInFolder, 1],
+          //       [hoverIndex, 0, dragItem as FeedResItem],
+          //     ],
+          //   },
+          // });
+        } else {
+          console.log("bu存在，直接插入");
+          // newFolder = update(folder, {
+          //   children: {
+          //     $splice: [
+          //       // [dragIndex, 1],
+          //       [hoverIndex, 0, dragItem as FeedResItem],
+          //     ],
+          //   },
+          // });
+        }
+      } else if (dragItem.folder_uuid) {
+
+      }
+
+      // TODO:
+      // 1. feed to feed
+      // 2. feed to folder
+      // 3. folder to folder
+      // 4. folder to feed
+
+      // setFeeds((prevCards: FeedResItem[]) =>
+      //   update(prevCards, {
+      //     $splice: [
+      //       [dragIndex, 1],
+      //       [hoverIndex, 0, prevCards[dragIndex] as FeedResItem],
+      //     ],
+      //   })
+      // );
     },
     [feeds]
   );
@@ -139,7 +201,7 @@ export const List = () => {
       >
         <ItemView
           index={index}
-          id={feed.uuid}
+          uuid={feed.uuid}
           level={level}
           text={feed.title}
           feed={{ ...feed }}
@@ -198,9 +260,8 @@ export const List = () => {
     () => ({
       accept: [ItemTypes.BOX, ItemTypes.CARD],
       drop(_item: unknown, monitor) {
-        const didDrop = monitor.didDrop()
+        const didDrop = monitor.didDrop();
         if (didDrop) {
-
         }
       },
       collect: (monitor) => ({
@@ -208,13 +269,13 @@ export const List = () => {
         isOverCurrent: monitor.isOver({ shallow: true }),
       }),
     }),
-    [],
-  )
+    []
+  );
 
-  let backgroundColor = 'rgba(0, 0, 0, .5)'
+  let backgroundColor = "rgba(0, 0, 0, .5)";
 
   if (isOverCurrent || isOver) {
-    backgroundColor = 'darkgreen'
+    backgroundColor = "darkgreen";
   }
 
   useEffect(() => {
@@ -222,7 +283,7 @@ export const List = () => {
   }, [store.feedList]);
 
   return (
-    <div ref={drop} style={getStyle(backgroundColor)}>
+    <div ref={drop}>
       <div className="">{feeds.map((feed, i) => renderCard(feed, i))}</div>;
     </div>
   );

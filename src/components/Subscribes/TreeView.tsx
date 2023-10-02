@@ -121,26 +121,26 @@ const TreeView = () => {
           });
         }
 
-        setTreeData((prevCards: FeedResItem[]) =>
-          update(prevCards, {
-            $splice: [
-              [dragIndex, 1],
-              [folderIndex, 1],
-              [folderIndex, 1, newFolder],
-            ],
-          })
-        );
+        // setTreeData((prevCards: FeedResItem[]) =>
+        //   update(prevCards, {
+        //     $splice: [
+        //       [dragIndex, 1],
+        //       [folderIndex, 1],
+        //       [folderIndex, 1, newFolder],
+        //     ],
+        //   })
+        // );
       } else {
         console.log("hover no folder");
 
-        setTreeData((prevCards: FeedResItem[]) =>
-          update(prevCards, {
-            $splice: [
-              [dragIndex, 1],
-              [hoverIndex, 0, prevCards[dragIndex] as FeedResItem],
-            ],
-          })
-        );
+        // setTreeData((prevCards: FeedResItem[]) =>
+        //   update(prevCards, {
+        //     $splice: [
+        //       [dragIndex, 1],
+        //       [hoverIndex, 0, prevCards[dragIndex] as FeedResItem],
+        //     ],
+        //   })
+        // );
       }
 
       console.log("%c Line:75 🥛 hoverItem", "color:#ea7e5c", hoverItem);

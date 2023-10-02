@@ -1,11 +1,15 @@
 import type { FC } from "react";
-import { useRef } from "react";
-import { DropTargetMonitor, useDrag, useDrop } from "react-dnd";
+import { useEffect, useRef } from "react";
+import {
+  DropTargetMonitor,
+  useDrag,
+  useDrop,
+} from "react-dnd";
 import type { Identifier, XYCoord } from "dnd-core";
 import { FeedResItem } from "@/db";
 import { DragItem, DropItem, ItemTypes } from "./ItemTypes";
-import clsx from "clsx";
 import { ItemView } from "./ItemView";
+import { getEmptyImage } from "react-dnd-html5-backend";
 
 const style = {
   cursor: "move",
@@ -54,7 +58,7 @@ export const TreeViewItem: FC<CardProps> = ({
 }) => {
   const ref = useRef<HTMLDivElement>(null);
 
-  const [{ isDragging }, drag] = useDrag({
+  const [{ isDragging }, drag, preview] = useDrag({
     type: ItemTypes.CARD,
     item: () => {
       return { index, ...feed, folder_uuid };
@@ -65,11 +69,13 @@ export const TreeViewItem: FC<CardProps> = ({
     end(item, monitor) {
       const dropResult = monitor.getDropResult<DropItem>();
       console.log("%c Line:128 🥃 item", "color:#93c0a4", item);
+      console.log("🚀 ~ file: TreeViewItem.tsx:69 ~ end ~ feed:", feed);
       console.log("%c Line:125 🥥 dropResult", "color:#7f2b82", dropResult);
 
       if (item.uuid && dropResult?.item_type === "folder") {
         console.log(
-          `You dropped ${item.title} into ${dropResult.title
+          `You dropped ${item.title} into ${
+            dropResult.title
           }! ${monitor.didDrop()}`
         );
         // onMoveIntoFolder(item, dropResult);
@@ -97,20 +103,24 @@ export const TreeViewItem: FC<CardProps> = ({
       return dragItem.uuid !== uuid;
     },
     hover(item: DragItem & Partial<FeedResItem>, monitor) {
-      console.log("🚀 ~ file: TreeViewItem.tsx:100 ~ hover ~ monitor:", monitor)
-      console.log("🚀 ~ file: TreeViewItem.tsx:100 ~ hover ~ item:", item)
-      console.log("🚀 ~ file: TreeViewItem.tsx:100 ~ hover ~ feed:", feed)
-      console.log("hover ==================>>>>>>>>")
+      console.log("hover ==================>>>>>>>>");
       if (!ref.current) {
-        console.log("🚀 ~ file: TreeViewItem.tsx:105 ~ hover ~ !ref.current:", !ref.current)
+        console.log(
+          "🚀 ~ file: TreeViewItem.tsx:105 ~ hover ~ !ref.current:",
+          !ref.current
+        );
         return;
       }
 
-      const dragIndex = item.index
-      const hoverIndex = index
-      const hoverUuid = uuid
+      const dragIndex = item.index;
+      const hoverIndex = index;
+      const hoverUuid = uuid;
 
-      console.log("🚀 ~ file: TreeViewItem.tsx:113 ~ hover ~ dragIndex === hoverIndex:", dragIndex, hoverIndex)
+      console.log(
+        "🚀 ~ file: TreeViewItem.tsx:113 ~ hover ~ dragIndex === hoverIndex:",
+        dragIndex,
+        hoverIndex
+      );
 
       if (dragIndex === hoverIndex) {
         return;
@@ -156,7 +166,11 @@ export const TreeViewItem: FC<CardProps> = ({
       item.index = hoverIndex;
     },
     drop: (item: DragItem, monitor: DropTargetMonitor) => {
-      // console.log("%c Line:115 🥑 item", "color:#93c0a4", item);
+      console.log("%c Line:115 🥑 item", "color:#93c0a4", item);
+      console.log(
+        "🚀 ~ file: TreeViewItem.tsx:159 ~ monitor:",
+        monitor.getDropResult()
+      );
       // console.log("%c Line:173 🍷 uuid", "color:#f5ce50", uuid);
 
       if (item.uuid !== uuid) {
@@ -167,32 +181,42 @@ export const TreeViewItem: FC<CardProps> = ({
     },
   });
 
-  const opacity = isDragging ? 0 : 1;
-  const isA = isOver && canDrop
+  const opacity = isDragging ? 0.3 : 1;
+  const isA = isOver && canDrop;
 
-  let backgroundColor = 'inherit'
-  if (isA && feed.item_type === 'folder') {
-    backgroundColor = 'darkgreen'
-  } else if (canDrop && feed.item_type === 'folder') {
-    backgroundColor = 'darkkhaki'
+  let backgroundColor = "inherit";
+  if (isA) {
+    backgroundColor = "darkgreen";
+  } else if (canDrop) {
+    // backgroundColor = 'darkkhaki'
   }
 
   drag(drop(ref));
   // drag(drop(isExpanded ? <div>{children}</div> : null));
 
+  useEffect(() => {
+    preview(getEmptyImage(), { captureDraggingState: true })
+  }, [])
+
   return (
-    <div ref={ref} style={{ ...style, opacity, backgroundColor }} data-handler-uuid={handlerId}>
-      <ItemView
-        index={index}
-        uuid={feed.uuid}
-        level={level}
-        text={feed.title}
-        feed={{ ...feed }}
-        isActive={isActive}
-        isExpanded={isExpanded}
-        toggleFolder={toggleFolder}
-      />
-      {props.children}
-    </div>
+    <>
+      <div
+        ref={ref}
+        style={{ ...style, opacity, backgroundColor }}
+        data-handler-uuid={handlerId}
+      >
+        <ItemView
+          index={index}
+          uuid={feed.uuid}
+          level={level}
+          text={feed.title}
+          feed={{ ...feed }}
+          isActive={isActive}
+          isExpanded={isExpanded}
+          toggleFolder={toggleFolder}
+        />
+        {props.children}
+      </div>
+    </>
   );
 };

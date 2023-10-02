@@ -87,9 +87,9 @@ export const Folder: FC<DustbinProps> = memo(function Dustbin({
 
   let backgroundColor = 'inherit'
   if (isActive) {
-    backgroundColor = 'darkgreen'
+    // backgroundColor = 'darkgreen'
   } else if (canDrop) {
-    backgroundColor = 'darkkhaki'
+    // backgroundColor = 'darkkhaki'
   }
 
   const [{ isDragging }, drag] = useDrag({

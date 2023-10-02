@@ -91,8 +91,8 @@ export const SubscribeItem: FC<CardProps> = ({
 
       // Time to actually perform the action
       onMove(
-        [dragIndex, item],
-        [hoverIndex, monitor.getDropResult() as DropItem]
+        [dragIndex, item.uuid, item],
+        [hoverIndex, uuid, monitor.getDropResult() as DropItem]
       );
 
       // Note: we're mutating the monitor item here!
@@ -127,7 +127,7 @@ export const SubscribeItem: FC<CardProps> = ({
     },
   });
 
-  const opacity = isDragging ? 0 : 1;
+  const opacity = isDragging ? 0.5 : 1;
 
   drag(drop(ref));
 
