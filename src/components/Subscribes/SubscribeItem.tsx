@@ -120,7 +120,7 @@ export const SubscribeItem: FC<CardProps> = ({
             dropResult.title
           }! ${monitor.didDrop()}`
         );
-        onMoveIntoFolder(item, dropResult);
+        // onMoveIntoFolder(item, dropResult);
       } else if (monitor.didDrop()) {
         props.onDrop();
       }

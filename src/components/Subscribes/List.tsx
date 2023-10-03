@@ -37,9 +37,19 @@ export const List = () => {
       ]
     ) => {
       const hoverItem = findItemDeep(feeds, hoverUuid);
+      console.log("🚀 ~ file: List.tsx:39 ~ List ~ dragItem:", dragItem);
       console.log("🚀 ~ file: List.tsx:32 ~ List ~ hoverItem:", hoverItem);
 
-      if (hoverItem?.folder_uuid) {
+      if (!hoverItem?.folder_uuid && !dragItem.folder_uuid) {
+        setFeeds((prevCards: FeedResItem[]) =>
+          update(prevCards, {
+            $splice: [
+              [dragIndex, 1],
+              [hoverIndex, 0, prevCards[dragIndex] as FeedResItem],
+            ],
+          })
+        );
+      } else if (hoverItem?.folder_uuid) {
         const folderIndex = feeds.findIndex(
           (item) => item.uuid === hoverItem.folder_uuid
         );
@@ -51,7 +61,11 @@ export const List = () => {
         const indexInFolder = folder.children.findIndex(
           (item) => item.uuid === dragUuid
         );
+
         let newFolder = { ...folder };
+
+        // dragItem.index = folderIndex;
+        dragItem.folder_uuid = folder.uuid;
 
         if (indexInFolder > -1) {
           console.log(
@@ -60,43 +74,101 @@ export const List = () => {
             indexInFolder
           );
           console.log("已经存在，需要重新计算");
-          // newFolder = update(folder, {
-          //   children: {
-          //     $splice: [
-          //       [indexInFolder, 1],
-          //       [hoverIndex, 0, dragItem as FeedResItem],
-          //     ],
-          //   },
-          // });
+          console.log(
+            "🚀 ~ file: List.tsx:121 ~ List ~ hoverIndex:",
+            hoverIndex
+          );
+          newFolder = update(folder, {
+            children: {
+              $splice: [
+                [indexInFolder, 1],
+                [hoverIndex, 0, dragItem as FeedResItem],
+              ],
+            },
+          });
+
+          setFeeds((prev: FeedResItem[]) =>
+            update(prev, {
+              $splice: [[folderIndex, 1, newFolder as FeedResItem]],
+            })
+          );
+
+          console.log("🚀 ~ file: List.tsx:119 ~ List ~ newFolder:", newFolder);
         } else {
-          console.log("bu存在，直接插入");
-          // newFolder = update(folder, {
-          //   children: {
-          //     $splice: [
-          //       // [dragIndex, 1],
-          //       [hoverIndex, 0, dragItem as FeedResItem],
-          //     ],
-          //   },
-          // });
+          console.log(
+            "bu存在，直接插入 dragIndex: %s dragItemIndex: %s, hoverIndex: %s",
+            dragIndex,
+            dragItem.index,
+            hoverIndex
+          );
+
+          newFolder = update(folder, {
+            children: {
+              $splice: [[hoverIndex, 0, dragItem as FeedResItem]],
+            },
+          });
+
+          setFeeds((prev: FeedResItem[]) => {
+            let list = [...prev];
+            let folderIdx: number = folderIndex;
+            let removeIdx: number = dragIndex;
+
+            list.forEach((_, idx) => {
+
+              if (_.uuid === dragUuid) {
+                removeIdx = idx;
+              }
+            });
+
+            if (removeIdx > -1) {
+              list.splice(removeIdx, 1);
+            }
+
+            list.forEach((_, idx) => {
+              if (_.uuid === folder.uuid) {
+                folderIdx = idx;
+              }
+            });
+
+            if (folderIdx > -1) {
+              list[folderIdx] = newFolder;
+            }
+
+            return list;
+          });
         }
-      } else if (dragItem.folder_uuid) {
-
       }
+      if (!hoverItem?.folder_uuid && dragItem.folder_uuid) {
+        const folderIndex = feeds.findIndex(
+          (item) => item.uuid === dragItem.folder_uuid
+        );
+        const folder = feeds[folderIndex];
 
-      // TODO:
-      // 1. feed to feed
+        let newFolder = { ...folder };
+
+        const indexInFolder = folder.children.findIndex(
+          (item) => item.uuid === dragUuid
+        );
+        newFolder = update(folder, {
+          children: {
+            $splice: [[indexInFolder, 1]],
+          },
+        });
+
+        setFeeds((prev: FeedResItem[]) =>
+          update(prev, {
+            $splice: [
+              [dragIndex, 1],
+              [hoverIndex, 0, dragItem],
+              [folderIndex, 1],
+              [folderIndex, 0, newFolder as FeedResItem],
+            ],
+          })
+        );
+      }
       // 2. feed to folder
       // 3. folder to folder
       // 4. folder to feed
-
-      // setFeeds((prevCards: FeedResItem[]) =>
-      //   update(prevCards, {
-      //     $splice: [
-      //       [dragIndex, 1],
-      //       [hoverIndex, 0, prevCards[dragIndex] as FeedResItem],
-      //     ],
-      //   })
-      // );
     },
     [feeds]
   );
