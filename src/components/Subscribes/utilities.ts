@@ -133,16 +133,16 @@ export function findItemDeep(
   return undefined;
 }
 
-export function removeItem(items: TreeItems, id: UniqueIdentifier) {
+export function removeItem(items: FeedResItem[], uuid: string) {
   const newItems = [];
 
   for (const item of items) {
-    if (item.id === id) {
+    if (item.uuid === uuid) {
       continue;
     }
 
-    if (item.children.length) {
-      item.children = removeItem(item.children, id);
+    if (item.children && item.children.length) {
+      item.children = removeItem(item.children, uuid);
     }
 
     newItems.push(item);
