@@ -177,6 +177,7 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
           item.children = initUnreadCount(item.children, countCache);
           item.children.forEach((child: FeedResItem) => {
             child.folder_uuid = item.uuid;
+            item.unread += child.unread;
           });
         }
 
@@ -185,8 +186,10 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
     };
     return Promise.all([dataAgent.getFeeds(), dataAgent.getUnreadTotal()]).then(
       ([{ data: feedList }, unreadTotal]) => {
+        console.log("%c Line:188 🍡 unreadTotal", "color:#4fff4B", unreadTotal);
         console.log("%c Line:185 🍺 feedList", "color:#7f2b82", feedList);
         feedList = initUnreadCount(feedList, unreadTotal);
+        console.log("%c Line:191 🥐 feedList", "color:#2eafb0", feedList);
         set(() => ({
           feedList: feedList || [],
         }));
