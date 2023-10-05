@@ -4,7 +4,6 @@ import { useDrag, useDrop } from "react-dnd";
 import type { Identifier, XYCoord } from "dnd-core";
 import { FeedResItem } from "@/db";
 import { DragItem, DropItem, ItemTypes } from "./ItemTypes";
-import clsx from "clsx";
 
 const style = {
   cursor: "move",
@@ -21,11 +20,10 @@ export interface CardProps {
   isActive: Boolean;
   level?: number;
   onMove: (
-    a: [dragIndex: number, dragItem: DragItem],
-    b: [hoverIndex: number, dropResult: DropItem]
+    a: [dragIndex: number, uuid: string, dragItem: DragItem],
+    b: [hoverIndex: number, uuid: string, dropResult: DropItem]
   ) => void;
   onDrop: () => void;
-  onMoveIntoFolder: (dragItem: DragItem, dropResult: DropItem) => void;
 }
 
 export const SubscribeItem: FC<CardProps> = ({
@@ -35,7 +33,6 @@ export const SubscribeItem: FC<CardProps> = ({
   index,
   level,
   onMove,
-  onMoveIntoFolder,
   ...props
 }) => {
   const ref = useRef<HTMLDivElement>(null);
@@ -112,16 +109,7 @@ export const SubscribeItem: FC<CardProps> = ({
       isDragging: monitor.isDragging(),
     }),
     end(item, monitor) {
-      const dropResult = monitor.getDropResult<DropItem>();
-
-      if (item.uuid && dropResult?.item_type === "folder") {
-        console.log(
-          `You dropped ${item.title} into ${
-            dropResult.title
-          }! ${monitor.didDrop()}`
-        );
-        // onMoveIntoFolder(item, dropResult);
-      } else if (monitor.didDrop()) {
+      if (monitor.didDrop()) {
         props.onDrop();
       }
     },

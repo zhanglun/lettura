@@ -10,6 +10,7 @@ import { ItemView } from "./ItemView";
 import { DragItem, DropItem, ItemTypes } from "./ItemTypes";
 import { useDrop } from "react-dnd";
 import { findItemDeep, removeItem } from "./utilities";
+import { motion } from "framer-motion";
 
 export interface ContainerState {
   feeds: FeedResItem[];
@@ -23,7 +24,7 @@ export const List = () => {
   }));
   const [feeds, setFeeds] = useState<FeedResItem[]>([]);
 
-  const moveCard = useCallback(
+  const moveItem = useCallback(
     (
       [dragIndex, dragUuid, dragItem]: [
         dragIndex: number,
@@ -38,12 +39,18 @@ export const List = () => {
     ) => {
       const hoverItem = findItemDeep(feeds, hoverUuid);
       console.log("🚀 ~ file: List.tsx:39 ~ List ~ dragItem:", dragItem);
-      console.log("🚀 ~ file: List.tsx:39 ~ List ~ dragItem.folder_uuid:", dragItem.folder_uuid);
+      console.log(
+        "🚀 ~ file: List.tsx:39 ~ List ~ dragItem.folder_uuid:",
+        dragItem.folder_uuid
+      );
       console.log("🚀 ~ file: List.tsx:32 ~ List ~ hoverItem:", hoverItem);
-      console.log("🚀 ~ file: List.tsx:32 ~ List ~ hoverItem.folder_uuid:", hoverItem?.folder_uuid);
+      console.log(
+        "🚀 ~ file: List.tsx:32 ~ List ~ hoverItem.folder_uuid:",
+        hoverItem?.folder_uuid
+      );
 
       // when drag folder, just change position
-      if (dragItem.item_type === 'folder') {
+      if (dragItem.item_type === "folder") {
         setFeeds((prevCards: FeedResItem[]) =>
           update(prevCards, {
             $splice: [
@@ -84,7 +91,6 @@ export const List = () => {
               })
             );
           } else {
-            console.log('asdfasdfasdfsadf===>')
             newFolder = update(folder, {
               children: {
                 $splice: [[hoverIndex, 0, dragItem as FeedResItem]],
@@ -119,7 +125,8 @@ export const List = () => {
               return list;
             });
           }
-        } else if (!hoverItem?.folder_uuid) { // drag out from folder
+        } else if (!hoverItem?.folder_uuid) {
+          // drag out from folder
           if (dragItem.folder_uuid) {
             const folderIndex = feeds.findIndex(
               (item) => item.uuid === dragItem.folder_uuid
@@ -131,13 +138,14 @@ export const List = () => {
 
             dragItem.folder_uuid = "";
 
-            let newFolder = update({ ...folder }, {
-              children: {
-                $splice: [
-                  [indexInFolder, 1],
-                ]
-              },
-            });
+            let newFolder = update(
+              { ...folder },
+              {
+                children: {
+                  $splice: [[indexInFolder, 1]],
+                },
+              }
+            );
 
             setFeeds((prev: FeedResItem[]) => {
               let list = [...prev];
@@ -228,30 +236,18 @@ export const List = () => {
     [feeds]
   );
 
-  const moveIntoFolder = useCallback(
-    (dragItem: DragItem, dropItem: DropItem) => {
-      console.log("%c Line:114 🍷 feeds", "color:#ffdd4d", feeds);
+  const toggleFolder = (folderId: string) => {
+    const newTreeData = [...feeds];
+    const folder = findItemDeep(newTreeData, folderId);
 
-      dropItem.children.push(dragItem);
+    if (!folder || folder.item_type !== "folder") {
+      return;
+    }
 
-      if (dropItem.uuid === dragItem.uuid || dragItem.item_type === "folder") {
-        return dropItem;
-      }
+    folder.is_expanded = !folder.is_expanded;
 
-      const newlist = update(feeds, {
-        $splice: [[dragItem.index, 1]],
-        [dropItem.index]: {
-          $set: { ...dropItem },
-        },
-      });
-      console.log("%c Line:128 🍒 newlist", "color:#6ec1c2", newlist);
-
-      setFeeds(newlist);
-
-      requestUpdateOrder(newlist);
-    },
-    [feeds]
-  );
+    setFeeds([...newTreeData]);
+  };
 
   const renderFeed = (
     feed: FeedResItem,
@@ -267,9 +263,8 @@ export const List = () => {
         text={feed.title}
         feed={{ ...feed }}
         isActive={isActive}
-        onMove={moveCard}
+        onMove={moveItem}
         onDrop={() => onSubscribeItemDrop()}
-        onMoveIntoFolder={moveIntoFolder}
       >
         <ItemView
           index={index}
@@ -278,6 +273,8 @@ export const List = () => {
           text={feed.title}
           feed={{ ...feed }}
           isActive={isActive}
+          isExpanded={feed.is_expanded || false}
+          toggleFolder={toggleFolder}
         />
       </SubscribeItem>
     );
@@ -293,12 +290,13 @@ export const List = () => {
         return (
           <Folder
             index={index}
-            id={feed.uuid}
+            uuid={feed.uuid}
             feed={{ ...feed }}
+            isExpanded={feed.is_expanded || false}
             onDrop={(dragItem: DragItem) =>
               handleDropIntoFolder(index, dragItem, feed)
             }
-            onMove={moveCard}
+            onMove={moveItem}
             key={index}
           >
             <ItemView
@@ -308,13 +306,31 @@ export const List = () => {
               text={feed.title}
               feed={{ ...feed }}
               isActive={isActive}
+              isExpanded={feed.is_expanded || false}
+              toggleFolder={toggleFolder}
             />
-            {feed.children &&
-              feed.children.map((child, idx) => {
-                const isActive = store?.feed?.uuid === child.uuid;
+            {feed.children && (
+              <motion.div
+                initial={{
+                  height: feed.is_expanded ? 0 : "auto",
+                  opacity: 0,
+                }}
+                animate={{
+                  height: feed.is_expanded ? "auto" : 0,
+                  opacity: 1,
+                }}
+                exit={{
+                  height: "auto",
+                  opacity: 0,
+                }}
+              >
+                {feed.children.map((child, idx) => {
+                  const isActive = store?.feed?.uuid === child.uuid;
 
-                return renderFeed(child, idx, isActive, 2);
-              })}
+                  return renderFeed(child, idx, isActive, 2);
+                })}
+              </motion.div>
+            )}
           </Folder>
         );
       }
@@ -351,7 +367,12 @@ export const List = () => {
   }
 
   useEffect(() => {
-    setFeeds([...store.feedList]);
+    setFeeds(
+      [...store.feedList].map((_) => {
+        _.is_expanded = false;
+        return _;
+      })
+    );
   }, [store.feedList]);
 
   return (

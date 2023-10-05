@@ -27,13 +27,8 @@ export interface CardProps {
   isExpanded: Boolean;
   folder_uuid: string | null;
   level?: number;
-  moveItem: (
-    dragItemId: string,
-    hoverItemId: string,
-    folderUuid: string | null
-  ) => void; // 修改moveItem函数签名
   toggleFolder: (uuid: string) => void;
-  onHover: (
+  onMove: (
     a: [dragIndex: number, uuid: string, dragItem: DragItem],
     b: [hoverIndex: number, uuid: string, dropResult: DropItem]
   ) => void;
@@ -50,8 +45,7 @@ export const TreeViewItem: FC<CardProps> = ({
   isActive,
   isExpanded,
   folder_uuid,
-  moveItem,
-  onHover,
+  onMove,
   onMoveIntoFolder,
   toggleFolder,
   ...props
@@ -103,25 +97,13 @@ export const TreeViewItem: FC<CardProps> = ({
       return dragItem.uuid !== uuid;
     },
     hover(item: DragItem & Partial<FeedResItem>, monitor) {
-      console.log("hover ==================>>>>>>>>");
       if (!ref.current) {
-        console.log(
-          "🚀 ~ file: TreeViewItem.tsx:105 ~ hover ~ !ref.current:",
-          !ref.current
-        );
         return;
       }
-
       const dragIndex = item.index;
       const hoverIndex = index;
-      const hoverUuid = uuid;
 
-      console.log(
-        "🚀 ~ file: TreeViewItem.tsx:113 ~ hover ~ dragIndex === hoverIndex:",
-        dragIndex,
-        hoverIndex
-      );
-
+      // Don't replace items with themselves
       if (dragIndex === hoverIndex) {
         return;
       }
@@ -154,9 +136,9 @@ export const TreeViewItem: FC<CardProps> = ({
       }
 
       // Time to actually perform the action
-      onHover(
+      onMove(
         [dragIndex, item.uuid, item],
-        [hoverIndex, hoverUuid, monitor.getDropResult() as DropItem]
+        [hoverIndex, uuid, monitor.getDropResult() as DropItem]
       );
 
       // Note: we're mutating the monitor item here!
@@ -166,17 +148,6 @@ export const TreeViewItem: FC<CardProps> = ({
       item.index = hoverIndex;
     },
     drop: (item: DragItem, monitor: DropTargetMonitor) => {
-      console.log("%c Line:115 🥑 item", "color:#93c0a4", item);
-      console.log(
-        "🚀 ~ file: TreeViewItem.tsx:159 ~ monitor:",
-        monitor.getDropResult()
-      );
-      // console.log("%c Line:173 🍷 uuid", "color:#f5ce50", uuid);
-
-      if (item.uuid !== uuid) {
-        // moveItem(item.uuid, uuid, folder_uuid); // 传递parentId属性
-      }
-
       return { ...item, index };
     },
   });

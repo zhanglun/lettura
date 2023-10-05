@@ -5,7 +5,7 @@ import { FeedResItem } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
 import { useBearStore } from "@/stores";
 import { DragItem, DropItem } from "./ItemTypes";
-import { findItemDeep } from "./utilities";
+import { findItemDeep, removeItem } from "./utilities";
 
 interface TreeItem extends FeedResItem {
   isExpanded?: boolean;
@@ -17,7 +17,7 @@ const TreeView = () => {
     feedList: state.feedList,
     feed: state.feed,
   }));
-  const [treeData, setTreeData] = useState<FeedResItem[]>([]);
+  const [feeds, setFeeds] = useState<FeedResItem[]>([]);
 
   const requestUpdateOrder = (list: FeedResItem[]) => {
     const body = list.reduce(
@@ -78,13 +78,13 @@ const TreeView = () => {
       console.log("%c Line:67 🍔 hoverIndex", "color:#93c0a4", hoverIndex);
       console.log("%c Line:67 🍩 dropResult", "color:#4fff4B", dropResult);
 
-      const hoverItem = findItemDeep(treeData, hoverUuid);
+      const hoverItem = findItemDeep(feeds, hoverUuid);
 
       if (hoverItem?.folder_uuid) {
-        const folderIndex = treeData.findIndex(
+        const folderIndex = feeds.findIndex(
           (item) => item.uuid === hoverItem.folder_uuid
         );
-        const folder = treeData[folderIndex];
+        const folder = feeds[folderIndex];
 
         console.log("%c Line:78 🍪 folder", "color:#93c0a4", folder);
         console.log("%c Line:78 🌰 folderIndex", "color:#ed9ec7", folderIndex);
@@ -121,7 +121,7 @@ const TreeView = () => {
           });
         }
 
-        // setTreeData((prevCards: FeedResItem[]) =>
+        // setFeeds((prevCards: FeedResItem[]) =>
         //   update(prevCards, {
         //     $splice: [
         //       [dragIndex, 1],
@@ -133,7 +133,7 @@ const TreeView = () => {
       } else {
         console.log("hover no folder");
 
-        // setTreeData((prevCards: FeedResItem[]) =>
+        // setFeeds((prevCards: FeedResItem[]) =>
         //   update(prevCards, {
         //     $splice: [
         //       [dragIndex, 1],
@@ -145,98 +145,162 @@ const TreeView = () => {
 
       console.log("%c Line:75 🥛 hoverItem", "color:#ea7e5c", hoverItem);
     },
-    [treeData]
+    [feeds]
   );
 
-  const moveItem = (dragItemId: string, hoverItemId: string) => {
-    const updatedTreeData = [...treeData];
-    let dragItem: FeedResItem | undefined;
-    let hoverItem: FeedResItem | undefined;
+  const moveItem = useCallback(
+    (
+      [dragIndex, dragUuid, dragItem]: [
+        dragIndex: number,
+        uuid: string,
+        dragItem: DragItem
+      ],
+      [hoverIndex, hoverUuid, dropResult]: [
+        hoverIndex: number,
+        uuid: string,
+        dropResult: DropItem
+      ]
+    ) => {
+      const hoverItem = findItemDeep(feeds, hoverUuid);
+      console.log("🚀 ~ file: List.tsx:39 ~ List ~ dragItem:", dragItem);
+      console.log("🚀 ~ file: List.tsx:39 ~ List ~ dragItem.folder_uuid:", dragItem.folder_uuid);
+      console.log("🚀 ~ file: List.tsx:32 ~ List ~ hoverItem:", hoverItem);
+      console.log("🚀 ~ file: List.tsx:32 ~ List ~ hoverItem.folder_uuid:", hoverItem?.folder_uuid);
 
-    const findItem = (items: FeedResItem[]) => {
-      for (const item of items) {
-        if (item.uuid === dragItemId) {
-          dragItem = item;
-        } else if (item.uuid === hoverItemId) {
-          hoverItem = item;
-        }
+      // when drag folder, just change position
+      if (dragItem.item_type === 'folder') {
+        setFeeds((prevCards: FeedResItem[]) =>
+          update(prevCards, {
+            $splice: [
+              [dragIndex, 1],
+              [hoverIndex, 0, prevCards[dragIndex] as FeedResItem],
+            ],
+          })
+        );
+      } else {
+        // when drag to/in folder
+        if (hoverItem?.folder_uuid) {
+          const folderIndex = feeds.findIndex(
+            (item) => item.uuid === hoverItem.folder_uuid
+          );
+          const folder = feeds[folderIndex];
+          const indexInFolder = folder.children.findIndex(
+            (item) => item.uuid === dragUuid
+          );
 
-        if (dragItem && hoverItem) {
-          break;
-        }
+          let newFolder = { ...folder };
 
-        if (item.children) {
-          findItem(item.children as DragItem[]);
-        }
-      }
-    };
+          dragItem.folder_uuid = folder.uuid;
 
-    findItem(updatedTreeData);
+          // already in folder, change position
+          if (indexInFolder > -1) {
+            newFolder = update(folder, {
+              children: {
+                $splice: [
+                  [indexInFolder, 1],
+                  [hoverIndex, 0, dragItem as FeedResItem],
+                ],
+              },
+            });
 
-    console.log("%c Line:82 🍌 dragItem", "color:#33a5ff", dragItem);
-    console.log("%c Line:84 🍢 hoverItem", "color:#ed9ec7", hoverItem);
+            setFeeds((prev: FeedResItem[]) =>
+              update(prev, {
+                $splice: [[folderIndex, 1, newFolder as FeedResItem]],
+              })
+            );
+          } else {
+            console.log('asdfasdfasdfsadf===>')
+            newFolder = update(folder, {
+              children: {
+                $splice: [[hoverIndex, 0, dragItem as FeedResItem]],
+              },
+            });
 
-    if (dragItem && hoverItem) {
-      // if (dragItem.uuid === hoverItem.uuid) {
-      //   return; // Ignore if the dragged item is already a child of the hover item
-      // }
+            setFeeds((prev: FeedResItem[]) => {
+              let list = removeItem([...prev], dragUuid);
+              let folderIdx: number = folderIndex;
+              // let removeIdx: number = dragIndex;
 
-      // Remove dragItem from its original parent
-      const removeItem = (items: FeedResItem[]) => {
-        for (const item of items) {
-          if (
-            item.uuid === dragItem?.uuid &&
-            item.folder_uuid === dragItem?.folder_uuid
-          ) {
-            item.folder_uuid = null;
-            break;
-          } else if (item.children) {
-            removeItem(item.children);
+              // list.forEach((_, idx) => {
+              //   if (_.uuid === dragUuid) {
+              //     removeIdx = idx;
+              //   }
+              // });
+
+              // if (removeIdx > -1) {
+              //   list.splice(removeIdx, 1);
+              // }
+
+              list.forEach((_, idx) => {
+                if (_.uuid === folder.uuid) {
+                  folderIdx = idx;
+                }
+              });
+
+              if (folderIdx > -1) {
+                list[folderIdx] = newFolder;
+              }
+
+              return list;
+            });
+          }
+        } else if (!hoverItem?.folder_uuid) { // drag out from folder
+          if (dragItem.folder_uuid) {
+            const folderIndex = feeds.findIndex(
+              (item) => item.uuid === dragItem.folder_uuid
+            );
+            const folder = feeds[folderIndex];
+            const indexInFolder = folder.children.findIndex(
+              (item) => item.uuid === dragUuid
+            );
+
+            dragItem.folder_uuid = "";
+
+            let newFolder = update({ ...folder }, {
+              children: {
+                $splice: [
+                  [indexInFolder, 1],
+                ]
+              },
+            });
+
+            setFeeds((prev: FeedResItem[]) => {
+              let list = [...prev];
+              let folderIdx: number = folderIndex;
+
+              list.splice(hoverIndex, 0, dragItem);
+
+              list.forEach((_, idx) => {
+                if (_.uuid === folder.uuid) {
+                  folderIdx = idx;
+                }
+              });
+
+              if (folderIdx > -1) {
+                list[folderIdx] = newFolder;
+              }
+
+              return list;
+            });
+          } else {
+            setFeeds((prevCards: FeedResItem[]) =>
+              update(prevCards, {
+                $splice: [
+                  [dragIndex, 1],
+                  [hoverIndex, 0, prevCards[dragIndex] as FeedResItem],
+                ],
+              })
+            );
           }
         }
-      };
-
-      console.log(
-        "%c Line:125 🥪 updatedTreeData",
-        "color:#6ec1c2",
-        updatedTreeData
-      );
-
-      removeItem(updatedTreeData);
-
-      // Add dragItem as a child to the new parent
-      const addChildToParent = (items: FeedResItem[]) => {
-        for (const item of items) {
-          if (item.uuid === hoverItem?.uuid) {
-            if (!item.children) {
-              item.children = [];
-            }
-            item.children.push(dragItem!);
-            dragItem!.folder_uuid = item.uuid;
-            break;
-          } else if (item.children) {
-            addChildToParent(item.children);
-          }
-        }
-      };
-
-      if (hoverItem.item_type === "folder" && !hoverItem.children) {
-        hoverItem.children = [];
       }
-
-      addChildToParent(updatedTreeData);
-    }
-
-    setTreeData(updatedTreeData);
-
-    console.log("%c Line:110 🍫 newTreeData", "color:#e41a6a", updatedTreeData);
-
-    // requestUpdateOrder([...updatedTreeData]);
-  };
+    },
+    [feeds]
+  );
 
   const toggleFolder = (folderId: string) => {
     console.log("%c Line:115 🍓 folderId", "color:#ed9ec7", folderId);
-    const newTreeData = [...treeData];
+    const newTreeData = [...feeds];
     const folder = findItem(newTreeData, folderId);
 
     if (!folder || folder.item_type !== "folder") {
@@ -245,7 +309,7 @@ const TreeView = () => {
 
     folder.isExpanded = !folder.isExpanded;
 
-    setTreeData([...newTreeData]);
+    setFeeds([...newTreeData]);
   };
 
   const findItem = (
@@ -310,15 +374,9 @@ const TreeView = () => {
           index={idx}
           level={level + 1}
           feed={item}
-          folder_uuid={
-            parent_uuid !== item.uuid && item.item_type === "channel"
-              ? parent_uuid
-              : null
-          }
           isActive={isActive}
           isExpanded={item.isExpanded || false}
-          moveItem={moveItem}
-          onHover={hoverItem}
+          onMove={moveItem}
           toggleFolder={toggleFolder}
         >
           {item.children && renderTreeItems(item.children, level + 1)}
@@ -328,10 +386,10 @@ const TreeView = () => {
   };
 
   useEffect(() => {
-    setTreeData([...store.feedList]);
+    setFeeds([...store.feedList]);
   }, [store.feedList]);
 
-  return <div>{renderTreeItems(treeData)}</div>;
+  return <div>{renderTreeItems(feeds)}</div>;
 };
 
 export default TreeView;
