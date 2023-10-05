@@ -72,6 +72,8 @@ export const List = () => {
 
           let newFolder = { ...folder };
 
+          newFolder.is_expanded = true;
+
           dragItem.folder_uuid = folder.uuid;
 
           // already in folder, change position
@@ -293,9 +295,10 @@ export const List = () => {
             uuid={feed.uuid}
             feed={{ ...feed }}
             isExpanded={feed.is_expanded || false}
-            onDrop={(dragItem: DragItem) =>
-              handleDropIntoFolder(index, dragItem, feed)
-            }
+            onDrop={() => onSubscribeItemDrop()}
+            // onDrop={(dragItem: DragItem) =>
+            //   handleDropIntoFolder(index, dragItem, feed)
+            // }
             onMove={moveItem}
             key={index}
           >
