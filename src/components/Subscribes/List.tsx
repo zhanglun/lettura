@@ -380,7 +380,7 @@ export const List = () => {
 
   return (
     <div ref={drop}>
-      <div className="">{feeds.map((feed, i) => renderCard(feed, i))}</div>;
+      <div className="">{feeds.map((feed, i) => renderCard(feed, i))}</div>
     </div>
   );
 };

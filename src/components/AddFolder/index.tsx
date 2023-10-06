@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState, ChangeEvent } from "react";
-import { useModal } from "../Modal/useModal";
 import * as dataAgent from "../../helpers/dataAgent";
-import { busChannel } from "../../helpers/busChannel";
+
 import {
   Dialog,
   DialogContent,
@@ -12,10 +11,12 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Icon } from "../Icon";
-import { Folder as Folder2, Loader2 } from "lucide-react";
+import { Folder, Folder as Folder2, Loader2 } from "lucide-react";
 import { Button } from "../ui/button";
 import { FeedResItem } from "@/db";
+import { useBearStore } from "@/stores";
+import { Icon } from "../Icon";
+import { TooltipBox } from "../TooltipBox";
 
 export interface AddFolderProps {
   action: "add" | "edit";
@@ -29,6 +30,9 @@ export interface AddFolderProps {
 
 export const AddFolder = (props: AddFolderProps) => {
   const { action, folder } = props;
+  const store = useBearStore((state) => ({
+    getFeedList: state.getFeedList,
+  }))
   const { dialogStatus, setDialogStatus, afterConfirm, afterCancel, trigger } =
     props;
   const [name, setName] = useState("");
@@ -46,7 +50,15 @@ export const AddFolder = (props: AddFolderProps) => {
     afterCancel();
   };
 
+  const handleStatusChange = () => {
+    handleCancel();
+  };
+
   const handleSave = async () => {
+    if(!name) {
+      return false
+    }
+
     setConfirming(true);
 
     let p: Promise<any> = Promise.resolve();
@@ -58,12 +70,14 @@ export const AddFolder = (props: AddFolderProps) => {
     }
 
     p.then((res) => {
+      console.log("🚀 ~ file: index.tsx:59 ~ p.then ~ res:", res)
       if (res[0] > 0) {
-        busChannel.emit("getChannels");
-
+        store.getFeedList()
         afterConfirm();
         handleCancel();
       }
+    }).catch((err) => {
+      console.log("🚀 ~ file: index.tsx:66 ~ p.then ~ err:", err)
     }).finally(() => {
       setConfirming(false);
     });
@@ -108,7 +122,7 @@ export const AddFolder = (props: AddFolderProps) => {
             <Button
               className="w-full"
               onClick={handleSave}
-              disabled={confirming}
+              disabled={confirming || !name}
             >
               {confirming ? (
                 <>

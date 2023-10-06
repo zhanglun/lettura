@@ -307,7 +307,7 @@ pub fn update_user_config(user_cfg: config::UserConfig) -> usize {
 }
 
 #[command]
-pub fn create_folder(name: String) -> usize {
+pub fn create_folder(name: String) -> (usize, String) {
   feed::folder::create_folder(name)
 }
 

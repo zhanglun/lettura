@@ -18,7 +18,7 @@ pub fn get_channels_in_folders(
   result
 }
 
-pub fn create_folder(folder_name: String) -> usize {
+pub fn create_folder(folder_name: String) -> (usize, String) {
   let mut connection = db::establish_connection();
   let uuid = Uuid::new_v4().hyphenated().to_string();
   let folder = models::NewFolder {
@@ -29,8 +29,15 @@ pub fn create_folder(folder_name: String) -> usize {
 
   let result = diesel::insert_or_ignore_into(schema::folders::dsl::folders)
     .values(folder)
-    .execute(&mut connection)
-    .expect("Expect create folder");
+    .execute(&mut connection);
+
+  let result = match result {
+    Ok(r) => (r, String::from("")),
+    Err(error) => {
+      return (0, error.to_string());
+    }
+  };
+
   result
 }
 
