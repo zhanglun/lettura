@@ -86,8 +86,8 @@ dependencies:
     specifier: ^3.1.1
     version: 3.1.1
   lucide-react:
-    specifier: ^0.216.0
-    version: 0.216.0(react@18.2.0)
+    specifier: ^0.284.0
+    version: 0.284.0(react@18.2.0)
   p-limit:
     specifier: ^4.0.0
     version: 4.0.0
@@ -2763,8 +2763,8 @@ packages:
       yallist: 3.1.1
     dev: true
 
-  /lucide-react@0.216.0(react@18.2.0):
-    resolution: {integrity: sha512-PGWXs6JXI/08rhfkmj/joji0MAKDCcms44j0LYILO4J36AWqKhgjjaZ6WECRSyZ9TQe5gOrAR0g38O8cKrQngw==}
+  /lucide-react@0.284.0(react@18.2.0):
+    resolution: {integrity: sha512-dVSMHYAya/TeY3+vsk+VQJEKNQN2AhIo0+Dp09B2qpzvcBuu93H98YZykFcjIAfmanFiDd8nqfXFR38L757cyQ==}
     peerDependencies:
       react: ^16.5.1 || ^17.0.0 || ^18.0.0
     dependencies:
@@ -3512,7 +3512,7 @@ packages:
     dev: false
 
   github.com/tauri-apps/tauri-plugin-log/1a369766cf90f3aed9c2b7c68b70bf39081538b3:
-    resolution: {commit: 1a369766cf90f3aed9c2b7c68b70bf39081538b3, repo: git+ssh://git@github.com/tauri-apps/tauri-plugin-log.git, type: git}
+    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-log/tar.gz/1a369766cf90f3aed9c2b7c68b70bf39081538b3}
     name: tauri-plugin-log-api
     version: 0.0.0
     dependencies:

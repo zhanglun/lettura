@@ -5,7 +5,7 @@ import { RouteConfig } from "@/config";
 import { FeedResItem } from "@/db";
 import { useBearStore } from "@/stores";
 import { getChannelFavicon } from "@/helpers/parseXML";
-import { ChevronDown, ChevronRight, Folder, FolderOpen } from "lucide-react";
+import { ChevronDownCircle, ChevronRightCircle } from "lucide-react";
 
 export interface CardProps {
   uuid: any;
@@ -81,13 +81,11 @@ export const ItemView: FC<CardProps> = ({
             <span className="flex items-center">
               {isExpanded ? (
                 <>
-                  <ChevronDown size={16} className="mr-1" />
-                  <FolderOpen size={16} className="mr-2" />
+                  <ChevronDownCircle size={16} className="mr-1" />
                 </>
               ) : (
                 <>
-                  <ChevronRight size={16} className="mr-1"/>
-                  <Folder size={16} className="mr-2" />
+                  <ChevronRightCircle size={16} className="mr-1"/>
                 </>
               )}
             </span>
