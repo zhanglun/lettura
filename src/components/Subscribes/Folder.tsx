@@ -1,10 +1,11 @@
-import { memo, useRef } from "react";
+import { memo, useRef, useState } from "react";
 import type { CSSProperties, FC } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import type { Identifier, XYCoord } from "dnd-core";
 import { motion } from "framer-motion";
 import { DragItem, DropItem, ItemTypes } from "./ItemTypes";
 import { FeedResItem } from "@/db";
+import clsx from "clsx";
 
 export interface DustbinProps {
   uuid: any;
@@ -33,8 +34,12 @@ export const Folder: FC<DustbinProps> = memo(function Folder({
   ...props
 }) {
   const ref = useRef<HTMLDivElement>(null);
+  const [insertTileIndicator, setInsertTileIndicator] = useState<string | null>(
+    null
+  );
   const [{ isOver, canDrop }, drop] = useDrop({
-    accept: ItemTypes.CARD,
+    // accept: ItemTypes.CARD,
+    accept: [ItemTypes.CARD, ItemTypes.BOX],
     drop: onDrop,
     collect: (monitor) => ({
       isOver: monitor.isOver(),
@@ -79,31 +84,38 @@ export const Folder: FC<DustbinProps> = memo(function Folder({
         return;
       }
 
-      // Time to actually perform the action
-      onMove(
-        [dragIndex, item.uuid, item],
-        [hoverIndex, uuid, monitor.getDropResult() as DropItem]
-      );
+      const isOver = monitor.isOver();
+
+      let insertCaretDirection = "";
+
+      if (hoverClientY > hoverMiddleY) {
+        insertCaretDirection = "top";
+      } else {
+        insertCaretDirection = "bottom";
+      }
+
+      if (isOver && insertCaretDirection) {
+        setInsertTileIndicator(`select-${insertCaretDirection}`);
+      } else {
+        setInsertTileIndicator(null);
+      }
 
       // Note: we're mutating the monitor item here!
       // Generally it's better to avoid mutations,
       // but it's good here for the sake of performance
       // to avoid expensive index searches.
       item.index = hoverIndex;
+
+      // Time to actually perform the action
+      // onMove(
+      //   [dragIndex, item.uuid, item],
+      //   [hoverIndex, uuid, monitor.getDropResult() as DropItem]
+      // );
     },
   });
 
-  const isActive = isOver && canDrop;
-
-  let backgroundColor = "inherit";
-  if (isActive) {
-    // backgroundColor = 'darkgreen'
-  } else if (canDrop) {
-    // backgroundColor = 'darkkhaki'
-  }
-
   const [{ isDragging }, drag] = useDrag({
-    type: ItemTypes.CARD,
+    type: ItemTypes.BOX,
     item: () => {
       return { index, ...feed };
     },
@@ -112,12 +124,7 @@ export const Folder: FC<DustbinProps> = memo(function Folder({
     }),
     end(item, monitor) {
       if (monitor.didDrop()) {
-        console.log("%c Line:54 🍻 item", "color:#93c0a4", item);
-        console.log(
-          "%c Line:112 🍖 monitor.didDrop()",
-          "color:#b03734",
-          monitor.didDrop()
-        );
+          // monitor.didDrop()
       }
     },
   });
@@ -125,7 +132,15 @@ export const Folder: FC<DustbinProps> = memo(function Folder({
   drag(drop(ref));
 
   return (
-    <div ref={ref} style={{ backgroundColor }} data-id="folder" className="overflow-hidden">
+    <div
+      ref={ref}
+      data-id="folder"
+      className={clsx(
+        "overflow-hidden relative",
+        { [`${insertTileIndicator}`]: isOver },
+        { "bg-red": isDragging }
+      )}
+    >
       {props.children}
     </div>
   );

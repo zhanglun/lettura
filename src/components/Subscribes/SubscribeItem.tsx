@@ -1,13 +1,10 @@
 import type { FC } from "react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import type { Identifier, XYCoord } from "dnd-core";
 import { FeedResItem } from "@/db";
 import { DragItem, DropItem, ItemTypes } from "./ItemTypes";
-
-const style = {
-  cursor: "move",
-};
+import clsx from "clsx";
 
 export interface CardProps {
   uuid: string;
@@ -36,14 +33,14 @@ export const SubscribeItem: FC<CardProps> = ({
   ...props
 }) => {
   const ref = useRef<HTMLDivElement>(null);
-  const [{ handlerId }, drop] = useDrop<
-    DragItem,
-    void,
-    { handlerId: Identifier | null }
-  >({
+  const [insertTileIndicator, setInsertTileIndicator] = useState<string | null>(
+    null
+  );
+  const [{ handlerId, isOver }, drop] = useDrop({
     accept: [ItemTypes.CARD, ItemTypes.BOX],
     collect(monitor) {
       return {
+        isOver: monitor.isOver(),
         handlerId: monitor.getHandlerId(),
       };
     },
@@ -57,6 +54,27 @@ export const SubscribeItem: FC<CardProps> = ({
       // Don't replace items with themselves
       if (dragIndex === hoverIndex) {
         return;
+      }
+
+      const isOver = monitor.isOver();
+
+      const bottom = dragIndex > hoverIndex;
+      const top = dragIndex < hoverIndex;
+
+      let insertCaretDirection = "";
+
+      if (bottom) {
+        insertCaretDirection = "bottom";
+      }
+
+      if (top) {
+        insertCaretDirection = "top";
+      }
+
+      if (isOver && insertCaretDirection) {
+        setInsertTileIndicator(`select-${insertCaretDirection}`);
+      } else {
+        setInsertTileIndicator(null);
       }
 
       // Determine rectangle on screen
@@ -87,10 +105,10 @@ export const SubscribeItem: FC<CardProps> = ({
       }
 
       // Time to actually perform the action
-      onMove(
-        [dragIndex, item.uuid, item],
-        [hoverIndex, uuid, monitor.getDropResult() as DropItem]
-      );
+      // onMove(
+      //   [dragIndex, item.uuid, item],
+      //   [hoverIndex, uuid, monitor.getDropResult() as DropItem]
+      // );
 
       // Note: we're mutating the monitor item here!
       // Generally it's better to avoid mutations,
@@ -110,7 +128,7 @@ export const SubscribeItem: FC<CardProps> = ({
     }),
     end(item, monitor) {
       if (monitor.didDrop()) {
-        props.onDrop();
+        // props.onDrop();
       }
     },
   });
@@ -120,7 +138,14 @@ export const SubscribeItem: FC<CardProps> = ({
   drag(drop(ref));
 
   return (
-    <div ref={ref} style={{ ...style, opacity }} data-handler-uuid={handlerId}>
+    <div
+      ref={ref}
+      style={{ opacity }}
+      className={clsx("overflow-hidden relative", {
+        [`${insertTileIndicator}`]: isOver,
+      })}
+      data-handler-uuid={handlerId}
+    >
       {props.children}
     </div>
   );

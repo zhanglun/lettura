@@ -8,7 +8,6 @@ import * as dataAgent from "@/helpers/dataAgent";
 import { Folder } from "./Folder";
 import { ItemView } from "./ItemView";
 import { DragItem, DropItem, ItemTypes } from "./ItemTypes";
-import { useDrop } from "react-dnd";
 import { findItemDeep, removeItem } from "./utilities";
 import { motion } from "framer-motion";
 
@@ -23,7 +22,6 @@ export const List = () => {
     feed: state.feed,
   }));
   const [feeds, setFeeds] = useState<FeedResItem[]>([]);
-
   const moveItem = useCallback(
     (
       [dragIndex, dragUuid, dragItem]: [
@@ -51,14 +49,14 @@ export const List = () => {
 
       // when drag folder, just change position
       if (dragItem.item_type === "folder") {
-        setFeeds((prevCards: FeedResItem[]) =>
-          update(prevCards, {
-            $splice: [
-              [dragIndex, 1],
-              [hoverIndex, 0, prevCards[dragIndex] as FeedResItem],
-            ],
-          })
-        );
+        // setFeeds((prevCards: FeedResItem[]) =>
+        //   update(prevCards, {
+        //     $splice: [
+        //       [dragIndex, 1],
+        //       [hoverIndex, 0, prevCards[dragIndex] as FeedResItem],
+        //     ],
+        //   })
+        // );
       } else {
         // when drag to/in folder
         if (hoverItem?.folder_uuid) {
@@ -347,39 +345,12 @@ export const List = () => {
     };
   }
 
-  const [{ isOver, isOverCurrent }, drop] = useDrop(
-    () => ({
-      accept: [ItemTypes.BOX, ItemTypes.CARD],
-      drop(_item: unknown, monitor) {
-        const didDrop = monitor.didDrop();
-        if (didDrop) {
-        }
-      },
-      collect: (monitor) => ({
-        isOver: monitor.isOver(),
-        isOverCurrent: monitor.isOver({ shallow: true }),
-      }),
-    }),
-    []
-  );
-
-  let backgroundColor = "rgba(0, 0, 0, .5)";
-
-  if (isOverCurrent || isOver) {
-    backgroundColor = "darkgreen";
-  }
-
   useEffect(() => {
-    setFeeds(
-      [...store.feedList].map((_) => {
-        _.is_expanded = false;
-        return _;
-      })
-    );
-  }, [store.feedList]);
+    setFeeds([ ...store.feedList ]);
+  }, [ store.feedList ]);
 
   return (
-    <div ref={drop}>
+    <div>
       <div className="">{feeds.map((feed, i) => renderCard(feed, i))}</div>
     </div>
   );
