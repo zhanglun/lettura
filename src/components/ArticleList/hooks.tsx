@@ -1,14 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useMatch } from "react-router-dom";
+import { useHotkeys } from "react-hotkeys-hook";
 import { useBearStore } from "@/stores";
-import { useShortcut } from "@/hooks/useShortcut";
 import { RouteConfig } from "@/config";
 
 function throttle(fn: any, wait: number) {
   let previous = 0;
   let timer: ReturnType<typeof setTimeout>;
 
-  return function(...args: any) {
+  return function (...args: any) {
     if (Date.now() - previous > wait) {
       clearTimeout(timer);
 
@@ -24,7 +24,10 @@ function throttle(fn: any, wait: number) {
   };
 }
 
-export const useArticleListHook = (props: { feedUuid: string | null, type: string | null }) => {
+export const useArticleListHook = (props: {
+  feedUuid: string | null;
+  type: string | null;
+}) => {
   const { feedUuid, type } = props;
 
   const isToday = useMatch(RouteConfig.TODAY);
@@ -44,7 +47,6 @@ export const useArticleListHook = (props: { feedUuid: string | null, type: strin
     cursor: state.cursor,
     setCursor: state.setCursor,
   }));
-  const { registerShortcut, unregisterShortcut } = useShortcut();
 
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -142,25 +144,24 @@ export const useArticleListHook = (props: { feedUuid: string | null, type: strin
     };
   }, [loading, store.articleList]);
 
-  const goPrev = useCallback(throttle(() => {
-    console.warn("goPrev");
-    store.goPreviousArticle();
-  }, 300), []);
+  const goPrev = useCallback(
+    throttle(() => {
+      console.warn("goPrev");
+      store.goPreviousArticle();
+    }, 300),
+    []
+  );
 
-  const goNext = useCallback(throttle(() => {
-    console.warn("goNext");
-    store.goNextArticle();
-  }, 300), []);
+  const goNext = useCallback(
+    throttle(() => {
+      console.warn("goNext");
+      store.goNextArticle();
+    }, 300),
+    []
+  );
 
-  useEffect(() => {
-    registerShortcut(["n"], goNext);
-    registerShortcut(["Shift+n", "N"], goPrev);
-
-    return () => {
-      unregisterShortcut("n");
-      unregisterShortcut(["Shift+n", "N"]);
-    };
-  }, []);
+  useHotkeys("n", goNext);
+  useHotkeys("Shift+n, N", goPrev);
 
   return {
     getList,

@@ -1,6 +1,6 @@
-import { useShortcut } from "@/hooks/useShortcut";
 import classNames from "classnames";
-import React, { useEffect, useImperativeHandle, useRef } from "react";
+import { useHotkeys } from "react-hotkeys-hook";
+import React, { useImperativeHandle, useRef } from "react";
 
 export interface ScrollBoxRefObject {
   scrollToTop: () => void;
@@ -15,7 +15,6 @@ export interface ScrollBoxProps {
 export const ScrollBox = React.forwardRef((props: ScrollBoxProps, ref: any) => {
   const { className, children } = props;
   const scrollRef = useRef<HTMLDivElement>(null);
-  const { registerShortcut, unregisterShortcut } = useShortcut();
 
   const scrollDown = () => {
     if (scrollRef.current) {
@@ -41,15 +40,8 @@ export const ScrollBox = React.forwardRef((props: ScrollBoxProps, ref: any) => {
     };
   });
 
-  useEffect(() => {
-    registerShortcut("j", scrollDown);
-    registerShortcut("k", scrollUp);
-
-    return () => {
-      unregisterShortcut("j");
-      unregisterShortcut("k");
-    };
-  }, []);
+  useHotkeys("j", scrollDown);
+  useHotkeys("k", scrollUp);
 
   return (
     <div className={classNames("overflow-y-auto", className)} ref={scrollRef}>

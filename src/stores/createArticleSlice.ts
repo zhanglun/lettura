@@ -9,7 +9,7 @@ export interface ArticleSlice {
   setArticle: (ArticleResItem: ArticleResItem | null) => void;
   articleList: ArticleResItem[];
   setArticleList: (list: ArticleResItem[]) => void;
-  getArticleList: (uuid: string, type: string, filter: any) => any;
+  getArticleList: (uuid: string, type: string | null, filter: any) => any;
   getTodayArticleList: (filter: any) => any;
   getAllArticleList: (filter: any) => any;
   cursor: number;
@@ -51,7 +51,7 @@ export const createArticleSlice: StateCreator<
     }));
   },
 
-  getArticleList: (uuid: string, type: string, filter: any) => {
+  getArticleList: (uuid: string, type: string | null, filter: any) => {
     console.log("%c Line:75 🍰 filter", "color:#fca650", filter);
     const currentList = get().articleList;
 

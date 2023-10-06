@@ -1,4 +1,5 @@
 import React, { ChangeEvent, useEffect, useRef, useState } from "react";
+import { useHotkeys } from "react-hotkeys-hook";
 import * as dataAgent from "@/helpers/dataAgent";
 import { useModal } from "../Modal/useModal";
 
@@ -22,8 +23,8 @@ import { useBearStore } from "@/stores";
 export const AddFeedChannel = (props: any) => {
   const store = useBearStore((state) => ({
     initCollectionMetas: state.initCollectionMetas,
-  }))
-  const [showStatus, , , , toggleModal] = useModal();
+  }));
+  const [showStatus, , showModal, , toggleModal] = useModal();
   const [step, setStep] = useState(1);
   const [feedUrl, setFeedUrl] = useState("");
   const [feed, setFeed] = useState<any>({});
@@ -102,10 +103,17 @@ export const AddFeedChannel = (props: any) => {
       });
   };
 
+  useHotkeys("c", () => {
+    showModal();
+  });
+
   useEffect(() => {
-    if (showStatus && inputRef && inputRef.current) {
-      inputRef.current.focus();
-    }
+    setTimeout(() => {
+      if (showStatus && inputRef.current) {
+        inputRef.current.focus();
+        setFeedUrl(() => "");
+      }
+    }, 10);
   }, [showStatus]);
 
   return (

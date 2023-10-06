@@ -3,6 +3,7 @@ import classNames from "classnames";
 import { ArticleListRefType } from "@/components/ArticleList";
 import * as dataAgent from "../../helpers/dataAgent";
 import { useBearStore } from "@/stores";
+import { useHotkeys } from "react-hotkeys-hook";
 import styles from "./index.module.scss";
 import {
   Filter,
@@ -32,7 +33,6 @@ import { ArticleDialogView } from "@/components/ArticleView/DialogView";
 import { ToolbarItemNavigator } from "@/layout/Article/ToolBar";
 import { ReadingOptions } from "@/layout/Article/ReadingOptions";
 import { useQuery } from "@/helpers/parseXML";
-import { useShortcut } from "@/hooks/useShortcut";
 import { open } from "@tauri-apps/api/shell";
 import { TooltipBox } from "@/components/TooltipBox";
 import { useMatch } from "react-router-dom";
@@ -72,7 +72,6 @@ export const ArticleContainer = (): JSX.Element => {
   const viewRef = useRef<HTMLDivElement>(null);
   const articleListRef = useRef<ArticleListRefType>(null);
   const { currentIdx, setCurrentIdx } = store;
-  const { registerShortcut, unregisterShortcut } = useShortcut();
 
   const handleViewScroll = () => {
     if (viewRef.current) {
@@ -90,13 +89,7 @@ export const ArticleContainer = (): JSX.Element => {
     store.article && open(store.article.link);
   };
 
-  useEffect(() => {
-    registerShortcut("o", () => openInBrowser());
-
-    return () => {
-      unregisterShortcut("o");
-    };
-  }, [store.article]);
+  useHotkeys('o', () => openInBrowser())
 
   useEffect(() => {
     if (viewRef.current) {
