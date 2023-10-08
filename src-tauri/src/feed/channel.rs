@@ -483,6 +483,9 @@ pub fn update_feed_sort(sorts: Vec<FeedSort>) -> usize {
         .set(schema::feeds::sort.eq(item.sort))
         .execute(&mut connection)
         .expect("msg");
+      diesel::delete(schema::feed_metas::dsl::feed_metas.filter(schema::feed_metas::uuid.eq(&item.uuid)))
+      .execute(&mut connection)
+      .expect("delete feed from folder");
     }
 
     if item.folder_uuid.len() > 0 && item.folder_uuid == item.uuid {

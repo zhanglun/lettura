@@ -181,17 +181,18 @@ export const List = () => {
           sort: idx,
         };
 
+        acu.push({
+          ...item,
+        });
+
         if ((feed.children || []).length > 0) {
           feed.children.forEach((child) => {
             item.uuid = child.uuid || "";
+            item.item_type = child.item_type;
             (item.folder_uuid = feed.uuid),
               acu.push({
                 ...item,
               });
-          });
-        } else {
-          acu.push({
-            ...item,
           });
         }
 
