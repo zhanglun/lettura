@@ -24,44 +24,34 @@ export const List = () => {
   const [feeds, setFeeds] = useState<FeedResItem[]>([]);
   const moveItem = useCallback(
     (
-      [dragIndex, dragUuid, dragItem]: [
-        dragIndex: number,
-        uuid: string,
-        dragItem: DragItem
-      ],
-      [hoverIndex, hoverUuid, dropResult]: [
-        hoverIndex: number,
-        uuid: string,
-        dropResult: DropItem
-      ]
+      dragItem: FeedResItem,
+      dropResult: FeedResItem,
+      position: string | null
     ) => {
-      const hoverItem = findItemDeep(feeds, hoverUuid);
-      console.log("🚀 ~ file: List.tsx:39 ~ List ~ dragItem:", dragItem);
-      console.log(
-        "🚀 ~ file: List.tsx:39 ~ List ~ dragItem.folder_uuid:",
-        dragItem.folder_uuid
-      );
-      console.log("🚀 ~ file: List.tsx:32 ~ List ~ hoverItem:", hoverItem);
-      console.log(
-        "🚀 ~ file: List.tsx:32 ~ List ~ hoverItem.folder_uuid:",
-        hoverItem?.folder_uuid
-      );
+      const dragUuid = dragItem.uuid;
+      const dropUuid = dropResult.uuid;
+      let list = [...feeds];
+
+      let dragIndex = feeds.findIndex((item) => item.uuid === dragItem.uuid);
+      let dropIndex = feeds.findIndex((item) => item.uuid === dropResult.uuid);
 
       // when drag folder, just change position
       if (dragItem.item_type === "folder") {
-        // setFeeds((prevCards: FeedResItem[]) =>
-        //   update(prevCards, {
-        //     $splice: [
-        //       [dragIndex, 1],
-        //       [hoverIndex, 0, prevCards[dragIndex] as FeedResItem],
-        //     ],
-        //   })
-        // );
+        if (position === "middle") {
+          return;
+        }
+
+        list = update(list, {
+          $splice: [
+            [dragIndex, 1],
+            [dropIndex + (position === "top" ? 0 : 1), 0, dragItem],
+          ],
+        });
       } else {
         // when drag to/in folder
-        if (hoverItem?.folder_uuid) {
+        if (dropResult?.folder_uuid) {
           const folderIndex = feeds.findIndex(
-            (item) => item.uuid === hoverItem.folder_uuid
+            (item) => item.uuid === dropResult.folder_uuid
           );
           const folder = feeds[folderIndex];
           const indexInFolder = folder.children.findIndex(
@@ -70,9 +60,11 @@ export const List = () => {
 
           let newFolder = { ...folder };
 
-          newFolder.is_expanded = true;
-
           dragItem.folder_uuid = folder.uuid;
+
+          dropIndex = folder.children.findIndex(
+            (item) => item.uuid === dropUuid
+          );
 
           // already in folder, change position
           if (indexInFolder > -1) {
@@ -80,52 +72,35 @@ export const List = () => {
               children: {
                 $splice: [
                   [indexInFolder, 1],
-                  [hoverIndex, 0, dragItem as FeedResItem],
+                  [dropIndex, 0, dragItem as FeedResItem],
                 ],
               },
             });
 
-            setFeeds((prev: FeedResItem[]) =>
-              update(prev, {
-                $splice: [[folderIndex, 1, newFolder as FeedResItem]],
-              })
-            );
+            list = update(list, {
+              $splice: [[folderIndex, 1, newFolder as FeedResItem]],
+            });
           } else {
             newFolder = update(folder, {
               children: {
-                $splice: [[hoverIndex, 0, dragItem as FeedResItem]],
+                $splice: [[dropIndex, 0, dragItem as FeedResItem]],
               },
             });
 
-            setFeeds((prev: FeedResItem[]) => {
-              let list = removeItem([...prev], dragUuid);
-              let folderIdx: number = folderIndex;
-              // let removeIdx: number = dragIndex;
+            list = removeItem(list, dragUuid);
+            let folderIdx: number = folderIndex;
 
-              // list.forEach((_, idx) => {
-              //   if (_.uuid === dragUuid) {
-              //     removeIdx = idx;
-              //   }
-              // });
-
-              // if (removeIdx > -1) {
-              //   list.splice(removeIdx, 1);
-              // }
-
-              list.forEach((_, idx) => {
-                if (_.uuid === folder.uuid) {
-                  folderIdx = idx;
-                }
-              });
-
-              if (folderIdx > -1) {
-                list[folderIdx] = newFolder;
+            list.forEach((_, idx) => {
+              if (_.uuid === folder.uuid) {
+                folderIdx = idx;
               }
-
-              return list;
             });
+
+            if (folderIdx > -1) {
+              list[folderIdx] = newFolder;
+            }
           }
-        } else if (!hoverItem?.folder_uuid) {
+        } else if (!dropResult?.folder_uuid) {
           // drag out from folder
           if (dragItem.folder_uuid) {
             const folderIndex = feeds.findIndex(
@@ -135,6 +110,8 @@ export const List = () => {
             const indexInFolder = folder.children.findIndex(
               (item) => item.uuid === dragUuid
             );
+            dropIndex = feeds.findIndex((item) => item.uuid === dropUuid);
+            console.log("%c Line:142 🍇 dropIndex", "color:#ed9ec7", dropIndex);
 
             dragItem.folder_uuid = "";
 
@@ -147,45 +124,54 @@ export const List = () => {
               }
             );
 
-            setFeeds((prev: FeedResItem[]) => {
-              let list = [...prev];
-              let folderIdx: number = folderIndex;
-
-              list.splice(hoverIndex, 0, dragItem);
-
-              list.forEach((_, idx) => {
-                if (_.uuid === folder.uuid) {
-                  folderIdx = idx;
-                }
-              });
-
-              if (folderIdx > -1) {
-                list[folderIdx] = newFolder;
-              }
-
-              return list;
+            list = update(list, {
+              $splice: [
+                [dropIndex + (position === "top" ? 0 : 1), 0, dragItem],
+              ],
             });
+            let folderIdx: number = folderIndex;
+
+            list.forEach((_, idx) => {
+              if (_.uuid === folder.uuid) {
+                folderIdx = idx;
+              }
+            });
+
+            if (folderIdx > -1) {
+              list[folderIdx] = newFolder;
+            }
           } else {
-            setFeeds((prevCards: FeedResItem[]) =>
-              update(prevCards, {
-                $splice: [
-                  [dragIndex, 1],
-                  [hoverIndex, 0, prevCards[dragIndex] as FeedResItem],
-                ],
-              })
-            );
+            list = update(list, {
+              $splice: [
+                [dragIndex, 1],
+                [dropIndex + (position === "top" ? 0 : 1), 0, dragItem],
+              ],
+            });
           }
         }
       }
+
+      setFeeds(() => list);
+
+      return list;
     },
     [feeds]
   );
 
-  const onSubscribeItemDrop = useCallback(() => {
-    requestUpdateOrder(feeds);
-  }, [feeds]);
+  const onSubscribeItemDrop = useCallback(
+    (
+      dragItem: FeedResItem,
+      dropResult: FeedResItem,
+      position: string | null
+    ) => {
+      let list = moveItem(dragItem, dropResult, position);
+      requestUpdateOrder(list || []);
+    },
+    [feeds]
+  );
 
   const requestUpdateOrder = (list: FeedResItem[]) => {
+    console.log("%c Line:175 🍕 list", "color:#2eafb0", list);
     const body = list.reduce(
       (acu, feed, idx) => {
         let item = {
@@ -195,7 +181,7 @@ export const List = () => {
           sort: idx,
         };
 
-        if (feed.children.length > 0) {
+        if ((feed.children || []).length > 0) {
           feed.children.forEach((child) => {
             item.uuid = child.uuid || "";
             (item.folder_uuid = feed.uuid),
@@ -226,16 +212,6 @@ export const List = () => {
     });
   };
 
-  const handleDropIntoFolder = useCallback(
-    (index: number, dragItem: DragItem, dropItem: FeedResItem) => {
-      return {
-        index,
-        ...dropItem,
-      };
-    },
-    [feeds]
-  );
-
   const toggleFolder = (folderId: string) => {
     const newTreeData = [...feeds];
     const folder = findItemDeep(newTreeData, folderId);
@@ -249,36 +225,38 @@ export const List = () => {
     setFeeds([...newTreeData]);
   };
 
-  const renderFeed = (
-    feed: FeedResItem,
-    index: number,
-    isActive: boolean,
-    level: number
-  ) => {
-    return (
-      <SubscribeItem
-        key={feed.uuid}
-        index={index}
-        uuid={feed.uuid}
-        text={feed.title}
-        feed={{ ...feed }}
-        isActive={isActive}
-        onMove={moveItem}
-        onDrop={() => onSubscribeItemDrop()}
-      >
-        <ItemView
+  const renderFeed = useCallback(
+    (feed: FeedResItem, index: number, level = 1) => {
+      const isActive = store?.feed?.uuid === feed.uuid;
+      return (
+        <SubscribeItem
+          key={feed.uuid}
           index={index}
           uuid={feed.uuid}
-          level={level}
           text={feed.title}
           feed={{ ...feed }}
           isActive={isActive}
-          isExpanded={feed.is_expanded || false}
-          toggleFolder={toggleFolder}
-        />
-      </SubscribeItem>
-    );
-  };
+          onDrop={onSubscribeItemDrop}
+        >
+          <ItemView
+            index={index}
+            uuid={feed.uuid}
+            level={level}
+            text={feed.title}
+            feed={{ ...feed }}
+            isActive={isActive}
+            isExpanded={feed.is_expanded || false}
+            toggleFolder={toggleFolder}
+          />
+          {feed.children &&
+            feed.children.map((child, idx) => {
+              return renderFeed(child, idx, 2);
+            })}
+        </SubscribeItem>
+      );
+    },
+    [feeds, store.feed]
+  );
 
   const renderCard = useCallback(
     (feed: FeedResItem, index: number) => {
@@ -310,28 +288,12 @@ export const List = () => {
               isExpanded={feed.is_expanded || false}
               toggleFolder={toggleFolder}
             />
-            {feed.children && (
-              <motion.div
-                initial={{
-                  height: feed.is_expanded ? 0 : "auto",
-                  opacity: 0,
-                }}
-                animate={{
-                  height: feed.is_expanded ? "auto" : 0,
-                  opacity: 1,
-                }}
-                exit={{
-                  height: "auto",
-                  opacity: 0,
-                }}
-              >
-                {feed.children.map((child, idx) => {
-                  const isActive = store?.feed?.uuid === child.uuid;
+            {feed.children &&
+              feed.children.map((child, idx) => {
+                const isActive = store?.feed?.uuid === child.uuid;
 
-                  return renderFeed(child, idx, isActive, 2);
-                })}
-              </motion.div>
-            )}
+                return renderFeed(child, idx, isActive, 2);
+              })}
           </Folder>
         );
       }
@@ -346,12 +308,12 @@ export const List = () => {
   }
 
   useEffect(() => {
-    setFeeds([ ...store.feedList ]);
-  }, [ store.feedList ]);
+    setFeeds([...store.feedList]);
+  }, [store.feedList]);
 
   return (
     <div>
-      <div className="">{feeds.map((feed, i) => renderCard(feed, i))}</div>
+      <div className="">{feeds.map((feed, i) => renderFeed(feed, i))}</div>
     </div>
   );
 };

@@ -238,26 +238,3 @@
     border: 2px solid var(--color-primary);
   }
 }
-
-@tailwind components;
-@layer components {
-  .select-top::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0px;
-    background-color: purple;
-    height: 2px;
-  }
-
-  .select-bottom::after {
-    content: "";
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background-color: red;
-    height: 2px;
-  }
-}

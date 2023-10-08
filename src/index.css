@@ -131,3 +131,33 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+
+@tailwind components;
+@layer components {
+  .is-drag-over {
+    border: 1px solid red;
+  }
+  .select-top::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0px;
+    background-color: var(--color-primary);
+    height: 2px;
+  }
+
+  .select-bottom::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--color-primary);
+    height: 2px;
+  }
+
+  .select-middle {
+    background-color: red;
+  }
+}
