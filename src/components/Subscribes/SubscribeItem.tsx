@@ -1,13 +1,10 @@
 import type { FC } from "react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import type { Identifier, XYCoord } from "dnd-core";
 import { FeedResItem } from "@/db";
 import { DragItem, DropItem, ItemTypes } from "./ItemTypes";
-
-const style = {
-  cursor: "move",
-};
+import clsx from "clsx";
 
 export interface CardProps {
   uuid: string;
@@ -19,11 +16,7 @@ export interface CardProps {
   arrow?: React.ReactNode;
   isActive: Boolean;
   level?: number;
-  onMove: (
-    a: [dragIndex: number, uuid: string, dragItem: DragItem],
-    b: [hoverIndex: number, uuid: string, dropResult: DropItem]
-  ) => void;
-  onDrop: () => void;
+  onDrop: (item: any, dropResult: any, position: string | null) => void;
 }
 
 export const SubscribeItem: FC<CardProps> = ({
@@ -32,18 +25,31 @@ export const SubscribeItem: FC<CardProps> = ({
   feed,
   index,
   level,
-  onMove,
   ...props
 }) => {
   const ref = useRef<HTMLDivElement>(null);
-  const [{ handlerId }, drop] = useDrop<
-    DragItem,
-    void,
-    { handlerId: Identifier | null }
-  >({
+  const [insertTileIndicator, setInsertTileIndicator] = useState<string | null>(
+    null
+  );
+  const [{ handlerId, isOver, canDrop }, drop] = useDrop({
     accept: [ItemTypes.CARD, ItemTypes.BOX],
+    drop: (item: FeedResItem, monitor) => {
+      if (monitor.didDrop()) {
+        return
+      }
+
+      if (item.uuid === feed.uuid) {
+        return;
+      }
+
+      props.onDrop(item, feed, insertTileIndicator);
+
+      return feed;
+    },
     collect(monitor) {
       return {
+        isOver: monitor.isOver({ shallow: true }),
+        canDrop: monitor.canDrop(),
         handlerId: monitor.getHandlerId(),
       };
     },
@@ -54,8 +60,7 @@ export const SubscribeItem: FC<CardProps> = ({
       const dragIndex = item.index;
       const hoverIndex = index;
 
-      // Don't replace items with themselves
-      if (dragIndex === hoverIndex) {
+      if (item.uuid === feed.uuid) {
         return;
       }
 
@@ -77,31 +82,38 @@ export const SubscribeItem: FC<CardProps> = ({
       // When dragging upwards, only move when the cursor is above 50%
 
       // Dragging downwards
-      if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
-        return;
+      // if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
+      //   return;
+      // }
+
+      // // Dragging upwards
+      // if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
+      //   return;
+      // }
+      // const isOver = monitor.isOver({ shallow: true });
+      const bottom = hoverClientY > hoverMiddleY + 5;
+      const top = hoverClientY < hoverMiddleY - 5;
+
+      let insertCaretDirection = "";
+
+      if (bottom) {
+        insertCaretDirection = "bottom";
+      } else if (top) {
+        insertCaretDirection = "top";
+      } else {
+        insertCaretDirection = "middle";
       }
 
-      // Dragging upwards
-      if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
-        return;
+      if (isOver && insertCaretDirection) {
+        setInsertTileIndicator(insertCaretDirection);
+      } else {
+        setInsertTileIndicator(null);
       }
-
-      // Time to actually perform the action
-      onMove(
-        [dragIndex, item.uuid, item],
-        [hoverIndex, uuid, monitor.getDropResult() as DropItem]
-      );
-
-      // Note: we're mutating the monitor item here!
-      // Generally it's better to avoid mutations,
-      // but it's good here for the sake of performance
-      // to avoid expensive index searches.
-      item.index = hoverIndex;
     },
   });
 
   const [{ isDragging }, drag] = useDrag({
-    type: ItemTypes.CARD,
+    type: feed.item_type === "channel" ? ItemTypes.CARD : ItemTypes.BOX,
     item: () => {
       return { index, ...feed };
     },
@@ -109,9 +121,11 @@ export const SubscribeItem: FC<CardProps> = ({
       isDragging: monitor.isDragging(),
     }),
     end(item, monitor) {
-      if (monitor.didDrop()) {
-        props.onDrop();
-      }
+      // const dropResult = monitor.getDropResult<FeedResItem>();
+
+      // if (dropResult && item && monitor.didDrop()) {
+      //   props.onDrop(item, dropResult, insertTileIndicator);
+      // }
     },
   });
 
@@ -120,7 +134,14 @@ export const SubscribeItem: FC<CardProps> = ({
   drag(drop(ref));
 
   return (
-    <div ref={ref} style={{ ...style, opacity }} data-handler-uuid={handlerId}>
+    <div
+      ref={ref}
+      style={{ opacity }}
+      className={clsx("overflow-hidden relative", {
+        [`select-${insertTileIndicator}`]: isOver,
+      })}
+      data-handler-uuid={handlerId}
+    >
       {props.children}
     </div>
   );

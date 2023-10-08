@@ -113,7 +113,7 @@ export const ItemView: FC<CardProps> = ({
             }
           )}
         >
-        {feed.title}
+        {index} - {feed.title}
         </span>
         {unread > 0 && (
           <span
