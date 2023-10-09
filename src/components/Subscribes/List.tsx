@@ -5,14 +5,23 @@ import { SubscribeItem } from "./SubscribeItem";
 import { useBearStore } from "@/stores";
 import { FeedResItem } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
-import { Folder } from "./Folder";
 import { ItemView } from "./ItemView";
-import { DragItem, DropItem, ItemTypes } from "./ItemTypes";
-import { findItemDeep, removeItem } from "./utilities";
-import { motion } from "framer-motion";
+import {
+  adjustedTargetIndex,
+  findFolderAndIndex,
+  findItemDeep,
+  getParent,
+  removeItem,
+} from "./utilities";
 
 export interface ContainerState {
   feeds: FeedResItem[];
+}
+
+export interface TreeItem {
+  uuid: string;
+  data: FeedResItem;
+  children: FeedResItem[];
 }
 
 export const List = () => {
@@ -31,125 +40,117 @@ export const List = () => {
       const dragUuid = dragItem.uuid;
       const dropUuid = dropResult.uuid;
       let list = [...feeds];
+      let dragIndex = feeds.findIndex((item) => item.uuid === dragUuid);
+      let dropIndex = feeds.findIndex((item) => item.uuid === dropUuid);
 
-      let dragIndex = feeds.findIndex((item) => item.uuid === dragItem.uuid);
-      let dropIndex = feeds.findIndex((item) => item.uuid === dropResult.uuid);
+      const dragItemParent = getParent(list, dragUuid);
+      const dropItemParent = getParent(list, dropUuid);
 
-      // when drag folder, just change position
-      if (dragItem.item_type === "folder") {
-        if (position === "middle") {
-          return;
-        }
+      if (
+        (dragItemParent && dropItemParent) ||
+        (dragItemParent &&
+          !dropItemParent &&
+          dropResult.item_type === "folder" &&
+          position === "middle")
+      ) {
+        // from folder to folder
+        console.log("%c Line:58 🍑 from folder to folder", "color:#ffdd4d");
+        const [dragItemParentIndex] = findFolderAndIndex(
+          feeds,
+          dragItemParent.uuid
+        );
+        const [dropItemParentIndex] = findFolderAndIndex(
+          feeds,
+          dropItemParent?.uuid || dropResult.uuid
+        );
 
+        dragItemParent.children = removeItem(dragItemParent.children, dragUuid);
+        const indexInFolder = (dropItemParent || dropResult).children.findIndex(
+          (item) => item.uuid === dragUuid
+        );
+        (dropItemParent || dropResult).children = update(
+          (dropItemParent || dropResult).children,
+          {
+            $splice: [
+              [indexInFolder, indexInFolder > -1 ? 1 : 0],
+              [
+                adjustedTargetIndex(dropIndex, indexInFolder, position),
+                0,
+                dragItem as FeedResItem,
+              ],
+            ],
+          }
+        );
+
+        list[dragItemParentIndex] = dragItemParent;
+        list[dropItemParentIndex] = dropItemParent || dropResult;
+      } else if (dragItemParent && !dropItemParent) {
+        // from folder to global
+        const [dragItemParentIndex] = findFolderAndIndex(
+          feeds,
+          dragItemParent.uuid
+        );
+        const [dropItemParentIndex] = findFolderAndIndex(
+          feeds,
+          dropResult.uuid
+        );
+
+        dragItemParent.children = removeItem(dragItemParent.children, dragUuid);
+        list[dragItemParentIndex] = dragItemParent;
+        list = update(list, {
+          $splice: [
+            [
+              adjustedTargetIndex(dropItemParentIndex, -1, position),
+              0,
+              dragItem,
+            ],
+          ],
+        });
+      } else if (
+        (!dragItemParent && dropItemParent) ||
+        (!dragItemParent &&
+          !dropItemParent && dragItem.item_type === "channel" &&
+          dropResult.item_type === "folder")
+      ) {
+        const [dropItemParentIndex] = findFolderAndIndex(
+          feeds,
+          dropItemParent?.uuid || dropResult.uuid
+        );
+
+        const indexInFolder = (dropItemParent || dropResult).children.findIndex(
+          (item) => item.uuid === dragUuid
+        );
+        (dropItemParent || dropResult).children = update(
+          (dropItemParent || dropResult).children,
+          {
+            $splice: [
+              [indexInFolder, indexInFolder > -1 ? 1 : 0],
+              [
+                adjustedTargetIndex(dropIndex, indexInFolder, position),
+                0,
+                dragItem as FeedResItem,
+              ],
+            ],
+          }
+        );
+
+        list[dropItemParentIndex] = dropItemParent || dropResult;
         list = update(list, {
           $splice: [
             [dragIndex, 1],
-            [dropIndex + (position === "top" ? 0 : 1), 0, dragItem],
           ],
         });
-      } else {
-        // when drag to/in folder
-        if (dropResult?.folder_uuid) {
-          const folderIndex = feeds.findIndex(
-            (item) => item.uuid === dropResult.folder_uuid
-          );
-          const folder = feeds[folderIndex];
-          const indexInFolder = folder.children.findIndex(
-            (item) => item.uuid === dragUuid
-          );
-
-          let newFolder = { ...folder };
-
-          dragItem.folder_uuid = folder.uuid;
-
-          dropIndex = folder.children.findIndex(
-            (item) => item.uuid === dropUuid
-          );
-
-          // already in folder, change position
-          if (indexInFolder > -1) {
-            newFolder = update(folder, {
-              children: {
-                $splice: [
-                  [indexInFolder, 1],
-                  [dropIndex, 0, dragItem as FeedResItem],
-                ],
-              },
-            });
-
-            list = update(list, {
-              $splice: [[folderIndex, 1, newFolder as FeedResItem]],
-            });
-          } else {
-            newFolder = update(folder, {
-              children: {
-                $splice: [[dropIndex, 0, dragItem as FeedResItem]],
-              },
-            });
-
-            list = removeItem(list, dragUuid);
-            let folderIdx: number = folderIndex;
-
-            list.forEach((_, idx) => {
-              if (_.uuid === folder.uuid) {
-                folderIdx = idx;
-              }
-            });
-
-            if (folderIdx > -1) {
-              list[folderIdx] = newFolder;
-            }
-          }
-        } else if (!dropResult?.folder_uuid) {
-          // drag out from folder
-          if (dragItem.folder_uuid) {
-            const folderIndex = feeds.findIndex(
-              (item) => item.uuid === dragItem.folder_uuid
-            );
-            const folder = feeds[folderIndex];
-            const indexInFolder = folder.children.findIndex(
-              (item) => item.uuid === dragUuid
-            );
-            dropIndex = feeds.findIndex((item) => item.uuid === dropUuid);
-            console.log("%c Line:142 🍇 dropIndex", "color:#ed9ec7", dropIndex);
-
-            dragItem.folder_uuid = "";
-
-            let newFolder = update(
-              { ...folder },
-              {
-                children: {
-                  $splice: [[indexInFolder, 1]],
-                },
-              }
-            );
-
-            list = update(list, {
-              $splice: [
-                [dropIndex + (position === "top" ? 0 : 1), 0, dragItem],
-              ],
-            });
-            let folderIdx: number = folderIndex;
-
-            list.forEach((_, idx) => {
-              if (_.uuid === folder.uuid) {
-                folderIdx = idx;
-              }
-            });
-
-            if (folderIdx > -1) {
-              list[folderIdx] = newFolder;
-            }
-          } else {
-            list = update(list, {
-              $splice: [
-                [dragIndex, 1],
-                [dropIndex + (position === "top" ? 0 : 1), 0, dragItem],
-              ],
-            });
-          }
-        }
+        // from global to folder
+      } else if (!dragItemParent && !dropItemParent) {
+        list = update(list, {
+          $splice: [
+            [dragIndex, 1],
+            [adjustedTargetIndex(dropIndex, dragIndex, position), 0, dragItem],
+          ],
+        });
       }
+
+      console.log("%c Line:225 🍧 list", "color:#2eafb0", list);
 
       setFeeds(() => list);
 
@@ -186,9 +187,10 @@ export const List = () => {
         });
 
         if ((feed.children || []).length > 0) {
-          feed.children.forEach((child) => {
+          feed.children.forEach((child, idx) => {
             item.uuid = child.uuid || "";
             item.item_type = child.item_type;
+            item.sort = idx;
             (item.folder_uuid = feed.uuid),
               acu.push({
                 ...item,
@@ -258,55 +260,6 @@ export const List = () => {
     },
     [feeds, store.feed]
   );
-
-  const renderCard = useCallback(
-    (feed: FeedResItem, index: number) => {
-      const isActive = store?.feed?.uuid === feed.uuid;
-
-      if (feed.item_type === "channel") {
-        return renderFeed(feed, index, isActive, 1);
-      } else {
-        return (
-          <Folder
-            index={index}
-            uuid={feed.uuid}
-            feed={{ ...feed }}
-            isExpanded={feed.is_expanded || false}
-            onDrop={() => onSubscribeItemDrop()}
-            // onDrop={(dragItem: DragItem) =>
-            //   handleDropIntoFolder(index, dragItem, feed)
-            // }
-            onMove={moveItem}
-            key={index}
-          >
-            <ItemView
-              index={index}
-              uuid={feed.uuid}
-              level={1}
-              text={feed.title}
-              feed={{ ...feed }}
-              isActive={isActive}
-              isExpanded={feed.is_expanded || false}
-              toggleFolder={toggleFolder}
-            />
-            {feed.children &&
-              feed.children.map((child, idx) => {
-                const isActive = store?.feed?.uuid === child.uuid;
-
-                return renderFeed(child, idx, isActive, 2);
-              })}
-          </Folder>
-        );
-      }
-    },
-    [feeds, store.feed]
-  );
-
-  function getStyle(backgroundColor: string): CSSProperties {
-    return {
-      backgroundColor,
-    };
-  }
 
   useEffect(() => {
     setFeeds([...store.feedList]);

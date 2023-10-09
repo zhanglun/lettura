@@ -137,27 +137,31 @@ code {
   .is-drag-over {
     border: 1px solid red;
   }
-  .select-top::after {
+
+  .indicator-top::after {
     content: "";
     position: absolute;
     left: 0;
     right: 0;
-    top: 0px;
+    top: -1px;
     background-color: var(--color-primary);
     height: 2px;
   }
 
-  .select-bottom::after {
+  .indicator-bottom::after {
     content: "";
     position: absolute;
-    bottom: 0;
+    bottom: -1px;
     left: 0;
     right: 0;
-    background-color: var(--color-primary);
+    /* background-color: var(--color-primary); */
+    background-color: green;
     height: 2px;
   }
 
-  .select-middle {
-    background-color: red;
+  .indicator-middle {
+    border-color: var(--color-primary);
+    border-style: dashed;
+    /* background-color: red; */
   }
 }

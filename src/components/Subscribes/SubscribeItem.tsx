@@ -121,11 +121,6 @@ export const SubscribeItem: FC<CardProps> = ({
       isDragging: monitor.isDragging(),
     }),
     end(item, monitor) {
-      // const dropResult = monitor.getDropResult<FeedResItem>();
-
-      // if (dropResult && item && monitor.didDrop()) {
-      //   props.onDrop(item, dropResult, insertTileIndicator);
-      // }
     },
   });
 
@@ -137,8 +132,10 @@ export const SubscribeItem: FC<CardProps> = ({
     <div
       ref={ref}
       style={{ opacity }}
-      className={clsx("overflow-hidden relative", {
-        [`select-${insertTileIndicator}`]: isOver,
+      className={clsx(
+        "relative rounded-md border border-transparent",
+        {
+        [`indicator-${insertTileIndicator}`]: isOver,
       })}
       data-handler-uuid={handlerId}
     >
