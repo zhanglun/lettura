@@ -460,7 +460,7 @@ pub fn update_feed_sort(sorts: Vec<FeedSort>) -> usize {
           "
           insert into feed_metas (id, uuid, folder_uuid, sort) values
         ((select id from feed_metas where uuid = ?), ?, ?, ?)
-        ON CONFLICT(id) DO UPDATE SET sort = excluded.sort;
+        ON CONFLICT(id) DO UPDATE SET folder_uuid = excluded.folder_uuid, sort = excluded.sort;
         "
         ))
         .bind::<Text, _>(&item.uuid)
