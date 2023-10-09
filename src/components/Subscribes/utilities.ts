@@ -11,8 +11,8 @@ export function getProjection(
   dragOffset: number,
   indentationWidth: number
 ) {
-  const overItemIndex = items.findIndex(({id}) => id === overId);
-  const activeItemIndex = items.findIndex(({id}) => id === activeId);
+  const overItemIndex = items.findIndex(({ id }) => id === overId);
+  const activeItemIndex = items.findIndex(({ id }) => id === activeId);
   const activeItem = items[activeItemIndex];
   const newItems = arrayMove(items, activeItemIndex, overItemIndex);
   const previousItem = newItems[overItemIndex - 1];
@@ -22,7 +22,7 @@ export function getProjection(
   const maxDepth = getMaxDepth({
     previousItem,
   });
-  const minDepth = getMinDepth({nextItem});
+  const minDepth = getMinDepth({ nextItem });
   let depth = projectedDepth;
 
   if (projectedDepth >= maxDepth) {
@@ -31,7 +31,7 @@ export function getProjection(
     depth = minDepth;
   }
 
-  return {depth, maxDepth, minDepth, parentId: getParentId()};
+  return { depth, maxDepth, minDepth, parentId: getParentId() };
 
   function getParentId() {
     if (depth === 0 || !previousItem) {
@@ -55,7 +55,7 @@ export function getProjection(
   }
 }
 
-function getMaxDepth({previousItem}: {previousItem: FlattenedItem}) {
+function getMaxDepth({ previousItem }: { previousItem: FlattenedItem }) {
   if (previousItem) {
     return previousItem.depth + 1;
   }
@@ -63,7 +63,7 @@ function getMaxDepth({previousItem}: {previousItem: FlattenedItem}) {
   return 0;
 }
 
-function getMinDepth({nextItem}: {nextItem: FlattenedItem}) {
+function getMinDepth({ nextItem }: { nextItem: FlattenedItem }) {
   if (nextItem) {
     return nextItem.depth;
   }
@@ -79,7 +79,7 @@ function flatten(
   return items.reduce<FeedResItem[]>((acc, item, index) => {
     return [
       ...acc,
-      {...item, parentId, depth, index},
+      { ...item, parentId, depth, index },
       ...flatten(item.children, item.uuid, depth + 1),
     ];
   }, []);
@@ -90,16 +90,16 @@ export function flattenTree(items: FeedResItem[]): FeedResItem[] {
 }
 
 export function buildTree(flattenedItems: FlattenedItem[]): TreeItems {
-  const root: TreeItem = {id: 'root', children: []};
-  const nodes: Record<string, TreeItem> = {[root.id]: root};
-  const items = flattenedItems.map((item) => ({...item, children: []}));
+  const root: TreeItem = { id: "root", children: [] };
+  const nodes: Record<string, TreeItem> = { [root.id]: root };
+  const items = flattenedItems.map((item) => ({ ...item, children: [] }));
 
   for (const item of items) {
-    const {id, children} = item;
+    const { id, children } = item;
     const parentId = item.parentId ?? root.id;
     const parent = nodes[parentId] ?? findItem(items, parentId);
 
-    nodes[id] = {id, children};
+    nodes[id] = { id, children };
     parent.children.push(item);
   }
 
@@ -107,7 +107,7 @@ export function buildTree(flattenedItems: FlattenedItem[]): TreeItems {
 }
 
 export function findItem(items: FeedResItem[], itemId: string) {
-  return items.find(({uuid}) => uuid === itemId);
+  return items.find(({ uuid }) => uuid === itemId);
 }
 
 export function findItemDeep(
@@ -115,7 +115,7 @@ export function findItemDeep(
   itemId: string
 ): FeedResItem | undefined {
   for (const item of items) {
-    const {uuid, children = []} = item;
+    const { uuid, children = [] } = item;
 
     if (uuid === itemId) {
       return item;
@@ -172,7 +172,7 @@ export function setProperty<T extends keyof TreeItem>(
 }
 
 function countChildren(items: TreeItem[], count = 0): number {
-  return items.reduce((acc, {children}) => {
+  return items.reduce((acc, { children }) => {
     if (children.length) {
       return countChildren(children, acc + 1);
     }
@@ -203,4 +203,51 @@ export function removeChildrenOf(
 
     return true;
   });
+}
+
+export function findFolderAndIndex(
+  items: FeedResItem[],
+  uuid: string
+): [number, FeedResItem] {
+  const index = items.findIndex((item) => item.uuid === uuid);
+
+  if (index > -1) {
+    return [index, { ...items[index] }];
+  } else {
+    return [index, {} as FeedResItem];
+  }
+}
+
+export function adjustedTargetIndex(
+  targetIndex: number,
+  foundIndex: number,
+  position: string | null
+) {
+  if (position !== "top") {
+    targetIndex += 1;
+  }
+
+  if (foundIndex === -1) {
+    return targetIndex;
+  } else {
+    return targetIndex > foundIndex ? targetIndex - 1 : targetIndex;
+  }
+}
+
+export function getParent(items: FeedResItem[], uuid: string): FeedResItem | null {
+  for (const item of items) {
+    if (item.children && item.children.length > 0) {
+      if (item.children.some(child => child.uuid === uuid)) {
+        return item; // 找到了父级元素
+      } else {
+        const foundParent = getParent(item.children, uuid);
+
+        if (foundParent) {
+          return foundParent; // 找到了父级元素
+        }
+      }
+    }
+  }
+
+  return null; // 没有找到匹配的父级元素
 }
