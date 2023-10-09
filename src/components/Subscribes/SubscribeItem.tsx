@@ -31,7 +31,13 @@ export const SubscribeItem: FC<CardProps> = ({
   const [insertTileIndicator, setInsertTileIndicator] = useState<string | null>(
     null
   );
-  const [{ handlerId, isOver, canDrop }, drop] = useDrop({
+  const [{ handlerId, isOver }, drop] = useDrop<
+    DragItem,
+    FeedResItem,
+    { handlerId: Identifier | null,
+    isOver: boolean,
+    }
+  >({
     accept: [ItemTypes.CARD, ItemTypes.BOX],
     drop: (item: FeedResItem, monitor) => {
       if (monitor.didDrop()) {
@@ -49,7 +55,6 @@ export const SubscribeItem: FC<CardProps> = ({
     collect(monitor) {
       return {
         isOver: monitor.isOver({ shallow: true }),
-        canDrop: monitor.canDrop(),
         handlerId: monitor.getHandlerId(),
       };
     },

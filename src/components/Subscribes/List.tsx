@@ -11,18 +11,9 @@ import {
   findFolderAndIndex,
   findItemDeep,
   getParent,
-  removeItem,
+  removeItem, TreeItem,
 } from "./utilities";
 
-export interface ContainerState {
-  feeds: FeedResItem[];
-}
-
-export interface TreeItem {
-  uuid: string;
-  data: FeedResItem;
-  children: FeedResItem[];
-}
 
 export const List = () => {
   const store = useBearStore((state) => ({
@@ -30,18 +21,18 @@ export const List = () => {
     feedList: state.feedList,
     feed: state.feed,
   }));
-  const [feeds, setFeeds] = useState<FeedResItem[]>([]);
+  const [treeData, setTreeData] = useState<TreeItem[]>([]);
   const moveItem = useCallback(
     (
-      dragItem: FeedResItem,
-      dropResult: FeedResItem,
+      dragItem: TreeItem,
+      dropResult: TreeItem,
       position: string | null
     ) => {
       const dragUuid = dragItem.uuid;
       const dropUuid = dropResult.uuid;
-      let list = [...feeds];
-      let dragIndex = feeds.findIndex((item) => item.uuid === dragUuid);
-      let dropIndex = feeds.findIndex((item) => item.uuid === dropUuid);
+      let list = [...treeData];
+      let dragIndex = treeData.findIndex((item) => item.uuid === dragUuid);
+      let dropIndex = treeData.findIndex((item) => item.uuid === dropUuid);
 
       const dragItemParent = getParent(list, dragUuid);
       const dropItemParent = getParent(list, dropUuid);
@@ -56,11 +47,11 @@ export const List = () => {
         // from folder to folder
         console.log("%c Line:58 🍑 from folder to folder", "color:#ffdd4d");
         const [dragItemParentIndex] = findFolderAndIndex(
-          feeds,
+          treeData,
           dragItemParent.uuid
         );
         const [dropItemParentIndex] = findFolderAndIndex(
-          feeds,
+          treeData,
           dropItemParent?.uuid || dropResult.uuid
         );
 
@@ -87,11 +78,11 @@ export const List = () => {
       } else if (dragItemParent && !dropItemParent) {
         // from folder to global
         const [dragItemParentIndex] = findFolderAndIndex(
-          feeds,
+          treeData,
           dragItemParent.uuid
         );
         const [dropItemParentIndex] = findFolderAndIndex(
-          feeds,
+          treeData,
           dropResult.uuid
         );
 
@@ -113,7 +104,7 @@ export const List = () => {
           dropResult.item_type === "folder")
       ) {
         const [dropItemParentIndex] = findFolderAndIndex(
-          feeds,
+          treeData,
           dropItemParent?.uuid || dropResult.uuid
         );
 
@@ -152,23 +143,23 @@ export const List = () => {
 
       console.log("%c Line:225 🍧 list", "color:#2eafb0", list);
 
-      setFeeds(() => list);
+      setTreeData(() => list);
 
       return list;
     },
-    [feeds]
+    [treeData]
   );
 
   const onSubscribeItemDrop = useCallback(
     (
-      dragItem: FeedResItem,
-      dropResult: FeedResItem,
+      dragItem: TreeItem,
+      dropResult: TreeItem,
       position: string | null
     ) => {
       let list = moveItem(dragItem, dropResult, position);
       requestUpdateOrder(list || []);
     },
-    [feeds]
+    [treeData]
   );
 
   const requestUpdateOrder = (list: FeedResItem[]) => {
@@ -216,7 +207,7 @@ export const List = () => {
   };
 
   const toggleFolder = (folderId: string) => {
-    const newTreeData = [...feeds];
+    const newTreeData = [...treeData];
     const folder = findItemDeep(newTreeData, folderId);
 
     if (!folder || folder.item_type !== "folder") {
@@ -225,11 +216,11 @@ export const List = () => {
 
     folder.is_expanded = !folder.is_expanded;
 
-    setFeeds([...newTreeData]);
+    setTreeData([...newTreeData]);
   };
 
   const renderFeed = useCallback(
-    (feed: FeedResItem, index: number, level = 1) => {
+    (feed: TreeItem, index: number, level = 1) => {
       const isActive = store?.feed?.uuid === feed.uuid;
       return (
         <SubscribeItem
@@ -253,21 +244,26 @@ export const List = () => {
           />
           {feed.children &&
             feed.children.map((child, idx) => {
-              return renderFeed(child, idx, 2);
+              return renderFeed(child as TreeItem, idx, 2);
             })}
         </SubscribeItem>
       );
     },
-    [feeds, store.feed]
+    [treeData, store.feed]
   );
 
   useEffect(() => {
-    setFeeds([...store.feedList]);
+    setTreeData([...store.feedList].map(_ => {
+      return {
+        ..._,
+        is_expanded: false
+      };
+    }));
   }, [store.feedList]);
 
   return (
     <div>
-      <div className="">{feeds.map((feed, i) => renderFeed(feed, i))}</div>
+      <div className="">{treeData.map((feed, i) => renderFeed(feed, i))}</div>
     </div>
   );
 };
