@@ -95,7 +95,7 @@ export const SubscribeItem: FC<CardProps> = ({
       // if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
       //   return;
       // }
-      // const isOver = monitor.isOver({ shallow: true });
+
       const bottom = hoverClientY > hoverMiddleY + 5;
       const top = hoverClientY < hoverMiddleY - 5;
 
@@ -140,7 +140,9 @@ export const SubscribeItem: FC<CardProps> = ({
       className={clsx(
         "relative rounded-md border border-transparent",
         {
-        [`indicator-${insertTileIndicator}`]: isOver,
+          [`indicator-middle`]: isOver && insertTileIndicator === 'middle',
+          [`indicator-top`]: isOver && insertTileIndicator === 'top',
+          [`indicator-bottom`]: isOver && insertTileIndicator === 'bottom',
       })}
       data-handler-uuid={handlerId}
     >
