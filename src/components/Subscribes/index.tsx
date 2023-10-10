@@ -27,10 +27,13 @@ import { useQuery } from "@/helpers/parseXML";
 import { useRefresh } from "./useRefresh";
 import { TooltipBox } from "../TooltipBox";
 import { ListContainer } from "./ListContainer";
+import { copyText } from "@/helpers/copyText";
+import { useToast } from "../ui/use-toast";
 
 const ChannelList = (): JSX.Element => {
   const isToday = useMatch(RouteConfig.TODAY);
   const isAll = useMatch(RouteConfig.ALL);
+  const { toast } = useToast();
   const navigate = useNavigate();
   const [addFolderDialogStatus, setAddFolderDialogStatus] = useModal();
   const [editFolderDialogStatus, setEditFolderDialogStatus] = useModal();
@@ -52,6 +55,7 @@ const ChannelList = (): JSX.Element => {
     updateFeed: state.updateFeed,
     feedContextMenuTarget: state.feedContextMenuTarget,
     setFeedContextMenuTarget: state.setFeedContextMenuTarget,
+    setFeedContextMenuStatus: state.setFeedContextMenuStatus,
 
     setViewMeta: state.setViewMeta,
     collectionMeta: state.collectionMeta,
@@ -112,9 +116,7 @@ const ChannelList = (): JSX.Element => {
   }, []);
 
   const handleContextMenuChange = (status: boolean) => {
-    // if (!status) {
-    //   store.setFeedContextMenuTarget(null);
-    // }
+    store.setFeedContextMenuStatus(status)
   };
 
   useEffect(() => {
@@ -157,7 +159,6 @@ const ChannelList = (): JSX.Element => {
               </TooltipBox>
             }
           />
-
           <TooltipBox content="Update">
             <Icon onClick={startFresh}>
               <RefreshCw
@@ -263,6 +264,8 @@ const ChannelList = (): JSX.Element => {
             <ListContainer />
           </ContextMenuTrigger>
           <ContextMenuContent>
+            <ContextMenuItem>Mark all as read</ContextMenuItem>
+            <ContextMenuSeparator />
             {store.feedContextMenuTarget?.item_type === "folder" && (
               <>
                 <ContextMenuItem
@@ -282,7 +285,32 @@ const ChannelList = (): JSX.Element => {
                         open(store.feedContextMenuTarget?.link)
                       }
                     >
-                      Open {new URL(store.feedContextMenuTarget?.link).host}
+                      Open Home Page
+                    </ContextMenuItem>
+                    <ContextMenuSeparator />
+                    <ContextMenuItem
+                      onClick={() =>
+                        store.feedContextMenuTarget?.link &&
+                        copyText(store.feedContextMenuTarget?.link)
+                          .then(() => toast({
+                            title: "Current URL copied to clipboard",
+                            description: "Paste it wherever you like"
+                          }))
+                      }
+                    >
+                      Copy Feed URL
+                    </ContextMenuItem>
+                    <ContextMenuItem
+                      onClick={() =>
+                        store.feedContextMenuTarget?.link &&
+                        copyText(store.feedContextMenuTarget?.link)
+                        .then(() => toast({
+                          title: "Current URL copied to clipboard",
+                          description: "Paste it wherever you like"
+                        }))
+                      }
+                    >
+                      Copy Home Page URL
                     </ContextMenuItem>
                     <ContextMenuSeparator />
                     <ContextMenuItem
@@ -297,7 +325,7 @@ const ChannelList = (): JSX.Element => {
                         reloadFeedData(store.feedContextMenuTarget)
                       }
                     >
-                      Reload feed
+                      Reload feeds
                     </ContextMenuItem>
                     <ContextMenuSeparator />
                     <ContextMenuItem onClick={() => setEditFeedStatus(true)}>

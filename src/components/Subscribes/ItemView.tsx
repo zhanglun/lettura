@@ -37,6 +37,7 @@ export const ItemView: FC<CardProps> = ({
     getFeedList: state.getFeedList,
     setFeedContextMenuTarget: state.setFeedContextMenuTarget,
     feedContextMenuTarget: state.feedContextMenuTarget,
+    feedContextMenuStatus: state.feedContextMenuStatus,
   }));
 
   const handleToggle = () => {
@@ -67,7 +68,7 @@ export const ItemView: FC<CardProps> = ({
           {
             "hover:bg-primary bg-primary text-primary-foreground": isActive,
             "shadow-[inset_0_0_0_2px_var(--color-primary)]":
-              store.feedContextMenuTarget &&
+              store.feedContextMenuStatus && store.feedContextMenuTarget &&
               store.feedContextMenuTarget.uuid === feed.uuid,
             "pl-9": level === 2,
           }

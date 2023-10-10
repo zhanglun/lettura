@@ -35,6 +35,8 @@ export interface FeedSlice {
 
   feedContextMenuTarget: FeedResItem | null;
   setFeedContextMenuTarget: (target: FeedResItem | null) => void;
+  feedContextMenuStatus: boolean;
+  setFeedContextMenuStatus: (status: boolean) => void;
 }
 
 export const createFeedSlice: StateCreator<FeedSlice> = (
@@ -201,6 +203,12 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
   setFeedContextMenuTarget: (target: Channel | null) => {
     set(() => ({
       feedContextMenuTarget: target,
+    }));
+  },
+  feedContextMenuStatus: false,
+  setFeedContextMenuStatus(status) {
+    set(() => ({
+      feedContextMenuStatus: status,
     }));
   },
 });
