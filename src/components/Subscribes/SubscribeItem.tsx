@@ -31,7 +31,13 @@ export const SubscribeItem: FC<CardProps> = ({
   const [insertTileIndicator, setInsertTileIndicator] = useState<string | null>(
     null
   );
-  const [{ handlerId, isOver, canDrop }, drop] = useDrop({
+  const [{ handlerId, isOver }, drop] = useDrop<
+    DragItem,
+    FeedResItem,
+    { handlerId: Identifier | null,
+    isOver: boolean,
+    }
+  >({
     accept: [ItemTypes.CARD, ItemTypes.BOX],
     drop: (item: FeedResItem, monitor) => {
       if (monitor.didDrop()) {
@@ -49,7 +55,6 @@ export const SubscribeItem: FC<CardProps> = ({
     collect(monitor) {
       return {
         isOver: monitor.isOver({ shallow: true }),
-        canDrop: monitor.canDrop(),
         handlerId: monitor.getHandlerId(),
       };
     },
@@ -90,7 +95,7 @@ export const SubscribeItem: FC<CardProps> = ({
       // if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
       //   return;
       // }
-      // const isOver = monitor.isOver({ shallow: true });
+
       const bottom = hoverClientY > hoverMiddleY + 5;
       const top = hoverClientY < hoverMiddleY - 5;
 
@@ -135,7 +140,9 @@ export const SubscribeItem: FC<CardProps> = ({
       className={clsx(
         "relative rounded-md border border-transparent",
         {
-        [`indicator-${insertTileIndicator}`]: isOver,
+          [`indicator-middle`]: isOver && insertTileIndicator === 'middle',
+          [`indicator-top`]: isOver && insertTileIndicator === 'top',
+          [`indicator-bottom`]: isOver && insertTileIndicator === 'bottom',
       })}
       data-handler-uuid={handlerId}
     >

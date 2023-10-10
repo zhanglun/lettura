@@ -154,14 +154,12 @@ code {
     bottom: -1px;
     left: 0;
     right: 0;
-    /* background-color: var(--color-primary); */
-    background-color: green;
+    background-color: var(--color-primary);
     height: 2px;
   }
 
   .indicator-middle {
     border-color: var(--color-primary);
     border-style: dashed;
-    /* background-color: red; */
   }
 }
