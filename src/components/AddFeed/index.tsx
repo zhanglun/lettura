@@ -18,6 +18,7 @@ import { ArrowLeft, Loader2, Plus } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { TooltipBox } from "../TooltipBox";
 import { useBearStore } from "@/stores";
+import { Kbd } from "@/components/Kbd";
 
 export const AddFeedChannel = (props: any) => {
   const store = useBearStore((state) => ({
@@ -110,7 +111,11 @@ export const AddFeedChannel = (props: any) => {
 
   return (
     <Dialog open={showStatus} onOpenChange={handleStatusChange}>
-      <TooltipBox content="Add feed">
+      <TooltipBox content={
+        <>
+          Add feed <Kbd val="c" className="ml-3" />
+        </>
+      }>
         <DialogTrigger asChild>
           <Icon>
             <Plus size={16} />

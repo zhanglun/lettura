@@ -13,7 +13,7 @@ import {
           {props.children}
         </TooltipTrigger>
         <TooltipContent>
-          <p>{props.content}</p>
+          <p className="flex items-center gap-1">{props.content}</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
