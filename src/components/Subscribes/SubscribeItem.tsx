@@ -5,6 +5,7 @@ import type { Identifier, XYCoord } from "dnd-core";
 import { FeedResItem } from "@/db";
 import { DragItem, DropItem, ItemTypes } from "./ItemTypes";
 import clsx from "clsx";
+import { ItemView } from "./ItemView";
 
 export interface CardProps {
   uuid: string;
@@ -15,7 +16,9 @@ export interface CardProps {
   children?: any;
   arrow?: React.ReactNode;
   isActive: Boolean;
+  isExpanded: Boolean;
   level?: number;
+  toggleFolder: (uuid: string) => void;
   onDrop: (item: any, dropResult: any, position: string | null) => void;
 }
 
@@ -25,6 +28,9 @@ export const SubscribeItem: FC<CardProps> = ({
   feed,
   index,
   level,
+  isActive,
+  isExpanded,
+  toggleFolder,
   ...props
 }) => {
   const ref = useRef<HTMLDivElement>(null);
@@ -34,14 +40,12 @@ export const SubscribeItem: FC<CardProps> = ({
   const [{ handlerId, isOver }, drop] = useDrop<
     DragItem,
     FeedResItem,
-    { handlerId: Identifier | null,
-    isOver: boolean,
-    }
+    { handlerId: Identifier | null; isOver: boolean }
   >({
     accept: [ItemTypes.CARD, ItemTypes.BOX],
     drop: (item: FeedResItem, monitor) => {
       if (monitor.didDrop()) {
-        return
+        return;
       }
 
       if (item.uuid === feed.uuid) {
@@ -62,10 +66,12 @@ export const SubscribeItem: FC<CardProps> = ({
       if (!ref.current) {
         return;
       }
-      const dragIndex = item.index;
-      const hoverIndex = index;
 
       if (item.uuid === feed.uuid) {
+        return;
+      }
+
+      if (item.uuid === feed.folder_uuid) {
         return;
       }
 
@@ -82,20 +88,6 @@ export const SubscribeItem: FC<CardProps> = ({
       // Get pixels to the top
       const hoverClientY = (clientOffset as XYCoord).y - hoverBoundingRect.top;
 
-      // Only perform the move when the mouse has crossed half of the items height
-      // When dragging downwards, only move when the cursor is below 50%
-      // When dragging upwards, only move when the cursor is above 50%
-
-      // Dragging downwards
-      // if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
-      //   return;
-      // }
-
-      // // Dragging upwards
-      // if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
-      //   return;
-      // }
-
       const bottom = hoverClientY > hoverMiddleY + 5;
       const top = hoverClientY < hoverMiddleY - 5;
 
@@ -106,6 +98,9 @@ export const SubscribeItem: FC<CardProps> = ({
       } else if (top) {
         insertCaretDirection = "top";
       } else {
+        if (item.item_type === "folder" && feed.item_type === "folder") {
+          return;
+        }
         insertCaretDirection = "middle";
       }
 
@@ -125,8 +120,7 @@ export const SubscribeItem: FC<CardProps> = ({
     collect: (monitor: any) => ({
       isDragging: monitor.isDragging(),
     }),
-    end(item, monitor) {
-    },
+    end(item, monitor) {},
   });
 
   const opacity = isDragging ? 0.5 : 1;
@@ -137,16 +131,31 @@ export const SubscribeItem: FC<CardProps> = ({
     <div
       ref={ref}
       style={{ opacity }}
-      className={clsx(
-        "relative rounded-md border border-transparent",
-        {
-          [`indicator-middle`]: isOver && insertTileIndicator === 'middle',
-          [`indicator-top`]: isOver && insertTileIndicator === 'top',
-          [`indicator-bottom`]: isOver && insertTileIndicator === 'bottom',
+      className={clsx("relative rounded-md border border-transparent", {
+        [`indicator-middle`]: isOver && insertTileIndicator === "middle",
+        [`indicator-top`]: isOver && insertTileIndicator === "top",
+        [`indicator-bottom`]: isOver && insertTileIndicator === "bottom",
       })}
       data-handler-uuid={handlerId}
     >
-      {props.children}
+      <ItemView
+        index={index}
+        uuid={feed.uuid}
+        level={level}
+        text={feed.title}
+        feed={{ ...feed }}
+        isActive={isActive}
+        isExpanded={isExpanded || false}
+        toggleFolder={toggleFolder}
+      >
+        <div
+          className={clsx({
+            hidden: !isExpanded,
+          })}
+        >
+          {props.children}
+        </div>
+      </ItemView>
     </div>
   );
 };

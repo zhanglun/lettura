@@ -13,6 +13,7 @@ export interface CardProps {
   index: number;
   feed: FeedResItem;
   className?: String;
+  children?: any;
   arrow?: React.ReactNode;
   isActive: Boolean;
   isExpanded: Boolean;
@@ -51,6 +52,7 @@ export const ItemView: FC<CardProps> = ({
   const ico = logo || getChannelFavicon(link);
 
   return (
+    <div>
     <div
       key={feed.title}
       onClick={() => {
@@ -95,13 +97,6 @@ export const ItemView: FC<CardProps> = ({
         {feed.link && (
           <img
             src={ico}
-            onError={(e) => {
-              // @ts-ignore
-              e.target.onerror = null;
-
-              // @ts-ignore
-              // e.target.src = defaultSiteIcon;
-            }}
             className="h-4 w-4 rounded mr-2"
             alt={feed.title}
           />
@@ -114,7 +109,7 @@ export const ItemView: FC<CardProps> = ({
             }
           )}
         >
-        {index} - {feed.title}
+        {level} -{index} - {feed.title}
         </span>
         {unread > 0 && (
           <span
@@ -129,6 +124,8 @@ export const ItemView: FC<CardProps> = ({
           </span>
         )}
       </div>
+    </div>
+      {props.children}
     </div>
   );
 };

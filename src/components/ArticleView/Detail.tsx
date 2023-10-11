@@ -25,10 +25,16 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
   const ico = getChannelFavicon(channel_link);
   const [pageContent, setPageContent] = useState("");
   const [banner, setBanner] = useState("");
+  const [showBanner, setShowBanner] = useState(false);
 
   useEffect(() => {
     setBanner("");
     setPageContent("");
+
+    dataAgent.getBestImage(article.link).then(({ data }) => {
+      console.log("%c Line:39 🥖 data", "color:#fca650", data);
+      data && setBanner(data);
+    });
 
     article &&
       dataAgent.getArticleDetail(article.uuid).then((res) => {
@@ -47,13 +53,7 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
 
         // try to get the best banner if there is no image in article content
         // it will make render slower
-        if (content.search(/<img[^>]+>/gi) === -1) {
-          dataAgent.getBestImage(data.link).then(({ data }) => {
-            console.log("%c Line:39 🥖 data", "color:#fca650", data);
-            data && setBanner(data);
-          });
-        }
-
+        setShowBanner(content.search(/<img[^>]+>/gi) === -1);
         setPageContent(content);
       });
   }, [article]);
@@ -61,11 +61,11 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
   return (
     <AnimatePresence mode="wait">
       <motion.div
-        key={article.uuid}
-        initial={{ y: 10, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        exit={{ y: -10, opacity: 0 }}
-        transition={{ duration: 0.2 }}
+      // key={article.uuid}
+      // initial={{ y: 10, opacity: 0 }}
+      // animate={{ y: 0, opacity: 1 }}
+      // exit={{ y: -10, opacity: 0 }}
+      // transition={{ duration: 0.2 }}
       >
         <div className="m-auto">
           <div className="pb-4 border-b border-border">
@@ -94,12 +94,13 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
             </div>
           </div>
           <div className="m-auto pt-1 mt-6">
-            {banner && (
-              <div className={styles.banner}>
-                <img src={banner} alt="" />
+            {showBanner && (
+              <div className="w-full my-4 bg-accent text-center">
+                <img src={banner} alt="" className="w-full" />
               </div>
             )}
             <div
+              key={article.uuid}
               className={classnames("reading-content", "text-detail-paragraph")}
               // eslint-disable-next-line react/no-danger
               dangerouslySetInnerHTML={createMarkup(pageContent)}

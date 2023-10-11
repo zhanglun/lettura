@@ -11,9 +11,9 @@ import {
   findFolderAndIndex,
   findItemDeep,
   getParent,
-  removeItem, TreeItem,
+  removeItem,
+  TreeItem,
 } from "./utilities";
-
 
 export const List = () => {
   const store = useBearStore((state) => ({
@@ -23,11 +23,7 @@ export const List = () => {
   }));
   const [treeData, setTreeData] = useState<TreeItem[]>([]);
   const moveItem = useCallback(
-    (
-      dragItem: TreeItem,
-      dropResult: TreeItem,
-      position: string | null
-    ) => {
+    (dragItem: TreeItem, dropResult: TreeItem, position: string | null) => {
       const dragUuid = dragItem.uuid;
       const dropUuid = dropResult.uuid;
       let list = [...treeData];
@@ -36,6 +32,10 @@ export const List = () => {
 
       const dragItemParent = getParent(list, dragUuid);
       const dropItemParent = getParent(list, dropUuid);
+
+      if (dragUuid == dropUuid || dragUuid === dropItemParent?.uuid) {
+        return false;
+      }
 
       if (
         (dragItemParent && dropItemParent) ||
@@ -100,7 +100,8 @@ export const List = () => {
       } else if (
         (!dragItemParent && dropItemParent) ||
         (!dragItemParent &&
-          !dropItemParent && dragItem.item_type === "channel" &&
+          !dropItemParent &&
+          dragItem.item_type === "channel" &&
           dropResult.item_type === "folder")
       ) {
         const [dropItemParentIndex] = findFolderAndIndex(
@@ -111,6 +112,8 @@ export const List = () => {
         const indexInFolder = (dropItemParent || dropResult).children.findIndex(
           (item) => item.uuid === dragUuid
         );
+
+        dragItem.folder_uuid = dropItemParent?.uuid || dropResult.uuid;
         (dropItemParent || dropResult).children = update(
           (dropItemParent || dropResult).children,
           {
@@ -127,9 +130,7 @@ export const List = () => {
 
         list[dropItemParentIndex] = dropItemParent || dropResult;
         list = update(list, {
-          $splice: [
-            [dragIndex, 1],
-          ],
+          $splice: [[dragIndex, 1]],
         });
         // from global to folder
       } else if (!dragItemParent && !dropItemParent) {
@@ -151,11 +152,7 @@ export const List = () => {
   );
 
   const onSubscribeItemDrop = useCallback(
-    (
-      dragItem: TreeItem,
-      dropResult: TreeItem,
-      position: string | null
-    ) => {
+    (dragItem: TreeItem, dropResult: TreeItem, position: string | null) => {
       let list = moveItem(dragItem, dropResult, position);
       requestUpdateOrder(list || []);
     },
@@ -228,20 +225,13 @@ export const List = () => {
           index={index}
           uuid={feed.uuid}
           text={feed.title}
+          level={level}
           feed={{ ...feed }}
           isActive={isActive}
+          isExpanded={feed.is_expanded}
+          toggleFolder={toggleFolder}
           onDrop={onSubscribeItemDrop}
         >
-          <ItemView
-            index={index}
-            uuid={feed.uuid}
-            level={level}
-            text={feed.title}
-            feed={{ ...feed }}
-            isActive={isActive}
-            isExpanded={feed.is_expanded || false}
-            toggleFolder={toggleFolder}
-          />
           {feed.children &&
             feed.children.map((child, idx) => {
               return renderFeed(child as TreeItem, idx, 2);
@@ -253,12 +243,14 @@ export const List = () => {
   );
 
   useEffect(() => {
-    setTreeData([...store.feedList].map(_ => {
-      return {
-        ..._,
-        is_expanded: false
-      };
-    }));
+    setTreeData(
+      [...store.feedList].map((_) => {
+        return {
+          ..._,
+          is_expanded: false,
+        };
+      })
+    );
   }, [store.feedList]);
 
   return (
