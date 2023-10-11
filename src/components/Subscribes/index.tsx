@@ -263,7 +263,7 @@ const ChannelList = (): JSX.Element => {
           <ContextMenuTrigger>
             <ListContainer />
           </ContextMenuTrigger>
-          <ContextMenuContent>
+          <ContextMenuContent key={store.feedContextMenuTarget?.uuid || "0"}>
             <ContextMenuItem>Mark all as read</ContextMenuItem>
             <ContextMenuSeparator />
             {store.feedContextMenuTarget?.item_type === "folder" && (
