@@ -90,6 +90,24 @@ const ChannelList = (): JSX.Element => {
     console.log("TODO");
   };
 
+  const markAllRead = () => {
+    if (store.feedContextMenuTarget) {
+      const { uuid } = store.feedContextMenuTarget;
+
+      dataAgent
+        .markAllRead({ uuid, isToday: !!isToday, isAll: !!isAll })
+        .then((res) => {
+          console.log("%c Line:98 🍷 res", "color:#465975", res);
+          getFeedList();
+          store.initCollectionMetas();
+
+          if (store.feed?.uuid === uuid) {
+
+          }
+        });
+    }
+  };
+
   useEffect(() => {
     feedList.forEach((feed) => {
       if (feed.uuid === channelUuid) {
@@ -116,7 +134,7 @@ const ChannelList = (): JSX.Element => {
   }, []);
 
   const handleContextMenuChange = (status: boolean) => {
-    store.setFeedContextMenuStatus(status)
+    store.setFeedContextMenuStatus(status);
   };
 
   useEffect(() => {
@@ -264,7 +282,13 @@ const ChannelList = (): JSX.Element => {
             <ListContainer />
           </ContextMenuTrigger>
           <ContextMenuContent key={store.feedContextMenuTarget?.uuid || "0"}>
-            <ContextMenuItem>Mark all as read</ContextMenuItem>
+            <ContextMenuItem
+              onClick={() => {
+                markAllRead();
+              }}
+            >
+              Mark all as read
+            </ContextMenuItem>
             <ContextMenuSeparator />
             {store.feedContextMenuTarget?.item_type === "folder" && (
               <>
@@ -291,11 +315,12 @@ const ChannelList = (): JSX.Element => {
                     <ContextMenuItem
                       onClick={() =>
                         store.feedContextMenuTarget?.link &&
-                        copyText(store.feedContextMenuTarget?.link)
-                          .then(() => toast({
+                        copyText(store.feedContextMenuTarget?.link).then(() =>
+                          toast({
                             title: "Current URL copied to clipboard",
-                            description: "Paste it wherever you like"
-                          }))
+                            description: "Paste it wherever you like",
+                          })
+                        )
                       }
                     >
                       Copy Feed URL
@@ -303,11 +328,12 @@ const ChannelList = (): JSX.Element => {
                     <ContextMenuItem
                       onClick={() =>
                         store.feedContextMenuTarget?.link &&
-                        copyText(store.feedContextMenuTarget?.link)
-                        .then(() => toast({
-                          title: "Current URL copied to clipboard",
-                          description: "Paste it wherever you like"
-                        }))
+                        copyText(store.feedContextMenuTarget?.link).then(() =>
+                          toast({
+                            title: "Current URL copied to clipboard",
+                            description: "Paste it wherever you like",
+                          })
+                        )
                       }
                     >
                       Copy Home Page URL

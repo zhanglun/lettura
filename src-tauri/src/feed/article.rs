@@ -394,13 +394,13 @@ impl Article {
     let mut connection = establish_connection();
     let mut channel_uuids: Vec<String> = vec![];
     let relations = schema::feed_metas::dsl::feed_metas
-      .filter(schema::feed_metas::uuid.eq(&uuid))
+      .filter(schema::feed_metas::folder_uuid.eq(&uuid))
       .load::<models::FeedMeta>(&mut connection)
       .expect("Expect find channel");
 
     if relations.len() > 0 {
       for relation in relations {
-        if relation.uuid == uuid {
+        if relation.folder_uuid == uuid {
           let uuid = String::from(relation.uuid);
 
           channel_uuids.push(uuid.clone());
