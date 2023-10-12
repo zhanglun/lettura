@@ -5,7 +5,7 @@ import { Panel, PanelSection } from "../Panel";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
-import { Channel } from "@/db";
+import { Channel, FeedResItem } from "@/db";
 import { writeTextFile } from "@tauri-apps/api/fs";
 import { save } from "@tauri-apps/api/dialog";
 import { busChannel } from "@/helpers/busChannel";
@@ -101,7 +101,7 @@ export const ImportAndExport = (props: any) => {
     }
   };
 
-  const createOPMLObj = (feeds: Channel[]) => {
+  const createOPMLObj = (feeds: FeedResItem[]) => {
     const xmlDoc = document.implementation.createDocument(null, "opml");
     const root = xmlDoc.getElementsByTagName("opml")[0];
 
@@ -147,7 +147,7 @@ export const ImportAndExport = (props: any) => {
     setExporting(true);
     dataAgent
       .getFeeds()
-      .then((feeds) => {
+      .then(({ data: feeds }) => {
         const doc = createOPMLObj(feeds);
         const serializer = new XMLSerializer();
         const xmlString = serializer.serializeToString(doc);
