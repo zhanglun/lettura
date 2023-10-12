@@ -208,8 +208,12 @@ export const getBestImage = async (
   });
 };
 
-export const getPageSources = async (url: string): Promise<string> => {
-  return invoke("get_web_source", { url });
+export const getPageSources = async (url: string): Promise<AxiosResponse<string>> => {
+  return request.get(`article-proxy`, {
+    params: {
+      url,
+    },
+  });
 };
 
 export const updateIcon = async (

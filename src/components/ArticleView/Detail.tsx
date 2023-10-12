@@ -101,9 +101,9 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
             </div>
           </div>
           <div className="m-auto pt-1 mt-6">
-            {showBanner && (
+            {article.image && (
               <div className="w-full my-4  text-center">
-                <img src={banner} alt="" className="bg-accent" />
+                <img src={article.image} alt="" className="bg-accent" />
               </div>
             )}
             <div

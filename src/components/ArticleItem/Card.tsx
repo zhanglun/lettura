@@ -2,7 +2,7 @@ import React, { ForwardedRef, useEffect, useState } from "react";
 import classnames from "classnames";
 import Dayjs from "dayjs";
 import { useBearStore } from "@/stores";
-import { getChannelFavicon } from "@/helpers/parseXML";
+import {getBestImages, getChannelFavicon} from "@/helpers/parseXML";
 import * as dataAgent from "@/helpers/dataAgent";
 
 export const ArticleCardItem = (props: any) => {
@@ -50,9 +50,9 @@ export const ArticleCardItem = (props: any) => {
       if (match_img?.[1]) {
         setBanner(match_img[1]);
       } else {
-        // dataAgent.getBestImage(article.link).then((res) => {
-        //   setBanner(res);
-        // });
+        getBestImages([article]).then((res) => {
+          setBanner(res[0].image);
+        });
       }
     }
   }, [ article ]);
@@ -69,20 +69,8 @@ export const ArticleCardItem = (props: any) => {
       onClick={ handleClick }
       id={ article.uuid }
     >
-      {/*{ readStatus === 1 && (*/ }
-      {/*  <div className="absolute left-2 top-50% mt-[-1] w-2 h-2 rounded-full bg-primary"/>*/ }
-      {/*) }*/ }
-      {/*<div className="relative h-[140px] overflow-hidden bg-muted bg-cover bg-center">*/}
-      {/*  <div className="w-full h-full transition-all group-hover:scale-[1.5]" style={ { backgroundImage: `url(${ banner })` } }>*/}
-      {/*  </div>*/}
-      {/*</div>*/}
-      <div className="relative overflow-hidden w-full h-[140px] aspect-[1.57] group">
-          <div className="w-full h-full transition-all bg-center bg-cover group-hover:scale-[1.5]" style={ { backgroundImage: `url(${ banner })` } }>
-          </div>
-        <div className="
-            absolute left-0 right-0 bottom-0 top-0 transition-all
-            p-2 bg-gradient-to-r from-black/50 to-black/0 group-hover:from-white/0 group-hover:to-white/0
-          ">
+      <div className="relative h-[140px] overflow-hidden bg-muted">
+        <div className="w-full h-full bg-cover bg-center transition-all group-hover:scale-[1.5]" style={ { backgroundImage: `url(${ banner })` } }>
         </div>
       </div>
       <div className="p-4 space-y-2">
