@@ -1,7 +1,7 @@
 import { invoke } from "@tauri-apps/api";
 import { Article, ArticleResItem, Channel, FeedResItem, Folder } from "../db";
 import { request } from "@/helpers/request";
-import { AxiosResponse } from "axios";
+import { AxiosRequestConfig, AxiosResponse } from "axios";
 
 export const getChannels = async (
   filter: any
@@ -192,9 +192,10 @@ export const initProcess = async (): Promise<any> => {
 };
 
 export const getArticleDetail = async (
-  uuid: string
+  uuid: string,
+  config: AxiosRequestConfig
 ): Promise<AxiosResponse<ArticleResItem>> => {
-  return request.get(`articles/${uuid}`);
+  return request.get(`articles/${uuid}`, config);
 };
 
 export const getBestImage = async (

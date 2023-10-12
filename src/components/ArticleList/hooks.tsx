@@ -161,7 +161,7 @@ export const useArticleListHook = (props: {
   );
 
   useHotkeys("n", goNext);
-  useHotkeys("Shift+n, N", goPrev);
+  useHotkeys("Shift+n", goPrev);
 
   return {
     getList,

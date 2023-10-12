@@ -141,7 +141,7 @@ const ChannelList = (): JSX.Element => {
       className="relative flex flex-col w-[var(--app-channel-width)] h-full select-none border-r border-border text-[hsl(var(--foreground))]
   bg-[hsl(var(--background))]"
     >
-      <div className="flex items-center justify-end h-[var(--app-toolbar-height)] px-2 py-0 bg-[var(--background)]">
+      <div className="flex items-center justify-end h-[var(--app-toolbar-height)] px-2 py-0 bg-[var(--background)] border-b">
         <div />
         <div className="flex justify-end">
           <AddFeedChannel />

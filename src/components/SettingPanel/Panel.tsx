@@ -15,7 +15,7 @@ export const Panel = (props: PanelProps) => {
       <div className="mb-5">
         <h3 className="text-lg font-medium tracking-tight">{title}</h3>
         {subTitle && (
-          <p className="text-sm mb-3 mt-2 text-[hsl(var(--foreground)_/_0.6)] text-muted-foreground">
+          <p className="text-sm mb-3 mt-2 text-muted-foreground">
             {subTitle}
           </p>
         )}

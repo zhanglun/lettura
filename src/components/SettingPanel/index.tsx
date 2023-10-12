@@ -25,8 +25,10 @@ function SettingPanel() {
               General
             </Link>
             <Link to={RouteConfig.SETTINGS_APPEARANCE}>
-              <Palette size={16} className="mr-3" />
-              Appearance
+              <span className="flex items-center">
+                <Palette size={16} className="mr-3" />
+                Appearance
+              </span>
             </Link>
             <Link to={RouteConfig.SETTINGS_SHORTCUT}>
               <Keyboard size={16} className="mr-3" />
@@ -37,8 +39,10 @@ function SettingPanel() {
               Content
             </Link>
             <Link to={RouteConfig.SETTINGS_IMPORT}>
-              <Rss size={16} className="mr-3" />
-              Import/Export
+              <span className="flex items-center">
+                <Rss size={16} className="mr-3" />
+                Import/Export
+              </span>
             </Link>
           </nav>
         </aside>

@@ -45,10 +45,12 @@ export const Shortcut = () => {
     <Panel title="Shortcut">
       <PanelSection title="">
         <div className="w-full">
+          <KeyBox name="c" description="Subscribe feed" />
+          <Separator />
           <KeyBox name="n" description="View next article" />
           <Separator />
           <KeyBox
-            name={["N", "Shift + n"]}
+            name={["Shift + n"]}
             description="View previous article"
           />
           <Separator />
@@ -56,7 +58,7 @@ export const Shortcut = () => {
           <Separator />
           <KeyBox name="k" description="Scroll up" />
           <Separator />
-          <KeyBox name="o" description="Open link i browser" />
+          <KeyBox name="o" description="Open link in browser" />
         </div>
       </PanelSection>
     </Panel>

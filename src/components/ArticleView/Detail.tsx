@@ -26,18 +26,21 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
   const [pageContent, setPageContent] = useState("");
   const [banner, setBanner] = useState("");
   const [showBanner, setShowBanner] = useState(false);
+  const controller = new AbortController();
 
   useEffect(() => {
     setBanner("");
     setPageContent("");
 
-    dataAgent.getBestImage(article.link).then(({ data }) => {
-      console.log("%c Line:39 🥖 data", "color:#fca650", data);
-      data && setBanner(data);
-    });
+    // dataAgent.getBestImage(article.link).then(({ data }) => {
+    //   console.log("%c Line:39 🥖 data", "color:#fca650", data);
+    //   data && setBanner(data);
+    // });
 
     article &&
-      dataAgent.getArticleDetail(article.uuid).then((res) => {
+      dataAgent.getArticleDetail(article.uuid, {
+        signal: controller.signal
+      }).then((res) => {
         console.log("%c Line:102 🥓 res", "color:#33a5ff", res);
         const { data } = res;
         const content = (data.content || data.description || "").replace(
@@ -56,6 +59,10 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
         setShowBanner(content.search(/<img[^>]+>/gi) === -1);
         setPageContent(content);
       });
+
+      return () => {
+        controller.abort();
+      }
   }, [article]);
 
   return (
@@ -95,8 +102,8 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
           </div>
           <div className="m-auto pt-1 mt-6">
             {showBanner && (
-              <div className="w-full my-4 bg-accent text-center">
-                <img src={banner} alt="" className="w-full" />
+              <div className="w-full my-4  text-center">
+                <img src={banner} alt="" className="bg-accent" />
               </div>
             )}
             <div
