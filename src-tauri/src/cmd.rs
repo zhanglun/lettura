@@ -199,13 +199,6 @@ pub async fn get_all_articles(filter: feed::article::ArticleFilter) -> feed::art
 }
 
 #[command]
-pub fn delete_feed(uuid: String) -> usize {
-  let result = feed::channel::delete_feed(uuid);
-
-  result
-}
-
-#[command]
 pub async fn import_channels(list: Vec<String>) -> usize {
   println!("{:?}", &list);
   for url in &list {

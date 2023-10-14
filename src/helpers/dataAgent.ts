@@ -60,7 +60,7 @@ export const moveChannelIntoFolder = async (
  * @param {String} uuid  channel 的 uuid
  */
 export const deleteChannel = async (uuid: string) => {
-  return invoke("delete_feed", { uuid });
+  return request.delete(`feeds/${uuid}`)
 };
 
 export const deleteFolder = async (uuid: string) => {

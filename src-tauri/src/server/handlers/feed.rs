@@ -1,4 +1,4 @@
-use actix_web::{get, post, web, Responder, Result};
+use actix_web::{get, post, delete, web, Responder, Result};
 use log::info;
 
 use crate::feed;
@@ -7,6 +7,13 @@ use crate::feed;
 #[get("/api/feeds")]
 pub async fn handle_get_feeds() -> Result<impl Responder> {
   let results = feed::channel::get_channels();
+
+  Ok(web::Json(results))
+}
+
+#[delete("/api/feeds/{uuid}")]
+pub async fn handle_delete_feed(uuid: web::Path<String>) -> Result<impl Responder> {
+  let results = feed::channel::delete_feed(uuid.to_string());
 
   Ok(web::Json(results))
 }
@@ -31,5 +38,6 @@ pub fn config(cfg: &mut web::ServiceConfig) {
   cfg
     .service(handle_update_feed_sort)
     .service(handle_get_subscribes)
-    .service(handle_get_feeds);
+    .service(handle_get_feeds)
+    .service(handle_delete_feed);
 }

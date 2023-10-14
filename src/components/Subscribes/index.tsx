@@ -38,6 +38,7 @@ const ChannelList = (): JSX.Element => {
   const navigate = useNavigate();
   const [addFolderDialogStatus, setAddFolderDialogStatus] = useModal();
   const [editFolderDialogStatus, setEditFolderDialogStatus] = useModal();
+  const [deleteFolderStatus, setDeleteFolderStatus] = useModal();
   const [editFeedStatus, setEditFeedStatus] = useModal();
   const [showStatus, setModalStatus] = useModal();
   const [
@@ -301,7 +302,7 @@ const ChannelList = (): JSX.Element => {
                 </ContextMenuItem>
                 <ContextMenuSeparator/>
                 <ContextMenuItem
-                  onClick={() => setModalStatus(true)}
+                  onClick={() => setDeleteFolderStatus(true)}
                   className="text-red-600"
                 >
                   Delete folder
@@ -387,8 +388,10 @@ const ChannelList = (): JSX.Element => {
           afterCancel={() => store.setFeedContextMenuTarget(null)}
         />
         <DialogDeleteFolder
-          folder={store.feedContextMenuTarget as FeedResItem & Folder} dialogStatus={showStatus}
-          setDialogStatus={setModalStatus} afterConfirm={getFeedList}
+          folder={store.feedContextMenuTarget as FeedResItem & Folder}
+          dialogStatus={deleteFolderStatus}
+          setDialogStatus={setDeleteFolderStatus}
+          afterConfirm={getFeedList}
           afterCancel={() => store.setFeedContextMenuTarget(null)}
         />
         <DialogEditFeed
