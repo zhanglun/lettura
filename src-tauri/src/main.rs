@@ -134,6 +134,11 @@ async fn main() {
     sender: Mutex::new(async_process_input_tx),
   })
     .menu(core::menu::AppMenu::get_menu(&context))
+    .plugin(tauri_plugin_single_instance::init(|app, argv, cwd| {
+      println!("{}, {argv:?}, {cwd}", app.package_info().name);
+
+      // app.emit_all("single-instance", Payload { args: argv, cwd }).unwrap();
+    }))
     .plugin(tauri_plugin_log::Builder::default()
       .targets([
         LogTarget::LogDir,

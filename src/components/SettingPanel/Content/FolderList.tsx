@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { DataTable } from "./DataTable";
 import { Edit, Folder as FolderIcon, Trash2 } from "lucide-react";
-import { Folder } from "@/db";
+import {FeedResItem, Folder} from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
 import { useModal } from "@/components/Modal/useModal";
 import { CellContext, createColumnHelper } from "@tanstack/react-table";
@@ -84,7 +84,7 @@ export const FolderList = () => {
       <DialogDeleteFolder
         dialogStatus={showStatus}
         setDialogStatus={setModalStatus}
-        folder={currentFolder}
+        folder={currentFolder as Folder & FeedResItem}
         afterConfirm={getFolderList}
         afterCancel={() => {}}
       />

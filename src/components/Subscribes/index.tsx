@@ -1,15 +1,15 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useMatch, useNavigate } from "react-router-dom";
-import { Folder, RefreshCw, Settings, Coffee, Haze } from "lucide-react";
+import React, {useCallback, useEffect, useRef, useState} from "react";
+import {useMatch, useNavigate} from "react-router-dom";
+import {RefreshCw, Settings, Coffee, Haze, FolderPlus} from "lucide-react";
 import classNames from "classnames";
-import { listen } from "@tauri-apps/api/event";
-import { RouteConfig } from "@/config";
-import { FeedResItem } from "@/db";
+import {listen} from "@tauri-apps/api/event";
+import {RouteConfig} from "@/config";
+import {FeedResItem, Folder} from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
-import { busChannel } from "@/helpers/busChannel";
-import { useBearStore } from "@/stores";
-import { AddFeedChannel } from "../AddFeed";
-import { AddFolder } from "../AddFolder";
+import {busChannel} from "@/helpers/busChannel";
+import {useBearStore} from "@/stores";
+import {AddFeedChannel} from "../AddFeed";
+import {AddFolder} from "../AddFolder";
 
 import {
   ContextMenu,
@@ -18,22 +18,23 @@ import {
   ContextMenuSeparator,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import { Icon } from "../Icon";
-import { DialogUnsubscribeFeed } from "../SettingPanel/Content/DialogUnsubscribeFeed";
-import { useModal } from "../Modal/useModal";
-import { open } from "@tauri-apps/api/shell";
-import { DialogEditFeed } from "@/components/SettingPanel/Content/DialogEditFeed";
-import { useQuery } from "@/helpers/parseXML";
-import { useRefresh } from "./useRefresh";
-import { TooltipBox } from "../TooltipBox";
-import { ListContainer } from "./ListContainer";
-import { copyText } from "@/helpers/copyText";
-import { useToast } from "../ui/use-toast";
+import {Icon} from "../Icon";
+import {DialogUnsubscribeFeed} from "../SettingPanel/Content/DialogUnsubscribeFeed";
+import {useModal} from "../Modal/useModal";
+import {open} from "@tauri-apps/api/shell";
+import {DialogEditFeed} from "@/components/SettingPanel/Content/DialogEditFeed";
+import {useQuery} from "@/helpers/parseXML";
+import {useRefresh} from "./useRefresh";
+import {TooltipBox} from "../TooltipBox";
+import {ListContainer} from "./ListContainer";
+import {copyText} from "@/helpers/copyText";
+import {useToast} from "../ui/use-toast";
+import {DialogDeleteFolder} from "@/components/SettingPanel/Content/DialogDeleteFolder";
 
 const ChannelList = (): JSX.Element => {
   const isToday = useMatch(RouteConfig.TODAY);
   const isAll = useMatch(RouteConfig.ALL);
-  const { toast } = useToast();
+  const {toast} = useToast();
   const navigate = useNavigate();
   const [addFolderDialogStatus, setAddFolderDialogStatus] = useModal();
   const [editFolderDialogStatus, setEditFolderDialogStatus] = useModal();
@@ -80,10 +81,10 @@ const ChannelList = (): JSX.Element => {
 
   const reloadFeedIcon = (feed: FeedResItem | null) => {
     feed &&
-      dataAgent.updateIcon(feed.uuid, feed.link).then((res) => {
-        console.log("%c Line:139 🍷 res", "color:#ea7e5c", res);
-        feed.logo = res;
-      });
+    dataAgent.updateIcon(feed.uuid, feed.link).then((res) => {
+      console.log("%c Line:139 🍷 res", "color:#ea7e5c", res);
+      feed.logo = res;
+    });
   };
 
   const reloadFeedData = (feed: FeedResItem | null) => {
@@ -92,10 +93,10 @@ const ChannelList = (): JSX.Element => {
 
   const markAllRead = () => {
     if (store.feedContextMenuTarget) {
-      const { uuid } = store.feedContextMenuTarget;
+      const {uuid} = store.feedContextMenuTarget;
 
       dataAgent
-        .markAllRead({ uuid, isToday: !!isToday, isAll: !!isAll })
+        .markAllRead({uuid, isToday: !!isToday, isAll: !!isAll})
         .then((res) => {
           console.log("%c Line:98 🍷 res", "color:#465975", res);
           getFeedList();
@@ -159,10 +160,11 @@ const ChannelList = (): JSX.Element => {
       className="relative flex flex-col w-[var(--app-channel-width)] h-full select-none border-r border-border text-[hsl(var(--foreground))]
   bg-[hsl(var(--background))]"
     >
-      <div className="flex items-center justify-end h-[var(--app-toolbar-height)] px-2 py-0 bg-[var(--background)] border-b">
-        <div />
+      <div
+        className="flex items-center justify-end h-[var(--app-toolbar-height)] px-2 py-0 bg-[var(--background)] border-b">
+        <div/>
         <div className="flex justify-end">
-          <AddFeedChannel />
+          <AddFeedChannel/>
           <AddFolder
             action="add"
             dialogStatus={addFolderDialogStatus}
@@ -172,7 +174,7 @@ const ChannelList = (): JSX.Element => {
             trigger={
               <TooltipBox content="Add folder">
                 <Icon>
-                  <Folder size={16} />
+                  <FolderPlus size={16}/>
                 </Icon>
               </TooltipBox>
             }
@@ -188,7 +190,7 @@ const ChannelList = (): JSX.Element => {
 
           <TooltipBox content="Go to settings">
             <Icon onClick={goToSetting}>
-              <Settings size={16} />
+              <Settings size={16}/>
             </Icon>
           </TooltipBox>
         </div>
@@ -219,7 +221,7 @@ const ChannelList = (): JSX.Element => {
             }}
           >
             <span className="h-4 w-4 rounded mr-2">
-              <Haze size={16} />
+              <Haze size={16}/>
             </span>
             <span className="grow shrink basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-sm">
               Today
@@ -255,7 +257,7 @@ const ChannelList = (): JSX.Element => {
             }}
           >
             <span className="h-4 w-4 rounded mr-2">
-              <Coffee size={16} />
+              <Coffee size={16}/>
             </span>
             <span className="grow shrink basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-sm">
               All Items
@@ -279,7 +281,7 @@ const ChannelList = (): JSX.Element => {
         </h2>
         <ContextMenu onOpenChange={handleContextMenuChange}>
           <ContextMenuTrigger>
-            <ListContainer />
+            <ListContainer/>
           </ContextMenuTrigger>
           <ContextMenuContent key={store.feedContextMenuTarget?.uuid || "0"}>
             <ContextMenuItem
@@ -289,13 +291,20 @@ const ChannelList = (): JSX.Element => {
             >
               Mark all as read
             </ContextMenuItem>
-            <ContextMenuSeparator />
+            <ContextMenuSeparator/>
             {store.feedContextMenuTarget?.item_type === "folder" && (
               <>
                 <ContextMenuItem
                   onSelect={() => setEditFolderDialogStatus(true)}
                 >
-                  Edit
+                  Edit folder
+                </ContextMenuItem>
+                <ContextMenuSeparator/>
+                <ContextMenuItem
+                  onClick={() => setModalStatus(true)}
+                  className="text-red-600"
+                >
+                  Delete folder
                 </ContextMenuItem>
               </>
             )}
@@ -311,7 +320,7 @@ const ChannelList = (): JSX.Element => {
                     >
                       Open Home Page
                     </ContextMenuItem>
-                    <ContextMenuSeparator />
+                    <ContextMenuSeparator/>
                     <ContextMenuItem
                       onClick={() =>
                         store.feedContextMenuTarget?.link &&
@@ -338,7 +347,7 @@ const ChannelList = (): JSX.Element => {
                     >
                       Copy Home Page URL
                     </ContextMenuItem>
-                    <ContextMenuSeparator />
+                    <ContextMenuSeparator/>
                     <ContextMenuItem
                       onClick={() =>
                         reloadFeedIcon(store.feedContextMenuTarget)
@@ -353,10 +362,11 @@ const ChannelList = (): JSX.Element => {
                     >
                       Reload feeds
                     </ContextMenuItem>
-                    <ContextMenuSeparator />
+                    <ContextMenuSeparator/>
                     <ContextMenuItem onClick={() => setEditFeedStatus(true)}>
                       Detail
                     </ContextMenuItem>
+                    <ContextMenuSeparator/>
                     <ContextMenuItem
                       onClick={() => setModalStatus(true)}
                       className="text-red-600"
@@ -374,6 +384,11 @@ const ChannelList = (): JSX.Element => {
           dialogStatus={showStatus}
           setDialogStatus={setModalStatus}
           afterConfirm={getFeedList}
+          afterCancel={() => store.setFeedContextMenuTarget(null)}
+        />
+        <DialogDeleteFolder
+          folder={store.feedContextMenuTarget as FeedResItem & Folder} dialogStatus={showStatus}
+          setDialogStatus={setModalStatus} afterConfirm={getFeedList}
           afterCancel={() => store.setFeedContextMenuTarget(null)}
         />
         <DialogEditFeed
@@ -404,4 +419,4 @@ const ChannelList = (): JSX.Element => {
   );
 };
 
-export { ChannelList };
+export {ChannelList};

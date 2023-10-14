@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useState} from "react";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -9,14 +9,14 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
-import { Channel, Folder } from "@/db";
+import {Button} from "@/components/ui/button";
+import {Channel, FeedResItem, Folder} from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
-import { busChannel } from "@/helpers/busChannel";
-import { useToast } from "@/components/ui/use-toast";
+import {busChannel} from "@/helpers/busChannel";
+import {useToast} from "@/components/ui/use-toast";
 
 export interface DialogProps {
-  folder: Folder | null;
+  folder: FeedResItem & Folder | null;
   dialogStatus: boolean;
   trigger?: React.ReactNode;
   setDialogStatus: (status: boolean) => void;
@@ -25,7 +25,7 @@ export interface DialogProps {
 }
 
 export const DialogDeleteFolder = React.memo((props: DialogProps) => {
-  const { toast } = useToast();
+  const {toast} = useToast();
   const {
     folder,
     dialogStatus,
@@ -70,7 +70,7 @@ export const DialogDeleteFolder = React.memo((props: DialogProps) => {
             relates with
             {folder && (
               <span className="text-primary font-bold ml-1">
-                {folder?.name}
+                {folder?.title || folder?.name}
               </span>
             )}
           </AlertDialogDescription>
