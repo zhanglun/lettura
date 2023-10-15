@@ -46,16 +46,10 @@ export function getBestImages(entries: ArticleResItem[]) {
           console.log('metaImage', metaImage);
 
           if (metaImage) {
-            var base = dom.querySelector('head base');
-            if (!base) {
-              base = dom.createElement('base');
-              base.setAttribute('href', response.url);
-              dom.getElementsByTagName('head')[0].appendChild(base);
-            }
-            var a = dom.createElement('a');
-            a.href = metaImage.getAttribute('content');
+            const a = dom.createElement('a');
 
-            console.log(a)
+            a.href = metaImage.getAttribute('content') || '';
+
             entry.image = a.href;
           }
           return entry;
