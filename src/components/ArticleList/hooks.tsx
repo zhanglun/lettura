@@ -105,6 +105,12 @@ export const useArticleListHook = (props: {
   }, [store.cursor]);
 
   useEffect(() => {
+    if (store.articleList.length === 0) {
+      setHasMore(false);
+    }
+  }, [store.articleList]);
+
+  useEffect(() => {
     const $rootElem = listRef.current as HTMLDivElement;
     const $target = loadRef.current as HTMLDivElement;
 

@@ -58,6 +58,7 @@ const ChannelList = (): JSX.Element => {
     feedContextMenuTarget: state.feedContextMenuTarget,
     setFeedContextMenuTarget: state.setFeedContextMenuTarget,
     setFeedContextMenuStatus: state.setFeedContextMenuStatus,
+    setArticleList: state.setArticleList,
 
     setViewMeta: state.setViewMeta,
     collectionMeta: state.collectionMeta,
@@ -155,6 +156,30 @@ const ChannelList = (): JSX.Element => {
 
     listener();
   }, []);
+
+  const afterDeleteFolder = () => {
+    if (store.feedContextMenuTarget) {
+      const { uuid } = store.feedContextMenuTarget;
+      if (store.feed?.uuid === uuid) {
+        store.setArticleList([])
+      }
+      store.setFeedContextMenuTarget(null)
+    }
+
+    getFeedList();
+  }
+
+  const afterUnsubscribeFeed = () => {
+    if (store.feedContextMenuTarget) {
+      const { uuid } = store.feedContextMenuTarget;
+      if (store.feed?.uuid === uuid) {
+        store.setArticleList([])
+      }
+      store.setFeedContextMenuTarget(null)
+    }
+
+    getFeedList();
+  }
 
   return (
     <div
@@ -384,14 +409,14 @@ const ChannelList = (): JSX.Element => {
           feed={store.feedContextMenuTarget}
           dialogStatus={showStatus}
           setDialogStatus={setModalStatus}
-          afterConfirm={getFeedList}
+          afterConfirm={afterUnsubscribeFeed}
           afterCancel={() => store.setFeedContextMenuTarget(null)}
         />
         <DialogDeleteFolder
           folder={store.feedContextMenuTarget as FeedResItem & Folder}
           dialogStatus={deleteFolderStatus}
           setDialogStatus={setDeleteFolderStatus}
-          afterConfirm={getFeedList}
+          afterConfirm={afterDeleteFolder}
           afterCancel={() => store.setFeedContextMenuTarget(null)}
         />
         <DialogEditFeed

@@ -216,12 +216,6 @@ export const ArticleContainer = (): JSX.Element => {
   }, []);
 
   useEffect(() => {
-    console.log(
-      "%c Line:211 🥤 store.feed?.uuid",
-      "color:#fca650",
-      store.feed?.uuid
-    );
-
     if (listRef.current !== null) {
       listRef.current.scroll(0, 0);
     }
