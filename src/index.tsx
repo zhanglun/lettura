@@ -1,22 +1,18 @@
 import React from "react";
-import ReactDOM from "react-dom";
-import "./index.css";
-import App from "./App";
+import { createRoot } from 'react-dom/client';
 import reportWebVitals from "./reportWebVitals";
 import { Toaster } from "./components/ui/Toaster";
+import App from "./App";
+import "./index.css";
 
-navigator.serviceWorker.addEventListener('message', event => {
-  console.log('Service Worker message:', event.data);
-});
+const domNode = document.getElementById('root') as HTMLElement;
+const root = createRoot(domNode);
 
-ReactDOM.render(
-  // <React.StrictMode>
+root.render(
   <>
     <Toaster />
     <App />
   </>,
-  // </React.StrictMode>,
-  document.getElementById("root"),
 );
 
 // If you want to start measuring performance in your app, pass a function
