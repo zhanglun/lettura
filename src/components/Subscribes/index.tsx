@@ -58,6 +58,7 @@ const ChannelList = (): JSX.Element => {
     feedContextMenuTarget: state.feedContextMenuTarget,
     setFeedContextMenuTarget: state.setFeedContextMenuTarget,
     setFeedContextMenuStatus: state.setFeedContextMenuStatus,
+    articleList: state.articleList,
     setArticleList: state.setArticleList,
 
     setViewMeta: state.setViewMeta,
@@ -105,7 +106,10 @@ const ChannelList = (): JSX.Element => {
           store.initCollectionMetas();
 
           if (store.feed?.uuid === uuid) {
-
+            store.setArticleList(store.articleList.map(_ => {
+              _.read_status = 2;
+              return _;
+            }),);
           }
         });
     }
