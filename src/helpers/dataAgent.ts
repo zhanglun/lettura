@@ -134,10 +134,7 @@ export const getCollectionMetas = async (): Promise<
     [key: string]: number;
   }>
 > => {
-  const req = request.get("collection-metas");
-  console.log("%c Line:123 🍏 req", "color:#ed9ec7", req);
-
-  return req;
+  return request.get("collection-metas");
 };
 
 export const updateArticleReadStatus = async (

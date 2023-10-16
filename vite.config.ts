@@ -1,10 +1,23 @@
 import path from 'path';
-import { defineConfig } from "vite";
+import {defineConfig} from "vite";
 import react from "@vitejs/plugin-react";
+import {VitePWA} from "vite-plugin-pwa";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    VitePWA({
+      strategies: 'injectManifest',
+      srcDir: 'src/worker',
+      filename: 'sw.ts',
+      injectRegister: "auto",
+      registerType: 'autoUpdate',
+      devOptions: {
+        enabled: true,
+      }
+    })
+  ],
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   // prevent vite from obscuring rust errors

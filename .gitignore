@@ -54,3 +54,4 @@ build
 .vs
 *.db
 lettura.toml
+dev-dist

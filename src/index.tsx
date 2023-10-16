@@ -5,6 +5,10 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { Toaster } from "./components/ui/Toaster";
 
+navigator.serviceWorker.addEventListener('message', event => {
+  console.log('Service Worker message:', event.data);
+});
+
 ReactDOM.render(
   // <React.StrictMode>
   <>
