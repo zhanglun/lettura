@@ -1,3 +1,4 @@
+use std::env;
 use tauri::{utils::assets::EmbeddedAssets};
 use tauri::{AboutMetadata, CustomMenuItem, Menu, MenuItem, Submenu, Context, WindowMenuEvent};
 pub struct AppMenu {
@@ -9,20 +10,27 @@ impl AppMenu {
     #[allow(unused_mut)]
     let mut disable_item =
       CustomMenuItem::new("disable-menu", "Disable menu").accelerator("CmdOrControl+D");
-    #[allow(unused_mut)]
-    let mut test_item = CustomMenuItem::new("test", "Test").accelerator("CmdOrControl+T");
     #[cfg(target_os = "macos")]
     {
       disable_item = disable_item.native_image(tauri::NativeImage::MenuOnState);
-      test_item = test_item.native_image(tauri::NativeImage::Add);
     }
 
-    let name = &context.package_info().name;
+    let _env = env::var("LETTURA_ENV");
+    let name = match _env {
+      Ok(_env) => {
+        String::from("Lettura dev")
+      }
+      Err(_) => {
+        context.package_info().name.clone()
+      }
+    };
 
     let app_menu = Submenu::new(
         "",
         Menu::new()
           .add_native_item(MenuItem::About(name.into(), AboutMetadata::new()))
+          .add_native_item(MenuItem::Separator)
+          .add_item(CustomMenuItem::new("settings".to_string(), "Settings...").accelerator("CmdOrControl+,"))
           .add_native_item(MenuItem::Separator)
           .add_native_item(MenuItem::Hide)
           .add_native_item(MenuItem::HideOthers)
@@ -67,11 +75,14 @@ impl AppMenu {
   pub fn on_menu_event(event: WindowMenuEvent) {
     match event.menu_item_id() {
       "quit" => {
-        println!("quit");
         std::process::exit(0);
       }
       "close" => {
         event.window().close().unwrap();
+      }
+      "settings" => {
+        println!("gotosetting");
+        event.window().emit("go-to-settings", "").unwrap();
       }
       _ => {}
     }

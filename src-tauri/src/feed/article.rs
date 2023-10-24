@@ -159,8 +159,6 @@ impl Article {
 
     let debug = diesel::debug_query::<diesel::sqlite::Sqlite, _>(&query);
 
-    println!("The insert query: {:?}", debug);
-
     let result = query
       .load::<ArticleQueryItem>(&mut connection)
       .expect("Expect loading articles");

@@ -20,6 +20,7 @@ import { Appearance } from "./components/SettingPanel/Appearance";
 
 import "./styles/index.global.scss";
 import { Shortcut } from "./components/SettingPanel/ShortCut";
+import { emit, listen } from '@tauri-apps/api/event'
 
 function App() {
   const store = useBearStore((state) => ({
@@ -27,6 +28,14 @@ function App() {
     goNextArticle: state.goNextArticle,
     getUserConfig: state.getUserConfig,
   }));
+
+  useEffect(() => {
+    listen("go-to-settings", () => {
+      console.log("%c Line:34 🍒 go-to-setting", "color:#fca650", 'go-to-setting');
+
+      window.location.href = RouteConfig.SETTINGS_GENERAL;
+    })
+  }, [])
 
   useEffect(() => {
     document

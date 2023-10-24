@@ -470,8 +470,6 @@ pub fn update_feed_sort(sorts: Vec<FeedSort>) -> usize {
 
       let debug = diesel::debug_query::<diesel::sqlite::Sqlite, _>(&query);
 
-      println!("The insert query: {:?}", debug);
-
       query
         .load::<FeedSortRes>(&mut connection)
         .expect("Expect loading articles");
