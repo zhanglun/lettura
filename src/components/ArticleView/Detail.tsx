@@ -7,6 +7,7 @@ import { useBearStore } from "@/stores";
 import * as dataAgent from "@/helpers/dataAgent";
 import { motion, AnimatePresence } from "framer-motion";
 import { fetch } from "@tauri-apps/api/http";
+import xss from 'xss';
 
 function createMarkup(html: string) {
   return { __html: html };
@@ -57,7 +58,7 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
         // try to get the best banner if there is no image in article content
         // it will make render slower
         setShowBanner(content.search(/<img[^>]+>/gi) === -1);
-        setPageContent(content);
+        setPageContent(xss(content));
       });
 
       return () => {
