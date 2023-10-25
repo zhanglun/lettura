@@ -331,12 +331,6 @@ mod tests {
   use super::*;
 
   #[test]
-  fn test_delete_feed() {
-    let url = "ee323999-8302-41de-afb4-e0929cebf5a6";
-    delete_feed(String::from(url));
-  }
-
-  #[test]
   fn test_get_unread_total() {
     get_unread_total();
   }

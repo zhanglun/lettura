@@ -336,7 +336,7 @@ pub fn get_feeds() -> Vec<SubscribeItem> {
     });
   }
 
-  println!("filter_uuids :{:?}", &filter_uuids);
+  log::debug!("filter_uuids :{:?}", &filter_uuids);
 
   let feeds = schema::feeds::dsl::feeds
     .filter(diesel::dsl::not(schema::feeds::uuid.eq_any(&filter_uuids)))

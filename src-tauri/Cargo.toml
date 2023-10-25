@@ -33,7 +33,8 @@ feed-rs = "1.3.0"
 url="*"
 base64="*"
 once_cell = "*"
-log="^0.4"
+log= { version = "^0.4" }
+env_logger="*"
 tauri-plugin-log = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1", features = ["colored"]  }
 tauri-plugin-single-instance = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
 actix-web = "4.4.0"

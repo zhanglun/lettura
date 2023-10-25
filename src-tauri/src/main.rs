@@ -1,6 +1,6 @@
 #![cfg_attr(
-all(not(debug_assertions), target_os = "windows"),
-windows_subsystem = "windows"
+  all(not(debug_assertions), target_os = "windows"),
+  windows_subsystem = "windows"
 )]
 
 #[macro_use]
@@ -8,12 +8,12 @@ extern crate diesel;
 extern crate diesel_migrations;
 extern crate dotenv;
 
-use chrono::offset::Utc;
 use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
+use log::LevelFilter;
 use serde::{Deserialize, Serialize};
-use tauri::{AppHandle, GlobalWindowEvent, Manager, WindowEvent, Wry};
+use tauri::{GlobalWindowEvent, Manager, WindowEvent, Wry};
+use tauri_plugin_log::{fern, LogTarget};
 use tokio::{self, sync::mpsc};
-use tauri_plugin_log::{LogTarget, fern};
 
 mod cmd;
 mod core;
@@ -78,30 +78,33 @@ async fn main() {
 
   let window = tauri::Builder::default();
 
-  window.manage(AsyncProcInputTx {
-    sender: Mutex::new(async_process_input_tx),
-  })
+  window
+    .manage(AsyncProcInputTx {
+      sender: Mutex::new(async_process_input_tx),
+    })
     .menu(core::menu::AppMenu::get_menu(&context))
     .plugin(tauri_plugin_single_instance::init(|app, argv, cwd| {
       println!("{}, {argv:?}, {cwd}", app.package_info().name);
 
       // app.emit_all("single-instance", Payload { args: argv, cwd }).unwrap();
     }))
-    .plugin(tauri_plugin_log::Builder::default()
-      .targets([
-        LogTarget::LogDir,
-        LogTarget::Stdout,
-      ])
-      .with_colors(fern::colors::ColoredLevelConfig::default())
-      .build())
+    .plugin(
+      tauri_plugin_log::Builder::default()
+        .targets([LogTarget::LogDir, LogTarget::Stdout])
+        .with_colors(fern::colors::ColoredLevelConfig::default())
+        .level(
+          env::var("LETTURA_ENV")
+            .map(|_env| LevelFilter::Debug)
+            .unwrap_or(LevelFilter::Info),
+        )
+        .build(),
+    )
     .setup(move |app| {
       let app_handle = app.handle();
 
       let main_window = app.get_window("main").unwrap();
 
-      let _env = env::var("LETTURA_ENV");
-
-      match _env {
+      match env::var("LETTURA_ENV") {
         Ok(_env) => {
           main_window.set_title("Lettura dev").unwrap();
         }

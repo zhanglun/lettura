@@ -1,9 +1,8 @@
 mod handlers;
 
-use actix_cors::Cors;
 use std::sync::Mutex;
-
 use actix_web::{http, middleware, web, App, HttpServer};
+use actix_cors::Cors;
 use tauri::AppHandle;
 
 struct TauriAppState {
@@ -15,9 +14,7 @@ pub async fn init(app: AppHandle) -> std::io::Result<()> {
   let tauri_app = web::Data::new(TauriAppState {
     app: Mutex::new(app),
   });
-
-  println!("start initial server");
-
+  log::debug!("actix_web server start!");
   HttpServer::new(move || {
     let cors = Cors::default()
       .allow_any_origin()

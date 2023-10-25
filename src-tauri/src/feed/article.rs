@@ -86,13 +86,10 @@ impl Article {
           .expect("Expect find channel");
         }
       }
-      // let relations = schema::feed_metas::dsl::feed_metas
-      //   .filter(schema::feed_metas::uuid.eq(&channel_uuid))
-      //   .load::<models::FeedMeta>(&mut connection)
-      //   .expect("Expect find channel");
+
       let mut channel_uuids: Vec<String> = vec![];
 
-      println!("relations {:?}", relations);
+      log::debug!("relations {:?}", relations);
 
       if relations.len() > 0 {
         for relation in relations {

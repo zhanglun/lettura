@@ -187,7 +187,7 @@ pub fn load_or_initial() -> Option<UserConfig> {
     data.insert(String::from("update_interval"), toml::Value::try_from::<i32>(0).unwrap());
   }
 
-  println!("data: {:?}", data);
+  log::debug!("USER CONFIG: {:?}", data);
 
   Some(data.try_into::<UserConfig>().expect("config data error"))
 }
