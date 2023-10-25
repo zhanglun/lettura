@@ -24,8 +24,6 @@ export const ArticleItem = React.forwardRef(
     };
 
     const handleClick = async (e: React.MouseEvent) => {
-      console.log("%c Line:32 🍡 article", "color:#ffdd4d", article);
-
       updateCurrentArticle(article);
     };
 

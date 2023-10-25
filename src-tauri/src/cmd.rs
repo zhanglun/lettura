@@ -194,11 +194,6 @@ pub async fn get_today_articles(filter: feed::article::ArticleFilter) -> feed::a
 }
 
 #[command]
-pub async fn get_all_articles(filter: feed::article::ArticleFilter) -> feed::article::ArticleQueryResult {
-  feed::article::Article::get_all_articles(filter)
-}
-
-#[command]
 pub async fn import_channels(list: Vec<String>) -> usize {
   println!("{:?}", &list);
   for url in &list {
@@ -228,25 +223,13 @@ pub fn init_process(window: Window) {
   });
 }
 
-#[command]
-pub fn get_unread_total() -> HashMap<String, i32> {
-  let result = feed::channel::get_unread_total();
 
-  result
-}
 
 #[command]
 pub fn update_article_read_status(uuid: String, status: i32) -> usize {
   let res = feed::article::Article::update_article_read_status(uuid, status);
 
   res
-}
-
-#[command]
-pub fn get_user_config() -> Option<config::UserConfig> {
-  let user_config = config::load_or_initial();
-
-  user_config
 }
 
 #[command]
@@ -329,20 +312,6 @@ pub async fn update_icon(uuid: String, url: String) -> usize {
 #[cfg(test)]
 mod tests {
   use super::*;
-
-  #[test]
-  fn test_get_unread_total() {
-    get_unread_total();
-  }
-
-  #[test]
-  fn test_update_proxy() {
-    let ip = "111.111.11.11".to_string();
-    let port = "1111".to_string();
-
-    update_proxy(ip, port);
-    config::get_user_config();
-  }
 
   #[tokio::test]
   async fn test_parse_feed() {

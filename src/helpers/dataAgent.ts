@@ -60,7 +60,7 @@ export const moveChannelIntoFolder = async (
  * @param {String} uuid  channel 的 uuid
  */
 export const deleteChannel = async (uuid: string) => {
-  return request.delete(`feeds/${uuid}`)
+  return request.delete(`feeds/${uuid}`);
 };
 
 export const deleteFolder = async (uuid: string) => {
@@ -75,7 +75,11 @@ export const importChannels = async (list: string[]) => {
   return invoke("import_channels", { list });
 };
 
-export const getArticleList = async (uuid: string | undefined, type: string | null, filter: any) => {
+export const getArticleList = async (
+  uuid: string | undefined,
+  type: string | null,
+  filter: any
+) => {
   console.log("ppp: %o", {
     params: {
       uuid,
@@ -87,7 +91,7 @@ export const getArticleList = async (uuid: string | undefined, type: string | nu
     params: {
       channel_uuid: uuid,
       ...filter,
-      item_type: type
+      item_type: type,
     },
   });
 
@@ -101,8 +105,11 @@ export const getTodayArticleList = async (filter: any) => {
 };
 
 export const getAllArticleList = async (filter: any) => {
-  console.warn("%c Line:74 🍬 getAllArticleList", "color:#93c0a4");
-  return invoke("get_all_articles", { filter });
+  return request.get('/api/all-articles', {
+    params: {
+      ...filter
+    }
+  })
 };
 
 export const fetchFeed = async (url: string): Promise<[any, string]> => {
@@ -122,11 +129,12 @@ export const syncFeed = async (
       feed_type,
     },
   });
-  // return invoke("sync_articles_with_channel_uuid", { feedType, uuid });
 };
 
-export const getUnreadTotal = async (): Promise<{ [key: string]: number }> => {
-  return invoke("get_unread_total");
+export const getUnreadTotal = async (): Promise<
+  AxiosResponse<{ [key: string]: number }>
+> => {
+  return request.get("unread-total");
 };
 
 export const getCollectionMetas = async (): Promise<
@@ -156,7 +164,7 @@ export const markAllRead = async (body: {
 };
 
 export const getUserConfig = async (): Promise<any> => {
-  return invoke("get_user_config");
+  return request.get("user-config");
 };
 
 export const updateUserConfig = async (cfg: any): Promise<any> => {
@@ -205,7 +213,9 @@ export const getBestImage = async (
   });
 };
 
-export const getPageSources = async (url: string): Promise<AxiosResponse<string>> => {
+export const getPageSources = async (
+  url: string
+): Promise<AxiosResponse<string>> => {
   return request.get(`article-proxy`, {
     params: {
       url,

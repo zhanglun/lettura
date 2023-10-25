@@ -80,8 +80,6 @@ pub async fn handle_mark_as_read(
 pub async fn handle_articles(
   query: web::Query<feed::article::ArticleFilter>,
 ) -> Result<impl Responder> {
-  println!("{:?}", query);
-
   let obj = feed::article::ArticleFilter {
     channel_uuid: query.channel_uuid.clone(),
     item_type: query.item_type.clone(),
@@ -94,6 +92,24 @@ pub async fn handle_articles(
 
   Ok(web::Json(res))
 }
+
+#[get("/api/all-articles")]
+pub async fn handle_get_all_article(
+  query: web::Query<feed::article::ArticleFilter>,
+) -> Result<impl Responder> {
+  let obj = feed::article::ArticleFilter {
+    channel_uuid: query.channel_uuid.clone(),
+    item_type: query.item_type.clone(),
+    read_status: query.read_status.clone(),
+    cursor: query.cursor.clone(),
+    limit: query.limit.clone(),
+  };
+
+  let res = feed::article::Article::get_all_articles(obj);
+
+  Ok(web::Json(res))
+}
+
 
 #[get("/api/articles/today")]
 pub async fn handle_today_articles() -> Result<impl Responder> {
@@ -112,5 +128,7 @@ pub fn config(cfg: &mut web::ServiceConfig) {
     .service(handle_collection_metas)
     .service(handle_sync_feed)
     .service(handle_mark_as_read)
-    .service(handle_articles);
+    .service(handle_articles)
+    .service(handle_get_all_article)
+    ;
 }

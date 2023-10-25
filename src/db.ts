@@ -18,6 +18,7 @@ export interface Channel {
   create_date?: Date;
   update_date?: Date;
   last_sync_date?: string;
+  is_expanded?: boolean;
 }
 
 export interface FeedResItem {
