@@ -187,12 +187,6 @@ pub async fn add_feed(url: String) -> (usize, String) {
     Err(err) => (0, err),
   }
 }
-
-#[command]
-pub async fn get_today_articles(filter: feed::article::ArticleFilter) -> feed::article::ArticleQueryResult {
-  feed::article::Article::get_today_articles(filter)
-}
-
 #[command]
 pub async fn import_channels(list: Vec<String>) -> usize {
   println!("{:?}", &list);

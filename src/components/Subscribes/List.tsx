@@ -1,8 +1,8 @@
 import update from "immutability-helper";
-import { useCallback, useEffect, useState } from "react";
-import { SubscribeItem } from "./SubscribeItem";
-import { useBearStore } from "@/stores";
-import { FeedResItem } from "@/db";
+import {useCallback, useEffect, useState} from "react";
+import {SubscribeItem} from "./SubscribeItem";
+import {useBearStore} from "@/stores";
+import {FeedResItem} from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
 import {
   adjustedTargetIndex,
@@ -160,7 +160,6 @@ export const List = () => {
   );
 
   const requestUpdateOrder = (list: FeedResItem[]) => {
-    console.log("%c Line:175 🍕 list", "color:#2eafb0", list);
     const body = list.reduce(
       (acu, feed, idx) => {
         let item = {
@@ -196,8 +195,6 @@ export const List = () => {
       }[]
     );
 
-    console.log("%c Line:55 🥚 body", "color:#ffdd4d", body);
-
     dataAgent.updateFeedSort(body).then((res) => {
       console.log("%c Line:47 🥔 res", "color:#b03734", res);
     });
@@ -228,7 +225,7 @@ export const List = () => {
           uuid={feed.uuid}
           text={feed.title}
           level={level}
-          feed={{ ...feed }}
+          feed={{...feed}}
           isActive={isActive}
           isExpanded={feed.is_expanded}
           toggleFolder={toggleFolder}

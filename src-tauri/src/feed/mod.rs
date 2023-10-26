@@ -1,7 +1,6 @@
 use feed_rs::parser;
-use log::info;
+use log;
 use reqwest;
-
 use crate::core::config;
 
 pub mod article;
@@ -14,7 +13,7 @@ pub fn create_client() -> reqwest::Client {
 
   if let Some(user_config) = user_config {
     if let Some(proxy) = user_config.local_proxy {
-      info!("user_config.local_proxy {:?}", proxy);
+      log::info!("user_config.local_proxy {:?}", proxy);
 
       let mut scheme = String::from("socks5h://");
 
@@ -55,26 +54,26 @@ pub async fn parse_feed(url: &str) -> Result<feed_rs::model::Feed, String> {
             match res {
               Ok(res) => Ok(res),
               Err(error) => {
-                println!("content parse error{:?}", error);
+                log::error!("content parse error{:?}", error);
                 Err(error.to_string())
               }
             }
           }
           Err(error) => {
-            println!("response not OK {:?}", error);
+            log::error!("response not OK {:?}", error);
             Err(error.to_string())
           }
         }
       }
       reqwest::StatusCode::NOT_FOUND => Err(String::from("Could not find a feed at the location.")),
       _ => {
-        println!("o {:?}", response);
+        log::error!("o {:?}", response);
         Err("Not 200 OK".to_string())
       }
     },
     Err(error) => {
-      println!("ERROR: {:?}", error);
-      println!("URL: {:?}", url);
+      log::error!("ERROR: {:?}", error);
+      log::error!("URL: {:?}", url);
 
       Err(error.to_string())
     }

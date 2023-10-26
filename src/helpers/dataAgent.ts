@@ -100,8 +100,11 @@ export const getArticleList = async (
 };
 
 export const getTodayArticleList = async (filter: any) => {
-  console.warn("%c Line:70 🥔 get_today_articles", "color:#7f2b82");
-  return invoke("get_today_articles", { filter });
+  return request.get('/today-articles', {
+    params: {
+      ...filter
+    }
+  });
 };
 
 export const getAllArticleList = async (filter: any) => {

@@ -80,7 +80,7 @@ pub async fn handle_mark_as_read(
 pub async fn handle_articles(
   query: web::Query<feed::article::ArticleFilter>,
 ) -> Result<impl Responder> {
-  let obj = feed::article::ArticleFilter {
+  let filter = feed::article::ArticleFilter {
     channel_uuid: query.channel_uuid.clone(),
     item_type: query.item_type.clone(),
     read_status: query.read_status.clone(),
@@ -88,16 +88,16 @@ pub async fn handle_articles(
     limit: query.limit.clone(),
   };
 
-  let res = feed::article::Article::get_article(obj);
+  let res = feed::article::Article::get_article(filter);
 
   Ok(web::Json(res))
 }
 
 #[get("/api/all-articles")]
-pub async fn handle_get_all_article(
+pub async fn handle_get_all_articles(
   query: web::Query<feed::article::ArticleFilter>,
 ) -> Result<impl Responder> {
-  let obj = feed::article::ArticleFilter {
+  let filter = feed::article::ArticleFilter {
     channel_uuid: query.channel_uuid.clone(),
     item_type: query.item_type.clone(),
     read_status: query.read_status.clone(),
@@ -105,19 +105,26 @@ pub async fn handle_get_all_article(
     limit: query.limit.clone(),
   };
 
-  let res = feed::article::Article::get_all_articles(obj);
+  let res = feed::article::Article::get_all_articles(filter);
 
   Ok(web::Json(res))
 }
 
-
-#[get("/api/articles/today")]
-pub async fn handle_today_articles() -> Result<impl Responder> {
-  let obj = MyObj {
-    name: "hahah".to_string(),
+#[get("/api/today-articles")]
+pub async fn handle_get_today_articles(
+  query: web::Query<feed::article::ArticleFilter>,
+) -> Result<impl Responder> {
+  let filter = feed::article::ArticleFilter {
+    channel_uuid: query.channel_uuid.clone(),
+    item_type: query.item_type.clone(),
+    read_status: query.read_status.clone(),
+    cursor: query.cursor.clone(),
+    limit: query.limit.clone(),
   };
 
-  Ok(web::Json(obj))
+  let res = feed::article::Article::get_today_articles(filter);
+
+  Ok(web::Json(res))
 }
 
 pub fn config(cfg: &mut web::ServiceConfig) {
@@ -129,6 +136,7 @@ pub fn config(cfg: &mut web::ServiceConfig) {
     .service(handle_sync_feed)
     .service(handle_mark_as_read)
     .service(handle_articles)
-    .service(handle_get_all_article)
+    .service(handle_get_all_articles)
+    .service(handle_get_today_articles)
     ;
 }

@@ -163,7 +163,7 @@ const ChannelList = (): JSX.Element => {
 
   const afterDeleteFolder = () => {
     if (store.feedContextMenuTarget) {
-      const { uuid } = store.feedContextMenuTarget;
+      const {uuid} = store.feedContextMenuTarget;
       if (store.feed?.uuid === uuid) {
         store.setArticleList([])
       }
@@ -175,7 +175,7 @@ const ChannelList = (): JSX.Element => {
 
   const afterUnsubscribeFeed = () => {
     if (store.feedContextMenuTarget) {
-      const { uuid } = store.feedContextMenuTarget;
+      const {uuid} = store.feedContextMenuTarget;
       if (store.feed?.uuid === uuid) {
         store.setArticleList([])
       }
