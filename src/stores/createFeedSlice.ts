@@ -37,6 +37,9 @@ export interface FeedSlice {
   setFeedContextMenuTarget: (target: FeedResItem | null) => void;
   feedContextMenuStatus: boolean;
   setFeedContextMenuStatus: (status: boolean) => void;
+
+  openFolder: (uuid: string) => void;
+  closeFolder: (uuid: string) => void;
 }
 
 export const createFeedSlice: StateCreator<FeedSlice> = (
@@ -212,4 +215,32 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
       feedContextMenuStatus: status,
     }));
   },
+
+  closeFolder: (uuid: string) => {
+    let list = get().feedList;
+
+    list.forEach(_ => {
+      if (_.uuid === uuid) {
+        _.is_expanded = false;
+      }
+    });
+
+    set(() => ({
+      feedList: [...list]
+    }))
+  },
+
+  openFolder: (uuid: string) => {
+    let list = get().feedList;
+
+    list.forEach(_ => {
+      if (_.uuid === uuid) {
+        _.is_expanded = true;
+      }
+    });
+
+    set(() => ({
+      feedList: [...list]
+    }))
+  }
 });

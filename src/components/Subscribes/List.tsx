@@ -1,11 +1,9 @@
 import update from "immutability-helper";
 import { useCallback, useEffect, useState } from "react";
-import type { CSSProperties } from "react";
 import { SubscribeItem } from "./SubscribeItem";
 import { useBearStore } from "@/stores";
 import { FeedResItem } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
-import { ItemView } from "./ItemView";
 import {
   adjustedTargetIndex,
   findFolderAndIndex,
@@ -20,6 +18,8 @@ export const List = () => {
     getFeedList: state.getFeedList,
     feedList: state.feedList,
     feed: state.feed,
+    openFolder: state.openFolder,
+    closeFolder: state.closeFolder,
   }));
   const [treeData, setTreeData] = useState<TreeItem[]>([]);
   const moveItem = useCallback(
@@ -213,6 +213,8 @@ export const List = () => {
 
     folder.is_expanded = !folder.is_expanded;
 
+    folder.is_expanded ? store.openFolder(folderId) : store.closeFolder(folderId);
+
     setTreeData([...newTreeData]);
   };
 
@@ -243,14 +245,7 @@ export const List = () => {
   );
 
   useEffect(() => {
-    setTreeData(
-      [...store.feedList].map((_) => {
-        return {
-          ..._,
-          is_expanded: false,
-        };
-      })
-    );
+    setTreeData([...store.feedList] as TreeItem[]);
   }, [store.feedList]);
 
   return (

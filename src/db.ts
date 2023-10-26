@@ -42,6 +42,7 @@ export interface FeedResItem {
   update_date?: Date;
   last_sync_date?: string;
   folder_uuid?: string | null;
+  is_expanded?: boolean;
 }
 export interface Article {
   id?: number;

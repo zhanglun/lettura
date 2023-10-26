@@ -42,7 +42,6 @@ export const ItemView: FC<CardProps> = ({
   }));
 
   const handleToggle = () => {
-    console.log("%c Line:42 🍷 handleToggle", "color:#b03734", feed.item_type);
     if (feed.item_type === "folder") {
       toggleFolder(uuid);
     }
