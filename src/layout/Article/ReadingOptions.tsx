@@ -105,7 +105,7 @@ export const ReadingOptions = (props: NavigatorProps) => {
           <CustomizeStyle styleConfig={store.userConfig.customize_style} />
         </PopoverContent>
       </Popover>
-      <TooltipBox content="View full page">
+      {/* <TooltipBox content="View full page">
         <Icon
           onClick={handleViewSourcePage}
           disable={!store.article}
@@ -116,7 +116,7 @@ export const ReadingOptions = (props: NavigatorProps) => {
             className={clsx({ "animate-bounce": store.viewOrigin })}
           />
         </Icon>
-      </TooltipBox>
+      </TooltipBox> */}
       <TooltipBox content="Open in browser">
         <Icon onClick={() => openInBrowser()}>
           <ExternalLink size={16} />
