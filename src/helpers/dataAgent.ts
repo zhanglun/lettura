@@ -105,7 +105,7 @@ export const getTodayArticleList = async (filter: any) => {
 };
 
 export const getAllArticleList = async (filter: any) => {
-  return request.get('/api/all-articles', {
+  return request.get('/all-articles', {
     params: {
       ...filter
     }

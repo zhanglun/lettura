@@ -7,6 +7,7 @@ import { useBearStore } from "@/stores";
 import * as dataAgent from "@/helpers/dataAgent";
 import { motion, AnimatePresence } from "framer-motion";
 import { fetch } from "@tauri-apps/api/http";
+import { open } from "@tauri-apps/api/shell";
 import xss from 'xss';
 
 function createMarkup(html: string) {
@@ -28,6 +29,38 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
   const [banner, setBanner] = useState("");
   const [showBanner, setShowBanner] = useState(false);
   const controller = new AbortController();
+
+  function delegateContentClick (e: React.MouseEvent<HTMLElement>) {
+    let elem = null;
+    const i = e.nativeEvent.composedPath();
+
+    for (let a = 0; a <= i.length - 1; a++) {
+      const s = i[a] as HTMLElement;
+
+      if ("A" === s.tagName) {
+        elem = s;
+        break;
+      }
+    }
+
+    if (elem && elem.getAttribute("href")) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const href = elem.getAttribute("href") || "";
+
+      if (
+        href &&
+        (href.indexOf("http://") >= 0 ||
+          href.indexOf("https://") >= 0 ||
+          href.indexOf("www.") >= 0)
+      ) {
+        open(href);
+      } else if (href.indexOf("#") === 0) {
+        open(`${article.link}${href}`);
+      }
+    }
+  }
 
   useEffect(() => {
     setBanner("");
@@ -109,6 +142,7 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
             )}
             <div
               key={article.uuid}
+              onClick={delegateContentClick}
               className={classnames("reading-content", "text-detail-paragraph")}
               // eslint-disable-next-line react/no-danger
               dangerouslySetInnerHTML={createMarkup(pageContent)}

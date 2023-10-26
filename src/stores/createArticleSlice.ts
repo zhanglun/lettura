@@ -80,7 +80,7 @@ export const createArticleSlice: StateCreator<
   getAllArticleList: (filter: any) => {
     const currentList = get().articleList;
 
-    return dataAgent.getAllArticleList(filter).then((res) => {
+    return dataAgent.getAllArticleList(filter).then(({ data: res }) => {
       const { list } = res as { list: ArticleResItem[] };
 
       get().setArticleList([...currentList, ...list]);
