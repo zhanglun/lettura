@@ -667,10 +667,12 @@ pub async fn fetch_site_favicon(url: &str) -> Option<String> {
   favicon_url
 }
 
-pub async fn sync_articles(uuid: String) -> Vec<(usize, String, String)> {
+pub async fn sync_articles(uuid: String) -> HashMap<String, (usize, String)> {
+  let mut result = HashMap::new();
+
   let channel = match feed::channel::get_feed_by_uuid(&uuid) {
     Some(channel) => channel,
-    None => return vec![(0, uuid, "feed not found".to_string())],
+    None => return HashMap::new(),
   };
 
   let res = match feed::parse_feed(&channel.feed_url).await {
@@ -680,34 +682,48 @@ pub async fn sync_articles(uuid: String) -> Vec<(usize, String, String)> {
     }
     Err(err) => {
       feed::channel::update_health_status(&uuid, 1, err.to_string());
-      return vec![(0, uuid, err.to_string())];
+      result.insert(uuid, (0, err.to_string()));
+
+      return result;
     }
   };
 
   let articles = create_article_models(&channel.uuid, &channel.feed_url, &res);
-  let result = feed::article::Article::add_articles(channel.uuid, articles);
+  let record = feed::article::Article::add_articles(channel.uuid, articles);
 
-  vec![(result, uuid, "".to_string())]
+  result.insert(uuid, (record, "".to_string()));
+
+  return result;
+
 }
 
-pub async fn sync_article_in_folder(uuid: String) -> Vec<(usize, String, String)> {
+pub async fn sync_article_in_folder(uuid: String) -> HashMap<String, (usize, String)> {
   let connection = db::establish_connection();
-  let feeds = feed::folder::get_channels_in_folders(connection, vec![uuid]);
+  let feeds = feed::folder::get_channels_in_folders(connection, vec![uuid.clone()]);
+  let mut result: HashMap<String, (usize, String)> = HashMap::new();
+  let mut count = 0;
 
-  println!("{:?}", feeds);
-  let mut res = vec![];
+
+  log::debug!("sync_article_in_folder: feeds {:?}", feeds);
 
   for feed in feeds {
-    res.extend(sync_articles(feed.uuid).await);
+    let record = sync_articles(feed.uuid.clone()).await;
+    let (num, _message) = record.get(&String::from(feed.uuid)).unwrap();
+    result.extend(record.clone());
+    count += num;
   }
 
-  res
+  result.insert(uuid, (count, String::from("")));
+
+  result
 }
 
-pub async fn sync_feed(uuid: String, feed_type: String) -> Vec<(usize, String, String)> {
+// pub struct SyncFeedResult {}
+pub async fn sync_feed(uuid: String, feed_type: String) -> HashMap<String, (usize, String)> {
   if feed_type == "folder" {
     return feed::channel::sync_article_in_folder(uuid.to_string()).await;
   } else {
+    log::debug!("start sync feed ===>");
     return feed::channel::sync_articles(uuid.to_string()).await;
   }
 }
@@ -755,10 +771,12 @@ mod tests {
 
   #[tokio::test]
   async fn test_sync_feed() {
-    sync_feed(
-      "1e2dbbcd-5f44-4811-a907-0b6320b3ee9e".to_string(),
+    let a = sync_feed(
+      "efc718b5-14a8-45ce-8d0b-975013198ac1".to_string(),
       "feed".to_string(),
     )
     .await;
+
+    println!("a {:?}", a);
   }
 }

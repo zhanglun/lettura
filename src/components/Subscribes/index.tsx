@@ -28,7 +28,8 @@ import {useRefresh} from "./useRefresh";
 import {TooltipBox} from "../TooltipBox";
 import {ListContainer} from "./ListContainer";
 import {copyText} from "@/helpers/copyText";
-import {useToast} from "../ui/use-toast";
+import { ToastAction } from "@/components/ui/toast";
+import {useToast} from "@/components/ui/use-toast";
 import {DialogDeleteFolder} from "@/components/SettingPanel/Content/DialogDeleteFolder";
 
 const ChannelList = (): JSX.Element => {
@@ -49,7 +50,7 @@ const ChannelList = (): JSX.Element => {
     setRefreshing,
     done,
     setDone,
-    startFresh,
+    startRefresh,
   ] = useRefresh();
   const store = useBearStore((state) => ({
     feed: state.feed,
@@ -64,7 +65,9 @@ const ChannelList = (): JSX.Element => {
     setViewMeta: state.setViewMeta,
     collectionMeta: state.collectionMeta,
     initCollectionMetas: state.initCollectionMetas,
+    syncArticles: state.syncArticles,
   }));
+
   const [, , channelUuid] = useQuery();
 
   useEffect(() => {
@@ -91,6 +94,29 @@ const ChannelList = (): JSX.Element => {
   };
 
   const reloadFeedData = (feed: FeedResItem | null) => {
+    if (feed) {
+      store.syncArticles(feed?.uuid, feed?.item_type)
+        .then(([,, message ]) => {
+          if (message) {
+            toast({
+              title: "Something wrong!",
+              variant: "destructive",
+              description: message,
+              action: (
+                <ToastAction altText="Goto schedule to undo">Close</ToastAction>
+              ),
+            });
+          } else {
+            toast({
+              title: "Success",
+              description: message,
+              action: (
+                <ToastAction altText="Goto schedule to undo">Close</ToastAction>
+              ),
+            });
+          }
+        });
+    }
     console.log("TODO");
   };
 
@@ -210,7 +236,7 @@ const ChannelList = (): JSX.Element => {
             }
           />
           <TooltipBox content="Update">
-            <Icon onClick={startFresh}>
+            <Icon onClick={startRefresh}>
               <RefreshCw
                 size={16}
                 className={`${refreshing ? "spinning" : ""}`}
@@ -226,7 +252,7 @@ const ChannelList = (): JSX.Element => {
         </div>
       </div>
       <div
-        className="flex-1 overflow-y-auto pb-2 px-2 height-[calc(100% - var(--app-toolbar-height))]"
+        className="flex-1 overflow-y-auto pb-2 px-1 height-[calc(100% - var(--app-toolbar-height))]"
         ref={listRef}
       >
         <h2 className="mt-6 mb-2 px-4 text-lg font-semibold tracking-tight">
@@ -353,8 +379,8 @@ const ChannelList = (): JSX.Element => {
                     <ContextMenuSeparator/>
                     <ContextMenuItem
                       onClick={() =>
-                        store.feedContextMenuTarget?.link &&
-                        copyText(store.feedContextMenuTarget?.link).then(() =>
+                        store.feedContextMenuTarget?.feed_url &&
+                        copyText(store.feedContextMenuTarget?.feed_url).then(() =>
                           toast({
                             title: "Current URL copied to clipboard",
                             description: "Paste it wherever you like",

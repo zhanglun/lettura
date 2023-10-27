@@ -40,6 +40,8 @@ export interface FeedSlice {
 
   openFolder: (uuid: string) => void;
   closeFolder: (uuid: string) => void;
+
+  syncArticles: (uuid: string, type: string) => Promise<[number, string, string]>;
 }
 
 export const createFeedSlice: StateCreator<FeedSlice> = (
@@ -192,10 +194,7 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
     };
     return Promise.all([dataAgent.getFeeds(), dataAgent.getUnreadTotal()]).then(
       ([{ data: feedList }, { data: unreadTotal }]) => {
-        console.log("%c Line:188 🍡 unreadTotal", "color:#4fff4B", unreadTotal);
-        console.log("%c Line:185 🍺 feedList", "color:#7f2b82", feedList);
         feedList = initUnreadCount(feedList, unreadTotal);
-        console.log("%c Line:191 🥐 feedList", "color:#2eafb0", feedList);
         set(() => ({
           feedList: feedList || [],
         }));
@@ -242,5 +241,19 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
     set(() => ({
       feedList: [...list]
     }))
+  },
+
+  syncArticles(uuid: string, type: string) {
+    return dataAgent.syncFeed(type, uuid)
+      .then(({ data }) => {
+        const [num, , message] = data[0];
+
+        if (num > 0) {
+          get().initCollectionMetas();
+          get().getFeedList();
+        }
+
+        return data[0];
+      })
   }
 });

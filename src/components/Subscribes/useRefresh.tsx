@@ -59,7 +59,7 @@ export const useRefresh = () => {
 
     setRefreshing(true);
 
-    dataAgent.getUserConfig().then((config) => {
+    dataAgent.getUserConfig().then(({ data: config }) => {
       const { threads = 5 } = config;
       const limit = pLimit(threads);
       const fns = (store.feedList || []).map((channel: any) => {

@@ -65,7 +65,7 @@ export const ItemView: FC<CardProps> = ({
     >
       <div
         className={clsx(
-          "w-full h-8 px-4 rounded-md flex items-center cursor-pointer group text-foreground hover:bg-accent",
+          "w-full h-9 px-4 rounded-md flex items-center cursor-pointer group text-foreground hover:bg-accent",
           {
             "hover:bg-primary bg-primary text-primary-foreground": isActive,
             "shadow-[inset_0_0_0_2px_var(--color-primary)]":

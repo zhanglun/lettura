@@ -11,7 +11,7 @@ pub fn get_channels_in_folders(
   uuids: Vec<String>,
 ) -> Vec<models::FeedMeta> {
   let result = schema::feed_metas::dsl::feed_metas
-    .filter(schema::feed_metas::uuid.eq_any(&uuids))
+    .filter(schema::feed_metas::folder_uuid.eq_any(&uuids))
     .load::<models::FeedMeta>(&mut connection)
     .expect("Expect get feed meta");
 

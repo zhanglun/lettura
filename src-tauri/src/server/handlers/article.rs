@@ -71,8 +71,6 @@ pub async fn handle_mark_as_read(
     is_all: body.is_all,
   });
 
-  println!("=========> {:?}", body);
-
   Ok(web::Json(res))
 }
 
