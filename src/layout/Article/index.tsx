@@ -1,9 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, {useEffect, useRef, useState} from "react";
 import classNames from "classnames";
-import { ArticleListRefType } from "@/components/ArticleList";
+import {ArticleListRefType} from "@/components/ArticleList";
 import * as dataAgent from "../../helpers/dataAgent";
-import { useBearStore } from "@/stores";
-import { useHotkeys } from "react-hotkeys-hook";
+import {useBearStore} from "@/stores";
+import {useHotkeys} from "react-hotkeys-hook";
 import styles from "./index.module.scss";
 import {
   Filter,
@@ -22,21 +22,22 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { ToastAction } from "@/components/ui/toast";
-import { useToast } from "@/components/ui/use-toast";
-import { Icon } from "@/components/Icon";
-import { Separator } from "@/components/ui/separator";
-import { Layout1 } from "@/layout/Article/Layout1";
-import { Layout2 } from "@/layout/Article/Layout2";
-import { Layout3 } from "@/layout/Article/Layout3";
-import { ArticleDialogView } from "@/components/ArticleView/DialogView";
-import { ToolbarItemNavigator } from "@/layout/Article/ToolBar";
-import { ReadingOptions } from "@/layout/Article/ReadingOptions";
-import { useQuery } from "@/helpers/parseXML";
-import { open } from "@tauri-apps/api/shell";
-import { TooltipBox } from "@/components/TooltipBox";
-import { useMatch } from "react-router-dom";
-import { RouteConfig } from "@/config";
+import {ToastAction} from "@/components/ui/toast";
+import {useToast} from "@/components/ui/use-toast";
+import {Icon} from "@/components/Icon";
+import {Separator} from "@/components/ui/separator";
+import {Layout1} from "@/layout/Article/Layout1";
+import {Layout2} from "@/layout/Article/Layout2";
+import {Layout3} from "@/layout/Article/Layout3";
+import {ArticleDialogView} from "@/components/ArticleView/DialogView";
+import {ToolbarItemNavigator} from "@/layout/Article/ToolBar";
+import {ReadingOptions} from "@/layout/Article/ReadingOptions";
+import {useQuery} from "@/helpers/parseXML";
+import {open} from "@tauri-apps/api/shell";
+import {TooltipBox} from "@/components/TooltipBox";
+import {useMatch} from "react-router-dom";
+import {RouteConfig} from "@/config";
+import pLimit from "p-limit";
 
 export const ArticleContainer = (): JSX.Element => {
   const store = useBearStore((state) => ({
@@ -46,6 +47,7 @@ export const ArticleContainer = (): JSX.Element => {
     setArticle: state.setArticle,
     updateArticleAndIdx: state.updateArticleAndIdx,
     feed: state.feed,
+    syncArticles: state.syncArticles,
 
     articleDialogViewStatus: state.articleDialogViewStatus,
     setArticleDialogViewStatus: state.setArticleDialogViewStatus,
@@ -64,14 +66,14 @@ export const ArticleContainer = (): JSX.Element => {
 
   const isToday = useMatch(RouteConfig.TODAY);
   const isAll = useMatch(RouteConfig.ALL);
-  const { toast } = useToast();
+  const {toast} = useToast();
   const [layoutType, setLayoutType] = useState(1);
   const [feedUrl] = useQuery();
   const [syncing, setSyncing] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<HTMLDivElement>(null);
   const articleListRef = useRef<ArticleListRefType>(null);
-  const { currentIdx, setCurrentIdx } = store;
+  const {currentIdx, setCurrentIdx} = store;
 
   const handleViewScroll = () => {
     if (viewRef.current) {
@@ -143,37 +145,32 @@ export const ArticleContainer = (): JSX.Element => {
   const syncArticles = () => {
     if (store.feed?.uuid) {
       setSyncing(true);
-
-      dataAgent
-        .syncFeed(store.feed?.item_type as string, store.feed?.uuid as string)
-        .then(({ data }) => {
-          console.log("%c Line:161 🍞 data", "color:#33a5ff", data);
-          const [num, , message] = data[0];
-
-          if (message) {
-            toast({
-              title: "Something wrong!",
-              variant: "destructive",
-              description: message,
-              action: (
-                <ToastAction altText="Goto schedule to undo">Close</ToastAction>
-              ),
-            });
-          } else {
-            toast({
-              title: "Success",
-              description: message,
-              action: (
-                <ToastAction altText="Goto schedule to undo">Close</ToastAction>
-              ),
-            });
-          }
-
-          if (num > 0) {
-            getArticleList();
-            store.initCollectionMetas();
-            store.getFeedList();
-          }
+      store.syncArticles(store.feed)
+        .then(() => {
+          // if (message) {
+          //   toast({
+          //     title: "Something wrong!",
+          //     variant: "destructive",
+          //     description: message,
+          //     action: (
+          //       <ToastAction altText="Goto schedule to undo">Close</ToastAction>
+          //     ),
+          //   });
+          // } else {
+          //   toast({
+          //     title: "Success",
+          //     description: message,
+          //     action: (
+          //       <ToastAction altText="Goto schedule to undo">Close</ToastAction>
+          //     ),
+          //   });
+          // }
+          //
+          // if (num > 0) {
+          //   getArticleList();
+          //   store.initCollectionMetas();
+          //   store.getFeedList();
+          // }
         })
         .finally(() => {
           setSyncing(false);
@@ -247,7 +244,7 @@ export const ArticleContainer = (): JSX.Element => {
             <DropdownMenuTrigger>
               <TooltipBox content="Filter">
                 <Icon>
-                  <Filter size={16} />
+                  <Filter size={16}/>
                 </Icon>
               </TooltipBox>
             </DropdownMenuTrigger>
@@ -271,47 +268,48 @@ export const ArticleContainer = (): JSX.Element => {
           </DropdownMenu>
           <TooltipBox content="Mark all as read">
             <Icon onClick={markAllRead}>
-              <CheckCheck size={16} />
+              <CheckCheck size={16}/>
             </Icon>
           </TooltipBox>
           <TooltipBox content="Reload feed">
             <Icon onClick={handleRefresh}>
-              <RefreshCw size={16} className={`${syncing ? "spinning" : ""}`} />
+              <RefreshCw size={16} className={`${syncing ? "spinning" : ""}`}/>
             </Icon>
           </TooltipBox>
           <span>
-            <Separator orientation="vertical" className="h-4 mx-2" />
+            <Separator orientation="vertical" className="h-4 mx-2"/>
           </span>
           <Icon onClick={() => handleSetLayout(1)} active={layoutType === 1}>
-            <Layout size={16} />
+            <Layout size={16}/>
           </Icon>
           <Icon onClick={() => handleSetLayout(2)} active={layoutType === 2}>
-            <LayoutGrid size={16} />
+            <LayoutGrid size={16}/>
           </Icon>
           <Icon onClick={() => handleSetLayout(3)} active={layoutType === 3}>
-            <LayoutList size={16} />
+            <LayoutList size={16}/>
           </Icon>
           <span>
-            <Separator orientation="vertical" className="h-4 mx-2" />
+            <Separator orientation="vertical" className="h-4 mx-2"/>
           </span>
-          <ToolbarItemNavigator listRef={listRef} />
+          <ToolbarItemNavigator listRef={listRef}/>
           <span>
-            <Separator orientation="vertical" className="h-4 mx-2" />
+            <Separator orientation="vertical" className="h-4 mx-2"/>
           </span>
-          <ReadingOptions />
+          <ReadingOptions/>
         </div>
       </div>
       <div className="h-[100vh_-_var(--app-toolbar-height)]">
-        {layoutType === 1 && <Layout1 />}
-        {layoutType === 2 && <Layout2 />}
-        {layoutType === 3 && <Layout3 />}
+        {layoutType === 1 && <Layout1/>}
+        {layoutType === 2 && <Layout2/>}
+        {layoutType === 3 && <Layout3/>}
       </div>
       <ArticleDialogView
         article={store.article}
         userConfig={store.userConfig}
         dialogStatus={store.articleDialogViewStatus}
         setDialogStatus={store.setArticleDialogViewStatus}
-        afterConfirm={() => {}}
+        afterConfirm={() => {
+        }}
         afterCancel={() => {
           store.setArticle(null);
           console.log("store.article", store.article);

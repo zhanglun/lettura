@@ -1,6 +1,7 @@
 import { StateCreator } from "zustand";
 import { Channel, FeedResItem } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
+import pLimit from "p-limit";
 
 export type CollectionMeta = {
   total: { unread: number };
@@ -41,7 +42,8 @@ export interface FeedSlice {
   openFolder: (uuid: string) => void;
   closeFolder: (uuid: string) => void;
 
-  syncArticles: (uuid: string, type: string) => Promise<[number, string, string]>;
+  // syncArticles: (feed: FeedResItem) => Promise<[number, string, string]>;
+  syncArticles: (feed: FeedResItem) => any;
 }
 
 export const createFeedSlice: StateCreator<FeedSlice> = (
@@ -243,17 +245,44 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
     }))
   },
 
-  syncArticles(uuid: string, type: string) {
-    return dataAgent.syncFeed(type, uuid)
-      .then(({ data }) => {
-        const [num, , message] = data[0];
-
-        if (num > 0) {
-          get().initCollectionMetas();
-          get().getFeedList();
-        }
-
-        return data[0];
+  syncArticles(feed: FeedResItem) {
+    const {children} = feed;
+    const limit = pLimit(5);
+    const fns = (children?.length > 0 ? children : [{...feed}]).map((_) => {
+      return limit(() => {
+        return dataAgent.syncFeed("feed", _.uuid);
       })
-  }
+    });
+
+    return Promise.all(fns)
+      .then((resList) => {
+        const map = resList.reduce((acu, { data }) => {
+          console.log('===> data', data);
+          const [[uuid, values]] = Object.entries(data);
+          acu[uuid] =  values;
+
+          return acu;
+        }, {} as { [key: string]: any});
+        let list = get().feedList.map((_) => {
+          if (map[_.uuid]) {
+            _.unread += map[_.uuid][0]
+          }
+
+          if (_.children) {
+            _.children.forEach(child => {
+              if (map[child.uuid]) {
+                child.unread += map[child.uuid][0];
+              }
+            })
+          }
+
+          return _;
+        })
+
+        set(() => ({
+          feedList: list,
+        }))
+      }).finally(() => {
+    })
+  },
 });

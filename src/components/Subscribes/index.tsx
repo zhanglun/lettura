@@ -95,29 +95,28 @@ const ChannelList = (): JSX.Element => {
 
   const reloadFeedData = (feed: FeedResItem | null) => {
     if (feed) {
-      store.syncArticles(feed?.uuid, feed?.item_type)
-        .then(([,, message ]) => {
-          if (message) {
-            toast({
-              title: "Something wrong!",
-              variant: "destructive",
-              description: message,
-              action: (
-                <ToastAction altText="Goto schedule to undo">Close</ToastAction>
-              ),
-            });
-          } else {
-            toast({
-              title: "Success",
-              description: message,
-              action: (
-                <ToastAction altText="Goto schedule to undo">Close</ToastAction>
-              ),
-            });
-          }
+      store.syncArticles(feed)
+        .then(() => {
+          // if (message) {
+          //   toast({
+          //     title: "Something wrong!",
+          //     variant: "destructive",
+          //     description: message,
+          //     action: (
+          //       <ToastAction altText="Goto schedule to undo">Close</ToastAction>
+          //     ),
+          //   });
+          // } else {
+          //   toast({
+          //     title: "Success",
+          //     description: message,
+          //     action: (
+          //       <ToastAction altText="Goto schedule to undo">Close</ToastAction>
+          //     ),
+          //   });
+          // }
         });
     }
-    console.log("TODO");
   };
 
   const markAllRead = () => {
