@@ -14,6 +14,7 @@ export const useRefresh = () => {
 
     collectionMeta: state.collectionMeta,
     updateCollectionMeta: state.updateCollectionMeta,
+    syncArticles: state.syncArticles,
   }));
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [done, setDone] = useState<number>(0);
@@ -24,25 +25,12 @@ export const useRefresh = () => {
     store.getFeedList();
   };
 
-  const loadAndUpdate = (type: string, uuid: string, unread: number) => {
-    return dataAgent
-      .syncFeed(type, uuid)
-      .then((res) => {
-        const { data } = res;
-        console.log("%c Line:29 🍌 data", "color:#ffdd4d", data);
-
-        data.forEach((item) => {
-          const [count, uuid, _msg] = item;
-
-          if (count) {
-            store.updateCollectionMeta(count, count);
-            store.updateFeed(uuid, { unread: unread + count });
-          }
-        });
-
-        return data;
+  const loadAndUpdate = (channel: FeedResItem) => {
+    return store.syncArticles(channel)
+      .then(() => {
+        return Promise.resolve();
       })
-      .catch((err) => {
+      .catch((err: any) => {
         console.log("%c Line:239 🍬 err", "color:#2eafb0", err);
         return Promise.resolve();
       })
@@ -64,7 +52,7 @@ export const useRefresh = () => {
       const limit = pLimit(threads);
       const fns = (store.feedList || []).map((channel: any) => {
         return limit(() =>
-          loadAndUpdate(channel.item_type, channel.uuid, channel.unread)
+          loadAndUpdate(channel)
         );
       });
 
@@ -74,28 +62,28 @@ export const useRefresh = () => {
           setRefreshing(false);
           setDone(0);
           getFeedList();
-          loop();
+          // loop();
         });
     });
   };
 
-  function loop() {
-    if (timeRef.current) {
-      clearTimeout(timeRef.current);
-    }
+  // function loop() {
+  //   if (timeRef.current) {
+  //     clearTimeout(timeRef.current);
+  //   }
+  //
+  //   if (store.userConfig.update_interval) {
+  //     timeRef.current = setTimeout(() => {
+  //       startRefresh();
+  //       console.log("%c Line:113 🥕 startRefresh", "color:#42b983");
+  //       loop();
+  //     }, store?.userConfig?.update_interval * 60 * 60 * 1000);
+  //   }
+  // }
 
-    if (store.userConfig.update_interval) {
-      timeRef.current = setTimeout(() => {
-        startRefresh();
-        console.log("%c Line:113 🥕 startRefresh", "color:#42b983");
-        loop();
-      }, store?.userConfig?.update_interval * 60 * 60 * 1000);
-    }
-  }
-
-  useEffect(() => {
-    loop();
-  }, [store.userConfig.update_interval]);
+  // useEffect(() => {
+  //   loop();
+  // }, [store.userConfig.update_interval]);
 
   return [
     store.feedList,

@@ -258,8 +258,11 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
       .then((resList) => {
         const map = resList.reduce((acu, { data }) => {
           console.log('===> data', data);
-          const [[uuid, values]] = Object.entries(data);
-          acu[uuid] =  values;
+          const [[uuid, values] = []] = Object.entries(data);
+
+          if (uuid && values) {
+            acu[uuid] = values;
+          }
 
           return acu;
         }, {} as { [key: string]: any});
@@ -272,6 +275,7 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
             _.children.forEach(child => {
               if (map[child.uuid]) {
                 child.unread += map[child.uuid][0];
+                _.unread += map[child.uuid][0];
               }
             })
           }
