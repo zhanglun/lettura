@@ -42,7 +42,6 @@ export interface FeedSlice {
   openFolder: (uuid: string) => void;
   closeFolder: (uuid: string) => void;
 
-  // syncArticles: (feed: FeedResItem) => Promise<[number, string, string]>;
   syncArticles: (feed: FeedResItem) => any;
 }
 

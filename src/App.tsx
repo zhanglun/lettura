@@ -52,7 +52,7 @@ function App() {
   useEffect(() => {
     store.getUserConfig();
 
-    dataAgent.getUserConfig().then((cfg: any) => {
+    dataAgent.getUserConfig().then(({ data: cfg }) => {
       const { theme, customize_style } = cfg as UserConfig;
 
       if (theme === 'system') {

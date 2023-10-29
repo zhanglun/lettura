@@ -92,7 +92,7 @@ export const General = () => {
   };
 
   useEffect(() => {
-    dataAgent.getUserConfig().then((cfg: any) => {
+    dataAgent.getUserConfig().then(({ data: cfg }) => {
       console.log("update use config", cfg);
 
       const { local_proxy, threads, update_interval } = cfg as UserConfig;
@@ -138,7 +138,7 @@ export const General = () => {
           />
         </div>
       </PanelSection>
-      <PanelSection title="Update Interval" subTitle="set the update interval">
+      <PanelSection title="Update Interval (WIP)" subTitle="set the update interval">
         <Select
           value={updateInterval.toString()}
           onValueChange={(v: string) =>

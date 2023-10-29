@@ -1,4 +1,5 @@
 use dotenv::dotenv;
+use log::log;
 use serde::{Deserialize, Serialize};
 use std::{env, fs, path, path::PathBuf};
 use toml;
@@ -195,6 +196,8 @@ pub fn load_or_initial() -> Option<UserConfig> {
 pub fn update_proxy(ip: String, port: String) -> usize {
   let data = get_user_config();
 
+  println!("data: {:?}", data);
+
   let mut data = match data {
     Some(data) => data,
     None => UserConfig::default(),
@@ -203,6 +206,9 @@ pub fn update_proxy(ip: String, port: String) -> usize {
   let user_config_path = get_user_config_path();
   let a = data.update_proxy(ip, port);
   let content = toml::to_string(a).unwrap();
+
+  println!("content: {:?}", content);
+  println!("user_config_path: {:?}", user_config_path);
 
   fs::write(user_config_path, content).expect("update proxy error");
 
