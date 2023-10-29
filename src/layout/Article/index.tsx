@@ -146,7 +146,15 @@ export const ArticleContainer = (): JSX.Element => {
     if (store.feed?.uuid) {
       setSyncing(true);
       store.syncArticles(store.feed)
-        .then(() => {
+        .then((result) => {
+          console.log("result ==> ", result);
+          toast({
+            title: "Sync finished",
+            description: "",
+            action: (
+              <ToastAction altText="Goto schedule to undo">Close</ToastAction>
+            ),
+          });
           // if (message) {
           //   toast({
           //     title: "Something wrong!",

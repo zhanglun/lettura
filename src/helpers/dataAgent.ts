@@ -126,7 +126,7 @@ export const addChannel = async (url: string): Promise<[number, string]> => {
 export const syncFeed = async (
   feed_type: string,
   uuid: string
-): Promise<AxiosResponse<[[number, string, string]]>> => {
+): Promise<AxiosResponse<{[key: string]: [string, number, string]}>> => {
   return request.get(`/feeds/${uuid}/sync`, {
     params: {
       feed_type,

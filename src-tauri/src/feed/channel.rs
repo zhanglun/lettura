@@ -667,7 +667,7 @@ pub async fn fetch_site_favicon(url: &str) -> Option<String> {
   favicon_url
 }
 
-pub async fn sync_articles(uuid: String) -> HashMap<String, (usize, String)> {
+pub async fn sync_articles(uuid: String) -> HashMap<String, (String, usize, String)> {
   let mut result = HashMap::new();
 
   let channel = match feed::channel::get_feed_by_uuid(&uuid) {
@@ -682,7 +682,7 @@ pub async fn sync_articles(uuid: String) -> HashMap<String, (usize, String)> {
     }
     Err(err) => {
       feed::channel::update_health_status(&uuid, 1, err.to_string());
-      result.insert(uuid, (0, err.to_string()));
+      result.insert(uuid, (channel.title, 0, err.to_string()));
 
       return result;
     }
@@ -691,35 +691,34 @@ pub async fn sync_articles(uuid: String) -> HashMap<String, (usize, String)> {
   let articles = create_article_models(&channel.uuid, &channel.feed_url, &res);
   let record = feed::article::Article::add_articles(channel.uuid, articles);
 
-  result.insert(uuid, (record, "".to_string()));
+  result.insert(uuid, (channel.title, record, "".to_string()));
 
   return result;
 
 }
 
-pub async fn sync_article_in_folder(uuid: String) -> HashMap<String, (usize, String)> {
+pub async fn sync_article_in_folder(uuid: String) -> HashMap<String, (String, usize, String)> {
   let connection = db::establish_connection();
   let feeds = feed::folder::get_channels_in_folders(connection, vec![uuid.clone()]);
-  let mut result: HashMap<String, (usize, String)> = HashMap::new();
+  let mut result: HashMap<String, (String, usize, String)> = HashMap::new();
   let mut count = 0;
-
 
   log::debug!("sync_article_in_folder: feeds {:?}", feeds);
 
   for feed in feeds {
     let record = sync_articles(feed.uuid.clone()).await;
-    let (num, _message) = record.get(&String::from(feed.uuid)).unwrap();
+    let (_feed_title, num, _message) = record.get(&String::from(feed.uuid)).unwrap();
     result.extend(record.clone());
     count += num;
   }
 
-  result.insert(uuid, (count, String::from("")));
+  result.insert(uuid, (String::from(""), count, String::from("")));
 
   result
 }
 
 // pub struct SyncFeedResult {}
-pub async fn sync_feed(uuid: String, feed_type: String) -> HashMap<String, (usize, String)> {
+pub async fn sync_feed(uuid: String, feed_type: String) -> HashMap<String, (String, usize, String)> {
   if feed_type == "folder" {
     return feed::channel::sync_article_in_folder(uuid.to_string()).await;
   } else {

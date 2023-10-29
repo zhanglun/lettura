@@ -42,7 +42,7 @@ export interface FeedSlice {
   openFolder: (uuid: string) => void;
   closeFolder: (uuid: string) => void;
 
-  syncArticles: (feed: FeedResItem) => any;
+  syncArticles: (feed: FeedResItem) => Promise<any>;
 }
 
 export const createFeedSlice: StateCreator<FeedSlice> = (
@@ -244,7 +244,7 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
     }))
   },
 
-  syncArticles(feed: FeedResItem) {
+  syncArticles(feed: FeedResItem): Promise<any> {
     const {children} = feed;
     const limit = pLimit(5);
     const fns = (children?.length > 0 ? children : [{...feed}]).map((_) => {
@@ -267,14 +267,14 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
         }, {} as { [key: string]: any});
         let list = get().feedList.map((_) => {
           if (map[_.uuid]) {
-            _.unread += map[_.uuid][0]
+            _.unread += map[_.uuid][1]
           }
 
           if (_.children) {
             _.children.forEach(child => {
               if (map[child.uuid]) {
-                child.unread += map[child.uuid][0];
-                _.unread += map[child.uuid][0];
+                child.unread += map[child.uuid][1];
+                _.unread += map[child.uuid][1];
               }
             })
           }
@@ -285,6 +285,8 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
         set(() => ({
           feedList: list,
         }))
+
+        return map;
       }).finally(() => {
     })
   },
