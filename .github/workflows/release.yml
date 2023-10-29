@@ -63,7 +63,7 @@ jobs:
 
       - name: Rust setup
         uses: dtolnay/rust-toolchain@stable
-        with: 
+        with:
           targets: ${{ (matrix.platform == 'macos-latest'&&'aarch64-apple-darwin') || '' }}
 
       - name: Rust cache
@@ -74,7 +74,7 @@ jobs:
       - name: Sync Pnpm version
         uses: pnpm/action-setup@v2
         with:
-          version: 6.32.9
+          version: latest
       - name: Sync node version and setup cache
         uses: actions/setup-node@v3
         with:
