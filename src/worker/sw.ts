@@ -1,3 +1,7 @@
+import { precacheAndRoute } from 'workbox-precaching'
+
+precacheAndRoute(self.__WB_MANIFEST);
+
 // NOTE: We must export or import at least one thing so we are not in
 // the "global" scope, but in a module scope which is re-declarable.
 //
