@@ -83,18 +83,20 @@ jobs:
 
       - name: Install app dependencies and build web
         run: pnpm install
-      - name: Build the app for Apple silicon
-        uses: tauri-apps/tauri-action@dev
-        if: matrix.platform == 'macos-latest'
-        env:
-          GITHUB_TOKEN: ${{ secrets.LETTURA_TOKEN }}
-          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-          TAURI_KEY_PASSWORD : ${{ secrets.TAURI_KEY_PASSWORD }}
-        with:
-          releaseId: ${{ needs.create-release.outputs.release_id }}
-          args:  '-t aarch64-apple-darwin'
+
+      # - name: Build the app for Apple silicon
+      #   uses: tauri-apps/tauri-action@dev
+      #   if: matrix.platform == 'macos-latest'
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.LETTURA_TOKEN }}
+      #     TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+      #     TAURI_KEY_PASSWORD : ${{ secrets.TAURI_KEY_PASSWORD }}
+      #   with:
+      #     releaseId: ${{ needs.create-release.outputs.release_id }}
+      #     args:  '--target aarch64-apple-darwin'
+
       - name: Build the app
-        uses: tauri-apps/tauri-action@dev
+        uses: tauri-apps/tauri-action@v0.4
         env:
           GITHUB_TOKEN: ${{ secrets.LETTURA_TOKEN }}
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
