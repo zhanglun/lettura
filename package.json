@@ -52,6 +52,7 @@
     "tailwindcss-animate": "^1.0.5",
     "tauri-plugin-log-api": "github:tauri-apps/tauri-plugin-log",
     "web-vitals": "^3.1.0",
+    "workbox-build": "^7.0.0",
     "xss": "^1.0.14",
     "zustand": "^4.3.7"
   },
