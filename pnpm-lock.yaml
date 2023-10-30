@@ -5843,7 +5843,7 @@ packages:
     dev: false
 
   github.com/tauri-apps/tauri-plugin-log/e5266f6719039c32b8f51ae86c9b726c2c9f3e42:
-    resolution: {commit: e5266f6719039c32b8f51ae86c9b726c2c9f3e42, repo: git+ssh://git@github.com/tauri-apps/tauri-plugin-log.git, type: git}
+    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-log/tar.gz/e5266f6719039c32b8f51ae86c9b726c2c9f3e42}
     name: tauri-plugin-log-api
     version: 0.0.0
     dependencies:
