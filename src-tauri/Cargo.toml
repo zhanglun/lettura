@@ -35,7 +35,7 @@ base64="*"
 once_cell = "*"
 log= { version = "^0.4" }
 env_logger="*"
-tauri-plugin-log = { version="2.0.0-alpha", features = ["colored"]  }
+tauri-plugin-log = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1", features = ["colored"]  }
 tauri-plugin-single-instance = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
 actix-web = "4.4.0"
 actix-cors = "*"
