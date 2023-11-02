@@ -1,9 +1,3 @@
-import React, { ChangeEvent, useEffect, useRef, useState } from "react";
-import * as dataAgent from "@/helpers/dataAgent";
-import { busChannel } from "@/helpers/busChannel";
-import { useModal } from "../Modal/useModal";
-
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -12,31 +6,32 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Icon } from "../Icon";
-import { ArrowLeft, Loader2, Plus, Settings } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
 import { SettingPanel } from "./index";
+import { useNavigate } from "react-router-dom";
+import { useBearStore } from "@/stores";
 
-export const SettingDialog = (props: any) => {
-  const [showStatus, , , toggleModal] = useModal();
+export const SettingDialog = () => {
+  const store = useBearStore((state) => ({
+    lastViewRouteBeforeSetting: state.lastViewRouteBeforeSetting,
+  }));
+  const navigate = useNavigate();
 
-  const handleCancel = () => {
-    toggleModal();
-  };
-
-  const handleStatusChange = () => {
-    handleCancel();
+  const handleStatusChange = (status: boolean) => {
+    console.log("%c Line:20 🍬 status", "color:#2eafb0", status);
+    console.log("%c Line:23 🥃 store.lastViewRouteBeforeSetting", "color:#93c0a4", store.lastViewRouteBeforeSetting);
+    if (!status) {
+      if (store.lastViewRouteBeforeSetting) {
+        const { pathname, search, hash } = store.lastViewRouteBeforeSetting;
+        navigate(`${pathname}${search}${hash}`, { replace: true });
+      } else {
+        navigate('/', { replace: true });
+      }
+    }
   };
 
   return (
-    <Dialog open={showStatus} onOpenChange={handleStatusChange}>
-      <DialogTrigger asChild>
-        <Icon>
-          <Settings size={16} />
-        </Icon>
-      </DialogTrigger>
-      <DialogContent className="w-[90%]">
+    <Dialog open={true} onOpenChange={handleStatusChange}>
+      <DialogContent className="min-w-[90%] min-h-[90%]">
         <SettingPanel />
       </DialogContent>
     </Dialog>

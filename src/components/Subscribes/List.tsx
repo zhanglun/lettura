@@ -144,7 +144,7 @@ export const List = () => {
 
       console.log("%c Line:225 🍧 list", "color:#2eafb0", list);
 
-      setTreeData(() => list);
+      setTreeData(list);
 
       return list;
     },
@@ -200,8 +200,9 @@ export const List = () => {
     });
   };
 
-  const toggleFolder = (folderId: string) => {
+  const toggleFolder =  useCallback((folderId: string) => {
     const newTreeData = [...treeData];
+    console.log('newTreeData ===? ', newTreeData);
     const folder = findItemDeep(newTreeData, folderId);
 
     if (!folder || folder.item_type !== "folder") {
@@ -212,12 +213,14 @@ export const List = () => {
 
     folder.is_expanded ? store.openFolder(folderId) : store.closeFolder(folderId);
 
-    setTreeData([...newTreeData]);
-  };
+    console.log('newTreeData ===< ', newTreeData);
+    // setTreeData([...newTreeData]);
+  }, [treeData]);
 
   const renderFeed = useCallback(
     (feed: TreeItem, index: number, level = 1) => {
       const isActive = store?.feed?.uuid === feed.uuid;
+
       return (
         <SubscribeItem
           key={feed.uuid}
@@ -241,13 +244,18 @@ export const List = () => {
     [treeData, store.feed]
   );
 
+  const renderList = useCallback(() => {
+    console.log('treeData =>', treeData)
+    return treeData.map((feed, i) => renderFeed(feed, i))
+  }, [treeData]);
+
   useEffect(() => {
     setTreeData([...store.feedList] as TreeItem[]);
   }, [store.feedList]);
 
   return (
     <div>
-      <div className="">{treeData.map((feed, i) => renderFeed(feed, i))}</div>
+      <div className="">{renderList()}</div>
     </div>
   );
 };

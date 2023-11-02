@@ -7,7 +7,7 @@ import { Separator } from "@/components/ui/separator";
 
 function SettingPanel() {
   return (
-    <div className="flex-1 hidden space-y-6 px-10 pt-14 md:block overflow-auto">
+    <div className="h-[84vh] flex-1 hidden space-y-6 px-10 pt-14 md:block overflow-auto">
       <div className="space-y-0.5">
         <h2 className="flex items-center font-semibold text-2xl tracking-tight">
           Settings

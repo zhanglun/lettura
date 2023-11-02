@@ -20,7 +20,7 @@ import { Appearance } from "./components/SettingPanel/Appearance";
 
 import "./styles/index.global.scss";
 import { Shortcut } from "./components/SettingPanel/ShortCut";
-import { emit, listen } from '@tauri-apps/api/event'
+import { emit, listen } from "@tauri-apps/api/event";
 
 function App() {
   const store = useBearStore((state) => ({
@@ -31,11 +31,15 @@ function App() {
 
   useEffect(() => {
     listen("go-to-settings", () => {
-      console.log("%c Line:34 🍒 go-to-setting", "color:#fca650", 'go-to-setting');
+      console.log(
+        "%c Line:34 🍒 go-to-setting",
+        "color:#fca650",
+        "go-to-setting"
+      );
 
       window.location.href = RouteConfig.SETTINGS_GENERAL;
-    })
-  }, [])
+    });
+  }, []);
 
   useEffect(() => {
     document
@@ -55,8 +59,12 @@ function App() {
     dataAgent.getUserConfig().then(({ data: cfg }) => {
       const { theme, customize_style } = cfg as UserConfig;
 
-      if (theme === 'system') {
-        document.documentElement.dataset.colorScheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      if (theme === "system") {
+        document.documentElement.dataset.colorScheme = window.matchMedia(
+          "(prefers-color-scheme: dark)"
+        ).matches
+          ? "dark"
+          : "light";
       } else {
         document.documentElement.dataset.colorScheme = theme;
       }
@@ -66,52 +74,21 @@ function App() {
         Object.keys(customize_style).forEach((key: string) => {
           document.documentElement.style.setProperty(
             `--reading-editable-${key.replace(/_/gi, "-")}`,
-            customize_style[key as keyof CustomizeStyle] as string,
+            customize_style[key as keyof CustomizeStyle] as string
           );
         });
     });
   }, []);
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route
-          path={"/"}
-          element={
-            <DndProvider backend={HTML5Backend}>
-              <div className="flex h-full max-h-full">
-                <ChannelList />
-                <Outlet />
-              </div>
-            </DndProvider>
-          }
-        >
-          <Route path={"/"} element={<WelcomePage />} />
-          <Route path={RouteConfig.TODAY} element={<ArticleContainer />} />
-          <Route path={RouteConfig.ALL} element={<ArticleContainer />} />
-          <Route path={RouteConfig.CHANNEL} element={<ArticleContainer />} />
-          <Route path={RouteConfig.SETTINGS} element={<SettingContainer />}>
-            <Route path={RouteConfig.SETTINGS_GENERAL} element={<General />} />
-            <Route
-              path={RouteConfig.SETTINGS_APPEARANCE}
-              element={<Appearance />}
-            />
-            <Route
-              path={RouteConfig.SETTINGS_SHORTCUT}
-              element={<Shortcut />}
-            />
-            <Route
-              path={RouteConfig.SETTINGS_FEED_MANAGER}
-              element={<FeedManager />}
-            />
-            <Route
-              path={RouteConfig.SETTINGS_IMPORT}
-              element={<ImportAndExport />}
-            />
-          </Route>
-        </Route>
-      </Routes>
-    </BrowserRouter>
+    <>
+      <div className="flex h-full max-h-full">
+        <DndProvider backend={HTML5Backend}>
+          <ChannelList />
+        </DndProvider>
+        <Outlet />
+      </div>
+    </>
   );
 }
 
