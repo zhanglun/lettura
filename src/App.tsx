@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { appWindow } from "@tauri-apps/api/window";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { ChannelList } from "./components/Subscribes";
 import { useBearStore } from "@/stores";
 import * as dataAgent from "./helpers/dataAgent";
@@ -27,7 +27,10 @@ function App() {
     goPreviousArticle: state.goPreviousArticle,
     goNextArticle: state.goNextArticle,
     getUserConfig: state.getUserConfig,
+    setLastViewRouteBeforeSetting: state.setLastViewRouteBeforeSetting,
   }));
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     listen("go-to-settings", () => {
@@ -36,8 +39,9 @@ function App() {
         "color:#fca650",
         "go-to-setting"
       );
+      store.setLastViewRouteBeforeSetting(Object.assign({ ...location }));
+      navigate(RouteConfig.SETTINGS_GENERAL);
 
-      window.location.href = RouteConfig.SETTINGS_GENERAL;
     });
   }, []);
 
