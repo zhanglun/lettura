@@ -145,6 +145,7 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
 
   feed: null,
   setFeed: (feed: FeedResItem | null) => {
+    console.log("%c Line:148 🥛 feed", "color:#fca650", feed);
     set(() => ({
       feed: feed,
     }));

@@ -1,8 +1,8 @@
 import update from "immutability-helper";
-import {useCallback, useEffect, useState} from "react";
-import {SubscribeItem} from "./SubscribeItem";
-import {useBearStore} from "@/stores";
-import {FeedResItem} from "@/db";
+import { useCallback, useEffect, useState } from "react";
+import { SubscribeItem } from "./SubscribeItem";
+import { useBearStore } from "@/stores";
+import { FeedResItem } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
 import {
   adjustedTargetIndex,
@@ -200,25 +200,30 @@ export const List = () => {
     });
   };
 
-  const toggleFolder =  useCallback((folderId: string) => {
-    const newTreeData = [...treeData];
-    console.log('newTreeData ===? ', newTreeData);
-    const folder = findItemDeep(newTreeData, folderId);
+  const toggleFolder = useCallback(
+    (folderId: string) => {
+      const newTreeData = [...treeData];
+      console.log("newTreeData ===? ", newTreeData);
+      const folder = findItemDeep(newTreeData, folderId);
 
-    if (!folder || folder.item_type !== "folder") {
-      return;
-    }
+      if (!folder || folder.item_type !== "folder") {
+        return;
+      }
 
-    folder.is_expanded = !folder.is_expanded;
+      folder.is_expanded = !folder.is_expanded;
 
-    folder.is_expanded ? store.openFolder(folderId) : store.closeFolder(folderId);
+      folder.is_expanded
+        ? store.openFolder(folderId)
+        : store.closeFolder(folderId);
 
-    console.log('newTreeData ===< ', newTreeData);
-    // setTreeData([...newTreeData]);
-  }, [treeData]);
+      console.log("newTreeData ===< ", newTreeData);
+      // setTreeData([...newTreeData]);
+    },
+    [treeData]
+  );
 
-  const renderFeed = useCallback(
-    (feed: TreeItem, index: number, level = 1) => {
+  const renderList = useCallback(() => {
+    const renderFeed = (feed: TreeItem, index: number, level = 1) => {
       const isActive = store?.feed?.uuid === feed.uuid;
 
       return (
@@ -228,7 +233,7 @@ export const List = () => {
           uuid={feed.uuid}
           text={feed.title}
           level={level}
-          feed={{...feed}}
+          feed={{ ...feed }}
           isActive={isActive}
           isExpanded={feed.is_expanded}
           toggleFolder={toggleFolder}
@@ -240,14 +245,10 @@ export const List = () => {
             })}
         </SubscribeItem>
       );
-    },
-    [treeData, store.feed]
-  );
+    };
 
-  const renderList = useCallback(() => {
-    console.log('treeData =>', treeData)
-    return treeData.map((feed, i) => renderFeed(feed, i))
-  }, [treeData]);
+    return treeData.map((feed, i) => renderFeed(feed, i));
+  }, [treeData, store.feed]);
 
   useEffect(() => {
     setTreeData([...store.feedList] as TreeItem[]);
