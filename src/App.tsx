@@ -1,26 +1,17 @@
 import React, { useEffect } from "react";
+import { Outlet, useNavigate } from "react-router-dom";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { appWindow } from "@tauri-apps/api/window";
-import { Outlet, useNavigate } from "react-router-dom";
-import { ChannelList } from "./components/Subscribes";
+import { emit, listen } from "@tauri-apps/api/event";
+
 import { useBearStore } from "@/stores";
+import { ChannelList } from "./components/Subscribes";
 import * as dataAgent from "./helpers/dataAgent";
-
-import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { RouteConfig } from "./config";
-import { ArticleContainer } from "./layout/Article";
-import { SettingContainer } from "./layout/Setting";
-
-import { General } from "./components/SettingPanel/General";
-import { FeedManager } from "./components/SettingPanel/Content";
-import { ImportAndExport } from "./components/SettingPanel/ImportAndExport";
-import { WelcomePage } from "./components/WelcomePage";
-import { Appearance } from "./components/SettingPanel/Appearance";
 
 import "./styles/index.global.scss";
-import { Shortcut } from "./components/SettingPanel/ShortCut";
-import { emit, listen } from "@tauri-apps/api/event";
+import { CommandPanel } from "./command";
 
 function App() {
   const store = useBearStore((state) => ({
@@ -92,6 +83,7 @@ function App() {
         </DndProvider>
         <Outlet />
       </div>
+      <CommandPanel />
     </>
   );
 }
