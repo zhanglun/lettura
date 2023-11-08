@@ -153,6 +153,7 @@ pub struct NewArticle {
   pub content: String,
   pub author: String,
   pub pub_date: String,
+  pub media_object: String,
 }
 
 #[derive(Debug, Queryable, QueryableByName, Clone, Serialize)]

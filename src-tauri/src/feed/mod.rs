@@ -1,7 +1,11 @@
-use feed_rs::parser;
+use crate::core::config;
+use feed_rs::{
+  model::{MediaContent, MediaObject, MediaThumbnail, Text},
+  parser,
+};
 use log;
 use reqwest;
-use crate::core::config;
+use serde::{ser::SerializeStruct, Serialize, Serializer};
 
 pub mod article;
 pub mod channel;
@@ -82,6 +86,51 @@ pub async fn parse_feed(url: &str) -> Result<feed_rs::model::Feed, String> {
   a
 }
 
+pub struct WrappedText(pub Text);
+
+impl Serialize for WrappedText {
+  fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+  where
+    S: Serializer,
+  {
+    let mut state = serializer.serialize_struct("Text", 3)?;
+    state.serialize_field("content_type", &self.0.content_type.to_string())?;
+    state.serialize_field("src", &self.0.src)?;
+    state.serialize_field("content", &self.0.content)?;
+    state.end()
+  }
+}
+
+pub struct WrappedMediaContent(pub MediaContent);
+
+impl Serialize for WrappedMediaContent {
+  fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+      where
+          S: Serializer {
+      let mut state = serializer.serialize_struct("MediaContent", 6)?;
+      state.serialize_field("url", &self.0.url)?;
+      state.serialize_field("content_type", &self.0.content_type.clone().unwrap().to_string())?;
+      state.serialize_field("height", &self.0.height)?;
+      state.serialize_field("width", &self.0.width)?;
+      state.serialize_field("size", &self.0.size)?;
+      state.end()
+  }
+}
+
+pub struct WrappedMediaObject(pub MediaObject);
+
+impl Serialize for WrappedMediaObject {
+  fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+  where
+    S: Serializer,
+  {
+    let mut state = serializer.serialize_struct("MediaObject", 8)?;
+    state.serialize_field("title", &self.0.title.clone().map(WrappedText))?;
+    state.serialize_field("description", &self.0.description.clone().map(WrappedText))?;
+    state.serialize_field("content", &self.0.content.clone().into_iter().map(WrappedMediaContent).collect::<Vec<WrappedMediaContent>>())?;
+    state.end()
+  }
+}
 
 #[cfg(test)]
 mod tests {

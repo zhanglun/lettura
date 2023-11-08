@@ -1,12 +1,11 @@
-use std::collections::HashMap;
-
-use serde::Serialize;
+use serde::{Serialize};
 use tauri::{command, Window};
 use tokio::sync::{mpsc, Mutex};
 use uuid::Uuid;
 
 use crate::core::config;
 use crate::feed;
+use crate::feed::WrappedMediaObject;
 use crate::models;
 use crate::AsyncProcessMessage;
 
@@ -151,6 +150,10 @@ pub fn create_article_models(
       None => String::from(""),
     };
 
+    let media_object = entry.media.clone().into_iter().map(|m| WrappedMediaObject(m)).collect::<Vec<WrappedMediaObject>>();
+    let json = serde_json::to_string(&media_object).unwrap();
+    println!("JSON: {}", json);
+
     let s = models::NewArticle {
       uuid: article_uuid,
       feed_uuid: channel_uuid.to_string(),
@@ -161,6 +164,7 @@ pub fn create_article_models(
       description,
       author: author,
       pub_date: pub_date,
+      media_object: json,
     };
 
     articles.push(s);
@@ -216,8 +220,6 @@ pub fn init_process(window: Window) {
       .unwrap();
   });
 }
-
-
 
 #[command]
 pub fn update_article_read_status(uuid: String, status: i32) -> usize {

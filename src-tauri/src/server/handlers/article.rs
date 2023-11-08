@@ -79,7 +79,7 @@ pub async fn handle_articles(
   query: web::Query<feed::article::ArticleFilter>,
 ) -> Result<impl Responder> {
   let filter = feed::article::ArticleFilter {
-    channel_uuid: query.channel_uuid.clone(),
+    feed_uuid: query.feed_uuid.clone(),
     item_type: query.item_type.clone(),
     read_status: query.read_status.clone(),
     cursor: query.cursor.clone(),
@@ -96,7 +96,7 @@ pub async fn handle_get_all_articles(
   query: web::Query<feed::article::ArticleFilter>,
 ) -> Result<impl Responder> {
   let filter = feed::article::ArticleFilter {
-    channel_uuid: query.channel_uuid.clone(),
+    feed_uuid: query.feed_uuid.clone(),
     item_type: query.item_type.clone(),
     read_status: query.read_status.clone(),
     cursor: query.cursor.clone(),
@@ -113,7 +113,7 @@ pub async fn handle_get_today_articles(
   query: web::Query<feed::article::ArticleFilter>,
 ) -> Result<impl Responder> {
   let filter = feed::article::ArticleFilter {
-    channel_uuid: query.channel_uuid.clone(),
+    feed_uuid: query.feed_uuid.clone(),
     item_type: query.item_type.clone(),
     read_status: query.read_status.clone(),
     cursor: query.cursor.clone(),

@@ -10,7 +10,7 @@ pub struct Article {}
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ArticleFilter {
-  pub channel_uuid: Option<String>,
+  pub feed_uuid: Option<String>,
   pub item_type: Option<String>,
   pub read_status: Option<i32>,
   pub cursor: Option<i32>,
@@ -31,7 +31,7 @@ pub struct ArticleQueryItem {
   #[diesel(sql_type = Text)]
   pub uuid: String,
   #[diesel(sql_type = Text)]
-  pub channel_uuid: String,
+  pub feed_uuid: String,
   #[diesel(sql_type = Text)]
   pub channel_title: String,
   #[diesel(sql_type = Text)]
@@ -70,7 +70,7 @@ impl Article {
     let mut query = diesel::sql_query("").into_boxed();
     let mut limit = 12;
 
-    if let Some(channel_uuid) = filter.channel_uuid {
+    if let Some(channel_uuid) = filter.feed_uuid {
       let mut relations = vec![];
 
       if let Some(item_type) = filter.item_type {
@@ -106,7 +106,7 @@ impl Article {
         "
             SELECT
               A.id, A.uuid,
-              A.channel_uuid,
+              A.feed_uuid,
               C.title as channel_title,
               C.link as channel_link,
               A.link,
@@ -119,7 +119,7 @@ impl Article {
               feeds as C
             LEFT JOIN
               articles as A
-            ON C.uuid = A.channel_uuid
+            ON C.uuid = A.feed_uuid
             WHERE C.uuid in ({}) AND A.uuid IS NOT NULL",
         params
       ));
@@ -173,7 +173,7 @@ impl Article {
       "
         SELECT
           A.id, A.uuid,
-          A.channel_uuid,
+          A.feed_uuid,
           C.title as channel_title,
           C.link as channel_link,
           A.link,
@@ -187,7 +187,7 @@ impl Article {
           feeds as C
         LEFT JOIN
           articles as A
-        ON C.uuid = A.channel_uuid
+        ON C.uuid = A.feed_uuid
         WHERE DATE(A.create_date) = DATE('now')",
     );
 
@@ -233,7 +233,7 @@ impl Article {
       "
         SELECT
           A.id, A.uuid,
-          A.channel_uuid,
+          A.feed_uuid,
           C.title as channel_title,
           C.link as channel_link,
           A.link,
@@ -247,7 +247,7 @@ impl Article {
           feeds as C
         LEFT JOIN
           articles as A
-        ON C.uuid = A.channel_uuid ",
+        ON C.uuid = A.feed_uuid ",
     );
 
     match filter.read_status {
