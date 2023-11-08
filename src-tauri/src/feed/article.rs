@@ -395,10 +395,12 @@ impl Article {
 
     if relations.len() > 0 {
       for relation in relations {
-        if relation.folder_uuid == uuid {
-          let uuid = String::from(relation.uuid);
+        if let Some(folder_uuid) = relation.folder_uuid {
+          if folder_uuid == uuid {
+            let uuid = String::from(relation.uuid);
 
-          channel_uuids.push(uuid.clone());
+            channel_uuids.push(uuid.clone());
+          }
         }
       }
     } else {
@@ -406,7 +408,7 @@ impl Article {
     }
     let result = diesel::update(
       schema::articles::dsl::articles
-        .filter(schema::articles::channel_uuid.eq_any(channel_uuids))
+        .filter(schema::articles::feed_uuid.eq_any(channel_uuids))
         .filter(schema::articles::read_status.eq(1)),
     )
     .set(schema::articles::read_status.eq(2))

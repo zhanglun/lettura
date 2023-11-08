@@ -11,8 +11,8 @@ pub fn create_client() -> reqwest::Client {
   let user_config = config::get_user_config();
   let client_builder = reqwest::Client::builder();
 
-  if let Some(user_config) = user_config {
-    if let Some(proxy) = user_config.local_proxy {
+  if let Some(config) = user_config {
+    if let Some(proxy) = config.local_proxy {
       log::info!("user_config.local_proxy {:?}", proxy);
 
       let mut scheme = String::from("socks5h://");
@@ -82,3 +82,16 @@ pub async fn parse_feed(url: &str) -> Result<feed_rs::model::Feed, String> {
   a
 }
 
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  #[tokio::test]
+  async fn test_parse_feed() {
+    let url = "https://www.youtube.com/feeds/videos.xml?channel_id=UCpVm7bg6pXKo1Pr6k5kxG9A";
+    let res = parse_feed(url).await;
+
+    println!("{:?}", res);
+  }
+}

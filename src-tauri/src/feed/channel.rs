@@ -49,7 +49,7 @@ pub fn delete_feed(uuid: String) -> usize {
       .expect("Expect delete channel");
 
     diesel::delete(
-      schema::articles::dsl::articles.filter(schema::articles::channel_uuid.eq(&uuid)),
+      schema::articles::dsl::articles.filter(schema::articles::feed_uuid.eq(&uuid)),
     )
     .execute(&mut connection)
     .expect("Expect delete channel");
@@ -72,30 +72,10 @@ pub fn batch_delete_feed(channel_uuids: Vec<String>) -> usize {
       .expect("Expect delete channel");
 
   diesel::delete(
-    schema::articles::dsl::articles.filter(schema::articles::channel_uuid.eq_any(&channel_uuids)),
+    schema::articles::dsl::articles.filter(schema::articles::feed_uuid.eq_any(&channel_uuids)),
   )
   .execute(&mut connection)
   .expect("Expect delete channel");
-
-  result
-}
-
-pub fn get_feed_meta_with_uuids(channel_uuids: Vec<String>) -> Vec<models::FeedMeta> {
-  let mut connection = db::establish_connection();
-  let result = schema::feed_metas::dsl::feed_metas
-    .filter(schema::feed_metas::uuid.eq_any(&channel_uuids))
-    .load::<models::FeedMeta>(&mut connection)
-    .expect("Expect get feed meta");
-
-  result
-}
-
-pub fn get_all_feed_meta() -> Vec<models::FeedMeta> {
-  let mut connection = db::establish_connection();
-  let result = schema::feed_metas::dsl::feed_metas
-    .order(schema::feed_metas::sort.desc())
-    .load::<models::FeedMeta>(&mut connection)
-    .expect("Expect get feed meta");
 
   result
 }
@@ -480,7 +460,9 @@ pub fn update_feed_sort(sorts: Vec<FeedSort>) -> usize {
         .set(schema::feeds::sort.eq(item.sort))
         .execute(&mut connection)
         .expect("msg");
-      diesel::delete(schema::feed_metas::dsl::feed_metas.filter(schema::feed_metas::uuid.eq(&item.uuid)))
+      diesel::delete(
+        schema::feed_metas::dsl::feed_metas.filter(schema::feed_metas::uuid.eq(&item.uuid)),
+      )
       .execute(&mut connection)
       .expect("delete feed from folder");
     }
@@ -562,16 +544,21 @@ pub fn get_channels() -> ChannelQueryResult {
   }
 
   for r in relations {
-    folder_channel_map.insert(
-      r.uuid.clone(),
-      (
-        r.folder_uuid.clone(),
-        folder_name_map
-          .get(&r.folder_uuid)
-          .unwrap_or(&"".to_string())
-          .to_string(),
-      ),
-    );
+    match r.folder_uuid {
+      Some(folder_uuid) => {
+        folder_channel_map.insert(
+          r.uuid.clone(),
+          (
+            folder_uuid.clone(),
+            folder_name_map
+              .get(&folder_uuid)
+              .unwrap_or(&"".to_string())
+              .to_string(),
+          ),
+        );
+      }
+      None => {}
+    }
   }
 
   let result: Vec<ChannelQuery> = channels
@@ -694,7 +681,6 @@ pub async fn sync_articles(uuid: String) -> HashMap<String, (String, usize, Stri
   result.insert(uuid, (channel.title, record, "".to_string()));
 
   return result;
-
 }
 
 pub async fn sync_article_in_folder(uuid: String) -> HashMap<String, (String, usize, String)> {
@@ -718,7 +704,10 @@ pub async fn sync_article_in_folder(uuid: String) -> HashMap<String, (String, us
 }
 
 // pub struct SyncFeedResult {}
-pub async fn sync_feed(uuid: String, feed_type: String) -> HashMap<String, (String, usize, String)> {
+pub async fn sync_feed(
+  uuid: String,
+  feed_type: String,
+) -> HashMap<String, (String, usize, String)> {
   if feed_type == "folder" {
     return feed::channel::sync_article_in_folder(uuid.to_string()).await;
   } else {

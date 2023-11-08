@@ -153,7 +153,7 @@ pub fn create_article_models(
 
     let s = models::NewArticle {
       uuid: article_uuid,
-      channel_uuid: channel_uuid.to_string(),
+      feed_uuid: channel_uuid.to_string(),
       title: title.to_string(),
       link,
       content,

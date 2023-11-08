@@ -4,17 +4,18 @@ diesel::table! {
     articles (id) {
         id -> Integer,
         uuid -> Text,
-        channel_uuid -> Text,
         title -> Text,
         link -> Text,
         feed_url -> Text,
+        feed_uuid -> Text,
         description -> Text,
-        content -> Text,
-        pub_date -> Timestamp,
         author -> Text,
+        pub_date -> Timestamp,
+        content -> Text,
         create_date -> Timestamp,
         update_date -> Timestamp,
         read_status -> Integer,
+        media_object -> Nullable<Text>,
     }
 }
 
@@ -22,7 +23,7 @@ diesel::table! {
     feed_metas (id) {
         id -> Integer,
         uuid -> Text,
-        folder_uuid -> Text,
+        folder_uuid -> Nullable<Text>,
         sort -> Integer,
         create_date -> Timestamp,
         update_date -> Timestamp,
