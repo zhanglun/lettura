@@ -1,4 +1,3 @@
-import React from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
@@ -9,13 +8,13 @@ import "./index.css";
 import ErrorPage from "./ErrorPage";
 import { ArticleContainer } from "./layout/Article";
 import { RouteConfig } from "./config";
-import { SettingContainer } from "./layout/Setting";
 import { General } from "./components/SettingPanel/General";
 import { Appearance } from "./components/SettingPanel/Appearance";
 import { Shortcut } from "./components/SettingPanel/ShortCut";
 import { FeedManager } from "./components/SettingPanel/Content";
 import { ImportAndExport } from "./components/SettingPanel/ImportAndExport";
 import { SettingDialog } from "./components/SettingPanel/DialogMode";
+import { WelcomePage } from "./components/WelcomePage";
 
 const router = createBrowserRouter([
   {
@@ -28,6 +27,10 @@ const router = createBrowserRouter([
     ),
     errorElement: <ErrorPage />,
     children: [
+      {
+        path: "/",
+        element: <WelcomePage />
+      },
       {
         path: RouteConfig.TODAY,
         element: <ArticleContainer />,
