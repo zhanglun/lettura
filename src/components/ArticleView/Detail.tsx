@@ -76,7 +76,6 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
               src={`https://www.youtube.com/embed/${videoId}`}
               width="640"
               height="360"
-              frameborder="0"
             />
           );
         }
