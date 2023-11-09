@@ -110,7 +110,7 @@ pub fn update_health_status(
 #[derive(Debug, Clone, Queryable, Serialize, QueryableByName)]
 pub struct UnreadTotal {
   #[diesel(sql_type = diesel::sql_types::Text)]
-  pub channel_uuid: String,
+  pub feed_uuid: String,
   #[diesel(sql_type = diesel::sql_types::Integer)]
   pub unread_count: i32,
 }
@@ -129,11 +129,11 @@ pub fn get_unread_total() -> HashMap<String, i32> {
   const SQL_QUERY_UNREAD_TOTAL: &str = "
     SELECT
       id,
-      channel_uuid,
+      feed_uuid,
       count(read_status) as unread_count
     FROM articles
     WHERE read_status = 1
-    GROUP BY channel_uuid;
+    GROUP BY feed_uuid;
   ";
   let sql_folders: &str = "
     SELECT
@@ -150,7 +150,7 @@ pub fn get_unread_total() -> HashMap<String, i32> {
   let total_map = record
     .clone()
     .into_iter()
-    .map(|r| (r.channel_uuid.clone(), r.unread_count.clone()))
+    .map(|r| (r.feed_uuid.clone(), r.unread_count.clone()))
     .collect::<HashMap<String, i32>>();
   let meta_group = diesel::sql_query(sql_folders)
     .load::<MetaGroup>(&mut connection)
@@ -170,8 +170,8 @@ pub fn get_unread_total() -> HashMap<String, i32> {
   }
 
   for i in record {
-    if let Some(count) = total_map.get(&i.channel_uuid) {
-      result_map.entry(i.channel_uuid).or_insert(count.clone());
+    if let Some(count) = total_map.get(&i.feed_uuid) {
+      result_map.entry(i.feed_uuid).or_insert(count.clone());
     }
   }
 
