@@ -39,6 +39,8 @@ specifiers:
   dnd-core: ^16.0.1
   framer-motion: ^10.13.0
   immutability-helper: ^3.1.1
+  linkify-string: ^4.1.2
+  linkifyjs: ^4.1.2
   lucide-react: ^0.284.0
   p-limit: ^4.0.0
   postcss: ^8.4.20
@@ -93,6 +95,8 @@ dependencies:
   dnd-core: 16.0.1
   framer-motion: 10.16.4_biqbaboplfbrettd7655fr4n2y
   immutability-helper: 3.1.1
+  linkify-string: 4.1.2_linkifyjs@4.1.2
+  linkifyjs: 4.1.2
   lucide-react: 0.284.0_react@18.2.0
   p-limit: 4.0.0
   react: 18.2.0
@@ -4176,6 +4180,18 @@ packages:
   /lines-and-columns/1.2.4:
     resolution: {integrity: sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==}
 
+  /linkify-string/4.1.2_linkifyjs@4.1.2:
+    resolution: {integrity: sha512-tYDXkrzKCy5haf9eHS7GWU+a//q0jveP5kX2VF+/47h5jfTTtsqqj3lchacLTwRMB/nJL3trrloyAhPzcvBvqw==}
+    peerDependencies:
+      linkifyjs: ^4.0.0
+    dependencies:
+      linkifyjs: 4.1.2
+    dev: false
+
+  /linkifyjs/4.1.2:
+    resolution: {integrity: sha512-1elJrH8MwUgr77Rgmx4JgB/nBgISYVoGossH6pAfCeHG+07TblTn6RWKx0MKozEMJU6NCFYHRih9M8ZtV3YZ+Q==}
+    dev: false
+
   /lodash.castarray/4.4.0:
     resolution: {integrity: sha512-aVx8ztPv7/2ULbArGJ2Y42bG1mEQ5mGjpdvrbJcJFU3TbYybe+QlLS4pst9zV52ymy2in1KpFPiZnAOATxD4+Q==}
     dev: true
@@ -5539,7 +5555,7 @@ packages:
     dev: false
 
   github.com/tauri-apps/tauri-plugin-log/e5266f6719039c32b8f51ae86c9b726c2c9f3e42:
-    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-log/tar.gz/e5266f6719039c32b8f51ae86c9b726c2c9f3e42}
+    resolution: {commit: e5266f6719039c32b8f51ae86c9b726c2c9f3e42, repo: git+ssh://git@github.com/tauri-apps/tauri-plugin-log.git, type: git}
     name: tauri-plugin-log-api
     version: 0.0.0
     dependencies:

@@ -1,6 +1,6 @@
 use crate::core::config;
 use feed_rs::{
-  model::{MediaContent, MediaObject, MediaThumbnail, Text},
+  model::{MediaContent, MediaObject, MediaThumbnail, Text, Image, Link},
   parser,
 };
 use log;
@@ -117,6 +117,53 @@ impl Serialize for WrappedMediaContent {
   }
 }
 
+pub struct WrappedLink(pub Link);
+
+impl Serialize for WrappedLink {
+  fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+      where
+          S: Serializer {
+      let mut state = serializer.serialize_struct("Link", 6)?;
+      state.serialize_field("href", &self.0.href)?;
+      state.serialize_field("rel", &self.0.rel)?;
+      state.serialize_field("media_type", &self.0.media_type)?;
+      state.serialize_field("href_lang", &self.0.href_lang)?;
+      state.serialize_field("title", &self.0.title)?;
+      state.serialize_field("length", &self.0.length)?;
+      state.end()
+  }
+}
+
+pub struct WrappedImage(pub Image);
+
+impl Serialize for WrappedImage {
+  fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+      where
+          S: Serializer {
+      let mut state = serializer.serialize_struct("Image", 6)?;
+      state.serialize_field("uri", &self.0.uri)?;
+      state.serialize_field("title", &self.0.title)?;
+      state.serialize_field("link", &self.0.link.clone().map(WrappedLink))?;
+      state.serialize_field("width", &self.0.width)?;
+      state.serialize_field("height", &self.0.height)?;
+      state.serialize_field("description", &self.0.description)?;
+      state.end()
+  }
+}
+
+pub struct WrappedMediaThumbnail(pub MediaThumbnail);
+
+impl Serialize for WrappedMediaThumbnail {
+  fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+      where
+          S: Serializer {
+      let mut state = serializer.serialize_struct("MediaThumbnail", 2)?;
+      state.serialize_field("image", &WrappedImage(self.0.image.clone()))?;
+      state.serialize_field("time", &self.0.time)?;
+      state.end()
+  }
+}
+
 pub struct WrappedMediaObject(pub MediaObject);
 
 impl Serialize for WrappedMediaObject {
@@ -128,6 +175,7 @@ impl Serialize for WrappedMediaObject {
     state.serialize_field("title", &self.0.title.clone().map(WrappedText))?;
     state.serialize_field("description", &self.0.description.clone().map(WrappedText))?;
     state.serialize_field("content", &self.0.content.clone().into_iter().map(WrappedMediaContent).collect::<Vec<WrappedMediaContent>>())?;
+    state.serialize_field("thumbnails", &self.0.thumbnails.clone().into_iter().map(WrappedMediaThumbnail).collect::<Vec<WrappedMediaThumbnail>>())?;
     state.end()
   }
 }

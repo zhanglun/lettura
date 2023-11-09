@@ -89,7 +89,7 @@ export const getArticleList = async (
   });
   const req = request.get("articles", {
     params: {
-      channel_uuid: uuid,
+      feed_uuid: uuid,
       ...filter,
       item_type: type,
     },

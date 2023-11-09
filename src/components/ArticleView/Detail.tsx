@@ -8,7 +8,8 @@ import * as dataAgent from "@/helpers/dataAgent";
 import { motion, AnimatePresence } from "framer-motion";
 import { fetch } from "@tauri-apps/api/http";
 import { open } from "@tauri-apps/api/shell";
-import xss from 'xss';
+import xss from "xss";
+import linkifyStr from "linkify-string";
 
 function createMarkup(html: string) {
   return { __html: html };
@@ -28,9 +29,10 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
   const [pageContent, setPageContent] = useState("");
   const [banner, setBanner] = useState("");
   const [showBanner, setShowBanner] = useState(false);
+  const [medias, setMedias] = useState([]);
   const controller = new AbortController();
 
-  function delegateContentClick (e: React.MouseEvent<HTMLElement>) {
+  function delegateContentClick(e: React.MouseEvent<HTMLElement>) {
     let elem = null;
     const i = e.nativeEvent.composedPath();
 
@@ -62,6 +64,43 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
     }
   }
 
+  function renderMediaBox(media: any) {
+    const { description, content, thumbnails } = media;
+
+    function renderContent() {
+      return content.map((c: any) => {
+        if (/youtube.com\/v/.test(c.url)) {
+          const videoId = c.url.split("/").pop();
+          return (
+            <iframe
+              src={`https://www.youtube.com/embed/${videoId}`}
+              width="640"
+              height="360"
+              frameborder="0"
+            />
+          );
+        }
+      });
+    }
+
+    console.log(
+      "%c Line:92 🥐 linkifyStr(description.content)",
+      "color:#b03734",
+      linkifyStr(description.content)
+    );
+
+    return (
+      <div className="reading-content">
+        <div className="pb-6">{renderContent()}</div>
+        <div style={{whiteSpace: "pre-line"}}
+          dangerouslySetInnerHTML={createMarkup(
+            linkifyStr(description.content)
+          )}
+        />
+      </div>
+    );
+  }
+
   useEffect(() => {
     setBanner("");
     setPageContent("");
@@ -72,31 +111,39 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
     // });
 
     article &&
-      dataAgent.getArticleDetail(article.uuid, {
-        signal: controller.signal
-      }).then((res) => {
-        console.log("%c Line:102 🥓 res", "color:#33a5ff", res);
-        const { data } = res;
-        const content = (data.content || data.description || "").replace(
-          /<a[^>]+>/gi,
-          (a: string) => {
-            if (!/\starget\s*=/gi.test(a)) {
-              return a.replace(/^<a\s/, '<a target="_blank"');
+      dataAgent
+        .getArticleDetail(article.uuid, {
+          signal: controller.signal,
+        })
+        .then((res) => {
+          console.log("%c Line:102 🥓 res", "color:#33a5ff", res);
+          const { data } = res;
+          const content = (data.content || data.description || "").replace(
+            /<a[^>]+>/gi,
+            (a: string) => {
+              if (!/\starget\s*=/gi.test(a)) {
+                return a.replace(/^<a\s/, '<a target="_blank"');
+              }
+
+              return a;
             }
+          );
 
-            return a;
+          // try to get the best banner if there is no image in article content
+          // it will make render slower
+          setShowBanner(content.search(/<img[^>]+>/gi) === -1);
+          setPageContent(xss(content));
+
+          try {
+            setMedias(JSON.parse(data.media_object));
+          } catch (e) {
+            setMedias([]);
           }
-        );
+        });
 
-        // try to get the best banner if there is no image in article content
-        // it will make render slower
-        setShowBanner(content.search(/<img[^>]+>/gi) === -1);
-        setPageContent(xss(content));
-      });
-
-      return () => {
-        controller.abort();
-      }
+    return () => {
+      controller.abort();
+    };
   }, [article]);
 
   return (
@@ -147,6 +194,7 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
               // eslint-disable-next-line react/no-danger
               dangerouslySetInnerHTML={createMarkup(pageContent)}
             />
+            {medias.length > 0 && <div>{medias.map(renderMediaBox)}</div>}
             {/* <div
               className={classnames("reading-content", "text-detail-paragraph")}>
                 <iframe src={article.link} className="w-full" allowFullScreen></iframe>

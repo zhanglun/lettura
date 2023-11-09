@@ -75,6 +75,7 @@ export interface ArticleResItem {
   pub_date?: Date;
   create_date?: Date;
   read_status: number;
+  media_object: string;
 }
 
 export interface Folder {

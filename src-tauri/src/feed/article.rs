@@ -154,8 +154,6 @@ impl Article {
       query = query.sql(" OFFSET ?").bind::<Integer, _>((c - 1) * limit);
     }
 
-    let debug = diesel::debug_query::<diesel::sqlite::Sqlite, _>(&query);
-
     let result = query
       .load::<ArticleQueryItem>(&mut connection)
       .expect("Expect loading articles");
