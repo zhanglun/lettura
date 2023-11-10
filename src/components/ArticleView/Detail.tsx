@@ -8,7 +8,7 @@ import * as dataAgent from "@/helpers/dataAgent";
 import { motion, AnimatePresence } from "framer-motion";
 import { fetch } from "@tauri-apps/api/http";
 import { open } from "@tauri-apps/api/shell";
-import xss from "xss";
+import xss, { getDefaultWhiteList } from "xss";
 import linkifyStr from "linkify-string";
 
 function createMarkup(html: string) {
@@ -131,7 +131,13 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
           // try to get the best banner if there is no image in article content
           // it will make render slower
           setShowBanner(content.search(/<img[^>]+>/gi) === -1);
-          setPageContent(xss(content));
+          console.log('xss.whitelist', xss)
+          setPageContent(xss(content, {
+            whiteList: {
+              ...getDefaultWhiteList(),
+              iframe:[],
+            }
+          }));
 
           try {
             setMedias(JSON.parse(data.media_object));

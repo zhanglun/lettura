@@ -173,7 +173,7 @@ pub fn create_article_models(
 }
 
 #[command]
-pub async fn add_feed(url: String) -> (usize, String) {
+pub async fn add_feed(url: String) -> (Option<models::Feed>, usize, String) {
   println!("request channel {}", &url);
 
   let res = feed::parse_feed(&url).await;
@@ -187,7 +187,7 @@ pub async fn add_feed(url: String) -> (usize, String) {
 
       feed::channel::add_feed(feed, articles)
     }
-    Err(err) => (0, err),
+    Err(err) => (None, 0, err),
   }
 }
 #[command]

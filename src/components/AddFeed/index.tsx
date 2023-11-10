@@ -24,6 +24,7 @@ import { Kbd } from "@/components/Kbd";
 export const AddFeedChannel = (props: any) => {
   const store = useBearStore((state) => ({
     initCollectionMetas: state.initCollectionMetas,
+    addNewFeed: state.addNewFeed,
   }));
   const [showStatus, , showModal, , toggleModal] = useModal();
   const [step, setStep] = useState(1);
@@ -87,14 +88,19 @@ export const AddFeedChannel = (props: any) => {
       .addChannel(feedUrl)
       .then((res) => {
         console.log("%c Line:88 🥕 res", "color:#4fff4B", res);
-        if (res[1] === "") {
+        if (res[2] === "") {
           store.initCollectionMetas();
+
+          res[0].children = [];
+          res[0].unread = res[1];
+
+          store.addNewFeed(res[0]);
           handleCancel();
         } else {
           toast({
             variant: "destructive",
             title: "Unable to subscribe",
-            description: res[1],
+            description: res[2],
             duration: 2000,
           });
         }

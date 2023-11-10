@@ -43,6 +43,7 @@ export interface FeedSlice {
   closeFolder: (uuid: string) => void;
 
   syncArticles: (feed: FeedResItem) => Promise<any>;
+  addNewFeed: (feed: FeedResItem) => void;
 }
 
 export const createFeedSlice: StateCreator<FeedSlice> = (
@@ -291,4 +292,11 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
       }).finally(() => {
     })
   },
+
+
+  addNewFeed(feed) {
+    set((state) => ({
+      feedList: [...state.feedList, feed]
+    }))
+  }
 });

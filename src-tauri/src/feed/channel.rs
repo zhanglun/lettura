@@ -362,7 +362,7 @@ pub fn get_last_sort(connection: &mut diesel::SqliteConnection) -> i32 {
   last_sort
 }
 
-pub fn add_feed(feed: models::NewFeed, articles: Vec<models::NewArticle>) -> (usize, String) {
+pub fn add_feed(feed: models::NewFeed, articles: Vec<models::NewArticle>) -> (Option<models::Feed>, usize, String) {
   let mut connection = db::establish_connection();
   let last_sort = get_last_sort(&mut connection);
   let record = models::NewFeed {
@@ -371,12 +371,10 @@ pub fn add_feed(feed: models::NewFeed, articles: Vec<models::NewArticle>) -> (us
   };
   let result = diesel::insert_into(schema::feeds::dsl::feeds)
     .values(&record)
-    .execute(&mut connection);
+    .get_result::<models::Feed>(&mut connection);
 
-  println!("result ===> {:?}", result);
-
-  let result = match result {
-    Ok(r) => (r, String::from("")),
+  let result: (Option<models::Feed>, usize, String) = match result {
+    Ok(r) => (Some(r), 1, String::from("")),
     Err(error) => {
       if let diesel::result::Error::DatabaseError(
         diesel::result::DatabaseErrorKind::UniqueViolation,
@@ -384,18 +382,17 @@ pub fn add_feed(feed: models::NewFeed, articles: Vec<models::NewArticle>) -> (us
       ) = error
       {
         return (
+          None,
           0,
           "The feed you are trying to save already exists.".to_string(),
         );
       } else {
-        return (0, error.to_string());
+        return (None, 0, error.to_string());
       }
     }
   };
 
-  println!(" new result {:?}", result);
-
-  if result.0 == 1 {
+  if result.1 == 1 {
     println!("start insert articles");
 
     let articles = diesel::insert_or_ignore_into(schema::articles::dsl::articles)
@@ -403,6 +400,8 @@ pub fn add_feed(feed: models::NewFeed, articles: Vec<models::NewArticle>) -> (us
       .execute(&mut connection);
 
     println!("articles {:?}", articles);
+
+    return (result.0, articles.unwrap_or(0), result.2);
   }
 
   result
