@@ -1,6 +1,6 @@
 import React, { ForwardedRef, useEffect, useState } from "react";
+import { formatDistanceToNow } from "date-fns";
 import classnames from "classnames";
-import Dayjs from "dayjs";
 import { useBearStore } from "@/stores";
 import { getChannelFavicon } from "@/helpers/parseXML";
 
@@ -85,18 +85,18 @@ export const ArticleItem = React.forwardRef(
             },
           )}
         >
-          <div className={classnames("flex items-center")}>
+          <div className="flex items-center">
             <img
               src={store.feed?.logo || ico}
               alt=""
               className="rounded w-4 mr-1"
             />
-            {article.author || article.channel_title}
+            <span className="overflow-hidden text-ellipsis mr-1 whitespace-nowrap">
+              {article.author || article.channel_title}
+            </span>
           </div>
-          <div>
-            {Dayjs(new Date(article.pub_date || article.create_date)).format(
-              "YYYY-MM-DD HH:mm",
-            )}
+          <div className="whitespace-nowrap">
+            {formatDistanceToNow(new Date(article.pub_date || article.create_date), { includeSeconds: true, addSuffix: true })}
           </div>
         </div>
       </li>

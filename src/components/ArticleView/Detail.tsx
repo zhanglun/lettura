@@ -131,7 +131,6 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
           // try to get the best banner if there is no image in article content
           // it will make render slower
           setShowBanner(content.search(/<img[^>]+>/gi) === -1);
-          console.log('xss.whitelist', xss)
           setPageContent(xss(content, {
             whiteList: {
               ...getDefaultWhiteList(),

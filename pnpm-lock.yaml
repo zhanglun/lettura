@@ -35,6 +35,7 @@ specifiers:
   classnames: ^2.3.2
   clsx: ^1.2.1
   cmdk: ^0.2.0
+  date-fns: ^2.30.0
   dayjs: ^1.11.7
   dnd-core: ^16.0.1
   framer-motion: ^10.13.0
@@ -91,6 +92,7 @@ dependencies:
   classnames: 2.3.2
   clsx: 1.2.1
   cmdk: 0.2.0_wh47g5ajjaiodohliq4abgp5yu
+  date-fns: 2.30.0
   dayjs: 1.11.10
   dnd-core: 16.0.1
   framer-motion: 10.16.4_biqbaboplfbrettd7655fr4n2y
@@ -109,7 +111,7 @@ dependencies:
   tailwind-merge: 1.14.0
   tailwindcss: 3.3.5
   tailwindcss-animate: 1.0.7_tailwindcss@3.3.5
-  tauri-plugin-log-api: github.com/tauri-apps/tauri-plugin-log/e5266f6719039c32b8f51ae86c9b726c2c9f3e42
+  tauri-plugin-log-api: github.com/tauri-apps/tauri-plugin-log/c860f305c0208b5159ee875ba2133e71927b0283
   web-vitals: 3.5.0
   workbox-build: 7.0.0
   xss: 1.0.14
@@ -3498,6 +3500,13 @@ packages:
   /csstype/3.1.2:
     resolution: {integrity: sha512-I7K1Uu0MBPzaFKg4nI5Q7Vs2t+3gWWW648spaF+Rg7pI9ds18Ugn+lvg4SHczUdKlHI5LWBXyqfS8+DufyBsgQ==}
 
+  /date-fns/2.30.0:
+    resolution: {integrity: sha512-fnULvOpxnC5/Vg3NCiWelDsLiUc9bRwAPs/+LfTLNvetFCtCTN+yQz15C/fs4AwX1R9K5GLtLfn8QW+dWisaAw==}
+    engines: {node: '>=0.11'}
+    dependencies:
+      '@babel/runtime': 7.23.2
+    dev: false
+
   /dayjs/1.11.10:
     resolution: {integrity: sha512-vjAczensTgRcqDERK0SR2XMwsF/tSvnvlv6VcF2GIhg6Sx4yOIt/irsr1RDJsKiIyBzJDpCoXiWWq28MqH2cnQ==}
     dev: false
@@ -5554,8 +5563,8 @@ packages:
       use-sync-external-store: 1.2.0_react@18.2.0
     dev: false
 
-  github.com/tauri-apps/tauri-plugin-log/e5266f6719039c32b8f51ae86c9b726c2c9f3e42:
-    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-log/tar.gz/e5266f6719039c32b8f51ae86c9b726c2c9f3e42}
+  github.com/tauri-apps/tauri-plugin-log/c860f305c0208b5159ee875ba2133e71927b0283:
+    resolution: {commit: c860f305c0208b5159ee875ba2133e71927b0283, repo: git+ssh://git@github.com/tauri-apps/tauri-plugin-log.git, type: git}
     name: tauri-plugin-log-api
     version: 0.0.0
     dependencies:

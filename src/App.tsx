@@ -77,7 +77,7 @@ function App() {
 
   return (
     <>
-      <div className="flex h-full max-h-full">
+      <div className="flex h-full max-h-full border-t">
         <DndProvider backend={HTML5Backend}>
           <ChannelList />
         </DndProvider>

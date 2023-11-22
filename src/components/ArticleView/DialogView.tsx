@@ -49,11 +49,10 @@ export const ArticleDialogView = (
       { trigger && <DialogTrigger>{ trigger }</DialogTrigger> }
       <DialogContent className="p-0 min-w-[960px] is-scroll">
         <ScrollBox className="max-h-[94vh]" ref={scrollBoxRef}>
-          {/* <div className="overflow-y-auto"> */ }
           <>
-            <div className="sticky left-0 right-0 top-0 z-[3] supports-backdrop-blur:bg-background/60">
+            <div className="sticky left-0 right-0 top-0 z-[3]">
               <div
-                className="flex items-center justify-end px-20 py-2 space-x-0.5 rounded-tl-lg rounded-tr-lg  view-blur-bar">
+                className="flex items-center justify-end px-20 py-2 space-x-0.5 rounded-tl-lg rounded-tr-lg bg-background border-b">
                 <ToolbarItemNavigator/>
                 <span>
                   <Separator orientation="vertical" className="h-4 mx-2"/>

@@ -57,7 +57,7 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
     >
       <ul className="m-0 grid gap-2 py-2 px-2">{renderList()}</ul>
       <div ref={loadRef}>
-        {hasMore && (
+        {loading && (
           <div className="p-3 pl-6 grid gap-1 relative">
             <Skeleton className="h-5 w-full" />
             <div>
