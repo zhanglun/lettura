@@ -19,17 +19,17 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import { Icon } from "../Icon";
-import { DialogUnsubscribeFeed } from "../SettingPanel/Content/DialogUnsubscribeFeed";
+import { DialogUnsubscribeFeed } from "../../layout/Setting/Content/DialogUnsubscribeFeed";
 import { useModal } from "../Modal/useModal";
 import { open } from "@tauri-apps/api/shell";
-import { DialogEditFeed } from "@/components/SettingPanel/Content/DialogEditFeed";
+import { DialogEditFeed } from "@/layout/Setting/Content/DialogEditFeed";
 import { useQuery } from "@/helpers/parseXML";
 import { useRefresh } from "./useRefresh";
 import { TooltipBox } from "../TooltipBox";
 import { ListContainer } from "./ListContainer";
 import { copyText } from "@/helpers/copyText";
 import { useToast } from "@/components/ui/use-toast";
-import { DialogDeleteFolder } from "@/components/SettingPanel/Content/DialogDeleteFolder";
+import { DialogDeleteFolder } from "@/layout/Setting/Content/DialogDeleteFolder";
 
 const ChannelList = (): JSX.Element => {
   const isToday = useMatch(RouteConfig.LOCAL_TODAY);

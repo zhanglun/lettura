@@ -9,7 +9,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { CustomizeStyle } from "@/components/SettingPanel/CustomizeStyle";
+import { CustomizeStyle } from "@/layout/Setting/CustomizeStyle";
 import { open } from "@tauri-apps/api/shell";
 import * as dataAgent from "@/helpers/dataAgent";
 import { useToast } from "@/components/ui/use-toast";

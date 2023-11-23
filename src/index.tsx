@@ -6,16 +6,16 @@ import { Toaster } from "./components/ui/Toaster";
 import App from "./App";
 import ErrorPage from "./ErrorPage";
 import { RouteConfig } from "./config";
-import { General } from "./components/SettingPanel/General";
-import { Appearance } from "./components/SettingPanel/Appearance";
-import { Shortcut } from "./components/SettingPanel/ShortCut";
-import { FeedManager } from "./components/SettingPanel/Content";
-import { ImportAndExport } from "./components/SettingPanel/ImportAndExport";
+import { General } from "./layout/Setting/General";
+import { Appearance } from "./layout/Setting/Appearance";
+import { Shortcut } from "./layout/Setting/ShortCut";
+import { FeedManager } from "./layout/Setting/Content";
+import { ImportAndExport } from "./layout/Setting/ImportAndExport";
 import { WelcomePage } from "./components/WelcomePage";
 import { ArticleContainer } from "./layout/Article";
 import { SearchPage } from "./layout/Search";
 import { LocalPage } from "./layout/Local";
-import { SettingContainer } from "./layout/Setting";
+import { SettingPage } from "./layout/Setting";
 
 import "./index.css";
 
@@ -58,7 +58,7 @@ const router = createBrowserRouter([
       },
       {
         path: RouteConfig.SETTINGS,
-        element: <SettingContainer />,
+        element: <SettingPage />,
         children: [
           {
             path: RouteConfig.SETTINGS_GENERAL,

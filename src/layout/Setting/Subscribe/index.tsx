@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import styles from "../settingpanel.module.css";
-import { Toast } from "../../Toast";
+import { Toast } from "../../../components/Toast";
 
 export const SettingSubscribe: () => JSX.Element = () => {
   const [feedUrl, setFeedUrl] = useState("");
