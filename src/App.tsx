@@ -12,6 +12,7 @@ import { RouteConfig } from "./config";
 
 import "./styles/index.global.scss";
 import { CommandPanel } from "./command";
+import { SideNav } from "./layout/SideNav";
 
 function App() {
   const store = useBearStore((state) => ({
@@ -78,6 +79,7 @@ function App() {
   return (
     <>
       <div className="flex h-full max-h-full border-t">
+        <SideNav />
         <DndProvider backend={HTML5Backend}>
           <ChannelList />
         </DndProvider>
