@@ -18,9 +18,9 @@ export const useQuery = () => {
   const query = new URLSearchParams(useLocation().search);
   const feedUrl = query.get("feedUrl");
   const type = query.get("type");
-  const channelUuid = query.get("channelUuid");
+  const feedUuid = query.get("feedUuid");
 
-  return [feedUrl, type, channelUuid];
+  return [feedUrl, type, feedUuid];
 };
 
 export function getBestImages(entries: ArticleResItem[]) {

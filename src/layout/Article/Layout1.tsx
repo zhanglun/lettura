@@ -29,7 +29,7 @@ export const Layout1 = (): JSX.Element => {
     userConfig: state.userConfig,
   }));
 
-  const [feedUrl, type, channelUuid] = useQuery();
+  const [feedUrl, type, feedUuid] = useQuery();
   const [syncing, setSyncing] = useState(false);
   const scrollBoxRef = useRef<ScrollBoxRefObject>(null);
 
@@ -44,7 +44,7 @@ export const Layout1 = (): JSX.Element => {
         <ArticleList
           title={params.name}
           type={type}
-          feedUuid={channelUuid}
+          feedUuid={feedUuid}
           feedUrl={feedUrl || ""}
         />
       </div>

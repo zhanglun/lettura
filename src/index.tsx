@@ -4,17 +4,20 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import reportWebVitals from "./reportWebVitals";
 import { Toaster } from "./components/ui/Toaster";
 import App from "./App";
-import "./index.css";
 import ErrorPage from "./ErrorPage";
-import { ArticleContainer } from "./layout/Article";
 import { RouteConfig } from "./config";
 import { General } from "./components/SettingPanel/General";
 import { Appearance } from "./components/SettingPanel/Appearance";
 import { Shortcut } from "./components/SettingPanel/ShortCut";
 import { FeedManager } from "./components/SettingPanel/Content";
 import { ImportAndExport } from "./components/SettingPanel/ImportAndExport";
-import { SettingDialog } from "./components/SettingPanel/DialogMode";
 import { WelcomePage } from "./components/WelcomePage";
+import { ArticleContainer } from "./layout/Article";
+import { SearchPage } from "./layout/Search";
+import { LocalPage } from "./layout/Local";
+import { SettingContainer } from "./layout/Setting";
+
+import "./index.css";
 
 const router = createBrowserRouter([
   {
@@ -29,23 +32,33 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <WelcomePage />
+        element: <WelcomePage />,
       },
       {
-        path: RouteConfig.TODAY,
-        element: <ArticleContainer />,
+        path: RouteConfig.LOCAL,
+        element: <LocalPage />,
+        children: [
+          {
+            path: RouteConfig.LOCAL_TODAY,
+            element: <ArticleContainer />,
+          },
+          {
+            path: RouteConfig.LOCAL_ALL,
+            element: <ArticleContainer />,
+          },
+          {
+            path: RouteConfig.LOCAL_FEED,
+            element: <ArticleContainer />,
+          },
+        ],
       },
       {
-        path: RouteConfig.ALL,
-        element: <ArticleContainer />,
-      },
-      {
-        path: RouteConfig.CHANNEL,
-        element: <ArticleContainer />,
+        path: RouteConfig.SEARCH,
+        element: <SearchPage />,
       },
       {
         path: RouteConfig.SETTINGS,
-        element: <SettingDialog />,
+        element: <SettingContainer />,
         children: [
           {
             path: RouteConfig.SETTINGS_GENERAL,
@@ -77,10 +90,6 @@ const root = createRoot(domNode);
 
 root.render(
   <RouterProvider router={router} />
-  // <>
-  //   <Toaster />
-  //   <App />
-  // </>,
 );
 
 // If you want to start measuring performance in your app, pass a function

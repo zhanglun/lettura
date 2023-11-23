@@ -64,8 +64,8 @@ export const ArticleContainer = (): JSX.Element => {
     userConfig: state.userConfig,
   }));
 
-  const isToday = useMatch(RouteConfig.TODAY);
-  const isAll = useMatch(RouteConfig.ALL);
+  const isToday = useMatch(RouteConfig.LOCAL_TODAY);
+  const isAll = useMatch(RouteConfig.LOCAL_ALL);
   const {toast} = useToast();
   const [layoutType, setLayoutType] = useState(1);
   const [feedUrl] = useQuery();

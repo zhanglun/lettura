@@ -11,7 +11,7 @@ export const Layout3 = (): JSX.Element => {
   const store = useBearStore((state) => ({
     article: state.article,
   }));
-  const [feedUrl, type, channelUuid] = useQuery();
+  const [feedUrl, type, feedUuid] = useQuery();
   const scrollBoxRef = useRef<ScrollBoxRefObject>(null);
 
   useEffect(() => {
@@ -20,7 +20,7 @@ export const Layout3 = (): JSX.Element => {
 
   return (
     <ArticleCardList
-      feedUuid={channelUuid}
+      feedUuid={feedUuid}
       type={type}
       feedUrl={feedUrl || ""}
       title={params.name}

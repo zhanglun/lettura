@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import { useMatch, useNavigate } from "react-router-dom";
 import { RefreshCw, Settings, Coffee, Haze, FolderPlus } from "lucide-react";
 import classNames from "classnames";
@@ -28,13 +28,12 @@ import { useRefresh } from "./useRefresh";
 import { TooltipBox } from "../TooltipBox";
 import { ListContainer } from "./ListContainer";
 import { copyText } from "@/helpers/copyText";
-import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/use-toast";
 import { DialogDeleteFolder } from "@/components/SettingPanel/Content/DialogDeleteFolder";
 
 const ChannelList = (): JSX.Element => {
-  const isToday = useMatch(RouteConfig.TODAY);
-  const isAll = useMatch(RouteConfig.ALL);
+  const isToday = useMatch(RouteConfig.LOCAL_TODAY);
+  const isAll = useMatch(RouteConfig.LOCAL_ALL);
   const { toast } = useToast();
   const navigate = useNavigate();
   const [addFolderDialogStatus, setAddFolderDialogStatus] = useModal();
@@ -69,7 +68,7 @@ const ChannelList = (): JSX.Element => {
     setLastViewRouteBeforeSetting: state.setLastViewRouteBeforeSetting,
   }));
 
-  const [, , channelUuid] = useQuery();
+  const [, , feedUuid] = useQuery();
 
   useEffect(() => {
     store.initCollectionMetas();
@@ -144,11 +143,11 @@ const ChannelList = (): JSX.Element => {
 
   useEffect(() => {
     feedList.forEach((feed) => {
-      if (feed.uuid === channelUuid) {
+      if (feed.uuid === feedUuid) {
         store.setFeed(feed);
       }
     });
-  }, [channelUuid, feedList]);
+  }, [feedUuid, feedList]);
 
   const goToSetting = () => {
     store.setLastViewRouteBeforeSetting(Object.assign({ ...location }));
@@ -274,7 +273,7 @@ const ChannelList = (): JSX.Element => {
                 isToday: true,
                 isAll: false,
               });
-              navigate(RouteConfig.TODAY);
+              navigate(RouteConfig.LOCAL_TODAY);
             }}
           >
             <span className="h-4 w-4 rounded mr-2">
@@ -310,7 +309,7 @@ const ChannelList = (): JSX.Element => {
                 isToday: false,
                 isAll: true,
               });
-              navigate(RouteConfig.ALL);
+              navigate(RouteConfig.LOCAL_ALL);
             }}
           >
             <span className="h-4 w-4 rounded mr-2">

@@ -57,7 +57,7 @@ export const ItemView: FC<CardProps> = ({
       onClick={() => {
         store.setFeed(feed);
         navigate(
-          `${RouteConfig.CHANNEL.replace(/:uuid/, feed.uuid)}?channelUuid=${
+          `${RouteConfig.LOCAL_FEED.replace(/:uuid/, feed.uuid)}?feedUuid=${
             feed.uuid
           }&feedUrl=${feed.feed_url}&type=${feed.item_type}`
         );
