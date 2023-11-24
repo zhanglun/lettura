@@ -31,7 +31,7 @@ Pre-release version is [here](https://github.com/zhanglun/lettura/releases), you
 ### Prerequisites
 
 * Install Node.js. I recommend you to use [NVM](https://github.com/nvm-sh/nvm).
-* Install pnpm. [Here](https://pnpm.io/installation) is the manual. 
+* Install pnpm. [Here](https://pnpm.io/installation) is the manual.
 * Install Rust. You can find way in [here](https://www.rust-lang.org/tools/install)
 * Follow the [Tauri setup guide](https://tauri.app/v1/guides/getting-started/prerequisites)
 * Run pnpm install
@@ -44,7 +44,7 @@ It is easy to start developing
 pnpm tauri dev
 ```
 
-And also easy to build. 
+And also easy to build.
 
 ```bash
 pnpm tauri build

@@ -25,6 +25,7 @@ specifiers:
   '@tauri-apps/action-core': ^0.3.1
   '@tauri-apps/api': ^1.5.1
   '@tauri-apps/cli': ^1.5.6
+  '@types/lodash': ^4.14.202
   '@types/node': ^18.11.18
   '@types/react': ^18.0.26
   '@types/react-dom': ^18.0.10
@@ -42,6 +43,7 @@ specifiers:
   immutability-helper: ^3.1.1
   linkify-string: ^4.1.2
   linkifyjs: ^4.1.2
+  lodash: ^4.17.21
   lucide-react: ^0.284.0
   p-limit: ^4.0.0
   postcss: ^8.4.20
@@ -99,6 +101,7 @@ dependencies:
   immutability-helper: 3.1.1
   linkify-string: 4.1.2_linkifyjs@4.1.2
   linkifyjs: 4.1.2
+  lodash: 4.17.21
   lucide-react: 0.284.0_react@18.2.0
   p-limit: 4.0.0
   react: 18.2.0
@@ -111,7 +114,7 @@ dependencies:
   tailwind-merge: 1.14.0
   tailwindcss: 3.3.5
   tailwindcss-animate: 1.0.7_tailwindcss@3.3.5
-  tauri-plugin-log-api: github.com/tauri-apps/tauri-plugin-log/c860f305c0208b5159ee875ba2133e71927b0283
+  tauri-plugin-log-api: github.com/tauri-apps/tauri-plugin-log/3b3ff84b49516ae2ac70ff76c75e6e7b93e8a841
   web-vitals: 3.5.0
   workbox-build: 7.0.0
   xss: 1.0.14
@@ -123,6 +126,7 @@ devDependencies:
   '@tailwindcss/typography': 0.5.10_tailwindcss@3.3.5
   '@tauri-apps/action-core': 0.3.1
   '@tauri-apps/cli': 1.5.6
+  '@types/lodash': 4.14.202
   '@types/node': 18.18.9
   '@types/react': 18.2.37
   '@types/react-dom': 18.2.15
@@ -3124,6 +3128,10 @@ packages:
   /@types/estree/0.0.39:
     resolution: {integrity: sha512-EYNwp3bU+98cpU4lAWYYL7Zz+2gryWH1qbdDTidVd6hkiR6weksdbMadyXKXNPEkQFhXM+hVO9ZygomHXp+AIw==}
 
+  /@types/lodash/4.14.202:
+    resolution: {integrity: sha512-OvlIYQK9tNneDlS0VN54LLd5uiPCBOp7gS5Z0f1mjoJYBrtStzgmJBxONW3U6OZqdtNzZPmn9BS/7WI7BFFcFQ==}
+    dev: true
+
   /@types/node/18.18.9:
     resolution: {integrity: sha512-0f5klcuImLnG4Qreu9hPj/rEfFq6YRc5n2mAjSsH+ec/mJL+3voBH0+8T7o8RpFjH7ovc+TRsL/c7OYIQsPTfQ==}
     dependencies:
@@ -5563,8 +5571,8 @@ packages:
       use-sync-external-store: 1.2.0_react@18.2.0
     dev: false
 
-  github.com/tauri-apps/tauri-plugin-log/c860f305c0208b5159ee875ba2133e71927b0283:
-    resolution: {commit: c860f305c0208b5159ee875ba2133e71927b0283, repo: git+ssh://git@github.com/tauri-apps/tauri-plugin-log.git, type: git}
+  github.com/tauri-apps/tauri-plugin-log/3b3ff84b49516ae2ac70ff76c75e6e7b93e8a841:
+    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-log/tar.gz/3b3ff84b49516ae2ac70ff76c75e6e7b93e8a841}
     name: tauri-plugin-log-api
     version: 0.0.0
     dependencies:
