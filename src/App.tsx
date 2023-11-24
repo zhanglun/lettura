@@ -17,7 +17,6 @@ function App() {
     goPreviousArticle: state.goPreviousArticle,
     goNextArticle: state.goNextArticle,
     getUserConfig: state.getUserConfig,
-    setLastViewRouteBeforeSetting: state.setLastViewRouteBeforeSetting,
   }));
 
   const navigate = useNavigate();
@@ -29,7 +28,6 @@ function App() {
         "color:#fca650",
         "go-to-setting"
       );
-      store.setLastViewRouteBeforeSetting(Object.assign({ ...location }));
       navigate(RouteConfig.SETTINGS_GENERAL);
 
     });

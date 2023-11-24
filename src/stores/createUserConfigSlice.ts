@@ -10,9 +10,6 @@ export interface UserConfigSlice {
   updateViewOrigin: (status: boolean) => void;
   viewOriginLoading: boolean;
   updateViewOriginLoading: (status: boolean) => void;
-
-  lastViewRouteBeforeSetting: Location | null;
-  setLastViewRouteBeforeSetting: (l: Location) => void;
 }
 
 export const createUserConfigSlice: StateCreator<UserConfigSlice> = (
@@ -53,14 +50,6 @@ export const createUserConfigSlice: StateCreator<UserConfigSlice> = (
   updateViewOriginLoading: (status: boolean) => {
     set(() => ({
       viewOriginLoading: status,
-    }));
-  },
-
-  // settings
-  lastViewRouteBeforeSetting: null,
-  setLastViewRouteBeforeSetting(s: Location) {
-    set(() => ({
-      lastViewRouteBeforeSetting: s,
     }));
   },
 });

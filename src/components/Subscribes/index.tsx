@@ -65,7 +65,6 @@ const ChannelList = (): JSX.Element => {
     collectionMeta: state.collectionMeta,
     initCollectionMetas: state.initCollectionMetas,
     syncArticles: state.syncArticles,
-    setLastViewRouteBeforeSetting: state.setLastViewRouteBeforeSetting,
   }));
 
   const [, , feedUuid] = useQuery();
@@ -150,7 +149,6 @@ const ChannelList = (): JSX.Element => {
   }, [feedUuid, feedList]);
 
   const goToSetting = () => {
-    store.setLastViewRouteBeforeSetting(Object.assign({ ...location }));
     navigate(RouteConfig.SETTINGS_GENERAL);
   };
 
@@ -241,12 +239,6 @@ const ChannelList = (): JSX.Element => {
                 size={16}
                 className={`${refreshing ? "spinning" : ""}`}
               />
-            </Icon>
-          </TooltipBox>
-
-          <TooltipBox content="Go to settings">
-            <Icon onClick={goToSetting}>
-              <Settings size={16} />
             </Icon>
           </TooltipBox>
         </div>
