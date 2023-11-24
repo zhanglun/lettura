@@ -13,7 +13,7 @@ export const Panel = (props: PanelProps) => {
   return (
     <div className="space-y-6">
       <div className="mb-5">
-        <h3 className="text-lg font-medium tracking-tight">{title}</h3>
+        <h3 className="text-xl font-medium tracking-tight">{title}</h3>
         {subTitle && (
           <p className="text-sm mb-3 mt-2 text-muted-foreground">
             {subTitle}
@@ -26,7 +26,7 @@ export const Panel = (props: PanelProps) => {
   );
 };
 
-export interface PanelSectionProps extends PanelProps {}
+export interface PanelSectionProps extends PanelProps { }
 
 export const PanelSection = (props: PanelSectionProps) => {
   const { title, subTitle, children } = props;

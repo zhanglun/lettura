@@ -47,7 +47,7 @@ export const SideNav = () => {
         </div>
         <div className="flex items-center justify-center">
           <TooltipBox content="Go to settings">
-            <NavLink to={RouteConfig.SETTINGS} className={createActiveNavClass}>
+            <NavLink to={RouteConfig.SETTINGS_GENERAL} className={createActiveNavClass}>
               <Settings size={20} />
             </NavLink>
           </TooltipBox>
