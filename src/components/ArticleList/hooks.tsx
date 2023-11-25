@@ -52,10 +52,10 @@ export const useArticleListHook = (props: {
   const [hasMore, setHasMore] = useState(true);
   const listRef = useRef<HTMLDivElement>(null);
   const loadRef = useRef<HTMLDivElement>(null);
-  const getList = () => {
+  const getList = ({ cursor }: { cursor: number }) => {
     const filter: { read_status?: number; cursor: number; limit?: number } = {
       read_status: store.currentFilter.id,
-      cursor: store.cursor,
+      cursor: cursor,
       limit: 12,
     };
 
@@ -95,15 +95,9 @@ export const useArticleListHook = (props: {
 
       setHasMore(true);
 
-      getList();
+      getList({ cursor: 1});
     }
   }, [feedUuid, store.currentFilter, isToday, isAll]);
-
-  useEffect(() => {
-    console.log("store.cursor", store.cursor);
-    getList();
-  }, [store.cursor]);
-
 
   useEffect(() => {
     const $rootElem = listRef.current as HTMLDivElement;
@@ -128,6 +122,7 @@ export const useArticleListHook = (props: {
         ) {
           console.log("interaction update cursor ====>");
           store.setCursor(store.cursor + 1);
+          getList({ cursor: store.cursor + 1 });
         } else if (entry.isIntersecting && store.articleList.length === 0) {
           store.setCursor(1);
         }

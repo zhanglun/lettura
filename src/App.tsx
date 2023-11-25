@@ -46,10 +46,8 @@ function App() {
   }, []);
 
   useEffect(() => {
-    store.getUserConfig();
-
-    dataAgent.getUserConfig().then(({ data: cfg }) => {
-      const { theme, customize_style } = cfg as UserConfig;
+    store.getUserConfig().then((cfg: UserConfig) => {
+      const { theme, customize_style } = cfg;
 
       if (theme === "system") {
         document.documentElement.dataset.colorScheme = window.matchMedia(
