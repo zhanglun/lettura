@@ -1,3 +1,4 @@
+pub mod common;
 pub mod tray;
 pub mod scraper;
 pub mod menu;

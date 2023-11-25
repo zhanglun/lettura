@@ -4,11 +4,6 @@ use serde::{Deserialize, Serialize};
 use crate::core;
 use crate::feed;
 
-#[derive(Serialize)]
-struct MyObj {
-  name: String,
-}
-
 #[get("/api/articles/{uuid}")]
 pub async fn handle_get_article_detail(uuid: web::Path<String>) -> Result<impl Responder> {
   let res = feed::article::Article::get_article_with_uuid(uuid.to_string());

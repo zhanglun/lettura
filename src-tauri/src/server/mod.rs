@@ -27,6 +27,7 @@ pub async fn init(app: AppHandle) -> std::io::Result<()> {
       .wrap(cors)
       .app_data(tauri_app.clone())
       .wrap(middleware::Logger::default())
+      .configure(handlers::common::config)
       .configure(handlers::article::config)
       .configure(handlers::feed::config)
   })
