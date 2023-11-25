@@ -1,12 +1,10 @@
-import React from "react";
 import bg from "./bg.svg";
-import styles from "./welcome.module.scss";
 
 export const WelcomePage = () => {
   return (
-    <div className={styles.box}>
-      <div className={styles.placeholder}>
-        <img src={bg} className={styles.bg} />
+    <div className="h-full flex items-center justify-center">
+      <div className="w-[40%] max-w-[500px]">
+        <img src={bg} className="w-full" />
       </div>
     </div>
   );

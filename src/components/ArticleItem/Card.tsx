@@ -31,7 +31,7 @@ export const ArticleCardItem = (props: any) => {
     updateCurrentArticle(article);
   };
 
-  const ico = getChannelFavicon(article.channel_link);
+  const ico = getChannelFavicon(article.feed_url);
 
   useEffect(() => {
     setReadStatus(article.read_status);
@@ -93,7 +93,7 @@ export const ArticleCardItem = (props: any) => {
             className="rounded w-4 mr-1"
           />
           <span className="text-xs">
-            { article.author || article.channel_title }
+            { article.author || article.feed_title }
           </span>
         </div>
         <div className="line-clamp-3">

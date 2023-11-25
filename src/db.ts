@@ -47,16 +47,16 @@ export interface FeedResItem {
 export interface Article {
   id?: number;
   uuid: string;
-  channel_uuid: string;
-  channel_link: string;
+  feed_uuid: string;
+  feed_title: string;
+  feed_url: string;
   title: string;
   link: string;
   image: string;
-  feed_url: string;
   description: string;
   content?: string;
-  pub_date?: Date;
-  create_date?: Date;
+  pub_date?: string;
+  create_date: string;
   read_status: number;
 }
 
@@ -64,16 +64,16 @@ export interface ArticleResItem {
   id?: number;
   author: string;
   uuid: string;
-  channel_uuid: string;
-  channel_link: string;
+  feed_uuid: string;
+  feed_title: string;
+  feed_url: string;
   title: string;
   link: string;
   image: string;
-  feed_url: string;
   description: string;
   content?: string;
-  pub_date?: Date;
-  create_date?: Date;
+  pub_date?: string;
+  create_date: string;
   read_status: number;
   media_object: string;
 }

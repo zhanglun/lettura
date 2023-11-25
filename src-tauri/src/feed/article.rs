@@ -33,19 +33,19 @@ pub struct ArticleQueryItem {
   #[diesel(sql_type = Text)]
   pub feed_uuid: String,
   #[diesel(sql_type = Text)]
-  pub channel_title: String,
+  pub feed_title: String,
   #[diesel(sql_type = Text)]
-  pub channel_link: String,
+  pub feed_url: String,
   #[diesel(sql_type = Text)]
   pub link: String,
   #[diesel(sql_type = Text)]
   pub title: String,
   #[diesel(sql_type = Text)]
-  pub feed_url: String,
-  #[diesel(sql_type = Text)]
   pub description: String,
   #[diesel(sql_type = Text)]
   pub pub_date: String,
+  #[diesel(sql_type = Text)]
+  pub create_date: String,
   #[diesel(sql_type = Integer)]
   pub read_status: i32,
 }
@@ -107,13 +107,14 @@ impl Article {
             SELECT
               A.id, A.uuid,
               A.feed_uuid,
-              C.title as channel_title,
-              C.link as channel_link,
+              C.title as feed_title,
+              C.link as feed_url,
               A.link,
               A.title,
               A.feed_url,
               A.description as description,
               A.pub_date,
+              A.create_date,
               A.read_status
             FROM
               feeds as C
@@ -172,8 +173,8 @@ impl Article {
         SELECT
           A.id, A.uuid,
           A.feed_uuid,
-          C.title as channel_title,
-          C.link as channel_link,
+          C.title as feed_title,
+          C.link as feed_url,
           A.link,
           A.title,
           A.feed_url,
@@ -232,8 +233,8 @@ impl Article {
         SELECT
           A.id, A.uuid,
           A.feed_uuid,
-          C.title as channel_title,
-          C.link as channel_link,
+          C.title as feed_title,
+          C.link as feed_url,
           A.link,
           A.title,
           A.feed_url,

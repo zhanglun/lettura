@@ -28,7 +28,7 @@ export const ArticleLineItem = (props: any) => {
     updateCurrentArticle(article);
   };
 
-  const ico = getChannelFavicon(article.channel_link);
+  const ico = getChannelFavicon(article.feed_url);
 
   useEffect(() => {
     setReadStatus(article.read_status);

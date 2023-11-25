@@ -1,11 +1,12 @@
 import React, { ForwardedRef, useEffect, useState } from "react";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow, format, parseISO } from "date-fns";
 import classnames from "classnames";
 import { useBearStore } from "@/stores";
 import { getChannelFavicon } from "@/helpers/parseXML";
+import { ArticleResItem } from "@/db";
 
 export const ArticleItem = React.forwardRef(
-  (props: any, ref: ForwardedRef<HTMLLIElement>) => {
+  (props: { article: ArticleResItem }, ref: ForwardedRef<HTMLLIElement>) => {
     const store = useBearStore((state) => ({
       updateArticleAndIdx: state.updateArticleAndIdx,
       article: state.article,
@@ -27,7 +28,7 @@ export const ArticleItem = React.forwardRef(
       updateCurrentArticle(article);
     };
 
-    const ico = getChannelFavicon(article.channel_link);
+    const ico = getChannelFavicon(article.feed_url);
 
     useEffect(() => {
       setReadStatus(article.read_status);
@@ -37,6 +38,13 @@ export const ArticleItem = React.forwardRef(
       setHighlight(store.article?.id === article.id);
     }, [store.article, article]);
 
+    console.log(
+      formatDistanceToNow(parseISO(article.create_date), {
+        includeSeconds: true,
+        addSuffix: true,
+      })
+    );
+
     return (
       <li
         className={classnames(
@@ -45,7 +53,7 @@ export const ArticleItem = React.forwardRef(
           {
             "text-[hsl(var(--foreground)_/_80%)]": readStatus === 2,
             "bg-article-active-bg": highlight,
-          },
+          }
         )}
         onClick={handleClick}
         ref={ref}
@@ -61,7 +69,7 @@ export const ArticleItem = React.forwardRef(
                 ? "text-article-active-headline"
                 : "text-article-headline"
             }`,
-            "font-bold text-sm group-hover:text-article-active-headline",
+            "font-bold text-sm group-hover:text-article-active-headline"
           )}
         >
           {article.title}
@@ -72,7 +80,7 @@ export const ArticleItem = React.forwardRef(
             "text-article-paragraph group-hover:text-article-active-paragraph",
             {
               "text-article-active-paragraph": highlight,
-            },
+            }
           )}
         >
           {(article.description || "").replace(/<[^<>]+>/g, "")}
@@ -82,7 +90,7 @@ export const ArticleItem = React.forwardRef(
             "flex justify-between items-center text-xs text-article-paragraph group-hover:text-article-active-paragraph",
             {
               "text-article-active-paragraph": highlight,
-            },
+            }
           )}
         >
           <div className="flex items-center">
@@ -92,14 +100,17 @@ export const ArticleItem = React.forwardRef(
               className="rounded w-4 mr-1"
             />
             <span className="overflow-hidden text-ellipsis mr-1 whitespace-nowrap">
-              {article.author || article.channel_title}
+              {article.author || article.feed_title}
             </span>
           </div>
           <div className="whitespace-nowrap">
-            {formatDistanceToNow(new Date(article.pub_date || article.create_date), { includeSeconds: true, addSuffix: true })}
+            {formatDistanceToNow(parseISO(article.create_date), {
+              includeSeconds: true,
+              addSuffix: true,
+            })}
           </div>
         </div>
       </li>
     );
-  },
+  }
 );

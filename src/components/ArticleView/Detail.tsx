@@ -24,8 +24,8 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
   const store = useBearStore((state) => ({
     feed: state.feed,
   }));
-  const { pub_date, channel_link } = article;
-  const ico = getChannelFavicon(channel_link);
+  const { pub_date, feed_url } = article;
+  const ico = getChannelFavicon(feed_url);
   const [pageContent, setPageContent] = useState("");
   const [banner, setBanner] = useState("");
   const [showBanner, setShowBanner] = useState(false);
@@ -167,7 +167,7 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
             <div className={classnames(styles.meta)}>
               <span className={styles.channelInfo}>
                 <img src={store.feed?.logo || ico} alt="" className="rounded" />
-                {article.channel_title}
+                {article.feed_title}
               </span>
               {article.author && (
                 <span
@@ -198,7 +198,7 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
               // eslint-disable-next-line react/no-danger
               dangerouslySetInnerHTML={createMarkup(pageContent)}
             />
-            {medias.length > 0 && <div>{medias.map(renderMediaBox)}</div>}
+            {medias && medias.length > 0 && <div>{medias.map(renderMediaBox)}</div>}
             {/* <div
               className={classnames("reading-content", "text-detail-paragraph")}>
                 <iframe src={article.link} className="w-full" allowFullScreen></iframe>
