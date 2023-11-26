@@ -82,18 +82,12 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
       });
     }
 
-    console.log(
-      "%c Line:92 🥐 linkifyStr(description.content)",
-      "color:#b03734",
-      linkifyStr(description.content)
-    );
-
     return (
       <div className="reading-content">
         <div className="pb-6">{renderContent()}</div>
         <div style={{whiteSpace: "pre-line"}}
           dangerouslySetInnerHTML={createMarkup(
-            linkifyStr(description.content)
+            linkifyStr(description?.content || "")
           )}
         />
       </div>

@@ -38,13 +38,6 @@ export const ArticleItem = React.forwardRef(
       setHighlight(store.article?.id === article.id);
     }, [store.article, article]);
 
-    console.log(
-      formatDistanceToNow(parseISO(article.create_date), {
-        includeSeconds: true,
-        addSuffix: true,
-      })
-    );
-
     return (
       <li
         className={classnames(
