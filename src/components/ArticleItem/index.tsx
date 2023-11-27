@@ -1,5 +1,5 @@
 import React, { ForwardedRef, useEffect, useState } from "react";
-import { formatDistanceToNow, format, parseISO } from "date-fns";
+import { formatDistanceToNow, parseISO } from "date-fns";
 import classnames from "classnames";
 import { useBearStore } from "@/stores";
 import { getChannelFavicon } from "@/helpers/parseXML";

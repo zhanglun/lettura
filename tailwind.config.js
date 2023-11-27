@@ -20,21 +20,21 @@ module.exports = {
     colors: ({ colors }) => ({
       ...colors,
 
-      "feed-list-bg": "var(--feed-list-bg-color)",
-      "feed-headline": 'hsl(var(--background))',
-      "feed-active-bg": 'hsl(var(--background))',
-      "feed-active-headline": "hsl(var(--foreground))",
+      // "feed-list-bg": "var(--feed-list-bg-color)",
+      // "feed-headline": 'hsl(var(--background))',
+      // "feed-active-bg": 'hsl(var(--background))',
+      // "feed-active-headline": "hsl(var(--foreground))",
 
-      "article-list-bg": "var(--article-list-bg-color)",
-      "article-headline": "var(--article-headline-color)",
-      "article-paragraph": "var(--article-paragraph-color)",
-      "article-active-bg": "hsl(var(--secondary))",
-      "article-active-headline": "var(--article-active-headline-color)",
-      "article-active-paragraph": "var(--article-active-paragraph-color)",
+      // "article-list-bg": "var(--article-list-bg-color)",
+      // "article-headline": "var(--article-headline-color)",
+      // "article-paragraph": "var(--article-paragraph-color)",
+      // "article-active-bg": "hsl(var(--secondary))",
+      // "article-active-headline": "var(--article-active-headline-color)",
+      // "article-active-paragraph": "var(--article-active-paragraph-color)",
 
-      "detail-bg": "var(--detail-bg-color)",
-      "detail-headline": "var(--detail-headline-color)",
-      "detail-paragraph": "var(--detail-paragraph-color)",
+      // "detail-bg": "var(--detail-bg-color)",
+      // "detail-headline": "var(--detail-headline-color)",
+      // "detail-paragraph": "var(--detail-paragraph-color)",
     }),
     extend: {
       colors: {
