@@ -42,7 +42,7 @@ export const ArticleItem = React.forwardRef(
       <li
         className={classnames(
           "list-none rounded-sm p-3 pl-6 grid gap-1 relative select-none",
-          "group hover:bg-article-active-bg hover:cursor-pointer",
+          "group hover:bg-accent hover:cursor-pointer",
           {
             "text-[hsl(var(--foreground)_/_80%)]": readStatus === 2,
             "bg-article-active-bg": highlight,

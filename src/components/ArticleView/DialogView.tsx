@@ -10,7 +10,6 @@ import { ScrollBox, ScrollBoxRefObject } from "./ScrollBox";
 
 type ArticleDialogViewProps = {
   article: any | null;
-  userConfig: UserConfig;
   dialogStatus: boolean;
   trigger?: React.ReactNode;
   setDialogStatus: (status: boolean) => void;
@@ -23,7 +22,6 @@ export const ArticleDialogView = (
 ): JSX.Element => {
   const {
     article,
-    userConfig,
     dialogStatus,
     setDialogStatus,
     afterConfirm,

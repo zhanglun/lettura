@@ -35,15 +35,17 @@ export const SearchPage = () => {
   useEffect(() => {}, []);
 
   return (
-    <div className="max-h-full overflow-auto">
-      <div className="p-4">
+    <div className="max-h-full flex flex-col">
+      <div className="p-4 sticky top-0 bg-background">
         <Input type="search" placeholder="Search..." onChange={handleSearch} />
       </div>
       <Separator />
-      <div>
-        <SearchResult resultList={resultList} />
+      <div className="flex-1 overflow-auto">
+        <SearchResult resultList={resultList}/>
       </div>
-      <div></div>
+      <div className="p-4">
+
+      </div>
     </div>
   );
 };

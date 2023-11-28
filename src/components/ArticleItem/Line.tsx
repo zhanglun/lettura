@@ -42,10 +42,10 @@ export const ArticleLineItem = (props: any) => {
     <li
       className={classnames(
         "grid grid-cols-[30px_1fr_120px] items-center list-none rounded-sm p-2 pl-6 relative",
-        "group hover:bg-article-active-bg hover:cursor-pointer",
+        "group hover:bg-accent hover:cursor-pointer",
         {
           "text-[hsl(var(--foreground)_/_80%)]": readStatus === 2,
-          "bg-article-active-bg": highlight,
+          "bg-primary": highlight,
         },
       )}
       onClick={handleClick}
