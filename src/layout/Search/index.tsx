@@ -2,14 +2,11 @@ import { useCallback, useEffect, useState } from "react";
 import { debounce } from "lodash";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { request } from "@/helpers/request";
-import { ArticleResItem } from "@/db";
-import { AxiosResponse } from "axios";
 import { SearchResult } from "./Result";
+import { useSearchListHook } from "./hooks";
 
 export const SearchPage = () => {
-  const [resultList, setResultList] = useState<ArticleResItem[]>([]);
-  const [query, setQuery] = useState("");
+  const { query, setQuery } = useSearchListHook();
   const debounceSearch = useCallback(
     debounce((query: string) => {
       setQuery(query);
@@ -22,8 +19,6 @@ export const SearchPage = () => {
 
     val && debounceSearch(val);
   };
-
-  useEffect(() => {}, []);
 
   return (
     <div className="h-[100vh] flex flex-col">

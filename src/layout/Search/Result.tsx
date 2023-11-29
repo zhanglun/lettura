@@ -17,11 +17,8 @@ export function SearchResult(props: SearchResultProps) {
     articleDialogViewStatus: state.articleDialogViewStatus,
     setArticleDialogViewStatus: state.setArticleDialogViewStatus,
   }));
-  const { articleList, listRef, loadRef, loading, observerTarget } = useSearchListHook(
-    {
-      searchParams: { query: props.query },
-    }
-  );
+  const { resultList, listRef, loadRef, loading, observerTarget } = useSearchListHook();
+  console.log("%c Line:21 🍓 articleList", "color:#465975", resultList);
   const [currentArticle, setCurrentArticle] = useState<ArticleResItem | null>(
     null
   );
@@ -50,7 +47,7 @@ export function SearchResult(props: SearchResultProps) {
   return (
     <div className={clsx("overflow-auto", className)}>
       <div className="max-w-[840px] m-auto" ref={listRef}>
-        {renderResultList(articleList)}
+        {renderResultList(resultList)}
         <div ref={loadRef}>
           {loading && (
             <div className="p-3 pl-6 grid gap-1 relative">

@@ -10,8 +10,8 @@ export interface SearchParams {
   query: string;
 }
 
-export const useSearchListHook = (props: { searchParams: SearchParams }) => {
-  const { searchParams } = props;
+export const useSearchListHook = () => {
+  const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [resultList, setResultList] = useState<ArticleResItem[]>([]);
@@ -20,55 +20,52 @@ export const useSearchListHook = (props: { searchParams: SearchParams }) => {
   const loadRef = useRef<HTMLDivElement>(null);
   const observerTarget = useRef<HTMLDivElement>(null);
 
-  const getList = useCallback(
-    (params: { query?: string; cursor?: number }) => {
-      setLoading(true);
-      const query = params.query?.trim() || searchParams.query.trim();
+  const getList = (params: { query?: string; cursor?: number }) => {
+    setLoading(true);
+    console.log("%c Line:26 🍇 query", "color:#fca650", query);
+    console.log("%c Line:38 🍆 cursor", "color:#93c0a4", cursor);
+    console.log("%c Line:37 🌽 params.cursor", "color:#ffdd4d", params.cursor);
 
-      console.log("%c Line:27 🌮 searchParams", "color:#7f2b82", searchParams);
-      console.log("%c Line:26 🍇 query", "color:#fca650", query);
-      console.log("%c Line:38 🍆 cursor", "color:#93c0a4", cursor);
+    if (!query) {
+      return;
+    }
 
-      if (!query) {
-        return;
-      }
+    request
+      .get("/search", {
+        params: {
+          query: query,
+          cursor: params.cursor || cursor,
+        },
+      })
+      .then((res: AxiosResponse<ArticleResItem[]>) => {
+        const list = res.data;
 
-      request
-        .get("/search", {
-          params: {
-            query: query,
-            cursor: params.cursor || cursor,
-          },
-        })
-        .then((res: AxiosResponse<ArticleResItem[]>) => {
-          console.log("%c Line:15 🍎 res", "color:#ed9ec7", res);
-          const list = res.data;
+        console.log("%c Line:43 🍞 list", "color:#42b983", list);
 
-          setResultList((prev) => [...prev, ...list]);
-          setCursor((prev) => prev + 1);
+        setResultList((prev) => [...prev, ...list]);
+        console.log("%c Line:46 🥪 [...prev, ...list]", "color:#4fff4B",  [...list]);
+        setCursor((prev) => prev + 1);
 
-          if (list.length === 0) {
-            setHasMore(false);
-          }
-        })
-        .finally(() => {
-          setLoading(false);
-        })
-        .catch((err: any) => {
-          console.log("%c Line:71 🍎 err", "color:#ffdd4d", err);
-        });
-    },
-    [cursor, searchParams]
-  );
+        if (list.length === 0) {
+          setHasMore(false);
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      })
+      .catch((err: any) => {
+        console.log("%c Line:71 🍎 err", "color:#ffdd4d", err);
+      });
+  };
 
   useEffect(() => {
-    if (searchParams.query) {
+    if (query) {
       setResultList([]);
       setCursor(1);
       setHasMore(true);
-      // getList({ query: searchParams.query, cursor: 1 });
+      getList({ query, cursor: 1 });
     }
-  }, [searchParams.query]);
+  }, [query]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -79,7 +76,7 @@ export const useSearchListHook = (props: { searchParams: SearchParams }) => {
           entries[0].isIntersecting
         );
         if (entries[0].isIntersecting) {
-          getList({ query: searchParams.query });
+          getList({});
         }
       },
       { threshold: 1 }
@@ -94,7 +91,7 @@ export const useSearchListHook = (props: { searchParams: SearchParams }) => {
         observer.unobserve(observerTarget.current);
       }
     };
-  }, [observerTarget, searchParams.query]);
+  }, [observerTarget]);
 
   const goPrev = useCallback(
     throttle(() => {
@@ -116,10 +113,12 @@ export const useSearchListHook = (props: { searchParams: SearchParams }) => {
   useHotkeys("Shift+n", goPrev);
 
   return {
+    query,
+    setQuery,
     getList,
     loading,
     hasMore,
-    articleList: resultList,
+    resultList,
     setLoading,
     listRef,
     loadRef,
