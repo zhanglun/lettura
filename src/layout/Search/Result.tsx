@@ -17,7 +17,7 @@ export function SearchResult(props: SearchResultProps) {
     articleDialogViewStatus: state.articleDialogViewStatus,
     setArticleDialogViewStatus: state.setArticleDialogViewStatus,
   }));
-  const { articleList, listRef, loadRef, loading, hasMore } = useSearchListHook(
+  const { articleList, listRef, loadRef, loading, observerTarget } = useSearchListHook(
     {
       searchParams: { query: props.query },
     }
@@ -67,6 +67,7 @@ export function SearchResult(props: SearchResultProps) {
             </div>
           )}
         </div>
+        <div ref={observerTarget}>2</div>
       </div>
 
       <ArticleDialogView
