@@ -8,16 +8,16 @@ import { request } from "@/helpers/request";
 import { AxiosResponse } from "axios";
 import { useHotkeys } from "react-hotkeys-hook";
 import { Skeleton } from "@/components/ui/skeleton";
+import useInfiniteScroll from "./useInfiniteScroll";
 import clsx from "clsx";
 
 export const SearchPage = () => {
+  const [isFetching, setIsFetching] = useState(false);
   const [query, setQuery] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [cursor, setCursor] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [resultList, setResultList] = useState<ArticleResItem[]>([]);
-  const [cursor, setCursor] = useState(1);
   const loadRef = useRef<HTMLDivElement>(null);
-  const observerTarget = useRef<HTMLDivElement>(null);
 
   const debounceSearch = useCallback(
     debounce((query: string) => {
@@ -36,12 +36,12 @@ export const SearchPage = () => {
     val && debounceSearch(val);
   };
 
-  const getList = useCallback((params: any) => {
-    setLoading(true);
+  const getList = (params: any) => {
+    setIsFetching(true);
     const text = params.query || query;
     console.log("%c Line:41 🍕 query", "color:#ed9ec7", query);
 
-    if (!text) {
+    if (!text || !hasMore) {
       return;
     }
 
@@ -56,41 +56,21 @@ export const SearchPage = () => {
         const list = res.data;
 
         setResultList((prevState) => [...prevState, ...list]);
-        setCursor(cursor + 1);
-
-        if (list.length === 0) {
-          setHasMore(false);
-        }
+        setCursor(prev => prev + 1);
+        setHasMore(res.data.length > 0);
       })
       .finally(() => {
-        setLoading(false);
+        setIsFetching(false);
       })
       .catch((err: any) => {
         console.log("%c Line:71 🍎 err", "color:#ffdd4d", err);
       });
-  }, [query, cursor]);
+  };
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        console.log(entries[0].isIntersecting);
-        if (entries[0].isIntersecting) {
-          getList({});
-        }
-      },
-      { threshold: 1 }
-    );
-
-    if (observerTarget.current) {
-      observer.observe(observerTarget.current);
-    }
-
-    return () => {
-      if (observerTarget.current) {
-        observer.unobserve(observerTarget.current);
-      }
-    };
-  }, [observerTarget]);
+  const [lastElementRef] = useInfiniteScroll(
+    hasMore ? () => getList({}) : () => {},
+    isFetching,
+  );
 
   const goPrev = useCallback(
     throttle(() => {
@@ -121,8 +101,8 @@ export const SearchPage = () => {
       <div className="overflow-auto flex-1">
         <SearchResult query={query} resultList={resultList} />
         <div ref={loadRef}>
-          {loading ? "laoding" : ""}
-          {loading && (
+          {isFetching ? "isFetching" : ""}
+          {isFetching && (
             <div className="p-3 pl-6 grid gap-1 relative">
               <Skeleton className="h-5 w-full" />
               <div>
@@ -137,7 +117,7 @@ export const SearchPage = () => {
             </div>
           )}
         </div>
-        <div ref={observerTarget}>2</div>
+        <div ref={lastElementRef}>2</div>
       </div>
       <div className="p-4"></div>
     </div>
