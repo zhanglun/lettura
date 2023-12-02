@@ -18,6 +18,7 @@ export const SearchPage = () => {
   const [hasMore, setHasMore] = useState(true);
   const [resultList, setResultList] = useState<ArticleResItem[]>([]);
   const loadRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const debounceSearch = useCallback(
     debounce((query: string) => {
@@ -92,10 +93,14 @@ export const SearchPage = () => {
   useHotkeys("n", goNext);
   useHotkeys("Shift+n", goPrev);
 
+  useEffect(() => {
+    inputRef.current && inputRef.current.focus();
+  }, []);
+
   return (
     <div className="h-[100vh] flex flex-col">
       <div className="p-4 bg-background">
-        <Input type="search" placeholder="Search..." onChange={handleSearch} />
+        <Input ref={inputRef} type="search" placeholder="Search content..." onChange={handleSearch} />
       </div>
       <Separator />
       <div className="overflow-auto flex-1">

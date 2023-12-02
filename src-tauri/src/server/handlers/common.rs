@@ -21,12 +21,12 @@ pub async fn handle_search(search: web::Query<SearchRequest>) -> Result<impl Res
   Ok(web::Json(result))
 }
 
-#[get("/api/favorite")]
+#[get("/api/star")]
 pub async fn handle_get_favorite() -> Result<impl Responder> {
   Ok("")
 }
 
-#[post("/api/favorite")]
+#[post("/api/star")]
 pub async fn handle_update_favorite() -> Result<impl Responder> {
   Ok("")
 }

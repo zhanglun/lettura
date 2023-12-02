@@ -28,31 +28,34 @@ export const SideNav = () => {
       </div>
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-center">
-          <Gauge />
+          <Gauge strokeWidth={1} />
         </div>
         <div className="flex items-center justify-center">
           <TooltipBox content="Local feeds" side="right">
             <NavLink to={RouteConfig.LOCAL} className={createActiveNavClass}>
-              <HardDrive />
+              <HardDrive strokeWidth={1} />
             </NavLink>
           </TooltipBox>
         </div>
         <div className="">
           <TooltipBox content="Search content" side="right">
             <NavLink to={RouteConfig.SEARCH} className={createActiveNavClass}>
-              <Search />
+              <Search strokeWidth={1} />
             </NavLink>
           </TooltipBox>
         </div>
       </div>
       <div className="flex flex-col gap-3 px-4 py-3">
         <div className="flex items-center justify-center">
-          <HelpCircle size={20} />
+          <HelpCircle size={20} strokeWidth={1} />
         </div>
         <div className="flex items-center justify-center">
           <TooltipBox content="Go to settings" side="right">
-            <NavLink to={RouteConfig.SETTINGS_GENERAL} className={createActiveNavClass}>
-              <Settings size={20} />
+            <NavLink
+              to={RouteConfig.SETTINGS_GENERAL}
+              className={createActiveNavClass}
+            >
+              <Settings size={20} strokeWidth={1} />
             </NavLink>
           </TooltipBox>
         </div>
