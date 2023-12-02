@@ -313,7 +313,6 @@ export const ArticleContainer = (): JSX.Element => {
       </div>
       <ArticleDialogView
         article={store.article}
-        userConfig={store.userConfig}
         dialogStatus={store.articleDialogViewStatus}
         setDialogStatus={store.setArticleDialogViewStatus}
         afterConfirm={() => {

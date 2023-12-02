@@ -29,6 +29,10 @@ export function LocalPage() {
     }
   }, [matched]);
 
+  useEffect(() => {
+
+  }, []);
+
   return (
     <div className="flex flex-row h-full">
       <DndProvider backend={HTML5Backend}>

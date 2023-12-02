@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import styles from "./view.module.scss";
 import { useBearStore } from "@/stores";
 import { ArticleDetail } from "@/components/ArticleView/Detail";
 

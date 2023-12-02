@@ -48,7 +48,7 @@ dependencies:
     specifier: ^1.0.3
     version: 1.0.4(@types/react-dom@18.2.15)(@types/react@18.2.37)(react-dom@18.2.0)(react@18.2.0)
   '@radix-ui/react-toast':
-    specifier: ^1.1.3
+    specifier: ^1.1.5
     version: 1.1.5(@types/react-dom@18.2.15)(@types/react@18.2.37)(react-dom@18.2.0)(react@18.2.0)
   '@radix-ui/react-tooltip':
     specifier: ^1.0.6
@@ -139,7 +139,7 @@ dependencies:
     version: 1.0.7(tailwindcss@3.3.5)
   tauri-plugin-log-api:
     specifier: github:tauri-apps/tauri-plugin-log
-    version: github.com/tauri-apps/tauri-plugin-log/3b3ff84b49516ae2ac70ff76c75e6e7b93e8a841
+    version: github.com/tauri-apps/tauri-plugin-log/a428c4c4833027865898ef0f284a69b1978fcd94
   web-vitals:
     specifier: ^3.1.0
     version: 3.5.0
@@ -5290,8 +5290,8 @@ packages:
       use-sync-external-store: 1.2.0(react@18.2.0)
     dev: false
 
-  github.com/tauri-apps/tauri-plugin-log/3b3ff84b49516ae2ac70ff76c75e6e7b93e8a841:
-    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-log/tar.gz/3b3ff84b49516ae2ac70ff76c75e6e7b93e8a841}
+  github.com/tauri-apps/tauri-plugin-log/a428c4c4833027865898ef0f284a69b1978fcd94:
+    resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-log/tar.gz/a428c4c4833027865898ef0f284a69b1978fcd94}
     name: tauri-plugin-log-api
     version: 0.0.0
     dependencies:

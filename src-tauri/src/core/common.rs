@@ -1,9 +1,6 @@
 use diesel::{prelude::*, sql_types::*};
-use serde::{Serialize};
-
-use crate::{
-  db::establish_connection,
-};
+use serde::Serialize;
+use crate::db;
 
 #[derive(Debug, Queryable, Serialize, QueryableByName)]
 pub struct ArticleQueryItem {
@@ -58,7 +55,7 @@ pub struct GlobalSearchQuery {
 
 impl Common {
   pub fn global_search(search: GlobalSearchQuery) -> Vec<ArticleQueryItem> {
-    let mut connection = establish_connection();
+    let mut connection = db::establish_connection();
     let query = search.query;
     let limit = search.limit.unwrap_or(12);
     let cursor = search.cursor.unwrap_or(1);

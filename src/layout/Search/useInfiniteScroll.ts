@@ -11,9 +11,11 @@ const useInfiniteScroll = (callback: any, isFetching: boolean) => {
       if (isFetching) return;
 
       //stop watching targets, you can think of it as a reset
+      // @ts-ignore
       if (observer.current) observer.current.disconnect();
 
       //create a new intersection observer and execute the callback incase of an intersecting event
+      // @ts-ignore
       observer.current = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting) {
           callback();
@@ -21,6 +23,7 @@ const useInfiniteScroll = (callback: any, isFetching: boolean) => {
       });
 
       //if there is a node, let the intersection observer watch that node
+      // @ts-ignore
       if (node) observer.current.observe(node);
     },
     [callback, isFetching]

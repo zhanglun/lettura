@@ -1,6 +1,13 @@
 import React, { useCallback, useEffect, useRef } from "react";
 import { useMatch, useNavigate } from "react-router-dom";
-import { RefreshCw, Settings, Coffee, Haze, FolderPlus } from "lucide-react";
+import {
+  RefreshCw,
+  Settings,
+  Coffee,
+  Haze,
+  FolderPlus,
+  CheckCircle,
+} from "lucide-react";
 import classNames from "classnames";
 import { listen } from "@tauri-apps/api/event";
 import { RouteConfig } from "@/config";
@@ -30,6 +37,7 @@ import { ListContainer } from "./ListContainer";
 import { copyText } from "@/helpers/copyText";
 import { useToast } from "@/components/ui/use-toast";
 import { DialogDeleteFolder } from "@/layout/Setting/Content/DialogDeleteFolder";
+import { ToastAction } from "@radix-ui/react-toast";
 
 const ChannelList = (): JSX.Element => {
   const isToday = useMatch(RouteConfig.LOCAL_TODAY);
@@ -93,26 +101,57 @@ const ChannelList = (): JSX.Element => {
   };
 
   const reloadFeedData = (feed: FeedResItem | null) => {
+    console.log("🚀 ~ file: index.tsx:96 ~ reloadFeedData ~ feed:", feed);
+    const a = toast({
+      title: "Start reloading, Please wait",
+      duration: 100000,
+    });
+
     if (feed) {
-      store.syncArticles(feed).then(() => {
-        // if (message) {
-        //   toast({
-        //     title: "Something wrong!",
-        //     variant: "destructive",
-        //     description: message,
-        //     action: (
-        //       <ToastAction altText="Goto schedule to undo">Close</ToastAction>
-        //     ),
-        //   });
-        // } else {
-        //   toast({
-        //     title: "Success",
-        //     description: message,
-        //     action: (
-        //       <ToastAction altText="Goto schedule to undo">Close</ToastAction>
-        //     ),
-        //   });
-        // }
+      store.syncArticles(feed).then((res) => {
+        const [uuid, [title, num, message]] = Object.entries(res)[0] as [
+          string,
+          [string, number, string]
+        ];
+
+        if (message) {
+          a.update({
+            id: a.id,
+            title: "Something wrong!",
+            variant: "destructive",
+            description: message,
+            action: (
+              <ToastAction altText="Goto schedule to undo">Close</ToastAction>
+            ),
+            duration: 5000,
+          });
+        } else {
+          a.update({
+            id: a.id,
+            // @ts-ignore
+            title: (
+              <div className="flex gap-2 text-green-500 items-center">
+                <CheckCircle strokeWidth={1.5} />
+                SUCCESS
+              </div>
+            ),
+            description: (
+              <div>
+                {num > 0 ? (
+                  <>
+                    We have {num} new pieces of data from {title}
+                  </>
+                ) : (
+                  <>{title} is already up to date.</>
+                )}
+              </div>
+            ),
+            action: (
+              <ToastAction altText="Goto schedule to undo">Close</ToastAction>
+            ),
+            duration: 5000,
+          });
+        }
       });
     }
   };
@@ -147,10 +186,6 @@ const ChannelList = (): JSX.Element => {
       }
     });
   }, [feedUuid, feedList]);
-
-  const goToSetting = () => {
-    navigate(RouteConfig.SETTINGS_GENERAL);
-  };
 
   const listRef = useRef<HTMLDivElement>(null);
   const handleListScroll = useCallback(() => {
