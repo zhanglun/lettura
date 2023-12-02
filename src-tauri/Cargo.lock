@@ -2184,11 +2184,11 @@ checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
 
 [[package]]
 name = "lettura"
-version = "0.1.1"
+version = "0.1.11"
 dependencies = [
  "actix-cors",
  "actix-web",
- "base64 0.21.5",
+ "base64 0.13.1",
  "chrono",
  "diesel",
  "diesel_migrations",
