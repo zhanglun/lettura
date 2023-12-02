@@ -22,6 +22,7 @@ export const SearchPage = () => {
   const debounceSearch = useCallback(
     debounce((query: string) => {
       setResultList([]);
+      setCursor(1);
 
       getList({ query, cursor: 1 });
     }, 200),
@@ -30,20 +31,20 @@ export const SearchPage = () => {
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value as string;
+
     setQuery(val);
-    console.log("%c Line:35 🥔 val", "color:#33a5ff", val);
 
     val && debounceSearch(val);
   };
 
   const getList = (params: any) => {
-    setIsFetching(true);
     const text = params.query || query;
-    console.log("%c Line:41 🍕 query", "color:#ed9ec7", query);
 
     if (!text || !hasMore) {
       return;
     }
+
+    setIsFetching(true);
 
     request
       .get("/search", {

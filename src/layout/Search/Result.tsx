@@ -1,10 +1,8 @@
 import { ArticleResItem } from "@/db";
 import { ResultItem } from "./ResultItem";
 import { ArticleDialogView } from "@/components/ArticleView/DialogView";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useBearStore } from "@/stores";
-import clsx from "clsx";
-import { Skeleton } from "@/components/ui/skeleton";
 
 export interface SearchResultProps
   extends React.HTMLAttributes<HTMLDivElement> {
@@ -13,7 +11,7 @@ export interface SearchResultProps
 }
 
 export function SearchResult(props: SearchResultProps) {
-  const { className, resultList } = props;
+  const { resultList } = props;
   const store = useBearStore((state) => ({
     articleDialogViewStatus: state.articleDialogViewStatus,
     setArticleDialogViewStatus: state.setArticleDialogViewStatus,
