@@ -6,8 +6,8 @@ use crate::core::common;
 #[derive(Debug, Deserialize)]
 pub struct SearchRequest {
   pub query: String,
-  pub limit: Option<i64>,
-  pub cursor: Option<i64>,
+  pub limit: Option<i32>,
+  pub cursor: Option<i32>,
 }
 
 #[get("/api/search")]

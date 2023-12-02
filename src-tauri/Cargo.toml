@@ -21,7 +21,7 @@ tauri = { version = "1.4", features = ["devtools", "dialog-all", "fs-all", "http
 reqwest = { version = "0.11", features = ["json", "socks"] }
 tokio = { version = "1", features = ["full"] }
 chrono = { version="0.4", features = ["serde"] }
-diesel = { version = "2.0.2", features = ["sqlite", "chrono", "uuid", "returning_clauses_for_sqlite_3_35"] }
+diesel = { version = "2.0.2", features = ["sqlite", "chrono", "uuid", "returning_clauses_for_sqlite_3_35", "serde_json"] }
 diesel_migrations = { version = "2.0.0", features = ["sqlite"] }
 libsqlite3-sys = { version = "^0", features = ["bundled"] }
 dotenv = "0.15.0"

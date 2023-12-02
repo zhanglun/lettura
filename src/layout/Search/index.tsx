@@ -97,11 +97,9 @@ export const SearchPage = () => {
         <Input type="search" placeholder="Search..." onChange={handleSearch} />
       </div>
       <Separator />
-      <h2>Query: {query}</h2>
       <div className="overflow-auto flex-1">
         <SearchResult query={query} resultList={resultList} />
         <div ref={loadRef}>
-          {isFetching ? "isFetching" : ""}
           {isFetching && (
             <div className="p-3 pl-6 grid gap-1 relative">
               <Skeleton className="h-5 w-full" />
@@ -117,7 +115,7 @@ export const SearchPage = () => {
             </div>
           )}
         </div>
-        <div ref={lastElementRef}>2</div>
+        <div ref={lastElementRef}></div>
       </div>
       <div className="p-4"></div>
     </div>

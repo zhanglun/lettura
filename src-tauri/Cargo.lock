@@ -1010,6 +1010,7 @@ dependencies = [
  "chrono",
  "diesel_derives",
  "libsqlite3-sys",
+ "serde_json",
  "time",
  "uuid",
 ]
