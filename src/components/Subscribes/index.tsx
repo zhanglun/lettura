@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useRef } from "react";
 import { useMatch, useNavigate } from "react-router-dom";
 import {
   RefreshCw,
-  Settings,
   Coffee,
   Haze,
   FolderPlus,
@@ -26,7 +25,7 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import { Icon } from "../Icon";
-import { DialogUnsubscribeFeed } from "../../layout/Setting/Content/DialogUnsubscribeFeed";
+import { DialogUnsubscribeFeed } from "@/layout/Setting/Content/DialogUnsubscribeFeed";
 import { useModal } from "../Modal/useModal";
 import { open } from "@tauri-apps/api/shell";
 import { DialogEditFeed } from "@/layout/Setting/Content/DialogEditFeed";

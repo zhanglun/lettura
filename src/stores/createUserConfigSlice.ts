@@ -6,6 +6,10 @@ export interface UserConfigSlice {
   getUserConfig: any;
   updateUserConfig: (cfg: UserConfig) => void;
 
+  lastSyncTime: Date;
+
+  setLastSyncTime: (t: Date) => void;
+
   viewOrigin: boolean;
   updateViewOrigin: (status: boolean) => void;
   viewOriginLoading: boolean;
@@ -23,6 +27,7 @@ export const createUserConfigSlice: StateCreator<UserConfigSlice> = (
       set(() => ({
         userConfig: cfg,
       }));
+
       return cfg;
     });
   },
@@ -35,6 +40,13 @@ export const createUserConfigSlice: StateCreator<UserConfigSlice> = (
         userConfig: cfg,
       }));
     });
+  },
+
+  lastSyncTime: new Date(1900, 0, 1),
+  setLastSyncTime(t) {
+    set(() => ({
+      lastSyncTime: t,
+    }))
   },
 
   viewOrigin: false,

@@ -8,6 +8,9 @@ export const useRefresh = () => {
   const store = useBearStore((state) => ({
     userConfig: state.userConfig,
 
+    lastSyncTime: state.lastSyncTime,
+    setLastSyncTime: state.setLastSyncTime,
+
     feedList: state.feedList,
     getFeedList: state.getFeedList,
     updateFeed: state.updateFeed,
@@ -18,7 +21,6 @@ export const useRefresh = () => {
   }));
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [done, setDone] = useState<number>(0);
-
   const timeRef = useRef<any>();
 
   const getFeedList = () => {
@@ -67,23 +69,28 @@ export const useRefresh = () => {
     });
   };
 
-  // function loop() {
-  //   if (timeRef.current) {
-  //     clearTimeout(timeRef.current);
-  //   }
-  //
-  //   if (store.userConfig.update_interval) {
-  //     timeRef.current = setTimeout(() => {
-  //       startRefresh();
-  //       console.log("%c Line:113 🥕 startRefresh", "color:#42b983");
-  //       loop();
-  //     }, store?.userConfig?.update_interval * 60 * 60 * 1000);
-  //   }
-  // }
+  function loop() {
+    if (timeRef.current) {
+      clearTimeout(timeRef.current);
+    }
 
-  // useEffect(() => {
-  //   loop();
-  // }, [store.userConfig.update_interval]);
+    if (store.userConfig.update_interval) {
+      timeRef.current = setTimeout(() => {
+        startRefresh();
+        loop();
+      }, store?.userConfig?.update_interval * 60 * 60 * 1000);
+    }
+  }
+
+  useEffect(() => {
+    startRefresh();
+
+    loop();
+
+    return () => {
+      clearTimeout(timeRef.current)
+    }
+  }, [])
 
   return [
     store.feedList,
