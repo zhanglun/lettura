@@ -7,11 +7,6 @@ use crate::core::config;
 use crate::feed;
 use crate::feed::WrappedMediaObject;
 use crate::models;
-use crate::AsyncProcessMessage;
-
-pub struct AsyncProcInputTx {
-  pub sender: Mutex<mpsc::Sender<AsyncProcessMessage>>,
-}
 
 #[derive(Debug, Serialize)]
 pub struct FeedFetchResponse {
@@ -243,29 +238,6 @@ pub fn update_threads(threads: i32) -> usize {
 pub fn update_theme(theme: String) -> usize {
   config::update_theme(theme);
   1
-}
-
-#[command]
-pub async fn update_interval(
-  interval: u64,
-  state: tauri::State<'_, AsyncProcInputTx>,
-) -> Result<(), ()> {
-  config::update_interval(interval);
-  let sender = state.sender.lock().await;
-
-  if interval > 0 {
-    sender
-      .send(AsyncProcessMessage::TurnOnAutoUpdateFeed)
-      .await
-      .map_err(|e| e.to_string());
-  } else {
-    sender
-      .send(AsyncProcessMessage::TurnOffAutoUpdateFeed)
-      .await
-      .map_err(|e| e.to_string());
-  }
-
-  Ok(())
 }
 
 #[command]

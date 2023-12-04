@@ -42,13 +42,6 @@ fn handle_window_event(event: GlobalWindowEvent<Wry>) {
   }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub enum AsyncProcessMessage {
-  TurnOnAutoUpdateFeed,
-  TurnOffAutoUpdateFeed,
-}
-
-use crate::cmd::AsyncProcInputTx;
 use tokio::sync::Mutex;
 
 fn send_to_webview<R: tauri::Runtime>(
@@ -74,14 +67,9 @@ async fn main() {
     .run_pending_migrations(MIGRATIONS)
     .expect("Error migrating");
 
-  let (async_process_input_tx, async_process_input_rx) = mpsc::channel::<AsyncProcessMessage>(32);
-
   let window = tauri::Builder::default();
 
   window
-    .manage(AsyncProcInputTx {
-      sender: Mutex::new(async_process_input_tx),
-    })
     .menu(core::menu::AppMenu::get_menu(&context))
     .plugin(tauri_plugin_single_instance::init(|app, argv, cwd| {
       println!("{}, {argv:?}, {cwd}", app.package_info().name);
@@ -132,7 +120,6 @@ async fn main() {
       cmd::update_proxy,
       cmd::update_threads,
       cmd::update_theme,
-      cmd::update_interval,
       cmd::create_folder,
       cmd::delete_folder,
       cmd::update_folder,

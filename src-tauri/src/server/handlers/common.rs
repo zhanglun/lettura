@@ -3,6 +3,11 @@ use serde::{Deserialize, Serialize};
 
 use crate::core::common;
 
+#[post("/api/user_config")]
+pub async fn handle_update_user_config() -> Result<impl Responder> {
+  Ok(web::Json("hahahah"))
+}
+
 #[derive(Debug, Deserialize)]
 pub struct SearchRequest {
   pub query: String,
