@@ -167,13 +167,11 @@ export const markAllRead = async (body: {
 };
 
 export const getUserConfig = async (): Promise<any> => {
-  return request.get("user-config");
+  return request.get("/user-config");
 };
 
 export const updateUserConfig = async (cfg: any): Promise<any> => {
-  return invoke("update_user_config", {
-    userCfg: cfg,
-  });
+  return request.post("/user-config", cfg)
 };
 
 export const updateProxy = async (cfg: LocalProxy): Promise<any> => {

@@ -2,20 +2,12 @@ use actix_web::{get, post, delete, web, Responder, Result};
 use log::info;
 
 use crate::feed;
-use crate::core::config;
 
 #[get("/api/unread-total")]
 pub async fn handle_get_unread_total() -> Result<impl Responder> {
   let result = feed::channel::get_unread_total();
 
   Ok(web::Json(result))
-}
-
-#[get("/api/user-config")]
-pub async fn handle_get_user_config() -> Result<impl Responder> {
-  let user_config = config::load_or_initial();
-
-  Ok(web::Json(user_config))
 }
 
 /// for feed management
@@ -52,7 +44,6 @@ pub async fn handle_update_feed_sort(body: web::Json<Vec<feed::channel::FeedSort
 pub fn config(cfg: &mut web::ServiceConfig) {
   cfg
     .service(handle_get_unread_total)
-    .service(handle_get_user_config)
     .service(handle_update_feed_sort)
     .service(handle_get_subscribes)
     .service(handle_get_feeds)

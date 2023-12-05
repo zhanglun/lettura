@@ -2,9 +2,18 @@ use actix_web::{get, post, web, Responder, Result};
 use serde::{Deserialize, Serialize};
 
 use crate::core::common;
+use crate::core::config;
 
-#[post("/api/user_config")]
-pub async fn handle_update_user_config() -> Result<impl Responder> {
+#[get("/api/user-config")]
+pub async fn handle_get_user_config() -> Result<impl Responder> {
+  let user_config = config::load_or_initial();
+
+  Ok(web::Json(user_config))
+}
+
+#[post("/api/user-config")]
+pub async fn handle_update_user_config(user_cfg: web::Json<config::UserConfig>) -> Result<impl Responder> {
+  config::update_user_config(user_cfg.0);
   Ok(web::Json("hahahah"))
 }
 
@@ -38,6 +47,8 @@ pub async fn handle_update_favorite() -> Result<impl Responder> {
 
 pub fn config(cfg: &mut web::ServiceConfig) {
   cfg
+    .service(handle_get_user_config)
+    .service(handle_update_user_config)
     .service(handle_search)
     .service(handle_get_favorite)
     .service(handle_update_favorite);

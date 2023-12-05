@@ -277,14 +277,14 @@ pub fn update_interval(interval: u64) -> usize {
   return 1;
 }
 
-pub fn update_user_config (cfg: UserConfig) -> usize {
+pub fn update_user_config (cfg: UserConfig) -> String {
   let user_config_path = get_user_config_path();
 
   let content = toml::to_string(&cfg).unwrap();
 
-  fs::write(user_config_path, content).expect("update threads error");
+  fs::write(user_config_path, &content).expect("update threads error");
 
-  return 1;
+  return content;
 }
 
 #[cfg(test)]

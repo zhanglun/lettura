@@ -81,6 +81,7 @@ export const General = () => {
   const handleUpdateIntervalChange = (val: number) => {
     console.log("%c Line:80 🍯 val", "color:#7f2b82", val);
     setUpdateInterval(val);
+    console.log('store ==>', store.userConfig);
 
     store.updateUserConfig({
       ...store.userConfig,
