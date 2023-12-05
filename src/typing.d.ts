@@ -22,4 +22,7 @@ declare interface UserConfig {
   update_interval?: number;
   local_proxy?: LocalProxy;
   customize_style?: CustomizeStyle;
+
+  purge_on_days: number;
+  purge_unread_articles: boolean;
 }

@@ -8,6 +8,8 @@ use crate::core::config;
 pub async fn handle_get_user_config() -> Result<impl Responder> {
   let user_config = config::load_or_initial();
 
+  println!("useConfig {:?}", user_config);
+
   Ok(web::Json(user_config))
 }
 

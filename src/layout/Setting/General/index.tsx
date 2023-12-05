@@ -11,6 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useBearStore } from "@/stores";
+import { Switch } from "@/components/ui/switch";
 
 const intervalOptions = [
   {
@@ -40,13 +41,13 @@ export const General = () => {
     userConfig: state.userConfig,
     updateUserConfig: state.updateUserConfig,
   }));
-  const [localProxyConfig, setLocalProxyConfig] = useState<LocalProxy>({
+  const [ localProxyConfig, setLocalProxyConfig ] = useState<LocalProxy>({
     protocol: "",
     ip: "",
     port: "",
   });
-  const [threads, setThreads] = useState<number>(1);
-  const [updateInterval, setUpdateInterval] = useState<number>(0);
+  const [ threads, setThreads ] = useState<number>(1);
+  const [ updateInterval, setUpdateInterval ] = useState<number>(0);
 
   const handleSaveLocalProxy = (cfg: LocalProxy) => {
     dataAgent
@@ -79,9 +80,7 @@ export const General = () => {
   };
 
   const handleUpdateIntervalChange = (val: number) => {
-    console.log("%c Line:80 🍯 val", "color:#7f2b82", val);
     setUpdateInterval(val);
-    console.log('store ==>', store.userConfig);
 
     store.updateUserConfig({
       ...store.userConfig,
@@ -119,9 +118,9 @@ export const General = () => {
         <div className="grid gap-1 grid-cols-[120px_10px_60px] items-center">
           <Input
             type="text"
-            value={localProxyConfig.ip}
+            value={ localProxyConfig.ip }
             className="tracking-wide"
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            onChange={ (e: React.ChangeEvent<HTMLInputElement>) =>
               handleLocalProxyChange("ip", e.target.value)
             }
           />
@@ -129,8 +128,8 @@ export const General = () => {
           <Input
             type="text"
             className="tracking-wide"
-            value={localProxyConfig.port}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            value={ localProxyConfig.port }
+            onChange={ (e: React.ChangeEvent<HTMLInputElement>) =>
               handleLocalProxyChange("port", e.target.value)
             }
           />
@@ -138,23 +137,23 @@ export const General = () => {
       </PanelSection>
       <PanelSection title="Update Interval (WIP)" subTitle="set the update interval">
         <Select
-          value={updateInterval.toString()}
-          onValueChange={(v: string) =>
+          value={ updateInterval.toString() }
+          onValueChange={ (v: string) =>
             handleUpdateIntervalChange(parseInt(v, 10))
           }
         >
           <SelectTrigger className="w-[180px] h-8">
-            <SelectValue placeholder="Change update interval" />
+            <SelectValue placeholder="Change update interval"/>
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              {intervalOptions.map((opt) => {
+              { intervalOptions.map((opt) => {
                 return (
-                  <SelectItem key={opt.value} value={opt.value.toString()}>
-                    {opt.label}
+                  <SelectItem key={ opt.value } value={ opt.value.toString() }>
+                    { opt.label }
                   </SelectItem>
                 );
-              })}
+              }) }
             </SelectGroup>
           </SelectContent>
         </Select>
@@ -166,16 +165,50 @@ export const General = () => {
         <Input
           className="w-[200px]"
           type="number"
-          step={1}
-          min={1}
-          max={5}
-          value={threads}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+          step={ 1 }
+          min={ 1 }
+          max={ 5 }
+          value={ threads }
+          onChange={ (e: React.ChangeEvent<HTMLInputElement>) =>
             handleThreadsChange(
               parseInt(e.target.value, 10) as unknown as number,
             )
           }
         />
+      </PanelSection>
+      <PanelSection title="Purge articles older than" subTitle="save your disk (0 disables)">
+        <div className="flex items-center gap-2">
+          <Input
+            className="w-[200px]"
+            type="number"
+            step={ 1 }
+            min={ 0 }
+            max={ 1825 }
+            value={ store.userConfig.purge_on_days }
+            onChange={ (e: React.ChangeEvent<HTMLInputElement>) => {
+              store.updateUserConfig({
+                ...store.userConfig,
+                purge_on_days: parseInt(e.target.value, 10) as unknown as number,
+              });
+            }
+            }
+          />
+          <span>days</span>
+        </div>
+      </PanelSection>
+      <PanelSection title="Purge unread articles">
+        <div>
+          <Switch
+            checked={ store.userConfig.purge_unread_articles }
+            onCheckedChange={ (val: boolean) => {
+              store.updateUserConfig({
+                ...store.userConfig,
+                purge_unread_articles: val,
+              });
+            } }
+            aria-readonly
+          />
+        </div>
       </PanelSection>
     </Panel>
   );

@@ -20,7 +20,7 @@ export const createUserConfigSlice: StateCreator<UserConfigSlice> = (
   set,
   get
 ) => ({
-  userConfig: {},
+  userConfig: {} as UserConfig,
 
   getUserConfig: () => {
     return dataAgent.getUserConfig().then(({ data: cfg }) => {

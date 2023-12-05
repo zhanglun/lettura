@@ -37,6 +37,22 @@ impl Default for CustomizeStyle {
   }
 }
 
+macro_rules! generate_set_property {
+    ($config:ident, $method:ident, $field:ident, $field_type:ty) => {
+        pub fn $method(mut $config, value: $field_type) -> Self {
+            $config.$field = value;
+            $config
+        }
+    };
+    ($config:ident, $method:ident, $field:ident, Option<$field_type:ty>) => {
+        pub fn $method(mut $config, value: Option<$field_type>) -> Self {
+            $config.$field = value;
+            $config
+        }
+    };
+}
+
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UserConfig {
   pub threads: i32,
@@ -44,6 +60,8 @@ pub struct UserConfig {
   pub update_interval: u64,
   pub local_proxy: Option<LocalProxy>,
   pub customize_style: CustomizeStyle,
+  pub purge_on_days: u64,
+  pub purge_unread_articles: bool,
 }
 
 impl Default for UserConfig {
@@ -54,38 +72,19 @@ impl Default for UserConfig {
       update_interval: 0,
       local_proxy: None,
       customize_style: CustomizeStyle::default(),
+      purge_on_days: 0,
+      purge_unread_articles: true,
     }
   }
 }
 
 impl UserConfig {
-  fn update_threads(&mut self, threads: i32) -> &mut UserConfig {
-    self.threads = threads;
-
-    self
-  }
-
-  fn update_theme(&mut self, theme: String) -> &mut UserConfig {
-    self.theme = theme;
-
-    self
-  }
-
-  fn update_interval(&mut self, interval: u64) -> &mut UserConfig {
-    self.update_interval = interval;
-
-    self
-  }
-
-  fn update_proxy(&mut self, ip: String, port: String) -> &mut UserConfig {
-    if ip == "" && port == "" {
-      self.local_proxy = None;
-    } else {
-      self.local_proxy = Some(LocalProxy { ip, port });
-    }
-
-    self
-  }
+  generate_set_property!(self, set_threads, threads, i32);
+  generate_set_property!(self, set_theme, theme, String);
+  generate_set_property!(self, set_update_interval, update_interval, u64);
+  generate_set_property!(self, set_local_proxy, local_proxy, Option<LocalProxy>);
+  generate_set_property!(self, set_purge_on_days, purge_on_days, u64);
+  generate_set_property!(self, set_purge_unread_articles, purge_unread_articles, bool);
 
   /// init use config
   pub fn init_config() -> UserConfig {
@@ -188,27 +187,28 @@ pub fn load_or_initial() -> Option<UserConfig> {
     data.insert(String::from("update_interval"), toml::Value::try_from::<i32>(0).unwrap());
   }
 
+  if !data.contains_key("purge_on_days") {
+    data.insert(String::from("purge_on_days"), toml::Value::try_from::<u64>(0).unwrap());
+  }
+
+  if !data.contains_key("purge_unread_articles") {
+    data.insert(String::from("purge_unread_articles"), toml::Value::try_from::<bool>(true).unwrap());
+  }
+
   log::debug!("USER CONFIG: {:?}", data);
 
   Some(data.try_into::<UserConfig>().expect("config data error"))
 }
 
 pub fn update_proxy(ip: String, port: String) -> usize {
-  let data = get_user_config();
-
-  println!("data: {:?}", data);
-
-  let mut data = match data {
+  let mut data = match get_user_config() {
     Some(data) => data,
     None => UserConfig::default(),
   };
 
   let user_config_path = get_user_config_path();
-  let a = data.update_proxy(ip, port);
-  let content = toml::to_string(a).unwrap();
-
-  println!("content: {:?}", content);
-  println!("user_config_path: {:?}", user_config_path);
+  let a = data.set_local_proxy(Some(LocalProxy {ip, port}));
+  let content = toml::to_string(&a).unwrap();
 
   fs::write(user_config_path, content).expect("update proxy error");
 
@@ -216,17 +216,15 @@ pub fn update_proxy(ip: String, port: String) -> usize {
 }
 
 pub fn update_threads(threads: i32) -> usize {
-  let data = get_user_config();
-
-  let mut data = match data {
+  let mut data = match get_user_config() {
     Some(data) => data,
     None => UserConfig::default(),
   };
 
   let user_config_path = get_user_config_path();
-  let a = data.update_threads(threads);
+  let a = data.set_threads(threads);
 
-  let content = toml::to_string(a).unwrap();
+  let content = toml::to_string(&a).unwrap();
 
   fs::write(user_config_path, content).expect("update threads error");
 
@@ -234,9 +232,7 @@ pub fn update_threads(threads: i32) -> usize {
 }
 
 pub fn update_theme(theme: String) -> usize {
-  let data = get_user_config();
-
-  let mut data = match data {
+  let mut data = match get_user_config() {
     Some(data) => data,
     None => UserConfig::default(),
   };
@@ -245,9 +241,9 @@ pub fn update_theme(theme: String) -> usize {
 
   println!("data {:?}", data);
 
-  let a = data.update_theme(theme);
+  let a = data.set_theme(theme);
 
-  let content = toml::to_string(a).unwrap();
+  let content = toml::to_string(&a).unwrap();
 
   println!("content {:?}", content);
 
@@ -268,16 +264,16 @@ pub fn update_interval(interval: u64) -> usize {
 
   println!("data {:?}", data);
 
-  let a = data.update_interval(interval);
+  let a = data.set_update_interval(interval);
 
-  let content = toml::to_string(a).unwrap();
+  let content = toml::to_string(&a).unwrap();
 
   fs::write(user_config_path, content).expect("update interval error");
 
   return 1;
 }
 
-pub fn update_user_config (cfg: UserConfig) -> String {
+pub fn update_user_config(cfg: UserConfig) -> String {
   let user_config_path = get_user_config_path();
 
   let content = toml::to_string(&cfg).unwrap();
@@ -288,7 +284,6 @@ pub fn update_user_config (cfg: UserConfig) -> String {
 }
 
 #[cfg(test)]
-
 mod tests {
   use super::*;
 
