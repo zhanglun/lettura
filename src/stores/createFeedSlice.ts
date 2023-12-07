@@ -255,6 +255,8 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
       })
     });
 
+    const collectionMeta = get().collectionMeta;
+
     return Promise.all(fns)
       .then((resList) => {
         const map = resList.reduce((acu, { data }) => {
@@ -270,6 +272,9 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
         let list = get().feedList.map((_) => {
           if (map[_.uuid]) {
             _.unread += map[_.uuid][1]
+
+            collectionMeta.today.unread += map[_.uuid][1]
+            collectionMeta.total.unread += map[_.uuid][1]
           }
 
           if (_.children) {
@@ -277,6 +282,9 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
               if (map[child.uuid]) {
                 child.unread += map[child.uuid][1];
                 _.unread += map[child.uuid][1];
+
+                collectionMeta.today.unread += map[child.uuid][1]
+                collectionMeta.total.unread += map[child.uuid][1]
               }
             })
           }
@@ -286,6 +294,7 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
 
         set(() => ({
           feedList: list,
+          collectionMeta: collectionMeta,
         }))
 
         return map;
