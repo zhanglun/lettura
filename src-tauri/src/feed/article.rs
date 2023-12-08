@@ -1,6 +1,8 @@
+use chrono::{Utc, Duration};
 use diesel::prelude::*;
 use diesel::sql_types::*;
 use serde::{Deserialize, Serialize};
+use crate::core::config::get_user_config;
 
 use crate::db::establish_connection;
 use crate::models;
@@ -436,5 +438,36 @@ impl Article {
     } else {
       return 0;
     }
+  }
+
+  pub fn purge_articles() -> usize {
+    let user_config = get_user_config();
+
+    if let Some(cfg)  = user_config {
+      if cfg.purge_on_days == 0 {
+        return 0;
+      }
+
+      let expired_date = Utc::now().naive_utc() - Duration::days(cfg.purge_on_days as i64);
+      let mut connection = establish_connection();
+      let mut query = diesel::delete(schema::articles::dsl::articles).into_boxed();
+
+      if !cfg.purge_unread_articles {
+        query = query.filter(schema::articles::read_status.eq(2));
+      }
+
+      let query = query
+        .filter(schema::articles::create_date.lt(expired_date));
+
+      let result = query
+        .execute(&mut connection)
+        .expect("purge failed!");
+
+      log::info!("{:?} articles purged", result);
+
+      return result;
+    }
+
+    0
   }
 }

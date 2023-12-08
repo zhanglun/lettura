@@ -92,7 +92,7 @@ export const ArticleItem = React.forwardRef(
               alt=""
               className="rounded w-4 mr-1"
             />
-            <span className="overflow-hidden text-ellipsis mr-1 whitespace-nowrap">
+            <span className="max-w-[146px] overflow-hidden text-ellipsis mr-1 whitespace-nowrap">
               {article.author || article.feed_title}
             </span>
           </div>

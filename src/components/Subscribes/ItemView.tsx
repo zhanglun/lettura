@@ -65,7 +65,7 @@ export const ItemView: FC<CardProps> = ({
     >
       <div
         className={clsx(
-          "w-full h-9 px-4 rounded-md flex items-center cursor-pointer group text-foreground hover:bg-accent",
+          "w-full h-9 px-3 rounded-md flex items-center cursor-pointer group text-foreground hover:bg-accent",
           {
             "hover:bg-primary bg-primary text-primary-foreground": isActive,
             "shadow-[inset_0_0_0_2px_var(--color-primary)]":
@@ -96,7 +96,7 @@ export const ItemView: FC<CardProps> = ({
         {feed.link && (
           <img
             src={ico}
-            className="h-4 w-4 rounded mr-2"
+            className="h-5 w-5 rounded mr-2"
             alt={feed.title}
           />
         )}
@@ -113,7 +113,7 @@ export const ItemView: FC<CardProps> = ({
         {unread > 0 && (
           <span
             className={clsx(
-              "-mr-2 min-w-[1rem] h-4 leading-4 text-center text-[10px]",
+              "-mr-1 min-w-[1rem] h-4 leading-4 text-center text-[10px]",
               {
                 "text-primary-foreground": isActive,
               }

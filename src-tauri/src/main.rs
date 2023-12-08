@@ -105,6 +105,8 @@ async fn main() {
         server::init(*boxed_handle).unwrap();
       });
 
+      feed::article::Article::purge_articles();
+
       Ok(())
     })
     .on_menu_event(core::menu::AppMenu::on_menu_event)
