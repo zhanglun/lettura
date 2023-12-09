@@ -6,6 +6,16 @@ import {
   Haze,
   FolderPlus,
   CheckCircle,
+  CheckCheck,
+  Pencil,
+  Trash2,
+  Rss,
+  Image,
+  ExternalLink,
+  BellOff,
+  FileText,
+  Link,
+  Link2,
 } from "lucide-react";
 import classNames from "classnames";
 import { listen } from "@tauri-apps/api/event";
@@ -371,7 +381,7 @@ const ChannelList = (): JSX.Element => {
                 markAllRead();
               }}
             >
-              Mark all as read
+              <CheckCheck size={14} className="mr-2"/> Mark all as read
             </ContextMenuItem>
             <ContextMenuSeparator />
             {store.feedContextMenuTarget?.item_type === "folder" && (
@@ -379,14 +389,14 @@ const ChannelList = (): JSX.Element => {
                 <ContextMenuItem
                   onSelect={() => setEditFolderDialogStatus(true)}
                 >
-                  Edit folder
+                 <Pencil size={14} className="mr-2" /> Edit folder
                 </ContextMenuItem>
                 <ContextMenuSeparator />
                 <ContextMenuItem
                   onClick={() => setDeleteFolderStatus(true)}
                   className="text-red-600"
                 >
-                  Delete folder
+                 <Trash2 size={14} className="mr-2" /> Delete folder
                 </ContextMenuItem>
               </>
             )}
@@ -400,7 +410,7 @@ const ChannelList = (): JSX.Element => {
                         open(store.feedContextMenuTarget?.link)
                       }
                     >
-                      Open Home Page
+                     <ExternalLink size={14} className="mr-2" /> Open Home Page
                     </ContextMenuItem>
                     <ContextMenuSeparator />
                     <ContextMenuItem
@@ -415,7 +425,7 @@ const ChannelList = (): JSX.Element => {
                         )
                       }
                     >
-                      Copy Feed URL
+                      <Link size={14} className="mr-2" /> Copy Feed URL
                     </ContextMenuItem>
                     <ContextMenuItem
                       onClick={() =>
@@ -428,7 +438,7 @@ const ChannelList = (): JSX.Element => {
                         )
                       }
                     >
-                      Copy Home Page URL
+                      <Link2 size={14} className="mr-2" /> Copy Home Page URL
                     </ContextMenuItem>
                     <ContextMenuSeparator />
                     <ContextMenuItem
@@ -436,25 +446,25 @@ const ChannelList = (): JSX.Element => {
                         reloadFeedIcon(store.feedContextMenuTarget)
                       }
                     >
-                      Reload icon
+                      <Image size={14} className="mr-2" /> Reload icon
                     </ContextMenuItem>
                     <ContextMenuItem
                       onClick={() =>
                         reloadFeedData(store.feedContextMenuTarget)
                       }
                     >
-                      Reload feeds
+                      <Rss size={14} className="mr-2" /> Reload feeds
                     </ContextMenuItem>
                     <ContextMenuSeparator />
                     <ContextMenuItem onClick={() => setEditFeedStatus(true)}>
-                      Detail
+                      <FileText size={14} className="mr-2" /> View detail
                     </ContextMenuItem>
                     <ContextMenuSeparator />
                     <ContextMenuItem
                       onClick={() => setModalStatus(true)}
                       className="text-red-600"
                     >
-                      Unsubscribe
+                      <BellOff size={14} className="mr-2" /> Unsubscribe
                     </ContextMenuItem>
                   </>
                 )}
