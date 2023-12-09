@@ -43,7 +43,7 @@ export function SearchResult(props: SearchResultProps) {
 
   return (
     <>
-      <div className="max-w-[840px] m-auto py-4">
+      <div className="">
         { renderResultList(resultList) }
       </div>
       <ArticleDialogView

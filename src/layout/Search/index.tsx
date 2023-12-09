@@ -9,7 +9,6 @@ import { AxiosResponse } from "axios";
 import { useHotkeys } from "react-hotkeys-hook";
 import { Skeleton } from "@/components/ui/skeleton";
 import useInfiniteScroll from "./useInfiniteScroll";
-import clsx from "clsx";
 
 export const SearchPage = () => {
   const [isFetching, setIsFetching] = useState(false);
@@ -58,7 +57,7 @@ export const SearchPage = () => {
         const list = res.data;
 
         setResultList((prevState) => [...prevState, ...list]);
-        setCursor(prev => prev + 1);
+        setCursor((prev) => prev + 1);
         setHasMore(res.data.length > 0);
       })
       .finally(() => {
@@ -71,7 +70,7 @@ export const SearchPage = () => {
 
   const [lastElementRef] = useInfiniteScroll(
     hasMore ? () => getList({}) : () => {},
-    isFetching,
+    isFetching
   );
 
   const goPrev = useCallback(
@@ -100,28 +99,35 @@ export const SearchPage = () => {
   return (
     <div className="h-[100vh] flex flex-col">
       <div className="p-4 bg-background">
-        <Input ref={inputRef} type="search" placeholder="Search content..." onChange={handleSearch} />
+        <Input
+          ref={inputRef}
+          type="search"
+          placeholder="Search content..."
+          onChange={handleSearch}
+        />
       </div>
       <Separator />
       <div className="overflow-auto flex-1">
-        <SearchResult query={query} resultList={resultList} />
-        <div ref={loadRef}>
-          {isFetching && (
-            <div className="p-3 pl-6 grid gap-1 relative">
-              <Skeleton className="h-5 w-full" />
-              <div>
-                <Skeleton className="h-3 w-full" />
+        <div className="max-w-[840px] m-auto py-4">
+          <SearchResult query={query} resultList={resultList} />
+          <div ref={loadRef}>
+            {isFetching && (
+              <div className="p-3 pl-6 grid gap-1 relative">
+                <Skeleton className="h-5 w-full" />
+                <div>
+                  <Skeleton className="h-3 w-full" />
+                </div>
+                <div>
+                  <Skeleton className="h-3 w-full m-[-2px]" />
+                </div>
+                <div>
+                  <Skeleton className="h-3 w-32" />
+                </div>
               </div>
-              <div>
-                <Skeleton className="h-3 w-full m-[-2px]" />
-              </div>
-              <div>
-                <Skeleton className="h-3 w-32" />
-              </div>
-            </div>
-          )}
+            )}
+          </div>
+          <div ref={lastElementRef}></div>
         </div>
-        <div ref={lastElementRef}></div>
       </div>
       <div className="p-4"></div>
     </div>

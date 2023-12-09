@@ -129,6 +129,7 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
             whiteList: {
               ...getDefaultWhiteList(),
               iframe:[],
+              button: [],
             }
           }));
 
