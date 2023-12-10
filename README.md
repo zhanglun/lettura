@@ -1,12 +1,14 @@
 
 <p align="center">
-  <img src="./logo.svg" width="360px"/>
+  <img src="./src/logo.svg" width="360px"/>
 </p>
 <h1 align="center">Lettura</h1>
 
 Another free and open-source feed reader for macOS and Window.
 
 <a href="https://www.producthunt.com/posts/lettura?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-lettura" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=414450&theme=light" alt="Lettura - Follow&#0032;your&#0032;favorite&#0032;content&#0032;and&#0032;never&#0032;miss&#0032;a&#0032;story | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
+
+<a href="https://www.buymeacoffee.com/zhanglun"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=zhanglun&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff" /></a>
 
 It supports RSS, Atom.
 
