@@ -314,10 +314,10 @@ impl Article {
       .load::<models::Article>(&mut connection)
       .unwrap_or(vec![]);
 
-    if result.len() == 1 {
-      return result.pop();
+    return if result.len() == 1 {
+      result.pop()
     } else {
-      return None;
+      None
     }
   }
 

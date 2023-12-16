@@ -1,10 +1,9 @@
+import { useEffect } from "react";
 import { Outlet, useMatch, useNavigate } from "react-router-dom";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-
 import { ChannelList } from "../../components/Subscribes";
 import { useBearStore } from "@/stores";
-import { useEffect } from "react";
 import { RouteConfig } from "@/config";
 
 export function LocalPage() {
@@ -28,10 +27,6 @@ export function LocalPage() {
       );
     }
   }, [matched]);
-
-  useEffect(() => {
-
-  }, []);
 
   return (
     <div className="flex flex-row h-full">

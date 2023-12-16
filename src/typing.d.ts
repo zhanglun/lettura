@@ -20,6 +20,7 @@ declare interface UserConfig {
   threads?: number;
   theme?: string;
   update_interval?: number;
+  last_sync_time?: Date;
   local_proxy?: LocalProxy;
   customize_style?: CustomizeStyle;
 

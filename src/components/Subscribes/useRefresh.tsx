@@ -8,7 +8,6 @@ export const useRefresh = () => {
   const store = useBearStore((state) => ({
     userConfig: state.userConfig,
 
-    lastSyncTime: state.lastSyncTime,
     setLastSyncTime: state.setLastSyncTime,
 
     feedList: state.feedList,
@@ -28,7 +27,8 @@ export const useRefresh = () => {
   };
 
   const loadAndUpdate = (channel: FeedResItem) => {
-    return store.syncArticles(channel)
+    return store
+      .syncArticles(channel)
       .then(() => {
         return Promise.resolve();
       })
@@ -50,12 +50,13 @@ export const useRefresh = () => {
     setRefreshing(true);
 
     dataAgent.getUserConfig().then(({ data: config }) => {
+      console.log("set last sync time");
+      store.setLastSyncTime(new Date());
+
       const { threads = 5 } = config;
       const limit = pLimit(threads);
       const fns = (store.feedList || []).map((channel: any) => {
-        return limit(() =>
-          loadAndUpdate(channel)
-        );
+        return limit(() => loadAndUpdate(channel));
       });
 
       Promise.all(fns)
@@ -83,14 +84,31 @@ export const useRefresh = () => {
   }
 
   useEffect(() => {
-    startRefresh();
+    console.log(
+      "%c Line:88 🎂 lastSyncTime",
+      "color:#f5ce50",
+      store.userConfig.last_sync_time
+    );
+    console.log(
+      "%c Line:89 🍣 store.userConfig.update_interval",
+      "color:#e41a6a",
+      store.userConfig.update_interval
+    );
+
+    if (
+      store.userConfig.update_interval && store.userConfig.last_sync_time &&
+      new Date().getTime() - new Date(store.userConfig.last_sync_time).getTime() >
+        store.userConfig.update_interval * 60 * 60 * 1000
+    ) {
+      startRefresh();
+    }
 
     loop();
 
     return () => {
-      clearTimeout(timeRef.current)
-    }
-  }, [])
+      clearTimeout(timeRef.current);
+    };
+  }, [store.userConfig.update_interval]);
 
   return [
     store.feedList,

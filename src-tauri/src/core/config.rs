@@ -1,5 +1,6 @@
 use dotenv::dotenv;
 use log::log;
+use chrono::{Local, DateTime, TimeZone, Utc, NaiveDateTime};
 use serde::{Deserialize, Serialize};
 use std::{env, fs, path, path::PathBuf};
 use toml;
@@ -57,11 +58,14 @@ macro_rules! generate_set_property {
 pub struct UserConfig {
   pub threads: i32,
   pub theme: String,
+
   pub update_interval: u64,
+  pub last_sync_time: NaiveDateTime,
+
   pub local_proxy: Option<LocalProxy>,
   pub customize_style: CustomizeStyle,
   pub purge_on_days: u64,
-  pub purge_unread_articles: bool,
+  pub purge_unread_articles: bool
 }
 
 impl Default for UserConfig {
@@ -70,6 +74,7 @@ impl Default for UserConfig {
       threads: 1,
       theme: String::from('1'),
       update_interval: 0,
+      last_sync_time: NaiveDateTime::from_timestamp_opt(0, 0).unwrap(),
       local_proxy: None,
       customize_style: CustomizeStyle::default(),
       purge_on_days: 0,
@@ -187,6 +192,10 @@ pub fn load_or_initial() -> Option<UserConfig> {
     data.insert(String::from("update_interval"), toml::Value::try_from::<i32>(0).unwrap());
   }
 
+  if !data.contains_key("last_sync_time") {
+    data.insert(String::from("last_sync_time"), toml::Value::try_from::<NaiveDateTime>(Local::now().naive_local()).unwrap());
+  }
+
   if !data.contains_key("purge_on_days") {
     data.insert(String::from("purge_on_days"), toml::Value::try_from::<u64>(0).unwrap());
   }
@@ -201,7 +210,7 @@ pub fn load_or_initial() -> Option<UserConfig> {
 }
 
 pub fn update_proxy(ip: String, port: String) -> usize {
-  let mut data = match get_user_config() {
+  let data = match get_user_config() {
     Some(data) => data,
     None => UserConfig::default(),
   };
@@ -232,7 +241,7 @@ pub fn update_threads(threads: i32) -> usize {
 }
 
 pub fn update_theme(theme: String) -> usize {
-  let mut data = match get_user_config() {
+  let data = match get_user_config() {
     Some(data) => data,
     None => UserConfig::default(),
   };
@@ -253,9 +262,7 @@ pub fn update_theme(theme: String) -> usize {
 }
 
 pub fn update_interval(interval: u64) -> usize {
-  let data = get_user_config();
-
-  let mut data = match data {
+  let data = match get_user_config() {
     Some(data) => data,
     None => UserConfig::default(),
   };
