@@ -78,6 +78,8 @@ export const useArticleListHook = (props: {
 
       if (res.length === 0) {
         setHasMore(false);
+      } else {
+        store.setCursor(cursor);
       }
     })
       .finally(() => {
@@ -95,7 +97,7 @@ export const useArticleListHook = (props: {
 
       setHasMore(true);
 
-      getList({ cursor: 1});
+      getList({ cursor: 1 });
     }
   }, [feedUuid, store.currentFilter, isToday, isAll]);
 
@@ -121,7 +123,6 @@ export const useArticleListHook = (props: {
           store.articleList.length
         ) {
           console.log("interaction update cursor ====>");
-          store.setCursor(store.cursor + 1);
           getList({ cursor: store.cursor + 1 });
         } else if (entry.isIntersecting && store.articleList.length === 0) {
           store.setCursor(1);
@@ -151,7 +152,12 @@ export const useArticleListHook = (props: {
   const goNext = useCallback(
     throttle(() => {
       console.warn("goNext");
-      store.goNextArticle();
+      const [shouldLoad] = store.goNextArticle();
+
+      if (shouldLoad) {
+        getList({ cursor: store.cursor + 1 });
+      }
+
     }, 300),
     []
   );

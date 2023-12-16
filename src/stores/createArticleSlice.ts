@@ -181,7 +181,7 @@ export const createArticleSlice: StateCreator<
     get().updateArticleAndIdx(articleList[cur], cur);
   },
 
-  goNextArticle() {
+  goNextArticle(): [shouldLoad: boolean] {
     let cur = -1;
     let currentIdx = get().currentIdx;
     let articleList = get().articleList;
@@ -200,9 +200,13 @@ export const createArticleSlice: StateCreator<
     if (cur === articleList.length - 1) {
       console.error("%c Line:194 🥖 cur", "color:#ed9ec7", "到底了");
       get().setCursor(get().cursor + 1);
+
+      return [true];
     } else {
       get().updateArticleAndIdx(articleList[cur], cur);
     }
+
+    return [false];
   },
 
   currentIdx: 0,
