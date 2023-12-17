@@ -10,10 +10,9 @@ extern crate dotenv;
 
 use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 use log::LevelFilter;
-use serde::{Deserialize, Serialize};
 use tauri::{GlobalWindowEvent, Manager, WindowEvent, Wry};
 use tauri_plugin_log::{fern, LogTarget};
-use tokio::{self, sync::mpsc};
+use tokio;
 
 mod cmd;
 mod core;

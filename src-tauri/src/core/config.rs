@@ -1,6 +1,6 @@
 use dotenv::dotenv;
 use log::log;
-use chrono::{Local, DateTime, TimeZone, Utc, NaiveDateTime};
+use chrono::{DateTime, TimeZone, Utc};
 use serde::{Deserialize, Serialize};
 use std::{env, fs, path, path::PathBuf};
 use toml;
@@ -60,7 +60,7 @@ pub struct UserConfig {
   pub theme: String,
 
   pub update_interval: u64,
-  pub last_sync_time: NaiveDateTime,
+  pub last_sync_time: String,
 
   pub local_proxy: Option<LocalProxy>,
   pub customize_style: CustomizeStyle,
@@ -74,7 +74,7 @@ impl Default for UserConfig {
       threads: 1,
       theme: String::from('1'),
       update_interval: 0,
-      last_sync_time: NaiveDateTime::from_timestamp_opt(0, 0).unwrap(),
+      last_sync_time: Utc.timestamp_millis_opt(0).unwrap().to_rfc3339_opts(chrono::SecondsFormat::Secs, true),
       local_proxy: None,
       customize_style: CustomizeStyle::default(),
       purge_on_days: 0,
@@ -193,7 +193,7 @@ pub fn load_or_initial() -> Option<UserConfig> {
   }
 
   if !data.contains_key("last_sync_time") {
-    data.insert(String::from("last_sync_time"), toml::Value::try_from::<NaiveDateTime>(Local::now().naive_local()).unwrap());
+    data.insert(String::from("last_sync_time"), toml::Value::try_from::<String>(Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Secs, true)).unwrap());
   }
 
   if !data.contains_key("purge_on_days") {
