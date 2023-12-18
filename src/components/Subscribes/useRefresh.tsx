@@ -37,7 +37,6 @@ export const useRefresh = () => {
       .syncArticles(channel)
       .then(() => {
         if (store.feed && store.feed.uuid === channel.uuid) {
-          alert(`更新当前文章列表${store.feed.title}`);
           setFeedType(store.feed.item_type);
           setFeedUuid(store.feed.uuid);
           getList({ cursor: 1});

@@ -104,13 +104,11 @@ const ChannelList = (): JSX.Element => {
   const reloadFeedIcon = (feed: FeedResItem | null) => {
     feed &&
       dataAgent.updateIcon(feed.uuid, feed.link).then((res) => {
-        console.log("%c Line:139 🍷 res", "color:#ea7e5c", res);
         feed.logo = res;
       });
   };
 
   const reloadFeedData = (feed: FeedResItem | null) => {
-    console.log("🚀 ~ file: index.tsx:96 ~ reloadFeedData ~ feed:", feed);
     const a = toast({
       title: "Start reloading, Please wait",
       duration: 100000,
@@ -381,7 +379,7 @@ const ChannelList = (): JSX.Element => {
                 markAllRead();
               }}
             >
-              <CheckCheck size={14} className="mr-2"/> Mark all as read
+              <CheckCheck size={14} className="mr-2" /> Mark all as read
             </ContextMenuItem>
             <ContextMenuSeparator />
             {store.feedContextMenuTarget?.item_type === "folder" && (
@@ -389,14 +387,14 @@ const ChannelList = (): JSX.Element => {
                 <ContextMenuItem
                   onSelect={() => setEditFolderDialogStatus(true)}
                 >
-                 <Pencil size={14} className="mr-2" /> Edit folder
+                  <Pencil size={14} className="mr-2" /> Edit folder
                 </ContextMenuItem>
                 <ContextMenuSeparator />
                 <ContextMenuItem
                   onClick={() => setDeleteFolderStatus(true)}
                   className="text-red-600"
                 >
-                 <Trash2 size={14} className="mr-2" /> Delete folder
+                  <Trash2 size={14} className="mr-2" /> Delete folder
                 </ContextMenuItem>
               </>
             )}
@@ -410,7 +408,7 @@ const ChannelList = (): JSX.Element => {
                         open(store.feedContextMenuTarget?.link)
                       }
                     >
-                     <ExternalLink size={14} className="mr-2" /> Open Home Page
+                      <ExternalLink size={14} className="mr-2" /> Open Home Page
                     </ContextMenuItem>
                     <ContextMenuSeparator />
                     <ContextMenuItem

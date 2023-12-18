@@ -16,148 +16,148 @@ import {
 export const List = () => {
   const store = useBearStore((state) => ({
     getFeedList: state.getFeedList,
+    setFeedList: state.setFeedList,
     feedList: state.feedList,
     feed: state.feed,
     openFolder: state.openFolder,
     closeFolder: state.closeFolder,
   }));
   const [treeData, setTreeData] = useState<TreeItem[]>([]);
-  const moveItem = useCallback(
-    (dragItem: TreeItem, dropResult: TreeItem, position: string | null) => {
-      const dragUuid = dragItem.uuid;
-      const dropUuid = dropResult.uuid;
-      let list = [...treeData];
-      let dragIndex = treeData.findIndex((item) => item.uuid === dragUuid);
-      let dropIndex = treeData.findIndex((item) => item.uuid === dropUuid);
+  const moveItem = (
+    dragItem: TreeItem,
+    dropResult: TreeItem,
+    position: string | null
+  ): TreeItem[] => {
+    const dragUuid = dragItem.uuid;
+    const dropUuid = dropResult.uuid;
+    let list = [...treeData];
+    let dragIndex = treeData.findIndex((item) => item.uuid === dragUuid);
+    let dropIndex = treeData.findIndex((item) => item.uuid === dropUuid);
 
-      const dragItemParent = getParent(list, dragUuid);
-      const dropItemParent = getParent(list, dropUuid);
+    const dragItemParent = getParent(list, dragUuid);
+    const dropItemParent = getParent(list, dropUuid);
 
-      if (dragUuid == dropUuid || dragUuid === dropItemParent?.uuid) {
-        return false;
-      }
-
-      if (
-        (dragItemParent && dropItemParent) ||
-        (dragItemParent &&
-          !dropItemParent &&
-          dropResult.item_type === "folder" &&
-          position === "middle")
-      ) {
-        // from folder to folder
-        console.log("%c Line:58 🍑 from folder to folder", "color:#ffdd4d");
-        const [dragItemParentIndex] = findFolderAndIndex(
-          treeData,
-          dragItemParent.uuid
-        );
-        const [dropItemParentIndex] = findFolderAndIndex(
-          treeData,
-          dropItemParent?.uuid || dropResult.uuid
-        );
-
-        dragItemParent.children = removeItem(dragItemParent.children, dragUuid);
-        const indexInFolder = (dropItemParent || dropResult).children.findIndex(
-          (item) => item.uuid === dragUuid
-        );
-        (dropItemParent || dropResult).children = update(
-          (dropItemParent || dropResult).children,
-          {
-            $splice: [
-              [indexInFolder, indexInFolder > -1 ? 1 : 0],
-              [
-                adjustedTargetIndex(dropIndex, indexInFolder, position),
-                0,
-                dragItem as FeedResItem,
-              ],
-            ],
-          }
-        );
-
-        list[dragItemParentIndex] = dragItemParent;
-        list[dropItemParentIndex] = dropItemParent || dropResult;
-      } else if (dragItemParent && !dropItemParent) {
-        // from folder to global
-        const [dragItemParentIndex] = findFolderAndIndex(
-          treeData,
-          dragItemParent.uuid
-        );
-        const [dropItemParentIndex] = findFolderAndIndex(
-          treeData,
-          dropResult.uuid
-        );
-
-        dragItemParent.children = removeItem(dragItemParent.children, dragUuid);
-        list[dragItemParentIndex] = dragItemParent;
-        list = update(list, {
-          $splice: [
-            [
-              adjustedTargetIndex(dropItemParentIndex, -1, position),
-              0,
-              dragItem,
-            ],
-          ],
-        });
-      } else if (
-        (!dragItemParent && dropItemParent) ||
-        (!dragItemParent &&
-          !dropItemParent &&
-          dragItem.item_type === "channel" &&
-          dropResult.item_type === "folder")
-      ) {
-        const [dropItemParentIndex] = findFolderAndIndex(
-          treeData,
-          dropItemParent?.uuid || dropResult.uuid
-        );
-
-        const indexInFolder = (dropItemParent || dropResult).children.findIndex(
-          (item) => item.uuid === dragUuid
-        );
-
-        dragItem.folder_uuid = dropItemParent?.uuid || dropResult.uuid;
-        (dropItemParent || dropResult).children = update(
-          (dropItemParent || dropResult).children,
-          {
-            $splice: [
-              [indexInFolder, indexInFolder > -1 ? 1 : 0],
-              [
-                adjustedTargetIndex(dropIndex, indexInFolder, position),
-                0,
-                dragItem as FeedResItem,
-              ],
-            ],
-          }
-        );
-
-        list[dropItemParentIndex] = dropItemParent || dropResult;
-        list = update(list, {
-          $splice: [[dragIndex, 1]],
-        });
-        // from global to folder
-      } else if (!dragItemParent && !dropItemParent) {
-        list = update(list, {
-          $splice: [
-            [dragIndex, 1],
-            [adjustedTargetIndex(dropIndex, dragIndex, position), 0, dragItem],
-          ],
-        });
-      }
-
-      console.log("%c Line:225 🍧 list", "color:#2eafb0", list);
-
-      setTreeData(list);
-
+    if (dragUuid == dropUuid || dragUuid === dropItemParent?.uuid) {
       return list;
-    },
-    [treeData]
-  );
+    }
 
-  const onSubscribeItemDrop = useCallback(
-    (dragItem: TreeItem, dropResult: TreeItem, position: string | null) => {
-      let list = moveItem(dragItem, dropResult, position);
-      requestUpdateOrder(list || []);
-    },
-    [treeData]
-  );
+    if (
+      (dragItemParent && dropItemParent) ||
+      (dragItemParent &&
+        !dropItemParent &&
+        dropResult.item_type === "folder" &&
+        position === "middle")
+    ) {
+      // from folder to folder
+      console.log("%c Line:58 🍑 from folder to folder", "color:#ffdd4d");
+      const [dragItemParentIndex] = findFolderAndIndex(
+        treeData,
+        dragItemParent.uuid
+      );
+      const [dropItemParentIndex] = findFolderAndIndex(
+        treeData,
+        dropItemParent?.uuid || dropResult.uuid
+      );
+
+      dragItemParent.children = removeItem(dragItemParent.children, dragUuid);
+      const indexInFolder = (dropItemParent || dropResult).children.findIndex(
+        (item) => item.uuid === dragUuid
+      );
+      (dropItemParent || dropResult).children = update(
+        (dropItemParent || dropResult).children,
+        {
+          $splice: [
+            [indexInFolder, indexInFolder > -1 ? 1 : 0],
+            [
+              adjustedTargetIndex(dropIndex, indexInFolder, position),
+              0,
+              dragItem as FeedResItem,
+            ],
+          ],
+        }
+      );
+
+      list[dragItemParentIndex] = dragItemParent;
+      list[dropItemParentIndex] = dropItemParent || dropResult;
+    } else if (dragItemParent && !dropItemParent) {
+      // from folder to global
+      const [dragItemParentIndex] = findFolderAndIndex(
+        treeData,
+        dragItemParent.uuid
+      );
+      const [dropItemParentIndex] = findFolderAndIndex(
+        treeData,
+        dropResult.uuid
+      );
+
+      dragItemParent.children = removeItem(dragItemParent.children, dragUuid);
+      list[dragItemParentIndex] = dragItemParent;
+      list = update(list, {
+        $splice: [
+          [adjustedTargetIndex(dropItemParentIndex, -1, position), 0, dragItem],
+        ],
+      });
+    } else if (
+      (!dragItemParent && dropItemParent) ||
+      (!dragItemParent &&
+        !dropItemParent &&
+        dragItem.item_type === "channel" &&
+        dropResult.item_type === "folder")
+    ) {
+      const [dropItemParentIndex] = findFolderAndIndex(
+        treeData,
+        dropItemParent?.uuid || dropResult.uuid
+      );
+
+      const indexInFolder = (dropItemParent || dropResult).children.findIndex(
+        (item) => item.uuid === dragUuid
+      );
+
+      dragItem.folder_uuid = dropItemParent?.uuid || dropResult.uuid;
+      (dropItemParent || dropResult).children = update(
+        (dropItemParent || dropResult).children,
+        {
+          $splice: [
+            [indexInFolder, indexInFolder > -1 ? 1 : 0],
+            [
+              adjustedTargetIndex(dropIndex, indexInFolder, position),
+              0,
+              dragItem as FeedResItem,
+            ],
+          ],
+        }
+      );
+
+      list[dropItemParentIndex] = dropItemParent || dropResult;
+      list = update(list, {
+        $splice: [[dragIndex, 1]],
+      });
+      // from global to folder
+    } else if (!dragItemParent && !dropItemParent) {
+      list = update(list, {
+        $splice: [
+          [dragIndex, 1],
+          [adjustedTargetIndex(dropIndex, dragIndex, position), 0, dragItem],
+        ],
+      });
+    }
+
+    console.log("%c Line:225 🍧 list", "color:#2eafb0", list);
+
+    setTreeData(() => list);
+    store.setFeedList(list);
+
+    return list;
+  };
+
+  const onSubscribeItemDrop = (
+    dragItem: TreeItem,
+    dropResult: TreeItem,
+    position: string | null
+  ) => {
+    let list = moveItem(dragItem, dropResult, position);
+    requestUpdateOrder(list);
+  };
 
   const requestUpdateOrder = (list: FeedResItem[]) => {
     const body = list.reduce(
@@ -200,29 +200,25 @@ export const List = () => {
     });
   };
 
-  const toggleFolder = useCallback(
-    (folderId: string) => {
-      const newTreeData = [...treeData];
-      console.log("newTreeData ===? ", newTreeData);
-      const folder = findItemDeep(newTreeData, folderId);
+  const toggleFolder = (folderId: string) => {
+    const newTreeData = [...treeData];
+    const folder = findItemDeep(newTreeData, folderId);
 
-      if (!folder || folder.item_type !== "folder") {
-        return;
-      }
+    if (!folder || folder.item_type !== "folder") {
+      return;
+    }
 
-      folder.is_expanded = !folder.is_expanded;
+    folder.is_expanded = !folder.is_expanded;
 
-      folder.is_expanded
-        ? store.openFolder(folderId)
-        : store.closeFolder(folderId);
+    // setTreeData([...newTreeData]);
 
-      console.log("newTreeData ===< ", newTreeData);
-      // setTreeData([...newTreeData]);
-    },
-    [treeData]
-  );
+    folder.is_expanded
+      ? store.openFolder(folderId)
+      : store.closeFolder(folderId);
+  };
 
-  const renderList = useCallback(() => {
+  const renderList = () => {
+    console.log("rerender render list", treeData);
     const renderFeed = (feed: TreeItem, index: number, level = 1) => {
       const isActive = store?.feed?.uuid === feed.uuid;
 
@@ -248,7 +244,7 @@ export const List = () => {
     };
 
     return treeData.map((feed, i) => renderFeed(feed, i));
-  }, [treeData, store.feed]);
+  };
 
   useEffect(() => {
     setTreeData([...store.feedList] as TreeItem[]);

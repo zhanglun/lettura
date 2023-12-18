@@ -32,6 +32,7 @@ export interface FeedSlice {
   setFeed: (feed: FeedResItem | null) => void;
   updateFeed: (uuid: string, updater: any) => void;
   feedList: FeedResItem[];
+  setFeedList: (list: FeedResItem[]) => void;
   getFeedList: () => any;
 
   feedContextMenuTarget: FeedResItem | null;
@@ -163,6 +164,11 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
     }
   },
   feedList: [],
+  setFeedList: (list: FeedResItem[])=> {
+    set(() => ({
+      feedList: list
+    }))
+  },
   updateFeed: (uuid: string, updater: any) => {
     set((state) => ({
       feedList: state.feedList.map((feed) => {
