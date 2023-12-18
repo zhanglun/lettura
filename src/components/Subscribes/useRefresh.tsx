@@ -3,6 +3,7 @@ import pLimit from "p-limit";
 import { FeedResItem } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
 import { useBearStore } from "@/stores";
+import { useArticleListHook } from "../ArticleList/hooks";
 
 export const useRefresh = () => {
   const store = useBearStore((state) => ({
@@ -13,12 +14,17 @@ export const useRefresh = () => {
     feedList: state.feedList,
     getFeedList: state.getFeedList,
     updateFeed: state.updateFeed,
+    feed: state.feed,
 
     collectionMeta: state.collectionMeta,
     updateCollectionMeta: state.updateCollectionMeta,
     syncArticles: state.syncArticles,
   }));
   const [refreshing, setRefreshing] = useState<boolean>(false);
+  const { getList, setFeedUuid, setFeedType } = useArticleListHook({
+    uuid: "",
+    type: "",
+  });
   const [done, setDone] = useState<number>(0);
   const timeRef = useRef<any>();
 
@@ -30,6 +36,12 @@ export const useRefresh = () => {
     return store
       .syncArticles(channel)
       .then(() => {
+        if (store.feed && store.feed.uuid === channel.uuid) {
+          alert(`更新当前文章列表${store.feed.title}`);
+          setFeedType(store.feed.item_type);
+          setFeedUuid(store.feed.uuid);
+          getList({ cursor: 1});
+        }
         return Promise.resolve();
       })
       .catch((err: any) => {
@@ -96,8 +108,10 @@ export const useRefresh = () => {
     );
 
     if (
-      store.userConfig.update_interval && store.userConfig.last_sync_time &&
-      new Date().getTime() - new Date(store.userConfig.last_sync_time).getTime() >
+      store.userConfig.update_interval &&
+      store.userConfig.last_sync_time &&
+      new Date().getTime() -
+        new Date(store.userConfig.last_sync_time).getTime() >
         store.userConfig.update_interval * 60 * 60 * 1000
     ) {
       startRefresh();

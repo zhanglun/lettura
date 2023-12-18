@@ -95,7 +95,6 @@ export const getArticleList = async (
     },
   });
 
-  console.log(req);
   return req;
 };
 

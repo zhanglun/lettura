@@ -52,11 +52,9 @@ export const createArticleSlice: StateCreator<
   },
 
   getArticleList: (uuid: string, type: string | null, filter: any) => {
-    console.log("%c Line:75 🍰 filter", "color:#fca650", filter);
     const currentList = get().articleList;
 
     return dataAgent.getArticleList(uuid, type, filter).then((res) => {
-      console.log("res ====?", res);
       const { list } = res.data as { list: ArticleResItem[] };
 
       get().setArticleList([...currentList, ...list]);

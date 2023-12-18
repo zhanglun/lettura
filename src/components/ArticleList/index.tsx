@@ -29,7 +29,7 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
   }));
 
   const { listRef, loadRef, loading, hasMore } = useArticleListHook({
-    feedUuid,
+    uuid: feedUuid,
     type,
   });
 

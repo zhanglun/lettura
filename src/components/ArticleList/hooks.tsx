@@ -25,10 +25,10 @@ function throttle(fn: any, wait: number) {
 }
 
 export const useArticleListHook = (props: {
-  feedUuid: string | null;
+  uuid: string | null;
   type: string | null;
 }) => {
-  const { feedUuid, type } = props;
+  const { uuid, type } = props;
 
   const isToday = useMatch(RouteConfig.LOCAL_TODAY);
   const isAll = useMatch(RouteConfig.LOCAL_ALL);
@@ -48,10 +48,13 @@ export const useArticleListHook = (props: {
     setCursor: state.setCursor,
   }));
 
+  const [feedUuid, setFeedUuid] = useState(uuid);
+  const [feedType, setFeedType] = useState(type);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const listRef = useRef<HTMLDivElement>(null);
   const loadRef = useRef<HTMLDivElement>(null);
+
   const getList = ({ cursor }: { cursor: number }) => {
     const filter: { read_status?: number; cursor: number; limit?: number } = {
       read_status: store.currentFilter.id,
@@ -62,7 +65,7 @@ export const useArticleListHook = (props: {
     let fn = Promise.resolve();
 
     if (feedUuid) {
-      fn = store.getArticleList(feedUuid, type, filter);
+      fn = store.getArticleList(feedUuid, feedType, filter);
     } else if (isToday) {
       fn = store.getTodayArticleList(filter);
     } else if (isAll) {
@@ -74,8 +77,6 @@ export const useArticleListHook = (props: {
     setLoading(true);
 
     fn.then((res: any) => {
-      console.log("res ===> ", feedUuid, res);
-
       if (res.length === 0) {
         setHasMore(false);
       } else {
@@ -89,6 +90,14 @@ export const useArticleListHook = (props: {
         console.log("%c Line:71 🍎 err", "color:#ffdd4d", err);
       });
   };
+
+  useEffect(() => {
+    setFeedUuid(uuid);
+  }, [uuid]);
+
+  useEffect(() => {
+    setFeedType(type);
+  }, [type]);
 
   useEffect(() => {
     if (feedUuid || isToday || isAll) {
@@ -157,7 +166,6 @@ export const useArticleListHook = (props: {
       if (shouldLoad) {
         getList({ cursor: store.cursor + 1 });
       }
-
     }, 300),
     []
   );
@@ -175,5 +183,7 @@ export const useArticleListHook = (props: {
     loadRef,
     isToday,
     isAll,
+    setFeedUuid,
+    setFeedType,
   };
 };

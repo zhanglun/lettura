@@ -15,7 +15,7 @@ export const ArticleLineList = (props: ArticleListProps): JSX.Element => {
     articleList: state.articleList,
   }));
   const { listRef, loadRef, loading, hasMore } = useArticleListHook({
-    feedUuid,
+    uuid: feedUuid,
     type,
   });
 
