@@ -3,8 +3,13 @@ import { CheckCircle2, Circle, ExternalLink, Link, Star } from "lucide-react";
 import { ArticleResItem } from "@/db";
 import clsx from "clsx";
 import { useEffect, useState } from "react";
+import { open } from "@tauri-apps/api/shell";
 import { Icon } from "@/components/Icon";
 import { getBestImages } from "@/helpers/parseXML";
+import * as dataAgent from "@/helpers/dataAgent";
+import { ArticleReadStatus } from "@/typing";
+import { TooltipBox } from "@/components/TooltipBox";
+import { useToast } from "@/components/ui/use-toast";
 
 export interface ResultItemProps {
   article: ArticleResItem;
@@ -12,11 +17,45 @@ export interface ResultItemProps {
 }
 export function ResultItem(props: ResultItemProps) {
   const { article } = props;
+  const { toast } = useToast();
   const [readStatus, setReadStatus] = useState(article.read_status);
   const [banner, setBanner] = useState("");
 
   function handleClick() {
     props.onView(article);
+
+    if (article.read_status === ArticleReadStatus.UNREAD) {
+      dataAgent
+        .updateArticleReadStatus(article.uuid, ArticleReadStatus.READ)
+        .then(() => {
+          article.read_status = ArticleReadStatus.READ;
+          console.log(
+            "%c Line:26 🍑 article.read_status",
+            "color:#b03734",
+            article.read_status
+          );
+          setReadStatus(ArticleReadStatus.READ);
+        });
+    }
+  }
+
+  function handleCopyLink() {
+    const { link } = article;
+
+    navigator.clipboard.writeText(link).then(
+      function () {
+        toast({
+          description: "Copied",
+        });
+      },
+      function (err) {
+        console.error("Async: Could not copy text: ", err);
+      }
+    );
+  }
+
+  function openInBrowser() {
+    article && open(article?.link);
   }
 
   useEffect(() => {
@@ -45,12 +84,14 @@ export function ResultItem(props: ResultItemProps) {
         "list-none rounded-sm p-3 pl-6 grid gap-1 relative select-none",
         "group hover:bg-accent hover:cursor-pointer",
         {
-          "text-[hsl(var(--foreground)_/_80%)]": readStatus === 2,
+          "text-foreground": readStatus === ArticleReadStatus.UNREAD,
+          "text-[hsl(var(--foreground)_/_80%)]":
+            readStatus === ArticleReadStatus.READ,
         }
       )}
       onClick={handleClick}
     >
-      <div className="w-full text-base font-medium text-foreground text-ellipsis overflow-hidden whitespace-nowrap leading-7">
+      <div className="w-full text-base font-medium text-ellipsis overflow-hidden whitespace-nowrap leading-7">
         {article.title}
       </div>
       <div className="text-sm text-muted-foreground leading-6">
@@ -65,7 +106,7 @@ export function ResultItem(props: ResultItemProps) {
             ></div>
           </div>
         )}
-        <div className="flex-1 text-sm text-foreground my-1 line-clamp-3">
+        <div className="flex-1 text-sm text-foreground my-1 line-clamp-5">
           {article.description.replace(/(<([^>]+)>)/gi, "")}
         </div>
       </div>
@@ -90,12 +131,16 @@ export function ResultItem(props: ResultItemProps) {
               <CheckCircle2 strokeWidth={1} size={20} />
             </Icon>
           )}
-          <Icon className="w-7 h-7">
-            <ExternalLink strokeWidth={1} size={20} />
-          </Icon>
-          <Icon className="w-7 h-7">
-            <Link strokeWidth={1} size={20} />
-          </Icon>
+          <TooltipBox content="Open in browser">
+            <Icon className="w-7 h-7" onClick={openInBrowser}>
+              <ExternalLink strokeWidth={1} size={20} />
+            </Icon>
+          </TooltipBox>
+          <TooltipBox content="Copy link">
+            <Icon className="w-7 h-7" onClick={handleCopyLink}>
+              <Link strokeWidth={1} size={20} />
+            </Icon>
+          </TooltipBox>
         </div>
       </div>
     </div>

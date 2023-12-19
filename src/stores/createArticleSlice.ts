@@ -3,6 +3,7 @@ import dayjs from "dayjs";
 import { ArticleResItem } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
 import { FeedSlice } from "./createFeedSlice";
+import { ArticleReadStatus } from "@/typing";
 
 export interface ArticleSlice {
   article: ArticleResItem | null;
@@ -96,7 +97,7 @@ export const createArticleSlice: StateCreator<
       console.log("🚀 ~ file: useBearStore.ts:57 ~ useBearStore ~ idx:", idx);
     }
 
-    if (article.read_status === 1) {
+    if (article.read_status === ArticleReadStatus.UNREAD) {
       dataAgent.updateArticleReadStatus(article.uuid, 2).then((res) => {
         if (res) {
           let isToday = dayjs(
@@ -106,7 +107,7 @@ export const createArticleSlice: StateCreator<
           get().updateCollectionMeta(isToday ? -1 : 0, -1);
           get().updateUnreadCount(article.feed_uuid, "decrease", 1);
 
-          article.read_status = 2;
+          article.read_status = ArticleReadStatus.READ;
 
           set(() => ({
             article,

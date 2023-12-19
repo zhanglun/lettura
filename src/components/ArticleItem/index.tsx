@@ -4,6 +4,7 @@ import classnames from "classnames";
 import { useBearStore } from "@/stores";
 import { getChannelFavicon } from "@/helpers/parseXML";
 import { ArticleResItem } from "@/db";
+import { ArticleReadStatus } from "@/typing";
 
 export const ArticleItem = React.forwardRef(
   (props: { article: ArticleResItem }, ref: ForwardedRef<HTMLLIElement>) => {
@@ -17,8 +18,8 @@ export const ArticleItem = React.forwardRef(
     const [readStatus, setReadStatus] = useState(article.read_status);
 
     const updateCurrentArticle = (article: any) => {
-      if (article.read_status === 1) {
-        setReadStatus(2);
+      if (article.read_status === ArticleReadStatus.UNREAD) {
+        setReadStatus(ArticleReadStatus.READ);
       }
 
       store.updateArticleAndIdx(article);
@@ -44,7 +45,7 @@ export const ArticleItem = React.forwardRef(
           "list-none rounded-sm p-3 pl-6 grid gap-1 relative select-none",
           "group hover:bg-accent hover:cursor-pointer",
           {
-            "text-[hsl(var(--foreground)_/_80%)]": readStatus === 2,
+            "text-[hsl(var(--foreground)_/_80%)]": readStatus === ArticleReadStatus.READ,
             "bg-article-active-bg": highlight,
           }
         )}
@@ -52,7 +53,7 @@ export const ArticleItem = React.forwardRef(
         ref={ref}
         id={article.uuid}
       >
-        {readStatus === 1 && (
+        {readStatus === ArticleReadStatus.UNREAD && (
           <div className="absolute left-2 top-4 w-2 h-2 rounded-full bg-primary" />
         )}
         <div
