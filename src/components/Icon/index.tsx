@@ -2,7 +2,7 @@ import classNames from "classnames";
 import React, { ReactNode } from "react";
 
 export interface IconProps {
-  onClick?: () => void;
+  onClick?: any;
   children?: ReactNode;
   className?: string | undefined;
   disable?: boolean;

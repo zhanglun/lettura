@@ -39,6 +39,21 @@ export function ResultItem(props: ResultItemProps) {
     }
   }
 
+  function toggleReadStatus() {
+    let newStatus: number = 1;
+
+    if (readStatus === ArticleReadStatus.UNREAD) {
+      newStatus = ArticleReadStatus.READ;
+    } else {
+      newStatus = ArticleReadStatus.UNREAD;
+    }
+
+    dataAgent.updateArticleReadStatus(article.uuid, newStatus).then(() => {
+      article.read_status = newStatus;
+      setReadStatus(newStatus);
+    });
+  }
+
   function handleCopyLink() {
     const { link } = article;
 
@@ -121,15 +136,31 @@ export function ResultItem(props: ResultItemProps) {
           <Icon className="w-7 h-7">
             <Star strokeWidth={1} size={20} />
           </Icon>
-          {article.read_status === 1 && (
-            <Icon className="w-7 h-7">
-              <Circle strokeWidth={1} size={20} />
-            </Icon>
+          {article.read_status === ArticleReadStatus.UNREAD && (
+            <TooltipBox content="Mark as read">
+              <Icon
+                className="w-7 h-7"
+                onClick={(e: React.MouseEvent<HTMLElement>) => {
+                  e.stopPropagation();
+                  toggleReadStatus();
+                }}
+              >
+                <Circle strokeWidth={1} size={20} />
+              </Icon>
+            </TooltipBox>
           )}
-          {article.read_status === 2 && (
-            <Icon className="w-7 h-7">
-              <CheckCircle2 strokeWidth={1} size={20} />
-            </Icon>
+          {article.read_status === ArticleReadStatus.READ && (
+            <TooltipBox content="Mark as unread">
+              <Icon
+                className="w-7 h-7"
+                onClick={(e: React.MouseEvent<HTMLElement>) => {
+                  e.stopPropagation();
+                  toggleReadStatus();
+                }}
+              >
+                <CheckCircle2 strokeWidth={1} size={20} />
+              </Icon>
+            </TooltipBox>
           )}
           <TooltipBox content="Open in browser">
             <Icon className="w-7 h-7" onClick={openInBrowser}>
