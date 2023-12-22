@@ -218,7 +218,6 @@ export const List = () => {
   };
 
   const renderList = () => {
-    console.log("rerender render list", treeData);
     const renderFeed = (feed: TreeItem, index: number, level = 1) => {
       const isActive = store?.feed?.uuid === feed.uuid;
 

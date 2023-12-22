@@ -1,5 +1,5 @@
 import type { FC } from "react";
-import { useRef, useState } from "react";
+import { memo, useRef, useState } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import type { Identifier, XYCoord } from "dnd-core";
 import { FeedResItem } from "@/db";
@@ -22,7 +22,7 @@ export interface CardProps {
   onDrop: (item: any, dropResult: any, position: string | null) => void;
 }
 
-export const SubscribeItem: FC<CardProps> = ({
+export const SubscribeItem: FC<CardProps> = memo(({
   uuid,
   text,
   feed,
@@ -158,4 +158,4 @@ export const SubscribeItem: FC<CardProps> = ({
       </ItemView>
     </div>
   );
-};
+});
