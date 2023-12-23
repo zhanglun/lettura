@@ -4,6 +4,7 @@ import { FeedResItem } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
 import { useBearStore } from "@/stores";
 import { useArticleListHook } from "../ArticleList/hooks";
+import { useArticle } from "../ArticleList/useArticle";
 
 export const useRefresh = () => {
   const store = useBearStore((state) => ({
@@ -21,9 +22,9 @@ export const useRefresh = () => {
     syncArticles: state.syncArticles,
   }));
   const [refreshing, setRefreshing] = useState<boolean>(false);
-  const { getList, setFeedUuid, setFeedType } = useArticleListHook({
-    uuid: "",
-    type: "",
+  const { getList } = useArticle({
+    feedUuid: store.feed?.uuid,
+    feedType: store.feed?.item_type,
   });
   const [done, setDone] = useState<number>(0);
   const timeRef = useRef<any>();
@@ -37,8 +38,6 @@ export const useRefresh = () => {
       .syncArticles(channel)
       .then(() => {
         if (store.feed && store.feed.uuid === channel.uuid) {
-          setFeedType(store.feed.item_type);
-          setFeedUuid(store.feed.uuid);
           getList({ cursor: 1});
         }
         return Promise.resolve();

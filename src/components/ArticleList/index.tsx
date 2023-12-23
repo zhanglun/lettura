@@ -7,8 +7,8 @@ import { useAutoScroll } from "@/hooks/useAutoScroll";
 import { motion } from "framer-motion";
 
 export type ArticleListProps = {
-  feedUuid: string | null;
-  type: string | null;
+  feedUuid?: string;
+  type?: string;
   feedUrl: string | null;
   title: string | null;
 };
@@ -30,7 +30,7 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
 
   const { listRef, loadRef, loading, hasMore } = useArticleListHook({
     uuid: feedUuid,
-    type,
+    type: type,
   });
 
   useAutoScroll({ listRef });

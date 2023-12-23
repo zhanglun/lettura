@@ -38,6 +38,7 @@ import { TooltipBox } from "@/components/TooltipBox";
 import { useMatch } from "react-router-dom";
 import { RouteConfig } from "@/config";
 import { useArticleListHook } from "@/components/ArticleList/hooks";
+import { useArticle } from "@/components/ArticleList/useArticle";
 
 export const ArticleContainer = (): JSX.Element => {
   const store = useBearStore((state) => ({
@@ -66,9 +67,9 @@ export const ArticleContainer = (): JSX.Element => {
 
   const isToday = useMatch(RouteConfig.LOCAL_TODAY);
   const isAll = useMatch(RouteConfig.LOCAL_ALL);
-  const { setFeedType, setFeedUuid, getList } = useArticleListHook({
-    uuid: "",
-    type: "",
+  const { getList } = useArticle({
+    feedUuid: "",
+    feedType: "",
   });
   const { toast } = useToast();
   const [layoutType, setLayoutType] = useState(1);
@@ -152,7 +153,7 @@ export const ArticleContainer = (): JSX.Element => {
           setFeedType(store.feed.item_type);
           // @ts-ignore
           setFeedUuid(store.feed.uuid);
-          getList({ cursor: 1 });
+          getList({ cursor: 1, feed_uuid: store.feed?.uuid, item_type: store.feed?.item_type });
 
           toast({
             title: "Sync finished",

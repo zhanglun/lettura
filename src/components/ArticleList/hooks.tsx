@@ -3,6 +3,7 @@ import { useMatch } from "react-router-dom";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useBearStore } from "@/stores";
 import { RouteConfig } from "@/config";
+import { useArticle } from "./useArticle";
 
 function throttle(fn: any, wait: number) {
   let previous = 0;
@@ -25,8 +26,8 @@ function throttle(fn: any, wait: number) {
 }
 
 export const useArticleListHook = (props: {
-  uuid: string | null;
-  type: string | null;
+  uuid?: string;
+  type?: string;
 }) => {
   const { uuid, type } = props;
 
@@ -40,6 +41,7 @@ export const useArticleListHook = (props: {
     getArticleList: state.getArticleList,
     getTodayArticleList: state.getTodayArticleList,
     getAllArticleList: state.getAllArticleList,
+    feed: state.feed,
 
     goPreviousArticle: state.goPreviousArticle,
     goNextArticle: state.goNextArticle,
@@ -50,46 +52,11 @@ export const useArticleListHook = (props: {
 
   const [feedUuid, setFeedUuid] = useState(uuid);
   const [feedType, setFeedType] = useState(type);
-  const [loading, setLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
   const listRef = useRef<HTMLDivElement>(null);
   const loadRef = useRef<HTMLDivElement>(null);
 
-  const getList = ({ cursor }: { cursor: number }) => {
-    const filter: { read_status?: number; cursor: number; limit?: number } = {
-      read_status: store.currentFilter.id,
-      cursor: cursor,
-      limit: 12,
-    };
+  const {loading, hasMore, getList} = useArticle({ feedUuid: uuid, feedType: type});
 
-    let fn = Promise.resolve();
-
-    if (feedUuid) {
-      fn = store.getArticleList(feedUuid, feedType, filter);
-    } else if (isToday) {
-      fn = store.getTodayArticleList(filter);
-    } else if (isAll) {
-      fn = store.getAllArticleList(filter);
-    } else {
-      return;
-    }
-
-    setLoading(true);
-
-    fn.then((res: any) => {
-      if (res.length === 0) {
-        setHasMore(false);
-      } else {
-        store.setCursor(cursor);
-      }
-    })
-      .finally(() => {
-        setLoading(false);
-      })
-      .catch((err: any) => {
-        console.log("%c Line:71 🍎 err", "color:#ffdd4d", err);
-      });
-  };
 
   useEffect(() => {
     setFeedUuid(uuid);
@@ -102,13 +69,9 @@ export const useArticleListHook = (props: {
   useEffect(() => {
     if (feedUuid || isToday || isAll) {
       store.setArticleList([]);
-      store.setCursor(1);
-
-      setHasMore(true);
-
-      getList({ cursor: 1 });
+      getList({ cursor: 1, feed_uuid: store.feed?.uuid, item_type: store.feed?.item_type });
     }
-  }, [feedUuid, store.currentFilter, isToday, isAll]);
+  }, [feedUuid, store.currentFilter, store.feed, isToday, isAll]);
 
   useEffect(() => {
     const $rootElem = listRef.current as HTMLDivElement;
@@ -178,7 +141,6 @@ export const useArticleListHook = (props: {
     loading,
     hasMore,
     articleList: store.articleList,
-    setLoading,
     listRef,
     loadRef,
     isToday,

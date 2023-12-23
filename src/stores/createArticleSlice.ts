@@ -10,7 +10,7 @@ export interface ArticleSlice {
   setArticle: (ArticleResItem: ArticleResItem | null) => void;
   articleList: ArticleResItem[];
   setArticleList: (list: ArticleResItem[]) => void;
-  getArticleList: (uuid: string, type: string | null, filter: any) => any;
+  getArticleList: (query: any) => any;
   getTodayArticleList: (filter: any) => any;
   getAllArticleList: (filter: any) => any;
   cursor: number;
@@ -52,10 +52,10 @@ export const createArticleSlice: StateCreator<
     }));
   },
 
-  getArticleList: (uuid: string, type: string | null, filter: any) => {
+  getArticleList: (query: any) => {
     const currentList = get().articleList;
 
-    return dataAgent.getArticleList(uuid, type, filter).then((res) => {
+    return dataAgent.getArticleList(query).then((res) => {
       const { list } = res.data as { list: ArticleResItem[] };
 
       get().setArticleList([...currentList, ...list]);
