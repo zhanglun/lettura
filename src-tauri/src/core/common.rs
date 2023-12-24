@@ -81,9 +81,11 @@ impl Common {
           articles AS A
         LEFT JOIN feeds as F
         WHERE
-          A.title LIKE ?
-          AND
-          A.content LIKE ?
+          (
+            A.title LIKE ?
+            OR
+            A.content LIKE ?
+          )
           AND A.feed_uuid = F.uuid
         LIMIT ? OFFSET ?
         ;"

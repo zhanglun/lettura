@@ -1,4 +1,4 @@
-use actix_web::{get, post, web, App, HttpRequest, HttpResponse, HttpServer, Responder, Result};
+use actix_web::{get, post, web, Responder, Result};
 use serde::{Deserialize, Serialize};
 
 use crate::core;
