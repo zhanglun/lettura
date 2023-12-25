@@ -60,6 +60,8 @@ export const createArticleSlice: StateCreator<
 
       get().setArticleList([...currentList, ...list]);
 
+      console.log("%c Line:64 🥕 list", "color:#2eafb0", list);
+
       return list;
     });
   },

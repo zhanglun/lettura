@@ -47,6 +47,7 @@ import { copyText } from "@/helpers/copyText";
 import { useToast } from "@/components/ui/use-toast";
 import { DialogDeleteFolder } from "@/layout/Setting/Content/DialogDeleteFolder";
 import { ToastAction } from "@radix-ui/react-toast";
+import { useArticle } from "../ArticleList/useArticle";
 
 const ChannelList = (): JSX.Element => {
   const isToday = useMatch(RouteConfig.LOCAL_TODAY);
@@ -83,6 +84,8 @@ const ChannelList = (): JSX.Element => {
     initCollectionMetas: state.initCollectionMetas,
     syncArticles: state.syncArticles,
   }));
+
+  const { getList } = useArticle({});
 
   const [, , feedUuid] = useQuery();
 
@@ -133,6 +136,11 @@ const ChannelList = (): JSX.Element => {
             duration: 5000,
           });
         } else {
+          getList({
+            cursor: 1,
+            feed_uuid: feed.uuid,
+            item_type: feed.item_type,
+          });
           a.update({
             id: a.id,
             // @ts-ignore

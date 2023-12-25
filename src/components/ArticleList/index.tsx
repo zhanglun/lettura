@@ -3,7 +3,6 @@ import { ArticleItem } from "../ArticleItem";
 import { useBearStore } from "@/stores";
 import { useArticleListHook } from "./hooks";
 import { Skeleton } from "../ui/skeleton";
-import { useAutoScroll } from "@/hooks/useAutoScroll";
 import { motion } from "framer-motion";
 
 export type ArticleListProps = {
@@ -20,7 +19,7 @@ export interface ArticleListRefType {
   innerRef: React.RefObject<HTMLDivElement>;
 }
 
-export const ArticleList = (props: ArticleListProps): JSX.Element => {
+export const ArticleList = React.memo((props: ArticleListProps) => {
   const { feedUuid, type } = props;
   const store = useBearStore((state) => ({
     currentFilter: state.currentFilter,
@@ -33,7 +32,8 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
     type: type,
   });
 
-  useAutoScroll({ listRef });
+  console.log("%c Line:25 🥕 render articleList", "color:#33a5ff");
+  console.log("%c Line:41 🍡 store.articleList", "color:#33a5ff", store.articleList);
 
   const renderList = (): JSX.Element[] => {
     return (store.articleList || []).map((article: any, idx: number) => {
@@ -74,4 +74,4 @@ export const ArticleList = (props: ArticleListProps): JSX.Element => {
       </div>
     </div>
   );
-};
+});
