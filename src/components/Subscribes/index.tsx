@@ -150,22 +150,27 @@ const ChannelList = (): JSX.Element => {
     if (store.feedContextMenuTarget) {
       const { uuid } = store.feedContextMenuTarget;
 
-      dataAgent
-        .markAllRead({ uuid, isToday: !!isToday, isAll: !!isAll })
-        .then((res) => {
-          console.log("%c Line:98 🍷 res", "color:#465975", res);
-          getFeedList();
-          store.initCollectionMetas();
+      toast.promise(
+        dataAgent.markAllRead({ uuid, isToday: !!isToday, isAll: !!isAll }),
+        {
+          loading: "Loading...",
+          success: (data) => {
+            getFeedList();
+            store.initCollectionMetas();
 
-          if (store.feed?.uuid === uuid) {
-            store.setArticleList(
-              store.articleList.map((_) => {
-                _.read_status = 2;
-                return _;
-              })
-            );
-          }
-        });
+            if (store.feed?.uuid === uuid) {
+              store.setArticleList(
+                store.articleList.map((_) => {
+                  _.read_status = 2;
+                  return _;
+                })
+              );
+            }
+            return `Done!😀`;
+          },
+          error: "Error🤢",
+        }
+      );
     }
   };
 
@@ -399,8 +404,7 @@ const ChannelList = (): JSX.Element => {
                         store.feedContextMenuTarget?.feed_url &&
                         copyText(store.feedContextMenuTarget?.feed_url).then(
                           () =>
-                            toast({
-                              title: "Current URL copied to clipboard",
+                            toast.message("Current URL copied to clipboard", {
                               description: "Paste it wherever you like",
                             })
                         )
@@ -412,8 +416,7 @@ const ChannelList = (): JSX.Element => {
                       onClick={() =>
                         store.feedContextMenuTarget?.link &&
                         copyText(store.feedContextMenuTarget?.link).then(() =>
-                          toast({
-                            title: "Current URL copied to clipboard",
+                          toast.message("Current URL copied to clipboard", {
                             description: "Paste it wherever you like",
                           })
                         )
