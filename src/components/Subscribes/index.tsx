@@ -200,7 +200,7 @@ const ChannelList = (): JSX.Element => {
         store.setFeed(feed);
       }
     });
-  }, [feedUuid, feedList]);
+  }, [feedList]);
 
   const listRef = useRef<HTMLDivElement>(null);
   const handleListScroll = useCallback(() => {

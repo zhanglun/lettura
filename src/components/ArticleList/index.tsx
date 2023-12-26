@@ -20,7 +20,8 @@ export interface ArticleListRefType {
 }
 
 export const ArticleList = React.memo((props: ArticleListProps) => {
-  const { feedUuid, type } = props;
+  const { feedUuid, feedUrl, type, title } = props;
+  console.log("%c Line:24 🍞 feedUuid, feedUrl, type, title", "color:#e41a6a", feedUuid, feedUrl, type, title);
   const store = useBearStore((state) => ({
     currentFilter: state.currentFilter,
     setArticleList: state.setArticleList,
