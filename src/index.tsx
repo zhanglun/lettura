@@ -2,7 +2,7 @@ import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import reportWebVitals from "./reportWebVitals";
-import { Toaster } from "./components/ui/Toaster";
+import { Toaster } from "./components/ui/sonner";
 import App from "./App";
 import ErrorPage from "./ErrorPage";
 import { RouteConfig } from "./config";

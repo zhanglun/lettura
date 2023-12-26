@@ -44,7 +44,7 @@ import { useRefresh } from "./useRefresh";
 import { TooltipBox } from "../TooltipBox";
 import { ListContainer } from "./ListContainer";
 import { copyText } from "@/helpers/copyText";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { DialogDeleteFolder } from "@/layout/Setting/Content/DialogDeleteFolder";
 import { ToastAction } from "@radix-ui/react-toast";
 import { useArticle } from "../ArticleList/useArticle";
@@ -52,7 +52,6 @@ import { useArticle } from "../ArticleList/useArticle";
 const ChannelList = (): JSX.Element => {
   const isToday = useMatch(RouteConfig.LOCAL_TODAY);
   const isAll = useMatch(RouteConfig.LOCAL_ALL);
-  const { toast } = useToast();
   const navigate = useNavigate();
   const [addFolderDialogStatus, setAddFolderDialogStatus] = useModal();
   const [editFolderDialogStatus, setEditFolderDialogStatus] = useModal();
@@ -112,28 +111,21 @@ const ChannelList = (): JSX.Element => {
   };
 
   const reloadFeedData = (feed: FeedResItem | null) => {
-    const a = toast({
-      title: "Start reloading, Please wait",
-      duration: 100000,
-    });
-
     if (feed) {
+      const toastId = toast("Sonner");
+      toast.loading("Start reloading, Please wait...", {
+        id: toastId,
+      });
+
       store.syncArticles(feed).then((res) => {
         const [uuid, [title, num, message]] = Object.entries(res)[0] as [
           string,
           [string, number, string]
         ];
-
         if (message) {
-          a.update({
-            id: a.id,
-            title: "Something wrong!",
-            variant: "destructive",
+          toast.error(`Something wrong!`, {
+            id: toastId,
             description: message,
-            action: (
-              <ToastAction altText="Goto schedule to undo">Close</ToastAction>
-            ),
-            duration: 5000,
           });
         } else {
           getList({
@@ -141,31 +133,14 @@ const ChannelList = (): JSX.Element => {
             feed_uuid: feed.uuid,
             item_type: feed.item_type,
           });
-          a.update({
-            id: a.id,
-            // @ts-ignore
-            title: (
-              <div className="flex gap-2 text-green-500 items-center">
-                <CheckCircle strokeWidth={1.5} />
-                SUCCESS
-              </div>
-            ),
-            description: (
-              <div>
-                {num > 0 ? (
-                  <>
-                    We have {num} new pieces of data from {title}
-                  </>
-                ) : (
-                  <>{title} is already up to date.</>
-                )}
-              </div>
-            ),
-            action: (
-              <ToastAction altText="Goto schedule to undo">Close</ToastAction>
-            ),
-            duration: 5000,
-          });
+          toast.success(
+            num > 0
+              ? `We have ${num} new pieces of data from ${title}`
+              : `${title} is already up to date.`,
+            {
+              id: toastId,
+            }
+          );
         }
       });
     }
