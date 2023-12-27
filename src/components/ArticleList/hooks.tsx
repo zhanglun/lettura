@@ -25,12 +25,9 @@ function throttle(fn: any, wait: number) {
   };
 }
 
-export const useArticleListHook = (props: {
-  uuid?: string;
-  type?: string;
-}) => {
+export const useArticleListHook = (props: { uuid?: string; type?: string }) => {
   const { uuid, type } = props;
-
+  console.log("%c Line:30 🧀 uuid", "color:#7f2b82", uuid);
   const isToday = useMatch(RouteConfig.LOCAL_TODAY);
   const isAll = useMatch(RouteConfig.LOCAL_ALL);
 
@@ -49,29 +46,49 @@ export const useArticleListHook = (props: {
     cursor: state.cursor,
     setCursor: state.setCursor,
   }));
-
-  const [feedUuid, setFeedUuid] = useState(uuid);
-  const [feedType, setFeedType] = useState(type);
   const listRef = useRef<HTMLDivElement>(null);
   const loadRef = useRef<HTMLDivElement>(null);
 
-  const {loading, hasMore, getList} = useArticle({ feedUuid: uuid, feedType: type});
+  const { loading, hasMore, getList } = useArticle({
+    feedUuid: uuid,
+    feedType: type,
+  });
 
+  // useEffect(() => {
+  //   if (uuid || isToday || isAll) {
+  //     store.setArticleList([]);
+  //     getList({ cursor: 1, feed_uuid: store.feed?.uuid, item_type: store.feed?.item_type });
+  //   }
+  // }, [uuid, store.currentFilter, store.feed, isToday, isAll]);
 
   useEffect(() => {
-    setFeedUuid(uuid);
+    if (uuid) {
+      store.setArticleList([]);
+      getList({
+        cursor: 1,
+        feed_uuid: uuid,
+        item_type: type,
+      });
+    }
   }, [uuid]);
 
   useEffect(() => {
-    setFeedType(type);
-  }, [type]);
+    if (isToday) {
+      store.setArticleList([]);
+      getList({
+        cursor: 1,
+      });
+    }
+  }, [isToday]);
 
   useEffect(() => {
-    if (feedUuid || isToday || isAll) {
+    if (isAll) {
       store.setArticleList([]);
-      getList({ cursor: 1, feed_uuid: store.feed?.uuid, item_type: store.feed?.item_type });
+      getList({
+        cursor: 1,
+      });
     }
-  }, [feedUuid, store.currentFilter, store.feed, isToday, isAll]);
+  }, [isAll]);
 
   useEffect(() => {
     const $rootElem = listRef.current as HTMLDivElement;
@@ -145,7 +162,5 @@ export const useArticleListHook = (props: {
     loadRef,
     isToday,
     isAll,
-    setFeedUuid,
-    setFeedType,
   };
 };

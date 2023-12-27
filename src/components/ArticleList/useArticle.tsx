@@ -34,6 +34,8 @@ export function useArticle(props: useArticleProps) {
       ...query,
     };
 
+    console.log("%c Line:32 🥑 filter", "color:#ffdd4d", filter);
+
     let fn = Promise.resolve();
 
     if (query.feed_uuid && query.item_type) {

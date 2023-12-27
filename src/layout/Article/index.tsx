@@ -149,10 +149,6 @@ export const ArticleContainer = (): JSX.Element => {
         .syncArticles(store.feed)
         .then((result) => {
           console.log("result ==> ", result);
-          // @ts-ignore
-          setFeedType(store.feed.item_type);
-          // @ts-ignore
-          setFeedUuid(store.feed.uuid);
           getList({ cursor: 1, feed_uuid: store.feed?.uuid, item_type: store.feed?.item_type });
 
           toast({

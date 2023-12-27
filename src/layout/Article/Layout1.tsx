@@ -10,7 +10,7 @@ import {
   ScrollBoxRefObject,
 } from "@/components/ArticleView/ScrollBox";
 
-export const Layout1 = (): JSX.Element => {
+export const Layout1 = React.memo(() => {
   // @ts-ignore
   const params: { name: string } = useParams();
   const store = useBearStore((state) => ({
@@ -56,4 +56,4 @@ export const Layout1 = (): JSX.Element => {
       </ScrollBox>
     </div>
   );
-};
+});
