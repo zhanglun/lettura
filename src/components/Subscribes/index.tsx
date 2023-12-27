@@ -46,8 +46,8 @@ import { ListContainer } from "./ListContainer";
 import { copyText } from "@/helpers/copyText";
 import { toast } from "sonner";
 import { DialogDeleteFolder } from "@/layout/Setting/Content/DialogDeleteFolder";
-import { ToastAction } from "@radix-ui/react-toast";
 import { useArticle } from "../ArticleList/useArticle";
+import { loadFeed } from "@/hooks/useLoadFeed";
 
 const ChannelList = (): JSX.Element => {
   const isToday = useMatch(RouteConfig.LOCAL_TODAY);
@@ -112,36 +112,12 @@ const ChannelList = (): JSX.Element => {
 
   const reloadFeedData = (feed: FeedResItem | null) => {
     if (feed) {
-      const toastId = toast("Sonner");
-      toast.loading("Start reloading, Please wait...", {
-        id: toastId,
-      });
-
-      store.syncArticles(feed).then((res) => {
-        const [uuid, [title, num, message]] = Object.entries(res)[0] as [
-          string,
-          [string, number, string]
-        ];
-        if (message) {
-          toast.error(`Something wrong!`, {
-            id: toastId,
-            description: message,
-          });
-        } else {
-          getList({
-            cursor: 1,
-            feed_uuid: feed.uuid,
-            item_type: feed.item_type,
-          });
-          toast.success(
-            num > 0
-              ? `We have ${num} new pieces of data from ${title}`
-              : `${title} is already up to date.`,
-            {
-              id: toastId,
-            }
-          );
-        }
+      loadFeed(feed, store.syncArticles, () => {
+        getList({
+          cursor: 1,
+          feed_uuid: feed.uuid,
+          item_type: feed.item_type,
+        });
       });
     }
   };

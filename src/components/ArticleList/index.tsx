@@ -28,7 +28,7 @@ export const ArticleList = React.memo((props: ArticleListProps) => {
     articleList: state.articleList,
   }));
 
-  const { listRef, loadRef, loading, hasMore } = useArticleListHook({
+  const { listRef, loadRef, loading } = useArticleListHook({
     uuid: feedUuid,
     type: type,
   });

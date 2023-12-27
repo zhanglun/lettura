@@ -48,18 +48,6 @@
   padding: 0 12px;
 }
 
-.syncingBar {
-  position: sticky;
-  top: var(--app-toolbar-height);
-  left: 0;
-  right: 0;
-  z-index: 1;
-  text-align: center;
-  font-size: 12px;
-  padding: 8px;
-  background-color: hsl(var(--muted));
-}
-
 .scrollList {
   overflow-y: auto;
   height: 100vh;

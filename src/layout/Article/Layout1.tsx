@@ -4,7 +4,6 @@ import { ArticleList } from "@/components/ArticleList";
 import { ArticleView } from "@/components/ArticleView";
 import { useBearStore } from "@/stores";
 import { useQuery } from "@/helpers/parseXML";
-import styles from "./index.module.scss";
 import {
   ScrollBox,
   ScrollBoxRefObject,
@@ -30,7 +29,6 @@ export const Layout1 = React.memo(() => {
   }));
 
   const [feedUrl, type, feedUuid] = useQuery();
-  const [syncing, setSyncing] = useState(false);
   const scrollBoxRef = useRef<ScrollBoxRefObject>(null);
 
   useEffect(() => {
@@ -40,7 +38,6 @@ export const Layout1 = React.memo(() => {
   return (
     <div className="grid grid-cols-[var(--app-article-width)_1fr]">
       <div className="relative h-full border-r">
-        {syncing && <div className={styles.syncingBar}>同步中</div>}
         <ArticleList
           title={params.name}
           type={type}

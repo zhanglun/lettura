@@ -39,6 +39,7 @@ import { useMatch } from "react-router-dom";
 import { RouteConfig } from "@/config";
 import { useArticleListHook } from "@/components/ArticleList/hooks";
 import { useArticle } from "@/components/ArticleList/useArticle";
+import { loadFeed } from "@/hooks/useLoadFeed";
 
 export const ArticleContainer = (): JSX.Element => {
   const store = useBearStore((state) => ({
@@ -141,57 +142,18 @@ export const ArticleContainer = (): JSX.Element => {
     }
   }, [articleListRef.current]);
 
-  const syncArticles = () => {
-    if (store.feed && store.feed.uuid) {
-      setSyncing(true);
-
-      store
-        .syncArticles(store.feed)
-        .then((result) => {
-          console.log("result ==> ", result);
-          getList({ cursor: 1, feed_uuid: store.feed?.uuid, item_type: store.feed?.item_type });
-
-          toast({
-            title: "Sync finished",
-            description: "",
-            action: (
-              <ToastAction altText="Goto schedule to undo">Close</ToastAction>
-            ),
-          });
-
-          // if (message) {
-          //   toast({
-          //     title: "Something wrong!",
-          //     variant: "destructive",
-          //     description: message,
-          //     action: (
-          //       <ToastAction altText="Goto schedule to undo">Close</ToastAction>
-          //     ),
-          //   });
-          // } else {
-          //   toast({
-          //     title: "Success",
-          //     description: message,
-          //     action: (
-          //       <ToastAction altText="Goto schedule to undo">Close</ToastAction>
-          //     ),
-          //   });
-          // }
-          //
-          // if (num > 0) {
-          //   getArticleList();
-          //   store.initCollectionMetas();
-          //   store.getFeedList();
-          // }
-        })
-        .finally(() => {
-          setSyncing(false);
-        });
-    }
-  };
-
   const handleRefresh = () => {
-    syncArticles();
+    if (store.feed && store.feed.uuid) {
+      const { uuid, item_type } = store.feed;
+
+      loadFeed(store.feed, store.syncArticles, () => {
+        getList({
+          cursor: 1,
+          feed_uuid: uuid,
+          item_type: item_type,
+        });
+      });
+    }
   };
 
   const handleSetLayout = (type: number) => {

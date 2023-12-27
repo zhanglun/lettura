@@ -16,9 +16,9 @@ export const getChannelFavicon = (url: string) => {
 
 export const useQuery = () => {
   const query = new URLSearchParams(useLocation().search);
-  const feedUrl = query.get("feedUrl");
-  const type = query.get("type");
-  const feedUuid = query.get("feedUuid");
+  const feedUrl = query.get("feedUrl") || undefined;
+  const type = query.get("type") || undefined;
+  const feedUuid = query.get("feedUuid") || undefined;
 
   return [feedUrl, type, feedUuid];
 };
