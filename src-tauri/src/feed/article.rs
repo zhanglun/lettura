@@ -11,6 +11,12 @@ use crate::schema;
 pub struct Article {}
 
 #[derive(Debug, Serialize, Deserialize)]
+pub enum ArticleReadStatus {
+  UNREAD = 1,
+  READ = 2,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
 pub struct ArticleFilter {
   pub feed_uuid: Option<String>,
   pub item_type: Option<String>,
@@ -374,7 +380,7 @@ impl Article {
       Some(_article) => {
         let res =
           diesel::update(schema::articles::dsl::articles.filter(schema::articles::uuid.eq(&uuid)))
-            .set(schema::articles::read_status.eq(status))
+            .set(schema::articles::read_status.eq(status as i32))
             .execute(&mut connection);
 
         match res {

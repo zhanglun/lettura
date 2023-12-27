@@ -116,7 +116,6 @@ async fn main() {
       cmd::fetch_feed,
       cmd::add_feed,
       cmd::import_channels,
-      cmd::update_article_read_status,
       cmd::update_user_config,
       cmd::update_proxy,
       cmd::update_threads,

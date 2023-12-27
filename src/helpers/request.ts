@@ -28,6 +28,15 @@ export const post = (url: string, data: any, config?: AxiosRequestConfig) => {
   });
 }
 
+export const put = (url: string, data: any, config?: AxiosRequestConfig) => {
+  const _instance = createInstance(config || {});
+
+  return _instance.put(url, data, config).then((res: AxiosResponse) => {
+    return res;
+  });
+}
+
+
 export const _delete = (url: string, config?: AxiosRequestConfig) => {
   const _instance = createInstance(config || {});
 
@@ -39,5 +48,6 @@ export const _delete = (url: string, config?: AxiosRequestConfig) => {
 export const request = {
   get,
   post,
+  put,
   delete: _delete
 }

@@ -140,9 +140,8 @@ export const updateArticleReadStatus = async (
   article_uuid: string,
   read_status: number
 ) => {
-  return invoke("update_article_read_status", {
-    uuid: article_uuid,
-    status: read_status,
+  return request.post(`/articles/${article_uuid}/read`, {
+    read_status
   });
 };
 

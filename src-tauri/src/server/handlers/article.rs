@@ -1,4 +1,4 @@
-use actix_web::{get, post, web, Responder, Result};
+use actix_web::{get, post, put, web, Responder, Result};
 use serde::{Deserialize, Serialize};
 
 use crate::core;
@@ -7,6 +7,20 @@ use crate::feed;
 #[get("/api/articles/{uuid}")]
 pub async fn handle_get_article_detail(uuid: web::Path<String>) -> Result<impl Responder> {
   let res = feed::article::Article::get_article_with_uuid(uuid.to_string());
+
+  Ok(web::Json(res))
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ReadParam {
+  read_status: i32,
+}
+
+#[post("/api/articles/{uuid}/read")]
+pub async fn handle_update_article_read_status(uuid: web::Path<String>, body: web::Json<ReadParam>) -> Result<impl Responder> {
+  println!("%c Line:23 🍞 body {:?}", body);
+  let body = body.into_inner();
+  let res = feed::article::Article::update_article_read_status(uuid.to_string(), body.read_status);
 
   Ok(web::Json(res))
 }
@@ -128,6 +142,7 @@ pub fn config(cfg: &mut web::ServiceConfig) {
     .service(handle_collection_metas)
     .service(handle_sync_feed)
     .service(handle_mark_as_read)
+    .service(handle_update_article_read_status)
     .service(handle_articles)
     .service(handle_get_all_articles)
     .service(handle_get_today_articles)

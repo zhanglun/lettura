@@ -202,7 +202,6 @@ struct Payload {
 
 #[command]
 pub fn init_process(window: Window) {
-  println!("asdfasdf");
   std::thread::spawn(move || loop {
     window
       .emit(
@@ -213,13 +212,6 @@ pub fn init_process(window: Window) {
       )
       .unwrap();
   });
-}
-
-#[command]
-pub fn update_article_read_status(uuid: String, status: i32) -> usize {
-  let res = feed::article::Article::update_article_read_status(uuid, status);
-
-  res
 }
 
 #[command]
