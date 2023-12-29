@@ -46,7 +46,6 @@ import { ListContainer } from "./ListContainer";
 import { copyText } from "@/helpers/copyText";
 import { toast } from "sonner";
 import { DialogDeleteFolder } from "@/layout/Setting/Content/DialogDeleteFolder";
-import { useArticle } from "../ArticleList/useArticle";
 import { loadFeed } from "@/hooks/useLoadFeed";
 
 const ChannelList = (): JSX.Element => {
@@ -84,7 +83,6 @@ const ChannelList = (): JSX.Element => {
     syncArticles: state.syncArticles,
   }));
 
-  const { getList } = useArticle({});
 
   const [, , feedUuid] = useQuery();
 
@@ -113,11 +111,7 @@ const ChannelList = (): JSX.Element => {
   const reloadFeedData = (feed: FeedResItem | null) => {
     if (feed) {
       loadFeed(feed, store.syncArticles, () => {
-        getList({
-          cursor: 1,
-          feed_uuid: feed.uuid,
-          item_type: feed.item_type,
-        });
+        // TODO: get article List
       });
     }
   };

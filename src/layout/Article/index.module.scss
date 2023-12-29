@@ -4,22 +4,9 @@
   flex: 1;
   height: 100vh;
   display: grid;
-  grid-template-rows: var(--app-toolbar-height) calc(100vh - var(--app-toolbar-height));
+  grid-template-columns: var(--app-article-width) 1fr;
   background-color: var(--app-main-bg-color);
-  //padding-top: var(--app-toolbar-height);
   position: relative;
-}
-
-:global(.view-blur-bar) {
-  backdrop-filter: saturate(180%) blur(20px);
-  // backdrop-filter: saturate(50%) blur(8px);
-  background: hsl(var(--background)/8%);
-  //rgba(255, 255, 255, 0.88);
-  --playerDropShadow2: hsl(var(--foreground)/7%);
-  //rgba(0, 0, 0, .07);
-  --playerInnerShadow: hsl(var(--background)/45%);
-  //rgba(255, 255, 255, .45);
-  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05), 0 1px 3px var(--playerDropShadow2), inset 0 1px 1px var(--playerInnerShadow);
 }
 
 .title {

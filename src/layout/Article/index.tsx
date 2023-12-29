@@ -1,97 +1,20 @@
-import React, { useEffect, useRef, useState } from "react";
 import classNames from "classnames";
-import { ArticleListRefType } from "@/components/ArticleList";
-import * as dataAgent from "../../helpers/dataAgent";
 import { useBearStore } from "@/stores";
 import { useHotkeys } from "react-hotkeys-hook";
-import styles from "./index.module.scss";
-import {
-  Filter,
-  CheckCheck,
-  RefreshCw,
-  Layout,
-  LayoutGrid,
-  LayoutList,
-} from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
-import { ToastAction } from "@/components/ui/toast";
-import { useToast } from "@/components/ui/use-toast";
-import { Icon } from "@/components/Icon";
-import { Separator } from "@/components/ui/separator";
 import { Layout1 } from "@/layout/Article/Layout1";
-import { Layout2 } from "@/layout/Article/Layout2";
-import { Layout3 } from "@/layout/Article/Layout3";
 import { ArticleDialogView } from "@/components/ArticleView/DialogView";
-import { ToolbarItemNavigator } from "@/layout/Article/ToolBar";
-import { ReadingOptions } from "@/layout/Article/ReadingOptions";
-import { useQuery } from "@/helpers/parseXML";
 import { open } from "@tauri-apps/api/shell";
-import { TooltipBox } from "@/components/TooltipBox";
-import { useMatch } from "react-router-dom";
-import { RouteConfig } from "@/config";
-import { useArticleListHook } from "@/components/ArticleList/hooks";
-import { useArticle } from "@/components/ArticleList/useArticle";
-import { loadFeed } from "@/hooks/useLoadFeed";
+import { View } from "./View";
+import styles from "./index.module.scss";
 
 export const ArticleContainer = (): JSX.Element => {
   const store = useBearStore((state) => ({
-    viewMeta: state.viewMeta,
     article: state.article,
-    articleList: state.articleList,
     setArticle: state.setArticle,
-    updateArticleAndIdx: state.updateArticleAndIdx,
-    feed: state.feed,
-    syncArticles: state.syncArticles,
 
     articleDialogViewStatus: state.articleDialogViewStatus,
     setArticleDialogViewStatus: state.setArticleDialogViewStatus,
-    markArticleListAsRead: state.markArticleListAsRead,
-    initCollectionMetas: state.initCollectionMetas,
-    getFeedList: state.getFeedList,
-
-    filterList: state.filterList,
-    currentFilter: state.currentFilter,
-    setFilter: state.setFilter,
-
-    currentIdx: state.currentIdx,
-    setCurrentIdx: state.setCurrentIdx,
-    userConfig: state.userConfig,
   }));
-
-  const isToday = useMatch(RouteConfig.LOCAL_TODAY);
-  const isAll = useMatch(RouteConfig.LOCAL_ALL);
-  const { getList } = useArticle({
-    feedUuid: "",
-    feedType: "",
-  });
-  const { toast } = useToast();
-  const [layoutType, setLayoutType] = useState(1);
-  const [feedUrl] = useQuery();
-  const [syncing, setSyncing] = useState(false);
-  const listRef = useRef<HTMLDivElement>(null);
-  const viewRef = useRef<HTMLDivElement>(null);
-  const articleListRef = useRef<ArticleListRefType>(null);
-  const { currentIdx, setCurrentIdx } = store;
-
-  const handleViewScroll = () => {
-    if (viewRef.current) {
-      const scrollTop = viewRef.current.scrollTop;
-
-      if (scrollTop > 0) {
-        viewRef.current?.parentElement?.classList.add("is-scroll");
-      } else {
-        viewRef.current?.parentElement?.classList.remove("is-scroll");
-      }
-    }
-  };
 
   const openInBrowser = () => {
     store.article && open(store.article.link);
@@ -99,184 +22,11 @@ export const ArticleContainer = (): JSX.Element => {
 
   useHotkeys("o", () => openInBrowser());
 
-  useEffect(() => {
-    if (viewRef.current) {
-      const $list = viewRef.current as HTMLDivElement;
-      $list.addEventListener("scroll", handleViewScroll);
-    }
-  }, [store.articleList]);
-
-  useEffect(() => {
-    if (
-      listRef.current &&
-      articleListRef.current &&
-      Object.keys(articleListRef.current.articlesRef).length > 0
-    ) {
-      const $rootElem = listRef.current as HTMLDivElement;
-
-      const options = {
-        root: $rootElem,
-        rootMargin: "0px",
-        threshold: 1,
-      };
-
-      const callback = (
-        entries: IntersectionObserverEntry[],
-        observer: IntersectionObserver
-      ) => {
-        if (entries[0].intersectionRatio < 1) {
-          listRef.current?.parentElement?.classList.add("is-scroll");
-        } else {
-          listRef.current?.parentElement?.classList.remove("is-scroll");
-        }
-      };
-
-      const observer = new IntersectionObserver(callback, options);
-      const $target = (
-        Object.values(articleListRef.current.articlesRef as any)[0] as any
-      ).current;
-
-      if ($target) {
-        observer.observe($target);
-      }
-    }
-  }, [articleListRef.current]);
-
-  const handleRefresh = () => {
-    if (store.feed && store.feed.uuid) {
-      const { uuid, item_type } = store.feed;
-
-      loadFeed(store.feed, store.syncArticles, () => {
-        getList({
-          cursor: 1,
-          feed_uuid: uuid,
-          item_type: item_type,
-        });
-      });
-    }
-  };
-
-  const handleSetLayout = (type: number) => {
-    setLayoutType(type);
-  };
-
-  const markAllRead = () => {
-    return store.markArticleListAsRead(!!isToday, !!isAll);
-  };
-
-  const changeFilter = (id: any) => {
-    if (store.filterList.some((_) => _.id === parseInt(id, 10))) {
-      store.setFilter({
-        ...store.filterList.filter((_) => _.id === parseInt(id, 10))[0],
-      });
-    }
-  };
-
-  const resetScrollTop = () => {
-    if (viewRef.current !== null) {
-      viewRef.current.scroll(0, 0);
-    }
-  };
-
-  useEffect(() => {
-    resetScrollTop();
-  }, [store.article]);
-
-  useEffect(() => {
-    resetScrollTop();
-  }, []);
-
-  useEffect(() => {
-    if (listRef.current !== null) {
-      listRef.current.scroll(0, 0);
-    }
-
-    setCurrentIdx(-1);
-  }, [store.feed?.uuid]);
-
   return (
     <div className={classNames(styles.article)}>
-      <div className="h-[var(--app-toolbar-height)] grid grid-cols-[1fr_1fr] items-center justify-between border-b">
-        <div
-          className="
-            flex
-            items-center
-            px-3
-            text-lg
-            font-bold
-            w-full
-            text-ellipsis
-            overflow-hidden
-            whitespace-nowrap
-            text-article-headline
-          "
-        >
-          {store.viewMeta ? store.viewMeta.title : ""}
-        </div>
-        <div className={"flex items-center justify-end px-2 space-x-0.5"}>
-          <DropdownMenu>
-            <DropdownMenuTrigger>
-              <TooltipBox content="Filter">
-                <Icon>
-                  <Filter size={16} />
-                </Icon>
-              </TooltipBox>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuRadioGroup
-                value={`${store.currentFilter.id}`}
-                onValueChange={changeFilter}
-              >
-                {store.filterList.map((item) => {
-                  return (
-                    <DropdownMenuRadioItem
-                      key={`${item.id}`}
-                      value={`${item.id}`}
-                    >
-                      {item.title}
-                    </DropdownMenuRadioItem>
-                  );
-                })}
-              </DropdownMenuRadioGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <TooltipBox content="Mark all as read">
-            <Icon onClick={markAllRead}>
-              <CheckCheck size={16} />
-            </Icon>
-          </TooltipBox>
-          <TooltipBox content="Reload feed">
-            <Icon onClick={handleRefresh}>
-              <RefreshCw size={16} className={`${syncing ? "spinning" : ""}`} />
-            </Icon>
-          </TooltipBox>
-          <span>
-            <Separator orientation="vertical" className="h-4 mx-2" />
-          </span>
-          <Icon onClick={() => handleSetLayout(1)} active={layoutType === 1}>
-            <Layout size={16} />
-          </Icon>
-          <Icon onClick={() => handleSetLayout(2)} active={layoutType === 2}>
-            <LayoutGrid size={16} />
-          </Icon>
-          <Icon onClick={() => handleSetLayout(3)} active={layoutType === 3}>
-            <LayoutList size={16} />
-          </Icon>
-          <span>
-            <Separator orientation="vertical" className="h-4 mx-2" />
-          </span>
-          <ToolbarItemNavigator listRef={listRef} />
-          <span>
-            <Separator orientation="vertical" className="h-4 mx-2" />
-          </span>
-          <ReadingOptions />
-        </div>
-      </div>
-      <div className="h-[100vh_-_var(--app-toolbar-height)]">
-        {layoutType === 1 && <Layout1 />}
-        {layoutType === 2 && <Layout2 />}
-        {layoutType === 3 && <Layout3 />}
-      </div>
+      <Layout1 />
+      <View />
+
       <ArticleDialogView
         article={store.article}
         dialogStatus={store.articleDialogViewStatus}

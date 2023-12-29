@@ -7,10 +7,11 @@ import { useBearStore } from "@/stores";
 import { useArticleListHook } from "./hooks";
 import { Skeleton } from "../ui/skeleton";
 import { RouteConfig } from "@/config";
-import { fetcher, request } from "@/helpers/request";
+import { request } from "@/helpers/request";
 import * as dateAgent from "@/helpers/dataAgent";
 import { ArticleResItem } from "@/db";
 import { useIntersectionObserver } from "./useIntersectionObserver";
+import { useArticle } from "@/layout/Article/useArticle";
 
 export type ArticleListProps = {
   feedUuid?: string;
@@ -37,50 +38,65 @@ export const ArticleList = React.memo((props: ArticleListProps) => {
   const loadRefVisible = !!entry?.isIntersecting;
   console.log("%c Line:37 🍻 loadRefVisible", "color:#fca650", loadRefVisible);
 
-  const store = useBearStore((state) => ({
-    currentFilter: state.currentFilter,
-  }));
+  // const store = useBearStore((state) => ({
+  //   currentFilter: state.currentFilter,
+  // }));
 
-  const query = {
-    read_status: store.currentFilter.id,
-    limit: PAGE_SIZE,
-    feed_uuid: feedUuid,
-    item_type: type,
-  };
-  const getKey = (pageIndex: number, previousPageData: any) => {
-    console.log("%c Line:50 🥃 previousPageData", "color:#42b983", previousPageData);
-    const list = !previousPageData ? [] : previousPageData.list;
-    if (previousPageData && !previousPageData.list?.length) return null; // 已经到最后一页
+  // const query = {
+  //   read_status: store.currentFilter.id,
+  //   limit: PAGE_SIZE,
+  //   feed_uuid: feedUuid,
+  //   item_type: type,
+  // };
+  // const getKey = (pageIndex: number, previousPageData: any) => {
+  //   console.log("%c Line:50 🥃 previousPageData", "color:#42b983", previousPageData);
+  //   const list = !previousPageData ? [] : previousPageData.list;
+  //   if (previousPageData && !previousPageData.list?.length) return null; // 已经到最后一页
 
-    return {
-      ...query,
-      cursor: pageIndex+1,
-    }; // SWR key
-  };
-  const { data, error, isLoading, isValidating, mutate, size, setSize } =
-    useSWRInfinite(getKey, (q) =>
+  //   return {
+  //     ...query,
+  //     cursor: pageIndex+1,
+  //   }; // SWR key
+  // };
+  // const { data, error, isLoading, isValidating, mutate, size, setSize } =
+  //   useSWRInfinite(getKey, (q) =>
 
-      request
-        .get("/articles", {
-          params: { ...q },
-        })
-        .then((res) => res.data)
-    );
+  //     request
+  //       .get("/articles", {
+  //         params: { ...q },
+  //       })
+  //       .then((res) => res.data)
+  //   );
 
-  const list = data ? data.reduce((acu, cur) => acu.concat(cur.list || []), []) : [];
-  console.log("%c Line:74 🥔 data", "color:#2eafb0", data);
-  console.log("%c Line:74 🥤 list", "color:#42b983", list);
-  const articleList = list ? [].concat(list) : [];
-  const isLoadingMore =
-    isLoading || (size > 0 && data && typeof data[size - 1] === "undefined");
-  const isEmpty = !isLoading && list.length === 0;
-  console.log("%c Line:72 🍧 isEmpty", "color:#f5ce50", isEmpty);
-  const isReachingEnd =
-    isEmpty || (data && data[data.length - 1]?.list?.length < PAGE_SIZE);
-  const isRefreshing = isValidating && data && data.length === size;
+  // const list = data ? data.reduce((acu, cur) => acu.concat(cur.list || []), []) : [];
+  // console.log("%c Line:74 🥔 data", "color:#2eafb0", data);
+  // console.log("%c Line:74 🥤 list", "color:#42b983", list);
+  // const articleList = list ? [].concat(list) : [];
+  // const isLoadingMore =
+  //   isLoading || (size > 0 && data && typeof data[size - 1] === "undefined");
+  // const isEmpty = !isLoading && list.length === 0;
+  // console.log("%c Line:72 🍧 isEmpty", "color:#f5ce50", isEmpty);
+  // const isReachingEnd =
+  //   isEmpty || (data && data[data.length - 1]?.list?.length < PAGE_SIZE);
+  // const isRefreshing = isValidating && data && data.length === size;
+  const {
+    articles,
+    error,
+    isLoading,
+    isValidating,
+    isLoadingMore,
+    size,
+    setSize,
+    isEmpty,
+    isReachingEnd,
+    isRefreshing,
+  } = useArticle({
+    feedUuid,
+    type,
+  });
 
   const renderList = (): JSX.Element[] => {
-    return (articleList || []).map((article: any, idx: number) => {
+    return (articles || []).map((article: any, idx: number) => {
       return (
         <motion.div
           animate={{ opacity: 1, y: 0 }}
@@ -94,14 +110,13 @@ export const ArticleList = React.memo((props: ArticleListProps) => {
     });
   };
 
-
   useEffect(() => {
     console.log("%c Line:101 🍌 size", "color:#b03734", size);
 
     if (loadRefVisible && !isReachingEnd) {
-      setSize(size + 1)
+      setSize(size + 1);
     }
-  }, [loadRefVisible, isReachingEnd])
+  }, [loadRefVisible, isReachingEnd]);
 
   return (
     <div className="overflow-y-auto h-[calc(100vh_-_var(--app-toolbar-height))]">
