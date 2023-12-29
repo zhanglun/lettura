@@ -1,10 +1,11 @@
-import { ArticleView } from "@/components/ArticleView";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArticleDetail } from "@/components/ArticleView/Detail";
 import {
   ScrollBox,
   ScrollBoxRefObject,
 } from "@/components/ArticleView/ScrollBox";
 import { useBearStore } from "@/stores";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { ReadingOptions } from "./ReadingOptions";
 import { Separator } from "@/components/ui/separator";
 import { ToolbarItemNavigator } from "./ToolBar";
@@ -12,7 +13,18 @@ import { ToolbarItemNavigator } from "./ToolBar";
 export function View() {
   const store = useBearStore((state) => ({
     userConfig: state.userConfig,
+    feed: state.feed,
+    article: state.article,
   }));
+
+  const renderPlaceholder = () => {
+    return (
+      <div className="py-10 text-xl">
+        <p>Let's read something</p>
+      </div>
+    );
+  };
+
   const scrollBoxRef = useRef<ScrollBoxRefObject>(null);
 
   return (
@@ -28,12 +40,30 @@ export function View() {
         </span>
         <ReadingOptions />
       </div>
-      <ScrollBox
-        className="h-[calc(100vh_-_var(--app-toolbar-height))]"
-        ref={scrollBoxRef}
-      >
-        <ArticleView userConfig={store.userConfig} />
-      </ScrollBox>
+      <AnimatePresence mode="wait">
+        <motion.div
+          // key={store.article?.uuid || "view"}
+          // initial={{ y: 20, opacity: 0 }}
+          // animate={{ y: 0, opacity: 1 }}
+          // exit={{ y: -20, opacity: 0 }}
+          // transition={{ duration: 0.2 }}
+          // className="overflow-hidden py-5"
+        >
+          <ScrollBox
+            className="h-[calc(100vh_-_var(--app-toolbar-height))]"
+            ref={scrollBoxRef}
+          >
+            <div className=" py-1 px-10 font-[var(--reading-font-body)] min-h-full m-auto sm:px-5 sm:max-w-xl lg:px-10 lg:max-w-5xl">
+              {" "}
+              {store.article ? (
+                <ArticleDetail article={store.article} />
+              ) : (
+                renderPlaceholder()
+              )}
+            </div>
+          </ScrollBox>
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }

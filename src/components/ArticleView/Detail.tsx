@@ -5,7 +5,6 @@ import Dayjs from "dayjs";
 import { getChannelFavicon } from "@/helpers/parseXML";
 import { useBearStore } from "@/stores";
 import * as dataAgent from "@/helpers/dataAgent";
-import { motion, AnimatePresence } from "framer-motion";
 import { fetch } from "@tauri-apps/api/http";
 import { open } from "@tauri-apps/api/shell";
 import xss, { getDefaultWhiteList } from "xss";
@@ -85,7 +84,8 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
     return (
       <div className="reading-content">
         <div className="pb-6">{renderContent()}</div>
-        <div style={{whiteSpace: "pre-line"}}
+        <div
+          style={{ whiteSpace: "pre-line" }}
           dangerouslySetInnerHTML={createMarkup(
             linkifyStr(description?.content || "")
           )}
@@ -125,13 +125,15 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
           // try to get the best banner if there is no image in article content
           // it will make render slower
           setShowBanner(content.search(/<img[^>]+>/gi) === -1);
-          setPageContent(xss(content, {
-            whiteList: {
-              ...getDefaultWhiteList(),
-              iframe:[],
-              button: [],
-            }
-          }));
+          setPageContent(
+            xss(content, {
+              whiteList: {
+                ...getDefaultWhiteList(),
+                iframe: [],
+                button: [],
+              },
+            })
+          );
 
           try {
             setMedias(JSON.parse(data.media_object));
@@ -146,61 +148,47 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
   }, [article]);
 
   return (
-    <AnimatePresence mode="wait">
-      <motion.div
-      // key={article.uuid}
-      // initial={{ y: 10, opacity: 0 }}
-      // animate={{ y: 0, opacity: 1 }}
-      // exit={{ y: -10, opacity: 0 }}
-      // transition={{ duration: 0.2 }}
-      >
-        <div className="m-auto">
-          <div className="pb-4 border-b border-border">
-            <div className="mt-6 mb-5 text-4xl font-bold text-detail-headline">
-              {article.title}
-            </div>
-            <div className={classnames(styles.meta)}>
-              <span className={styles.channelInfo}>
-                <img src={store.feed?.logo || ico} alt="" className="rounded" />
-                {article.feed_title}
-              </span>
-              {article.author && (
-                <span
-                  className={classnames(styles.author, "text-detail-paragraph")}
-                >
-                  {article.author}
-                </span>
-              )}
-              <span
-                className={classnames(styles.time, "text-detail-paragraph")}
-              >
-                {Dayjs(new Date(pub_date || new Date())).format(
-                  "YYYY-MM-DD HH:mm"
-                )}
-              </span>
-            </div>
+    <div className="m-auto">
+      <div className="pb-4 border-b border-border">
+        <div className="mt-6 mb-5 text-4xl font-bold text-detail-headline">
+          {article.title}
+        </div>
+        <div className={classnames(styles.meta)}>
+          <span className={styles.channelInfo}>
+            <img src={store.feed?.logo || ico} alt="" className="rounded" />
+            {article.feed_title}
+          </span>
+          {article.author && (
+            <span
+              className={classnames(styles.author, "text-detail-paragraph")}
+            >
+              {article.author}
+            </span>
+          )}
+          <span className={classnames(styles.time, "text-detail-paragraph")}>
+            {Dayjs(new Date(pub_date || new Date())).format("YYYY-MM-DD HH:mm")}
+          </span>
+        </div>
+      </div>
+      <div className="m-auto pt-1 mt-6">
+        {article.image && (
+          <div className="w-full my-4  text-center">
+            <img src={article.image} alt="" className="bg-accent" />
           </div>
-          <div className="m-auto pt-1 mt-6">
-            {article.image && (
-              <div className="w-full my-4  text-center">
-                <img src={article.image} alt="" className="bg-accent" />
-              </div>
-            )}
-            <div
-              key={article.uuid}
-              onClick={delegateContentClick}
-              className={classnames("reading-content", "text-detail-paragraph")}
-              // eslint-disable-next-line react/no-danger
-              dangerouslySetInnerHTML={createMarkup(pageContent)}
-            />
-            {medias && medias.length > 0 && <div>{medias.map(renderMediaBox)}</div>}
-            {/* <div
+        )}
+        <div
+          key={article.uuid}
+          onClick={delegateContentClick}
+          className={classnames("reading-content", "text-detail-paragraph")}
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={createMarkup(pageContent)}
+        />
+        {medias && medias.length > 0 && <div>{medias.map(renderMediaBox)}</div>}
+        {/* <div
               className={classnames("reading-content", "text-detail-paragraph")}>
                 <iframe src={article.link} className="w-full" allowFullScreen></iframe>
               </div> */}
-          </div>
-        </div>
-      </motion.div>
-    </AnimatePresence>
+      </div>
+    </div>
   );
 };

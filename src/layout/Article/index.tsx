@@ -6,8 +6,10 @@ import { ArticleDialogView } from "@/components/ArticleView/DialogView";
 import { open } from "@tauri-apps/api/shell";
 import { View } from "./View";
 import styles from "./index.module.scss";
+import { useQuery } from "@/helpers/parseXML";
 
 export const ArticleContainer = (): JSX.Element => {
+  const [feedUrl, type, feedUuid] = useQuery();
   const store = useBearStore((state) => ({
     article: state.article,
     setArticle: state.setArticle,
@@ -24,7 +26,7 @@ export const ArticleContainer = (): JSX.Element => {
 
   return (
     <div className={classNames(styles.article)}>
-      <Layout1 />
+      <Layout1 feedUuid={feedUuid || ""} type={type || ""} />
       <View />
 
       <ArticleDialogView

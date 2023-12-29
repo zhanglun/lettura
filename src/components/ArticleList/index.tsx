@@ -16,11 +16,9 @@ import { useArticle } from "@/layout/Article/useArticle";
 export type ArticleListProps = {
   feedUuid?: string;
   type?: string;
-  feedUrl: string | null;
   title: string | null;
 };
 
-const PAGE_SIZE = 20;
 export interface ArticleListRefType {
   getList: () => void;
   markAllRead: () => void;
@@ -29,7 +27,7 @@ export interface ArticleListRefType {
 }
 
 export const ArticleList = React.memo((props: ArticleListProps) => {
-  const { feedUuid, feedUrl, type, title } = props;
+  const { feedUuid, type, title } = props;
   // const isToday = useMatch(RouteConfig.LOCAL_TODAY);
   // const isAll = useMatch(RouteConfig.LOCAL_ALL);
   const loadRef = useRef<HTMLDivElement | null>(null);

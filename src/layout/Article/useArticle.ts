@@ -7,12 +7,10 @@ const PAGE_SIZE = 20;
 export interface UseArticleProps {
   feedUuid?: string;
   type?: string;
-  feedUrl: string | null;
-  title: string | null;
 }
 
 export function useArticle (props: UseArticleProps) {
-  const { feedUuid, feedUrl, type, title } = props;
+  const { feedUuid, type  } = props;
   const store = useBearStore((state) => ({
     currentFilter: state.currentFilter,
   }));
