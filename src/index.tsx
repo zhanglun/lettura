@@ -16,7 +16,6 @@ import { ArticleContainer } from "./layout/Article";
 import { SearchPage } from "./layout/Search";
 import { LocalPage } from "./layout/Local";
 import { SettingPage } from "./layout/Setting";
-
 import "./index.css";
 
 const router = createBrowserRouter([

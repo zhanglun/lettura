@@ -9,7 +9,7 @@ import styles from "./index.module.scss";
 import { useQuery } from "@/helpers/parseXML";
 
 export const ArticleContainer = (): JSX.Element => {
-  const [feedUrl, type, feedUuid] = useQuery();
+  const [, type, feedUuid] = useQuery();
   const store = useBearStore((state) => ({
     article: state.article,
     setArticle: state.setArticle,
@@ -26,7 +26,7 @@ export const ArticleContainer = (): JSX.Element => {
 
   return (
     <div className={classNames(styles.article)}>
-      <Layout1 feedUuid={feedUuid || ""} type={type || ""} />
+      <Layout1 feedUuid={feedUuid} type={type} />
       <View />
 
       <ArticleDialogView

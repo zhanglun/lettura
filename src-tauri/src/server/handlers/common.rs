@@ -1,5 +1,4 @@
 use actix_web::{get, post, web, Responder, Result};
-use log::kv::ToValue;
 use serde::{Deserialize, Serialize};
 
 use crate::core::common;

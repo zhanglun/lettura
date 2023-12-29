@@ -1,4 +1,4 @@
-use actix_web::{get, post, put, web, Responder, Result};
+use actix_web::{get, post, web, Responder, Result};
 use serde::{Deserialize, Serialize};
 
 use crate::core;
@@ -89,47 +89,15 @@ pub async fn handle_articles(
 ) -> Result<impl Responder> {
   let filter = feed::article::ArticleFilter {
     feed_uuid: query.feed_uuid.clone(),
+    folder_uuid: query.folder_uuid.clone(),
     item_type: query.item_type.clone(),
+    is_today: query.is_today.clone(),
     read_status: query.read_status.clone(),
     cursor: query.cursor.clone(),
     limit: query.limit.clone(),
   };
 
   let res = feed::article::Article::get_article(filter);
-
-  Ok(web::Json(res))
-}
-
-#[get("/api/all-articles")]
-pub async fn handle_get_all_articles(
-  query: web::Query<feed::article::ArticleFilter>,
-) -> Result<impl Responder> {
-  let filter = feed::article::ArticleFilter {
-    feed_uuid: query.feed_uuid.clone(),
-    item_type: query.item_type.clone(),
-    read_status: query.read_status.clone(),
-    cursor: query.cursor.clone(),
-    limit: query.limit.clone(),
-  };
-
-  let res = feed::article::Article::get_all_articles(filter);
-
-  Ok(web::Json(res))
-}
-
-#[get("/api/today-articles")]
-pub async fn handle_get_today_articles(
-  query: web::Query<feed::article::ArticleFilter>,
-) -> Result<impl Responder> {
-  let filter = feed::article::ArticleFilter {
-    feed_uuid: query.feed_uuid.clone(),
-    item_type: query.item_type.clone(),
-    read_status: query.read_status.clone(),
-    cursor: query.cursor.clone(),
-    limit: query.limit.clone(),
-  };
-
-  let res = feed::article::Article::get_today_articles(filter);
 
   Ok(web::Json(res))
 }
@@ -144,7 +112,5 @@ pub fn config(cfg: &mut web::ServiceConfig) {
     .service(handle_mark_as_read)
     .service(handle_update_article_read_status)
     .service(handle_articles)
-    .service(handle_get_all_articles)
-    .service(handle_get_today_articles)
     ;
 }

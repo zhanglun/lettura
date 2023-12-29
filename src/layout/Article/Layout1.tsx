@@ -1,8 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { ArticleList } from "@/components/ArticleList";
 import { useBearStore } from "@/stores";
-import { useQuery } from "@/helpers/parseXML";
 
 import { Filter, CheckCheck, RefreshCw } from "lucide-react";
 import {
@@ -20,10 +19,11 @@ import { useArticle } from "./useArticle";
 import { loadFeed } from "@/hooks/useLoadFeed";
 
 export const Layout1 = React.memo(
-  (props: { feedUuid: string; type: string }) => {
+  (props: { feedUuid?: string; type?: string }) => {
     const { feedUuid, type } = props;
     // @ts-ignore
     const params: { name: string } = useParams();
+
     const store = useBearStore((state) => ({
       viewMeta: state.viewMeta,
       article: state.article,
@@ -53,7 +53,8 @@ export const Layout1 = React.memo(
       }
     };
 
-    const markAllRead = () => {};
+    const markAllRead = () => {
+    };
 
     const changeFilter = (id: any) => {
       if (store.filterList.some((_) => _.id === parseInt(id, 10))) {
@@ -64,7 +65,7 @@ export const Layout1 = React.memo(
     };
 
     return (
-      <div className="grow-0 basis-[var(--app-article-width)] border-r">
+      <div className="shrink-0 basis-[var(--app-article-width)] border-r">
         <div className="h-[var(--app-toolbar-height)] grid grid-cols-[auto_1fr] items-center justify-between border-b">
           <div
             className="

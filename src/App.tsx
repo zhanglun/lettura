@@ -4,7 +4,6 @@ import { appWindow } from "@tauri-apps/api/window";
 import { emit, listen } from "@tauri-apps/api/event";
 
 import { useBearStore } from "@/stores";
-import * as dataAgent from "./helpers/dataAgent";
 import { RouteConfig } from "./config";
 
 import { CommandPanel } from "./command";

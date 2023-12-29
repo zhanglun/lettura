@@ -87,22 +87,6 @@ export const getArticleList = async (
   return req;
 };
 
-export const getTodayArticleList = async (filter: any) => {
-  return request.get('/today-articles', {
-    params: {
-      ...filter
-    }
-  });
-};
-
-export const getAllArticleList = async (filter: any) => {
-  return request.get('/all-articles', {
-    params: {
-      ...filter
-    }
-  })
-};
-
 export const fetchFeed = async (url: string): Promise<[any, string]> => {
   return invoke("fetch_feed", { url });
 };

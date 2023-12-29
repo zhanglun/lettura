@@ -1,8 +1,8 @@
-use chrono::{Utc, Duration};
+use crate::core::config::get_user_config;
+use chrono::{Duration, Utc};
 use diesel::prelude::*;
 use diesel::sql_types::*;
 use serde::{Deserialize, Serialize};
-use crate::core::config::get_user_config;
 
 use crate::db::establish_connection;
 use crate::models;
@@ -19,7 +19,9 @@ pub enum ArticleReadStatus {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ArticleFilter {
   pub feed_uuid: Option<String>,
+  pub folder_uuid: Option<String>,
   pub item_type: Option<String>,
+  pub is_today: Option<i32>,
   pub read_status: Option<i32>,
   pub cursor: Option<i32>,
   pub limit: Option<i32>,
@@ -84,14 +86,14 @@ impl Article {
       if let Some(item_type) = filter.item_type {
         if item_type == String::from("folder") {
           relations = schema::feed_metas::dsl::feed_metas
-          .filter(schema::feed_metas::folder_uuid.eq(&channel_uuid))
-          .load::<models::FeedMeta>(&mut connection)
-          .expect("Expect find channel");
-          } else {
+            .filter(schema::feed_metas::folder_uuid.eq(&channel_uuid))
+            .load::<models::FeedMeta>(&mut connection)
+            .expect("Expect find channel");
+        } else {
           relations = schema::feed_metas::dsl::feed_metas
-          .filter(schema::feed_metas::uuid.eq(&channel_uuid))
-          .load::<models::FeedMeta>(&mut connection)
-          .expect("Expect find channel");
+            .filter(schema::feed_metas::uuid.eq(&channel_uuid))
+            .load::<models::FeedMeta>(&mut connection)
+            .expect("Expect find channel");
         }
       }
 
@@ -136,48 +138,9 @@ impl Article {
       for uuid in channel_uuids {
         query = query.bind::<Text, _>(uuid);
       }
-    }
-
-    match filter.read_status {
-      Some(0) => {
-        1;
-      }
-      Some(status) => {
-        query = query
-          .sql(" AND A.read_status = ?")
-          .bind::<Integer, _>(status);
-      }
-      None => {
-        1;
-      }
-    }
-
-    query = query.sql(" ORDER BY A.pub_date DESC ");
-
-    if let Some(l) = filter.limit {
-      query = query.sql(" limit ?").bind::<Integer, _>(l);
-      limit = l;
-    }
-
-    if let Some(c) = filter.cursor {
-      query = query.sql(" OFFSET ?").bind::<Integer, _>((c - 1) * limit);
-    }
-
-    let result = query
-      .load::<ArticleQueryItem>(&mut connection)
-      .expect("Expect loading articles");
-
-    ArticleQueryResult { list: result }
-  }
-
-  /// get today articles for Today collection
-  pub fn get_today_articles(filter: ArticleFilter) -> ArticleQueryResult {
-    let mut connection = establish_connection();
-    let mut query = diesel::sql_query("").into_boxed();
-    let mut limit = 12;
-
-    query = query.sql(
-      "
+    } else if let Some(_is_today) = filter.is_today {
+      query = query.sql(
+        "
         SELECT
           A.id, A.uuid,
           A.feed_uuid,
@@ -196,66 +159,29 @@ impl Article {
           articles as A
         ON C.uuid = A.feed_uuid
         WHERE DATE(A.create_date) = DATE('now')",
-    );
-
-    match filter.read_status {
-      Some(0) => {
-        1;
-      }
-      Some(status) => {
-        query = query
-          .sql(" AND A.read_status = ?")
-          .bind::<Integer, _>(status);
-      }
-      None => {
-        1;
-      }
+      );
+    } else {
+      query = query.sql(
+        "
+          SELECT
+            A.id, A.uuid,
+            A.feed_uuid,
+            C.title as feed_title,
+            C.link as feed_url,
+            A.link,
+            A.title,
+            A.feed_url,
+            A.description as description,
+            A.pub_date,
+            A.create_date,
+            A.read_status
+          FROM
+            feeds as C
+          LEFT JOIN
+            articles as A
+          ON C.uuid = A.feed_uuid ",
+      );
     }
-
-    query = query.sql(" ORDER BY A.pub_date DESC ");
-
-    if let Some(l) = filter.limit {
-      query = query.sql(" limit ?").bind::<Integer, _>(l);
-      limit = l;
-    }
-
-    if let Some(c) = filter.cursor {
-      query = query.sql(" OFFSET ?").bind::<Integer, _>((c - 1) * limit);
-    }
-
-    let result = query
-      .load::<ArticleQueryItem>(&mut connection)
-      .expect("Expect loading articles");
-
-    ArticleQueryResult { list: result }
-  }
-
-  /// get all articles for All Items collection
-  pub fn get_all_articles(filter: ArticleFilter) -> ArticleQueryResult {
-    let mut connection = establish_connection();
-    let mut query = diesel::sql_query("").into_boxed();
-    let mut limit = 12;
-
-    query = query.sql(
-      "
-        SELECT
-          A.id, A.uuid,
-          A.feed_uuid,
-          C.title as feed_title,
-          C.link as feed_url,
-          A.link,
-          A.title,
-          A.feed_url,
-          A.description as description,
-          A.pub_date,
-          A.create_date,
-          A.read_status
-        FROM
-          feeds as C
-        LEFT JOIN
-          articles as A
-        ON C.uuid = A.feed_uuid ",
-    );
 
     match filter.read_status {
       Some(0) => {
@@ -324,7 +250,7 @@ impl Article {
       result.pop()
     } else {
       None
-    }
+    };
   }
 
   pub fn mark_as_read(params: MarkAllUnreadParam) -> usize {
@@ -449,7 +375,7 @@ impl Article {
   pub fn purge_articles() -> usize {
     let user_config = get_user_config();
 
-    if let Some(cfg)  = user_config {
+    if let Some(cfg) = user_config {
       if cfg.purge_on_days == 0 {
         return 0;
       }
@@ -462,12 +388,9 @@ impl Article {
         query = query.filter(schema::articles::read_status.eq(2));
       }
 
-      let query = query
-        .filter(schema::articles::create_date.lt(expired_date));
+      let query = query.filter(schema::articles::create_date.lt(expired_date));
 
-      let result = query
-        .execute(&mut connection)
-        .expect("purge failed!");
+      let result = query.execute(&mut connection).expect("purge failed!");
 
       log::info!("{:?} articles purged", result);
 
