@@ -28,10 +28,10 @@ export function View() {
   const scrollBoxRef = useRef<ScrollBoxRefObject>(null);
 
   return (
-    <div>
+    <div className="flex-1">
       <div
         className={
-          "h-[var(--app-toolbar-height)] flex items-center justify-end px-2 space-x-0.5 border-b"
+          "h-[var(--app-toolbar-height)] flex items-center justify-end px-2 space-x-0.5 border-b relative z-10 bg-background"
         }
       >
         <ToolbarItemNavigator />
@@ -42,12 +42,12 @@ export function View() {
       </div>
       <AnimatePresence mode="wait">
         <motion.div
-          // key={store.article?.uuid || "view"}
-          // initial={{ y: 20, opacity: 0 }}
-          // animate={{ y: 0, opacity: 1 }}
-          // exit={{ y: -20, opacity: 0 }}
-          // transition={{ duration: 0.2 }}
-          // className="overflow-hidden py-5"
+          key={store.article?.uuid || "view"}
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: -20, opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          className="overflow-hidden"
         >
           <ScrollBox
             className="h-[calc(100vh_-_var(--app-toolbar-height))]"

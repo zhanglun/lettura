@@ -3,8 +3,7 @@
 .article {
   flex: 1;
   height: 100vh;
-  display: grid;
-  grid-template-columns: var(--app-article-width) 1fr;
+  display: flex;
   background-color: var(--app-main-bg-color);
   position: relative;
 }

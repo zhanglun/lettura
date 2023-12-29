@@ -64,8 +64,8 @@ export const Layout1 = React.memo(
     };
 
     return (
-      <div className="grid border-r">
-        <div className="h-[var(--app-toolbar-height)] grid grid-cols-[1fr_1fr] items-center justify-between border-b">
+      <div className="grow-0 basis-[var(--app-article-width)] border-r">
+        <div className="h-[var(--app-toolbar-height)] grid grid-cols-[auto_1fr] items-center justify-between border-b">
           <div
             className="
             flex
