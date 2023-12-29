@@ -63,14 +63,14 @@ export const ArticleItem = React.forwardRef(
                 ? "text-article-active-headline"
                 : "text-article-headline"
             }`,
-            "font-bold text-sm group-hover:text-article-active-headline"
+            "font-bold text-sm group-hover:text-article-active-headline break-all"
           )}
         >
           {article.title}
         </div>
         <div
           className={classnames(
-            "text-xs line-clamp-2",
+            "text-xs line-clamp-2 break-all",
             "text-article-paragraph group-hover:text-article-active-paragraph",
             {
               "text-article-active-paragraph": highlight,
