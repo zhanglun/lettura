@@ -11,8 +11,6 @@ export interface ArticleSlice {
   articleList: ArticleResItem[];
   setArticleList: (list: ArticleResItem[]) => void;
   getArticleList: (query: any) => any;
-  getTodayArticleList: (filter: any) => any;
-  getAllArticleList: (filter: any) => any;
   cursor: number;
   setCursor: (c: number) => number;
   markArticleListAsRead: (isToday: boolean, isAll: boolean) => any;
@@ -57,30 +55,6 @@ export const createArticleSlice: StateCreator<
 
     return dataAgent.getArticleList(query).then((res) => {
       const { list } = res.data as { list: ArticleResItem[] };
-
-      get().setArticleList([...currentList, ...list]);
-
-      return list;
-    });
-  },
-
-  getTodayArticleList: (filter: any) => {
-    const currentList = get().articleList;
-
-    return dataAgent.getTodayArticleList(filter).then(({ data: res }) => {
-      const { list } = res as { list: ArticleResItem[] };
-
-      get().setArticleList([...currentList, ...list]);
-
-      return list;
-    });
-  },
-
-  getAllArticleList: (filter: any) => {
-    const currentList = get().articleList;
-
-    return dataAgent.getAllArticleList(filter).then(({ data: res }) => {
-      const { list } = res as { list: ArticleResItem[] };
 
       get().setArticleList([...currentList, ...list]);
 
@@ -154,6 +128,7 @@ export const createArticleSlice: StateCreator<
 
     return dataAgent.markAllRead(params).then((res) => {
       const { data } = res;
+      console.log("%c Line:131 🍖 data", "color:#e41a6a", data);
       set(() => ({
         articleList: get().articleList.map((_) => {
           _.read_status = 2;
@@ -163,6 +138,8 @@ export const createArticleSlice: StateCreator<
 
       get().getFeedList();
       get().initCollectionMetas();
+
+      return data;
     });
   },
 

@@ -17,6 +17,7 @@ import { Icon } from "@/components/Icon";
 import { TooltipBox } from "@/components/TooltipBox";
 import { useArticle } from "./useArticle";
 import { loadFeed } from "@/hooks/useLoadFeed";
+import { ArticleReadStatus } from "@/typing";
 
 export const Layout1 = React.memo(
   (props: { feedUuid?: string; type?: string }) => {
@@ -32,6 +33,7 @@ export const Layout1 = React.memo(
       updateArticleAndIdx: state.updateArticleAndIdx,
       feed: state.feed,
       syncArticles: state.syncArticles,
+      markArticleListAsRead: state.markArticleListAsRead,
 
       filterList: state.filterList,
       currentFilter: state.currentFilter,
@@ -42,7 +44,7 @@ export const Layout1 = React.memo(
       userConfig: state.userConfig,
     }));
 
-    const { setSize } = useArticle({ feedUuid });
+    const { setSize, articles, mutate, isToday, isAll } = useArticle({ feedUuid });
 
     const handleRefresh = () => {
       if (store.feed && store.feed.uuid) {
@@ -54,6 +56,13 @@ export const Layout1 = React.memo(
     };
 
     const markAllRead = () => {
+      console.log('data', articles)
+      return store.markArticleListAsRead(isToday, isAll).then(() => {
+        mutate([...articles.map(_ => {
+          _.read_status = ArticleReadStatus.READ;
+          return _
+        })])
+      })
     };
 
     const changeFilter = (id: any) => {

@@ -1,9 +1,11 @@
+import { useSWRConfig } from "swr"
 import useSWRInfinite from "swr/infinite";
 import { useBearStore } from "@/stores";
 import { request } from "@/helpers/request";
 import { useMatch } from "react-router-dom";
 import { RouteConfig } from "@/config";
 import { omit } from "lodash";
+import { ArticleResItem } from "@/db";
 
 const PAGE_SIZE = 20;
 
@@ -16,6 +18,7 @@ export function useArticle(props: UseArticleProps) {
   const { feedUuid, type } = props;
   const isToday = useMatch(RouteConfig.LOCAL_TODAY);
   const isAll = useMatch(RouteConfig.LOCAL_ALL);
+  const { mutate } = useSWRConfig();
   const store = useBearStore((state) => ({
     currentFilter: state.currentFilter,
   }));
@@ -30,7 +33,6 @@ export function useArticle(props: UseArticleProps) {
   });
 
   const getKey = (pageIndex: number, previousPageData: any) => {
-    const list = !previousPageData ? [] : previousPageData.list;
     if (previousPageData && !previousPageData.list?.length) return null; // 已经到最后一页
 
     return {
@@ -38,7 +40,7 @@ export function useArticle(props: UseArticleProps) {
       cursor: pageIndex + 1,
     }; // SWR key
   };
-  const { data, error, isLoading, isValidating, mutate, size, setSize } =
+  const { data, error, isLoading, isValidating, size, setSize } =
     useSWRInfinite(getKey, (q) =>
       request
         .get("/articles", {
@@ -50,7 +52,7 @@ export function useArticle(props: UseArticleProps) {
   const list = data
     ? data.reduce((acu, cur) => acu.concat(cur.list || []), [])
     : [];
-  const articles = list ? [].concat(list) : [];
+  const articles: ArticleResItem[] = list ? [].concat(list) : [];
   const isLoadingMore =
     isLoading || (size > 0 && data && typeof data[size - 1] === "undefined");
   const isEmpty = !isLoading && list.length === 0;
@@ -62,6 +64,7 @@ export function useArticle(props: UseArticleProps) {
     articles,
     error,
     isLoading,
+    globalMutate: mutate,
     isValidating,
     isLoadingMore,
     size,
@@ -69,5 +72,7 @@ export function useArticle(props: UseArticleProps) {
     isEmpty,
     isReachingEnd,
     isRefreshing,
+    isToday: !!isToday,
+    isAll: !!isAll,
   };
 }
