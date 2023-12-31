@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React from "react";
 import { useParams } from "react-router-dom";
 import { ArticleList } from "@/components/ArticleList";
 import { useBearStore } from "@/stores";
@@ -51,6 +51,7 @@ export const Layout1 = React.memo(
       isValidating,
       isLoadingMore,
       size,
+      mutate,
       setSize,
       isEmpty,
       isReachingEnd,
@@ -66,21 +67,14 @@ export const Layout1 = React.memo(
     const handleRefresh = () => {
       if (store.feed && store.feed.uuid) {
         loadFeed(store.feed, store.syncArticles, () => {
-          // TODO: get article list
-          // setSize(1);
+          mutate();
         });
       }
     };
 
     const markAllRead = () => {
-      console.log("data", articles);
       return store.markArticleListAsRead(isToday, isAll).then(() => {
-        updateData([
-          ...articles.map((_) => {
-            _.read_status = ArticleReadStatus.READ;
-            return _;
-          }),
-        ]);
+        mutate();
       });
     };
 
@@ -160,6 +154,7 @@ export const Layout1 = React.memo(
             type={type}
             feedUuid={feedUuid}
             isLoading={isLoading}
+            isRefreshing={isRefreshing}
             isEmpty={isEmpty}
             isReachingEnd={isReachingEnd}
             size={size}

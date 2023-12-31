@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import { ArticleItem } from "../ArticleItem";
 import { Skeleton } from "../ui/skeleton";
 import { useIntersectionObserver } from "./useIntersectionObserver";
-import { useArticle } from "@/layout/Article/useArticle";
 import { ArticleResItem } from "@/db";
 import { Snail } from "lucide-react";
 
@@ -14,6 +13,7 @@ export type ArticleListProps = {
   articles: ArticleResItem[];
   size: any;
   setSize: any;
+  isRefreshing?: boolean;
   isReachingEnd?: boolean;
   isEmpty: boolean;
   isLoading: boolean;
