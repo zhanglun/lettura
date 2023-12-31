@@ -58,7 +58,7 @@ export const ArticleList = React.memo((props: ArticleListProps) => {
       {isEmpty ? (
         <div className="absolute top-1/2 -translate-y-1/2 w-full flex flex-col justify-center items-center gap-1 text-muted-foreground">
           <Snail size={34} strokeWidth={1} />
-          <p>Yay, no unread articles found.</p>
+          <p>Yay, no matching items.</p>
         </div>
       ) : null}
       <ul className="m-0 grid gap-2 py-2 px-2">{renderList()}</ul>
