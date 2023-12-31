@@ -4,7 +4,8 @@ import { FeedResItem } from "@/db";
 export function loadFeed(
   feed: FeedResItem,
   requester: (feed: FeedResItem) => Promise<any>,
-  after: (...args: any[]) => any
+  success: (...args: any[]) => any,
+  fail: (...args: any[]) => any
 ) {
   const toastId = toast("Sonner");
   toast.loading("Start reloading, Please wait...", {
@@ -21,8 +22,9 @@ export function loadFeed(
         id: toastId,
         description: message,
       });
+      fail();
     } else {
-      after();
+      success();
       toast.success(
         num > 0
           ? `We have ${num} new pieces of data from ${title}`
@@ -32,5 +34,11 @@ export function loadFeed(
         }
       );
     }
+  }).catch((e) => {
+      fail();
+      toast.error(`Something wrong!`, {
+        id: toastId,
+        description: e.message,
+      });
   });
 }

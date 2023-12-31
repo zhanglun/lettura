@@ -13,8 +13,6 @@ import "./styles/index.global.scss";
 
 function App() {
   const store = useBearStore((state) => ({
-    goPreviousArticle: state.goPreviousArticle,
-    goNextArticle: state.goNextArticle,
     getUserConfig: state.getUserConfig,
   }));
 

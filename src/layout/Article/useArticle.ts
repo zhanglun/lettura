@@ -1,11 +1,12 @@
-// import { useSWRConfig } from "swr"
 import useSWRInfinite from "swr/infinite";
 import { useBearStore } from "@/stores";
 import { request } from "@/helpers/request";
 import { useMatch } from "react-router-dom";
 import { RouteConfig } from "@/config";
-import { omit } from "lodash";
+import { omit, throttle } from "lodash";
 import { ArticleResItem } from "@/db";
+import { useCallback, useState } from "react";
+import { ArticleReadStatus } from "@/typing";
 
 const PAGE_SIZE = 20;
 
@@ -18,10 +19,11 @@ export function useArticle(props: UseArticleProps) {
   const { feedUuid, type } = props;
   const isToday = useMatch(RouteConfig.LOCAL_TODAY);
   const isAll = useMatch(RouteConfig.LOCAL_ALL);
-  // const { mutate } = useSWRConfig();
   const store = useBearStore((state) => ({
     currentFilter: state.currentFilter,
+    updateArticleStatus: state.updateArticleStatus,
   }));
+  const [currentUuid, setCurrentUuid] = useState<string>();
 
   const query = omit({
     read_status: store.currentFilter.id,
@@ -67,16 +69,11 @@ export function useArticle(props: UseArticleProps) {
     isEmpty || (data && data[data.length - 1]?.list?.length < PAGE_SIZE);
   const isRefreshing = isValidating && data && data.length === size;
 
-  function updateData (list: ArticleResItem[]) {
-    mutate(list, false)
-  }
-
   return {
     articles,
     error,
     isLoading,
     mutate,
-    updateData,
     isValidating,
     isLoadingMore,
     size,

@@ -15,6 +15,7 @@ export interface ArticleSlice {
   setCursor: (c: number) => number;
   markArticleListAsRead: (isToday: boolean, isAll: boolean) => any;
 
+  updateArticleStatus: (article: ArticleResItem, status: ArticleReadStatus) => any;
   updateArticleAndIdx: (ArticleResItem: ArticleResItem, idx?: number) => void;
   goPreviousArticle: any;
   goNextArticle: any;
@@ -62,17 +63,10 @@ export const createArticleSlice: StateCreator<
     });
   },
 
-  updateArticleAndIdx: (article: ArticleResItem, idx?: number) => {
-    console.log("update ArticleResItem and Idx", idx);
-    let articleList = get().articleList;
-
-    if (idx === undefined || idx < 0) {
-      idx = articleList.findIndex((item) => item.uuid === article.uuid);
-      console.log("🚀 ~ file: useBearStore.ts:57 ~ useBearStore ~ idx:", idx);
-    }
-
-    if (article.read_status === ArticleReadStatus.UNREAD) {
-      dataAgent.updateArticleReadStatus(article.uuid, 2).then((res) => {
+  updateArticleStatus: (article: ArticleResItem, status: ArticleReadStatus) => {
+    return dataAgent
+      .updateArticleReadStatus(article.uuid, status)
+      .then((res) => {
         if (res) {
           let isToday = dayjs(
             dayjs(article.create_date).format("YYYY-MM-DD")
@@ -81,19 +75,42 @@ export const createArticleSlice: StateCreator<
           get().updateCollectionMeta(isToday ? -1 : 0, -1);
           get().updateUnreadCount(article.feed_uuid, "decrease", 1);
 
-          article.read_status = ArticleReadStatus.READ;
-
-          set(() => ({
-            article,
-            currentIdx: idx,
-          }));
+          article.read_status = status;
         }
       });
-    }
+  },
+
+  updateArticleAndIdx: (article: ArticleResItem, idx?: number) => {
+    // console.log("update ArticleResItem and Idx", idx);
+    // let articleList = get().articleList;
+
+    // if (idx === undefined || idx < 0) {
+    //   idx = articleList.findIndex((item) => item.uuid === article.uuid);
+    //   console.log("🚀 ~ file: useBearStore.ts:57 ~ useBearStore ~ idx:", idx);
+    // }
+
+    // if (article.read_status === ArticleReadStatus.UNREAD) {
+    //   dataAgent.updateArticleReadStatus(article.uuid, 2).then((res) => {
+    //     if (res) {
+    //       let isToday = dayjs(
+    //         dayjs(article.create_date).format("YYYY-MM-DD")
+    //       ).isSame(dayjs().format("YYYY-MM-DD"));
+
+    //       get().updateCollectionMeta(isToday ? -1 : 0, -1);
+    //       get().updateUnreadCount(article.feed_uuid, "decrease", 1);
+
+    //       article.read_status = ArticleReadStatus.READ;
+
+    //       set(() => ({
+    //         article,
+    //         currentIdx: idx,
+    //       }));
+    //     }
+    //   });
+    // }
 
     set(() => ({
       article,
-      currentIdx: idx,
     }));
   },
 

@@ -112,6 +112,8 @@ const ChannelList = (): JSX.Element => {
     if (feed) {
       loadFeed(feed, store.syncArticles, () => {
         // TODO: get article List
+      }, () => {
+
       });
     }
   };
