@@ -1,4 +1,4 @@
-import { useSWRConfig } from "swr"
+// import { useSWRConfig } from "swr"
 import useSWRInfinite from "swr/infinite";
 import { useBearStore } from "@/stores";
 import { request } from "@/helpers/request";
@@ -18,7 +18,7 @@ export function useArticle(props: UseArticleProps) {
   const { feedUuid, type } = props;
   const isToday = useMatch(RouteConfig.LOCAL_TODAY);
   const isAll = useMatch(RouteConfig.LOCAL_ALL);
-  const { mutate } = useSWRConfig();
+  // const { mutate } = useSWRConfig();
   const store = useBearStore((state) => ({
     currentFilter: state.currentFilter,
   }));
@@ -40,13 +40,20 @@ export function useArticle(props: UseArticleProps) {
       cursor: pageIndex + 1,
     }; // SWR key
   };
-  const { data, error, isLoading, isValidating, size, setSize } =
-    useSWRInfinite(getKey, (q) =>
-      request
-        .get("/articles", {
-          params: { ...q },
-        })
-        .then((res) => res.data)
+  const { data, error, isLoading, isValidating, size, mutate, setSize } =
+    useSWRInfinite(
+      getKey,
+      (q) =>
+        request
+          .get("/articles", {
+            params: { ...q },
+          })
+          .then((res) => res.data),
+      {
+        revalidateIfStale: false,
+        revalidateOnFocus: false,
+        revalidateOnReconnect: false,
+      }
     );
 
   const list = data
@@ -60,11 +67,16 @@ export function useArticle(props: UseArticleProps) {
     isEmpty || (data && data[data.length - 1]?.list?.length < PAGE_SIZE);
   const isRefreshing = isValidating && data && data.length === size;
 
+  function updateData (list: ArticleResItem[]) {
+    mutate(list, false)
+  }
+
   return {
     articles,
     error,
     isLoading,
-    globalMutate: mutate,
+    mutate,
+    updateData,
     isValidating,
     isLoadingMore,
     size,

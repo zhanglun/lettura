@@ -44,7 +44,24 @@ export const Layout1 = React.memo(
       userConfig: state.userConfig,
     }));
 
-    const { setSize, articles, mutate, isToday, isAll } = useArticle({ feedUuid });
+    const {
+      articles,
+      error,
+      isLoading,
+      isValidating,
+      isLoadingMore,
+      size,
+      setSize,
+      isEmpty,
+      isReachingEnd,
+      isRefreshing,
+      isToday,
+      isAll,
+      updateData,
+    } = useArticle({
+      feedUuid,
+      type,
+    });
 
     const handleRefresh = () => {
       if (store.feed && store.feed.uuid) {
@@ -56,13 +73,15 @@ export const Layout1 = React.memo(
     };
 
     const markAllRead = () => {
-      console.log('data', articles)
+      console.log("data", articles);
       return store.markArticleListAsRead(isToday, isAll).then(() => {
-        mutate([...articles.map(_ => {
-          _.read_status = ArticleReadStatus.READ;
-          return _
-        })])
-      })
+        updateData([
+          ...articles.map((_) => {
+            _.read_status = ArticleReadStatus.READ;
+            return _;
+          }),
+        ]);
+      });
     };
 
     const changeFilter = (id: any) => {
@@ -136,9 +155,15 @@ export const Layout1 = React.memo(
         </div>
         <div className="relative h-full">
           <ArticleList
+            articles={articles}
             title={params.name}
             type={type}
             feedUuid={feedUuid}
+            isLoading={isLoading}
+            isEmpty={isEmpty}
+            isReachingEnd={isReachingEnd}
+            size={size}
+            setSize={setSize}
           />
         </div>
       </div>

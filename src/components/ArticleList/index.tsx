@@ -4,11 +4,19 @@ import { ArticleItem } from "../ArticleItem";
 import { Skeleton } from "../ui/skeleton";
 import { useIntersectionObserver } from "./useIntersectionObserver";
 import { useArticle } from "@/layout/Article/useArticle";
+import { ArticleResItem } from "@/db";
+import { Snail } from "lucide-react";
 
 export type ArticleListProps = {
   feedUuid?: string;
   type?: string;
   title: string | null;
+  articles: ArticleResItem[];
+  size: any;
+  setSize: any;
+  isReachingEnd?: boolean;
+  isEmpty: boolean;
+  isLoading: boolean;
 };
 
 export interface ArticleListRefType {
@@ -19,26 +27,10 @@ export interface ArticleListRefType {
 }
 
 export const ArticleList = React.memo((props: ArticleListProps) => {
-  const { feedUuid, type, title } = props;
+  const { articles, isEmpty, isLoading, isReachingEnd, size, setSize } = props;
   const loadRef = useRef<HTMLDivElement | null>(null);
   const entry = useIntersectionObserver(loadRef, {});
   const loadRefVisible = !!entry?.isIntersecting;
-
-  const {
-    articles,
-    error,
-    isLoading,
-    isValidating,
-    isLoadingMore,
-    size,
-    setSize,
-    isEmpty,
-    isReachingEnd,
-    isRefreshing,
-  } = useArticle({
-    feedUuid,
-    type,
-  });
 
   const renderList = (): JSX.Element[] => {
     return (articles || []).map((article: any, idx: number) => {
@@ -63,7 +55,12 @@ export const ArticleList = React.memo((props: ArticleListProps) => {
 
   return (
     <div className="overflow-y-auto h-[calc(100vh_-_var(--app-toolbar-height))]">
-      {isEmpty ? <p>Yay, no issues found.</p> : null}
+      {isEmpty ? (
+        <div className="absolute top-1/2 -translate-y-1/2 w-full flex flex-col justify-center items-center gap-1 text-muted-foreground">
+          <Snail size={34} strokeWidth={1} />
+          <p>Yay, no unread articles found.</p>
+        </div>
+      ) : null}
       <ul className="m-0 grid gap-2 py-2 px-2">{renderList()}</ul>
       <div ref={loadRef} className="pt-1">
         {isLoading && (

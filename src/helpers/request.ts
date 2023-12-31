@@ -13,8 +13,6 @@ export const createInstance = (config: AxiosRequestConfig): AxiosInstance => {
 }
 
 export const get = (url: string, config?: AxiosRequestConfig) => {
-  console.log("%c Line:16 🍞 url", "color:#e41a6a", url);
-  console.log("%c Line:16 🍐 config", "color:#7f2b82", config);
   const _instance = createInstance(config || {});
 
   return _instance.get(url, config).then((res: AxiosResponse) => {
