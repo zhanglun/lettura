@@ -64,6 +64,10 @@ export const createArticleSlice: StateCreator<
   },
 
   updateArticleStatus: (article: ArticleResItem, status: ArticleReadStatus) => {
+    if (article.read_status === status) {
+      return Promise.resolve();
+    }
+
     return dataAgent
       .updateArticleReadStatus(article.uuid, status)
       .then((res) => {
@@ -72,43 +76,21 @@ export const createArticleSlice: StateCreator<
             dayjs(article.create_date).format("YYYY-MM-DD")
           ).isSame(dayjs().format("YYYY-MM-DD"));
 
-          get().updateCollectionMeta(isToday ? -1 : 0, -1);
-          get().updateUnreadCount(article.feed_uuid, "decrease", 1);
+          if (status === ArticleReadStatus.READ) {
+            console.log("%c Line:80 🥪 ArticleReadStatus.READ", "color:#f5ce50", ArticleReadStatus.READ);
+            get().updateCollectionMeta(isToday ? -1 : 0, -1);
+            get().updateUnreadCount(article.feed_uuid, "decrease", 1);
+          }
 
-          article.read_status = status;
+          if (status === ArticleReadStatus.UNREAD) {
+            get().updateCollectionMeta(isToday ? 1 : 0, 1);
+            get().updateUnreadCount(article.feed_uuid, "increase", 1);
+          }
         }
       });
   },
 
   updateArticleAndIdx: (article: ArticleResItem, idx?: number) => {
-    // console.log("update ArticleResItem and Idx", idx);
-    // let articleList = get().articleList;
-
-    // if (idx === undefined || idx < 0) {
-    //   idx = articleList.findIndex((item) => item.uuid === article.uuid);
-    //   console.log("🚀 ~ file: useBearStore.ts:57 ~ useBearStore ~ idx:", idx);
-    // }
-
-    // if (article.read_status === ArticleReadStatus.UNREAD) {
-    //   dataAgent.updateArticleReadStatus(article.uuid, 2).then((res) => {
-    //     if (res) {
-    //       let isToday = dayjs(
-    //         dayjs(article.create_date).format("YYYY-MM-DD")
-    //       ).isSame(dayjs().format("YYYY-MM-DD"));
-
-    //       get().updateCollectionMeta(isToday ? -1 : 0, -1);
-    //       get().updateUnreadCount(article.feed_uuid, "decrease", 1);
-
-    //       article.read_status = ArticleReadStatus.READ;
-
-    //       set(() => ({
-    //         article,
-    //         currentIdx: idx,
-    //       }));
-    //     }
-    //   });
-    // }
-
     set(() => ({
       article,
     }));

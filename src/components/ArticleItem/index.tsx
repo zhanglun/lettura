@@ -9,8 +9,9 @@ import { ArticleReadStatus } from "@/typing";
 export const ArticleItem = React.forwardRef(
   (props: { article: ArticleResItem }, ref: ForwardedRef<HTMLLIElement>) => {
     const store = useBearStore((state) => ({
-      updateArticleAndIdx: state.updateArticleAndIdx,
+      updateArticleStatus: state.updateArticleStatus,
       article: state.article,
+      setArticle: state.setArticle,
       feed: state.feed,
     }));
     const { article } = props;
@@ -22,7 +23,8 @@ export const ArticleItem = React.forwardRef(
         setReadStatus(ArticleReadStatus.READ);
       }
 
-      store.updateArticleAndIdx(article);
+      store.updateArticleStatus({...article}, ArticleReadStatus.READ);
+      store.setArticle(article);
     };
 
     const handleClick = async (e: React.MouseEvent) => {

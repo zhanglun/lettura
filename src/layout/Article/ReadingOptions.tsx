@@ -25,7 +25,6 @@ export const ReadingOptions = (props: NavigatorProps) => {
     article: state.article,
     articleList: state.articleList,
     setArticle: state.setArticle,
-    updateArticleAndIdx: state.updateArticleAndIdx,
     feed: state.feed,
 
     articleDialogViewStatus: state.articleDialogViewStatus,

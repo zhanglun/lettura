@@ -28,14 +28,12 @@ export const Layout1 = React.memo(
     // @ts-ignore
     const params: { name: string } = useParams();
     const [isSyncing, setIsSyncing] = useState(false);
-    const [currentUuid, setCurrentUuid] = useState<string>();
     const listRef = useRef<HTMLDivElement>(null);
 
     const store = useBearStore((state) => ({
       viewMeta: state.viewMeta,
       article: state.article,
       setArticle: state.setArticle,
-      updateArticleAndIdx: state.updateArticleAndIdx,
       feed: state.feed,
       syncArticles: state.syncArticles,
       markArticleListAsRead: state.markArticleListAsRead,
@@ -143,11 +141,12 @@ export const Layout1 = React.memo(
       for (let i = 0; i < articles.length; i++) {
         if (articles[i].uuid === uuid && i !== 0) {
           previousItem = articles[i - 1];
+
+          store.updateArticleStatus({...previousItem}, ArticleReadStatus.READ);
+
+          store.setArticle(previousItem);
           previousItem.read_status = ArticleReadStatus.READ;
 
-          store.updateArticleStatus(previousItem, ArticleReadStatus.READ);
-          setCurrentUuid((_) => previousItem.uuid);
-          store.setArticle(previousItem);
           calculateItemPosition("up", previousItem);
 
           break;
@@ -174,9 +173,11 @@ export const Layout1 = React.memo(
         nextItem = articles[0];
       }
 
+      store.updateArticleStatus({...nextItem}, ArticleReadStatus.READ);
+
       nextItem.read_status = ArticleReadStatus.READ;
-      store.updateArticleStatus(nextItem, ArticleReadStatus.READ);
       store.setArticle(nextItem);
+
       calculateItemPosition("down", nextItem);
 
       return [false];
@@ -187,7 +188,7 @@ export const Layout1 = React.memo(
         console.warn("goPrev");
         goPreviousArticle();
       }, 300),
-      [currentUuid, articles]
+      [articles]
     );
 
     const goNext = useCallback(
@@ -200,7 +201,7 @@ export const Layout1 = React.memo(
           // getList({ cursor: store.cursor + 1 });
         }
       }, 300),
-      [currentUuid, articles]
+      [articles]
     );
 
     useHotkeys("n", goNext);
