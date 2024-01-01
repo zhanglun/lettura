@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { ArticleList } from "@/components/ArticleList";
 import { useBearStore } from "@/stores";
@@ -29,6 +29,7 @@ export const Layout1 = React.memo(
     const params: { name: string } = useParams();
     const [isSyncing, setIsSyncing] = useState(false);
     const [currentUuid, setCurrentUuid] = useState<string>();
+    const listRef = useRef<HTMLDivElement>(null);
 
     const store = useBearStore((state) => ({
       viewMeta: state.viewMeta,
@@ -98,6 +99,43 @@ export const Layout1 = React.memo(
       }
     };
 
+    function calculateItemPosition(
+      direction: "up" | "down",
+      article: ArticleResItem | null
+    ) {
+      if (!article?.uuid) {
+        return;
+      }
+
+      const $li = document.getElementById(article.uuid);
+      const bounding = $li?.getBoundingClientRect();
+      const winH = window.innerHeight;
+
+      if (
+        (direction === "up" || direction === "down") &&
+        bounding &&
+        bounding.top < 58
+      ) {
+        const offset = 58 - bounding.top;
+        const scrollTop = (listRef?.current?.scrollTop || 0) - offset;
+
+        listRef?.current?.scrollTo(0, scrollTop);
+      } else if (
+        (direction === "up" || direction === "down") &&
+        bounding &&
+        bounding.bottom > winH
+      ) {
+        const offset = bounding.bottom - winH;
+        const scrollTop = (listRef?.current?.scrollTop || 0) + offset;
+
+        console.log(
+          "🚀 ~ file: index.tsx:324 ~ ArticleContainer ~ scrollTop:",
+          scrollTop
+        );
+        listRef?.current?.scrollTo(0, scrollTop);
+      }
+    }
+
     function goPreviousArticle() {
       let previousItem: ArticleResItem;
       let uuid = store.article?.uuid;
@@ -110,6 +148,7 @@ export const Layout1 = React.memo(
           store.updateArticleStatus(previousItem, ArticleReadStatus.READ);
           setCurrentUuid((_) => previousItem.uuid);
           store.setArticle(previousItem);
+          calculateItemPosition("up", previousItem);
 
           break;
         }
@@ -138,6 +177,7 @@ export const Layout1 = React.memo(
       nextItem.read_status = ArticleReadStatus.READ;
       store.updateArticleStatus(nextItem, ArticleReadStatus.READ);
       store.setArticle(nextItem);
+      calculateItemPosition("down", nextItem);
 
       return [false];
     };
@@ -229,6 +269,7 @@ export const Layout1 = React.memo(
         </div>
         <div className="relative h-full">
           <ArticleList
+            ref={listRef}
             articles={articles}
             title={params.name}
             type={type}

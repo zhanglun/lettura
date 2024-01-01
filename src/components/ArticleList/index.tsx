@@ -26,7 +26,7 @@ export interface ArticleListRefType {
   innerRef: React.RefObject<HTMLDivElement>;
 }
 
-export const ArticleList = React.memo((props: ArticleListProps) => {
+export const ArticleList = React.memo(React.forwardRef<HTMLDivElement, any>((props: ArticleListProps, ref) => {
   const { articles, isEmpty, isLoading, isReachingEnd, size, setSize } = props;
   const loadRef = useRef<HTMLDivElement | null>(null);
   const entry = useIntersectionObserver(loadRef, {});
@@ -54,7 +54,7 @@ export const ArticleList = React.memo((props: ArticleListProps) => {
   }, [loadRefVisible, isReachingEnd]);
 
   return (
-    <div className="overflow-y-auto h-[calc(100vh_-_var(--app-toolbar-height))]">
+    <div className="overflow-y-auto h-[calc(100vh_-_var(--app-toolbar-height))]" ref={ref}>
       {isEmpty ? (
         <div className="absolute top-1/2 -translate-y-1/2 w-full flex flex-col justify-center items-center gap-1 text-muted-foreground">
           <Snail size={34} strokeWidth={1} />
@@ -80,4 +80,4 @@ export const ArticleList = React.memo((props: ArticleListProps) => {
       </div>
     </div>
   );
-});
+}));
