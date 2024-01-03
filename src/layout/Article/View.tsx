@@ -40,7 +40,7 @@ export function View() {
         </span>
         <ReadingOptions />
       </div>
-      <AnimatePresence mode="wait">
+      <AnimatePresence>
         <motion.div
           key={store.article?.uuid || "view"}
           initial={{ y: 20, opacity: 0 }}
