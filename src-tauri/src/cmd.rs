@@ -185,14 +185,6 @@ pub async fn add_feed(url: String) -> (Option<models::Feed>, usize, String) {
     Err(err) => (None, 0, err),
   }
 }
-#[command]
-pub async fn import_channels(list: Vec<String>) -> usize {
-  println!("{:?}", &list);
-  for url in &list {
-    add_feed(url.to_string()).await;
-  }
-  1
-}
 
 // the payload type must implement `Serialize` and `Clone`.
 #[derive(Clone, serde::Serialize)]

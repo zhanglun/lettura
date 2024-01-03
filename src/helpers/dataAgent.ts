@@ -67,14 +67,6 @@ export const deleteFolder = async (uuid: string) => {
   return invoke("delete_folder", { uuid });
 };
 
-export const updateCountWithChannel = async (feedUrl: string): Promise<any> => {
-  return {};
-};
-
-export const importChannels = async (list: string[]) => {
-  return invoke("import_channels", { list });
-};
-
 export const getArticleList = async (
   filter: any
 ) => {

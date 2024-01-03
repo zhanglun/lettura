@@ -45,12 +45,19 @@ pub struct ArticleQueryItem {
 
   #[diesel(sql_type = Integer)]
   pub read_status: i32,
+
+  #[diesel(sql_type = Integer)]
+  pub starred: i32,
 }
 pub struct Common {}
 pub struct GlobalSearchQuery {
   pub query: String,
   pub limit: Option<i32>,
   pub cursor: Option<i32>,
+}
+
+pub struct StaredQueryItem {
+
 }
 
 impl Common {
@@ -76,7 +83,8 @@ impl Common {
           A.content,
           A.create_date,
           A.update_date,
-          A.read_status
+          A.read_status,
+          A.starred
         FROM
           articles AS A
         LEFT JOIN feeds as F
@@ -95,7 +103,7 @@ impl Common {
       .bind::<Text, _>(format!("%{}%", query))
       .bind::<Text, _>(format!("%{}%", query))
       .bind::<Integer, _>(limit)
-      .bind::<Integer, _>((cursor - 1) * limit)
+      .bind::<Integer, _>((cursor - 1) * limit.clone())
       .get_results(&mut connection)
       .unwrap();
 

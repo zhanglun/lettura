@@ -58,6 +58,8 @@ pub struct ArticleQueryItem {
   pub create_date: String,
   #[diesel(sql_type = Integer)]
   pub read_status: i32,
+  #[diesel(sql_type = Integer)]
+  pub starred: i32,
 }
 
 #[derive(Debug, Serialize)]
@@ -125,7 +127,8 @@ impl Article {
               A.description as description,
               A.pub_date,
               A.create_date,
-              A.read_status
+              A.read_status,
+              A.starred
             FROM
               feeds as C
             LEFT JOIN
@@ -152,7 +155,8 @@ impl Article {
           A.description as description,
           A.pub_date,
           A.create_date,
-          A.read_status
+          A.read_status,
+          A.starred
         FROM
           feeds as C
         LEFT JOIN
@@ -174,7 +178,8 @@ impl Article {
             A.description as description,
             A.pub_date,
             A.create_date,
-            A.read_status
+            A.read_status,
+            A.starred
           FROM
             feeds as C
           LEFT JOIN
@@ -201,7 +206,7 @@ impl Article {
 
     if let Some(l) = filter.limit {
       query = query.sql(" limit ?").bind::<Integer, _>(l);
-      limit = l;
+      limit = l.clone();
     }
 
     if let Some(c) = filter.cursor {

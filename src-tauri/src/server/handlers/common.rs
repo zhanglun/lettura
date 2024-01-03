@@ -8,7 +8,7 @@ use crate::core::config;
 pub async fn handle_get_user_config() -> Result<impl Responder> {
   let user_config = config::load_or_initial();
 
-  println!("useConfig {:?}", user_config);
+  log::info!("===> USER CONFIG {:?}", user_config);
 
   Ok(web::Json(user_config))
 }
@@ -30,20 +30,20 @@ pub struct SearchRequest {
 pub async fn handle_search(search: web::Query<SearchRequest>) -> Result<impl Responder> {
   let result = common::Common::global_search(common::GlobalSearchQuery {
     query: search.query.to_string(),
-    limit: search.limit,
-    cursor: search.cursor
+    limit: search.limit.clone(),
+    cursor: search.cursor.clone()
   });
 
   Ok(web::Json(result))
 }
 
-#[get("/api/star")]
-pub async fn handle_get_favorite() -> Result<impl Responder> {
+#[get("/api/stared")]
+pub async fn handle_get_stared() -> Result<impl Responder> {
   Ok("")
 }
 
 #[post("/api/star")]
-pub async fn handle_update_favorite() -> Result<impl Responder> {
+pub async fn handle_update_stared() -> Result<impl Responder> {
   Ok("")
 }
 
@@ -52,6 +52,6 @@ pub fn config(cfg: &mut web::ServiceConfig) {
     .service(handle_get_user_config)
     .service(handle_update_user_config)
     .service(handle_search)
-    .service(handle_get_favorite)
-    .service(handle_update_favorite);
+    .service(handle_get_stared)
+    .service(handle_update_stared);
 }

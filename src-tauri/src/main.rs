@@ -115,7 +115,6 @@ async fn main() {
     .invoke_handler(tauri::generate_handler![
       cmd::fetch_feed,
       cmd::add_feed,
-      cmd::import_channels,
       cmd::update_user_config,
       cmd::update_proxy,
       cmd::update_threads,
