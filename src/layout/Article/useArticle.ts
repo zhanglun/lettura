@@ -35,6 +35,8 @@ export function useArticle(props: UseArticleProps) {
     is_starred: isStarred && 1,
   });
 
+  console.log("%c Line:29 🍖 query", "color:#ea7e5c", query);
+
   const getKey = (pageIndex: number, previousPageData: any) => {
     if (previousPageData && !previousPageData.list?.length) return null; // 已经到最后一页
 
@@ -53,9 +55,9 @@ export function useArticle(props: UseArticleProps) {
           })
           .then((res) => res.data),
       {
-        revalidateIfStale: false,
-        revalidateOnFocus: false,
-        revalidateOnReconnect: false,
+        revalidateIfStale: true,
+        revalidateOnFocus: true,
+        revalidateOnReconnect: true,
       }
     );
 

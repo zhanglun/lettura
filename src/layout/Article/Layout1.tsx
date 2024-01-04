@@ -67,6 +67,8 @@ export const Layout1 = React.memo(
       type,
     });
 
+    console.log("%c Line:65 🍡 isStarred", "color:#f5ce50", isStarred);
+
     const handleRefresh = () => {
       if (store.feed && store.feed.uuid) {
         setIsSyncing(true);
