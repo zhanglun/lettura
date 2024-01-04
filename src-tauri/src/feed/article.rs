@@ -323,6 +323,21 @@ impl Article {
     }
   }
 
+  pub fn update_article_star_status(uuid: String, status: i32) -> usize {
+    let mut connection = establish_connection();
+    let article = Self::get_article_with_uuid(String::from(&uuid));
+
+    if let Some(article) = article {
+      let res = diesel::update(schema::articles::dsl::articles.filter(schema::articles::uuid.eq(&uuid)))
+        .set(schema::articles::starred.eq(status as i32))
+        .execute(&mut connection)
+        .unwrap_or(0);
+      res
+    } else {
+      0
+    }
+  }
+
   pub fn update_articles_read_status_channel(uuid: String) -> usize {
     let mut connection = establish_connection();
     let mut channel_uuids: Vec<String> = vec![];

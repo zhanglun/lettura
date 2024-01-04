@@ -2,7 +2,7 @@ import { formatDistanceToNow, parseISO } from "date-fns";
 import { CheckCircle2, Circle, ExternalLink, Link, Star } from "lucide-react";
 import { ArticleResItem } from "@/db";
 import clsx from "clsx";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { open } from "@tauri-apps/api/shell";
 import { Icon } from "@/components/Icon";
 import { getBestImages } from "@/helpers/parseXML";
@@ -10,6 +10,7 @@ import * as dataAgent from "@/helpers/dataAgent";
 import { ArticleReadStatus } from "@/typing";
 import { TooltipBox } from "@/components/TooltipBox";
 import { useToast } from "@/components/ui/use-toast";
+import { StarAndRead } from "@/layout/Article/StarAndRead";
 
 export interface ResultItemProps {
   article: ArticleResItem;
@@ -37,21 +38,6 @@ export function ResultItem(props: ResultItemProps) {
           setReadStatus(ArticleReadStatus.READ);
         });
     }
-  }
-
-  function toggleReadStatus() {
-    let newStatus: number = 1;
-
-    if (readStatus === ArticleReadStatus.UNREAD) {
-      newStatus = ArticleReadStatus.READ;
-    } else {
-      newStatus = ArticleReadStatus.UNREAD;
-    }
-
-    dataAgent.updateArticleReadStatus(article.uuid, newStatus).then(() => {
-      article.read_status = newStatus;
-      setReadStatus(newStatus);
-    });
   }
 
   function handleCopyLink() {
@@ -133,43 +119,15 @@ export function ResultItem(props: ResultItemProps) {
           })}
         </div>
         <div className="flex items-center gap-1">
-          <Icon className="w-7 h-7">
-            <Star strokeWidth={1} size={20} />
-          </Icon>
-          {article.read_status === ArticleReadStatus.UNREAD && (
-            <TooltipBox content="Mark as read">
-              <Icon
-                className="w-7 h-7"
-                onClick={(e: React.MouseEvent<HTMLElement>) => {
-                  e.stopPropagation();
-                  toggleReadStatus();
-                }}
-              >
-                <Circle strokeWidth={1} size={20} />
-              </Icon>
-            </TooltipBox>
-          )}
-          {article.read_status === ArticleReadStatus.READ && (
-            <TooltipBox content="Mark as unread">
-              <Icon
-                className="w-7 h-7"
-                onClick={(e: React.MouseEvent<HTMLElement>) => {
-                  e.stopPropagation();
-                  toggleReadStatus();
-                }}
-              >
-                <CheckCircle2 strokeWidth={1} size={20} />
-              </Icon>
-            </TooltipBox>
-          )}
+          <StarAndRead article={article} />
           <TooltipBox content="Open in browser">
             <Icon className="w-7 h-7" onClick={openInBrowser}>
-              <ExternalLink strokeWidth={1} size={20} />
+              <ExternalLink size={16} />
             </Icon>
           </TooltipBox>
           <TooltipBox content="Copy link">
             <Icon className="w-7 h-7" onClick={handleCopyLink}>
-              <Link strokeWidth={1} size={20} />
+              <Link size={16} />
             </Icon>
           </TooltipBox>
         </div>

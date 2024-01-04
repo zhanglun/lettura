@@ -139,6 +139,9 @@ pub struct Article {
 
   #[diesel(sql_type = Text)]
   pub media_object: Option<String>,
+
+  #[diesel(sql_type = Integer)]
+  pub starred: i32,
 }
 
 #[derive(Debug, Insertable, Clone)]

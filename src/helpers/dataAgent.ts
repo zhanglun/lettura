@@ -60,7 +60,7 @@ export const moveChannelIntoFolder = async (
  * @param {String} uuid  channel 的 uuid
  */
 export const deleteChannel = async (uuid: string) => {
-  return request.delete(`feeds/${uuid}`);
+  return request.delete(`feeds/${ uuid }`);
 };
 
 export const deleteFolder = async (uuid: string) => {
@@ -79,19 +79,19 @@ export const getArticleList = async (
   return req;
 };
 
-export const fetchFeed = async (url: string): Promise<[any, string]> => {
+export const fetchFeed = async (url: string): Promise<[ any, string ]> => {
   return invoke("fetch_feed", { url });
 };
 
-export const addChannel = async (url: string): Promise<[FeedResItem, number, string]> => {
+export const addChannel = async (url: string): Promise<[ FeedResItem, number, string ]> => {
   return invoke("add_feed", { url });
 };
 
 export const syncFeed = async (
   feed_type: string,
   uuid: string
-): Promise<AxiosResponse<{[key: string]: [string, number, string]}>> => {
-  return request.get(`/feeds/${uuid}/sync`, {
+): Promise<AxiosResponse<{ [key: string]: [ string, number, string ] }>> => {
+  return request.get(`/feeds/${ uuid }/sync`, {
     params: {
       feed_type,
     },
@@ -116,10 +116,20 @@ export const updateArticleReadStatus = async (
   article_uuid: string,
   read_status: number
 ) => {
-  return request.post(`/articles/${article_uuid}/read`, {
+  return request.post(`/articles/${ article_uuid }/read`, {
     read_status
   });
 };
+
+export const updateArticleStarStatus = async (
+  article_uuid: string,
+  star_status: number
+) => {
+  return request.post(`/articles/${ article_uuid }/star`, {
+    starred: star_status
+  });
+};
+
 
 export const markAllRead = async (body: {
   uuid?: string;
@@ -164,7 +174,7 @@ export const getArticleDetail = async (
   uuid: string,
   config: AxiosRequestConfig
 ): Promise<AxiosResponse<ArticleResItem>> => {
-  return request.get(`articles/${uuid}`, config);
+  return request.get(`articles/${ uuid }`, config);
 };
 
 export const getBestImage = async (

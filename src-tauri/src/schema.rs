@@ -16,6 +16,7 @@ diesel::table! {
         update_date -> Timestamp,
         read_status -> Integer,
         media_object -> Nullable<Text>,
+        starred -> Integer,
     }
 }
 

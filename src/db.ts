@@ -75,6 +75,7 @@ export interface ArticleResItem {
   pub_date?: string;
   create_date: string;
   read_status: number;
+  starred: number;
   media_object: string;
 }
 

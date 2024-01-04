@@ -9,6 +9,8 @@ import { useEffect, useRef } from "react";
 import { ReadingOptions } from "./ReadingOptions";
 import { Separator } from "@/components/ui/separator";
 import { ToolbarItemNavigator } from "./ToolBar";
+import { Star } from "lucide-react";
+import { StarAndRead } from "@/layout/Article/StarAndRead";
 
 export function View() {
   const store = useBearStore((state) => ({
@@ -34,6 +36,8 @@ export function View() {
           "h-[var(--app-toolbar-height)] flex items-center justify-end px-2 space-x-0.5 border-b relative z-10 bg-background"
         }
       >
+        { store.article && <StarAndRead article={store.article} />}
+        <Separator orientation={"vertical"} className={"h-4 mx-2"} />
         <ToolbarItemNavigator />
         <span>
           <Separator orientation="vertical" className="h-4 mx-2" />
