@@ -61,6 +61,7 @@ export const Layout1 = React.memo(
       isRefreshing,
       isToday,
       isAll,
+      isStarred,
     } = useArticle({
       feedUuid,
       type,

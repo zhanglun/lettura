@@ -27,7 +27,7 @@ CREATE TABLE articles (
                           DEFAULT 1,
     media_object TEXT,
     starred      INTEGER  NOT NULL
-                          DEFAULT (1),
+                          DEFAULT 0,
     UNIQUE (
         link,
         title

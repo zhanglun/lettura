@@ -15,7 +15,7 @@ import {
   BellOff,
   FileText,
   Link,
-  Link2,
+  Link2, Star,
 } from "lucide-react";
 import classNames from "classnames";
 import { listen } from "@tauri-apps/api/event";
@@ -51,6 +51,7 @@ import { loadFeed } from "@/hooks/useLoadFeed";
 const ChannelList = (): JSX.Element => {
   const isToday = useMatch(RouteConfig.LOCAL_TODAY);
   const isAll = useMatch(RouteConfig.LOCAL_ALL);
+  const isStarred = useMatch(RouteConfig.LOCAL_STARRED);
   const navigate = useNavigate();
   const [addFolderDialogStatus, setAddFolderDialogStatus] = useModal();
   const [editFolderDialogStatus, setEditFolderDialogStatus] = useModal();
@@ -324,6 +325,31 @@ const ChannelList = (): JSX.Element => {
                 {store.collectionMeta.total.unread}
               </span>
             )}
+          </div>
+          <div
+            className={classNames(
+              "w-full h-8 px-4 flex items-center rounded-md cursor-pointer mt-[2px] group",
+              {
+                "bg-primary text-primary-foreground": isStarred,
+              }
+            )}
+            onClick={() => {
+              store.setFeed(null);
+              store.setViewMeta({
+                title: "Starred",
+                isToday: false,
+                isAll: false,
+                isStarred: true,
+              });
+              navigate(RouteConfig.LOCAL_STARRED);
+            }}
+          >
+            <span className="h-4 w-4 rounded mr-2">
+              <Star size={16} />
+            </span>
+            <span className="grow shrink basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-sm">
+              Starred
+            </span>
           </div>
         </div>
         <h2 className="mt-6 mb-2 px-4 text-lg font-semibold tracking-tight">

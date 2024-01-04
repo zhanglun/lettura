@@ -4,6 +4,6 @@ export enum ArticleReadStatus {
 }
 
 export enum ArticleStarStatus {
-  UNSTAR = 1,
-  STARRED =2,
+  UNSTAR = 0,
+  STARRED = 1,
 }

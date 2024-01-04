@@ -106,6 +106,7 @@ pub async fn handle_articles(
     folder_uuid: query.folder_uuid.clone(),
     item_type: query.item_type.clone(),
     is_today: query.is_today.clone(),
+    is_starred: query.is_starred.clone(),
     read_status: query.read_status.clone(),
     cursor: query.cursor.clone(),
     limit: query.limit.clone(),

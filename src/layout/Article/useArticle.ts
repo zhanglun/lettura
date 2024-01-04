@@ -19,19 +19,20 @@ export function useArticle(props: UseArticleProps) {
   const { feedUuid, type } = props;
   const isToday = useMatch(RouteConfig.LOCAL_TODAY);
   const isAll = useMatch(RouteConfig.LOCAL_ALL);
+  const isStarred = useMatch(RouteConfig.LOCAL_STARRED);
   const store = useBearStore((state) => ({
     currentFilter: state.currentFilter,
     updateArticleStatus: state.updateArticleStatus,
   }));
-  const [currentUuid, setCurrentUuid] = useState<string>();
 
   const query = omit({
-    read_status: store.currentFilter.id,
+    read_status: isStarred ? undefined : store.currentFilter.id,
     limit: PAGE_SIZE,
     feed_uuid: feedUuid,
     item_type: type,
     is_today: isToday && 1,
     is_all: isAll && 1,
+    is_starred: isStarred && 1,
   });
 
   const getKey = (pageIndex: number, previousPageData: any) => {
@@ -83,5 +84,6 @@ export function useArticle(props: UseArticleProps) {
     isRefreshing,
     isToday: !!isToday,
     isAll: !!isAll,
+    isStarred: !!isStarred,
   };
 }

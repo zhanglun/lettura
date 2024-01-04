@@ -22,6 +22,7 @@ pub struct ArticleFilter {
   pub folder_uuid: Option<String>,
   pub item_type: Option<String>,
   pub is_today: Option<i32>,
+  pub is_starred: Option<i32>,
   pub read_status: Option<i32>,
   pub cursor: Option<i32>,
   pub limit: Option<i32>,
@@ -163,6 +164,30 @@ impl Article {
           articles as A
         ON C.uuid = A.feed_uuid
         WHERE DATE(A.create_date) = DATE('now')",
+      );
+    } else if let Some(_is_starred) = filter.is_starred {
+      query = query.sql(
+        "
+        SELECT
+          A.id, A.uuid,
+          A.feed_uuid,
+          C.title as feed_title,
+          C.link as feed_url,
+          A.link,
+          A.title,
+          A.feed_url,
+          A.description as description,
+          A.pub_date,
+          A.create_date,
+          A.read_status,
+          A.starred
+        FROM
+          feeds as C
+        LEFT JOIN
+          articles as A
+        ON C.uuid = A.feed_uuid
+        WHERE A.starred = 1
+        "
       );
     } else {
       query = query.sql(
