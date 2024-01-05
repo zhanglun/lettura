@@ -261,14 +261,14 @@ export const Layout1 = React.memo(
                 <CheckCheck size={16} />
               </Icon>
             </TooltipBox>
-            <TooltipBox content="Reload feed">
+            {!!!isStarred && <TooltipBox content="Reload feed">
               <Icon onClick={handleRefresh}>
                 <RefreshCw
                   size={16}
                   className={`${isSyncing ? "spinning" : "333"}`}
                 />
               </Icon>
-            </TooltipBox>
+            </TooltipBox>}
           </div>
         </div>
         <div className="relative h-full">

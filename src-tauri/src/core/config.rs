@@ -1,6 +1,5 @@
 use dotenv::dotenv;
-use log::log;
-use chrono::{DateTime, TimeZone, Utc};
+use chrono::{TimeZone, Utc};
 use serde::{Deserialize, Serialize};
 use std::{env, fs, path, path::PathBuf};
 use toml;
@@ -23,7 +22,7 @@ struct RemoteProxy {
 pub struct CustomizeStyle {
   typeface: String,
   font_size: i32,
-  line_height: i32,
+  line_height: f32,
   line_width: i32,
 }
 
@@ -32,7 +31,7 @@ impl Default for CustomizeStyle {
     Self {
       typeface: String::from("var(--sans-font)"),
       font_size: 14,
-      line_height: 28,
+      line_height: 1.4,
       line_width: 1,
     }
   }
@@ -225,7 +224,7 @@ pub fn update_proxy(ip: String, port: String) -> usize {
 }
 
 pub fn update_threads(threads: i32) -> usize {
-  let mut data = match get_user_config() {
+  let data = match get_user_config() {
     Some(data) => data,
     None => UserConfig::default(),
   };
@@ -257,25 +256,6 @@ pub fn update_theme(theme: String) -> usize {
   println!("content {:?}", content);
 
   fs::write(user_config_path, content).expect("update theme error");
-
-  return 1;
-}
-
-pub fn update_interval(interval: u64) -> usize {
-  let data = match get_user_config() {
-    Some(data) => data,
-    None => UserConfig::default(),
-  };
-
-  let user_config_path = get_user_config_path();
-
-  println!("data {:?}", data);
-
-  let a = data.set_update_interval(interval);
-
-  let content = toml::to_string(&a).unwrap();
-
-  fs::write(user_config_path, content).expect("update interval error");
 
   return 1;
 }

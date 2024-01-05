@@ -70,10 +70,7 @@
   /* P = base size */
   --reading-p-fs: calc(var(--reading-base-fs));
   --reading-p-font-size: calc(var(--reading-base-fs) * 1rem);
-  --reading-p-line-height: calc(
-    var(--reading-editable-line-height) /
-      calc(var(--reading-root-size) * var(--reading-p-fs))
-  );
+  --reading-p-line-height: var(--reading-editable-line-height);
   --reading-p-margin: calc(
     var(--reading-editable-font-size) / var(--reading-root-size) * 1rem
   );

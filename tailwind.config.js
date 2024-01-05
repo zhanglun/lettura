@@ -4,11 +4,11 @@ const { fontFamily } = require("tailwindcss/defaultTheme");
 module.exports = {
   darkMode: ["class", '[data-color-scheme="dark"]'],
   content: [
-    './pages/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}',
-    './src/**/*.{ts,tsx}',
-	],
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
+  ],
   theme: {
     container: {
       center: true,
@@ -22,7 +22,7 @@ module.exports = {
 
       // "feed-list-bg": "var(--feed-list-bg-color)",
       // "feed-headline": 'hsl(var(--background))',
-      "feed-active-bg": 'hsl(var(--background))',
+      "feed-active-bg": "hsl(var(--background))",
       // "feed-active-headline": "hsl(var(--foreground))",
 
       // "article-list-bg": "var(--article-list-bg-color)",
@@ -96,5 +96,9 @@ module.exports = {
       },
     },
   },
-  plugins: [require("@tailwindcss/line-clamp"), require("@tailwindcss/typography"), require("tailwindcss-animate")],
+  plugins: [
+    require("@tailwindcss/line-clamp"),
+    require("@tailwindcss/typography"),
+    require("tailwindcss-animate"),
+  ],
 };

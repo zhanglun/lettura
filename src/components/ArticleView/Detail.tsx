@@ -1,11 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
-import classnames from "classnames";
+import clsx from "clsx";
 import styles from "@/components/ArticleView/view.module.scss";
 import Dayjs from "dayjs";
 import { getChannelFavicon } from "@/helpers/parseXML";
 import { useBearStore } from "@/stores";
 import * as dataAgent from "@/helpers/dataAgent";
-import { fetch } from "@tauri-apps/api/http";
 import { open } from "@tauri-apps/api/shell";
 import xss, { getDefaultWhiteList } from "xss";
 import linkifyStr from "linkify-string";
@@ -153,19 +152,19 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
         <div className="mt-6 mb-5 text-4xl font-bold text-detail-headline">
           {article.title}
         </div>
-        <div className={classnames(styles.meta)}>
+        <div className={clsx(styles.meta)}>
           <span className={styles.channelInfo}>
             <img src={store.feed?.logo || ico} alt="" className="rounded" />
             {article.feed_title}
           </span>
           {article.author && (
             <span
-              className={classnames(styles.author, "text-detail-paragraph")}
+              className={clsx(styles.author, "text-detail-paragraph")}
             >
               {article.author}
             </span>
           )}
-          <span className={classnames(styles.time, "text-detail-paragraph")}>
+          <span className={clsx(styles.time, "text-detail-paragraph")}>
             {Dayjs(new Date(pub_date || new Date())).format("YYYY-MM-DD HH:mm")}
           </span>
         </div>
@@ -179,13 +178,13 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
         <div
           key={article.uuid}
           onClick={delegateContentClick}
-          className={classnames("reading-content", "text-detail-paragraph")}
+          className={clsx("reading-content", "text-detail-paragraph")}
           // eslint-disable-next-line react/no-danger
           dangerouslySetInnerHTML={createMarkup(pageContent)}
         />
         {medias && medias.length > 0 && <div>{medias.map(renderMediaBox)}</div>}
         {/* <div
-              className={classnames("reading-content", "text-detail-paragraph")}>
+              className={clsx("reading-content", "text-detail-paragraph")}>
                 <iframe src={article.link} className="w-full" allowFullScreen></iframe>
               </div> */}
       </div>
