@@ -7,6 +7,7 @@ import {
   Baseline,
 } from "lucide-react";
 import { ValueStep } from "./ValueStep";
+import { Separator } from "@radix-ui/react-separator";
 
 const FONTSIZE_OPTIONS = Array.from({ length: 12 }).map((_, idx) => {
   return {
@@ -96,7 +97,7 @@ export const CustomizeStyle = (props: CustomizeStyleProps) => {
       </div>
       <div>
         <h5 className="text-sm mb-2">Text styles</h5>
-        <div className="border border-input rounded-md overflow-hidden">
+        <div className="border border-input rounded-md">
           {/* <div className="flex justify-between pl-3 border-t -mt-[1px] h-10">
             <Type size={20} strokeWidth={1.5} />
             <span>Typeface</span>
@@ -111,6 +112,7 @@ export const CustomizeStyle = (props: CustomizeStyleProps) => {
               handleCustomizeStyleChange("font_size", option.value);
             }}
           />
+          <div className="w-full h-[1px] bg-input" />
           <ValueStep
             value={cfg.line_height}
             Icon={() => <Baseline />}

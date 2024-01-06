@@ -39,8 +39,6 @@ export const ValueStep = React.memo((props: ValueStepProps) => {
 
   useEffect(() => {
     if (value && options.length > 0) {
-      console.log("%c Line:42 🧀 options", "color:#f5ce50", options);
-      console.log("%c Line:42 🥤 value", "color:#42b983", value);
       const idx = options.findIndex((_) => _.value === value);
 
       setSelected(options[Math.max(idx, 0)]);
@@ -49,7 +47,7 @@ export const ValueStep = React.memo((props: ValueStepProps) => {
   }, [value]);
 
   return (
-    <div className="flex justify-between pl-3 border-t border-input -mt-[1px] h-10 select-none">
+    <div className="flex justify-between pl-2 py-1 pr-1 h-10 select-none">
       <div className="flex items-center gap-3">
         <span className="text-slate-500">
           <Icon size={24} strokeWidth={1} />
@@ -60,13 +58,13 @@ export const ValueStep = React.memo((props: ValueStepProps) => {
         <span className="text-xs">{selected.label}</span>
         <div className="flex items-center gap-[2px]">
           <div
-            className="bg-gray-300 rounded-l-[4px] w-8 h-8 flex items-center justify-center"
+            className="bg-gray-100 hover:bg-gray-50 cursor-pointer rounded-l-[4px] w-8 h-8 flex items-center justify-center"
             onClick={prev}
           >
             <Minus size={16} />
           </div>
           <div
-            className="bg-gray-200 rounded-r-[4px] w-8 h-8 flex items-center justify-center"
+            className="bg-gray-100 hover:bg-gray-50 cursor-pointer rounded-r-[4px] w-8 h-8 flex items-center justify-center"
             onClick={next}
           >
             <Plus size={16} />
