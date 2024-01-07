@@ -110,7 +110,15 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
         .then((res) => {
           console.log("%c Line:102 🥓 res", "color:#33a5ff", res);
           const { data } = res;
-          const content = (data.description || data.content || "").replace(
+          let content;
+
+          if (data.content && data.description) {
+            content = data.content.length > data.description.length ? data.content : data.description;
+          } else {
+            content = data.description || data.content || "";
+          }
+
+          content = content.replace(
             /<a[^>]+>/gi,
             (a: string) => {
               if (!/\starget\s*=/gi.test(a)) {
