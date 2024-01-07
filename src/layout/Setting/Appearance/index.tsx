@@ -4,7 +4,6 @@ import { CustomizeStyle } from "@/layout/Setting/CustomizeStyle";
 import { useBearStore } from "@/stores";
 import classNames from "classnames";
 import { Theme } from "./Theme";
-// import { ColorTheme } from "./ColorTheme";
 
 export const Appearance = () => {
   const store = useBearStore((state) => ({
@@ -19,6 +18,7 @@ export const Appearance = () => {
       fontSize: "var(--reading-p-font-size)",
       fontFamily: "var(--reading-editable-typeface)",
       lineHeight: "var(--reading-p-line-height)",
+      maxWidth: "calc(var(--reading-editable-line-width) * 1px)",
     });
   }, [store.userConfig]);
 
@@ -43,7 +43,7 @@ export const Appearance = () => {
         <div
           className={classNames(
             "mt-5 rounded-lg border p-4 break-words",
-            "reading-content",
+            "reading-content"
           )}
           style={previewStyle}
         >

@@ -155,7 +155,7 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
   }, [article]);
 
   return (
-    <div className="m-auto">
+    <div className="m-auto pt-1 pb-10 px-4 max-w-[calc(var(--reading-editable-line-width)_*_1px)]">
       <div className="pb-4 border-b border-border">
         <div className="mt-6 mb-5 text-4xl font-bold text-detail-headline">
           {article.title}

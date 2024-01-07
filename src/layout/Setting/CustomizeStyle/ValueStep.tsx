@@ -1,17 +1,21 @@
 import { Plus, Minus, LucideProps } from "lucide-react";
 import React, { useEffect, useState } from "react";
 
+interface OptionItem {
+  label: string; value: number | string
+}
+
 export interface ValueStepProps {
   Icon: React.ComponentType<LucideProps>;
   label: string;
   value: number | string;
-  options: { label: string; value: number }[];
-  onChange: (option: { label: string; value: number }) => any;
+  options: OptionItem[];
+  onChange: (option: OptionItem) => any;
 }
 
 export const ValueStep = React.memo((props: ValueStepProps) => {
   const { Icon, label, value, options, onChange } = props;
-  const [selected, setSelected] = useState<{ label: string; value: number }>({
+  const [selected, setSelected] = useState<OptionItem>({
     label: "",
     value: 0,
   });

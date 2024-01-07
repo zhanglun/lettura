@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useBearStore } from "@/stores";
-import { Moon, Sun, CaseSensitive, Baseline } from "lucide-react";
+import { Moon, Sun, CaseSensitive, Baseline, AlignJustify } from "lucide-react";
 import { ValueStep } from "./ValueStep";
 import clsx from "clsx";
 
@@ -17,6 +17,14 @@ const LINE_SPACING_OPTIONS = Array.from({ length: 8 }).map((_, idx) => {
     value: Math.round((idx * 0.1 + 1.4) * 10) / 10,
   };
 });
+
+const PAGE_SIZE_OPTIONS = [
+  { label: 'X-Small', value: 504 },
+  { label: 'Small', value: 576 },
+  { label: 'Medium', value: 648 },
+  { label: 'Large', value: 720 },
+  { label: 'X-Large', value: 792 }
+];
 
 export interface CustomizeStyleProps {
   className?: string;
@@ -168,6 +176,16 @@ export const CustomizeStyle = (props: CustomizeStyleProps) => {
             options={LINE_SPACING_OPTIONS}
             onChange={(option) => {
               handleCustomizeStyleChange("line_height", option.value);
+            }}
+          />
+          <div className="w-full h-[1px] bg-input" />
+          <ValueStep
+            value={cfg.line_width}
+            Icon={() => <AlignJustify />}
+            label="Line width"
+            options={PAGE_SIZE_OPTIONS}
+            onChange={(option) => {
+              handleCustomizeStyleChange("line_width", option.value);
             }}
           />
         </div>

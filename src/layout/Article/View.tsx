@@ -57,7 +57,7 @@ export function View() {
             className="h-[calc(100vh_-_var(--app-toolbar-height))]"
             ref={scrollBoxRef}
           >
-            <div className=" py-1 px-10 font-[var(--reading-font-body)] min-h-full m-auto sm:px-5 sm:max-w-xl lg:px-10 lg:max-w-5xl">
+            <div className="font-[var(--reading-font-body)] min-h-full m-auto sm:px-5 sm:max-w-xl lg:px-10 lg:max-w-5xl">
               {" "}
               {store.article ? (
                 <ArticleDetail article={store.article} />
