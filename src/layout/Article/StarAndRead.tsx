@@ -65,8 +65,8 @@ export function StarAndRead(props: StarAndReadProps) {
       </TooltipBox>
     ) }
     { article.starred === ArticleStarStatus.STARRED && (
-      <TooltipBox content="Star it">
-        <Icon className="w-7 h-7 text-[#fe9e2b] hover:text-[#fe9e2b]" onClick={ (e: React.MouseEvent<HTMLElement>) => {
+      <TooltipBox content="Unstar it">
+        <Icon className="w-7 h-7 !text-[#fe9e2b] !hover:text-[#fe9e2b]" onClick={ (e: React.MouseEvent<HTMLElement>) => {
           e.stopPropagation();
           toggleStarStatus();
         } }>

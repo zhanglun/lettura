@@ -18,7 +18,7 @@
   // --reading-editable-typeface: "Source Serif VF", Georgia, Serif;
   /* auto generate */
 
-  --reading-scale: 1.267;
+  --reading-scale: 1.2;
   --reading-root-size: 16; /* This is to replicate the browser base size for math purposes */
 
   --reading-base-fs: calc(
@@ -27,45 +27,35 @@
   --reading-base-font-size: calc(
     var(--reading-editable-font-size) / var(--reading-root-size) * 1rem
   );
-  --reading-base-line-height: calc(
-    var(--reading-editable-line-height) /
-      calc(var(--reading-root-size) * var(--reading-p-fs))
-  );
+  --reading-base-line-height: var(--reading-editable-line-height);
   --reading-base-margin: calc(
     var(--reading-editable-font-size) / var(--reading-root-size) * 1rem
   );
-
-  --reading-base-margin-v: calc(
-    (var(--reading-editable-line-height) / 32) *
-      (var(--reading-editable-font-size) / var(--reading-root-size) * 1em)
-  ); /* added as a variable margin size that factors in line-height and font-size */
 
   /* Caption = table divided by scale */
   --reading-caption-fs: calc(
     var(--reading-table-fs) / var(--reading-scale) / var(--reading-scale)
   );
-  --reading-caption-font-size: calc(var(--reading-caption-fs) * 1rem);
-  --reading-caption-line-height: calc(
-    var(--reading-editable-line-height) /
-      calc(var(--reading-root-size) * var(--reading-p-fs))
+  --reading-caption-font-size: clamp(
+    12px,
+    calc((var(--reading-editable-font-size) * 0.8) * 1px),
+    18px
   );
+  --reading-caption-line-height: var(--reading-editable-line-height);
   --reading-caption-margin: calc(
     var(--reading-editable-line-height) /
       calc(var(--reading-root-size) * var(--reading-p-fs)) * 1em
   );
 
   /* Table = base size divided by scale */
-  --reading-table-fs: calc(
-    var(--reading-base-fs) / var(--reading-scale) / var(--reading-scale)
+  --reading-table-fs: calc(var(--reading-base-fs) / var(--reading-scale));
+  --reading-table-font-size: clamp(
+    12px,
+    calc((var(--reading-editable-font-size) * 0.8) * 1px),
+    18px
   );
-  --reading-table-font-size: calc(var(--reading-table-fs) * 1rem);
-  --reading-table-line-height: calc(
-    var(--reading-editable-line-height) / var(--reading-root-size)
-  );
-  --reading-table-margin: calc(
-    var(--reading-editable-line-height) /
-      calc(var(--reading-root-size) * var(--reading-p-fs)) * 1em
-  );
+  --reading-table-line-height: var(--reading-editable-line-height);
+  --reading-table-margin: calc(var(--reading-editable-font-size) * 0.75);
 
   /* P = base size */
   --reading-p-fs: calc(var(--reading-base-fs));
@@ -74,14 +64,15 @@
   --reading-p-margin: calc(
     var(--reading-editable-font-size) / var(--reading-root-size) * 1rem
   );
+  --reading-p-margin-v: calc(
+    var(--reading-editable-font-size) / var(--reading-root-size) *
+      calc(var(--reading-editable-line-height) - 0.5) * 1rem
+  );
 
   /* H3 = base size x scale */
   --reading-h3-fs: var(--reading-p-fs);
   --reading-h3-font-size: calc(var(--reading-p-fs) * 1rem);
-  --reading-h3-line-height: calc(
-    var(--reading-editable-line-height) /
-      calc(var(--reading-root-size) * var(--reading-h3-fs))
-  );
+  --reading-h3-line-height: var(--reading-editable-line-height);
   --reading-h3-margin: calc(var(--reading-h3-line-height) * 1em);
 
   /* H2 = H3 size x scale */
@@ -89,20 +80,14 @@
   --reading-h2-font-size: calc(
     var(--reading-h3-fs) * var(--reading-scale) * 1rem
   );
-  --reading-h2-line-height: calc(
-    var(--reading-editable-line-height) /
-      calc(var(--reading-h2-fs) * var(--reading-root-size))
-  );
+  --reading-h2-line-height: calc(var(--reading-h3-line-height) * 0.925);
 
   /* H1 = H2 size x scale */
   --reading-h1-fs: calc(var(--reading-h2-fs) * var(--reading-scale));
   --reading-h1-font-size: calc(
     var(--reading-h2-fs) * var(--reading-scale) * 1rem
   );
-  --reading-h1-line-height: calc(
-    var(--reading-editable-line-height) /
-      calc(var(--reading-h1-fs) * var(--reading-root-size))
-  );
+  --reading-h1-line-height: calc(var(--reading-h2-line-height) * 0.925);
   --reading-h1-margin: calc(var(--reading-h1-line-height) * 1em);
 
   /* Typefaces */
