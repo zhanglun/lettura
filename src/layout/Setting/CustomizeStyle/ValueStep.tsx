@@ -58,13 +58,13 @@ export const ValueStep = React.memo((props: ValueStepProps) => {
         <span className="text-xs">{selected.label}</span>
         <div className="flex items-center gap-[2px]">
           <div
-            className="bg-gray-100 hover:bg-gray-50 cursor-pointer rounded-l-[4px] w-8 h-8 flex items-center justify-center"
+            className="bg-accent hover:bg-accent/80 cursor-pointer rounded-l-[4px] w-8 h-8 flex items-center justify-center"
             onClick={prev}
           >
             <Minus size={16} />
           </div>
           <div
-            className="bg-gray-100 hover:bg-gray-50 cursor-pointer rounded-r-[4px] w-8 h-8 flex items-center justify-center"
+            className="bg-accent hover:bg-accent/80 cursor-pointer rounded-r-[4px] w-8 h-8 flex items-center justify-center"
             onClick={next}
           >
             <Plus size={16} />

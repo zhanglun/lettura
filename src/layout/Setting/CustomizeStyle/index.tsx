@@ -1,13 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useBearStore } from "@/stores";
-import {
-  Moon,
-  Sun,
-  CaseSensitive,
-  Baseline,
-} from "lucide-react";
+import { Moon, Sun, CaseSensitive, Baseline } from "lucide-react";
 import { ValueStep } from "./ValueStep";
-import { Separator } from "@radix-ui/react-separator";
+import clsx from "clsx";
 
 const FONTSIZE_OPTIONS = Array.from({ length: 12 }).map((_, idx) => {
   return {
@@ -69,27 +64,80 @@ export const CustomizeStyle = (props: CustomizeStyleProps) => {
     );
   }
 
+  function handleThemeChange(value: string) {
+    store.updateUserConfig({
+      ...store.userConfig,
+      theme: value,
+    });
+
+    console.log("🚀 ~ file: Theme.tsx:26 ~ handleThemeChange ~ value:", value);
+
+    if (value === "system") {
+      document.documentElement.dataset.colorScheme = window.matchMedia(
+        "(prefers-color-scheme: dark)"
+      ).matches
+        ? "dark"
+        : "light";
+    } else {
+      document.documentElement.dataset.colorScheme = value;
+    }
+  }
+
   return (
     <div className={`w-full max-w-xs bg-detail-bg grid gap-4 ${className}`}>
       <div>
         <h5 className="text-sm mb-2">System theme</h5>
         <div className="grid grid-cols-3 gap-4">
           <div>
-            <div className="border rounded-lg h-14 flex items-center justify-center">
+            <div
+              className={clsx(
+                "border rounded-lg h-14 flex cursor-pointer items-center justify-center dark:bg-foreground dark:text-background",
+                {
+                  "ring-2": store.userConfig.theme === "light",
+                }
+              )}
+              onClick={() => handleThemeChange("light")}
+            >
               <Sun size={20} />
             </div>
             <div className="mt-1 text-center text-sm">Light</div>
           </div>
           <div>
-            <div className="border rounded-lg h-14 flex items-center justify-center bg-foreground text-background">
+            <div
+              className={clsx(
+                "border rounded-lg h-14 flex cursor-pointer items-center justify-center",
+                "bg-foreground text-background",
+                "dark:bg-background dark:text-foreground",
+                {
+                  "ring-2": store.userConfig.theme === "dark",
+                }
+              )}
+              onClick={() => handleThemeChange("dark")}
+            >
               <Moon size={20} />
             </div>
             <div className="mt-1 text-center text-sm">Dark</div>
           </div>
           <div>
-            <div className="border rounded-lg h-14 flex items-center justify-center gap-2">
-              <Sun size={20} />
-              <Moon size={19} />
+            <div
+              className={clsx(
+                "border rounded-lg h-14 cursor-pointer",
+                "bg-gradient-to-br from-background from-50%  via-foreground via-0% to-foreground",
+                "dark:from-foreground dark:from-50% dark:via-background dark:via-0% dark:to-background",
+                {
+                  "ring-2": store.userConfig.theme === "system",
+                }
+              )}
+              onClick={() => handleThemeChange("system")}
+            >
+              <div className="h-full flex items-center justify-center gap-2 ">
+                <span className="text-background dark:text-foreground mix-blend-difference contrast">
+                  <Sun size={20} />
+                </span>
+                <span className="text-background dark:text-foreground">
+                  <Moon size={19} />
+                </span>
+              </div>
             </div>
             <div className="mt-1 text-center text-sm">Auto</div>
           </div>
