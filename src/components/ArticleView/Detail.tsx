@@ -64,6 +64,7 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
 
   function renderMediaBox(media: any) {
     const { description, content, thumbnails } = media;
+    console.log("%c Line:67 🥓 media", "color:#f5ce50", media);
 
     function renderContent() {
       return content.map((c: any) => {
@@ -76,6 +77,18 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
               height="360"
             />
           );
+        }
+
+        if (/ximalaya.com/.test(c.url)) {
+          const url = c.url.match(/jt=(.*)/)?.[1];
+
+          if (url) {
+            return (
+              <figure>
+                <audio controls src={url}></audio>
+              </figure>
+            );
+          }
         }
       });
     }
@@ -113,21 +126,21 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
           let content;
 
           if (data.content && data.description) {
-            content = data.content.length > data.description.length ? data.content : data.description;
+            content =
+              data.content.length > data.description.length
+                ? data.content
+                : data.description;
           } else {
             content = data.description || data.content || "";
           }
 
-          content = content.replace(
-            /<a[^>]+>/gi,
-            (a: string) => {
-              if (!/\starget\s*=/gi.test(a)) {
-                return a.replace(/^<a\s/, '<a target="_blank"');
-              }
-
-              return a;
+          content = content.replace(/<a[^>]+>/gi, (a: string) => {
+            if (!/\starget\s*=/gi.test(a)) {
+              return a.replace(/^<a\s/, '<a target="_blank"');
             }
-          );
+
+            return a;
+          });
 
           // try to get the best banner if there is no image in article content
           // it will make render slower
@@ -144,6 +157,11 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
 
           try {
             setMedias(JSON.parse(data.media_object));
+            console.log(
+              "%c Line:147 🌽 JSON.parse(data.media_object)",
+              "color:#42b983",
+              JSON.parse(data.media_object)
+            );
           } catch (e) {
             setMedias([]);
           }
@@ -166,9 +184,7 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
             {article.feed_title}
           </span>
           {article.author && (
-            <span
-              className={clsx(styles.author, "text-detail-paragraph")}
-            >
+            <span className={clsx(styles.author, "text-detail-paragraph")}>
               {article.author}
             </span>
           )}

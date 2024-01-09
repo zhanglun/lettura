@@ -17,6 +17,7 @@ import { SearchPage } from "./layout/Search";
 import { LocalPage } from "./layout/Local";
 import { SettingPage } from "./layout/Setting";
 import "./index.css";
+import { FreshRSSPage } from "./layout/FresshRSS";
 
 const router = createBrowserRouter([
   {
@@ -54,6 +55,10 @@ const router = createBrowserRouter([
             element: <ArticleContainer />,
           },
         ],
+      },
+      {
+        path: RouteConfig.SERVICE_FRESHRSS,
+        element: <FreshRSSPage />,
       },
       {
         path: RouteConfig.SEARCH,

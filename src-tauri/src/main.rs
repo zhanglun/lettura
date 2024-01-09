@@ -41,8 +41,6 @@ fn handle_window_event(event: GlobalWindowEvent<Wry>) {
   }
 }
 
-use tokio::sync::Mutex;
-
 fn send_to_webview<R: tauri::Runtime>(
   event_name: String,
   message: String,

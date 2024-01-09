@@ -271,7 +271,7 @@ mod tests {
       // "http://www.youtube.com/feeds/videos.xml?channel_id=UCpVm7bg6pXKo1Pr6k5kxG9A".to_string();
     // let url = "https://medium.com/feed/google-design".to_string();
     // let url = "https://www.ximalaya.com/album/70501228.xml".to_string();
-    let url = "https://feed.cnblogs.com/blog/u/177636/rss/".to_string();
+    let url = "http://www.ximalaya.com/album/3558668.xml".to_string();
 
     println!("{:?}", url);
 

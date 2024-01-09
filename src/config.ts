@@ -12,6 +12,8 @@ export enum RouteConfig {
   LOCAL_FEED = "/local/feeds/:uuid",
   LOCAL_ARTICLE = "/local/feeds/:uuid/articles/:id",
 
+  SERVICE_FRESHRSS = "/service/freshrss",
+
   CHANNEL = "/channels/:uuid",
   ARTICLE = "/channels/:uuid/articles/:id",
 
