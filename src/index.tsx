@@ -17,7 +17,7 @@ import { SearchPage } from "./layout/Search";
 import { LocalPage } from "./layout/Local";
 import { SettingPage } from "./layout/Setting";
 import "./index.css";
-import { FreshRSSPage } from "./layout/FresshRSS";
+import { FreshRSSPage } from "./layout/FreshRSS";
 
 const router = createBrowserRouter([
   {
