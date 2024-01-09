@@ -284,7 +284,7 @@ mod tests {
 
         println!("{:?}", (Some(feed), String::from("")));
         let articles = create_article_models(&feed_uuid, &url, &res);
-        println!("{:?}", articles);
+        // println!("{:?}", articles);
       }
       Err(err) => {
         println!("err {:?}", (None::<models::NewFeed>, err));
