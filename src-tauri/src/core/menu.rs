@@ -31,6 +31,7 @@ impl AppMenu {
           .add_native_item(MenuItem::About(name.into(), AboutMetadata::new()))
           .add_native_item(MenuItem::Separator)
           .add_item(CustomMenuItem::new("settings".to_string(), "Settings...").accelerator("CmdOrControl+,"))
+          .add_item(CustomMenuItem::new("check_for_updates".to_string(), "Check for Updates"))
           .add_native_item(MenuItem::Separator)
           .add_native_item(MenuItem::Hide)
           .add_native_item(MenuItem::HideOthers)
@@ -79,6 +80,10 @@ impl AppMenu {
       }
       "close" => {
         event.window().close().unwrap();
+      }
+
+      "check_for_updates" => {
+        event.window().emit("check_for_updates", "").unwrap();
       }
       "settings" => {
         println!("gotosetting");

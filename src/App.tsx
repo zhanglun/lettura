@@ -25,9 +25,15 @@ function App() {
         "color:#fca650",
         "go-to-setting"
       );
+
       navigate(RouteConfig.SETTINGS_GENERAL);
 
     });
+
+    listen("check_for_updates", async (e) => {
+      emit("tauri://update")
+    })
+
   }, []);
 
   useEffect(() => {

@@ -75,7 +75,7 @@
     "windows": [
       {
         "fullscreen": false,
-        "maximized": true,
+        "maximized": false,
         "height": 760,
         "decorations": true,
         "resizable": true,
