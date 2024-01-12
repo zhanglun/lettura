@@ -21,8 +21,21 @@ export function PodcastAdapter(props: any) {
       });
     }
 
+    function renderThumbnails () {
+      return thumbnails.map((t: any) => {
+        if (t.image && t.image.uri) {
+          return (
+            <img src={t.image.uri} alt={t.image.uri} />
+          );
+        }
+      });
+    }
+
     return (
       <div className="reading-content">
+        <div>
+          {renderThumbnails()}
+        </div>
         <div className="pb-6">{renderContent()}</div>
         <div
           style={{ whiteSpace: "pre-line" }}

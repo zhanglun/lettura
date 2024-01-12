@@ -83,7 +83,7 @@ export const fetchFeed = async (url: string): Promise<[ any, string ]> => {
   return invoke("fetch_feed", { url });
 };
 
-export const addChannel = async (url: string): Promise<[ FeedResItem, number, string ]> => {
+export const subscribeFeed = async (url: string): Promise<[ FeedResItem, number, string ]> => {
   return invoke("add_feed", { url });
 };
 

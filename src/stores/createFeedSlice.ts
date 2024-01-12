@@ -311,7 +311,7 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
 
   addNewFeed(feed) {
     set((state) => ({
-      feedList: [...state.feedList, feed]
+      feedList: [feed, ...state.feedList]
     }))
   }
 });

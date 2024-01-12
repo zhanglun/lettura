@@ -7,6 +7,7 @@ import { open } from "@tauri-apps/api/shell";
 import { View } from "./View";
 import styles from "./index.module.scss";
 import { useQuery } from "@/helpers/parseXML";
+import { PodcastPlayer } from "@/components/PodcastPlayer";
 
 export const ArticleContainer = (): JSX.Element => {
   const [, type, feedUuid] = useQuery();
@@ -28,6 +29,7 @@ export const ArticleContainer = (): JSX.Element => {
     <div className={classNames(styles.article)}>
       <Layout1 feedUuid={feedUuid} type={type} />
       <View />
+      {/* <PodcastPlayer /> */}
 
       <ArticleDialogView
         article={store.article}

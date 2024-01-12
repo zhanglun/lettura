@@ -16,7 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Icon } from "../Icon";
 import { ArrowLeft, Loader2, Plus } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { TooltipBox } from "../TooltipBox";
 import { useBearStore } from "@/stores";
 import { Kbd } from "@/components/Kbd";
@@ -33,7 +33,6 @@ export const AddFeedChannel = (props: any) => {
   const [loading, setLoading] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const { toast } = useToast();
 
   const handleLoad = async () => {
     setLoading(true);
@@ -45,9 +44,7 @@ export const AddFeedChannel = (props: any) => {
         const [feed, message] = res;
         if (!feed) {
           console.log("%c Line:40 🥤 !feed", "color:#f5ce50", !feed);
-          toast({
-            variant: "destructive",
-            title: "Unable to subscribe",
+          toast.error('Unable to subscribe', {
             description: message,
             duration: 2000,
           });
@@ -85,7 +82,7 @@ export const AddFeedChannel = (props: any) => {
     setConfirming(true);
 
     dataAgent
-      .addChannel(feedUrl)
+      .subscribeFeed(feedUrl)
       .then((res) => {
         console.log("%c Line:88 🥕 res", "color:#4fff4B", res);
         if (res[2] === "") {
@@ -96,10 +93,9 @@ export const AddFeedChannel = (props: any) => {
 
           store.addNewFeed(res[0]);
           handleCancel();
+          toast.success("Your subscribe is ready! Please enjoy it!")
         } else {
-          toast({
-            variant: "destructive",
-            title: "Unable to subscribe",
+          toast.error("Unable to subscribe", {
             description: res[2],
             duration: 2000,
           });
