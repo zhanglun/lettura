@@ -1,31 +1,33 @@
-import { useEffect, useState } from "react";
 import linkifyStr from "linkify-string";
-import clsx from "clsx";
+import he from "he";
 
 export function PodcastAdapter(props: any) {
   const { article, content, medias } = props;
 
+  console.log("content", content);
+  console.log("medias", medias);
+  console.log("article", article);
+
   function renderMediaBox(media: any) {
     const { description, content, thumbnails } = media;
-    console.log("%c Line:67 🥓 media", "color:#f5ce50", media);
 
     function renderContent() {
       return content.map((c: any) => {
         if (c.url) {
           return (
             <figure>
-              <audio controls src={c.url}></audio>
+              <audio controls src={ c.url }></audio>
             </figure>
           );
         }
       });
     }
 
-    function renderThumbnails () {
+    function renderThumbnails() {
       return thumbnails.map((t: any) => {
         if (t.image && t.image.uri) {
           return (
-            <img src={t.image.uri} alt={t.image.uri} />
+            <img src={ t.image.uri } alt={ t.image.uri } />
           );
         }
       });
@@ -34,14 +36,15 @@ export function PodcastAdapter(props: any) {
     return (
       <div className="reading-content">
         <div>
-          {renderThumbnails()}
+          { renderThumbnails() }
         </div>
-        <div className="pb-6">{renderContent()}</div>
+        <div className="pb-6">{ renderContent() }</div>
         <div
-          style={{ whiteSpace: "pre-line" }}
-          dangerouslySetInnerHTML={{
-            __html: linkifyStr(description?.content || ""),
-          }}
+          className="text-xs text-muted-foreground"
+          style={ { whiteSpace: "pre-line" } }
+          dangerouslySetInnerHTML={ {
+            __html: linkifyStr(he.decode((description?.content || "").replace(/<[^<>]+>/ig, "")))
+          } }
         />
       </div>
     );
@@ -49,14 +52,14 @@ export function PodcastAdapter(props: any) {
 
   return (
     <div>
-      {medias && medias.length > 0 && <div>{medias.map(renderMediaBox)}</div>}
+      { medias && medias.length > 0 && <div>{ medias.map(renderMediaBox) }</div> }
       <div
-        key={article.uuid}
-        className={clsx("reading-content", "text-detail-paragraph")}
+        key={ article.uuid }
+        className={ "reading-content mt-6" }
         // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{
-          __html: content,
-        }}
+        dangerouslySetInnerHTML={ {
+          __html: content
+        } }
       />
     </div>
   );
