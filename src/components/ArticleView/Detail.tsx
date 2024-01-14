@@ -10,7 +10,7 @@ import xss, { getDefaultWhiteList } from "xss";
 import linkifyStr from "linkify-string";
 import { ArticleResItem } from "@/db";
 import { YoutubeAdapter } from "./adpater/Youtube";
-import { PodcastAdapter } from "./adpater/PodCast";
+import { PodcastAdapter } from "./adpater/Podcast";
 
 function createMarkup(html: string) {
   return { __html: html };

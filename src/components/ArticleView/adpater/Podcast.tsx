@@ -1,5 +1,6 @@
 import linkifyStr from "linkify-string";
 import he from "he";
+import { Button } from "@/components/ui/button";
 
 export function PodcastAdapter(props: any) {
   const { article, content, medias } = props;
@@ -8,15 +9,27 @@ export function PodcastAdapter(props: any) {
   console.log("medias", medias);
   console.log("article", article);
 
+  function addToPlayListAndPlay(media) {
+    const { description, content, thumbnails } = media;
+    const sourceURL = content[0].url;
+    const thumbnail = thumbnails[0].image.uri;
+    const text = description.content;
+
+    // TODO: save data in client
+  }
+
   function renderMediaBox(media: any) {
     const { description, content, thumbnails } = media;
+
+    console.log("🚀 ~ renderMediaBox ~ media:", media)
 
     function renderContent() {
       return content.map((c: any) => {
         if (c.url) {
           return (
-            <figure>
-              <audio controls src={ c.url }></audio>
+            <figure className="my-3">
+              {/* <audio controls src={ c.url }></audio> */}
+              <Button onClick={() => addToPlayListAndPlay(media)}>Play</Button>
             </figure>
           );
         }

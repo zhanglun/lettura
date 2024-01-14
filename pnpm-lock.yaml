@@ -158,6 +158,9 @@ dependencies:
   tauri-plugin-log-api:
     specifier: github:tauri-apps/tauri-plugin-log
     version: github.com/tauri-apps/tauri-plugin-log/19f5dcc0425e9127d2c591780e5047b83e77a7c2
+  wavesurfer.js:
+    specifier: ^7.6.4
+    version: registry.npmmirror.com/wavesurfer.js@7.6.4
   web-vitals:
     specifier: ^3.5.0
     version: 3.5.0
@@ -6105,6 +6108,12 @@ packages:
     dependencies:
       glob-to-regexp: registry.npmmirror.com/glob-to-regexp@0.4.1
       graceful-fs: registry.npmmirror.com/graceful-fs@4.2.11
+    dev: false
+
+  registry.npmmirror.com/wavesurfer.js@7.6.4:
+    resolution: {integrity: sha512-ZpGOHzFeShTD02OoXNSoo9hfHM7awPckNjlRuCbLb9eKcHTJB8tEE+REkNOwJKJ46uo0cT7VeRbMlVvKgzUV/w==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/wavesurfer.js/-/wavesurfer.js-7.6.4.tgz}
+    name: wavesurfer.js
+    version: 7.6.4
     dev: false
 
   registry.npmmirror.com/workbox-core@7.0.0:

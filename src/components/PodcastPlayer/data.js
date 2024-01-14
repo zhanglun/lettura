@@ -1,22 +1,17 @@
 export const list = [
   {
-    id: 13433,
-    uuid: "b5cab8fb-9f6e-4830-9575-3ab1b45231dc",
     title: "《AI创世者》导演与编剧的双重灾难",
     link: "https://www.ximalaya.com/sound/687053615",
     feed_url: "http://www.ximalaya.com/album/3558668.xml",
     feed_uuid: "add6c26a-cf1f-47e1-9c6b-657f4325bfb0",
     description:
       '<p style="color:#333333;font-weight:normal;font-size:16px;line-height:30px;font-family:Helvetica,Arial,sans-serif;hyphens:auto;text-align:justify;" data-flag="normal"><span>当一个糟糕的剧本遇到无力的导演</span><span>当一个糟糕的剧本遇到无力的导演</span><span>当一个糟糕的剧本遇到无力的导演</span><span>当一个糟糕的剧本遇到无力的导演</span><span>当一个糟糕的剧本遇到无力的导演</span><span>当一个糟糕的剧本遇到无力的导演</span><span>当一个糟糕的剧本遇到无力的导演</span><span>当一个糟糕的剧本遇到无力的导演</span><span>当一个糟糕的剧本遇到无力的导演</span><br></p><span><br></span><p data-flag="normal" style="color:#333333;font-weight:normal;font-size:16px;line-height:30px;font-family:Helvetica,Arial,sans-serif;hyphens:auto;text-align:justify;">这是一档主观的、热情的、无用的节目。如果你听了偶有醍醐灌顶的感觉，那一定是你自己天资聪慧、骨骼清奇。<br><br>主播很懒，并没有留下Show Notes。因为主播希望你也一样懒，从头听到尾，让时间慢一点、让生活快乐一点、让自己幽默一点。</p><span><br></span><p data-flag="normal" style="color:#333333;font-weight:normal;font-size:16px;line-height:30px;font-family:Helvetica,Arial,sans-serif;hyphens:auto;text-align:justify;">加群联系金花：uwwwsc</p><span><br></span><p data-flag="normal" style="color:#333333;font-weight:normal;font-size:16px;line-height:30px;font-family:Helvetica,Arial,sans-serif;hyphens:auto;text-align:justify;">（听说写了下面这些能有播放量）</p><span><br></span><p data-flag="normal" style="color:#333333;font-weight:normal;font-size:16px;line-height:30px;font-family:Helvetica,Arial,sans-serif;hyphens:auto;text-align:justify;">黑水公园</p><span><br></span><p data-flag="normal" style="color:#333333;font-weight:normal;font-size:16px;line-height:30px;font-family:Helvetica,Arial,sans-serif;hyphens:auto;text-align:justify;">首届CPA中文播客奖“年度娱乐类播客MVP”</p><p data-flag="normal" style="color:#333333;font-weight:normal;font-size:16px;line-height:30px;font-family:Helvetica,Arial,sans-serif;hyphens:auto;text-align:justify;">2022年苹果播客文化类编辑精选节目</p><p data-flag="normal" style="color:#333333;font-weight:normal;font-size:16px;line-height:30px;font-family:Helvetica,Arial,sans-serif;hyphens:auto;text-align:justify;">荔枝2022年度影响力播客</p><p data-flag="normal" style="color:#333333;font-weight:normal;font-size:16px;line-height:30px;font-family:Helvetica,Arial,sans-serif;hyphens:auto;text-align:justify;">喜马拉雅百大播客第四名</p><p data-flag="normal" style="color:#333333;font-weight:normal;font-size:16px;line-height:30px;font-family:Helvetica,Arial,sans-serif;hyphens:auto;text-align:justify;">连续五年苹果播客年度编辑推荐</p><p data-flag="normal" style="color:#333333;font-weight:normal;font-size:16px;line-height:30px;font-family:Helvetica,Arial,sans-serif;hyphens:auto;text-align:justify;">荔枝最强王者播客第三</p><span><br></span><p data-flag="normal" style="color:#333333;font-weight:normal;font-size:16px;line-height:30px;font-family:Helvetica,Arial,sans-serif;hyphens:auto;text-align:justify;">主创金花，《如何成为成为优秀的用户体验设计师》作者，科幻综艺《不要回答》编剧，毕业于克莱登大学。</p>',
-    author: "",
     pub_date: "2023-11-24T02:01:00+00:00",
-    content: "",
     create_date: "2024-01-09 00:54:17",
     update_date: "2024-01-09 00:54:17",
-    read_status: 2,
-    media_object:
-      '[{"title":{"content_type":"text/plain","src":null,"content":"《AI创世者》导演与编剧的双重灾难"},"description":null,"content":[{"url":"https://jt.ximalaya.com//GKwRIRwJM_TuAjC4IAKBIlKd-aacv2-48K.m4a?channel=rss&album_id=3558668&track_id=687053615&uid=40763963&jt=https://audio.xmcdn.com/storages/1bae-audiofreehighqps/5C/1B/GKwRIRwJM_TuAjC4IAKBIlKd-aacv2-48K.m4a","content_type":"audio/x-m4a","height":null,"width":null,"size":181578295}],"thumbnails":[{"image":{"uri":"https://fdfs.xmcdn.com/storages/d273-audiofreehighqps/15/9D/GKwRIW4JM_OgAAMAbwKBIiG9.jpeg","title":null,"link":null,"width":null,"height":null,"description":null},"time":null}]}]',
     starred: 0,
+    sourceURL: "https://alioss.gcores.com/uploads/audio/4d2ba602-896e-4a7f-ae32-10949705f4c7.mp3",
+    thumbnail: "http://media.fmit.cn/podcast/F_yh1CSii.jpeg",
   },
   {
     id: 15698,
@@ -33,8 +28,8 @@ export const list = [
     create_date: "2024-01-12 07:50:26",
     update_date: "2024-01-12 07:50:26",
     read_status: 2,
-    media_object:
-      '[{"title":null,"description":null,"content":[{"url":"https://audio.getpodcast.xyz/redirect/ximalaya/https://audio.xmcdn.com/storages/718a-audiofreehighqps/14/E7/GKwRIasJY03nAne7WQKTqdZJ-aacv2-48K.m4a?utm_campaign=ximalaya-246622-%E5%8E%9F%E6%9D%A5%E6%98%AF%E8%BF%99%E6%A0%B7%EF%BC%9F%EF%BC%81&utm_content=%E3%80%90%E5%B9%B4%E7%BB%88%E7%89%B9%E8%BE%91%E3%80%912023%EF%BC%8C%E4%B8%96%E7%95%8C%E4%BD%A0%E5%A5%BD%EF%BC%81&utm_medium=ximalaya&utm_source=rss&utm_term=696435935","content_type":"audio/x-m4a","height":null,"width":null,"size":null}],"thumbnails":[{"image":{"uri":"https://imagev2.xmcdn.com/storages/52a5-audiofreehighqps/FA/DC/CMCoOSEENJO4AAFD0ACXT94J.jpg","title":null,"link":null,"width":null,"height":null,"description":null},"time":null}]}]',
+    sourceURL: "https://audio.getpodcast.xyz/redirect/ximalaya/https://audio.xmcdn.com/storages/718a-audiofreehighqps/14/E7/GKwRIasJY03nAne7WQKTqdZJ-aacv2-48K.m4a?utm_campaign=ximalaya-246622-%E5%8E%9F%E6%9D%A5%E6%98%AF%E8%BF%99%E6%A0%B7%EF%BC%9F%EF%BC%81&utm_content=%E3%80%90%E5%B9%B4%E7%BB%88%E7%89%B9%E8%BE%91%E3%80%912023%EF%BC%8C%E4%B8%96%E7%95%8C%E4%BD%A0%E5%A5%BD%EF%BC%81&utm_medium=ximalaya&utm_source=rss&utm_term=696435935",
+    thumbnail: "https://imagev2.xmcdn.com/storages/52a5-audiofreehighqps/FA/DC/CMCoOSEENJO4AAFD0ACXT94J.jpg",
     starred: 0,
   },
 ];
