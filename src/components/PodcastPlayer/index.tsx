@@ -1,9 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import { Play, SkipBack, SkipForward } from "lucide-react";
 import { Separator } from "../ui/separator";
 import { list } from "./data";
-import { createWavesurfer } from "./wave";
 
 function createThumbnail(thumbnail: any) {
   return (
@@ -15,6 +14,7 @@ function createThumbnail(thumbnail: any) {
 
 export const PodcastPlayer = () => {
   const [current, setCurrent] = useState<any>(null);
+  const audioRef = useRef<HTMLAudioElement>();
 
   function renderList() {
     return [
@@ -63,8 +63,9 @@ export const PodcastPlayer = () => {
 
   useEffect(() => {
     if (current && current.sourceURL) {
-      createWavesurfer(document.querySelector("#wave"), current.sourceURL);
+      audioRef?.current?.play();
     }
+
   }, [current]);
 
   return (
@@ -75,9 +76,9 @@ export const PodcastPlayer = () => {
         "flex flex-col"
       )}
     >
-      <div className="h-[420px] shrink-0">
-        <div className="w-[160px] h-[160px] m-auto">
-          <div className="bg-muted rounded-sm overflow-hidden">
+      <div className="shrink-0">
+        <div className="pt-10 m-auto">
+          <div className="w-[160px] h-[160px] m-auto bg-muted rounded-sm overflow-hidden">
             {current && (
               <img
                 alt="uri"
@@ -86,8 +87,10 @@ export const PodcastPlayer = () => {
               />
             )}
           </div>
-          <div id="wave"></div>
-          <div className="flex gap-8 items-center justify-center py-3">
+          <div className="my-4 flex justify-center">
+            <audio ref={audioRef} controls preload="true" src={current?.sourceURL}></audio>
+          </div>
+          {/* <div className="flex gap-8 items-center justify-center py-3">
             <SkipBack size={18} />
             <div
               className={clsx(
@@ -100,7 +103,7 @@ export const PodcastPlayer = () => {
               <Play size={24} strokeWidth={1} />
             </div>
             <SkipForward size={18} />
-          </div>
+          </div> */}
         </div>
       </div>
       <div className="overflow-auto">{renderList()}</div>

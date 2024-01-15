@@ -29,7 +29,7 @@ export const ArticleContainer = (): JSX.Element => {
     <div className={classNames(styles.article)}>
       <Layout1 feedUuid={feedUuid} type={type} />
       <View />
-       {/* <PodcastPlayer /> */}
+      <PodcastPlayer />
 
       <ArticleDialogView
         article={store.article}
