@@ -54,6 +54,9 @@ pnpm tauri build
 
 You can get more details about building Tauri app in [here](https://tauri.app/v1/guides/distribution/publishing)
 
+## Repo Activuty
+
+![Alt](https://repobeats.axiom.co/api/embed/a1f5a08afeb1006c8f78055fac24b46eb6eb0527.svg "Repobeats analytics image")
 
 ### More Projects
 
