@@ -4,6 +4,8 @@ import { Play, SkipBack, SkipForward } from "lucide-react";
 import { Separator } from "../ui/separator";
 
 import { list } from "./data";
+import { Slider } from "../ui/slider";
+import { Player } from "./Player";
 
 function createThumbnail(thumbnail: any) {
   return (
@@ -77,40 +79,7 @@ export const PodcastPlayer = () => {
       )}
     >
       <div className="shrink-0">
-        <div className="pt-4 px-4 m-auto">
-          <div className="m-auto bg-muted rounded-2xl">
-            {current && (
-              <img alt="uri" src={current.thumbnail} className="rounded-2xl" />
-            )}
-          </div>
-          <div className="my-4 flex justify-center">
-            <div className="w-full bg-muted rounded-2xl">
-              <div>
-                <progress value="70" max="100"></progress>
-              </div>
-              <div className="flex gap-8 items-center justify-center py-3">
-                <SkipBack size={18} />
-                <div
-                  className={clsx(
-                    "w-[38px] h-[38px] pl-[3px]",
-                    "flex items-center justify-center",
-                    "rounded-full bg-foreground",
-                    "text-background"
-                  )}
-                >
-                  <Play size={24} strokeWidth={1} />
-                </div>
-                <SkipForward size={18} />
-              </div>
-            </div>
-          </div>
-          <audio
-            ref={audioRef}
-            controls
-            preload="true"
-            src={current?.sourceURL}
-          ></audio>
-        </div>
+        <Player list={list} />
       </div>
       <div className="overflow-auto">{renderList()}</div>
     </div>
