@@ -14,7 +14,7 @@ type TimeDisplayProps = {
 
 export const TimeDisplay = ({ time }: TimeDisplayProps) => {
   return (
-    <div className="time-display">
+    <div className="text-xs">
       {time.minutes}:{time.seconds.toString().padStart(2, "0")}
     </div>
   );
@@ -52,22 +52,34 @@ export const Player = (props: PlayerProps) => {
   const hoverPlayHeadRef = useRef<HTMLDivElement | null>(null);
 
   const onPlayButtonClick = () => {
-    musicPlayer.setIsPlaying(!musicPlayer.isPlaying);
+    const currentSong = list[currentAudio];
+    const audio = new Audio(currentSong.sourceURL);
+
+    if (pause) {
+      playerRef.current && playerRef.current.play();
+    } else {
+      playerRef.current && playerRef.current.pause();
+    }
+
+    setPause(!pause);
   };
 
   const onPrevButtonClick = () => {
-    if (currentAudio == 0) {
-      setCurrentAudio(list.length - 1);
-    } else {
-      setCurrentAudio(currentAudio - 1);
+    setCurrentAudio((currentAudio + list.length - 1) % list.length);
+
+    updatePlayer();
+
+    if(pause){
+     playerRef.current && playerRef.current.play();
     }
   };
 
   const onNextButtonClick = () => {
-    if (currentAudio == list.length - 1) {
-      setCurrentAudio(0);
-    } else {
-      setCurrentAudio(currentAudio + 1);
+    setCurrentAudio((currentAudio + 1) % list.length);
+    updatePlayer();
+
+    if(pause){
+      playerRef.current && playerRef.current.play();
     }
   };
 
@@ -95,10 +107,9 @@ export const Player = (props: PlayerProps) => {
 
     if (player && timeline && playHead) {
       const duration = player.duration;
-      const timelineWidth = timeline.offsetWidth - playHead.offsetWidth;
       const playPercent = 100 * (player.currentTime / duration);
+
       playHead.style.width = playPercent + "%";
-      // const currentTime = formatTime(parseInt(player.currentTime));
       setCurrentTime(secondsToMinutesAndSeconds(player.currentTime));
     }
   };
@@ -128,15 +139,19 @@ export const Player = (props: PlayerProps) => {
 
     if (player && timeline && playHead) {
       const duration = player.duration;
-
-      const playHeadWidth = timeline.offsetWidth;
-      const offsetWidth = timeline.offsetLeft;
-      const userClickWidth = e.clientX - offsetWidth;
-
-      const userClickWidthInPercent = (userClickWidth * 100) / playHeadWidth;
+      const playHeadRect: DOMRect = timeline.getBoundingClientRect();
+      const left = playHeadRect.left;
+      const userClickWidth = e.clientX - left;
+      const userClickWidthInPercent =
+        (userClickWidth * 100) / playHeadRect.width;
 
       playHead.style.width = userClickWidthInPercent + "%";
       player.currentTime = (duration * userClickWidthInPercent) / 100;
+
+      console.log(
+        "🚀 ~ changeCurrentTime ~ player.currentTime:",
+        player.currentTime
+      );
     }
   };
 
@@ -148,12 +163,11 @@ export const Player = (props: PlayerProps) => {
 
     if (player && timeline && playHead && hoverPlayHead) {
       const duration = player.duration;
-
-      const playHeadWidth = timeline.offsetWidth;
-
-      const offsetWidth = timeline.offsetLeft;
-      const userClickWidth = e.clientX - offsetWidth;
-      const userClickWidthInPercent = (userClickWidth * 100) / playHeadWidth;
+      const playHeadRect: DOMRect = timeline.getBoundingClientRect();
+      const left = playHeadRect.left;
+      const userClickWidth = e.clientX - left;
+      const userClickWidthInPercent =
+        (userClickWidth * 100) / playHeadRect.width;
 
       if (userClickWidthInPercent <= 100) {
         hoverPlayHead.style.width = userClickWidthInPercent + "%";
@@ -242,13 +256,12 @@ export const Player = (props: PlayerProps) => {
         />
       </div>
       <div className="my-4 flex justify-center">
-        <div className="w-full bg-muted rounded-2xl">
+        <div className="w-full bg-card rounded-2xl">
           <audio ref={playerRef}>
-            <source src={list[currentAudio].audio} type="audio/ogg" />
+            <source src={list[currentAudio].sourceURL} type="audio/ogg" />
             Your browser does not support the audio element.
           </audio>
           {/* <div>
-            <TimeDisplay time={currentTime} />
             <input
               type="range"
               min="0"
@@ -258,21 +271,31 @@ export const Player = (props: PlayerProps) => {
               onMouseUp={onSliderMouseUp}
               onChange={onSliderChange}
             />
-            <TimeDisplay time={maxTime} />
           </div> */}
-          <div>
+          <div className="flex gap-2 mx-4 my-4">
+            <TimeDisplay time={currentTime} />
             <div
               ref={timelineRef}
               id="timeline"
-              className="relative m-auto w-full h-1 bg-primary rounded-md cursor-pointer group"
+              className="relative m-auto w-full h-1 bg-secondary rounded-md cursor-pointer group"
             >
-              <div ref={playHeadRef} id="playhead" className="relative z-[2] w-0 h-1 rounded-md bg-red-500"></div>
+              <div
+                ref={playHeadRef}
+                id="playhead"
+                className="relative z-[2] w-0 h-1 rounded-md bg-primary"
+              ></div>
               <div
                 ref={hoverPlayHeadRef}
-                className="absolute z-[1] top-0 w-0 h-1 rounded-md bg-slate-600 transition-opacity opacity-0 after:opacity-0 before:opacity-0 group-hover:after:opacity-100 group-hover:before:opacity-100 group-hover:opacity-100 "
+                className={clsx(
+                  "absolute z-[1] top-0 w-0 h-1 rounded-md bg-slate-600 transition-opacity opacity-1 after:opacity-1 group-hover:after:opacity-100 group-hover:before:opacity-100 group-hover:opacity-100",
+                  "before:content-[attr(data-content)] before:opacity-1 before:block before:absolute before:-top-[40px] before:-right-[23px] before:z-10 before:p-1 before:text-center before:bg-slate-800 before:text-white before:rounded-md",
+                  "after:content-[''] after:opacity-0 after:block after:absolute after:-top-[8px] after:-right-[8px] after:border-t-[8px_solid] after:border-t-slate-800 after:border-l-[8px_solid_transparent] after:border-r-[8px_solid_transparent] after:bg-slate-800 after:text-white after:rounded-md"
+                )}
                 data-content="0:00"
-              ></div>
+              >
+              </div>
             </div>
+            <TimeDisplay time={maxTime} />
           </div>
           <div className="flex gap-8 items-center justify-center py-3">
             <SkipBack size={18} onClick={onPrevButtonClick} />
@@ -290,8 +313,8 @@ export const Player = (props: PlayerProps) => {
             <SkipForward size={18} onClick={onNextButtonClick} />
           </div>
         </div>
-        <p> {musicPlayer.isPlaying ? "isPlaying" : "is no playing"}</p>
       </div>
+      <p> {musicPlayer.isPlaying ? "isPlaying" : "is no playing"}</p>
     </div>
   );
 };
