@@ -64,8 +64,8 @@ export const Player = (props: PlayerProps) => {
     setPause(!pause);
   };
 
-  const onPrevButtonClick = () => {
-    setCurrentAudio((currentAudio + list.length - 1) % list.length);
+  const prevSong = () => {
+    setCurrentAudio((cur) => ( cur + list.length - 1) % list.length);
 
     updatePlayer();
 
@@ -74,24 +74,13 @@ export const Player = (props: PlayerProps) => {
     }
   };
 
-  const onNextButtonClick = () => {
-    setCurrentAudio((currentAudio + 1) % list.length);
+  const nextSong = () => {
+    setCurrentAudio((cur) => (cur + 1) % list.length);
     updatePlayer();
 
     if(pause){
       playerRef.current && playerRef.current.play();
     }
-  };
-
-  const onSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSliderValue(parseInt(e.currentTarget.value));
-    setIsSliderActive(true);
-  };
-
-  const onSliderMouseUp = () => {
-    const new_time = percentOf(musicPlayer.maxTime, sliderValue);
-    musicPlayer.updateTime(new_time);
-    setIsSliderActive(false);
   };
 
   const loadSong = (index: number) => {
@@ -115,21 +104,11 @@ export const Player = (props: PlayerProps) => {
   };
 
   const updatePlayer = () => {
+    console.log("🚀 ~ updatePlayer ~ currentAudio:", currentAudio)
     const currentSong = list[currentAudio];
     const audio = new Audio(currentSong.audio);
 
     playerRef?.current?.load();
-  };
-
-  const nextSong = () => {
-    if (playerRef && playerRef.current) {
-      setCurrentAudio((currentAudio + 1) % list.length);
-      updatePlayer();
-
-      if (pause) {
-        playerRef.current.play();
-      }
-    }
   };
 
   const changeCurrentTime = (e: any) => {
@@ -287,7 +266,7 @@ export const Player = (props: PlayerProps) => {
               <div
                 ref={hoverPlayHeadRef}
                 className={clsx(
-                  "absolute z-[1] top-0 w-0 h-1 rounded-md bg-slate-600 transition-opacity opacity-1 after:opacity-1 group-hover:after:opacity-100 group-hover:before:opacity-100 group-hover:opacity-100",
+                  "absolute z-[1] top-0 w-0 h-1 rounded-md bg-slate-600 transition-opacity duration-300 ease-in opacity-0 group-hover:after:opacity-100 group-hover:before:opacity-100 group-hover:opacity-100",
                   "before:content-[attr(data-content)] before:opacity-1 before:block before:absolute before:-top-[40px] before:-right-[23px] before:z-10 before:p-1 before:text-center before:bg-slate-800 before:text-white before:rounded-md",
                   "after:content-[''] after:opacity-0 after:block after:absolute after:-top-[8px] after:-right-[8px] after:border-t-[8px_solid] after:border-t-slate-800 after:border-l-[8px_solid_transparent] after:border-r-[8px_solid_transparent] after:bg-slate-800 after:text-white after:rounded-md"
                 )}
@@ -298,7 +277,7 @@ export const Player = (props: PlayerProps) => {
             <TimeDisplay time={maxTime} />
           </div>
           <div className="flex gap-8 items-center justify-center py-3">
-            <SkipBack size={18} onClick={onPrevButtonClick} />
+            <SkipBack size={18} onClick={prevSong} />
             <div
               className={clsx(
                 "w-[38px] h-[38px] pl-[3px]",
@@ -310,7 +289,7 @@ export const Player = (props: PlayerProps) => {
             >
               <Play size={24} strokeWidth={1} />
             </div>
-            <SkipForward size={18} onClick={onNextButtonClick} />
+            <SkipForward size={18} onClick={nextSong} />
           </div>
         </div>
       </div>
