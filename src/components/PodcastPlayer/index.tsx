@@ -53,7 +53,8 @@ export const PodcastPlayer = () => {
                     fill={"currentColor"}
                     size={24}
                     className={clsx("group-hover:visible", {
-                      visible: current?.uuid === _.uuid && !playing
+                      'block': current?.uuid === _.uuid && !playing,
+                      'hidden': current?.uuid === _.uuid && playing,
                     })}
                   />
                 )}
