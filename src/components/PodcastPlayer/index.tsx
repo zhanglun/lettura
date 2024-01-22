@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import { useLiveQuery } from 'dexie-react-hooks';
+import { useLiveQuery } from "dexie-react-hooks";
 import clsx from "clsx";
 import { Play, SkipBack, SkipForward } from "lucide-react";
 import { Separator } from "../ui/separator";
 import { Player } from "./Player";
 import { db } from "@/helpers/podcastDB";
+import { PlayingBar } from "./PlayingBar";
+import { busChannel } from "@/helpers/busChannel";
 
 function createThumbnail(thumbnail: any) {
   return (
@@ -15,17 +17,22 @@ function createThumbnail(thumbnail: any) {
 }
 
 export const PodcastPlayer = () => {
-  const list = useLiveQuery(() => db.podcasts.toCollection().sortBy('add_date')) || [];
+  const list =
+    useLiveQuery(() => db.podcasts.toCollection().reverse().toArray()) || [];
   console.log("%c Line:19 🍋 list", "color:#ed9ec7", list);
-  const [current, setCurrent] = useState<number>(0);
+  const [current, setCurrent] = useState<any>(null);
+  const [playing, setPlaying] = useState<boolean>(false);
 
   function renderList() {
     return (list || []).map((_: any, idx: number) => {
       const { description, thumbnail } = _;
 
       return (
-        <div className="group cursor-default">
-          <Separator className="group-hover:invisible" />
+        <div
+          className={clsx("group cursor-default rounded-lg", {
+            "bg-accent": current?.uuid === _.uuid,
+          })}
+        >
           <div className="flex gap-3 p-3 rounded-sm hover:bg-accent">
             <div className="relative w-[60px] h-[60px]">
               {createThumbnail(thumbnail)}
@@ -34,11 +41,24 @@ export const PodcastPlayer = () => {
                   "rounded-sm pl-[3px] flex items-center justify-center",
                   "text-primary-foreground bg-foreground/70 cursor-pointer",
                   "absolute top-0 left-0 bottom-0 right-0",
-                  "invisible group-hover:visible"
+                  "group-hover:visible",
+                  {
+                    invisible: current?.uuid !== _.uuid,
+                  }
                 )}
-                onClick={() => setCurrent(idx)}
+                onClick={() => setCurrent(_)}
               >
-                <Play fill={"currentColor"} size={24} />
+                {  (
+                  <Play
+                    fill={"currentColor"}
+                    size={24}
+                    className={clsx("group-hover:visible", {
+                      visible: current?.uuid === _.uuid && !playing
+                    })}
+                  />
+                )}
+
+                {playing && current?.uuid === _.uuid && <PlayingBar />}
               </div>
             </div>
             <div>
@@ -54,6 +74,20 @@ export const PodcastPlayer = () => {
     });
   }
 
+  function handlePlayingStatusChange(status: boolean) {
+    setPlaying(status);
+  }
+
+  useEffect(() => {
+    const sub = busChannel.on("addMediaAndPlay", (record) => {
+      setCurrent(record);
+    });
+
+    return () => {
+      sub();
+    };
+  }, []);
+
   return (
     <div
       className={clsx(
@@ -63,7 +97,11 @@ export const PodcastPlayer = () => {
       )}
     >
       <div className="shrink-0">
-        <Player list={list} current={current} />
+        <Player
+          list={list}
+          current={current}
+          onPlayingStatusChange={handlePlayingStatusChange}
+        />
       </div>
       <div className="overflow-auto">{renderList()}</div>
     </div>

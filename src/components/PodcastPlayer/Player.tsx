@@ -1,8 +1,7 @@
-import React, { useEffect, useImperativeHandle, useRef, useState } from "react";
-import { useMusicPlayer, secondsToMinutesAndSeconds } from "./useMusicPlayer";
+import React, { useEffect, useRef, useState } from "react";
+import { secondsToMinutesAndSeconds } from "./useMusicPlayer";
 import clsx from "clsx";
 import { Pause, Play, SkipBack, SkipForward } from "lucide-react";
-import { busChannel } from "@/helpers/busChannel";
 
 type TimeDisplayProps = {
   time: { minutes: number; seconds: number };
@@ -18,7 +17,8 @@ export const TimeDisplay = ({ time }: TimeDisplayProps) => {
 
 export interface PlayerProps {
   list: any[];
-  current: number;
+  current: any;
+  onPlayingStatusChange: (status: boolean) => void;
 }
 
 const formatTime = (currentTime: any) => {
@@ -49,11 +49,6 @@ export const Player = React.forwardRef((props: PlayerProps, ref) => {
 
     if (pause) {
       playerRef.current && playerRef.current.play();
-      console.log(
-        "%c Line:50 🍑 playerRef.current",
-        "color:#b03734",
-        playerRef.current
-      );
     } else {
       playerRef.current && playerRef.current.pause();
     }
@@ -193,33 +188,22 @@ export const Player = React.forwardRef((props: PlayerProps, ref) => {
   }, []);
 
   useEffect(() => {
-    const sub = busChannel.on("addMediaAndPlay", (record) => {
+    console.log("%c Line:207 🥥 props.current", "color:#465975", props.current);
+    if (list && list.length) {
       for(let i = 0; i<list.length; i++) {
-        if (list[i].uuid === record.uuid) {
+        if (list[i].uuid === props.current.uuid) {
           setCurrentAudio(i);
           updatePlayer(list[i]);
           playerRef.current && playerRef.current.play();
           setPause(false);
         }
       }
-    });
-
-    return () => {
-      sub();
-    };
-  }, [list]);
-
-  useEffect(() => {
-    console.log("%c Line:207 🥥 props.current", "color:#465975", props.current);
-    if (list && list.length) {
-      setCurrentAudio(props.current);
-      updatePlayer();
-
-      playerRef.current && playerRef.current.play();
-
-      setPause(false);
     }
   }, [props.current]);
+
+  useEffect(() => {
+    props.onPlayingStatusChange(!pause);
+  }, [pause])
 
   return (
     <div className="pt-4 px-4 m-auto">
@@ -279,6 +263,7 @@ export const Player = React.forwardRef((props: PlayerProps, ref) => {
               onClick={onPlayButtonClick}
             >
               {pause && <Play size={26} strokeWidth={1} className="pl-[3px]" />}
+              {/* {!pause && <PlayingBar />} */}
               {!pause && <Pause size={26} strokeWidth={1} />}
             </div>
             <SkipForward
