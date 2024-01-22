@@ -1,11 +1,10 @@
 import { useEffect, useRef, useState } from "react";
+import { useLiveQuery } from 'dexie-react-hooks';
 import clsx from "clsx";
 import { Play, SkipBack, SkipForward } from "lucide-react";
 import { Separator } from "../ui/separator";
-
-import { list } from "./data";
-import { Slider } from "../ui/slider";
 import { Player } from "./Player";
+import { db } from "@/helpers/podcastDB";
 
 function createThumbnail(thumbnail: any) {
   return (
@@ -16,21 +15,12 @@ function createThumbnail(thumbnail: any) {
 }
 
 export const PodcastPlayer = () => {
-  const [current, setCurrent] = useState<any>(null);
-  const audioRef = useRef<HTMLAudioElement>();
+  const list = useLiveQuery(() => db.podcasts.toCollection().sortBy('add_date')) || [];
+  console.log("%c Line:19 🍋 list", "color:#ed9ec7", list);
+  const [current, setCurrent] = useState<number>(0);
 
   function renderList() {
-    return [
-      ...list,
-      ...list,
-      ...list,
-      ...list,
-      ...list,
-      ...list,
-      ...list,
-      ...list,
-      ...list,
-    ].map((_) => {
+    return (list || []).map((_: any, idx: number) => {
       const { description, thumbnail } = _;
 
       return (
@@ -46,7 +36,7 @@ export const PodcastPlayer = () => {
                   "absolute top-0 left-0 bottom-0 right-0",
                   "invisible group-hover:visible"
                 )}
-                onClick={() => setCurrent(_)}
+                onClick={() => setCurrent(idx)}
               >
                 <Play fill={"currentColor"} size={24} />
               </div>
@@ -64,12 +54,6 @@ export const PodcastPlayer = () => {
     });
   }
 
-  useEffect(() => {
-    if (current && current.sourceURL) {
-      audioRef?.current?.play();
-    }
-  }, [current]);
-
   return (
     <div
       className={clsx(
@@ -79,7 +63,7 @@ export const PodcastPlayer = () => {
       )}
     >
       <div className="shrink-0">
-        <Player list={list} />
+        <Player list={list} current={current} />
       </div>
       <div className="overflow-auto">{renderList()}</div>
     </div>

@@ -1,12 +1,8 @@
-import { useEffect, useRef, useState } from "react";
-import {
-  useMusicPlayer,
-  percentOf,
-  numberToPercent,
-  secondsToMinutesAndSeconds,
-} from "./useMusicPlayer";
+import React, { useEffect, useImperativeHandle, useRef, useState } from "react";
+import { useMusicPlayer, secondsToMinutesAndSeconds } from "./useMusicPlayer";
 import clsx from "clsx";
-import { Play, SkipBack, SkipForward } from "lucide-react";
+import { Pause, Play, SkipBack, SkipForward } from "lucide-react";
+import { busChannel } from "@/helpers/busChannel";
 
 type TimeDisplayProps = {
   time: { minutes: number; seconds: number };
@@ -22,25 +18,21 @@ export const TimeDisplay = ({ time }: TimeDisplayProps) => {
 
 export interface PlayerProps {
   list: any[];
+  current: number;
 }
 
 const formatTime = (currentTime: any) => {
   const minutes = Math.floor(currentTime / 60);
   let seconds = Math.floor(currentTime % 60);
 
-  seconds = seconds >= 10 ? seconds : "0" + (seconds % 60);
-
-  const formatTime = minutes + ":" + seconds;
+  const formatTime =
+    minutes + ":" + (seconds >= 10 ? String(seconds) : "0" + (seconds % 60));
 
   return formatTime;
 };
 
-export const Player = (props: PlayerProps) => {
+export const Player = React.forwardRef((props: PlayerProps, ref) => {
   const { list } = props;
-  const musicPlayer = useMusicPlayer();
-
-  const [sliderValue, setSliderValue] = useState(0);
-  const [isSliderActive, setIsSliderActive] = useState(false);
   const [pause, setPause] = useState(true);
 
   const [currentTime, setCurrentTime] = useState({ minutes: 0, seconds: 0 });
@@ -53,10 +45,15 @@ export const Player = (props: PlayerProps) => {
 
   const onPlayButtonClick = () => {
     const currentSong = list[currentAudio];
-    const audio = new Audio(currentSong.sourceURL);
+    const audio = new Audio(currentSong.mediaURL);
 
     if (pause) {
       playerRef.current && playerRef.current.play();
+      console.log(
+        "%c Line:50 🍑 playerRef.current",
+        "color:#b03734",
+        playerRef.current
+      );
     } else {
       playerRef.current && playerRef.current.pause();
     }
@@ -65,27 +62,20 @@ export const Player = (props: PlayerProps) => {
   };
 
   const prevSong = () => {
-    setCurrentAudio((cur) => ( cur + list.length - 1) % list.length);
+    setCurrentAudio((cur) => (cur + list.length - 1) % list.length);
+    updatePlayer(list[currentAudio]);
 
-    updatePlayer();
-
-    if(pause){
-     playerRef.current && playerRef.current.play();
+    if (pause) {
+      playerRef.current && playerRef.current.play();
     }
   };
 
   const nextSong = () => {
     setCurrentAudio((cur) => (cur + 1) % list.length);
-    updatePlayer();
+    updatePlayer(list[currentAudio]);
 
-    if(pause){
+    if (pause) {
       playerRef.current && playerRef.current.play();
-    }
-  };
-
-  const loadSong = (index: number) => {
-    if (list.length) {
-      musicPlayer.setSrc(list[index].sourceURL);
     }
   };
 
@@ -103,10 +93,8 @@ export const Player = (props: PlayerProps) => {
     }
   };
 
-  const updatePlayer = () => {
-    console.log("🚀 ~ updatePlayer ~ currentAudio:", currentAudio)
-    const currentSong = list[currentAudio];
-    const audio = new Audio(currentSong.audio);
+  const updatePlayer = (song: any) => {
+    const audio = new Audio(song.audio);
 
     playerRef?.current?.load();
   };
@@ -167,27 +155,6 @@ export const Player = (props: PlayerProps) => {
   };
 
   useEffect(() => {
-    loadSong(currentAudio);
-  }, []);
-
-  useEffect(() => {
-    if (!isSliderActive) {
-      if (!musicPlayer.currentTime || !musicPlayer.maxTime) {
-        setSliderValue(0);
-      } else {
-        setSliderValue(
-          numberToPercent(musicPlayer.currentTime, musicPlayer.maxTime)
-        );
-      }
-    }
-    setCurrentTime(secondsToMinutesAndSeconds(musicPlayer.currentTime));
-  }, [musicPlayer.currentTime, musicPlayer.maxTime]);
-
-  useEffect(() => {
-    setMaxTime(secondsToMinutesAndSeconds(musicPlayer.maxTime));
-  }, [musicPlayer.maxTime]);
-
-  useEffect(() => {
     playerRef.current &&
       playerRef.current.addEventListener("timeupdate", timeUpdate, false);
     playerRef.current &&
@@ -225,32 +192,50 @@ export const Player = (props: PlayerProps) => {
     };
   }, []);
 
+  useEffect(() => {
+    const sub = busChannel.on("addMediaAndPlay", (record) => {
+      for(let i = 0; i<list.length; i++) {
+        if (list[i].uuid === record.uuid) {
+          setCurrentAudio(i);
+          updatePlayer(list[i]);
+          playerRef.current && playerRef.current.play();
+          setPause(false);
+        }
+      }
+    });
+
+    return () => {
+      sub();
+    };
+  }, [list]);
+
+  useEffect(() => {
+    console.log("%c Line:207 🥥 props.current", "color:#465975", props.current);
+    if (list && list.length) {
+      setCurrentAudio(props.current);
+      updatePlayer();
+
+      playerRef.current && playerRef.current.play();
+
+      setPause(false);
+    }
+  }, [props.current]);
+
   return (
     <div className="pt-4 px-4 m-auto">
-      <div className="m-auto bg-muted rounded-2xl">
+      <div className="m-auto bg-muted rounded-2xl shadow-lg">
         <img
           alt="uri"
-          src={list[currentAudio].thumbnail}
+          src={list[currentAudio]?.thumbnail}
           className="rounded-2xl"
         />
       </div>
       <div className="my-4 flex justify-center">
         <div className="w-full bg-card rounded-2xl">
           <audio ref={playerRef}>
-            <source src={list[currentAudio].sourceURL} type="audio/ogg" />
+            <source src={list[currentAudio]?.mediaURL} />
             Your browser does not support the audio element.
           </audio>
-          {/* <div>
-            <input
-              type="range"
-              min="0"
-              max="100"
-              value={sliderValue}
-              className="slider"
-              onMouseUp={onSliderMouseUp}
-              onChange={onSliderChange}
-            />
-          </div> */}
           <div className="flex gap-2 mx-4 my-4">
             <TimeDisplay time={currentTime} />
             <div
@@ -271,29 +256,39 @@ export const Player = (props: PlayerProps) => {
                   "after:content-[''] after:opacity-0 after:block after:absolute after:-top-[8px] after:-right-[8px] after:border-t-[8px_solid] after:border-t-slate-800 after:border-l-[8px_solid_transparent] after:border-r-[8px_solid_transparent] after:bg-slate-800 after:text-white after:rounded-md"
                 )}
                 data-content="0:00"
-              >
-              </div>
+              ></div>
             </div>
             <TimeDisplay time={maxTime} />
           </div>
           <div className="flex gap-8 items-center justify-center py-3">
-            <SkipBack size={18} onClick={prevSong} />
+            <SkipBack
+              size={20}
+              onClick={prevSong}
+              className="cursor-pointer text-accent-foreground hover:text-accent-foreground/80 transition-all"
+            />
             <div
               className={clsx(
-                "w-[38px] h-[38px] pl-[3px]",
+                "w-[42px] h-[42px]",
                 "flex items-center justify-center",
                 "rounded-full bg-foreground",
-                "text-background"
+                "text-background",
+                "cursor-pointer",
+                "hover:scale-110",
+                "transition-all"
               )}
               onClick={onPlayButtonClick}
             >
-              <Play size={24} strokeWidth={1} />
+              {pause && <Play size={26} strokeWidth={1} className="pl-[3px]" />}
+              {!pause && <Pause size={26} strokeWidth={1} />}
             </div>
-            <SkipForward size={18} onClick={nextSong} />
+            <SkipForward
+              size={20}
+              onClick={nextSong}
+              className="cursor-pointer text-accent-foreground hover:text-accent-foreground/80 transition-all"
+            />
           </div>
         </div>
       </div>
-      <p> {musicPlayer.isPlaying ? "isPlaying" : "is no playing"}</p>
     </div>
   );
-};
+});

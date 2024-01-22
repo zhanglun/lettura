@@ -39,6 +39,8 @@
     "cmdk": "^0.2.0",
     "date-fns": "^2.30.0",
     "dayjs": "^1.11.10",
+    "dexie": "^3.2.4",
+    "dexie-react-hooks": "^1.1.7",
     "dnd-core": "^16.0.1",
     "framer-motion": "^10.16.4",
     "he": "^1.2.0",
