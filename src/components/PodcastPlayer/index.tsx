@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import clsx from "clsx";
-import { Play } from "lucide-react";
+import { Play, Trash2 } from "lucide-react";
 import { Player } from "./Player";
 import { db } from "@/helpers/podcastDB";
 import { PlayingBar } from "./PlayingBar";
@@ -26,13 +26,22 @@ export const PodcastPlayer = () => {
     busChannel.emit("addMediaAndPlay", record);
   }
 
+  function removePodcast(record: any) {
+    console.log("%c Line:30 🥥 record", "color:#7f2b82", record);
+    db.podcasts.delete(record.id).then((res) => {
+      console.log("%c Line:33 🍣 res", "color:#ed9ec7", res);
+    }).catch((err) => {
+      console.log("%c Line:35 🌰 err", "color:#f5ce50", err);
+    })
+  }
+
   function renderList() {
     return (list || []).map((_: any, idx: number) => {
       const { description, thumbnail } = _;
 
       return (
         <div
-          className={clsx("group cursor-default rounded-lg", {
+          className={clsx("group cursor-default rounded-lg relative", {
             "bg-accent": current?.uuid === _.uuid,
           })}
         >
@@ -67,11 +76,16 @@ export const PodcastPlayer = () => {
             </div>
             <div>
               <p className="font-bold text-sm mb-1">{_.title}</p>
-              {/*<p className="mb-2 text-xs text-muted-foreground">这里是feed名称</p>*/}
+              <p className="mb-2 text-xs text-muted-foreground">
+                {_.feed_title}
+              </p>
               <p className="text-xs line-clamp-2 text-muted-foreground leading-normal">
                 {(description || _.description).replace(/(<([^>]+)>)/gi, "")}
               </p>
             </div>
+          </div>
+          <div className="absolute right-0 top-0 bottom-0 p-2 flex items-center justify-center bg-gradient-to-l from-zinc-200 to-transparent opacity-0 group-hover:opacity-100 transition-all">
+            <Trash2 size={18} strokeWidth={1.5} className="text-muted-foreground hover:text-foreground" onClick={() => removePodcast(_)}/>
           </div>
         </div>
       );
@@ -79,8 +93,6 @@ export const PodcastPlayer = () => {
   }
 
   function handlePlayingStatusChange(status: boolean, current: any) {
-    console.log("%c Line:82 🍢 current", "color:#6ec1c2", current);
-    console.log("%c Line:82 🍎 status", "color:#ea7e5c", status);
     setPlaying(status);
     setCurrent(current);
   }

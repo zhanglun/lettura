@@ -1,9 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { secondsToMinutesAndSeconds } from "./useMusicPlayer";
 import clsx from "clsx";
-import { Loader, Pause, Play, SkipBack, SkipForward } from "lucide-react";
+import { Pause, Play, SkipBack, SkipForward } from "lucide-react";
 import { busChannel } from "@/helpers/busChannel";
-import { pl } from "date-fns/locale";
 
 type TimeDisplayProps = {
   time: { minutes: number; seconds: number };
@@ -35,11 +34,10 @@ const formatTime = (currentTime: any) => {
 export const Player = React.forwardRef((props: PlayerProps, ref) => {
   const { list } = props;
   const [pause, setPause] = useState(true);
-  const [loading, setLoading] = useState(false);
-
   const [currentTime, setCurrentTime] = useState({ minutes: 0, seconds: 0 });
   const [maxTime, setMaxTime] = useState({ minutes: 0, seconds: 0 });
   const [currentAudio, setCurrentAudio] = useState(0);
+  const [currentMedia, setCurrentMedia] = useState<any>();
   const playerRef = useRef<HTMLAudioElement | null>(null);
   const timelineRef = useRef<HTMLDivElement | null>(null);
   const playHeadRef = useRef<HTMLDivElement | null>(null);
@@ -50,7 +48,6 @@ export const Player = React.forwardRef((props: PlayerProps, ref) => {
 
     if (playerRef.current) {
       if (playerRef.current.readyState === 0) {
-        setLoading(true);
         setPause(true);
 
         playerRef.current.src = currentSong.mediaURL;
@@ -69,6 +66,7 @@ export const Player = React.forwardRef((props: PlayerProps, ref) => {
 
   const prevSong = () => {
     setCurrentAudio((currentAudio + list.length - 1) % list.length);
+    setCurrentMedia(list[(currentAudio + list.length - 1) % list.length]);
     updatePlayer(list[(currentAudio + list.length - 1) % list.length]);
 
     playerRef.current && playerRef.current.play();
@@ -76,6 +74,7 @@ export const Player = React.forwardRef((props: PlayerProps, ref) => {
 
   const nextSong = () => {
     setCurrentAudio((currentAudio + 1) % list.length);
+    setCurrentMedia(list[(currentAudio + 1) % list.length]);
     updatePlayer(list[(currentAudio + 1) % list.length]);
 
     playerRef.current && playerRef.current.play();
@@ -93,14 +92,6 @@ export const Player = React.forwardRef((props: PlayerProps, ref) => {
       playHead.style.width = playPercent + "%";
       setCurrentTime(secondsToMinutesAndSeconds(player.currentTime));
     }
-  };
-
-  const startLoadMedia = () => {
-    setLoading(true);
-  };
-
-  const finishLoadMedia = () => {
-    setLoading(false);
   };
 
   const updatePlayer = (song: any) => {
@@ -172,6 +163,7 @@ export const Player = React.forwardRef((props: PlayerProps, ref) => {
         for (let i = 0; i < list.length; i++) {
           if (list[i].uuid === record.uuid) {
             setCurrentAudio(i);
+            setCurrentMedia(list[i]);
             updatePlayer(list[i]);
             playerRef.current && playerRef.current.play();
             setPause(false);
@@ -182,65 +174,63 @@ export const Player = React.forwardRef((props: PlayerProps, ref) => {
     [list]
   );
 
+  function renderPlayButton() {
+    if (pause) {
+      return <Play size={26} strokeWidth={1} className="pl-[3px]" />;
+    } else if (!pause) {
+      return <Pause size={26} strokeWidth={1} />;
+    }
+  }
+
   useEffect(() => {
-    playerRef.current &&
+    if (playerRef.current) {
       playerRef.current.addEventListener("timeupdate", timeUpdate, false);
-    playerRef.current &&
-      playerRef.current.addEventListener(
-        "loadedmetadata",
-        startLoadMedia,
-        false
-      );
-    playerRef.current &&
-      playerRef.current.addEventListener("canplay", finishLoadMedia, false);
-    playerRef.current &&
       playerRef.current.addEventListener("ended", nextSong, false);
-    timelineRef.current &&
+    }
+
+    if (timelineRef.current) {
       timelineRef.current.addEventListener("click", changeCurrentTime, false);
-    timelineRef.current &&
       timelineRef.current.addEventListener("mousemove", hoverTimeLine, false);
-    timelineRef.current &&
       timelineRef.current.addEventListener("mouseout", resetTimeLine, false);
+    }
 
     return () => {
-      playerRef.current &&
+      if (playerRef.current) {
         playerRef.current.removeEventListener("timeupdate", timeUpdate, false);
-      playerRef.current &&
-        playerRef.current.removeEventListener(
-          "loadedmetadata",
-          startLoadMedia,
-          false
-        );
-      playerRef.current &&
-        playerRef.current.removeEventListener(
-          "canplay",
-          finishLoadMedia,
-          false
-        );
-      playerRef.current &&
         playerRef.current.removeEventListener("ended", nextSong, false);
-      timelineRef.current &&
+      }
+
+      if (timelineRef.current) {
         timelineRef.current.removeEventListener(
           "click",
           changeCurrentTime,
           false
         );
-      timelineRef.current &&
         timelineRef.current.removeEventListener(
           "mousemove",
           hoverTimeLine,
           false
         );
-      timelineRef.current &&
         timelineRef.current.removeEventListener(
           "mouseout",
           resetTimeLine,
           false
         );
+      }
     };
   }, []);
 
   useEffect(() => {
+    // reset currentAudio and currentMedia
+    if (currentMedia) {
+      const idx = list.findIndex((_) => _.id === currentMedia.id);
+      setCurrentAudio(idx);
+    } else {
+      setPause(true);
+      setCurrentAudio(0);
+      setCurrentMedia(list[0]);
+    }
+
     const sub = busChannel.on("addMediaAndPlay", (record) => {
       receiveNewRecord(record);
     });
@@ -248,6 +238,7 @@ export const Player = React.forwardRef((props: PlayerProps, ref) => {
     return () => {
       sub();
     };
+
   }, [list]);
 
   useEffect(() => {
@@ -263,11 +254,13 @@ export const Player = React.forwardRef((props: PlayerProps, ref) => {
           className="rounded-2xl"
         />
       </div>
-        <p>currentAudio :{currentAudio}</p>
-        <div>
-          <div>{list[currentAudio]?.title}</div>
+      <div>
+        <div className="text-center mt-4">{list[currentAudio]?.title}</div>
+        <div className="text-muted-foreground text-sm text-center my-1">
+          {list[currentAudio]?.feed_title}
         </div>
-      <div className="my-4 flex justify-center">
+      </div>
+      <div className="my-3 flex justify-center">
         <div className="w-full bg-card rounded-2xl">
           <audio ref={playerRef} preload="true">
             <source src={list[currentAudio]?.mediaURL} />
@@ -315,17 +308,7 @@ export const Player = React.forwardRef((props: PlayerProps, ref) => {
               )}
               onClick={onPlayButtonClick}
             >
-              {pause && !loading && (
-                <Play size={26} strokeWidth={1} className="pl-[3px]" />
-              )}
-              {!pause && !loading && <Pause size={26} strokeWidth={1} />}
-              {pause && loading && (
-                <Loader
-                  size={26}
-                  strokeWidth={1}
-                  className="animate-spin-slow"
-                />
-              )}
+              {renderPlayButton()}
             </div>
             <SkipForward
               size={20}

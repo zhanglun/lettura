@@ -24,6 +24,7 @@ export function PodcastAdapter(props: any) {
       link: article.link,
       feed_url: article.feed_url,
       feed_uuid: article.feed_uuid,
+      feed_title: article.feed_title,
       pub_date: article.pub_date,
       create_date: article.create_date,
       update_date: article.update_date,
