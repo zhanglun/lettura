@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import clsx from "clsx";
-import { Play, SkipBack, SkipForward } from "lucide-react";
-import { Separator } from "../ui/separator";
+import { Play } from "lucide-react";
 import { Player } from "./Player";
 import { db } from "@/helpers/podcastDB";
 import { PlayingBar } from "./PlayingBar";
@@ -19,9 +18,13 @@ function createThumbnail(thumbnail: any) {
 export const PodcastPlayer = () => {
   const list =
     useLiveQuery(() => db.podcasts.toCollection().reverse().toArray()) || [];
-  console.log("%c Line:19 🍋 list", "color:#ed9ec7", list);
   const [current, setCurrent] = useState<any>(null);
   const [playing, setPlaying] = useState<boolean>(false);
+
+  function playRecord(record: any) {
+    setCurrent(record);
+    busChannel.emit("addMediaAndPlay", record);
+  }
 
   function renderList() {
     return (list || []).map((_: any, idx: number) => {
@@ -46,18 +49,18 @@ export const PodcastPlayer = () => {
                     invisible: current?.uuid !== _.uuid,
                   }
                 )}
-                onClick={() => setCurrent(_)}
+                onClick={() => playRecord(_)}
               >
-                {  (
+                {
                   <Play
                     fill={"currentColor"}
                     size={24}
                     className={clsx("group-hover:visible", {
-                      'block': current?.uuid === _.uuid && !playing,
-                      'hidden': current?.uuid === _.uuid && playing,
+                      block: current?.uuid === _.uuid && !playing,
+                      hidden: current?.uuid === _.uuid && playing,
                     })}
                   />
-                )}
+                }
 
                 {playing && current?.uuid === _.uuid && <PlayingBar />}
               </div>
@@ -75,19 +78,12 @@ export const PodcastPlayer = () => {
     });
   }
 
-  function handlePlayingStatusChange(status: boolean) {
+  function handlePlayingStatusChange(status: boolean, current: any) {
+    console.log("%c Line:82 🍢 current", "color:#6ec1c2", current);
+    console.log("%c Line:82 🍎 status", "color:#ea7e5c", status);
     setPlaying(status);
+    setCurrent(current);
   }
-
-  useEffect(() => {
-    const sub = busChannel.on("addMediaAndPlay", (record) => {
-      setCurrent(record);
-    });
-
-    return () => {
-      sub();
-    };
-  }, []);
 
   return (
     <div
@@ -98,11 +94,7 @@ export const PodcastPlayer = () => {
       )}
     >
       <div className="shrink-0">
-        <Player
-          list={list}
-          current={current}
-          onPlayingStatusChange={handlePlayingStatusChange}
-        />
+        <Player list={list} onPlayingStatusChange={handlePlayingStatusChange} />
       </div>
       <div className="overflow-auto">{renderList()}</div>
     </div>

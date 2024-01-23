@@ -1,7 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { secondsToMinutesAndSeconds } from "./useMusicPlayer";
 import clsx from "clsx";
-import { Pause, Play, SkipBack, SkipForward } from "lucide-react";
+import { Loader, Pause, Play, SkipBack, SkipForward } from "lucide-react";
+import { busChannel } from "@/helpers/busChannel";
+import { pl } from "date-fns/locale";
 
 type TimeDisplayProps = {
   time: { minutes: number; seconds: number };
@@ -17,8 +19,7 @@ export const TimeDisplay = ({ time }: TimeDisplayProps) => {
 
 export interface PlayerProps {
   list: any[];
-  current: any;
-  onPlayingStatusChange: (status: boolean) => void;
+  onPlayingStatusChange: (status: boolean, current: any) => void;
 }
 
 const formatTime = (currentTime: any) => {
@@ -34,6 +35,7 @@ const formatTime = (currentTime: any) => {
 export const Player = React.forwardRef((props: PlayerProps, ref) => {
   const { list } = props;
   const [pause, setPause] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const [currentTime, setCurrentTime] = useState({ minutes: 0, seconds: 0 });
   const [maxTime, setMaxTime] = useState({ minutes: 0, seconds: 0 });
@@ -45,33 +47,38 @@ export const Player = React.forwardRef((props: PlayerProps, ref) => {
 
   const onPlayButtonClick = () => {
     const currentSong = list[currentAudio];
-    const audio = new Audio(currentSong.mediaURL);
 
-    if (pause) {
-      playerRef.current && playerRef.current.play();
-    } else {
-      playerRef.current && playerRef.current.pause();
+    if (playerRef.current) {
+      if (playerRef.current.readyState === 0) {
+        setLoading(true);
+        setPause(true);
+
+        playerRef.current.src = currentSong.mediaURL;
+        playerRef.current.load();
+      }
+
+      if (pause) {
+        playerRef.current.play();
+      } else {
+        playerRef.current.pause();
+      }
+
+      setPause(!pause);
     }
-
-    setPause(!pause);
   };
 
   const prevSong = () => {
-    setCurrentAudio((cur) => (cur + list.length - 1) % list.length);
-    updatePlayer(list[currentAudio]);
+    setCurrentAudio((currentAudio + list.length - 1) % list.length);
+    updatePlayer(list[(currentAudio + list.length - 1) % list.length]);
 
-    if (pause) {
-      playerRef.current && playerRef.current.play();
-    }
+    playerRef.current && playerRef.current.play();
   };
 
   const nextSong = () => {
-    setCurrentAudio((cur) => (cur + 1) % list.length);
-    updatePlayer(list[currentAudio]);
+    setCurrentAudio((currentAudio + 1) % list.length);
+    updatePlayer(list[(currentAudio + 1) % list.length]);
 
-    if (pause) {
-      playerRef.current && playerRef.current.play();
-    }
+    playerRef.current && playerRef.current.play();
   };
 
   const timeUpdate = () => {
@@ -88,10 +95,19 @@ export const Player = React.forwardRef((props: PlayerProps, ref) => {
     }
   };
 
-  const updatePlayer = (song: any) => {
-    const audio = new Audio(song.audio);
+  const startLoadMedia = () => {
+    setLoading(true);
+  };
 
-    playerRef?.current?.load();
+  const finishLoadMedia = () => {
+    setLoading(false);
+  };
+
+  const updatePlayer = (song: any) => {
+    if (playerRef.current) {
+      playerRef.current.src = song.mediaURL;
+      playerRef.current.load();
+    }
   };
 
   const changeCurrentTime = (e: any) => {
@@ -149,9 +165,34 @@ export const Player = React.forwardRef((props: PlayerProps, ref) => {
     }
   };
 
+  const receiveNewRecord = useCallback(
+    (record: any) => {
+      console.log("%c Line:154 🍅 record", "color:#3f7cff", record);
+      if (list && list.length) {
+        for (let i = 0; i < list.length; i++) {
+          if (list[i].uuid === record.uuid) {
+            setCurrentAudio(i);
+            updatePlayer(list[i]);
+            playerRef.current && playerRef.current.play();
+            setPause(false);
+          }
+        }
+      }
+    },
+    [list]
+  );
+
   useEffect(() => {
     playerRef.current &&
       playerRef.current.addEventListener("timeupdate", timeUpdate, false);
+    playerRef.current &&
+      playerRef.current.addEventListener(
+        "loadedmetadata",
+        startLoadMedia,
+        false
+      );
+    playerRef.current &&
+      playerRef.current.addEventListener("canplay", finishLoadMedia, false);
     playerRef.current &&
       playerRef.current.addEventListener("ended", nextSong, false);
     timelineRef.current &&
@@ -164,6 +205,18 @@ export const Player = React.forwardRef((props: PlayerProps, ref) => {
     return () => {
       playerRef.current &&
         playerRef.current.removeEventListener("timeupdate", timeUpdate, false);
+      playerRef.current &&
+        playerRef.current.removeEventListener(
+          "loadedmetadata",
+          startLoadMedia,
+          false
+        );
+      playerRef.current &&
+        playerRef.current.removeEventListener(
+          "canplay",
+          finishLoadMedia,
+          false
+        );
       playerRef.current &&
         playerRef.current.removeEventListener("ended", nextSong, false);
       timelineRef.current &&
@@ -188,35 +241,35 @@ export const Player = React.forwardRef((props: PlayerProps, ref) => {
   }, []);
 
   useEffect(() => {
-    console.log("%c Line:207 🥥 props.current", "color:#465975", props.current);
-    if (list && list.length) {
-      for(let i = 0; i<list.length; i++) {
-        if (list[i].uuid === props.current.uuid) {
-          setCurrentAudio(i);
-          updatePlayer(list[i]);
-          playerRef.current && playerRef.current.play();
-          setPause(false);
-        }
-      }
-    }
-  }, [props.current]);
+    const sub = busChannel.on("addMediaAndPlay", (record) => {
+      receiveNewRecord(record);
+    });
+
+    return () => {
+      sub();
+    };
+  }, [list]);
 
   useEffect(() => {
-    props.onPlayingStatusChange(!pause);
-  }, [pause])
+    props.onPlayingStatusChange(!pause, list[currentAudio]);
+  }, [pause, currentAudio]);
 
   return (
     <div className="pt-4 px-4 m-auto">
-      <div className="m-auto bg-muted rounded-2xl shadow-lg">
+      <div className="m-auto bg-muted rounded-2xl shadow-md">
         <img
           alt="uri"
           src={list[currentAudio]?.thumbnail}
           className="rounded-2xl"
         />
       </div>
+        <p>currentAudio :{currentAudio}</p>
+        <div>
+          <div>{list[currentAudio]?.title}</div>
+        </div>
       <div className="my-4 flex justify-center">
         <div className="w-full bg-card rounded-2xl">
-          <audio ref={playerRef}>
+          <audio ref={playerRef} preload="true">
             <source src={list[currentAudio]?.mediaURL} />
             Your browser does not support the audio element.
           </audio>
@@ -262,9 +315,17 @@ export const Player = React.forwardRef((props: PlayerProps, ref) => {
               )}
               onClick={onPlayButtonClick}
             >
-              {pause && <Play size={26} strokeWidth={1} className="pl-[3px]" />}
-              {/* {!pause && <PlayingBar />} */}
-              {!pause && <Pause size={26} strokeWidth={1} />}
+              {pause && !loading && (
+                <Play size={26} strokeWidth={1} className="pl-[3px]" />
+              )}
+              {!pause && !loading && <Pause size={26} strokeWidth={1} />}
+              {pause && loading && (
+                <Loader
+                  size={26}
+                  strokeWidth={1}
+                  className="animate-spin-slow"
+                />
+              )}
             </div>
             <SkipForward
               size={20}
