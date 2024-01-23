@@ -1,7 +1,7 @@
 import linkifyStr from "linkify-string";
 import he from "he";
 import { Button } from "@/components/ui/button";
-import { db } from "@/helpers/podcastDB";
+import { Podcast, db } from "@/helpers/podcastDB";
 import { toast } from "sonner";
 import { busChannel } from "@/helpers/busChannel";
 
@@ -14,7 +14,9 @@ export function PodcastAdapter(props: any) {
 
   function addToPlayListAndPlay(media: any) {
     const { description, content, thumbnails } = media;
+    console.log("%c Line:17 🌶 media", "color:#ea7e5c", media);
     const mediaURL = content[0].url;
+    const mediaType = content[0].content_type;
     const thumbnail = thumbnails[0].image.uri;
     const text = description?.content || article.description;
 
@@ -30,10 +32,11 @@ export function PodcastAdapter(props: any) {
       update_date: article.update_date,
       starred: article.starred,
       mediaURL,
+      mediaType,
       thumbnail,
       description: text,
       add_date: new Date().getTime(),
-    }
+    } as Podcast;
 
     db.podcasts
       .add(record)

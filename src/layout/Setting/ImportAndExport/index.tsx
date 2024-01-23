@@ -55,7 +55,7 @@ export const ImportAndExport = (props: any) => {
 
   const addChannel = (url: string) => {
     return dataAgent
-      .addChannel(url)
+      .subscribeFeed(url)
       .then((res) => {
         busChannel.emit("getChannels");
         return res;

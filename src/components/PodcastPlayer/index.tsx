@@ -28,9 +28,9 @@ export const PodcastPlayer = () => {
 
   function removePodcast(record: any) {
     console.log("%c Line:30 🥥 record", "color:#7f2b82", record);
-    db.podcasts.delete(record.id).then((res) => {
+    db.podcasts.delete(record.id).then((res: any) => {
       console.log("%c Line:33 🍣 res", "color:#ed9ec7", res);
-    }).catch((err) => {
+    }).catch((err: any) => {
       console.log("%c Line:35 🌰 err", "color:#f5ce50", err);
     })
   }
