@@ -255,12 +255,12 @@ export const Player = React.forwardRef((props: PlayerProps, ref) => {
   }, [pause]);
 
   return (
-    <div className="m-auto">
-      <div className="m-auto bg-muted rounded-2xl shadow-md">
+    <div className="m-auto h-[528px]">
+      <div className="m-auto bg-muted rounded-sm shadow-md relative w-full pt-[100%] before:content-[''] before:absolute before:top-0 before:left-0 before:w-full before:h-full before:bg-muted">
         <img
           alt="uri"
           src={list[currentAudio]?.thumbnail}
-          className="rounded-2xl"
+          className="rounded-sm"
         />
       </div>
       <div>

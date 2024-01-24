@@ -211,7 +211,7 @@ export const Layout1 = React.memo(
     useHotkeys("Shift+n", goPrev);
 
     return (
-      <div className="shrink-0 basis-[var(--app-article-width)] border-r">
+      <div className="shrink-0 basis-[var(--app-article-width)] border-r flex flex-col h-full">
         <div className="h-[var(--app-toolbar-height)] grid grid-cols-[auto_1fr] items-center justify-between border-b">
           <div
             className="
@@ -271,7 +271,7 @@ export const Layout1 = React.memo(
             </TooltipBox>}
           </div>
         </div>
-        <div className="relative h-full">
+        <div className="relative flex-1 overflow-auto">
           <ArticleList
             ref={listRef}
             articles={articles}

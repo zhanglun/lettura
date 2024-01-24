@@ -28,11 +28,14 @@ export const PodcastPlayer = () => {
 
   function removePodcast(record: any) {
     console.log("%c Line:30 🥥 record", "color:#7f2b82", record);
-    db.podcasts.delete(record.id).then((res: any) => {
-      console.log("%c Line:33 🍣 res", "color:#ed9ec7", res);
-    }).catch((err: any) => {
-      console.log("%c Line:35 🌰 err", "color:#f5ce50", err);
-    })
+    db.podcasts
+      .delete(record.id)
+      .then((res: any) => {
+        console.log("%c Line:33 🍣 res", "color:#ed9ec7", res);
+      })
+      .catch((err: any) => {
+        console.log("%c Line:35 🌰 err", "color:#f5ce50", err);
+      });
   }
 
   function renderList() {
@@ -41,7 +44,7 @@ export const PodcastPlayer = () => {
 
       return (
         <div
-          className={clsx("group cursor-default rounded-lg relative", {
+          className={clsx("group cursor-default rounded-md relative", {
             "bg-accent": current?.uuid === _.uuid,
           })}
         >
@@ -75,7 +78,9 @@ export const PodcastPlayer = () => {
               </div>
             </div>
             <div className="grow shrink basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap">
-              <p className="font-bold text-sm mb-1 grow shrink basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap">{_.title}</p>
+              <p className="font-bold text-sm mb-1 grow shrink basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap">
+                {_.title}
+              </p>
               <p className="mb-2 text-xs text-muted-foreground">
                 {_.feed_title}
               </p>
@@ -85,7 +90,12 @@ export const PodcastPlayer = () => {
             </div>
           </div>
           <div className="absolute right-0 top-0 bottom-0 p-2 flex items-center justify-center bg-gradient-to-l from-zinc-200 to-transparent opacity-0 group-hover:opacity-100 transition-all">
-            <Trash2 size={18} strokeWidth={1.5} className="text-muted-foreground hover:text-foreground" onClick={() => removePodcast(_)}/>
+            <Trash2
+              size={18}
+              strokeWidth={1.5}
+              className="text-muted-foreground hover:text-foreground"
+              onClick={() => removePodcast(_)}
+            />
           </div>
         </div>
       );
@@ -100,15 +110,12 @@ export const PodcastPlayer = () => {
   return (
     <div
       className={clsx(
-        // "fixed right-0 top-0 bottom-0 z-10",
-        "flex flex-col w-[360px] h-[100vh] bg-background border",
-        // "rounded-2xl"
+        "flex flex-col w-[320px] h-full bg-white",
+        "p-2 rounded-md"
       )}
     >
-      <div className="shrink-0 p-3">
-        <Player list={list} onPlayingStatusChange={handlePlayingStatusChange} />
-      </div>
-      <div className="overflow-auto">{renderList()}</div>
+      <Player list={list} onPlayingStatusChange={handlePlayingStatusChange} />
+      <div className="overflow-auto flex-1">{renderList()}</div>
     </div>
   );
 };

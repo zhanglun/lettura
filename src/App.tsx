@@ -75,7 +75,7 @@ function App() {
 
   return (
     <>
-      <div className="flex h-full max-h-full border-t">
+      <div className="flex h-full max-h-full border-t bg-zinc-200">
         {/* <SideNav /> */}
         <div className="flex-1">
           <Outlet />

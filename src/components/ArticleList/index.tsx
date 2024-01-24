@@ -54,14 +54,14 @@ export const ArticleList = React.memo(React.forwardRef<HTMLDivElement, any>((pro
   }, [loadRefVisible, isReachingEnd]);
 
   return (
-    <div className="overflow-y-auto h-[calc(100vh_-_var(--app-toolbar-height))]" ref={ref}>
+    <div className="" ref={ref}>
       {isEmpty ? (
         <div className="absolute top-1/2 -translate-y-1/2 w-full flex flex-col justify-center items-center gap-1 text-muted-foreground">
           <Snail size={34} strokeWidth={1} />
           <p>Yay, no matching items.</p>
         </div>
       ) : null}
-      <ul className="m-0 grid gap-2 py-2 px-2">{renderList()}</ul>
+      <ul className="m-0 grid gap-2 py-2 pr-1">{renderList()}</ul>
       <div ref={loadRef} className="pt-1">
         {isLoading && (
           <div className="p-3 pl-6 grid gap-1 relative">
