@@ -74,8 +74,8 @@ export const PodcastPlayer = () => {
                 {playing && current?.uuid === _.uuid && <PlayingBar />}
               </div>
             </div>
-            <div>
-              <p className="font-bold text-sm mb-1">{_.title}</p>
+            <div className="grow shrink basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap">
+              <p className="font-bold text-sm mb-1 grow shrink basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap">{_.title}</p>
               <p className="mb-2 text-xs text-muted-foreground">
                 {_.feed_title}
               </p>
@@ -100,12 +100,12 @@ export const PodcastPlayer = () => {
   return (
     <div
       className={clsx(
-        "fixed right-0 top-0 bottom-0 z-10",
-        "w-[360px] bg-background",
-        "flex flex-col"
+        // "fixed right-0 top-0 bottom-0 z-10",
+        "flex flex-col w-[360px] h-[100vh] bg-background border",
+        // "rounded-2xl"
       )}
     >
-      <div className="shrink-0">
+      <div className="shrink-0 p-3">
         <Player list={list} onPlayingStatusChange={handlePlayingStatusChange} />
       </div>
       <div className="overflow-auto">{renderList()}</div>

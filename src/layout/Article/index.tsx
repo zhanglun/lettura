@@ -8,6 +8,7 @@ import { View } from "./View";
 import styles from "./index.module.scss";
 import { useQuery } from "@/helpers/parseXML";
 import { PodcastPlayer } from "@/components/PodcastPlayer";
+import clsx from "clsx";
 
 export const ArticleContainer = (): JSX.Element => {
   const [, type, feedUuid] = useQuery();
@@ -17,6 +18,8 @@ export const ArticleContainer = (): JSX.Element => {
 
     articleDialogViewStatus: state.articleDialogViewStatus,
     setArticleDialogViewStatus: state.setArticleDialogViewStatus,
+
+    podcastPanelStatus: state.podcastPanelStatus,
   }));
 
   const openInBrowser = () => {
@@ -29,7 +32,12 @@ export const ArticleContainer = (): JSX.Element => {
     <div className={classNames(styles.article)}>
       <Layout1 feedUuid={feedUuid} type={type} />
       <View />
-      <PodcastPlayer />
+
+        <div className={clsx("overflow-hidden", {
+          "w-0": store.podcastPanelStatus,
+        })}>
+          <PodcastPlayer />
+        </div>
 
       <ArticleDialogView
         article={store.article}

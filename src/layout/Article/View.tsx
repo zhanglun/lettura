@@ -9,8 +9,8 @@ import { useEffect, useRef } from "react";
 import { ReadingOptions } from "./ReadingOptions";
 import { Separator } from "@/components/ui/separator";
 import { ToolbarItemNavigator } from "./ToolBar";
-import { Star } from "lucide-react";
 import { StarAndRead } from "@/layout/Article/StarAndRead";
+import { PlayerSwitcher } from "@/components/PodcastPlayer/PlayerSwitch";
 
 export function View() {
   const store = useBearStore((state) => ({
@@ -43,6 +43,8 @@ export function View() {
           <Separator orientation="vertical" className="h-4 mx-2" />
         </span>
         <ReadingOptions />
+        <Separator orientation="vertical" className="h-4 mx-2" />
+        <PlayerSwitcher />
       </div>
       <AnimatePresence>
         <motion.div

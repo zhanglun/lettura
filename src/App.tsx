@@ -76,7 +76,7 @@ function App() {
   return (
     <>
       <div className="flex h-full max-h-full border-t">
-        <SideNav />
+        {/* <SideNav /> */}
         <div className="flex-1">
           <Outlet />
         </div>

@@ -16,7 +16,7 @@ interface SpaceSwitcherProps {
   spaces: {
     label: string;
     route: string;
-    icon: React.ReactNode;
+    icon?: React.ReactNode;
   }[];
 }
 

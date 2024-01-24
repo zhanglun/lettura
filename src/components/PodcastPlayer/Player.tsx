@@ -3,6 +3,7 @@ import { secondsToMinutesAndSeconds } from "./useMusicPlayer";
 import clsx from "clsx";
 import { Pause, Play, SkipBack, SkipForward } from "lucide-react";
 import { busChannel } from "@/helpers/busChannel";
+import { useBearStore } from "@/stores";
 
 type TimeDisplayProps = {
   time: { minutes: number; seconds: number };
@@ -33,6 +34,10 @@ const formatTime = (currentTime: any) => {
 
 export const Player = React.forwardRef((props: PlayerProps, ref) => {
   const { list } = props;
+  const store = useBearStore((state) => ({
+    podcastPlayingStatus: state.podcastPlayingStatus,
+    updatePodcastPlayingStatus: state.updatePodcastPlayingStatus,
+  }))
   const [pause, setPause] = useState(true);
   const [currentTime, setCurrentTime] = useState({ minutes: 0, seconds: 0 });
   const [maxTime, setMaxTime] = useState({ minutes: 0, seconds: 0 });
@@ -245,8 +250,12 @@ export const Player = React.forwardRef((props: PlayerProps, ref) => {
     props.onPlayingStatusChange(!pause, list[currentAudio]);
   }, [pause, currentAudio]);
 
+  useEffect(() => {
+    store.updatePodcastPlayingStatus(!pause);
+  }, [pause]);
+
   return (
-    <div className="pt-4 px-4 m-auto">
+    <div className="m-auto">
       <div className="m-auto bg-muted rounded-2xl shadow-md">
         <img
           alt="uri"

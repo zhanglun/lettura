@@ -47,6 +47,20 @@ import { copyText } from "@/helpers/copyText";
 import { toast } from "sonner";
 import { DialogDeleteFolder } from "@/layout/Setting/Content/DialogDeleteFolder";
 import { loadFeed } from "@/hooks/useLoadFeed";
+import { SpaceSwitcher } from "../SpaceSwitcher";
+
+const spaces = [
+  {
+    label: "Lettura",
+    route: RouteConfig.LOCAL_TODAY,
+    // icon: ;
+  },
+  {
+    label: "FreshRSS",
+    route: RouteConfig.SERVICE_FRESHRSS,
+    // icon: ;
+  }
+]
 
 const ChannelList = (): JSX.Element => {
   const isToday = useMatch(RouteConfig.LOCAL_TODAY);
@@ -219,7 +233,7 @@ const ChannelList = (): JSX.Element => {
   bg-[hsl(var(--background))]"
     >
       <div className="flex items-center justify-end h-[var(--app-toolbar-height)] px-2 py-0 bg-[var(--background)] border-b">
-        <div />
+        <SpaceSwitcher isCollapsed={false} spaces={spaces} />
         <div className="flex justify-end">
           <AddFeedChannel />
           <AddFolder
