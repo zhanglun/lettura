@@ -44,7 +44,7 @@ export const AddFeedChannel = (props: any) => {
         const [feed, message] = res;
         if (!feed) {
           console.log("%c Line:40 🥤 !feed", "color:#f5ce50", !feed);
-          toast.error('Unable to subscribe', {
+          toast.error("Unable to subscribe", {
             description: message,
             duration: 2000,
           });
@@ -93,7 +93,7 @@ export const AddFeedChannel = (props: any) => {
 
           store.addNewFeed(res[0]);
           handleCancel();
-          toast.success("Your subscribe is ready! Please enjoy it!")
+          toast.success("Your subscribe is ready! Please enjoy it!");
         } else {
           toast.error("Unable to subscribe", {
             description: res[2],
@@ -121,22 +121,21 @@ export const AddFeedChannel = (props: any) => {
 
   return (
     <Dialog open={showStatus} onOpenChange={handleStatusChange}>
-      <TooltipBox content={
-        <>
-          Add feed <Kbd val="c" className="ml-3" />
-        </>
-      }>
-        <DialogTrigger asChild>
-          <Icon>
-            <Plus size={16} />
-          </Icon>
-        </DialogTrigger>
+      <TooltipBox
+        content={
+          <>
+            Create new subscribe <Kbd val="c" className="ml-3" />
+          </>
+        }
+        side="right"
+      >
+        <DialogTrigger asChild>{props.children}</DialogTrigger>
       </TooltipBox>
       <DialogContent className="sm:max-w-[465px]">
         <DialogHeader>
-          <DialogTitle className="text-2xl flex items-center">
+          <DialogTitle className="flex items-center text-2xl">
             {step === 2 && (
-              <Icon className="w-6 h-6 p-1 mr-2" onClick={() => setStep(1)}>
+              <Icon className="mr-2 h-6 w-6 p-1" onClick={() => setStep(1)}>
                 <ArrowLeft size={16} />
               </Icon>
             )}
@@ -181,16 +180,16 @@ export const AddFeedChannel = (props: any) => {
           )}
           {step === 2 && (
             <div>
-              <div className="border rounded p-3 mb-3">
+              <div className="mb-3 rounded border p-3">
                 <div className="mb-4 flex items-start gap-3">
-                  <div className="rounded-lg overflow-hidden flex-0 w-[80px] h-[80px]">
+                  <div className="flex-0 h-[80px] w-[80px] overflow-hidden rounded-lg">
                     <img src={feed.logo} className="" />
                   </div>
                   <div className="flex-1">
-                    <div className="text-lg font-bold leading-5 mb-3">
+                    <div className="mb-3 text-lg font-bold leading-5">
                       {feed.title}
                     </div>
-                    <div className="text-sm text-stone-500 break-all">
+                    <div className="break-all text-sm text-stone-500">
                       {feedUrl}
                     </div>
                   </div>

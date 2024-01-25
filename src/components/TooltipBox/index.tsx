@@ -3,7 +3,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip"
+} from "@/components/ui/tooltip";
 
 export const TooltipBox = (props: any) => {
   const { side = "top" } = props;
@@ -11,13 +11,11 @@ export const TooltipBox = (props: any) => {
   return (
     <TooltipProvider>
       <Tooltip>
-        <TooltipTrigger>
-          {props.children}
-        </TooltipTrigger>
+        <TooltipTrigger className="w-full">{props.children}</TooltipTrigger>
         <TooltipContent side={side}>
           <p className="flex items-center gap-1">{props.content}</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
-  )
-}
+  );
+};

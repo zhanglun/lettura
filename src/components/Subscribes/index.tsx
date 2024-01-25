@@ -1,11 +1,10 @@
 import React, { useCallback, useEffect, useRef } from "react";
-import { useMatch, useNavigate } from "react-router-dom";
+import { NavLink, useMatch, useNavigate } from "react-router-dom";
 import {
   RefreshCw,
   Coffee,
   Haze,
   FolderPlus,
-  CheckCircle,
   CheckCheck,
   Pencil,
   Trash2,
@@ -15,7 +14,11 @@ import {
   BellOff,
   FileText,
   Link,
-  Link2, Star,
+  Link2,
+  Star,
+  Search,
+  PlusCircle,
+  Settings,
 } from "lucide-react";
 import classNames from "classnames";
 import { listen } from "@tauri-apps/api/event";
@@ -48,6 +51,7 @@ import { toast } from "sonner";
 import { DialogDeleteFolder } from "@/layout/Setting/Content/DialogDeleteFolder";
 import { loadFeed } from "@/hooks/useLoadFeed";
 import { SpaceSwitcher } from "../SpaceSwitcher";
+import clsx from "clsx";
 
 const spaces = [
   {
@@ -59,8 +63,20 @@ const spaces = [
     label: "FreshRSS",
     route: RouteConfig.SERVICE_FRESHRSS,
     // icon: ;
-  }
-]
+  },
+];
+
+type NavClass = {
+  isActive: boolean;
+  isPending: boolean;
+  isTransitioning: boolean;
+};
+
+function createActiveClass({ isActive }: NavClass) {
+  return clsx({
+    "hover:bg-primary bg-primary text-primary-foreground": isActive,
+  });
+}
 
 const ChannelList = (): JSX.Element => {
   const isToday = useMatch(RouteConfig.LOCAL_TODAY);
@@ -98,7 +114,6 @@ const ChannelList = (): JSX.Element => {
     syncArticles: state.syncArticles,
   }));
 
-
   const [, , feedUuid] = useQuery();
 
   useEffect(() => {
@@ -125,11 +140,14 @@ const ChannelList = (): JSX.Element => {
 
   const reloadFeedData = (feed: FeedResItem | null) => {
     if (feed) {
-      loadFeed(feed, store.syncArticles, () => {
-        // TODO: get article List
-      }, () => {
-
-      });
+      loadFeed(
+        feed,
+        store.syncArticles,
+        () => {
+          // TODO: get article List
+        },
+        () => {},
+      );
     }
   };
 
@@ -150,13 +168,13 @@ const ChannelList = (): JSX.Element => {
                 store.articleList.map((_) => {
                   _.read_status = 2;
                   return _;
-                })
+                }),
               );
             }
             return `Done!😀`;
           },
           error: "Error🤢",
-        }
+        },
       );
     }
   };
@@ -229,13 +247,12 @@ const ChannelList = (): JSX.Element => {
 
   return (
     <div
-      className="relative flex flex-col w-[var(--app-feedlist-width)] h-full select-none text-[hsl(var(--foreground))]
+      className="relative flex h-full w-[var(--app-feedlist-width)] select-none flex-col text-[hsl(var(--foreground))]
   "
     >
-      <div className="flex items-center justify-end h-[var(--app-toolbar-height)] px-2 py-0 bg-[var(--background)] border-b">
+      <div className="flex h-[var(--app-toolbar-height)] items-center justify-end border-b bg-[var(--background)] px-2 py-0">
         <SpaceSwitcher isCollapsed={false} spaces={spaces} />
         <div className="flex justify-end">
-          <AddFeedChannel />
           <AddFolder
             action="add"
             dialogStatus={addFolderDialogStatus}
@@ -260,20 +277,60 @@ const ChannelList = (): JSX.Element => {
           </TooltipBox>
         </div>
       </div>
+      <div className="px-2">
+        <TooltipBox content="Search content" side="right">
+          <NavLink
+            to={RouteConfig.SEARCH}
+            className={(isActive) => {
+              return clsx(
+                "group mt-[2px] flex h-8 w-full cursor-pointer items-center gap-2 rounded-md px-4 text-sm hover:bg-white",
+                createActiveClass(isActive),
+              );
+            }}
+          >
+            <Search size={16} />
+            Search
+          </NavLink>
+        </TooltipBox>
+        <AddFeedChannel>
+          <div
+            className={clsx(
+              "group mt-[2px] flex h-8 w-full cursor-pointer items-center gap-2 rounded-md px-4 text-sm hover:bg-white",
+            )}
+          >
+            <PlusCircle size={16} />
+            New Subscribe
+          </div>
+        </AddFeedChannel>
+        <TooltipBox content="Go to settings" side="right">
+          <NavLink
+            to={RouteConfig.SETTINGS_GENERAL}
+            className={(isActive) => {
+              return clsx(
+                "group mt-[2px] flex h-8 w-full cursor-pointer items-center gap-2 rounded-md px-4 text-sm hover:bg-white",
+                createActiveClass(isActive),
+              );
+            }}
+          >
+            <Settings size={16} />
+            Settings
+          </NavLink>
+        </TooltipBox>
+      </div>
       <div
-        className="flex-1 overflow-y-auto pb-2 px-1 height-[calc(100% - var(--app-toolbar-height))]"
+        className="height-[calc(100% - var(--app-toolbar-height))] flex-1 overflow-y-auto pb-2 pl-2 pr-1"
         ref={listRef}
       >
-        <h2 className="mt-6 mb-2 px-4 text-lg font-semibold tracking-tight">
+        <h2 className="mb-2 mt-6 px-4 text-lg font-semibold tracking-tight">
           Collections
         </h2>
         <div>
           <div
             className={classNames(
-              "w-full h-8 px-4 flex items-center rounded-md cursor-pointer mt-[2px] group",
+              "group mt-[2px] flex h-8 w-full cursor-pointer items-center rounded-md px-4",
               {
                 "bg-primary text-primary-foreground": isToday,
-              }
+              },
             )}
             onClick={() => {
               store.setFeed(null);
@@ -285,19 +342,19 @@ const ChannelList = (): JSX.Element => {
               navigate(RouteConfig.LOCAL_TODAY);
             }}
           >
-            <span className="h-4 w-4 rounded mr-2">
+            <span className="mr-2 h-4 w-4 rounded">
               <Haze size={16} />
             </span>
-            <span className="grow shrink basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-sm">
+            <span className="shrink grow basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-sm">
               Today
             </span>
             {store.collectionMeta.today.unread > 0 && (
               <span
                 className={classNames(
-                  "-mr-2 min-w-[1rem] h-4 leading-4 text-center text-[10px]",
+                  "-mr-2 h-4 min-w-[1rem] text-center text-[10px] leading-4",
                   {
                     "text-primary-foreground": isToday,
-                  }
+                  },
                 )}
               >
                 {store.collectionMeta.today.unread}
@@ -306,10 +363,10 @@ const ChannelList = (): JSX.Element => {
           </div>
           <div
             className={classNames(
-              "w-full h-8 px-4 flex items-center rounded-md cursor-pointer mt-[2px] group",
+              "group mt-[2px] flex h-8 w-full cursor-pointer items-center rounded-md px-4",
               {
                 "bg-primary text-primary-foreground": isAll,
-              }
+              },
             )}
             onClick={() => {
               store.setFeed(null);
@@ -321,19 +378,19 @@ const ChannelList = (): JSX.Element => {
               navigate(RouteConfig.LOCAL_ALL);
             }}
           >
-            <span className="h-4 w-4 rounded mr-2">
+            <span className="mr-2 h-4 w-4 rounded">
               <Coffee size={16} />
             </span>
-            <span className="grow shrink basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-sm">
+            <span className="shrink grow basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-sm">
               All Items
             </span>
             {store.collectionMeta.total.unread > 0 && (
               <span
                 className={classNames(
-                  "-mr-2 min-w-[1rem] h-4 leading-4 text-center text-[10px]",
+                  "-mr-2 h-4 min-w-[1rem] text-center text-[10px] leading-4",
                   {
                     "text-primary-foreground": isAll,
-                  }
+                  },
                 )}
               >
                 {store.collectionMeta.total.unread}
@@ -342,10 +399,10 @@ const ChannelList = (): JSX.Element => {
           </div>
           <div
             className={classNames(
-              "w-full h-8 px-4 flex items-center rounded-md cursor-pointer mt-[2px] group",
+              "group mt-[2px] flex h-8 w-full cursor-pointer items-center rounded-md px-4",
               {
                 "bg-primary text-primary-foreground": isStarred,
-              }
+              },
             )}
             onClick={() => {
               store.setFeed(null);
@@ -358,15 +415,15 @@ const ChannelList = (): JSX.Element => {
               navigate(RouteConfig.LOCAL_STARRED);
             }}
           >
-            <span className="h-4 w-4 rounded mr-2">
+            <span className="mr-2 h-4 w-4 rounded">
               <Star size={16} />
             </span>
-            <span className="grow shrink basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-sm">
+            <span className="shrink grow basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-sm">
               Starred
             </span>
           </div>
         </div>
-        <h2 className="mt-6 mb-2 px-4 text-lg font-semibold tracking-tight">
+        <h2 className="mb-2 mt-6 px-4 text-lg font-semibold tracking-tight">
           Feeds
         </h2>
         <ContextMenu onOpenChange={handleContextMenuChange}>
@@ -418,7 +475,7 @@ const ChannelList = (): JSX.Element => {
                           () =>
                             toast.message("Current URL copied to clipboard", {
                               description: "Paste it wherever you like",
-                            })
+                            }),
                         )
                       }
                     >
@@ -430,7 +487,7 @@ const ChannelList = (): JSX.Element => {
                         copyText(store.feedContextMenuTarget?.link).then(() =>
                           toast.message("Current URL copied to clipboard", {
                             description: "Paste it wherever you like",
-                          })
+                          }),
                         )
                       }
                     >
@@ -499,9 +556,9 @@ const ChannelList = (): JSX.Element => {
         />
       </div>
       {refreshing && (
-        <div className="sticky left-0 right-0 bottom-0 p-2 text-right">
-          <span className="text-xs mr-3">Syncing...</span>
-          <span className="text-xs text-foreground">
+        <div className="sticky bottom-0 left-0 right-0 p-2 text-right">
+          <span className="mr-3 text-xs">Syncing...</span>
+          <span className="text-foreground text-xs">
             {done}/{feedList.length}
           </span>
         </div>

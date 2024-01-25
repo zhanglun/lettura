@@ -29,7 +29,7 @@ export const ArticleContainer = (): JSX.Element => {
   useHotkeys("o", () => openInBrowser());
 
   return (
-    <div className={clsx("flex-1 h-[100vh] flex flex-row relative p-2", {
+    <div className={clsx("flex-1 h-[100vh] flex flex-row relative p-2 pl-0", {
       "gap-2 pr-1": store.podcastPanelStatus
     })}>
       <div className="rounded-md flex flex-1 bg-white h-full overflow-hidden">
