@@ -255,7 +255,7 @@ export const Player = React.forwardRef((props: PlayerProps, ref) => {
   }, [pause]);
 
   return (
-    <div className="m-auto h-[528px]">
+    <div className="m-auto w-full h-[528px]">
       <div className="m-auto bg-muted rounded-sm shadow-md relative w-full pt-[100%] before:content-[''] before:absolute before:top-0 before:left-0 before:w-full before:h-full before:bg-muted">
         <img
           alt="uri"

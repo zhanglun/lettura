@@ -229,8 +229,8 @@ const ChannelList = (): JSX.Element => {
 
   return (
     <div
-      className="relative flex flex-col w-[var(--app-feedlist-width)] h-full select-none border-r border-border text-[hsl(var(--foreground))]
-  bg-white dark:bg-zinc-800"
+      className="relative flex flex-col w-[var(--app-feedlist-width)] h-full select-none text-[hsl(var(--foreground))]
+  "
     >
       <div className="flex items-center justify-end h-[var(--app-toolbar-height)] px-2 py-0 bg-[var(--background)] border-b">
         <SpaceSwitcher isCollapsed={false} spaces={spaces} />
