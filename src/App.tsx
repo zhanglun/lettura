@@ -27,13 +27,11 @@ function App() {
       );
 
       navigate(RouteConfig.SETTINGS_GENERAL);
-
     });
 
     listen("check_for_updates", async (e) => {
-      emit("tauri://update")
-    })
-
+      emit("tauri://update");
+    });
   }, []);
 
   useEffect(() => {
@@ -75,11 +73,8 @@ function App() {
 
   return (
     <>
-      <div className="flex h-full max-h-full border-t bg-zinc-100">
-        {/* <SideNav /> */}
-        <div className="flex-1">
-          <Outlet />
-        </div>
+      <div className="h-full max-h-full overflow-hidden bg-zinc-100">
+        <Outlet />
       </div>
       <CommandPanel />
     </>

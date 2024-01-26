@@ -227,7 +227,8 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: hsl(var(--foreground));
-  background-color: hsl(var(--background));
+  // background-color: hsl(var(--background));
+  background-color: red;
   overflow: hidden;
 }
 

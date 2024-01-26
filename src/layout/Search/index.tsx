@@ -9,6 +9,9 @@ import { AxiosResponse } from "axios";
 import { useHotkeys } from "react-hotkeys-hook";
 import { Skeleton } from "@/components/ui/skeleton";
 import useInfiniteScroll from "./useInfiniteScroll";
+import { useNavigate } from "react-router-dom";
+import { ChevronLeft } from "lucide-react";
+import { Icon } from "@/components/Icon";
 
 export const SearchPage = () => {
   const [isFetching, setIsFetching] = useState(false);
@@ -18,6 +21,11 @@ export const SearchPage = () => {
   const [resultList, setResultList] = useState<ArticleResItem[]>([]);
   const loadRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
+
+  const goBack = () => {
+    navigate(-1);
+  };
 
   const debounceSearch = useCallback(
     debounce((query: string) => {
@@ -97,7 +105,18 @@ export const SearchPage = () => {
   }, []);
 
   return (
-    <div className="h-[100vh] flex flex-col">
+    <div className="flex flex-col h-[calc(100vh-theme(margin.4))] m-2 bg-card rounded-md">
+      <div className="p-4">
+        <h2 className="flex items-center gap-3 text-xl text-foreground tracking-tight font-bold cursor-pointer group">
+          <Icon
+            onClick={goBack}
+            className="text-muted-foreground group-hover:text-foreground"
+          >
+            <ChevronLeft />
+          </Icon>
+          Search content in your Lettura
+        </h2>
+      </div>
       <div className="p-4 bg-background">
         <Input
           ref={inputRef}
