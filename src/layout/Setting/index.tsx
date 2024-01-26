@@ -1,15 +1,33 @@
 import React from "react";
-import { Outlet } from "react-router-dom";
-import { Cog, Database, Keyboard, Palette, Rss } from "lucide-react";
+import { Outlet, useNavigate } from "react-router-dom";
+import {
+  ChevronLeft,
+  ChevronLeftCircle,
+  Cog,
+  Database,
+  Keyboard,
+  Palette,
+  Rss,
+} from "lucide-react";
 import { RouteConfig } from "../../config";
 import { Link } from "@/layout/Setting/Link";
+import { Icon } from "@/components/Icon";
 
 export function SettingPage() {
+  const navigate = useNavigate();
+
+  const goBack = () => {
+    navigate(-1);
+  };
+
   return (
-    <div className="flex-1 max-h-full flex lg:flex-row flex-col">
+    <div className="flex-1 max-h-full flex lg:flex-row flex-col bg-">
       <div className="lg:w-[220px] w-full px-6">
         <div className="max-w-[640px] m-auto">
-          <h2 className="flex items-center font-semibold text-2xl tracking-tight py-10 lg:px-4">
+          <h2 className="flex items-center gap-3 text-xl tracking-tight py-10 lg:px-4 group cursor-pointer">
+            <Icon onClick={goBack} className="text-muted-foreground group-hover:text-foreground">
+              <ChevronLeft />
+            </Icon>
             Settings
           </h2>
           <nav className="flex space-x-2 lg:flex-col lg:space-x-0 lg:space-y-1">
@@ -40,7 +58,7 @@ export function SettingPage() {
           </nav>
         </div>
       </div>
-      <div className="flex-1 pt-16 flex justify-center overflow-auto lg:h-[100vh]">
+      <div className="flex-1 pt-16 flex justify-center overflow-auto lg:h-[100vh] rounded-md bg-white">
         <div className="max-w-[640px] w-full">
           <Outlet />
         </div>
