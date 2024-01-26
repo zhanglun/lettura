@@ -128,6 +128,7 @@ export const AddFeedChannel = (props: any) => {
           </>
         }
         side="right"
+        className="w-full"
       >
         <DialogTrigger asChild>{props.children}</DialogTrigger>
       </TooltipBox>

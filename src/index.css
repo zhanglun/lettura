@@ -220,3 +220,15 @@ code {
     }
   }
 }
+
+@layer components {
+  .sidebar-item {
+    @apply  relative z-[1] flex items-center gap-2 rounded-md text-sm px-3 mt-[2px] h-8 w-full cursor-pointer;
+    @apply after:block after:content-[''] after:-z-10 after:absolute after:top-[0] after:left-[0] after:w-full after:h-full after:rounded-md after:opacity-0 after:scale-90 after:transition-all after:duration-300 after:ease-in-out;
+    @apply hover:after:opacity-100 hover:after:scale-100 md:transition-all md:ease-in-out md:mr-0  py-[8px] after:bg-zinc-200;
+  }
+
+  .sidebar-item--active {
+    @apply after:opacity-100 after:scale-100 after:bg-white shadow-sm;
+  }
+}

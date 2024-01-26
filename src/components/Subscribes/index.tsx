@@ -72,8 +72,11 @@ type NavClass = {
   isTransitioning: boolean;
 };
 
+const baseItemClass =
+  "flex relative z-[1] px-3 rounded-lg items-center text-sm mt-[2px] h-8 w-full cursor-pointer gap-2 rounded-md after:block after:content-[''] after:-z-10 after:absolute after:top-[0] after:left-[0] after:w-full after:h-full after:rounded-lg after:opacity-0 after:scale-90 after:transition-all after:duration-300 after:ease-in-out hover:after:opacity-100 hover:after:scale-100 md:transition-all md:duration-[500ms] md:ease-in-out md:mr-0 text-base py-[8px] after:bg-zinc-300";
+
 function createActiveClass({ isActive }: NavClass) {
-  return clsx({
+  return clsx(baseItemClass, {
     "hover:bg-primary bg-primary text-primary-foreground": isActive,
   });
 }
@@ -146,7 +149,7 @@ const ChannelList = (): JSX.Element => {
         () => {
           // TODO: get article List
         },
-        () => {},
+        () => {}
       );
     }
   };
@@ -168,13 +171,13 @@ const ChannelList = (): JSX.Element => {
                 store.articleList.map((_) => {
                   _.read_status = 2;
                   return _;
-                }),
+                })
               );
             }
             return `Done!😀`;
           },
           error: "Error🤢",
-        },
+        }
       );
     }
   };
@@ -278,13 +281,13 @@ const ChannelList = (): JSX.Element => {
         </div>
       </div>
       <div className="px-2">
-        <TooltipBox content="Search content" side="right">
+        <TooltipBox content="Search content" side="right" className="w-full">
           <NavLink
             to={RouteConfig.SEARCH}
-            className={(isActive) => {
+            className={({ isActive }) => {
               return clsx(
-                "group mt-[2px] flex h-8 w-full cursor-pointer items-center gap-2 rounded-md px-4 text-sm hover:bg-white",
-                createActiveClass(isActive),
+                "sidebar-item",
+                isActive ? "sidebar-item--active" : ""
               );
             }}
           >
@@ -293,22 +296,18 @@ const ChannelList = (): JSX.Element => {
           </NavLink>
         </TooltipBox>
         <AddFeedChannel>
-          <div
-            className={clsx(
-              "group mt-[2px] flex h-8 w-full cursor-pointer items-center gap-2 rounded-md px-4 text-sm hover:bg-white",
-            )}
-          >
+          <div className={"sidebar-item"}>
             <PlusCircle size={16} />
             New Subscribe
           </div>
         </AddFeedChannel>
-        <TooltipBox content="Go to settings" side="right">
+        <TooltipBox content="Go to settings" side="right" className="w-full">
           <NavLink
             to={RouteConfig.SETTINGS_GENERAL}
-            className={(isActive) => {
+            className={({ isActive }) => {
               return clsx(
-                "group mt-[2px] flex h-8 w-full cursor-pointer items-center gap-2 rounded-md px-4 text-sm hover:bg-white",
-                createActiveClass(isActive),
+                "sidebar-item",
+                isActive ? "sidebar-item--active" : ""
               );
             }}
           >
@@ -326,12 +325,6 @@ const ChannelList = (): JSX.Element => {
         </h2>
         <div>
           <div
-            className={classNames(
-              "group mt-[2px] flex h-8 w-full cursor-pointer items-center rounded-md px-4",
-              {
-                "bg-primary text-primary-foreground": isToday,
-              },
-            )}
             onClick={() => {
               store.setFeed(null);
               store.setViewMeta({
@@ -339,35 +332,34 @@ const ChannelList = (): JSX.Element => {
                 isToday: true,
                 isAll: false,
               });
-              navigate(RouteConfig.LOCAL_TODAY);
             }}
           >
-            <span className="mr-2 h-4 w-4 rounded">
+            <NavLink
+              to={RouteConfig.LOCAL_TODAY}
+              className={({ isActive }) => {
+                return clsx(
+                  "sidebar-item",
+                  isActive ? "sidebar-item--active" : ""
+                );
+              }}
+            >
               <Haze size={16} />
-            </span>
-            <span className="shrink grow basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-sm">
-              Today
-            </span>
-            {store.collectionMeta.today.unread > 0 && (
-              <span
-                className={classNames(
-                  "-mr-2 h-4 min-w-[1rem] text-center text-[10px] leading-4",
-                  {
-                    "text-primary-foreground": isToday,
-                  },
-                )}
-              >
-                {store.collectionMeta.today.unread}
+              <span className="shrink grow basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-sm">
+                Today
               </span>
-            )}
+              {store.collectionMeta.today.unread > 0 && (
+                <span
+                  className={classNames(
+                    "-mr-1 h-4 min-w-[1rem] px-1 flex items-center justify-center text-[10px] leading-4 rounded",
+                    "bg-zinc-200"
+                  )}
+                >
+                  {store.collectionMeta.today.unread}
+                </span>
+              )}
+            </NavLink>
           </div>
           <div
-            className={classNames(
-              "group mt-[2px] flex h-8 w-full cursor-pointer items-center rounded-md px-4",
-              {
-                "bg-primary text-primary-foreground": isAll,
-              },
-            )}
             onClick={() => {
               store.setFeed(null);
               store.setViewMeta({
@@ -375,35 +367,34 @@ const ChannelList = (): JSX.Element => {
                 isToday: false,
                 isAll: true,
               });
-              navigate(RouteConfig.LOCAL_ALL);
             }}
           >
-            <span className="mr-2 h-4 w-4 rounded">
+            <NavLink
+              to={RouteConfig.LOCAL_ALL}
+              className={({ isActive }) => {
+                return clsx(
+                  "sidebar-item",
+                  isActive ? "sidebar-item--active" : ""
+                );
+              }}
+            >
               <Coffee size={16} />
-            </span>
-            <span className="shrink grow basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-sm">
-              All Items
-            </span>
-            {store.collectionMeta.total.unread > 0 && (
-              <span
-                className={classNames(
-                  "-mr-2 h-4 min-w-[1rem] text-center text-[10px] leading-4",
-                  {
-                    "text-primary-foreground": isAll,
-                  },
-                )}
-              >
-                {store.collectionMeta.total.unread}
+              <span className="shrink grow basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-sm">
+                All Items
               </span>
-            )}
+              {store.collectionMeta.total.unread > 0 && (
+                <span
+                  className={classNames(
+                    "-mr-1 h-4 min-w-[1rem] px-1 flex items-center justify-center text-[10px] leading-4 rounded",
+                    "bg-zinc-200"
+                  )}
+                >
+                  {store.collectionMeta.total.unread}
+                </span>
+              )}
+            </NavLink>
           </div>
           <div
-            className={classNames(
-              "group mt-[2px] flex h-8 w-full cursor-pointer items-center rounded-md px-4",
-              {
-                "bg-primary text-primary-foreground": isStarred,
-              },
-            )}
             onClick={() => {
               store.setFeed(null);
               store.setViewMeta({
@@ -415,12 +406,20 @@ const ChannelList = (): JSX.Element => {
               navigate(RouteConfig.LOCAL_STARRED);
             }}
           >
-            <span className="mr-2 h-4 w-4 rounded">
+            <NavLink
+              to={RouteConfig.LOCAL_STARRED}
+              className={({ isActive }) => {
+                return clsx(
+                  "sidebar-item",
+                  isActive ? "sidebar-item--active" : ""
+                );
+              }}
+            >
               <Star size={16} />
-            </span>
-            <span className="shrink grow basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-sm">
-              Starred
-            </span>
+              <span className="shrink grow basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-sm">
+                Starred
+              </span>
+            </NavLink>
           </div>
         </div>
         <h2 className="mb-2 mt-6 px-4 text-lg font-semibold tracking-tight">
@@ -475,7 +474,7 @@ const ChannelList = (): JSX.Element => {
                           () =>
                             toast.message("Current URL copied to clipboard", {
                               description: "Paste it wherever you like",
-                            }),
+                            })
                         )
                       }
                     >
@@ -487,7 +486,7 @@ const ChannelList = (): JSX.Element => {
                         copyText(store.feedContextMenuTarget?.link).then(() =>
                           toast.message("Current URL copied to clipboard", {
                             description: "Paste it wherever you like",
-                          }),
+                          })
                         )
                       }
                     >

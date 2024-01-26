@@ -260,7 +260,7 @@ export const Player = React.forwardRef((props: PlayerProps, ref) => {
         <img
           alt="uri"
           src={list[currentAudio]?.thumbnail}
-          className="rounded-sm"
+          className="absolute top-0 left-0 rounded-sm"
         />
       </div>
       <div>
