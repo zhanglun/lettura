@@ -37,7 +37,7 @@ export const Player = React.forwardRef((props: PlayerProps, ref) => {
   const store = useBearStore((state) => ({
     podcastPlayingStatus: state.podcastPlayingStatus,
     updatePodcastPlayingStatus: state.updatePodcastPlayingStatus,
-  }))
+  }));
   const [pause, setPause] = useState(true);
   const [currentTime, setCurrentTime] = useState({ minutes: 0, seconds: 0 });
   const [maxTime, setMaxTime] = useState({ minutes: 0, seconds: 0 });
@@ -243,7 +243,6 @@ export const Player = React.forwardRef((props: PlayerProps, ref) => {
     return () => {
       sub();
     };
-
   }, [list]);
 
   useEffect(() => {
@@ -257,11 +256,13 @@ export const Player = React.forwardRef((props: PlayerProps, ref) => {
   return (
     <div className="m-auto w-full h-[528px]">
       <div className="m-auto bg-muted rounded-sm shadow-md relative w-full pt-[100%] before:content-[''] before:absolute before:top-0 before:left-0 before:w-full before:h-full before:bg-muted">
-        <img
-          alt="uri"
-          src={list[currentAudio]?.thumbnail}
-          className="absolute top-0 left-0 rounded-sm"
-        />
+        {list[currentAudio]?.thumbnail && (
+          <img
+            alt="uri"
+            src={list[currentAudio]?.thumbnail}
+            className="absolute top-0 left-0 rounded-sm"
+          />
+        )}
       </div>
       <div>
         <div className="text-center mt-4">{list[currentAudio]?.title}</div>

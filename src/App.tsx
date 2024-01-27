@@ -73,7 +73,7 @@ function App() {
 
   return (
     <>
-      <div className="h-full max-h-full overflow-hidden bg-zinc-100">
+      <div className="h-full max-h-full ">
         <Outlet />
       </div>
       <CommandPanel />

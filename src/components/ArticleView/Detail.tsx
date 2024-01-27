@@ -26,7 +26,7 @@ function validateFeed(article: ArticleResItem, medias: any) {
   if (/youtube.com\/feeds\/videos.xml/.test(feed_url)) {
     isYoutube = true;
     isCommon = false;
-  } else if (medias.length > 0) {
+  } else if (medias?.length > 0) {
     isPodcast = true;
     isCommon = false;
   }
@@ -86,7 +86,7 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
   }
 
   function renderMain() {
-    const { isCommon, isYoutube, isPodcast } = validateFeed(article, medias);
+    const { isCommon, isYoutube, isPodcast } = validateFeed(article, medias || []);
 
     if (isYoutube) {
       return (
