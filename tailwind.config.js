@@ -19,6 +19,11 @@ module.exports = {
     },
     colors: ({ colors }) => ({
       ...colors,
+      // canvas: {
+      //   DEFAULT: "red",
+      //   foreground: "green";
+      // }
+
 
       // "feed-list-bg": "var(--feed-list-bg-color)",
       // "feed-headline": 'hsl(var(--background))',
@@ -70,6 +75,10 @@ module.exports = {
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
+        },
+        panel: {
+          DEFAULT: "var(--panelBackground)",
+          foreground: "var(--panelForeground)",
         },
       },
       borderRadius: {

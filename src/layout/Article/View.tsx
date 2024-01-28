@@ -33,7 +33,7 @@ export function View() {
     <div className="flex-1">
       <div
         className={
-          "h-[var(--app-toolbar-height)] flex items-center justify-end px-2 space-x-0.5 border-b relative z-10 bg-background"
+          "h-[var(--app-toolbar-height)] flex items-center justify-end px-2 space-x-0.5 border-b relative z-10"
         }
       >
         { store.article && <StarAndRead article={store.article} />}

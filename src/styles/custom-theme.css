@@ -23,9 +23,15 @@
 }
 
 :root {
-  --colorCanvasBackground: theme(colors.zinc.100);
+  --canvasBackground: theme(colors.zinc.100);
+  --canvasForeground: theme(colors.zinc.700);
+  --panelBackground: theme(colors.white);
+  --panelForeground: theme(colors.zinc.700);
 }
 
-.dark {
-  --colorCanvasBackground: theme(colors.zinc.100);
+[data-color-scheme="dark"], .dark {
+  --canvasBackground: theme(colors.zinc.900);
+  --canvasForeground: theme(colors.zinc.100);
+  --panelBackground: theme(colors.zinc.800);
+  --panelForeground: theme(colors.zinc.300);
 }
