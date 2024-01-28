@@ -1,0 +1,31 @@
+:root[data-color-scheme="luckin"],
+[data-color-scheme="luckin"] {
+  --background: 0 0% 100%;
+  --foreground: 222.2 47.4% 11.2%;
+
+  --primary: 214 100% 18%;
+}
+
+:root[data-color-scheme="starbucks"],
+[data-color-scheme="starbucks"] {
+  --background: 0 0% 100%;
+  --foreground: 222.2 47.4% 11.2%;
+
+  --primary: 160 100% 22%;
+}
+
+:root[data-color-scheme="tims"],
+[data-color-scheme="tims"] {
+  --background: 0 0% 100%;
+  --foreground: 222.2 47.4% 11.2%;
+
+  --primary: 350 85% 42%;
+}
+
+:root {
+  --colorCanvasBackground: theme(colors.zinc.100);
+}
+
+.dark {
+  --colorCanvasBackground: theme(colors.zinc.100);
+}

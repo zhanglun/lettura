@@ -2,14 +2,11 @@ import React, { useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { appWindow } from "@tauri-apps/api/window";
 import { emit, listen } from "@tauri-apps/api/event";
-
 import { useBearStore } from "@/stores";
 import { RouteConfig } from "./config";
-
 import { CommandPanel } from "./command";
-import { SideNav } from "./layout/SideNav";
 
-import "./styles/index.global.scss";
+import "./styles/index.css";
 
 function App() {
   const store = useBearStore((state) => ({
