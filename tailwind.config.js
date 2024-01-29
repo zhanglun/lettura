@@ -76,6 +76,10 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        canvas: {
+          DEFAULT: "var(--canvasBackground)",
+          foreground: "var(--canvasForeground)",
+        },
         panel: {
           DEFAULT: "var(--panelBackground)",
           foreground: "var(--panelForeground)",
