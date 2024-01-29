@@ -253,7 +253,7 @@ const ChannelList = (): JSX.Element => {
       className="relative flex h-full w-[var(--app-feedlist-width)] select-none flex-col text-[hsl(var(--foreground))]
   "
     >
-      <div className="flex h-[var(--app-toolbar-height)] items-center justify-end border-b bg-[var(--background)] px-2 py-0">
+      <div className="flex h-[var(--app-toolbar-height)] items-center justify-end bg-[var(--background)] px-2 py-0">
         <SpaceSwitcher isCollapsed={false} spaces={spaces} />
         <div className="flex justify-end">
           <AddFolder
@@ -280,7 +280,7 @@ const ChannelList = (): JSX.Element => {
           </TooltipBox>
         </div>
       </div>
-      <div className="px-2">
+      <div className="px-2 pb-3">
         <TooltipBox content="Search content" side="right" className="w-full">
           <NavLink
             to={RouteConfig.SEARCH}
@@ -351,7 +351,7 @@ const ChannelList = (): JSX.Element => {
                 <span
                   className={classNames(
                     "-mr-1 h-4 min-w-[1rem] px-1 flex items-center justify-center text-[10px] leading-4 rounded",
-                    "bg-zinc-200"
+                    "bg-secondary text-secondary-foreground"
                   )}
                 >
                   {store.collectionMeta.today.unread}
@@ -386,7 +386,7 @@ const ChannelList = (): JSX.Element => {
                 <span
                   className={classNames(
                     "-mr-1 h-4 min-w-[1rem] px-1 flex items-center justify-center text-[10px] leading-4 rounded",
-                    "bg-zinc-200"
+                    "bg-secondary text-secondary-foreground"
                   )}
                 >
                   {store.collectionMeta.total.unread}

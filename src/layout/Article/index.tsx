@@ -32,7 +32,7 @@ export const ArticleContainer = (): JSX.Element => {
     <div className={clsx("flex-1 h-[100vh] flex flex-row relative p-2 pl-0", {
       "gap-2 pr-1": store.podcastPanelStatus
     })}>
-      <div className="rounded-md flex flex-1 bg-panel h-full overflow-hidden">
+      <div className="rounded-md flex flex-1 bg-panel h-full overflow-hidden shadow">
         <Layout1 feedUuid={feedUuid} type={type} />
         <View />
       </div>

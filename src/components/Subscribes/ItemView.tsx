@@ -7,9 +7,6 @@ import { useBearStore } from "@/stores";
 import { getChannelFavicon } from "@/helpers/parseXML";
 import { ChevronDownCircle, ChevronRightCircle } from "lucide-react";
 
-const baseItemClass =
-  "flex relative z-[1] px-3 rounded-lg items-center text-sm mt-[2px] h-8 w-full cursor-pointer gap-2 rounded-md after:block after:content-[''] after:-z-10 after:absolute after:top-[0] after:left-[0] after:w-full after:h-full after:rounded-lg after:opacity-0 after:scale-90 after:transition-all after:duration-300 after:ease-in-out hover:after:opacity-100 hover:after:scale-100 md:transition-all md:duration-[500ms] md:ease-in-out md:mr-0 text-base py-[8px] after:bg-zinc-300";
-
 export interface CardProps {
   uuid: any;
   text: string;

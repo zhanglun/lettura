@@ -43,9 +43,11 @@ module.exports = {
     }),
     extend: {
       colors: {
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
+        // border: "hsl(var(--border))",
+        border: "var(--borderLine)",
+        input: "var(--borderLine)",
+        ring: "var(--borderLine)",
+        // ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
@@ -84,6 +86,10 @@ module.exports = {
           DEFAULT: "var(--panelBackground)",
           foreground: "var(--panelForeground)",
         },
+        sidebar: {
+          DEFAULT: "hsl(var(--accent))",
+          hover: "var(---sideItemHoverBackground)",
+        }
       },
       borderRadius: {
         lg: "var(--radius)",

@@ -48,7 +48,7 @@ export const ArticleItem = React.forwardRef(
           "group hover:bg-accent hover:cursor-pointer",
           {
             "text-[hsl(var(--foreground)_/_80%)]": readStatus === ArticleReadStatus.READ,
-            "bg-article-active-bg": highlight,
+            "bg-primary text-accent hover:bg-primary": highlight,
           }
         )}
         onClick={handleClick}

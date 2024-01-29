@@ -21,7 +21,7 @@ export function SettingPage() {
   };
 
   return (
-    <div className="flex-1 max-h-full flex lg:flex-row flex-col bg-">
+    <div className="flex-1 max-h-full flex lg:flex-row flex-col bg-canvas">
       <div className="lg:w-[220px] w-full px-6">
         <div className="max-w-[640px] m-auto">
           <h2 className="flex items-center gap-3 text-xl tracking-tight py-10 lg:px-4 group cursor-pointer">

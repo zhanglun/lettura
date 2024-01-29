@@ -89,7 +89,7 @@ export const PodcastPlayer = () => {
               </p>
             </div>
           </div>
-          <div className="absolute right-0 top-0 bottom-0 p-2 flex items-center justify-center bg-gradient-to-l from-zinc-200 to-transparent opacity-0 group-hover:opacity-100 transition-all">
+          <div className="absolute right-0 top-0 bottom-0 p-2 flex items-center justify-center bg-gradient-to-l from-[bg-panel] to-transparent opacity-0 group-hover:opacity-100 transition-all">
             <Trash2
               size={18}
               strokeWidth={1.5}
@@ -110,7 +110,7 @@ export const PodcastPlayer = () => {
   return (
     <div
       className={clsx(
-        "flex flex-col w-[320px] h-full bg-white",
+        "flex flex-col w-[320px] h-full bg-panel",
         "p-2 rounded-md"
       )}
     >
