@@ -59,11 +59,11 @@ const spaces = [
     route: RouteConfig.LOCAL_TODAY,
     // icon: ;
   },
-  {
-    label: "FreshRSS",
-    route: RouteConfig.SERVICE_FRESHRSS,
-    // icon: ;
-  },
+  // {
+  //   label: "FreshRSS",
+  //   route: RouteConfig.SERVICE_FRESHRSS,
+  //   // icon: ;
+  // },
 ];
 
 type NavClass = {
