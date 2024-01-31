@@ -43,11 +43,9 @@ pub fn delete_feed(uuid: String) -> usize {
     .load::<models::Feed>(&mut connection)
     .expect("Expect find channel");
 
-  return if channel.len() == 1 {
-    let result = diesel::delete(schema::feeds::dsl::feeds.filter(schema::feeds::uuid.eq(&uuid)))
-      .execute(&mut connection)
-      .expect("Expect delete channel");
+  println!("channel {:?}", channel);
 
+  return if channel.len() == 1 {
     diesel::delete(
       schema::articles::dsl::articles.filter(schema::articles::feed_uuid.eq(&uuid)),
     )
@@ -55,6 +53,10 @@ pub fn delete_feed(uuid: String) -> usize {
     .expect("Expect delete channel");
 
     diesel::delete(schema::feed_metas::dsl::feed_metas.filter(schema::feed_metas::uuid.eq(&uuid)))
+      .execute(&mut connection)
+      .expect("Expect delete channel");
+
+    let result = diesel::delete(schema::feeds::dsl::feeds.filter(schema::feeds::uuid.eq(&uuid)))
       .execute(&mut connection)
       .expect("Expect delete channel");
 
