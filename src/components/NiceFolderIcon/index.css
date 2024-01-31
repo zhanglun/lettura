@@ -1,0 +1,73 @@
+:root .folder {
+  --borderRadius: 10%;
+}
+.folder {
+  transition: all 0.2s ease-in;
+}
+.folder__back {
+  position: relative;
+  width: 100%;
+  height: 80%;
+  background: #4786ff;
+  border-radius: 0px var(--borderRadius) var(--borderRadius) var(--borderRadius);
+}
+.folder__back::after {
+  position: absolute;
+  bottom: 98%;
+  left: 0;
+  content: "";
+  width: 30%;
+  height: 10%;
+  background: #4786ff;
+  border-radius: var(--borderRadius) var(--borderRadius) 0 0;
+}
+.folder__back .paper {
+  position: absolute;
+  bottom: 10%;
+  left: 50%;
+  transform: translate(-50%, 10%);
+  width: 70%;
+  height: 80%;
+  background: #e6e6e6;
+  border-radius: var(--borderRadius);
+  transition: all 0.3s ease-in-out;
+}
+.folder__back .paper:nth-child(2) {
+  background: #f2f2f2;
+  width: 80%;
+  height: 70%;
+}
+.folder__back .paper:nth-child(3) {
+  background: white;
+  width: 90%;
+  height: 60%;
+}
+.folder__back .folder__front {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: #70a1ff;
+  border-radius: var(--borderRadius);
+  transform-origin: bottom;
+  transition: all 0.3s ease-in-out;
+}
+
+.folder.folder--active .paper {
+  transform: translate(-50%, 0%);
+}
+.folder.folder--active .folder__front {
+  transform: skew(6deg) scaleY(0.8);
+}
+.folder.folder--active .right {
+  transform: skew(-6deg) scaleY(0.8);
+}
+
+.folder.folder--open .paper {
+  transform: translate(-50%, 0%);
+}
+.folder.folder--open .folder__front {
+  transform: skew(15deg) scaleY(0.6);
+}
+.folder.folder--open .right {
+  transform: skew(-15deg) scaleY(0.6);
+}

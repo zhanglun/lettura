@@ -6,6 +6,7 @@ import { FeedResItem } from "@/db";
 import { useBearStore } from "@/stores";
 import { getChannelFavicon } from "@/helpers/parseXML";
 import { ChevronDownCircle, ChevronRightCircle } from "lucide-react";
+import { NiceFolderIcon } from "../NiceFolderIcon";
 
 export interface CardProps {
   uuid: any;
@@ -50,6 +51,20 @@ export const ItemView: FC<CardProps> = ({
   const { unread = 0, link, logo } = feed;
   const ico = logo || getChannelFavicon(link);
 
+  function renderNiceFolder(isActive: Boolean, isExpanded: Boolean) {
+    let folderStatus: string;
+
+    if (isExpanded) {
+      folderStatus = "open";
+    } else if (isActive) {
+      folderStatus = "active";
+    } else {
+      folderStatus = "close";
+    }
+
+    return <NiceFolderIcon status={folderStatus} />;
+  }
+
   return (
     <div>
       <div
@@ -78,17 +93,7 @@ export const ItemView: FC<CardProps> = ({
         >
           {feed.item_type === "folder" && (
             <div onClick={handleToggle}>
-              <span className="flex items-center">
-                {isExpanded ? (
-                  <>
-                    <ChevronDownCircle size={16} className="mr-1" />
-                  </>
-                ) : (
-                  <>
-                    <ChevronRightCircle size={16} className="mr-1" />
-                  </>
-                )}
-              </span>
+              {renderNiceFolder(isActive, isExpanded)}
             </div>
           )}
           {feed.link && (
