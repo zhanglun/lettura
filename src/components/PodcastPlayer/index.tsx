@@ -9,7 +9,7 @@ import { busChannel } from "@/helpers/busChannel";
 
 function createThumbnail(thumbnail: any) {
   return (
-    <div className="bg-muted rounded-sm overflow-hidden">
+    <div className="bg-muted overflow-hidden rounded-sm">
       {thumbnail && <img alt="uri" src={thumbnail} className="max-w-[60px]" />}
     </div>
   );
@@ -44,22 +44,22 @@ export const PodcastPlayer = () => {
 
       return (
         <div
-          className={clsx("group cursor-default rounded-md relative", {
+          className={clsx("group relative cursor-default rounded-md", {
             "bg-accent": current?.uuid === _.uuid,
           })}
         >
-          <div className="flex gap-3 p-3 rounded-sm hover:bg-accent">
-            <div className="relative w-[60px] h-[60px]">
+          <div className="hover:bg-accent flex gap-3 rounded-sm p-3">
+            <div className="relative h-[60px] w-[60px]">
               {createThumbnail(thumbnail)}
               <div
                 className={clsx(
-                  "rounded-sm pl-[3px] flex items-center justify-center",
+                  "flex items-center justify-center rounded-sm pl-[3px]",
                   "text-primary-foreground bg-foreground/70 cursor-pointer",
-                  "absolute top-0 left-0 bottom-0 right-0",
+                  "absolute bottom-0 left-0 right-0 top-0",
                   "group-hover:visible",
                   {
                     invisible: current?.uuid !== _.uuid,
-                  }
+                  },
                 )}
                 onClick={() => playRecord(_)}
               >
@@ -77,19 +77,19 @@ export const PodcastPlayer = () => {
                 {playing && current?.uuid === _.uuid && <PlayingBar />}
               </div>
             </div>
-            <div className="grow shrink basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap">
-              <p className="font-bold text-sm mb-1 grow shrink basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap">
+            <div className="shrink grow basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap">
+              <p className="mb-1 shrink grow basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-sm font-bold">
                 {_.title}
               </p>
-              <p className="mb-2 text-xs text-muted-foreground">
+              <p className="text-muted-foreground mb-2 text-xs">
                 {_.feed_title}
               </p>
-              <p className="text-xs line-clamp-2 text-muted-foreground leading-normal">
+              <p className="text-muted-foreground line-clamp-2 text-xs leading-normal">
                 {(description || _.description).replace(/(<([^>]+)>)/gi, "")}
               </p>
             </div>
           </div>
-          <div className="absolute right-0 top-0 bottom-0 p-2 flex items-center justify-center bg-gradient-to-l from-[bg-panel] to-transparent opacity-0 group-hover:opacity-100 transition-all">
+          <div className="absolute bottom-0 right-0 top-0 flex items-center justify-center bg-gradient-to-l from-[bg-panel] to-transparent p-2 opacity-0 transition-all group-hover:opacity-100">
             <Trash2
               size={18}
               strokeWidth={1.5}
@@ -110,12 +110,12 @@ export const PodcastPlayer = () => {
   return (
     <div
       className={clsx(
-        "flex flex-col w-[320px] h-full bg-panel",
-        "p-2 rounded-md"
+        "bg-panel flex h-full w-[320px] flex-col shadow",
+        "rounded-md p-2",
       )}
     >
       <Player list={list} onPlayingStatusChange={handlePlayingStatusChange} />
-      <div className="overflow-auto flex-1">{renderList()}</div>
+      <div className="flex-1 overflow-auto">{renderList()}</div>
     </div>
   );
 };

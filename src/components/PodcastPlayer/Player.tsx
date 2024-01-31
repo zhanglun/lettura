@@ -124,7 +124,7 @@ export const Player = React.forwardRef((props: PlayerProps, ref) => {
 
       console.log(
         "🚀 ~ changeCurrentTime ~ player.currentTime:",
-        player.currentTime
+        player.currentTime,
       );
     }
   };
@@ -176,7 +176,7 @@ export const Player = React.forwardRef((props: PlayerProps, ref) => {
         }
       }
     },
-    [list]
+    [list],
   );
 
   function renderPlayButton() {
@@ -209,17 +209,17 @@ export const Player = React.forwardRef((props: PlayerProps, ref) => {
         timelineRef.current.removeEventListener(
           "click",
           changeCurrentTime,
-          false
+          false,
         );
         timelineRef.current.removeEventListener(
           "mousemove",
           hoverTimeLine,
-          false
+          false,
         );
         timelineRef.current.removeEventListener(
           "mouseout",
           resetTimeLine,
-          false
+          false,
         );
       }
     };
@@ -254,67 +254,67 @@ export const Player = React.forwardRef((props: PlayerProps, ref) => {
   }, [pause]);
 
   return (
-    <div className="m-auto w-full h-[528px]">
-      <div className="m-auto bg-muted rounded-sm shadow-md relative w-full pt-[100%] before:content-[''] before:absolute before:top-0 before:left-0 before:w-full before:h-full before:bg-muted">
+    <div className="m-auto w-full">
+      <div className="bg-muted before:bg-muted relative m-auto w-full rounded-sm pt-[100%] shadow-md before:absolute before:left-0 before:top-0 before:h-full before:w-full before:content-['']">
         {list[currentAudio]?.thumbnail && (
           <img
             alt="uri"
             src={list[currentAudio]?.thumbnail}
-            className="absolute top-0 left-0 rounded-sm"
+            className="absolute left-0 top-0 rounded-md"
           />
         )}
       </div>
       <div>
-        <div className="text-center mt-4">{list[currentAudio]?.title}</div>
-        <div className="text-muted-foreground text-sm text-center my-1">
+        <div className="mt-4 text-center">{list[currentAudio]?.title}</div>
+        <div className="text-muted-foreground my-1 text-center text-sm">
           {list[currentAudio]?.feed_title}
         </div>
       </div>
       <div className="my-3 flex justify-center">
-        <div className="w-full bg-card rounded-2xl">
+        <div className="bg-accent w-full rounded-md">
           <audio ref={playerRef} preload="true">
             <source src={list[currentAudio]?.mediaURL} />
             Your browser does not support the audio element.
           </audio>
-          <div className="flex gap-2 mx-4 my-4">
+          <div className="m-3 mt-4 flex gap-2">
             <TimeDisplay time={currentTime} />
             <div
               ref={timelineRef}
               id="timeline"
-              className="relative m-auto w-full h-1 bg-secondary rounded-md cursor-pointer group"
+              className="bg-muted-foreground/80 group relative m-auto h-1 w-full cursor-pointer rounded-md"
             >
               <div
                 ref={playHeadRef}
                 id="playhead"
-                className="relative z-[2] w-0 h-1 rounded-md bg-primary"
+                className="bg-primary relative z-[2] h-1 w-0 rounded-md"
               ></div>
               <div
                 ref={hoverPlayHeadRef}
                 className={clsx(
-                  "absolute z-[1] top-0 w-0 h-1 rounded-md bg-slate-600 transition-opacity duration-300 ease-in opacity-0 group-hover:after:opacity-100 group-hover:before:opacity-100 group-hover:opacity-100",
-                  "before:content-[attr(data-content)] before:opacity-1 before:block before:absolute before:-top-[40px] before:-right-[23px] before:z-10 before:p-1 before:text-center before:bg-slate-800 before:text-white before:rounded-md",
-                  "after:content-[''] after:opacity-0 after:block after:absolute after:-top-[8px] after:-right-[8px] after:border-t-[8px_solid] after:border-t-slate-800 after:border-l-[8px_solid_transparent] after:border-r-[8px_solid_transparent] after:bg-slate-800 after:text-white after:rounded-md"
+                  "absolute top-0 z-[1] h-1 w-0 rounded-md bg-slate-600 opacity-0 transition-opacity duration-300 ease-in group-hover:opacity-100 group-hover:before:opacity-100 group-hover:after:opacity-100",
+                  "before:opacity-1 before:absolute before:-right-[23px] before:-top-[40px] before:z-10 before:block before:rounded-md before:bg-slate-800 before:p-1 before:text-center before:text-white before:content-[attr(data-content)]",
+                  "after:absolute after:-right-[8px] after:-top-[8px] after:block after:rounded-md after:border-l-[8px_solid_transparent] after:border-r-[8px_solid_transparent] after:border-t-[8px_solid] after:border-t-slate-800 after:bg-slate-800 after:text-white after:opacity-0 after:content-['']",
                 )}
                 data-content="0:00"
               ></div>
             </div>
             <TimeDisplay time={maxTime} />
           </div>
-          <div className="flex gap-8 items-center justify-center py-3">
+          <div className="flex items-center justify-center gap-8 py-3 pt-1">
             <SkipBack
               size={20}
               onClick={prevSong}
-              className="cursor-pointer text-accent-foreground hover:text-accent-foreground/80 transition-all"
+              className="text-accent-foreground hover:text-accent-foreground/80 cursor-pointer transition-all"
             />
             <div
               className={clsx(
-                "w-[42px] h-[42px]",
+                "h-[42px] w-[42px]",
                 "flex items-center justify-center",
-                "rounded-full bg-foreground",
+                "bg-foreground rounded-full",
                 "text-background",
                 "cursor-pointer",
                 "hover:scale-110",
-                "transition-all"
+                "transition-all",
               )}
               onClick={onPlayButtonClick}
             >
@@ -323,7 +323,7 @@ export const Player = React.forwardRef((props: PlayerProps, ref) => {
             <SkipForward
               size={20}
               onClick={nextSong}
-              className="cursor-pointer text-accent-foreground hover:text-accent-foreground/80 transition-all"
+              className="text-accent-foreground hover:text-accent-foreground/80 cursor-pointer transition-all"
             />
           </div>
         </div>

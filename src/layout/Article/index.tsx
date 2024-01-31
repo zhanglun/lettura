@@ -29,17 +29,20 @@ export const ArticleContainer = (): JSX.Element => {
   useHotkeys("o", () => openInBrowser());
 
   return (
-    <div className={clsx("flex-1 h-[100vh] flex flex-row relative p-2 pl-0", {
-      "gap-2 pr-1": store.podcastPanelStatus
-    })}>
-      <div className="rounded-md flex flex-1 bg-panel h-full overflow-hidden shadow">
+    <div
+      className={clsx("relative grid h-[100vh] flex-1 p-2 pl-0", {
+        "gap-2 grid-cols-[1fr_auto]": store.podcastPanelStatus,
+        "grid-cols-[auto_0]": !store.podcastPanelStatus,
+      })}
+    >
+      <div className="bg-panel flex h-full flex-1 overflow-hidden rounded-md shadow">
         <Layout1 feedUuid={feedUuid} type={type} />
         <View />
       </div>
 
       <div
-        className={clsx("overflow-hidden shrink-0", {
-          "w-0": !store.podcastPanelStatus,
+        className={clsx({
+          "hidden": !store.podcastPanelStatus,
         })}
       >
         <PodcastPlayer />

@@ -3,6 +3,8 @@
 }
 .folder {
   transition: all 0.2s ease-in;
+  display: flex;
+  items-center: center;
 }
 .folder__back {
   position: relative;

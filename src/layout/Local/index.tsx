@@ -30,7 +30,6 @@ export function LocalPage() {
 
   return (
     <div className="flex flex-row h-full bg-canvas">
-      <div></div>
       <DndProvider backend={HTML5Backend}>
         <ChannelList />
       </DndProvider>
