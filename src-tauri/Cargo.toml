@@ -1,6 +1,6 @@
 [package]
 name = "lettura"
-version = "0.1.14"
+version = "0.1.15"
 description = "Your RSS reader"
 authors = ["zhanglun1410@gmail.com"]
 license = ""
