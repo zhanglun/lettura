@@ -47,7 +47,7 @@ export function View() {
         <PlayerSwitcher />
       </div>
       <AnimatePresence>
-        <motion.div
+        <motion.article
           key={store.article?.uuid || "view"}
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -68,7 +68,7 @@ export function View() {
               )}
             </div>
           </ScrollBox>
-        </motion.div>
+        </motion.article>
       </AnimatePresence>
     </div>
   );

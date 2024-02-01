@@ -110,8 +110,7 @@ export const PodcastPlayer = () => {
   return (
     <div
       className={clsx(
-        "bg-panel flex h-full w-[320px] flex-col shadow",
-        "rounded-md p-2",
+        "bg-panel flex h-[calc(100vh_-theme(padding.4))] w-[320px] flex-col shadow rounded-md p-2"
       )}
     >
       <Player list={list} onPlayingStatusChange={handlePlayingStatusChange} />
