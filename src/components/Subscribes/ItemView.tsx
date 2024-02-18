@@ -1,4 +1,4 @@
-import { FC, useLayoutEffect, useRef } from "react";
+import React, { FC } from "react";
 import { useNavigate } from "react-router-dom";
 import clsx from "clsx";
 import { RouteConfig } from "@/config";
@@ -67,7 +67,8 @@ export const ItemView: FC<CardProps> = ({
   return (
     <div
       key={feed.title}
-      onClick={() => {
+      onClick={(e: React.MouseEvent<HTMLDivElement>) => {
+        e.stopPropagation();
         store.setFeed(feed);
         navigate(
           `${RouteConfig.LOCAL_FEED.replace(/:uuid/, feed.uuid)}?feedUuid=${
