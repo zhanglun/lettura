@@ -154,13 +154,13 @@ export const SubscribeItem: FC<CardProps> = memo(
           {props.children && (
             <div
               className={clsx(
-                "grid grid-rows-[0fr] overflow-hidden transition-all",
+                "grid grid-rows-[0fr] grid-cols-[100%] overflow-hidden transition-all",
                 {
                   "grid-rows-[1fr]": isExpanded,
                 },
               )}
             >
-              <div className="min-h-0">{props.children}</div>
+              <div className="min-h-0 ">{props.children}</div>
             </div>
           )}
         </ItemView>
