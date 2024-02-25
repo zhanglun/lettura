@@ -87,8 +87,9 @@ module.exports = {
           foreground: "var(--panelForeground)",
         },
         sidebar: {
-          DEFAULT: "hsl(var(--accent))",
-          hover: "var(---sideItemHoverBackground)",
+          DEFAULT: "var(--sideItemBackground)",
+          active: "var(--sideItemActiveBackground)",
+          hover: "var(--sideItemHoverBackground)",
         }
       },
       borderRadius: {

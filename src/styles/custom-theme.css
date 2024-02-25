@@ -23,7 +23,8 @@
 }
 
 :root {
-  --sideItemHoverBackground: theme(colors.red.900);
+  --sideItemActiveBackground: rgba(255, 255, 255, 0.6);
+  --sideItemHoverBackground: rgba(210, 210, 210, 0.6);
   --borderLine: theme(colors.zinc.200);
   --canvasBackground: theme(colors.neutral.100);
   --canvasForeground: theme(colors.zinc.700);
@@ -31,7 +32,10 @@
   --panelForeground: theme(colors.zinc.700);
 }
 
-[data-color-scheme="dark"], .dark {
+[data-color-scheme="dark"],
+.dark {
+  --sideItemActiveBackground: rgb(98 98 98 / 60%);
+  --sideItemHoverBackground: rgb(85 85 85 / 60%);
   --borderLine: theme(colors.zinc.700);
   --canvasBackground: #3b3b3b;
   --canvasForeground: theme(colors.zinc.100);

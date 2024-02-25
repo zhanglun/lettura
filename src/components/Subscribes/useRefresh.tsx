@@ -99,6 +99,10 @@ export const useRefresh = () => {
       store.userConfig.update_interval
     );
 
+    if (!store.userConfig.last_sync_time) {
+      startRefresh();
+    }
+
     if (
       store.userConfig.update_interval &&
       store.userConfig.last_sync_time &&

@@ -52,6 +52,7 @@ import { DialogDeleteFolder } from "@/layout/Setting/Content/DialogDeleteFolder"
 import { loadFeed } from "@/hooks/useLoadFeed";
 import { SpaceSwitcher } from "../SpaceSwitcher";
 import clsx from "clsx";
+import { useScrollTop } from "@/hooks/useScrollTop";
 
 const spaces = [
   {
@@ -109,6 +110,7 @@ const ChannelList = (): JSX.Element => {
   }));
 
   const [, , feedUuid] = useQuery();
+  const [scrollTop, scrollTopProps] = useScrollTop();
 
   useEffect(() => {
     store.initCollectionMetas();
@@ -308,7 +310,10 @@ const ChannelList = (): JSX.Element => {
         </TooltipBox>
       </div>
       <div
-        className="height-[calc(100% - var(--app-toolbar-height))] flex-1 overflow-y-auto pb-2 pl-2 pr-1"
+        {...scrollTopProps}
+        className={clsx("height-[calc(100% - var(--app-toolbar-height))] flex-1 overflow-y-auto pb-2 pl-2 pr-1", {
+          "border-t": scrollTop > 0
+        })}
         ref={listRef}
       >
         <h2 className="mb-2 mt-6 px-4 text-lg font-semibold tracking-tight">
