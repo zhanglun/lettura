@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export function useScrollTop() {
+export function useScrollTop(): [number, any]{
   const [scrollTop, setScrollTop] = useState(0);
   console.log("🚀 ~ useScrollTop ~ scrollTop:", scrollTop)
 

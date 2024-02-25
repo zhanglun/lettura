@@ -11,7 +11,6 @@ import { Appearance } from "./layout/Setting/Appearance";
 import { Shortcut } from "./layout/Setting/ShortCut";
 import { FeedManager } from "./layout/Setting/Content";
 import { ImportAndExport } from "./layout/Setting/ImportAndExport";
-import { WelcomePage } from "./components/WelcomePage";
 import { ArticleContainer } from "./layout/Article";
 import { SearchPage } from "./layout/Search";
 import { LocalPage } from "./layout/Local";
@@ -64,32 +63,32 @@ const router = createBrowserRouter([
         path: RouteConfig.SEARCH,
         element: <SearchPage />,
       },
-      {
-        path: RouteConfig.SETTINGS,
-        element: <SettingPage />,
-        children: [
-          {
-            path: RouteConfig.SETTINGS_GENERAL,
-            element: <General />,
-          },
-          {
-            path: RouteConfig.SETTINGS_APPEARANCE,
-            element: <Appearance />,
-          },
-          {
-            path: RouteConfig.SETTINGS_SHORTCUT,
-            element: <Shortcut />,
-          },
-          {
-            path: RouteConfig.SETTINGS_FEED_MANAGER,
-            element: <FeedManager />,
-          },
-          {
-            path: RouteConfig.SETTINGS_IMPORT,
-            element: <ImportAndExport />,
-          },
-        ],
-      },
+      // {
+      //   path: RouteConfig.SETTINGS,
+      //   element: <SettingPage />,
+      //   children: [
+      //     {
+      //       path: RouteConfig.SETTINGS_GENERAL,
+      //       element: <General />,
+      //     },
+      //     {
+      //       path: RouteConfig.SETTINGS_APPEARANCE,
+      //       element: <Appearance />,
+      //     },
+      //     {
+      //       path: RouteConfig.SETTINGS_SHORTCUT,
+      //       element: <Shortcut />,
+      //     },
+      //     {
+      //       path: RouteConfig.SETTINGS_FEED_MANAGER,
+      //       element: <FeedManager />,
+      //     },
+      //     {
+      //       path: RouteConfig.SETTINGS_IMPORT,
+      //       element: <ImportAndExport />,
+      //     },
+      //   ],
+      // },
     ],
   },
 ]);

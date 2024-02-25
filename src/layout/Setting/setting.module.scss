@@ -1,149 +1,149 @@
-.container {
-  flex: 1;
-  display: grid;
-  grid-template-columns: 230px 1fr;
-  height: 100vh;
-  padding-top: 1rem;
-}
+// .container {
+//   flex: 1;
+//   display: grid;
+//   grid-template-columns: 230px 1fr;
+//   height: 100vh;
+//   padding-top: 1rem;
+// }
 
-.description {
-  font-size: 13px;
-  color: var(--detail-paragraph-color);
-  font-weight: normal;
-  margin-left: 14px;
-}
+// .description {
+//   font-size: 13px;
+//   color: var(--detail-paragraph-color);
+//   font-weight: normal;
+//   margin-left: 14px;
+// }
 
-.section {
-  padding: 0 0;
-  margin-bottom: 3rem;
-}
+// .section {
+//   padding: 0 0;
+//   margin-bottom: 3rem;
+// }
 
-.options {
-  color: var(--detail-headline-color);
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 16px;
-  margin: 22px 0 12px;
-}
+// .options {
+//   color: var(--detail-headline-color);
+//   font-size: 16px;
+//   font-weight: 700;
+//   line-height: 16px;
+//   margin: 22px 0 12px;
+// }
 
-.preview {
-  margin-top: 20px;
-  border: 1px solid var(--icon-stroke-color);
-  border-radius: 10px;
-  margin-bottom: 14px;
-  max-width: 600px;
-  padding: 18px 14px 14px;
-  box-shadow: inset(0 1px 3px 0 rgba(255, 255, 255, 0.5));
-}
+// .preview {
+//   margin-top: 20px;
+//   border: 1px solid var(--icon-stroke-color);
+//   border-radius: 10px;
+//   margin-bottom: 14px;
+//   max-width: 600px;
+//   padding: 18px 14px 14px;
+//   box-shadow: inset(0 1px 3px 0 rgba(255, 255, 255, 0.5));
+// }
 
-.previewLoading {
-  color: var(--text-color);
-}
+// .previewLoading {
+//   color: var(--text-color);
+// }
 
-.previewIcon {
-  width: 30px;
-  height: 30px;
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.05);
-  float: left;
-}
+// .previewIcon {
+//   width: 30px;
+//   height: 30px;
+//   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.05);
+//   float: left;
+// }
 
-.previewBody {
-  margin-left: 46px;
-}
+// .previewBody {
+//   margin-left: 46px;
+// }
 
-.previewTitle {
-  font-size: 16px;
-  color: var(--headline-color);
-  font-weight: var(--font-weight-bold);
-  margin: 0 0 14px;
-}
+// .previewTitle {
+//   font-size: 16px;
+//   color: var(--headline-color);
+//   font-weight: var(--font-weight-bold);
+//   margin: 0 0 14px;
+// }
 
-.previewFollowButton {
-  float: right;
-  cursor: pointer;
-}
+// .previewFollowButton {
+//   float: right;
+//   cursor: pointer;
+// }
 
-.previewLink {
-  font-size: 14px;
-  color: var(--text-color);
-}
+// .previewLink {
+//   font-size: 14px;
+//   color: var(--text-color);
+// }
 
-.previewDescription {
-  font-size: 14px;
-  color: var(--title-color);
-}
-
-
-.actionCol {
-  display: grid;
-  grid-auto-flow: column;
-  grid-gap: 0.8rem;
-  grid-template-columns: 1rem;
-}
-
-.nameCol {
-  display: grid;
-  grid-auto-flow: column;
-  grid-gap: 0.5rem;
-  grid-template-columns: 1rem;
-  align-items: center;
-}
-
-.uploadBox {
-  width: 480px;
-  height: 180px;
-  position: relative;
-  border: 2px dashed #dedede;
-  transition: all 0.3s ease-in-out;
-
-  &:hover {
-    background-color: #eee;
-    border-color: #c2c2c2;
-    cursor: pointer;
-  }
-}
-
-.uploadBoxInner {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 2;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  user-select: none;
-
-  .text {
-    color: #999;
-    font-size: 18px;
-  }
-
-  .additionText {
-    margin-top: 4px;
-    color: #bfbfbf;
-    font-size: 12px;
-  }
-
-}
-
-.uploadInput {
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 1;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-}
+// .previewDescription {
+//   font-size: 14px;
+//   color: var(--title-color);
+// }
 
 
-.feedManagerFields {
-  display: grid;
-  padding: 1rem 0;
-  grid-template-columns: 260px 140px;
-  grid-gap: 1rem;
-}
+// .actionCol {
+//   display: grid;
+//   grid-auto-flow: column;
+//   grid-gap: 0.8rem;
+//   grid-template-columns: 1rem;
+// }
+
+// .nameCol {
+//   display: grid;
+//   grid-auto-flow: column;
+//   grid-gap: 0.5rem;
+//   grid-template-columns: 1rem;
+//   align-items: center;
+// }
+
+// .uploadBox {
+//   width: 480px;
+//   height: 180px;
+//   position: relative;
+//   border: 2px dashed #dedede;
+//   transition: all 0.3s ease-in-out;
+
+//   &:hover {
+//     background-color: #eee;
+//     border-color: #c2c2c2;
+//     cursor: pointer;
+//   }
+// }
+
+// .uploadBoxInner {
+//   position: absolute;
+//   top: 0;
+//   left: 0;
+//   z-index: 2;
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+//   flex-direction: column;
+//   width: 100%;
+//   height: 100%;
+//   pointer-events: none;
+//   user-select: none;
+
+//   .text {
+//     color: #999;
+//     font-size: 18px;
+//   }
+
+//   .additionText {
+//     margin-top: 4px;
+//     color: #bfbfbf;
+//     font-size: 12px;
+//   }
+
+// }
+
+// .uploadInput {
+//   position: absolute;
+//   top: 0;
+//   left: 0;
+//   z-index: 1;
+//   width: 100%;
+//   height: 100%;
+//   opacity: 0;
+// }
+
+
+// .feedManagerFields {
+//   display: grid;
+//   padding: 1rem 0;
+//   grid-template-columns: 260px 140px;
+//   grid-gap: 1rem;
+// }

@@ -15,8 +15,6 @@ import { Folder, Folder as Folder2, Loader2 } from "lucide-react";
 import { Button } from "../ui/button";
 import { FeedResItem } from "@/db";
 import { useBearStore } from "@/stores";
-import { Icon } from "../Icon";
-import { TooltipBox } from "../TooltipBox";
 
 export interface AddFolderProps {
   action: "add" | "edit";
