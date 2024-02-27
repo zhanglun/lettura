@@ -265,9 +265,8 @@ export const Layout1 = React.memo(
             </TooltipBox>}
           </div>
         </div>
-        <div className="relative flex-1 overflow-auto">
+        <div className="relative flex-1 overflow-auto" ref={listRef}>
           <ArticleList
-            ref={listRef}
             articles={articles}
             title={params.name}
             type={type}
