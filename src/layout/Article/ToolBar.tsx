@@ -5,39 +5,33 @@ import { useBearStore } from "@/stores";
 import { TooltipBox } from "@/components/TooltipBox";
 
 export interface NavigatorProps {
-  listRef?: any;
+  goNext: () => void;
+  goPrev: () => void;
 }
 
 export const ToolbarItemNavigator = (props: NavigatorProps) => {
   const store = useBearStore((state) => ({
-    articleList: state.articleList,
-    goPreviousArticle: state.goPreviousArticle,
-    goNextArticle: state.goNextArticle,
-    currentIdx: state.currentIdx,
+    hasMoreNext: state.hasMoreNext,
+    hasMorePrev: state.hasMorePrev,
   }));
 
-  const { currentIdx } = store;
-
   const handleViewPrevious = () => {
-    store.goPreviousArticle();
+    props.goPrev();
   };
 
   const handleViewNext = () => {
-    store.goNextArticle();
+    props.goNext();
   };
 
   return (
     <>
       <TooltipBox content="Previous article">
-        <Icon disable={currentIdx <= 0} onClick={handleViewPrevious}>
+        <Icon disable={!store.hasMorePrev} onClick={handleViewPrevious}>
           <ChevronUp size={16} />
         </Icon>
       </TooltipBox>
       <TooltipBox content="Next article">
-        <Icon
-          disable={currentIdx >= store.articleList.length - 1}
-          onClick={handleViewNext}
-        >
+        <Icon disable={!store.hasMoreNext} onClick={handleViewNext}>
           <ChevronDown size={16} />
         </Icon>
       </TooltipBox>

@@ -17,11 +17,12 @@ export interface ArticleSlice {
 
   updateArticleStatus: (article: ArticleResItem, status: ArticleReadStatus) => any;
   updateArticleAndIdx: (ArticleResItem: ArticleResItem, idx?: number) => void;
-  goPreviousArticle: any;
-  goNextArticle: any;
 
-  currentIdx: number;
-  setCurrentIdx: (idx: number) => void;
+  hasMorePrev: boolean;
+  setHasMorePrev: (more: boolean) => void;
+
+  hasMoreNext: boolean;
+  setHasMoreNext: (more: boolean) => void;
 
   articleDialogViewStatus: boolean;
   setArticleDialogViewStatus: (status: boolean) => void;
@@ -96,6 +97,16 @@ export const createArticleSlice: StateCreator<
     }));
   },
 
+  hasMoreNext: true,
+  setHasMoreNext: (more: boolean) => {
+    set(() => ({ hasMoreNext: more }))
+  },
+
+  hasMorePrev: false,
+  setHasMorePrev: (more: boolean) => {
+    set(() => ({ hasMorePrev: more }))
+  },
+
   cursor: 1,
   setCursor: (c: number) => {
     set(() => ({
@@ -140,55 +151,6 @@ export const createArticleSlice: StateCreator<
 
       return data;
     });
-  },
-
-  goPreviousArticle() {
-    let cur = -1;
-    let currentIdx = get().currentIdx;
-    let articleList = get().articleList;
-
-    if (currentIdx <= 0) {
-      cur = 0;
-    } else {
-      cur = currentIdx - 1;
-    }
-
-    get().updateArticleAndIdx(articleList[cur], cur);
-  },
-
-  goNextArticle(): [shouldLoad: boolean] {
-    let cur = -1;
-    let currentIdx = get().currentIdx;
-    let articleList = get().articleList;
-
-    if (currentIdx < articleList.length - 1) {
-      cur = currentIdx + 1;
-    }
-
-    console.log(
-      "%c Line:205 🍕 articleList.length",
-      "color:#e41a6a",
-      articleList.length
-    );
-    console.log("%c Line:205 🌶 cur", "color:#3f7cff", cur);
-
-    if (cur === articleList.length - 1) {
-      console.error("%c Line:194 🥖 cur", "color:#ed9ec7", "到底了");
-      get().setCursor(get().cursor + 1);
-
-      return [true];
-    } else {
-      get().updateArticleAndIdx(articleList[cur], cur);
-    }
-
-    return [false];
-  },
-
-  currentIdx: 0,
-  setCurrentIdx: (idx: number) => {
-    set(() => ({
-      currentIdx: idx,
-    }));
   },
 
   articleDialogViewStatus: false,

@@ -1,4 +1,12 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  ForwardedRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { useParams } from "react-router-dom";
 import { ArticleList } from "@/components/ArticleList";
 import { useBearStore } from "@/stores";
@@ -22,8 +30,13 @@ import { useHotkeys } from "react-hotkeys-hook";
 import { throttle } from "lodash";
 import { ArticleResItem } from "@/db";
 
-export const Layout1 = React.memo(
-  (props: { feedUuid?: string; type?: string }) => {
+export interface ArticleColRefObject {
+  goNext: () => void;
+  goPrev: () => void;
+}
+
+export const ArticleCol = React.memo(
+  React.forwardRef<ArticleColRefObject, any>((props: { feedUuid?: string; type?: string }, listForwarded) => {
     const { feedUuid, type } = props;
     // @ts-ignore
     const params: { name: string } = useParams();
@@ -39,6 +52,8 @@ export const Layout1 = React.memo(
       markArticleListAsRead: state.markArticleListAsRead,
 
       updateArticleStatus: state.updateArticleStatus,
+      setHasMorePrev: state.setHasMorePrev,
+      setHasMoreNext: state.setHasMoreNext,
 
       filterList: state.filterList,
       currentFilter: state.currentFilter,
@@ -47,21 +62,11 @@ export const Layout1 = React.memo(
       userConfig: state.userConfig,
     }));
 
-    const {
-      articles,
-      isLoading,
-      size,
-      mutate,
-      setSize,
-      isEmpty,
-      isReachingEnd,
-      isToday,
-      isAll,
-      isStarred,
-    } = useArticle({
-      feedUuid,
-      type,
-    });
+    const { articles, isLoading, size, mutate, setSize, isEmpty, isReachingEnd, isToday, isAll, isStarred } =
+      useArticle({
+        feedUuid,
+        type,
+      });
 
     const handleRefresh = () => {
       if (store.feed && store.feed.uuid) {
@@ -94,10 +99,7 @@ export const Layout1 = React.memo(
       }
     };
 
-    function calculateItemPosition(
-      direction: "up" | "down",
-      article: ArticleResItem | null
-    ) {
+    function calculateItemPosition(direction: "up" | "down", article: ArticleResItem | null) {
       if (!article?.uuid) {
         return;
       }
@@ -106,54 +108,55 @@ export const Layout1 = React.memo(
       const bounding = $li?.getBoundingClientRect();
       const winH = window.innerHeight;
 
-      if (
-        (direction === "up" || direction === "down") &&
-        bounding &&
-        bounding.top < 58
-      ) {
+      if ((direction === "up" || direction === "down") && bounding && bounding.top < 58) {
         const offset = 58 - bounding.top;
         const scrollTop = (listRef?.current?.scrollTop || 0) - offset;
 
         listRef?.current?.scrollTo(0, scrollTop);
-      } else if (
-        (direction === "up" || direction === "down") &&
-        bounding &&
-        bounding.bottom > winH
-      ) {
+      } else if ((direction === "up" || direction === "down") && bounding && bounding.bottom > winH) {
         const offset = bounding.bottom - winH;
         const scrollTop = (listRef?.current?.scrollTop || 0) + offset;
 
-        console.log(
-          "🚀 ~ file: index.tsx:324 ~ ArticleContainer ~ scrollTop:",
-          scrollTop
-        );
+        console.log("🚀 ~ file: index.tsx:324 ~ ArticleContainer ~ scrollTop:", scrollTop);
         listRef?.current?.scrollTo(0, scrollTop);
       }
     }
 
-    function goPreviousArticle() {
+    const goPreviousArticle = () => {
       let previousItem: ArticleResItem;
       let uuid = store.article?.uuid;
 
       for (let i = 0; i < articles.length; i++) {
+        if (articles[i].uuid === uuid && i === 0) {
+          store.setHasMorePrev(false);
+          store.setHasMoreNext(true);
+
+          break;
+        }
+
         if (articles[i].uuid === uuid && i !== 0) {
           previousItem = articles[i - 1];
-
-          store.updateArticleStatus({...previousItem}, ArticleReadStatus.READ);
-
-          store.setArticle(previousItem);
           previousItem.read_status = ArticleReadStatus.READ;
+
+          store.updateArticleStatus({ ...previousItem }, ArticleReadStatus.READ);
+          store.setArticle(previousItem);
+          store.setHasMorePrev(true);
+          store.setHasMoreNext(true);
 
           calculateItemPosition("up", previousItem);
 
           break;
         }
       }
-    }
+    };
 
     const goNextArticle = () => {
       let nextItem: ArticleResItem = {} as ArticleResItem;
       let uuid = store.article?.uuid;
+
+      if (!uuid) {
+        return false;
+      }
 
       for (let i = 0; i < articles.length; i++) {
         if (articles[i].uuid === uuid && i === articles.length) {
@@ -170,7 +173,10 @@ export const Layout1 = React.memo(
         nextItem = articles[0];
       }
 
-      store.updateArticleStatus({...nextItem}, ArticleReadStatus.READ);
+      console.log("%c Line:162 🥟 articles", "color:#4fff4B", articles);
+      console.log("%c Line:162 🍔 nextItem", "color:#4fff4B", nextItem);
+
+      store.updateArticleStatus({ ...nextItem }, ArticleReadStatus.READ);
 
       nextItem.read_status = ArticleReadStatus.READ;
       store.setArticle(nextItem);
@@ -180,26 +186,27 @@ export const Layout1 = React.memo(
       return [false];
     };
 
-    const goPrev = useCallback(
-      throttle(() => {
-        console.warn("goPrev");
-        goPreviousArticle();
-      }, 300),
-      [articles]
-    );
+    const goPrev = throttle(() => {
+      console.warn("goPrev");
+      goPreviousArticle();
+    }, 300);
 
-    const goNext = useCallback(
-      throttle(() => {
-        console.warn("goNext");
-        const [shouldLoad] = goNextArticle();
-        console.log("%c Line:111 🍏 shouldLoad", "color:#42b983", shouldLoad);
+    const goNext = throttle(() => {
+      console.warn("goNext");
+      const [shouldLoad] = goNextArticle();
+      console.log("%c Line:111 🍏 shouldLoad", "color:#42b983", shouldLoad);
 
-        if (shouldLoad) {
-          // getList({ cursor: store.cursor + 1 });
-        }
-      }, 300),
-      [articles]
-    );
+      if (shouldLoad) {
+        // getList({ cursor: store.cursor + 1 });
+      }
+    }, 300);
+
+    useImperativeHandle(listForwarded, () => {
+      return {
+        goNext,
+        goPrev,
+      };
+    });
 
     useHotkeys("n", goNext);
     useHotkeys("Shift+n", goPrev);
@@ -233,16 +240,10 @@ export const Layout1 = React.memo(
                 </TooltipBox>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuRadioGroup
-                  value={`${store.currentFilter.id}`}
-                  onValueChange={changeFilter}
-                >
+                <DropdownMenuRadioGroup value={`${store.currentFilter.id}`} onValueChange={changeFilter}>
                   {store.filterList.map((item) => {
                     return (
-                      <DropdownMenuRadioItem
-                        key={`${item.id}`}
-                        value={`${item.id}`}
-                      >
+                      <DropdownMenuRadioItem key={`${item.id}`} value={`${item.id}`}>
                         {item.title}
                       </DropdownMenuRadioItem>
                     );
@@ -255,14 +256,13 @@ export const Layout1 = React.memo(
                 <CheckCheck size={16} />
               </Icon>
             </TooltipBox>
-            {!!!isStarred && <TooltipBox content="Reload feed">
-              <Icon onClick={handleRefresh}>
-                <RefreshCw
-                  size={16}
-                  className={`${isSyncing ? "spinning" : "333"}`}
-                />
-              </Icon>
-            </TooltipBox>}
+            {!!!isStarred && (
+              <TooltipBox content="Reload feed">
+                <Icon onClick={handleRefresh}>
+                  <RefreshCw size={16} className={`${isSyncing ? "spinning" : "333"}`} />
+                </Icon>
+              </TooltipBox>
+            )}
           </div>
         </div>
         <div className="relative flex-1 overflow-auto" ref={listRef}>
@@ -280,5 +280,5 @@ export const Layout1 = React.memo(
         </div>
       </div>
     );
-  }
+  })
 );

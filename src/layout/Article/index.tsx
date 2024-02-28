@@ -1,16 +1,15 @@
-import classNames from "classnames";
 import { useBearStore } from "@/stores";
 import { useHotkeys } from "react-hotkeys-hook";
-import { Layout1 } from "@/layout/Article/Layout1";
+import { ArticleCol, ArticleColRefObject } from "@/layout/Article/ArticleCol";
 import { ArticleDialogView } from "@/components/ArticleView/DialogView";
 import { open } from "@tauri-apps/api/shell";
 import { View } from "./View";
-import styles from "./index.module.scss";
 import { useQuery } from "@/helpers/parseXML";
 import { PodcastPlayer } from "@/components/PodcastPlayer";
 import clsx from "clsx";
+import { useRef } from "react";
 
-export const ArticleContainer = (): JSX.Element => {
+export const ArticleContainer = () => {
   const [, type, feedUuid] = useQuery();
   const store = useBearStore((state) => ({
     article: state.article,
@@ -21,6 +20,9 @@ export const ArticleContainer = (): JSX.Element => {
 
     podcastPanelStatus: state.podcastPanelStatus,
   }));
+
+  const articleColRef = useRef<ArticleColRefObject>(null);
+  const { goNext, goPrev } = (articleColRef.current || {}) as ArticleColRefObject;
 
   const openInBrowser = () => {
     store.article && open(store.article.link);
@@ -36,13 +38,13 @@ export const ArticleContainer = (): JSX.Element => {
       })}
     >
       <div className="bg-panel flex h-full flex-1 overflow-hidden rounded-md shadow">
-        <Layout1 feedUuid={feedUuid} type={type} />
-        <View />
+        <ArticleCol feedUuid={feedUuid} type={type} ref={articleColRef} />
+        <View goNext={goNext} goPrev={goPrev} />
       </div>
 
       <div
         className={clsx({
-          "hidden": !store.podcastPanelStatus,
+          hidden: !store.podcastPanelStatus,
         })}
       >
         <PodcastPlayer />

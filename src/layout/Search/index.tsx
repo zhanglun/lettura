@@ -84,7 +84,6 @@ export const SearchPage = () => {
   const goPrev = useCallback(
     throttle(() => {
       console.warn("goPrev");
-      // store.goPreviousArticle();
     }, 300),
     []
   );
@@ -92,7 +91,6 @@ export const SearchPage = () => {
   const goNext = useCallback(
     throttle(() => {
       console.warn("goNext");
-      // store.goNextArticle();
     }, 300),
     []
   );
