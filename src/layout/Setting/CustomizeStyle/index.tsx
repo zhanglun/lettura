@@ -38,7 +38,7 @@ export const CustomizeStyle = (props: CustomizeStyleProps) => {
       typeface: "",
       font_size: 12,
       line_height: 1.4,
-      line_width: 1,
+      line_width: 504,
     },
   } = props;
   const store = useBearStore((state) => ({

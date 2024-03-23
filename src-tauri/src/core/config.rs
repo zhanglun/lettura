@@ -32,7 +32,7 @@ impl Default for CustomizeStyle {
       typeface: String::from("var(--sans-font)"),
       font_size: 14,
       line_height: 1.4,
-      line_width: 1,
+      line_width: 504,
     }
   }
 }
