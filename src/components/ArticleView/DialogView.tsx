@@ -51,7 +51,7 @@ export const ArticleDialogView = (
             <div className="sticky left-0 right-0 top-0 z-[3]">
               <div
                 className="flex items-center justify-end px-20 py-2 space-x-0.5 rounded-tl-lg rounded-tr-lg bg-background border-b">
-                <ToolbarItemNavigator />
+                {/* <ToolbarItemNavigator  /> */}
                 <span>
                   <Separator orientation="vertical" className="h-4 mx-2"/>
                 </span>

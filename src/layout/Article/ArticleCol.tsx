@@ -155,7 +155,7 @@ export const ArticleCol = React.memo(
       let uuid = store.article?.uuid;
 
       if (!uuid) {
-        return false;
+        return [false];
       }
 
       for (let i = 0; i < articles.length; i++) {
