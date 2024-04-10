@@ -56,14 +56,11 @@ export function PodcastAdapter(props: any) {
   function renderMediaBox(media: any) {
     const { description, content, thumbnails } = media;
 
-    console.log("🚀 ~ renderMediaBox ~ media:", media);
-
     function renderContent() {
       return content.map((c: any) => {
-        if (c.url) {
+        if (c.url && c.content_type.indexOf('audio/') === 0) {
           return (
             <figure className="my-3">
-              {/* <audio controls src={ c.url }></audio> */}
               <Button onClick={() => addToPlayListAndPlay(media)}>Play</Button>
             </figure>
           );
@@ -80,9 +77,9 @@ export function PodcastAdapter(props: any) {
     }
 
     return (
-      <div className="reading-content">
+      <div>
         <div>{renderThumbnails()}</div>
-        <div className="pb-6">{renderContent()}</div>
+        <div>{renderContent()}</div>
         <div
           className="text-xs text-muted-foreground"
           style={{ whiteSpace: "pre-line" }}
