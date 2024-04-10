@@ -7,6 +7,7 @@ import { useBearStore } from "@/stores";
 export const useRefresh = () => {
   const store = useBearStore((state) => ({
     userConfig: state.userConfig,
+    getUserConfig: state.getUserConfig,
 
     setLastSyncTime: state.setLastSyncTime,
 
@@ -53,7 +54,7 @@ export const useRefresh = () => {
 
     setRefreshing(true);
 
-    dataAgent.getUserConfig().then(({ data: config }) => {
+    store.getUserConfig().then((config: UserConfig) => {
       console.log("set last sync time");
       store.setLastSyncTime(new Date());
 
@@ -88,16 +89,11 @@ export const useRefresh = () => {
   }
 
   useEffect(() => {
-    console.log(
-      "%c Line:88 🎂 lastSyncTime",
-      "color:#f5ce50",
-      store.userConfig.last_sync_time
-    );
-    console.log(
-      "%c Line:89 🍣 store.userConfig.update_interval",
-      "color:#e41a6a",
-      store.userConfig.update_interval
-    );
+    console.log("%c Line:93 🥕 feedList", "color:#33a5ff", store.feedList);
+
+    if (!store.feedList || store.feedList.length === 0) {
+      return ;
+    }
 
     if (!store.userConfig.last_sync_time) {
       startRefresh();
@@ -118,7 +114,7 @@ export const useRefresh = () => {
     return () => {
       clearTimeout(timeRef.current);
     };
-  }, [store.userConfig.update_interval]);
+  }, [store.feedList, store.userConfig.update_interval]);
 
   return [
     store.feedList,
