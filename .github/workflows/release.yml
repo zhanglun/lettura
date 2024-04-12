@@ -49,24 +49,24 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        settings:
-          - platform: 'macos-latest' # for Arm based macs (M1 and above).
+        include:
+          - platform: 'macos-latest'
             args: '--target aarch64-apple-darwin'
-          - platform: 'macos-latest' # for Intel based macs.
+          - platform: 'macos-latest'
             args: '--target x86_64-apple-darwin'
-          - platform: 'macos-latest' # for both Arm and Intelbased Macs
+          - platform: 'macos-latest'
             args: '--target universal-apple-darwin'
-          - platform: 'ubuntu-20.04' # for Tauri v1 you could replace this with ubuntu-20.04.
+          - platform: 'ubuntu-20.04'
             args: ''
           - platform: 'windows-latest'
             args: ''
-    runs-on: ${{ matrix.platform }}
+    runs-on: ${{ matrix.include.platform }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
       - name: Install dependencies (ubuntu only)
-        if: matrix.platform == 'ubuntu-20.04'
+        if: matrix.include.platform == 'ubuntu-20.04'
         run: |
           sudo apt-get update
           sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libayatana-appindicator3-dev librsvg2-dev
@@ -74,7 +74,7 @@ jobs:
       - name: Rust setup
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: ${{ (matrix.platform == 'macos-latest'&&'aarch64-apple-darwin') || '' }}
+          targets: ${{ (matrix.include.platform == 'macos-latest'&&'aarch64-apple-darwin') || '' }}
 
       - name: Rust cache
         uses: swatinem/rust-cache@v2
@@ -93,17 +93,6 @@ jobs:
 
       - name: Install app dependencies and build web
         run: pnpm install
-
-      # - name: Build the app for Apple silicon
-      #   uses: tauri-apps/tauri-action@dev
-      #   if: matrix.platform == 'macos-latest'
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.LETTURA_TOKEN }}
-      #     TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-      #     TAURI_KEY_PASSWORD : ${{ secrets.TAURI_KEY_PASSWORD }}
-      #   with:
-      #     releaseId: ${{ needs.create-release.outputs.release_id }}
-      #     args:  '--target aarch64-apple-darwin'
 
       - name: Build the app
         uses: tauri-apps/tauri-action@v0.4
@@ -133,7 +122,8 @@ jobs:
               repo: context.repo.repo,
               release_id: process.env.release_id,
               draft: false,
-              prerelease: false
+              prerelease: false,
+              args: ${{ matrix.include.args }}
             })
 
   # update_json:
