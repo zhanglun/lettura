@@ -11,19 +11,14 @@ import "./styles/index.css";
 function App() {
   const store = useBearStore((state) => ({
     getUserConfig: state.getUserConfig,
+    updateSettingDialogStatus: state.updateSettingDialogStatus,
   }));
 
   const navigate = useNavigate();
 
   useEffect(() => {
     listen("go-to-settings", () => {
-      console.log(
-        "%c Line:34 🍒 go-to-setting",
-        "color:#fca650",
-        "go-to-setting"
-      );
-
-      navigate(RouteConfig.SETTINGS_GENERAL);
+      store.updateSettingDialogStatus(true);
     });
 
     listen("check_for_updates", async (e) => {

@@ -15,8 +15,12 @@ export interface UserConfigSlice {
 
   podcastPanelStatus: boolean;
   updatePodcastPanelStatus: (status: boolean) => void;
+
   podcastPlayingStatus: boolean,
   updatePodcastPlayingStatus: (status: boolean) => void;
+
+  settingDialogStatus: boolean;
+  updateSettingDialogStatus: (status: boolean) => void;
 }
 
 export const createUserConfigSlice: StateCreator<UserConfigSlice> = (
@@ -75,10 +79,18 @@ export const createUserConfigSlice: StateCreator<UserConfigSlice> = (
       podcastPanelStatus: status
     }))
   },
+
   podcastPlayingStatus: false,
   updatePodcastPlayingStatus: (status: boolean) => {
     set(() => ({
       podcastPlayingStatus: status
+    }))
+  },
+
+  settingDialogStatus: false,
+  updateSettingDialogStatus: (status: boolean) => {
+    set(() => ({
+      settingDialogStatus: status
     }))
   },
 

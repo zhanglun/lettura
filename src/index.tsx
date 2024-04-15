@@ -6,15 +6,9 @@ import { Toaster } from "./components/ui/sonner";
 import App from "./App";
 import ErrorPage from "./ErrorPage";
 import { RouteConfig } from "./config";
-import { General } from "./layout/Setting/General";
-import { Appearance } from "./layout/Setting/Appearance";
-import { Shortcut } from "./layout/Setting/ShortCut";
-import { FeedManager } from "./layout/Setting/Content";
-import { ImportAndExport } from "./layout/Setting/ImportAndExport";
 import { ArticleContainer } from "./layout/Article";
 import { SearchPage } from "./layout/Search";
 import { LocalPage } from "./layout/Local";
-import { SettingPage } from "./layout/Setting";
 import "./index.css";
 import { FreshRSSPage } from "./layout/FreshRSS";
 
