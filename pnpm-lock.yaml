@@ -166,7 +166,7 @@ dependencies:
     version: 1.0.7(tailwindcss@3.3.5)
   tauri-plugin-log-api:
     specifier: github:tauri-apps/tauri-plugin-log
-    version: github.com/tauri-apps/tauri-plugin-log/19f5dcc0425e9127d2c591780e5047b83e77a7c2
+    version: git@github.com+tauri-apps/tauri-plugin-log/db7255ca2e07fc4d3e6cc5d93f9ccfceacb28901
   web-vitals:
     specifier: ^3.5.0
     version: 3.5.0
@@ -6098,8 +6098,8 @@ packages:
       use-sync-external-store: 1.2.0(react@18.2.0)
     dev: false
 
-  github.com/tauri-apps/tauri-plugin-log/19f5dcc0425e9127d2c591780e5047b83e77a7c2:
-    resolution: {commit: 19f5dcc0425e9127d2c591780e5047b83e77a7c2, repo: git+ssh://git@github.com/tauri-apps/tauri-plugin-log.git, type: git}
+  git@github.com+tauri-apps/tauri-plugin-log/db7255ca2e07fc4d3e6cc5d93f9ccfceacb28901:
+    resolution: {commit: db7255ca2e07fc4d3e6cc5d93f9ccfceacb28901, repo: git@github.com:tauri-apps/tauri-plugin-log.git, type: git}
     name: tauri-plugin-log-api
     version: 0.0.0
     dependencies:
