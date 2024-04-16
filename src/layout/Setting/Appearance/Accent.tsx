@@ -1,12 +1,21 @@
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useBearStore } from "@/stores";
 
 export const AccentItem = (props: { name: string; hsl: string }) => {
+  const store = useBearStore((state) => ({
+    userConfig: state.userConfig,
+    updateUserConfig: state.updateUserConfig,
+  }));
   const { hsl, name } = props;
 
   const handleClick = () => {
     document.documentElement.style.setProperty(
       `--primary`, hsl as string
     );
+    store.updateUserConfig({
+      ...store.userConfig,
+      theme: name,
+    });
   }
 
   return (

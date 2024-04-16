@@ -18,10 +18,8 @@ export const Theme = (props: any) => {
   function handleThemeChange(value: string) {
     store.updateUserConfig({
       ...store.userConfig,
-      theme: value,
+      color_scheme: value,
     });
-
-    console.log("🚀 ~ file: Theme.tsx:26 ~ handleThemeChange ~ value:", value)
 
     if (value === 'system') {
       document.documentElement.dataset.colorScheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';

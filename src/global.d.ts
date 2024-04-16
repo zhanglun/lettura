@@ -18,6 +18,7 @@ declare interface CustomizeStyle {
 
 declare interface UserConfig {
   threads?: number;
+  color_scheme?: string;
   theme?: string;
   update_interval?: number;
   last_sync_time?: Date;
