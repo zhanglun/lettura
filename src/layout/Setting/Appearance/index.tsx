@@ -4,6 +4,7 @@ import { CustomizeStyle } from "@/layout/Setting/CustomizeStyle";
 import { useBearStore } from "@/stores";
 import classNames from "classnames";
 import { Theme } from "./Theme";
+import { Accent } from "./Accent";
 
 export const Appearance = () => {
   const store = useBearStore((state) => ({
@@ -27,8 +28,11 @@ export const Appearance = () => {
       title="Appearance"
       subTitle="Customize the appearance of the app. Automatically switch between day and night themes."
     >
-      <PanelSection title="Theme" subTitle="Select your interface color scheme">
+      {/* <PanelSection title="Base color scheme" subTitle="Choose Lettura's default color scheme">
         <Theme />
+      </PanelSection> */}
+      <PanelSection title="Accent" subTitle="Choose 's default color scheme">
+        <Accent />
       </PanelSection>
       <PanelSection
         title="Style"

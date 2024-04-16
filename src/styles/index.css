@@ -57,7 +57,7 @@ div, ul {
 }
 
 ::-webkit-scrollbar {
-  width: 20px;
+  width: 6px;
 }
 
 ::-webkit-scrollbar-corner {
@@ -66,7 +66,7 @@ div, ul {
 
 ::-webkit-scrollbar-thumb {
   border: 0px solid transparent;
-  border-radius: 8px;
+  border-radius: 6px;
   background-color: #707070;
   background-clip: padding-box;
 }

@@ -39,14 +39,23 @@ export const Theme = (props: any) => {
         <SelectValue placeholder="Font" />
       </SelectTrigger>
       <SelectContent>
+        <SelectItem value="system">
+          <ThemeTag scheme="system" name="System preference" />
+        </SelectItem>
         <SelectItem value="light">
           <ThemeTag scheme="light" name="Light" />
         </SelectItem>
         <SelectItem value="dark">
           <ThemeTag scheme="dark" name="Dark" />
         </SelectItem>
-        <SelectItem value="system">
-          <ThemeTag scheme="system" name="System preference" />
+        <SelectItem value="luckin">
+          <ThemeTag scheme="luckin" name="Luckin" />
+        </SelectItem>
+        <SelectItem value="starbucks">
+          <ThemeTag scheme="starbucks" name="StarBucks" />
+        </SelectItem>
+        <SelectItem value="tims">
+          <ThemeTag scheme="tims" name="Tims" />
         </SelectItem>
       </SelectContent>
     </Select>

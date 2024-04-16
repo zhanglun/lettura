@@ -11,7 +11,7 @@ export const Panel = (props: PanelProps) => {
   const { title, subTitle, children } = props;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 outline-none">
       <div className="mb-5">
         <h3 className="text-xl font-medium tracking-tight">{title}</h3>
         {subTitle && (
