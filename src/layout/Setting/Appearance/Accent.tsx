@@ -3,8 +3,14 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 export const AccentItem = (props: { name: string; hsl: string }) => {
   const { hsl, name } = props;
 
+  const handleClick = () => {
+    document.documentElement.style.setProperty(
+      `--primary`, hsl as string
+    );
+  }
+
   return (
-    <div>
+    <div onClick={handleClick}>
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger>
