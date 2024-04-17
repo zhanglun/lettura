@@ -15,8 +15,8 @@ pub async fn handle_get_user_config() -> Result<impl Responder> {
 
 #[post("/api/user-config")]
 pub async fn handle_update_user_config(user_cfg: web::Json<config::UserConfig>) -> Result<impl Responder> {
-  config::update_user_config(user_cfg.0);
-  Ok(web::Json("hahahah"))
+  let result = config::update_user_config(user_cfg.0);
+  Ok(web::Json(result))
 }
 
 #[derive(Debug, Deserialize)]

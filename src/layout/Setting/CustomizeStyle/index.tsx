@@ -65,48 +65,43 @@ export const CustomizeStyle = (props: CustomizeStyleProps) => {
     document.documentElement.style.setProperty(`--reading-editable-${key.replace(/_/gi, "-")}`, value as string);
   }
 
-
-
   return (
     <div className={`w-full max-w-xs bg-detail-bg grid gap-4 ${className}`}>
-      <div>
-        <h5 className="text-sm mb-2">Text styles</h5>
-        <div className="border border-input rounded-md">
-          {/* <div className="flex justify-between pl-3 border-t -mt-[1px] h-10">
+      <div className="border border-input rounded-md">
+        {/* <div className="flex justify-between pl-3 border-t -mt-[1px] h-10">
             <Type size={20} strokeWidth={1.5} />
             <span>Typeface</span>
             <span>asdfsadf</span>
           </div> */}
-          <ValueStep
-            value={cfg.font_size}
-            Icon={() => <CaseSensitive />}
-            label="Font size"
-            options={FONTSIZE_OPTIONS}
-            onChange={(option) => {
-              handleCustomizeStyleChange("font_size", option.value);
-            }}
-          />
-          <div className="w-full h-[1px] bg-input" />
-          <ValueStep
-            value={cfg.line_height}
-            Icon={() => <Baseline />}
-            label="Line spacing"
-            options={LINE_SPACING_OPTIONS}
-            onChange={(option) => {
-              handleCustomizeStyleChange("line_height", option.value);
-            }}
-          />
-          <div className="w-full h-[1px] bg-input" />
-          <ValueStep
-            value={cfg.line_width}
-            Icon={() => <AlignJustify />}
-            label="Line width"
-            options={PAGE_SIZE_OPTIONS}
-            onChange={(option) => {
-              handleCustomizeStyleChange("line_width", option.value);
-            }}
-          />
-        </div>
+        <ValueStep
+          value={cfg.font_size}
+          Icon={() => <CaseSensitive />}
+          label="Font size"
+          options={FONTSIZE_OPTIONS}
+          onChange={(option) => {
+            handleCustomizeStyleChange("font_size", option.value);
+          }}
+        />
+        <div className="w-full h-[1px] bg-input" />
+        <ValueStep
+          value={cfg.line_height}
+          Icon={() => <Baseline />}
+          label="Line spacing"
+          options={LINE_SPACING_OPTIONS}
+          onChange={(option) => {
+            handleCustomizeStyleChange("line_height", option.value);
+          }}
+        />
+        <div className="w-full h-[1px] bg-input" />
+        <ValueStep
+          value={cfg.line_width}
+          Icon={() => <AlignJustify />}
+          label="Line width"
+          options={PAGE_SIZE_OPTIONS}
+          onChange={(option) => {
+            handleCustomizeStyleChange("line_width", option.value);
+          }}
+        />
       </div>
     </div>
   );

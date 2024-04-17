@@ -187,6 +187,10 @@ pub fn load_or_initial() -> Option<UserConfig> {
     data.insert(String::from("theme"), toml::Value::try_from::<String>(String::from("system")).unwrap());
   }
 
+  if !data.contains_key("theme") {
+    data.insert(String::from("theme"), toml::Value::try_from::<String>(String::from("default")).unwrap());
+  }
+
   if !data.contains_key("update_interval") {
     data.insert(String::from("update_interval"), toml::Value::try_from::<i32>(0).unwrap());
   }

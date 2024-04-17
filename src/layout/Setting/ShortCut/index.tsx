@@ -43,7 +43,7 @@ export const KeyBox = (props: {
 export const Shortcut = () => {
   return (
     <Panel title="Shortcut">
-      <PanelSection title="">
+      <PanelSection title="" orientation="vertical">
         <div className="w-full">
           <KeyBox name="c" description="Subscribe feed" />
           <Separator />
