@@ -22,7 +22,7 @@ export const ColorScheme = () => {
     }
   }
   return (
-    <div className="grid grid-cols-3 gap-4 w-[400px]">
+    <div className="grid grid-cols-3 gap-4 w-[400px] transform-gpu">
       <div>
         <div
           className={clsx(
