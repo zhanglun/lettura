@@ -37,7 +37,7 @@ export const ArticleContainer = () => {
         "grid-cols-[auto_0]": !store.podcastPanelStatus,
       })}
     >
-      <div className="bg-panel flex h-full flex-1 overflow-hidden rounded-md shadow">
+      <div className="bg-panel flex h-full flex-1 overflow-hidden rounded-md border">
         <ArticleCol feedUuid={feedUuid} type={type} ref={articleColRef} />
         <View goNext={goNext} goPrev={goPrev} />
       </div>
