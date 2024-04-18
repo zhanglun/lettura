@@ -51,7 +51,7 @@ export function DataTableToolbar<TData>({
           onChange={(event) =>
             table.getColumn("title")?.setFilterValue(event.target.value)
           }
-          className="h-8 w-[150px] lg:w-[250px]"
+          className="w-[150px] lg:w-[250px]"
         />
         {table.getColumn("folder") && folderList.length > 0 && (
           <DataTableFacetedFilter
@@ -78,7 +78,7 @@ export function DataTableToolbar<TData>({
           <Button
             variant="ghost"
             onClick={() => table.resetColumnFilters()}
-            className="h-8 px-2 lg:px-3"
+            className="px-2 lg:px-3"
           >
             Reset
             <X className="ml-2" size={16} />

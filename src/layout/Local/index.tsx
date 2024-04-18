@@ -35,6 +35,7 @@ export function LocalPage() {
   const matched = useMatch(RouteConfig.LOCAL);
   const store = useBearStore((state) => ({
     feed: state.feed,
+    updateSettingDialogStatus: state.updateSettingDialogStatus,
   }));
   const [feedList, setFeedList, getFeedList, refreshing, setRefreshing, done, setDone, startRefresh] = useRefresh();
   const [addFolderDialogStatus, setAddFolderDialogStatus] = useModal();
@@ -111,12 +112,11 @@ export function LocalPage() {
               }}
             >
             </NavLink> */}
-            <SettingDialog>
-              <div className="sidebar-item">
-                <Settings size={16} />
-                Settings
-              </div>
-            </SettingDialog>
+            <div className="sidebar-item" onClick={() => store.updateSettingDialogStatus(true)}>
+              <Settings size={16} />
+              Settings
+            </div>
+            <SettingDialog></SettingDialog>
           </TooltipBox>
         </div>
         <DndProvider backend={HTML5Backend}>

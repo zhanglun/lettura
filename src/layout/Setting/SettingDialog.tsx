@@ -16,24 +16,29 @@ import { Shortcut } from "./ShortCut";
 import clsx from "clsx";
 import { FeedManager } from "./Content";
 import { ImportAndExport } from "./ImportAndExport";
+import { useBearStore } from "@/stores";
 
 export interface SettingDialogProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 export function SettingDialog({ children }: SettingDialogProps) {
   const [value, setValue] = useState("General");
+  const store = useBearStore((state) => ({
+    settingDialogStatus: state.settingDialogStatus,
+    updateSettingDialogStatus: state.updateSettingDialogStatus,
+  }));
 
   const updateValue = (value: string) => {
     setValue(value);
   };
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="min-w-[80%] p-0">
-        <div className="flex-1 h-[94vh] flex flex-row bg-canvas rounded-md">
-          <div className="w-[220px] px-4">
+    <Dialog open={store.settingDialogStatus} onOpenChange={store.updateSettingDialogStatus}>
+      {/* <DialogTrigger asChild>{children}</DialogTrigger> */}
+      <DialogContent className="min-w-[66%] p-0">
+        <div className="flex-1 max-h-[80vh] flex flex-row rounded-md">
+          <div className="w-[220px] px-4 border-r">
             <div className="max-w-[640px] m-auto">
               <h2 className="flex items-center gap-3 text-xl tracking-tight py-10 lg:px-4 group cursor-pointer">
                 Settings
@@ -77,7 +82,7 @@ export function SettingDialog({ children }: SettingDialogProps) {
               </nav>
             </div>
           </div>
-          <div className="flex-1 flex justify-center overflow-auto m-2 rounded-md bg-panel">
+          <div className="flex-1 flex justify-center overflow-auto rounded-md bg-panel">
             <div className="w-full">
               <Tabs value={value} orientation="vertical" onValueChange={updateValue} className="w-full p-8">
                 <TabsContent value="General">
