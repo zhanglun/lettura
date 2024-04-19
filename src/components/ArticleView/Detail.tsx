@@ -11,6 +11,7 @@ import linkifyStr from "linkify-string";
 import { ArticleResItem } from "@/db";
 import { YoutubeAdapter } from "./adpater/Youtube";
 import { PodcastAdapter } from "./adpater/Podcast";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 function createMarkup(html: string) {
   return { __html: html };
@@ -176,22 +177,27 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
   return (
     <div className="m-auto pt-1 pb-10 px-4 max-w-[calc(var(--reading-editable-line-width)_*_1px)]">
       <div className="pb-4 border-b border-border">
-        <div className="mt-6 mb-5 text-4xl font-bold text-detail-headline">
+        <div className="mt-6 mb-5 text-3xl font-medium text-detail-headline">
           {article.title}
         </div>
-        <div className={clsx(styles.meta)}>
-          <span className={styles.channelInfo}>
-            <img src={store.feed?.logo || ico} alt="" className="rounded" />
-            {article.feed_title}
+        <div className="flex items-center gap-2 text-sm text-canvas-foreground sm:flex-wrap">
+          <div className="flex items-center gap-2 rounded-full bg-canvas pr-3">
+            <Avatar className="w-8 h-8">
+              <AvatarImage src={store.feed?.logo || ico} />
+              <AvatarFallback>{article.feed_title.slice(0,1)}</AvatarFallback>
+            </Avatar>
+            <span className="text-canvas-foreground">
+              {article.feed_title}
+            </span>
+          </div>
+          <span>
+            {Dayjs(new Date(pub_date || new Date())).format("YYYY-MM-DD HH:mm")}
           </span>
           {article.author && (
             <span className={clsx(styles.author)}>
-              {article.author}
+               · {article.author}
             </span>
           )}
-          <span className={clsx(styles.time)}>
-            {Dayjs(new Date(pub_date || new Date())).format("YYYY-MM-DD HH:mm")}
-          </span>
         </div>
       </div>
       <div className="m-auto pt-1 mt-6" onClick={delegateContentClick}>

@@ -54,6 +54,8 @@ pub struct ArticleQueryItem {
   #[diesel(sql_type = Text)]
   pub description: String,
   #[diesel(sql_type = Text)]
+  pub author: String,
+  #[diesel(sql_type = Text)]
   pub pub_date: String,
   #[diesel(sql_type = Text)]
   pub create_date: String,
@@ -126,6 +128,7 @@ impl Article {
               A.title,
               A.feed_url,
               A.description as description,
+              A.author,
               A.pub_date,
               A.create_date,
               A.read_status,
@@ -154,6 +157,7 @@ impl Article {
           A.title,
           A.feed_url,
           A.description as description,
+          A.author,
           A.pub_date,
           A.create_date,
           A.read_status,
@@ -177,6 +181,7 @@ impl Article {
           A.title,
           A.feed_url,
           A.description as description,
+          A.author,
           A.pub_date,
           A.create_date,
           A.read_status,
@@ -201,6 +206,7 @@ impl Article {
             A.title,
             A.feed_url,
             A.description as description,
+            A.author,
             A.pub_date,
             A.create_date,
             A.read_status,

@@ -6,6 +6,7 @@ import { FeedResItem } from "@/db";
 import { useBearStore } from "@/stores";
 import { getChannelFavicon } from "@/helpers/parseXML";
 import { NiceFolderIcon } from "../NiceFolderIcon";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 export interface CardProps {
   uuid: any;
@@ -53,50 +54,49 @@ export const ItemView: FC<CardProps> = ({ uuid, text, feed, index, isExpanded, t
       folderStatus = "close";
     }
 
-    return <NiceFolderIcon status={ folderStatus } onClick={ handleToggle }/>;
+    return <NiceFolderIcon status={folderStatus} onClick={handleToggle} />;
   }
 
   return (
     <>
       <div
-        className={ clsx("sidebar-item", {
+        className={clsx("sidebar-item", {
           "sidebar-item--active": isActive,
           "shadow-[inset_0_0_0_2px_var(--color-primary)]":
             store.feedContextMenuStatus &&
             store.feedContextMenuTarget &&
             store.feedContextMenuTarget.uuid === feed.uuid,
           "pl-5": level === 2,
-        }) }
-        onContextMenu={ () => {
+        })}
+        onContextMenu={() => {
           store.setFeedContextMenuTarget(feed);
-        } }
-        key={ feed.title }
-        onClick={ (e: React.MouseEvent<HTMLDivElement>) => {
+        }}
+        key={feed.title}
+        onClick={(e: React.MouseEvent<HTMLDivElement>) => {
           e.stopPropagation();
           store.setFeed(feed);
           navigate(
-            `${ RouteConfig.LOCAL_FEED.replace(/:uuid/, feed.uuid) }?feedUuid=${ feed.uuid }&feedUrl=${
+            `${RouteConfig.LOCAL_FEED.replace(/:uuid/, feed.uuid)}?feedUuid=${feed.uuid}&feedUrl=${
               feed.feed_url
-            }&type=${ feed.item_type }`
+            }&type=${feed.item_type}`
           );
-        } }
+        }}
       >
-        { feed.item_type === "folder" && <div>{ renderNiceFolder(isActive, isExpanded) }</div> }
-        { feed.link && (
-          <img
-            src={ ico }
-            className={ clsx("h-4 w-4 rounded") }
-            alt={ feed.title }
-          />
-        ) }
-        <span className={ clsx("shrink grow basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-sm") }>
-          { feed.title }
+        {feed.item_type === "folder" && <div>{renderNiceFolder(isActive, isExpanded)}</div>}
+        {feed.link && (
+          <Avatar className="w-5 h-5 rounded-md">
+            <AvatarImage src={ico} alt={feed.title} />
+            <AvatarFallback>{feed.title.slice(0, 1)}</AvatarFallback>
+          </Avatar>
+        )}
+        <span className={clsx("shrink grow basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-sm")}>
+          {feed.title}
         </span>
-        { unread > 0 && (
-          <span className={ clsx("-mr-1 h-4 min-w-[1rem] text-center text-sm font-medium leading-4") }>{ unread }</span>
-        ) }
+        {unread > 0 && (
+          <span className={clsx("-mr-1 h-4 min-w-[1rem] text-center text-sm font-medium leading-4")}>{unread}</span>
+        )}
       </div>
-      { props.children }
+      {props.children}
     </>
   );
 };
