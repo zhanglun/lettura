@@ -243,8 +243,7 @@ const ChannelList = (): JSX.Element => {
               {store.collectionMeta.today.unread > 0 && (
                 <span
                   className={classNames(
-                    "-mr-1 h-4 min-w-[1rem] px-1 flex items-center justify-center text-[10px] leading-4 rounded",
-                    "bg-secondary text-secondary-foreground"
+                    "-mr-1 h-4 min-w-[1rem] px-1 flex items-center justify-center text-sm font-medium leading-4 rounded"
                   )}
                 >
                   {store.collectionMeta.today.unread}
@@ -275,8 +274,7 @@ const ChannelList = (): JSX.Element => {
               {store.collectionMeta.total.unread > 0 && (
                 <span
                   className={classNames(
-                    "-mr-1 h-4 min-w-[1rem] px-1 flex items-center justify-center text-[10px] leading-4 rounded",
-                    "bg-secondary text-secondary-foreground"
+                    "-mr-1 h-4 min-w-[1rem] px-1 flex items-center justify-center text-sm font-medium leading-4 rounded"
                   )}
                 >
                   {store.collectionMeta.total.unread}

@@ -108,7 +108,7 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
       return (
         <div
           key={article.uuid}
-          className={clsx("reading-content", "text-detail-paragraph")}
+          className={clsx("reading-content")}
           // eslint-disable-next-line react/no-danger
           dangerouslySetInnerHTML={createMarkup(pageContent)}
         />
@@ -185,11 +185,11 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
             {article.feed_title}
           </span>
           {article.author && (
-            <span className={clsx(styles.author, "text-detail-paragraph")}>
+            <span className={clsx(styles.author)}>
               {article.author}
             </span>
           )}
-          <span className={clsx(styles.time, "text-detail-paragraph")}>
+          <span className={clsx(styles.time)}>
             {Dayjs(new Date(pub_date || new Date())).format("YYYY-MM-DD HH:mm")}
           </span>
         </div>

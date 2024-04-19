@@ -93,7 +93,7 @@ export const ItemView: FC<CardProps> = ({ uuid, text, feed, index, isExpanded, t
           { feed.title }
         </span>
         { unread > 0 && (
-          <span className={ clsx("-mr-1 h-4 min-w-[1rem] text-center text-[10px] leading-4") }>{ unread }</span>
+          <span className={ clsx("-mr-1 h-4 min-w-[1rem] text-center text-sm font-medium leading-4") }>{ unread }</span>
         ) }
       </div>
       { props.children }

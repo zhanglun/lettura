@@ -91,7 +91,7 @@ async fn main() {
 
       match env::var("LETTURA_ENV") {
         Ok(_env) => {
-          main_window.set_title("Lettura dev").unwrap();
+          main_window.set_title("Lettura in developing").unwrap();
         }
         Err(_) => {}
       }

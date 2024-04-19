@@ -36,10 +36,6 @@ module.exports = {
       // "article-active-bg": "hsl(var(--secondary))",
       // "article-active-headline": "var(--article-active-headline-color)",
       // "article-active-paragraph": "var(--article-active-paragraph-color)",
-
-      // "detail-bg": "var(--detail-bg-color)",
-      // "detail-headline": "var(--detail-headline-color)",
-      // "detail-paragraph": "var(--detail-paragraph-color)",
     }),
     extend: {
       colors: {
