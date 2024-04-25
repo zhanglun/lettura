@@ -97,6 +97,9 @@
 
   --reading-font-monospace: "Roboto Mono VF", "SFMono-Regular", Consolas,
     "Liberation Mono", Menlo, Courier, monospace;
+
+  /* Text selection colour */
+  --text-selection-background-color: #3297FD /* default value chosen from https://stackoverflow.com/questions/16094837/what-is-the-browser-default-background-color-when-selecting-text */
 }
 
 .reading-content {
