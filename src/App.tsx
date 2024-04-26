@@ -37,16 +37,16 @@ function App() {
 
   useEffect(() => {
     store.getUserConfig().then((cfg: UserConfig) => {
-      const { theme, customize_style } = cfg;
+      const { color_scheme, customize_style } = cfg;
 
-      if (theme === "system") {
+      if (color_scheme === "system") {
         document.documentElement.dataset.colorScheme = window.matchMedia(
           "(prefers-color-scheme: dark)"
         ).matches
           ? "dark"
           : "light";
       } else {
-        document.documentElement.dataset.colorScheme = theme;
+        document.documentElement.dataset.colorScheme = color_scheme;
       }
 
       customize_style &&

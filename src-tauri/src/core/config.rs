@@ -57,6 +57,7 @@ macro_rules! generate_set_property {
 pub struct UserConfig {
   pub threads: i32,
   pub theme: String,
+  pub color_scheme: String,
 
   pub update_interval: u64,
   pub last_sync_time: String,
@@ -72,6 +73,7 @@ impl Default for UserConfig {
     Self {
       threads: 1,
       theme: String::from('1'),
+      color_scheme: String::from("system"),
       update_interval: 0,
       last_sync_time: Utc.timestamp_millis_opt(0).unwrap().to_rfc3339_opts(chrono::SecondsFormat::Secs, true),
       local_proxy: None,
@@ -187,8 +189,8 @@ pub fn load_or_initial() -> Option<UserConfig> {
     data.insert(String::from("theme"), toml::Value::try_from::<String>(String::from("system")).unwrap());
   }
 
-  if !data.contains_key("theme") {
-    data.insert(String::from("theme"), toml::Value::try_from::<String>(String::from("default")).unwrap());
+  if !data.contains_key("color_scheme") {
+    data.insert(String::from("color_scheme"), toml::Value::try_from::<String>(String::from("system")).unwrap());
   }
 
   if !data.contains_key("update_interval") {
