@@ -83,8 +83,8 @@ export const Accent = () => {
 
   return (
     <div className="flex gap-4 items-center">
-      {ACCENTS.map((accent: { name: string; hsl: string }) => {
-        return <AccentItem {...accent} active={accent.name === currentTheme} onClick={handleClick} />;
+      {ACCENTS.map((accent: { name: string; hsl: string }, i) => {
+        return <AccentItem {...accent} active={accent.name === currentTheme} onClick={handleClick} key={i} />;
       })}
     </div>
   );
