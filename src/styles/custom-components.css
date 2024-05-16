@@ -90,12 +90,12 @@
 
 @layer components {
   .sidebar-item {
-    @apply relative z-[1] flex items-center gap-2 rounded-md text-sm px-3 h-9 my-[2px] w-full cursor-pointer;
+    @apply relative z-[1] flex items-center gap-2 rounded-md text-sm px-3 h-9 my-[2px] w-full cursor-pointer border border-transparent;
     @apply after:block after:content-[''] after:-z-10 after:absolute after:top-[0] after:left-[0] after:w-full after:h-full after:rounded-md after:opacity-0 after:scale-90 after:transition-all after:duration-300 after:ease-in-out;
     @apply hover:after:opacity-100 hover:after:scale-100 after:bg-sidebar-hover;
   }
 
   .sidebar-item--active {
-    @apply text-accent-foreground after:opacity-100 after:scale-100 after:bg-sidebar-active after:shadow-[0px_0px_0px_1px_rgba(60,64,67,0.00),0px_1.5px_4px_rgba(60,64,67,0.03),0px_3px_10px_rgba(60,64,67,0.1)] border;
+    @apply text-accent-foreground after:opacity-100 after:scale-100 after:bg-sidebar-active after:shadow-[0px_0px_0px_1px_rgba(60,64,67,0.00),0px_1.5px_4px_rgba(60,64,67,0.03),0px_3px_10px_rgba(60,64,67,0.1)] border-gray-200;
   }
 }

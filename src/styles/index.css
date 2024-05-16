@@ -53,7 +53,7 @@ code {
 /* ===== Scrollbar CSS ===== */
 
 div, ul {
-  scrollbar-gutter: stable;
+  /* scrollbar-gutter: stable; */
 }
 
 ::-webkit-scrollbar {
