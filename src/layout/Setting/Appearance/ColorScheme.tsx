@@ -28,7 +28,7 @@ export const ColorScheme = () => {
           className={clsx(
             "border rounded-lg h-14 flex cursor-pointer items-center justify-center dark:bg-foreground dark:text-background",
             {
-              "ring-2": store.userConfig.theme === "light",
+              "ring-2": store.userConfig.color_scheme === "light",
             }
           )}
           onClick={() => handleThemeChange("light")}
@@ -44,7 +44,7 @@ export const ColorScheme = () => {
             "bg-foreground text-background",
             "dark:bg-background dark:text-foreground",
             {
-              "ring-2": store.userConfig.theme === "dark",
+              "ring-2": store.userConfig.color_scheme === "dark",
             }
           )}
           onClick={() => handleThemeChange("dark")}
@@ -60,7 +60,7 @@ export const ColorScheme = () => {
             "bg-gradient-to-br from-background from-50%  via-foreground via-0% to-foreground",
             "dark:from-foreground dark:from-50% dark:via-background dark:via-0% dark:to-background",
             {
-              "ring-2": store.userConfig.theme === "system",
+              "ring-2": store.userConfig.color_scheme === "system",
             }
           )}
           onClick={() => handleThemeChange("system")}
