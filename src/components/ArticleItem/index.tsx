@@ -64,10 +64,10 @@ export const ArticleItem = React.forwardRef((props: { article: ArticleResItem },
         <div className="flex items-center gap-1.5">
           <Avatar
             size="1"
-            src={store.feed?.logo || ico}
-            fallback={store.feed?.title.slice(0, 1) || "L"}
-            alt={store.feed?.title}
-            className="rounded w-4 h-4"
+            src={getChannelFavicon(article.feed_url)}
+            fallback={article.feed_title.slice(0, 1) || "L"}
+            alt={article.feed_title}
+            className="rounded w-5 h-5"
           />
           <span className="max-w-[146px] overflow-hidden text-ellipsis mr-1 whitespace-nowrap">
             {article.author || article.feed_title}
