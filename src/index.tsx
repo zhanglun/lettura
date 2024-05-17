@@ -1,3 +1,4 @@
+import { Theme } from "@radix-ui/themes";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
 
@@ -9,8 +10,9 @@ import { RouteConfig } from "./config";
 import { ArticleContainer } from "./layout/Article";
 import { SearchPage } from "./layout/Search";
 import { LocalPage } from "./layout/Local";
-import "./index.css";
 import { FreshRSSPage } from "./layout/FreshRSS";
+
+import "./index.css";
 
 const router = createBrowserRouter([
   {
@@ -90,7 +92,9 @@ const domNode = document.getElementById("root") as HTMLElement;
 const root = createRoot(domNode);
 
 root.render(
-  <RouterProvider router={router} />
+  <Theme className="w-full h-full" panelBackground="translucent" accentColor="indigo" grayColor="gray">
+    <RouterProvider router={router} />
+  </Theme>
 );
 
 // If you want to start measuring performance in your app, pass a function

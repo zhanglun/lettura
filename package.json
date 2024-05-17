@@ -10,6 +10,7 @@
     "create-json": "node ./scripts/updater.mjs"
   },
   "dependencies": {
+    "@radix-ui/colors": "^3.0.0",
     "@radix-ui/react-alert-dialog": "^1.0.5",
     "@radix-ui/react-aspect-ratio": "^1.0.3",
     "@radix-ui/react-avatar": "^1.0.4",
@@ -29,6 +30,7 @@
     "@radix-ui/react-tabs": "^1.0.4",
     "@radix-ui/react-toast": "^1.1.5",
     "@radix-ui/react-tooltip": "^1.0.7",
+    "@radix-ui/themes": "^3.0.4",
     "@tailwindcss/line-clamp": "^0.4.4",
     "@tanstack/react-table": "^8.10.7",
     "@tauri-apps/api": "^1.5.6",

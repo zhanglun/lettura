@@ -5,8 +5,6 @@ import { emit, listen } from "@tauri-apps/api/event";
 import { useBearStore } from "@/stores";
 import { CommandPanel } from "./command";
 
-import "./styles/index.css";
-
 function App() {
   const store = useBearStore((state) => ({
     getUserConfig: state.getUserConfig,

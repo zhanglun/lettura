@@ -213,7 +213,7 @@ const ChannelList = (): JSX.Element => {
     <>
       <div
         {...scrollTopProps}
-        className={clsx("height-[calc(100% - var(--app-toolbar-height))] flex-1 overflow-y-auto pb-2 pl-2 pr-1", {
+        className={clsx("height-[calc(100% - var(--app-toolbar-height))] flex-1 overflow-y-auto pb-2 pl-2 pr-2", {
           "border-t": scrollTop > 0,
         })}
         ref={listRef}

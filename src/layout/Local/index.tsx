@@ -3,19 +3,18 @@ import { Outlet, NavLink, useMatch, useNavigate } from "react-router-dom";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import clsx from "clsx";
-import { Search, PlusCircle, Settings, FolderPlus, RefreshCw } from "lucide-react";
+import { Search, PlusCircle, Settings, FolderPlus, RotateCw } from "lucide-react";
 import { ChannelList } from "../../components/Subscribes";
 import { useBearStore } from "@/stores";
 import { RouteConfig } from "@/config";
 
-import { TooltipBox } from "@/components/TooltipBox";
 import { SpaceSwitcher } from "@/components/SpaceSwitcher";
 import { useModal } from "@/components/Modal/useModal";
 import { AddFeedChannel } from "@/components/AddFeed";
 import { AddFolder } from "@/components/AddFolder";
 import { useRefresh } from "@/components/Subscribes/useRefresh";
-import { Icon } from "@/components/Icon";
 import { SettingDialog } from "../Setting/SettingDialog";
+import { IconButton, Tooltip } from "@radix-ui/themes";
 
 const spaces = [
   {
@@ -62,9 +61,9 @@ export function LocalPage() {
         className="relative flex h-full w-[var(--app-feedlist-width)] select-none flex-col text-[hsl(var(--foreground))]
   "
       >
-        <div className="flex h-[var(--app-toolbar-height)] items-center justify-end bg-[var(--background)] px-2 py-0">
+        <div className="flex h-[var(--app-toolbar-height)] items-center justify-between bg-[var(--background)] pl-2 pr-3 pt-2">
           <SpaceSwitcher isCollapsed={false} spaces={spaces} />
-          <div className="flex justify-end">
+          <div className="flex items-center gap-3">
             <AddFolder
               action="add"
               dialogStatus={addFolderDialogStatus}
@@ -72,39 +71,45 @@ export function LocalPage() {
               afterConfirm={getFeedList}
               afterCancel={() => {}}
               trigger={
-                <TooltipBox content="Add folder">
-                  <Icon>
-                    <FolderPlus size={16} />
-                  </Icon>
-                </TooltipBox>
+                <IconButton variant="ghost" size="2" className="text-[var(--gray-11)] hover:text-[var(--accent-11)]">
+                  <FolderPlus size={18} strokeWidth={1.5} />
+                </IconButton>
               }
             />
-            <TooltipBox content="Update">
-              <Icon onClick={startRefresh}>
-                <RefreshCw size={16} className={`${refreshing ? "spinning" : ""}`} />
-              </Icon>
-            </TooltipBox>
+            <Tooltip content="Update">
+              <IconButton
+                size="2"
+                loading={refreshing}
+                variant={refreshing ? "soft" : "ghost"}
+                onClick={startRefresh}
+                className="text-[var(--gray-11)] hover:text-[var(--accent-11)]"
+              >
+                <RotateCw size={18} strokeWidth={1.5} />
+              </IconButton>
+            </Tooltip>
           </div>
         </div>
         <div className="px-2 pb-3">
-          <TooltipBox content="Search content" side="right" className="w-full">
-            <NavLink
-              to={RouteConfig.SEARCH}
-              className={({ isActive }) => {
-                return clsx("sidebar-item", isActive ? "sidebar-item--active" : "");
-              }}
-            >
-              <Search size={16} />
-              Search
-            </NavLink>
-          </TooltipBox>
+          <Tooltip content="Search content" side="right">
+            <div>
+              <NavLink
+                to={RouteConfig.SEARCH}
+                className={({ isActive }) => {
+                  return clsx("sidebar-item", isActive ? "sidebar-item--active" : "");
+                }}
+              >
+                <Search size={16} />
+                Search
+              </NavLink>
+            </div>
+          </Tooltip>
           <AddFeedChannel>
             <div className={"sidebar-item"}>
               <PlusCircle size={16} />
               New Subscribe
             </div>
           </AddFeedChannel>
-          <TooltipBox content="Go to settings" side="right" className="w-full">
+          <Tooltip content="Go to settings" side="right">
             {/* <NavLink
               to={RouteConfig.SETTINGS_GENERAL}
               className={({ isActive }) => {
@@ -116,8 +121,8 @@ export function LocalPage() {
               <Settings size={16} />
               Settings
             </div>
-            <SettingDialog></SettingDialog>
-          </TooltipBox>
+          </Tooltip>
+          <SettingDialog></SettingDialog>
         </div>
         <DndProvider backend={HTML5Backend}>
           <ChannelList />

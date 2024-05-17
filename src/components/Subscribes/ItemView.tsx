@@ -6,7 +6,7 @@ import { FeedResItem } from "@/db";
 import { useBearStore } from "@/stores";
 import { getChannelFavicon } from "@/helpers/parseXML";
 import { NiceFolderIcon } from "../NiceFolderIcon";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Avatar } from "@radix-ui/themes";
 
 export interface CardProps {
   uuid: any;
@@ -83,17 +83,12 @@ export const ItemView: FC<CardProps> = ({ uuid, text, feed, index, isExpanded, t
         }}
       >
         {feed.item_type === "folder" && <div>{renderNiceFolder(isActive, isExpanded)}</div>}
-        {feed.link && (
-          <Avatar className="w-5 h-5 rounded-md">
-            <AvatarImage src={ico} alt={feed.title} />
-            <AvatarFallback>{feed.title.slice(0, 1)}</AvatarFallback>
-          </Avatar>
-        )}
+        {feed.link && <Avatar size="1" src={ico} alt={feed.title} fallback={feed.title.slice(0, 1)}></Avatar>}
         <span className={clsx("shrink grow basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-sm")}>
           {feed.title}
         </span>
         {unread > 0 && (
-          <span className={clsx("-mr-1 h-4 min-w-[1rem] text-center text-sm font-medium leading-4")}>{unread}</span>
+          <span className={clsx("h-4 min-w-[1rem] text-center text-sm font-medium leading-4")}>{unread}</span>
         )}
       </div>
       {props.children}

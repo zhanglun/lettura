@@ -1,14 +1,24 @@
 const { fontFamily } = require("tailwindcss/defaultTheme");
+const {
+  blackA,
+  whiteA,
+  violet,
+  mauve,
+  mauveDark,
+  red,
+  gray,
+  grayA,
+  green,
+  indigo,
+  indigoDark,
+} = require("@radix-ui/colors");
+
+console.log("%c Line:13 🍣 indigo", "color:#ed9ec7", indigo);
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ["class", '[data-color-scheme="dark"]'],
-  content: [
-    "./pages/**/*.{ts,tsx}",
-    "./components/**/*.{ts,tsx}",
-    "./app/**/*.{ts,tsx}",
-    "./src/**/*.{ts,tsx}",
-  ],
+  content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
   theme: {
     container: {
       center: true,
@@ -19,26 +29,20 @@ module.exports = {
     },
     colors: ({ colors }) => ({
       ...colors,
-      // canvas: {
-      //   DEFAULT: "red",
-      //   foreground: "green";
-      // }
-
-
-      // "feed-list-bg": "var(--feed-list-bg-color)",
-      // "feed-headline": 'hsl(var(--background))',
-      // "feed-active-bg": "hsl(var(--background))",
-      // "feed-active-headline": "hsl(var(--foreground))",
-
-      // "article-list-bg": "var(--article-list-bg-color)",
-      // "article-headline": "var(--article-headline-color)",
-      // "article-paragraph": "var(--article-paragraph-color)",
-      // "article-active-bg": "hsl(var(--secondary))",
-      // "article-active-headline": "var(--article-active-headline-color)",
-      // "article-active-paragraph": "var(--article-active-paragraph-color)",
     }),
     extend: {
       colors: {
+        ...blackA,
+        ...violet,
+        ...mauve,
+        ...mauveDark,
+        ...whiteA,
+        ...red,
+        ...gray,
+        ...grayA,
+        ...green,
+        ...indigo,
+        ...indigoDark,
         // border: "hsl(var(--border))",
         border: "var(--borderLine)",
         input: "var(--borderLine)",
@@ -63,8 +67,20 @@ module.exports = {
           foreground: "hsl(var(--muted-foreground))",
         },
         accent: {
-          DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
+          DEFAULT: "var(--accent-12))",
+          1: "var(--accent-1)",
+          2: "var(--accent-2)",
+          3: "var(--accent-3)",
+          4: "var(--accent-4)",
+          5: "var(--accent-5)",
+          6: "var(--accent-6)",
+          7: "var(--accent-7)",
+          8: "var(--accent-8)",
+          9: "var(--accent-9)",
+          10: "var(--accent-10)",
+          11: "var(--accent-11)",
+          12: "var(--accent-12)",
         },
         popover: {
           DEFAULT: "hsl(var(--popover))",
@@ -75,26 +91,21 @@ module.exports = {
           foreground: "hsl(var(--card-foreground))",
         },
         canvas: {
-          DEFAULT: "var(--canvasBackground)",
-          foreground: "var(--canvasForeground)",
+          DEFAULT: "var(--gray-3)",
+          foreground: "var(--gray-11)",
         },
         panel: {
-          DEFAULT: "var(--panelBackground)",
-          foreground: "var(--panelForeground)",
+          DEFAULT: "var(--gray-1)",
+          foreground: "var(--gray-11)",
         },
         sidebar: {
-          DEFAULT: "var(--sideItemBackground)",
-          active: "var(--sideItemActiveBackground)",
-          hover: "var(--sideItemHoverBackground)",
-        }
-      },
-      borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+          DEFAULT: "var(--gray-11)",
+          active: "var(--gray-1)",
+          hover: "var(--gray-6)",
+        },
       },
       borderWidth: {
-        DEFAULT: '0.5px',
+        DEFAULT: "0.5px",
       },
       fontFamily: {
         sans: ["var(--font-sans)", ...fontFamily.sans],
@@ -112,13 +123,9 @@ module.exports = {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        'spin-slow': 'spin 2s linear infinite',
+        "spin-slow": "spin 2s linear infinite",
       },
     },
   },
-  plugins: [
-    require("@tailwindcss/line-clamp"),
-    require("@tailwindcss/typography"),
-    require("tailwindcss-animate"),
-  ],
+  plugins: [require("@tailwindcss/line-clamp"), require("@tailwindcss/typography"), require("tailwindcss-animate")],
 };

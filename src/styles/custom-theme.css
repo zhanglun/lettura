@@ -1,3 +1,16 @@
+@import "@radix-ui/colors/gray.css";
+@import "@radix-ui/colors/blue.css";
+@import "@radix-ui/colors/green.css";
+@import "@radix-ui/colors/red.css";
+@import "@radix-ui/colors/gray-dark.css";
+@import "@radix-ui/colors/blue-dark.css";
+@import "@radix-ui/colors/green-dark.css";
+@import "@radix-ui/colors/red-dark.css";
+@import "@radix-ui/colors/mauve.css";
+@import "@radix-ui/colors/mauve-dark.css";
+@import "@radix-ui/colors/indigo.css";
+@import "@radix-ui/colors/indigo-dark.css";
+
 :root[data-color-scheme="luckin"],
 [data-color-scheme="luckin"] {
   --primary: 214 100% 18%;
@@ -13,7 +26,7 @@
   --primary: 350 85% 42%;
 }
 
-:root {
+/* :root {
   --sideItemActiveBackground: rgba(255, 255, 255, 0.6);
   --sideItemHoverBackground: rgba(210, 210, 210, 0.6);
   --borderLine: theme(colors.zinc.200);
@@ -32,4 +45,4 @@
   --canvasForeground: theme(colors.zinc.100);
   --panelBackground: #333;
   --panelForeground: theme(colors.zinc.300);
-}
+} */
