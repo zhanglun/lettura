@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useBearStore } from "@/stores";
 import { CaseSensitive, Baseline, AlignJustify } from "lucide-react";
 import { ValueStep } from "./ValueStep";
+import { Separator } from "@radix-ui/themes";
 
 const FONTSIZE_OPTIONS = Array.from({ length: 12 }).map((_, idx) => {
   return {
@@ -66,8 +67,8 @@ export const CustomizeStyle = (props: CustomizeStyleProps) => {
   }
 
   return (
-    <div className={`w-full max-w-xs bg-detail-bg grid gap-4 ${className}`}>
-      <div className="border border-input rounded-md">
+    <div className={`w-full max-w-xs grid gap-4 ${className}`}>
+      <div className="border-1 rounded">
         {/* <div className="flex justify-between pl-3 border-t -mt-[1px] h-10">
             <Type size={20} strokeWidth={1.5} />
             <span>Typeface</span>
@@ -82,7 +83,7 @@ export const CustomizeStyle = (props: CustomizeStyleProps) => {
             handleCustomizeStyleChange("font_size", option.value);
           }}
         />
-        <div className="w-full h-[1px] bg-input" />
+        <Separator size="4" />
         <ValueStep
           value={cfg.line_height}
           Icon={() => <Baseline />}
@@ -92,7 +93,7 @@ export const CustomizeStyle = (props: CustomizeStyleProps) => {
             handleCustomizeStyleChange("line_height", option.value);
           }}
         />
-        <div className="w-full h-[1px] bg-input" />
+        <Separator size="4" />
         <ValueStep
           value={cfg.line_width}
           Icon={() => <AlignJustify />}

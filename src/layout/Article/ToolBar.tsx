@@ -3,6 +3,7 @@ import { Icon } from "@/components/Icon";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useBearStore } from "@/stores";
 import { TooltipBox } from "@/components/TooltipBox";
+import { IconButton, Tooltip } from "@radix-ui/themes";
 
 export interface NavigatorProps {
   goNext: () => void;
@@ -25,16 +26,30 @@ export const ToolbarItemNavigator = (props: NavigatorProps) => {
 
   return (
     <>
-      <TooltipBox content="Previous article">
-        <Icon disable={!store.hasMorePrev} onClick={handleViewPrevious}>
+      <Tooltip content="Previous article">
+        <IconButton
+          size="2"
+          variant="ghost"
+          color="gray"
+          className="text-[var(--gray-12)]"
+          disabled={!store.hasMorePrev}
+          onClick={handleViewPrevious}
+        >
           <ChevronUp size={16} />
-        </Icon>
-      </TooltipBox>
-      <TooltipBox content="Next article">
-        <Icon disable={!store.hasMoreNext} onClick={handleViewNext}>
+        </IconButton>
+      </Tooltip>
+      <Tooltip content="Next article">
+        <IconButton
+          size="2"
+          variant="ghost"
+          color="gray"
+          className="text-[var(--gray-12)]"
+          disabled={!store.hasMoreNext}
+          onClick={handleViewNext}
+        >
           <ChevronDown size={16} />
-        </Icon>
-      </TooltipBox>
+        </IconButton>
+      </Tooltip>
     </>
   );
 };

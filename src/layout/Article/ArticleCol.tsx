@@ -11,7 +11,7 @@ import { useParams } from "react-router-dom";
 import { ArticleList } from "@/components/ArticleList";
 import { useBearStore } from "@/stores";
 
-import { Filter, CheckCheck, RefreshCw } from "lucide-react";
+import { Filter, CheckCheck, RefreshCw, RotateCw } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,6 +29,7 @@ import { ArticleReadStatus } from "@/typing";
 import { useHotkeys } from "react-hotkeys-hook";
 import { throttle } from "lodash";
 import { ArticleResItem } from "@/db";
+import { Button, IconButton, Select, Tooltip } from "@radix-ui/themes";
 
 export interface ArticleColRefObject {
   goNext: () => void;
@@ -212,7 +213,7 @@ export const ArticleCol = React.memo(
     useHotkeys("Shift+n", goPrev);
 
     return (
-      <div className="shrink-0 basis-[var(--app-article-width)] border-r flex flex-col h-full">
+      <div className="shrink-0 grow-0 w-[var(--app-article-width)] border-r flex flex-col h-full">
         <div className="h-[var(--app-toolbar-height)] grid grid-cols-[auto_1fr] items-center justify-between border-b">
           <div
             className="
@@ -230,42 +231,34 @@ export const ArticleCol = React.memo(
           >
             {store.viewMeta ? store.viewMeta.title : ""}
           </div>
-          <div className={"flex items-center justify-end px-2 space-x-0.5"}>
-            <DropdownMenu>
-              <DropdownMenuTrigger>
-                <TooltipBox content="Filter">
-                  <Icon>
-                    <Filter size={16} />
-                  </Icon>
-                </TooltipBox>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuRadioGroup value={`${store.currentFilter.id}`} onValueChange={changeFilter}>
-                  {store.filterList.map((item) => {
-                    return (
-                      <DropdownMenuRadioItem key={`${item.id}`} value={`${item.id}`}>
-                        {item.title}
-                      </DropdownMenuRadioItem>
-                    );
-                  })}
-                </DropdownMenuRadioGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <TooltipBox content="Mark all as read">
-              <Icon onClick={markAllRead}>
-                <CheckCheck size={16} />
-              </Icon>
-            </TooltipBox>
+          <div className={"flex items-center justify-end px-2 space-x-1"}>
+            <Select.Root defaultValue={`${store.currentFilter.id}`} onValueChange={changeFilter} size="2">
+              <Select.Trigger variant="soft" className="hover:bg-[var(--accent-a3)]" />
+              <Select.Content>
+                {store.filterList.map((item) => {
+                  return (
+                    <Select.Item key={`${item.id}`} value={`${item.id}`}>
+                      {item.title}
+                    </Select.Item>
+                  );
+                })}
+              </Select.Content>
+            </Select.Root>
+            <Tooltip content="Mark all as read">
+              <IconButton onClick={markAllRead} size="2" variant="ghost" color="gray" className="text-[var(--gray-12)]">
+                <CheckCheck size={14} />
+              </IconButton>
+            </Tooltip>
             {!!!isStarred && (
-              <TooltipBox content="Reload feed">
-                <Icon onClick={handleRefresh}>
-                  <RefreshCw size={16} className={`${isSyncing ? "spinning" : "333"}`} />
-                </Icon>
-              </TooltipBox>
+              <Tooltip content="Reload feed">
+                <IconButton onClick={handleRefresh} size="2" variant="ghost" color="gray" className="text-[var(--gray-12)]" loading={isSyncing}>
+                  <RotateCw size={14} />
+                </IconButton>
+              </Tooltip>
             )}
           </div>
         </div>
-        <div className="relative flex-1 overflow-auto" ref={listRef}>
+        <div className="relative flex-1 overflow-auto scrollbar-gutter" ref={listRef}>
           <ArticleList
             articles={articles}
             title={params.name}

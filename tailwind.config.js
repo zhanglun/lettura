@@ -106,6 +106,7 @@ module.exports = {
       },
       borderWidth: {
         DEFAULT: "0.5px",
+        1: "1px",
       },
       fontFamily: {
         sans: ["var(--font-sans)", ...fontFamily.sans],

@@ -71,7 +71,7 @@ export function LocalPage() {
               afterConfirm={getFeedList}
               afterCancel={() => {}}
               trigger={
-                <IconButton variant="ghost" size="2" className="text-[var(--gray-11)] hover:text-[var(--accent-11)]">
+                <IconButton variant="ghost" size="2" color="gray" className="text-[var(--gray-12)]">
                   <FolderPlus size={18} strokeWidth={1.5} />
                 </IconButton>
               }
@@ -82,7 +82,8 @@ export function LocalPage() {
                 loading={refreshing}
                 variant={refreshing ? "soft" : "ghost"}
                 onClick={startRefresh}
-                className="text-[var(--gray-11)] hover:text-[var(--accent-11)]"
+                color="gray"
+                className="text-[var(--gray-12)]"
               >
                 <RotateCw size={18} strokeWidth={1.5} />
               </IconButton>
