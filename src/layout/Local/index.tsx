@@ -38,7 +38,6 @@ export function LocalPage() {
   }));
   const [feedList, setFeedList, getFeedList, refreshing, setRefreshing, done, setDone, startRefresh] = useRefresh();
   const [addFolderDialogStatus, setAddFolderDialogStatus] = useModal();
-  const [editFolderDialogStatus, setEditFolderDialogStatus] = useModal();
 
   useEffect(() => {
     if (store.feed && matched) {
@@ -92,7 +91,7 @@ export function LocalPage() {
         </div>
         <div className="px-2 pb-3">
           <Tooltip content="Search content" side="right">
-            <div>
+            <>
               <NavLink
                 to={RouteConfig.SEARCH}
                 className={({ isActive }) => {
@@ -102,7 +101,7 @@ export function LocalPage() {
                 <Search size={16} />
                 Search
               </NavLink>
-            </div>
+            </>
           </Tooltip>
           <AddFeedChannel>
             <div className={"sidebar-item"}>
@@ -111,17 +110,21 @@ export function LocalPage() {
             </div>
           </AddFeedChannel>
           <Tooltip content="Go to settings" side="right">
-            {/* <NavLink
-              to={RouteConfig.SETTINGS_GENERAL}
-              className={({ isActive }) => {
-                return clsx("sidebar-item", isActive ? "sidebar-item--active" : "");
-              }}
-            >
-            </NavLink> */}
-            <div className="sidebar-item" onClick={() => store.updateSettingDialogStatus(true)}>
+            <>
+              <NavLink
+                to={RouteConfig.SETTINGS_GENERAL}
+                className={({ isActive }) => {
+                  return clsx("sidebar-item", isActive ? "sidebar-item--active" : "");
+                }}
+              >
+                <Settings size={16} />
+                Settings
+              </NavLink>
+            </>
+            {/* <div className="sidebar-item" onClick={() => store.updateSettingDialogStatus(true)}>
               <Settings size={16} />
               Settings
-            </div>
+            </div> */}
           </Tooltip>
           <SettingDialog></SettingDialog>
         </div>

@@ -13,6 +13,12 @@ import { LocalPage } from "./layout/Local";
 import { FreshRSSPage } from "./layout/FreshRSS";
 
 import "./index.css";
+import { SettingPage } from "./layout/Setting";
+import { Appearance } from "./layout/Setting/Appearance";
+import { General } from "./layout/Setting/General";
+import { Shortcut } from "./layout/Setting/ShortCut";
+import { FeedManager } from "./layout/Setting/Content";
+import { ImportAndExport } from "./layout/Setting/ImportAndExport";
 
 const router = createBrowserRouter([
   {
@@ -29,28 +35,28 @@ const router = createBrowserRouter([
         path: "/",
         element: <Navigate to={RouteConfig.LOCAL_TODAY} />,
       },
+      // {
+      //   path: RouteConfig.LOCAL,
+      //   element: <LocalPage />,
+      //   children: [
       {
-        path: RouteConfig.LOCAL,
-        element: <LocalPage />,
-        children: [
-          {
-            path: RouteConfig.LOCAL_TODAY,
-            element: <ArticleContainer />,
-          },
-          {
-            path: RouteConfig.LOCAL_ALL,
-            element: <ArticleContainer />,
-          },
-          {
-            path: RouteConfig.LOCAL_STARRED,
-            element: <ArticleContainer />,
-          },
-          {
-            path: RouteConfig.LOCAL_FEED,
-            element: <ArticleContainer />,
-          },
-        ],
+        path: RouteConfig.LOCAL_TODAY,
+        element: <ArticleContainer />,
       },
+      {
+        path: RouteConfig.LOCAL_ALL,
+        element: <ArticleContainer />,
+      },
+      {
+        path: RouteConfig.LOCAL_STARRED,
+        element: <ArticleContainer />,
+      },
+      {
+        path: RouteConfig.LOCAL_FEED,
+        element: <ArticleContainer />,
+      },
+      //   ],
+      // },
       {
         path: RouteConfig.SERVICE_FRESHRSS,
         element: <FreshRSSPage />,
@@ -59,32 +65,32 @@ const router = createBrowserRouter([
         path: RouteConfig.SEARCH,
         element: <SearchPage />,
       },
-      // {
-      //   path: RouteConfig.SETTINGS,
-      //   element: <SettingPage />,
-      //   children: [
-      //     {
-      //       path: RouteConfig.SETTINGS_GENERAL,
-      //       element: <General />,
-      //     },
-      //     {
-      //       path: RouteConfig.SETTINGS_APPEARANCE,
-      //       element: <Appearance />,
-      //     },
-      //     {
-      //       path: RouteConfig.SETTINGS_SHORTCUT,
-      //       element: <Shortcut />,
-      //     },
-      //     {
-      //       path: RouteConfig.SETTINGS_FEED_MANAGER,
-      //       element: <FeedManager />,
-      //     },
-      //     {
-      //       path: RouteConfig.SETTINGS_IMPORT,
-      //       element: <ImportAndExport />,
-      //     },
-      //   ],
-      // },
+      {
+        path: RouteConfig.SETTINGS,
+        element: <SettingPage />,
+        children: [
+          {
+            path: RouteConfig.SETTINGS_GENERAL,
+            element: <General />,
+          },
+          {
+            path: RouteConfig.SETTINGS_APPEARANCE,
+            element: <Appearance />,
+          },
+          {
+            path: RouteConfig.SETTINGS_SHORTCUT,
+            element: <Shortcut />,
+          },
+          {
+            path: RouteConfig.SETTINGS_FEED_MANAGER,
+            element: <FeedManager />,
+          },
+          {
+            path: RouteConfig.SETTINGS_IMPORT,
+            element: <ImportAndExport />,
+          },
+        ],
+      },
     ],
   },
 ]);

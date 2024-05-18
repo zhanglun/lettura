@@ -4,6 +4,7 @@ import { appWindow } from "@tauri-apps/api/window";
 import { emit, listen } from "@tauri-apps/api/event";
 import { useBearStore } from "@/stores";
 import { CommandPanel } from "./command";
+import { LocalPage } from "./layout/Local";
 
 function App() {
   const store = useBearStore((state) => ({
@@ -61,7 +62,7 @@ function App() {
   return (
     <>
       <div className="h-full max-h-full ">
-        <Outlet />
+        <LocalPage />
       </div>
       <CommandPanel />
     </>

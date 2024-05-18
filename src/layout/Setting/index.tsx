@@ -1,66 +1,52 @@
-import React from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import {
-  ChevronLeft,
-  ChevronLeftCircle,
-  Cog,
-  Database,
-  Keyboard,
-  Palette,
-  Rss,
-} from "lucide-react";
+import { Cog, Database, Keyboard, Palette, Rss } from "lucide-react";
 import { RouteConfig } from "../../config";
 import { Link } from "@/layout/Setting/Link";
-import { Icon } from "@/components/Icon";
+import { Heading } from "@radix-ui/themes";
 
 export function SettingPage() {
   const navigate = useNavigate();
 
-  const goBack = () => {
-    navigate(-1);
-  };
-
   return (
-    <div className="flex-1 max-h-full flex lg:flex-row flex-col bg-canvas">
-      <div className="lg:w-[220px] w-full px-6">
-        <div className="max-w-[640px] m-auto">
-          <h2 className="flex items-center gap-3 text-xl tracking-tight py-10 lg:px-4 group cursor-pointer">
-            <Icon onClick={goBack} className="text-muted-foreground group-hover:text-foreground">
-              <ChevronLeft />
-            </Icon>
+    <div className="flex-1 max-h-full flex lg:flex-row flex-col bg-canvas p-2 pl-0">
+      <div className="bg-panel flex w-full h-full flex-1 overflow-hidden rounded-md border">
+        <div className="lg:w-[220px] w-full px-6">
+          <Heading size="6" className="flex items-center group cursor-pointer pt-6 pb-4 px-2">
             Settings
-          </h2>
-          <nav className="flex space-x-2 lg:flex-col lg:space-x-0 lg:space-y-1">
-            <Link to={RouteConfig.SETTINGS_GENERAL}>
-              <Cog size={16} className="mr-3" />
-              General
-            </Link>
-            <Link to={RouteConfig.SETTINGS_APPEARANCE}>
-              <span className="flex items-center">
-                <Palette size={16} className="mr-3" />
-                Appearance
-              </span>
-            </Link>
-            <Link to={RouteConfig.SETTINGS_SHORTCUT}>
-              <Keyboard size={16} className="mr-3" />
-              Shortcut
-            </Link>
-            <Link to={RouteConfig.SETTINGS_FEED_MANAGER}>
-              <Database size={16} className="mr-3" />
-              Content
-            </Link>
-            <Link to={RouteConfig.SETTINGS_IMPORT}>
-              <span className="flex items-center">
-                <Rss size={16} className="mr-3" />
-                Import/Export
-              </span>
-            </Link>
-          </nav>
+          </Heading>
+          <div className="max-w-[640px] m-auto">
+            <nav className="flex space-x-1 lg:flex-col lg:space-x-0 lg:space-y-1">
+              <Link to={RouteConfig.SETTINGS_GENERAL}>
+                <Cog size={16} className="mr-3" />
+                General
+              </Link>
+              <Link to={RouteConfig.SETTINGS_APPEARANCE}>
+                <span className="flex items-center">
+                  <Palette size={16} className="mr-3" />
+                  Appearance
+                </span>
+              </Link>
+              <Link to={RouteConfig.SETTINGS_SHORTCUT}>
+                <Keyboard size={16} className="mr-3" />
+                Shortcut
+              </Link>
+              <Link to={RouteConfig.SETTINGS_FEED_MANAGER}>
+                <Database size={16} className="mr-3" />
+                Content
+              </Link>
+              <Link to={RouteConfig.SETTINGS_IMPORT}>
+                <span className="flex items-center">
+                  <Rss size={16} className="mr-3" />
+                  Import/Export
+                </span>
+              </Link>
+            </nav>
+          </div>
         </div>
-      </div>
-      <div className="flex-1 pt-16 flex justify-center overflow-auto h-[calc(100vh-theme(margin.4))] m-2 rounded-md bg-panel">
-        <div className="max-w-[640px] w-full">
-          <Outlet />
+        <div className="flex-1 pt-16 flex justify-center overflow-auto h-[calc(100vh-theme(margin.4))] rounded-md ">
+          <div className="max-w-[640px] w-full">
+            <Outlet />
+          </div>
         </div>
       </div>
     </div>
