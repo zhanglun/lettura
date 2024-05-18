@@ -10,8 +10,8 @@ export function SettingPage() {
   return (
     <div className="flex-1 max-h-full flex lg:flex-row flex-col bg-canvas p-2 pl-0">
       <div className="bg-panel flex w-full h-full flex-1 overflow-hidden rounded-md border">
-        <div className="lg:w-[220px] w-full px-6">
-          <Heading size="6" className="flex items-center group cursor-pointer pt-6 pb-4 px-2">
+        <div className="lg:w-[220px] w-full px-5 border-r">
+          <Heading size="6" className="flex items-center group cursor-pointer pt-5 pb-4 px-2">
             Settings
           </Heading>
           <div className="max-w-[640px] m-auto">

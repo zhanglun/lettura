@@ -37,16 +37,22 @@ function App() {
   useEffect(() => {
     store.getUserConfig().then((cfg: UserConfig) => {
       const { color_scheme, customize_style } = cfg;
+      let mode = color_scheme || "light";
 
       if (color_scheme === "system") {
-        document.documentElement.dataset.colorScheme = window.matchMedia(
+        mode = window.matchMedia(
           "(prefers-color-scheme: dark)"
         ).matches
           ? "dark"
           : "light";
-      } else {
-        document.documentElement.dataset.colorScheme = color_scheme;
       }
+
+      if (mode === 'dark') {
+        document.body.classList.add("dark-theme");
+      } else {
+        document.body.classList.remove("dark-theme");
+      }
+
 
       customize_style &&
         Object.keys(customize_style).length &&

@@ -46,8 +46,7 @@ module.exports = {
         // border: "hsl(var(--border))",
         border: "var(--borderLine)",
         input: "var(--borderLine)",
-        ring: "var(--borderLine)",
-        // ring: "hsl(var(--ring))",
+        ring: "var(--accent)",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
