@@ -34,9 +34,9 @@ export const ColorScheme = () => {
       <div>
         <div
           className={clsx(
-            "border rounded-lg h-14 flex cursor-pointer items-center justify-center bg-white text-black dark:outline-none",
+            "border-2 rounded-lg h-14 flex cursor-pointer items-center justify-center bg-white text-black dark:outline-none",
             {
-              "ring-2": store.userConfig.color_scheme === "light",
+              "border-[var(--accent-10)]": store.userConfig.color_scheme === "light",
             }
           )}
           onClick={() => handleThemeChange("light")}
@@ -48,10 +48,10 @@ export const ColorScheme = () => {
       <div>
         <div
           className={clsx(
-            "border border-black rounded-lg h-14 flex cursor-pointer items-center justify-center",
+            "border-2 border-black rounded-lg h-14 flex cursor-pointer items-center justify-center",
             "bg-black text-white",
             {
-              "ring-2": store.userConfig.color_scheme === "dark",
+              "border-[var(--accent-10)]": store.userConfig.color_scheme === "dark",
             }
           )}
           onClick={() => handleThemeChange("dark")}
@@ -63,11 +63,11 @@ export const ColorScheme = () => {
       <div>
         <div
           className={clsx(
-            "border rounded-lg h-14 cursor-pointer",
+            "border-2 rounded-lg h-14 cursor-pointer",
             "bg-gradient-to-br from-white from-50%  via-black via-0% to-black",
             "dark:from-foreground dark:from-50% dark:via-background dark:via-0% dark:to-background",
             {
-              "ring-2": store.userConfig.color_scheme === "system",
+              "border-[var(--accent-10)]": store.userConfig.color_scheme === "system",
             }
           )}
           onClick={() => handleThemeChange("system")}

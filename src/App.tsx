@@ -5,9 +5,11 @@ import { emit, listen } from "@tauri-apps/api/event";
 import { useBearStore } from "@/stores";
 import { CommandPanel } from "./command";
 import { LocalPage } from "./layout/Local";
+import { Theme } from "@radix-ui/themes";
 
 function App() {
   const store = useBearStore((state) => ({
+    userConfig: state.userConfig,
     getUserConfig: state.getUserConfig,
     updateSettingDialogStatus: state.updateSettingDialogStatus,
   }));
@@ -53,7 +55,6 @@ function App() {
         document.body.classList.remove("dark-theme");
       }
 
-
       customize_style &&
         Object.keys(customize_style).length &&
         Object.keys(customize_style).forEach((key: string) => {
@@ -66,12 +67,13 @@ function App() {
   }, []);
 
   return (
-    <>
+    // @ts-ignore
+    <Theme accentColor={store.userConfig.theme || 'indigo'}>
       <div className="h-full max-h-full ">
         <LocalPage />
       </div>
       <CommandPanel />
-    </>
+    </Theme>
   );
 }
 

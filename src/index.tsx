@@ -19,6 +19,7 @@ import { General } from "./layout/Setting/General";
 import { Shortcut } from "./layout/Setting/ShortCut";
 import { FeedManager } from "./layout/Setting/Content";
 import { ImportAndExport } from "./layout/Setting/ImportAndExport";
+import { useBearStore } from "./stores";
 
 const router = createBrowserRouter([
   {

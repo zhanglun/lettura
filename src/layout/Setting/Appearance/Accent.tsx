@@ -5,19 +5,19 @@ import { useState } from "react";
 
 export interface Accent {
   name: string;
-  hsl: string;
+  variable: string;
 }
 
 export const AccentItem = (props: {
   name: string;
-  hsl: string;
+  variable: string;
   active: boolean;
   onClick: (accent: Accent) => void;
 }) => {
-  const { hsl, name, active, onClick } = props;
+  const { variable, name, active, onClick } = props;
 
   return (
-    <div onClick={() => onClick({ name, hsl })}>
+    <div onClick={() => onClick({ name, variable })}>
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger>
@@ -25,7 +25,7 @@ export const AccentItem = (props: {
               className={clsx("w-10 h-10 rounded-full flex items-center justify-center", "border-2", {
                 "shadow-[inset_0px_0px_0_2px_white]": active,
               })}
-              style={{ backgroundColor: `hsl(${hsl})`, borderColor: `hsl(${hsl})` }}
+              style={{ backgroundColor: `${variable}`, borderColor: `${variable}` }}
             >
               <div
                 className={clsx("w-3 h-3 rounded-full", {
@@ -47,20 +47,20 @@ export const AccentItem = (props: {
 export const Accent = () => {
   const ACCENTS = [
     {
-      name: "black",
-      hsl: "0 0% 13%",
+      name: "ruby",
+      variable: 'var(--ruby-10)',
     },
     {
-      name: "luckin",
-      hsl: "214 100% 18%",
+      name: "indigo",
+      variable: 'var(--indigo-10)',
     },
     {
-      name: "starbucks",
-      hsl: "160 100% 22%",
+      name: "tomato",
+      variable: 'var(--tomato-10)',
     },
     {
-      name: "tims",
-      hsl: "350 85% 42%",
+      name: "iris",
+      variable: 'var(--iris-10)',
     },
   ];
 
@@ -69,10 +69,12 @@ export const Accent = () => {
     updateUserConfig: state.updateUserConfig,
   }));
   const [currentTheme, setCurrentTheme] = useState(store.userConfig.theme);
-  const handleClick = (accent: { name: string; hsl: string }) => {
-    const { name, hsl } = accent;
+  const handleClick = (accent: { name: string; variable: string }) => {
+    const { name, variable } = accent;
 
-    document.documentElement.style.setProperty(`--primary`, hsl as string);
+    document.documentElement.style.setProperty(`--primary`, variable as string);
+    document.documentElement.dataset.accent = name;
+
     store.updateUserConfig({
       ...store.userConfig,
       theme: name,
@@ -83,7 +85,7 @@ export const Accent = () => {
 
   return (
     <div className="flex gap-4 items-center">
-      {ACCENTS.map((accent: { name: string; hsl: string }, i) => {
+      {ACCENTS.map((accent: { name: string; variable: string }, i) => {
         return <AccentItem {...accent} active={accent.name === currentTheme} onClick={handleClick} key={i} />;
       })}
     </div>
