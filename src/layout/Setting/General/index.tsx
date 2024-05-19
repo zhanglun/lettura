@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
 import * as dataAgent from "../../../helpers/dataAgent";
 import { Panel, PanelSection } from "../Panel";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useBearStore } from "@/stores";
-import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
+import { TextField, Select, Switch } from "@radix-ui/themes";
 
 const intervalOptions = [
   {
@@ -27,6 +25,37 @@ const intervalOptions = [
   {
     value: 24,
     label: "24 hours",
+  },
+];
+
+const purgeOptions = [
+  {
+    value: 0,
+    label: "Never",
+  },
+  {
+    value: 1,
+    label: "today",
+  },
+  {
+    value: 7,
+    label: "one week",
+  },
+  {
+    value: 14,
+    label: "two weeks",
+  },
+  {
+    value: 30,
+    label: "a month",
+  },
+  {
+    value: 180,
+    label: "six month",
+  },
+  {
+    value: 360,
+    label: "one year",
   },
 ];
 
@@ -55,21 +84,15 @@ export const General = () => {
 
   const handleLocalProxyChange = (key: string, val: string) => {
     const cfg = Object.assign(
-      { ...localProxyConfig },
+      { ...store.userConfig.local_proxy },
       {
         [key]: val,
       }
-    );
+    ) as LocalProxy;
 
-    setLocalProxyConfig(cfg);
-    handleSaveLocalProxy(cfg);
-  };
-
-  const handleThreadsChange = (val: number) => {
-    setThreads(val);
-
-    dataAgent.updateThreads(val).then((res) => {
-      console.log("res ===>", res);
+    store.updateUserConfig({
+      ...store.userConfig,
+      local_proxy: cfg,
     });
   };
 
@@ -82,103 +105,91 @@ export const General = () => {
     });
   };
 
-  useEffect(() => {
-    dataAgent.getUserConfig().then(({ data: cfg }) => {
-      console.log("update use config", cfg);
-
-      const { local_proxy, threads, update_interval } = cfg as UserConfig;
-
-      if (local_proxy) {
-        setLocalProxyConfig({
-          protocol: local_proxy.protocol,
-          ip: local_proxy.ip,
-          port: local_proxy.port,
-        });
-      }
-
-      if (threads) {
-        setThreads(threads);
-      }
-
-      if (update_interval) {
-        setUpdateInterval(update_interval);
-      }
-    });
-  }, []);
-
   return (
     <Panel title="General">
       <PanelSection title="Proxy" subTitle="use a proxy server for connection">
         <div className="grid gap-1 grid-cols-[120px_10px_60px] items-center">
-          <Input
+          <TextField.Root
             type="text"
-            value={localProxyConfig.ip}
+            value={store.userConfig.local_proxy?.ip}
             className="tracking-wide"
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleLocalProxyChange("ip", e.target.value)}
           />
           <span className="text-center">:</span>
-          <Input
+          <TextField.Root
             type="text"
             className="tracking-wide"
-            value={localProxyConfig.port}
+            value={store.userConfig.local_proxy?.port}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleLocalProxyChange("port", e.target.value)}
           />
         </div>
       </PanelSection>
       <Separator className="mt-6" />
       <PanelSection title="Update Interval (WIP)" subTitle="set the update interval">
-        <Select
+        <Select.Root
           value={updateInterval.toString()}
           onValueChange={(v: string) => handleUpdateIntervalChange(parseInt(v, 10))}
         >
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Change update interval" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
+          <Select.Trigger />
+          <Select.Content>
+            <Select.Group>
               {intervalOptions.map((opt) => {
                 return (
-                  <SelectItem key={opt.value} value={opt.value.toString()}>
+                  <Select.Item key={opt.value} value={opt.value.toString()}>
                     {opt.label}
-                  </SelectItem>
+                  </Select.Item>
                 );
               })}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+            </Select.Group>
+          </Select.Content>
+        </Select.Root>
       </PanelSection>
       <Separator className="mt-6" />
       <PanelSection title="Thread" subTitle="set the concurrent number of requests (from 1 to 5)">
-        <Input
-          className="w-[200px]"
-          type="number"
-          step={1}
-          min={1}
-          max={5}
-          value={threads}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            handleThreadsChange(parseInt(e.target.value, 10) as unknown as number)
-          }
-        />
+        <Select.Root
+          value={store.userConfig.threads?.toString()}
+          onValueChange={(v: string) => {
+            store.updateUserConfig({
+              ...store.userConfig,
+              threads: parseInt(v, 10),
+            });
+          }}
+        >
+          <Select.Trigger />
+          <Select.Content>
+            {[1, 2, 3, 4, 5].map((opt) => {
+              return (
+                <Select.Item key={opt} value={opt.toString()}>
+                  {opt}
+                </Select.Item>
+              );
+            })}
+          </Select.Content>
+        </Select.Root>
       </PanelSection>
       <Separator className="mt-6" />
-      <PanelSection title="Purge articles older than" subTitle="save your disk (0 disables)">
+      <PanelSection title="Purge articles older than" subTitle="save your disk">
         <div className="flex items-center gap-2">
-          <Input
-            className="w-[200px]"
-            type="number"
-            step={1}
-            min={0}
-            max={1825}
-            value={store.userConfig.purge_on_days}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+          <Select.Root
+            value={store.userConfig.purge_on_days?.toString()}
+            onValueChange={(v: string) =>
               store.updateUserConfig({
                 ...store.userConfig,
-                purge_on_days: parseInt(e.target.value, 10) as unknown as number,
-              });
-            }}
-          />
-          <span>days</span>
+                purge_on_days: parseInt(v, 10),
+              })
+            }
+          >
+            <Select.Trigger />
+            <Select.Content>
+              {purgeOptions.map((opt) => {
+                return (
+                  <Select.Item key={opt.value} value={opt.value.toString()}>
+                    {opt.label}
+                  </Select.Item>
+                );
+              })}
+            </Select.Content>
+          </Select.Root>
         </div>
       </PanelSection>
       <Separator className="mt-6" />

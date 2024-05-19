@@ -3,7 +3,6 @@ import { createRoot } from "react-dom/client";
 import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
 
 import reportWebVitals from "./reportWebVitals";
-import { Toaster } from "./components/ui/sonner";
 import App from "./App";
 import ErrorPage from "./ErrorPage";
 import { RouteConfig } from "./config";
@@ -24,12 +23,7 @@ import { useBearStore } from "./stores";
 const router = createBrowserRouter([
   {
     path: "/",
-    element: (
-      <>
-        <Toaster />
-        <App />
-      </>
-    ),
+    element: <App />,
     errorElement: <ErrorPage />,
     children: [
       {
@@ -98,11 +92,7 @@ const router = createBrowserRouter([
 const domNode = document.getElementById("root") as HTMLElement;
 const root = createRoot(domNode);
 
-root.render(
-  <Theme className="w-full h-full" panelBackground="translucent" accentColor="indigo" grayColor="gray">
-    <RouterProvider router={router} />
-  </Theme>
-);
+root.render(<RouterProvider router={router} />);
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

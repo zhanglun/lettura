@@ -6,6 +6,7 @@ import { useBearStore } from "@/stores";
 import { CommandPanel } from "./command";
 import { LocalPage } from "./layout/Local";
 import { Theme } from "@radix-ui/themes";
+import { Toaster } from "sonner";
 
 function App() {
   const store = useBearStore((state) => ({
@@ -25,15 +26,9 @@ function App() {
   }, []);
 
   useEffect(() => {
-    document
-      .getElementById("titlebar-minimize")
-      ?.addEventListener("click", () => appWindow.minimize());
-    document
-      .getElementById("titlebar-maximize")
-      ?.addEventListener("click", () => appWindow.toggleMaximize());
-    document
-      .getElementById("titlebar-close")
-      ?.addEventListener("click", () => appWindow.close());
+    document.getElementById("titlebar-minimize")?.addEventListener("click", () => appWindow.minimize());
+    document.getElementById("titlebar-maximize")?.addEventListener("click", () => appWindow.toggleMaximize());
+    document.getElementById("titlebar-close")?.addEventListener("click", () => appWindow.close());
   }, []);
 
   useEffect(() => {
@@ -42,14 +37,10 @@ function App() {
       let mode = color_scheme || "light";
 
       if (color_scheme === "system") {
-        mode = window.matchMedia(
-          "(prefers-color-scheme: dark)"
-        ).matches
-          ? "dark"
-          : "light";
+        mode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
       }
 
-      if (mode === 'dark') {
+      if (mode === "dark") {
         document.body.classList.add("dark-theme");
       } else {
         document.body.classList.remove("dark-theme");
@@ -67,12 +58,17 @@ function App() {
   }, []);
 
   return (
-    // @ts-ignore
-    <Theme accentColor={store.userConfig.theme || 'indigo'}>
+    <Theme
+      className="w-[100vw] h-[100vh]"
+      // @ts-ignore
+      accentColor={store.userConfig.theme || "indigo"}
+      panelBackground="translucent"
+    >
       <div className="h-full max-h-full ">
         <LocalPage />
       </div>
       <CommandPanel />
+      <Toaster />
     </Theme>
   );
 }
