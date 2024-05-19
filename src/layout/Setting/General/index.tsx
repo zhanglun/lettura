@@ -1,9 +1,6 @@
-import React, { useEffect, useState } from "react";
-import * as dataAgent from "../../../helpers/dataAgent";
 import { Panel, PanelSection } from "../Panel";
 import { useBearStore } from "@/stores";
-import { Separator } from "@/components/ui/separator";
-import { TextField, Select, Switch } from "@radix-ui/themes";
+import { TextField, Select, Switch, Separator } from "@radix-ui/themes";
 
 const intervalOptions = [
   {
@@ -64,23 +61,6 @@ export const General = () => {
     userConfig: state.userConfig,
     updateUserConfig: state.updateUserConfig,
   }));
-  const [localProxyConfig, setLocalProxyConfig] = useState<LocalProxy>({
-    protocol: "",
-    ip: "",
-    port: "",
-  });
-  const [threads, setThreads] = useState<number>(1);
-  const [updateInterval, setUpdateInterval] = useState<number>(0);
-
-  const handleSaveLocalProxy = (cfg: LocalProxy) => {
-    dataAgent
-      .updateProxy({
-        ...cfg,
-      })
-      .then((res) => {
-        console.log("%c Line:57 🥤 res", "color:#3f7cff", res);
-      });
-  };
 
   const handleLocalProxyChange = (key: string, val: string) => {
     const cfg = Object.assign(
@@ -93,15 +73,6 @@ export const General = () => {
     store.updateUserConfig({
       ...store.userConfig,
       local_proxy: cfg,
-    });
-  };
-
-  const handleUpdateIntervalChange = (val: number) => {
-    setUpdateInterval(val);
-
-    store.updateUserConfig({
-      ...store.userConfig,
-      update_interval: val,
     });
   };
 
@@ -124,11 +95,16 @@ export const General = () => {
           />
         </div>
       </PanelSection>
-      <Separator className="mt-6" />
+      <Separator className="mt-6" size="4" />
       <PanelSection title="Update Interval (WIP)" subTitle="set the update interval">
         <Select.Root
-          value={updateInterval.toString()}
-          onValueChange={(v: string) => handleUpdateIntervalChange(parseInt(v, 10))}
+          value={store.userConfig.update_interval?.toString()}
+          onValueChange={(v: string) => {
+            store.updateUserConfig({
+              ...store.userConfig,
+              update_interval: parseInt(v, 10),
+            });
+          }}
         >
           <Select.Trigger />
           <Select.Content>
@@ -144,7 +120,7 @@ export const General = () => {
           </Select.Content>
         </Select.Root>
       </PanelSection>
-      <Separator className="mt-6" />
+      <Separator className="mt-6" size="4" />
       <PanelSection title="Thread" subTitle="set the concurrent number of requests (from 1 to 5)">
         <Select.Root
           value={store.userConfig.threads?.toString()}
@@ -167,7 +143,7 @@ export const General = () => {
           </Select.Content>
         </Select.Root>
       </PanelSection>
-      <Separator className="mt-6" />
+      <Separator className="mt-6" size="4" />
       <PanelSection title="Purge articles older than" subTitle="save your disk">
         <div className="flex items-center gap-2">
           <Select.Root
@@ -192,7 +168,7 @@ export const General = () => {
           </Select.Root>
         </div>
       </PanelSection>
-      <Separator className="mt-6" />
+      <Separator className="mt-6" size="4" />
       <PanelSection title="Purge unread articles">
         <div>
           <Switch

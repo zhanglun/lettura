@@ -2,13 +2,12 @@ import React, { useRef, useState } from "react";
 import * as dataAgent from "@/helpers/dataAgent";
 import { promisePool } from "@/helpers/promisePool";
 import { Panel, PanelSection } from "../Panel";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { Channel, FeedResItem } from "@/db";
 import { writeTextFile } from "@tauri-apps/api/fs";
 import { save } from "@tauri-apps/api/dialog";
 import { busChannel } from "@/helpers/busChannel";
+import { Button } from "@radix-ui/themes";
 
 export interface ImportItem {
   title: string;
@@ -182,7 +181,7 @@ export const ImportAndExport = (props: any) => {
     <Panel title="Import/Export">
       <PanelSection title="OPML Import">
         <div className="flex w-full max-w-sm items-center space-x-2">
-          <Input
+          <input
             ref={fileInputRef}
             type="file"
             accept=".opml,.xml"

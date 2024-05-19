@@ -1,7 +1,6 @@
 import React from "react";
-import { Separator } from "@/components/ui/separator";
 import clsx from "clsx";
-import { Heading } from "@radix-ui/themes";
+import { Heading, Separator } from "@radix-ui/themes";
 
 declare const ORIENTATIONS: readonly ["horizontal", "vertical"];
 type Orientation = typeof ORIENTATIONS[number];
@@ -21,7 +20,7 @@ export const Panel = (props: PanelProps) => {
         <Heading size="6" weight="medium">{title}</Heading>
         {subTitle && <p className="text-sm mb-3 mt-2 text-[var(--gray-11)]">{subTitle}</p>}
       </div>
-      <Separator className="mt-5" />
+      <Separator className="mt-5" size="4" />
       <div className="space-y-5">{children}</div>
     </div>
   );
