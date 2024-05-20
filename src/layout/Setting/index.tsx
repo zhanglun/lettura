@@ -43,8 +43,8 @@ export function SettingPage() {
             </nav>
           </div>
         </div>
-        <div className="flex-1 pt-16 flex justify-center overflow-auto h-[calc(100vh-theme(margin.4))] rounded-md lg:px-0 px-5">
-          <div className="max-w-[640px] w-full">
+        <div className="flex-1 pt-16 flex justify-center overflow-auto rounded-md px-5">
+          <div className="max-w-[980px] w-full">
             <Outlet />
           </div>
         </div>

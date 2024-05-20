@@ -65,12 +65,13 @@ export const FolderList = () => {
   ];
 
   const getFolderList = () => {
-    dataAgent.getFolders().then((res) => {
-      setFolderList(res || []);
+    dataAgent.getFolders().then(({ data }) => {
+      setFolderList(data || []);
     });
   };
 
   useEffect(() => {
+    console.log('folder effect')
     getFolderList();
   }, []);
 

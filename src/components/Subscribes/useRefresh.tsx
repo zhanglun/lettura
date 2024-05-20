@@ -95,21 +95,21 @@ export const useRefresh = () => {
       return ;
     }
 
-    if (!store.userConfig.last_sync_time) {
-      startRefresh();
-    }
+    // if (!store.userConfig.last_sync_time) {
+    //   startRefresh();
+    // }
 
-    if (
-      store.userConfig.update_interval &&
-      store.userConfig.last_sync_time &&
-      new Date().getTime() -
-        new Date(store.userConfig.last_sync_time).getTime() >
-        store.userConfig.update_interval * 60 * 60 * 1000
-    ) {
-      startRefresh();
-    }
+    // if (
+    //   store.userConfig.update_interval &&
+    //   store.userConfig.last_sync_time &&
+    //   new Date().getTime() -
+    //     new Date(store.userConfig.last_sync_time).getTime() >
+    //     store.userConfig.update_interval * 60 * 60 * 1000
+    // ) {
+    //   startRefresh();
+    // }
 
-    loop();
+    // loop();
 
     return () => {
       clearTimeout(timeRef.current);

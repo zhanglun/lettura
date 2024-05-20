@@ -2,12 +2,11 @@
 
 import { X, Frown, Laugh, FolderIcon } from "lucide-react";
 import { Table } from "@tanstack/react-table";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import * as dataAgent from "@/helpers/dataAgent";
 import { DataTableFacetedFilter } from "./DataTableFacetedFilter";
 import { useEffect, useState } from "react";
 import { Folder } from "@/db";
+import { TextField, Button } from "@radix-ui/themes";
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
@@ -33,8 +32,8 @@ export function DataTableToolbar<TData>({
   const [folderList, setFolderList] = useState<Folder[]>([]);
 
   const getFolderList = () => {
-    dataAgent.getFolders().then((res) => {
-      setFolderList(res || []);
+    dataAgent.getFolders().then(({ data }) => {
+      setFolderList(data || []);
     });
   };
 
@@ -45,7 +44,7 @@ export function DataTableToolbar<TData>({
   return (
     <div className="flex items-center justify-between">
       <div className="flex flex-1 items-center space-x-2">
-        <Input
+        <TextField.Root
           placeholder="Filter feeds..."
           value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>

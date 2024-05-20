@@ -145,13 +145,6 @@ export const Feed = () => {
     }),
   ];
 
-  const handleSearch = (v: string) => {
-    setFilterParams({
-      ...filterParams,
-      searchText: v,
-    });
-  };
-
   const getList = async (params = {}) => {
     dataAgent.getChannels(params).then(({ data }) => {
       console.log("%c Line:157 🍢 data", "color:#3f7cff", data);
@@ -186,7 +179,7 @@ export const Feed = () => {
   }, []);
 
   return (
-    <div className="pt-2">
+    <div className="">
       <DataTable
         // @ts-ignore
         columns={columns}
