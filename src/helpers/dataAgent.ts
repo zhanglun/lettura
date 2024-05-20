@@ -28,8 +28,8 @@ export const updateFolder = async (
   return invoke("update_folder", { uuid, name });
 };
 
-export const getFolders = async (): Promise<Folder[]> => {
-  return invoke("get_folders");
+export const getFolders = async ():  Promise<AxiosResponse<Folder[]>> => {
+  return request.get("folders", {});
 };
 
 export const updateFeedSort = async (
