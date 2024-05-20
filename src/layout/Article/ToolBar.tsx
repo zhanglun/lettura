@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import { Icon } from "@/components/Icon";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useBearStore } from "@/stores";
-import { TooltipBox } from "@/components/TooltipBox";
 import { IconButton, Tooltip } from "@radix-ui/themes";
 
 export interface NavigatorProps {
