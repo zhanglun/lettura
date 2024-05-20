@@ -8,7 +8,6 @@ import { Icon } from "../Icon";
 import { ArrowLeft, Loader2, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { useBearStore } from "@/stores";
-// import { Kbd } from "@/components/Kbd";
 
 export const AddFeedChannel = (props: any) => {
   const store = useBearStore((state) => ({

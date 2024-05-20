@@ -23,13 +23,6 @@ export const ImportAndExport = (props: any) => {
   const [importedList, setImportedList] = useState<ImportItem[]>([]);
   const [done, setDone] = useState(0);
 
-  const uploadOPMLFile = () => {
-    if (fileInputRef?.current) {
-      console.log("fileInputRef", fileInputRef);
-      fileInputRef.current.click();
-    }
-  };
-
   const parserOPML = (source: string): ImportItem[] => {
     const parser = new DOMParser();
     const resultDOM = parser.parseFromString(source, "application/xml");
@@ -37,11 +30,9 @@ export const ImportAndExport = (props: any) => {
 
     return Array.from($outlines)
       .map(($item: Element) => {
-        const title =
-          $item.getAttribute("title") || $item.getAttribute("text") || "";
+        const title = $item.getAttribute("title") || $item.getAttribute("text") || "";
         const feed_url = $item.getAttribute("xmlUrl") || "";
-        const link =
-          $item.getAttribute("htmlUrl") || new URL(feed_url).origin || "";
+        const link = $item.getAttribute("htmlUrl") || new URL(feed_url).origin || "";
 
         return {
           title,
@@ -180,15 +171,22 @@ export const ImportAndExport = (props: any) => {
   return (
     <Panel title="Import/Export">
       <PanelSection title="OPML Import">
-        <div className="flex w-full max-w-sm items-center space-x-2">
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".opml,.xml"
-            onChange={(e) => {
-              handleFileChange(e);
-            }}
-          />
+        <div className="flex w-full items-center space-x-2">
+          <div className="border-dashed border-3 rounded relative min-w-[360px] h-[34px] transition-all hover:border-[var(--gray-10)]">
+            <label htmlFor="uploadInput" className="block text-center leading-7 text-sm font-medium cursor-pointer">
+              {file ? file.name : "Browse file"}
+            </label>
+            <input
+              id="uploadInput"
+              hidden
+              ref={fileInputRef}
+              type="file"
+              accept=".opml,.xml"
+              onChange={(e) => {
+                handleFileChange(e);
+              }}
+            />
+          </div>
           <Button onClick={importFromOPML} disabled={importing || !file}>
             Import
             <>{importing ? `${done}/${importedList.length}` : ""}</>

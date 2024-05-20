@@ -8,14 +8,14 @@ export function SettingPage() {
   const navigate = useNavigate();
 
   return (
-    <div className="flex-1 max-h-full flex lg:flex-row flex-col bg-canvas p-2 pl-0">
+    <div className="flex-1 max-h-full flex flex-row bg-canvas p-2 pl-0">
       <div className="bg-panel flex w-full h-full flex-1 overflow-hidden rounded-md border">
-        <div className="lg:w-[220px] w-full px-5 border-r">
+        <div className="w-[220px] px-5 border-r">
           <Heading size="6" className="flex items-center group cursor-pointer pt-5 pb-4 px-2">
             Settings
           </Heading>
           <div className="max-w-[640px] m-auto">
-            <nav className="flex space-x-1 lg:flex-col lg:space-x-0 lg:space-y-1">
+            <nav className="flex flex-col space-x-0 space-y-1">
               <Link to={RouteConfig.SETTINGS_GENERAL}>
                 <Cog size={16} className="mr-3" />
                 General
@@ -43,7 +43,7 @@ export function SettingPage() {
             </nav>
           </div>
         </div>
-        <div className="flex-1 pt-16 flex justify-center overflow-auto h-[calc(100vh-theme(margin.4))] rounded-md ">
+        <div className="flex-1 pt-16 flex justify-center overflow-auto h-[calc(100vh-theme(margin.4))] rounded-md lg:px-0 px-5">
           <div className="max-w-[640px] w-full">
             <Outlet />
           </div>
