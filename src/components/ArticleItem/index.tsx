@@ -65,7 +65,7 @@ export const ArticleItem = React.forwardRef((props: { article: ArticleResItem },
           <Avatar
             size="1"
             src={getChannelFavicon(article.feed_url)}
-            fallback={article.feed_title.slice(0, 1) || "L"}
+            fallback={article.feed_title?.slice(0, 1) || "L"}
             alt={article.feed_title}
             className="rounded w-5 h-5"
           />

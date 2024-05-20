@@ -4,7 +4,7 @@ declare module "*.css" {
 }
 
 declare interface LocalProxy {
-  protocol: "";
+  protocol: string;
   ip: string;
   port: string;
 }

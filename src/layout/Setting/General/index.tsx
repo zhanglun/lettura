@@ -1,6 +1,7 @@
 import { Panel, PanelSection } from "../Panel";
 import { useBearStore } from "@/stores";
 import { TextField, Select, Switch, Separator } from "@radix-ui/themes";
+import { useEffect, useState } from "react";
 
 const intervalOptions = [
   {
@@ -62,19 +63,30 @@ export const General = () => {
     updateUserConfig: state.updateUserConfig,
   }));
 
-  const handleLocalProxyChange = (key: string, val: string) => {
-    const cfg = Object.assign(
-      { ...store.userConfig.local_proxy },
-      {
-        [key]: val,
-      }
-    ) as LocalProxy;
+  const [localProxy, setLocalProxy] = useState({} as LocalProxy);
 
-    store.updateUserConfig({
-      ...store.userConfig,
-      local_proxy: cfg,
-    });
+  console.log("%c Line:67 🥥 store.userConfig.local_proxy", "color:#fca650", store.userConfig.local_proxy);
+
+  const handleLocalProxyChange = (key: string, val: string) => {
+    const p = {
+      ...localProxy,
+      ...{
+        [key]: val,
+      },
+    };
+    setLocalProxy(p);
+
+    if (p.ip && p.port) {
+      store.updateUserConfig({
+        ...store.userConfig,
+        local_proxy: p,
+      });
+    }
   };
+
+  useEffect(() => {
+    setLocalProxy(store.userConfig.local_proxy || {} as LocalProxy);
+  }, [store.userConfig]);
 
   return (
     <Panel title="General">
@@ -82,7 +94,7 @@ export const General = () => {
         <div className="grid gap-1 grid-cols-[120px_10px_60px] items-center">
           <TextField.Root
             type="text"
-            value={store.userConfig.local_proxy?.ip}
+            value={localProxy.ip}
             className="tracking-wide"
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleLocalProxyChange("ip", e.target.value)}
           />
@@ -90,7 +102,7 @@ export const General = () => {
           <TextField.Root
             type="text"
             className="tracking-wide"
-            value={store.userConfig.local_proxy?.port}
+            value={localProxy.port}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleLocalProxyChange("port", e.target.value)}
           />
         </div>

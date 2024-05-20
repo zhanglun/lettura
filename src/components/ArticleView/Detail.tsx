@@ -162,7 +162,7 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
               radius="full"
               className="w-8 h-8"
               src={store.feed?.logo || ico}
-              fallback={article.feed_title.slice(0, 1)}
+              fallback={article.feed_title?.slice(0, 1)}
             ></Avatar>
             <span className="text-[var(--gray-11)]">{article.feed_title}</span>
           </div>
