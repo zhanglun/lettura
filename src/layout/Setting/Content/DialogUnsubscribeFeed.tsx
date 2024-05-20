@@ -1,19 +1,9 @@
 import React, { useState } from "react";
-import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
+import { AlertDialog, Button, Flex } from "@radix-ui/themes";
 import { FeedResItem } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
 import { busChannel } from "@/helpers/busChannel";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 
 export interface DialogProps {
   feed: FeedResItem | null;
@@ -25,15 +15,7 @@ export interface DialogProps {
 }
 
 export const DialogUnsubscribeFeed = React.memo((props: DialogProps) => {
-  const { toast } = useToast();
-  const {
-    feed,
-    dialogStatus,
-    setDialogStatus,
-    afterConfirm,
-    afterCancel,
-    trigger,
-  } = props;
+  const { feed, dialogStatus, setDialogStatus, afterConfirm, afterCancel, trigger } = props;
 
   const confirmUnsubscribe = () => {
     if (feed?.uuid) {
@@ -45,9 +27,7 @@ export const DialogUnsubscribeFeed = React.memo((props: DialogProps) => {
           setDialogStatus(false);
         })
         .catch((err) => {
-          toast({
-            variant: "destructive",
-            title: "Ops! Something wrong~",
+          toast.error("Ops! Something wrong~", {
             description: err.message,
             duration: 2000,
           });
@@ -60,31 +40,24 @@ export const DialogUnsubscribeFeed = React.memo((props: DialogProps) => {
   };
 
   return (
-    <AlertDialog open={dialogStatus} onOpenChange={setDialogStatus}>
-      {trigger && <AlertDialogTrigger>{trigger}</AlertDialogTrigger>}
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-          <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete the data
-            relates with
-            {feed && (
-              <span className="text-primary font-bold ml-1">{feed?.title}</span>
-            )}
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel onClick={() => handleCancel()}>
-            Cancel
-          </AlertDialogCancel>
+    <AlertDialog.Root open={dialogStatus} onOpenChange={setDialogStatus}>
+      {trigger && <AlertDialog.Trigger>{trigger}</AlertDialog.Trigger>}
+      <AlertDialog.Content>
+        <AlertDialog.Title>Are you absolutely sure?</AlertDialog.Title>
+        <AlertDialog.Description>
+          This action cannot be undone. This will permanently delete the data relates with
+          {feed && <span className="text-primary font-bold ml-1">{feed?.title}</span>}
+        </AlertDialog.Description>
+        <Flex gap="3" mt="4" justify="end">
+          <AlertDialog.Cancel onClick={() => handleCancel()}>Cancel</AlertDialog.Cancel>
           <Button
             className="text-destructive-foreground bg-destructive hover:bg-[hsl(var(--destructive)/0.9)]"
             onClick={() => confirmUnsubscribe()}
           >
             Unsubscribe
           </Button>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+        </Flex>
+      </AlertDialog.Content>
+    </AlertDialog.Root>
   );
 });

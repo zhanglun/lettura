@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useState } from "react";
 import { Panel } from "../Panel";
 import { Feed } from "./Feed";
 import { FolderList } from "./FolderList";

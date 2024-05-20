@@ -11,18 +11,12 @@ import { getChannelFavicon } from "@/helpers/parseXML";
 import { DialogUnsubscribeFeed } from "./DialogUnsubscribeFeed";
 import { useModal } from "@/components/Modal/useModal";
 import { Icon } from "@/components/Icon";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
+import { HoverCard } from "@radix-ui/themes";
 
 export const Feed = () => {
   const [list, setList] = useState<(Channel & { parent_uuid: String })[]>([]);
   const [showStatus, setModalStatus] = useModal();
-  const [renderList, setRenderList] = useState<
-    (Channel & { parent_uuid: String })[]
-  >([]);
+  const [renderList, setRenderList] = useState<(Channel & { parent_uuid: String })[]>([]);
   const [filterParams, setFilterParams] = useState<{
     searchText?: string;
     folderUuid?: string;
@@ -47,17 +41,8 @@ export const Feed = () => {
         return (
           <div>
             <div className="flex items-center">
-              <img
-                src={getChannelFavicon(link)}
-                alt=""
-                className="w-6 h-6 rounded-full mr-2"
-              />
-              <a
-                className="font-bold hover:underline"
-                href={link}
-                target={"_blank"}
-                rel="noreferrer"
-              >
+              <img src={getChannelFavicon(link)} alt="" className="w-6 h-6 rounded-full mr-2" />
+              <a className="font-bold hover:underline" href={link} target={"_blank"} rel="noreferrer">
                 {title}
               </a>
             </div>
@@ -74,8 +59,7 @@ export const Feed = () => {
           <>
             {props.row.original.folder_name && (
               <div className="flex space-x-2 items-center">
-                <FolderIcon size={16} />{" "}
-                <span>{props.row.original.folder_name}</span>
+                <FolderIcon size={16} /> <span>{props.row.original.folder_name}</span>
               </div>
             )}
           </>
@@ -90,18 +74,16 @@ export const Feed = () => {
 
         return (
           <div className="flex justify-center">
-            {health_status === 0 && (
-              <div className="w-3 h-3 rounded-full bg-green-600" />
-            )}
+            {health_status === 0 && <div className="w-3 h-3 rounded-full bg-green-600" />}
             {health_status === 1 && (
-              <HoverCard>
-                <HoverCardTrigger>
+              <HoverCard.Root>
+                <HoverCard.Trigger>
                   <div className="w-3 h-3 rounded-full bg-red-600" />
-                </HoverCardTrigger>
-                <HoverCardContent>
+                </HoverCard.Trigger>
+                <HoverCard.Content>
                   <p>{failure_reason}</p>
-                </HoverCardContent>
-              </HoverCard>
+                </HoverCard.Content>
+              </HoverCard.Root>
             )}
           </div>
         );
@@ -127,16 +109,10 @@ export const Feed = () => {
       cell(props: CellContext<Channel, string>): JSX.Element {
         return (
           <div className="flex space-x-1">
-            <Icon
-              className="w-6 h-6"
-              onClick={() => open(props.row.original.feed_url)}
-            >
+            <Icon className="w-6 h-6" onClick={() => open(props.row.original.feed_url)}>
               <Rss size={14} />
             </Icon>
-            <Icon
-              className="w-6 h-6"
-              onClick={() => handleUnSubscribe(props.row.original)}
-            >
+            <Icon className="w-6 h-6" onClick={() => handleUnSubscribe(props.row.original)}>
               <Trash2 size={14} />
             </Icon>
           </div>
@@ -157,8 +133,7 @@ export const Feed = () => {
     const { searchText = "", folderUuid = "" } = filterParams;
     const result = list.filter((item) => {
       return (
-        (item.title.indexOf(searchText) > -1 ||
-          item.feed_url.indexOf(searchText) > -1) &&
+        (item.title.indexOf(searchText) > -1 || item.feed_url.indexOf(searchText) > -1) &&
         item.parent_uuid === folderUuid
       );
     });

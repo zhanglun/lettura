@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { ArticleItem } from "../ArticleItem";
-import { Skeleton } from "../ui/skeleton";
+import { Skeleton } from "@radix-ui/themes";
 import { useIntersectionObserver } from "./useIntersectionObserver";
 import { ArticleResItem } from "@/db";
 import { Snail } from "lucide-react";

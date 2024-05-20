@@ -3,7 +3,6 @@ import * as dataAgent from "../../helpers/dataAgent";
 import { Folder, Folder as Folder2, Loader2 } from "lucide-react";
 import { FeedResItem } from "@/db";
 import { useBearStore } from "@/stores";
-import { DialogHeader } from "@/components/ui/dialog";
 import { Dialog, TextField, Tooltip, Button } from "@radix-ui/themes";
 
 export interface AddFolderProps {

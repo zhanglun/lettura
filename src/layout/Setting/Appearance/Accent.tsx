@@ -1,5 +1,5 @@
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useBearStore } from "@/stores";
+import { Tooltip } from "@radix-ui/themes";
 import clsx from "clsx";
 import { useState } from "react";
 
@@ -18,28 +18,21 @@ export const AccentItem = (props: {
 
   return (
     <div onClick={() => onClick({ name, variable })}>
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger>
-            <div
-              className={clsx("w-10 h-10 rounded-full flex items-center justify-center", "border-2", {
-                "shadow-[inset_0px_0px_0_2px_white]": active,
-              })}
-              style={{ backgroundColor: `${variable}`, borderColor: `${variable}` }}
-            >
-              <div
-                className={clsx("w-3 h-3 rounded-full", {
-                  "bg-white/50": !active,
-                  "bg-white/90": active,
-                })}
-              ></div>
-            </div>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>{name}</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <Tooltip content={name}>
+        <div
+          className={clsx("w-10 h-10 rounded-full flex items-center justify-center", "border-2", {
+            "shadow-[inset_0px_0px_0_2px_white]": active,
+          })}
+          style={{ backgroundColor: `${variable}`, borderColor: `${variable}` }}
+        >
+          <div
+            className={clsx("w-3 h-3 rounded-full", {
+              "bg-white/50": !active,
+              "bg-white/90": active,
+            })}
+          ></div>
+        </div>
+      </Tooltip>
     </div>
   );
 };
@@ -48,19 +41,19 @@ export const Accent = () => {
   const ACCENTS = [
     {
       name: "ruby",
-      variable: 'var(--ruby-10)',
+      variable: "var(--ruby-10)",
     },
     {
       name: "indigo",
-      variable: 'var(--indigo-10)',
+      variable: "var(--indigo-10)",
     },
     {
       name: "tomato",
-      variable: 'var(--tomato-10)',
+      variable: "var(--tomato-10)",
     },
     {
       name: "iris",
-      variable: 'var(--iris-10)',
+      variable: "var(--iris-10)",
     },
   ];
 

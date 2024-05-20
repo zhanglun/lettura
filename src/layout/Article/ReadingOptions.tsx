@@ -5,7 +5,7 @@ import { Article } from "@/db";
 import { CustomizeStyle } from "@/layout/Setting/CustomizeStyle";
 import { open } from "@tauri-apps/api/shell";
 import * as dataAgent from "@/helpers/dataAgent";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { IconButton, Popover, Tooltip } from "@radix-ui/themes";
 
 export interface NavigatorProps {
@@ -13,7 +13,6 @@ export interface NavigatorProps {
 }
 
 export const ReadingOptions = (props: NavigatorProps) => {
-  const { toast } = useToast();
   const store = useBearStore((state) => ({
     article: state.article,
     articleList: state.articleList,
@@ -73,9 +72,7 @@ export const ReadingOptions = (props: NavigatorProps) => {
 
     navigator.clipboard.writeText(link).then(
       function () {
-        toast({
-          description: "Copied",
-        });
+        toast("Copied");
       },
       function (err) {
         console.error("Async: Could not copy text: ", err);

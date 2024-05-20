@@ -13,7 +13,6 @@ import { useModal } from "@/components/Modal/useModal";
 import { AddFeedChannel } from "@/components/AddFeed";
 import { AddFolder } from "@/components/AddFolder";
 import { useRefresh } from "@/components/Subscribes/useRefresh";
-import { SettingDialog } from "../Setting/SettingDialog";
 import { IconButton, Tooltip } from "@radix-ui/themes";
 
 const spaces = [
@@ -121,12 +120,7 @@ export function LocalPage() {
                 Settings
               </NavLink>
             </>
-            {/* <div className="sidebar-item" onClick={() => store.updateSettingDialogStatus(true)}>
-              <Settings size={16} />
-              Settings
-            </div> */}
           </Tooltip>
-          <SettingDialog></SettingDialog>
         </div>
         <DndProvider backend={HTML5Backend}>
           <ChannelList />

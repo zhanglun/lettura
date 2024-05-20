@@ -12,17 +12,6 @@ import { ArticleList } from "@/components/ArticleList";
 import { useBearStore } from "@/stores";
 
 import { Filter, CheckCheck, RefreshCw, RotateCw } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
-import { Icon } from "@/components/Icon";
-import { TooltipBox } from "@/components/TooltipBox";
 import { useArticle } from "./useArticle";
 import { loadFeed } from "@/hooks/useLoadFeed";
 import { ArticleReadStatus } from "@/typing";

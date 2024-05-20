@@ -1,5 +1,5 @@
 import { PartyPopper } from "lucide-react";
-import { Button } from "../ui/button";
+import { Button } from "@radix-ui/themes";
 import bg from "./bg.svg";
 import { useNavigate } from "react-router-dom";
 import { RouteConfig } from "@/config";

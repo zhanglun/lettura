@@ -4,7 +4,6 @@ import { Check, LucideIcon, PlusCircle } from "lucide-react";
 
 import { cn } from "@/helpers/cn";
 import { Button, Badge, Popover, Separator } from "@radix-ui/themes";
-import {} from "@/components/ui/badge";
 import {
   Command,
   CommandEmpty,
