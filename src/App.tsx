@@ -1,9 +1,7 @@
 import { useEffect } from "react";
-import { Outlet } from "react-router-dom";
 import { appWindow } from "@tauri-apps/api/window";
 import { emit, listen } from "@tauri-apps/api/event";
 import { useBearStore } from "@/stores";
-import { CommandPanel } from "./command";
 import { LocalPage } from "./layout/Local";
 import { Theme } from "@radix-ui/themes";
 import { Toaster } from "sonner";
@@ -67,7 +65,6 @@ function App() {
       <div className="h-full max-h-full ">
         <LocalPage />
       </div>
-      <CommandPanel />
       <Toaster />
     </Theme>
   );

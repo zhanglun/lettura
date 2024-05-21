@@ -1,4 +1,3 @@
-import { Theme } from "@radix-ui/themes";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
 

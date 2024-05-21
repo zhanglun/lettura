@@ -20,7 +20,7 @@ import {
 import classNames from "classnames";
 import { listen } from "@tauri-apps/api/event";
 import { RouteConfig } from "@/config";
-import { FeedResItem, Folder } from "@/db";
+import { FeedResItem, FolderResItem } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
 import { busChannel } from "@/helpers/busChannel";
 import { useBearStore } from "@/stores";
@@ -382,14 +382,14 @@ const ChannelList = (): JSX.Element => {
           </ContextMenu.Content>
         </ContextMenu.Root>
         <DialogUnsubscribeFeed
-          feed={store.feedContextMenuTarget}
+          feed={store.feedContextMenuTarget as FeedResItem | null}
           dialogStatus={showStatus}
           setDialogStatus={setModalStatus}
           afterConfirm={afterUnsubscribeFeed}
           afterCancel={() => store.setFeedContextMenuTarget(null)}
         />
         <DialogDeleteFolder
-          folder={store.feedContextMenuTarget as FeedResItem & Folder}
+          folder={store.feedContextMenuTarget as FolderResItem | null}
           dialogStatus={deleteFolderStatus}
           setDialogStatus={setDeleteFolderStatus}
           afterConfirm={afterDeleteFolder}
@@ -404,7 +404,7 @@ const ChannelList = (): JSX.Element => {
         />
         <AddFolder
           action="edit"
-          folder={store.feedContextMenuTarget}
+          folder={store.feedContextMenuTarget as FolderResItem | null}
           dialogStatus={editFolderDialogStatus}
           setDialogStatus={setEditFolderDialogStatus}
           afterConfirm={getFeedList}

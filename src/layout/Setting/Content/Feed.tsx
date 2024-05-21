@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import { Folder as FolderIcon, Rss, Trash2 } from "lucide-react";
 import { open } from "@tauri-apps/api/shell";
-import { Channel, Folder } from "@/db";
+import { Channel } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
 import { busChannel } from "@/helpers/busChannel";
 import { DataTable } from "./DataTable";
@@ -10,8 +10,7 @@ import { CellContext, createColumnHelper } from "@tanstack/react-table";
 import { getChannelFavicon } from "@/helpers/parseXML";
 import { DialogUnsubscribeFeed } from "./DialogUnsubscribeFeed";
 import { useModal } from "@/components/Modal/useModal";
-import { Icon } from "@/components/Icon";
-import { HoverCard } from "@radix-ui/themes";
+import { Avatar, Badge, HoverCard, IconButton } from "@radix-ui/themes";
 
 export const Feed = () => {
   const [list, setList] = useState<(Channel & { parent_uuid: String })[]>([]);
@@ -39,30 +38,13 @@ export const Feed = () => {
         const { title, link } = props.row.original;
 
         return (
-          <div>
-            <div className="flex items-center">
-              <img src={getChannelFavicon(link)} alt="" className="w-6 h-6 rounded-full mr-2" />
-              <a className="font-bold hover:underline" href={link} target={"_blank"} rel="noreferrer">
-                {title}
-              </a>
-            </div>
+          <div className="flex items-center gap-2">
+            <Avatar src={getChannelFavicon(link)} fallback={title.slice(0, 1)} alt={title} size="1" />
+            <a className="font-bold hover:underline" href={link} target={"_blank"} rel="noreferrer">
+              {title}
+            </a>
+            {props.row.original.folder_name && <Badge>{props.row.original.folder_name}</Badge>}
           </div>
-        );
-      },
-    },
-    {
-      accessorKey: "folder",
-      header: "Folder",
-      size: "fix-content",
-      cell(props: CellContext<Channel, string>): JSX.Element {
-        return (
-          <>
-            {props.row.original.folder_name && (
-              <div className="flex space-x-2 items-center">
-                <FolderIcon size={16} /> <span>{props.row.original.folder_name}</span>
-              </div>
-            )}
-          </>
         );
       },
     },
@@ -104,17 +86,17 @@ export const Feed = () => {
     }),
     columnHelper.accessor((row) => `${row.uuid}-opt`, {
       id: "opt",
-      header: "Action",
+      header: "",
       size: 110,
       cell(props: CellContext<Channel, string>): JSX.Element {
         return (
           <div className="flex space-x-1">
-            <Icon className="w-6 h-6" onClick={() => open(props.row.original.feed_url)}>
+            <IconButton variant="ghost" color="gray" onClick={() => open(props.row.original.feed_url)}>
               <Rss size={14} />
-            </Icon>
-            <Icon className="w-6 h-6" onClick={() => handleUnSubscribe(props.row.original)}>
+            </IconButton>
+            <IconButton variant="ghost" color="red" onClick={() => handleUnSubscribe(props.row.original)}>
               <Trash2 size={14} />
-            </Icon>
+            </IconButton>
           </div>
         );
       },

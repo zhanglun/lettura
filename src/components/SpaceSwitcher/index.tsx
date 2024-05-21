@@ -26,7 +26,7 @@ export function SpaceSwitcher({ isCollapsed, spaces }: SpaceSwitcherProps) {
         )}
         aria-label="Select Space"
       >
-        <div placeholder="Select an Space">
+        <div>
           {spaces.find((space) => space.route === selectedSpace)?.icon}
           <span className={cn("", isCollapsed && "hidden")}>
             {spaces.find((space) => space.route === selectedSpace)?.label}

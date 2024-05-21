@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { toast } from "sonner";
 import { Button, AlertDialog, Flex } from "@radix-ui/themes";
-import { Channel, FeedResItem, Folder } from "@/db";
+import { Channel, FeedResItem, FolderResItem } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
 import { busChannel } from "@/helpers/busChannel";
 
 export interface DialogProps {
-  folder: (FeedResItem & Folder) | null;
+  folder?: FolderResItem | null;
   dialogStatus: boolean;
   trigger?: React.ReactNode;
   setDialogStatus: (status: boolean) => void;
@@ -46,14 +46,15 @@ export const DialogDeleteFolder = React.memo((props: DialogProps) => {
         <AlertDialog.Title>Are you absolutely sure?</AlertDialog.Title>
         <AlertDialog.Description>
           This action cannot be undone. This will permanently delete the data relates with
-          {folder && <span className="text-primary font-bold ml-1">{folder?.title || folder?.name}</span>}
+          {folder && <span className="text-primary font-bold ml-1">{folder?.name}</span>}
         </AlertDialog.Description>
         <Flex gap="3" mt="4" justify="end">
-          <AlertDialog.Cancel onClick={() => handleCancel()}>Cancel</AlertDialog.Cancel>
-          <Button
-            className="text-destructive-foreground bg-destructive hover:bg-[hsl(var(--destructive)/0.9)]"
-            onClick={() => confirmDelete()}
-          >
+          <AlertDialog.Cancel onClick={() => handleCancel()}>
+            <Button variant="soft" color="gray">
+              Cancel
+            </Button>
+          </AlertDialog.Cancel>
+          <Button variant="solid" color="red" onClick={() => confirmDelete()}>
             Delete folder
           </Button>
         </Flex>

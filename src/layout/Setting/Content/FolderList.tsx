@@ -1,37 +1,41 @@
 import React, { useEffect, useState } from "react";
 import { DataTable } from "./DataTable";
 import { Edit, Folder as FolderIcon, Trash2 } from "lucide-react";
-import {FeedResItem, Folder} from "@/db";
+import { FeedResItem, FolderResItem } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
 import { useModal } from "@/components/Modal/useModal";
 import { CellContext, createColumnHelper } from "@tanstack/react-table";
-import { Icon } from "@/components/Icon";
 import { DialogDeleteFolder } from "./DialogDeleteFolder";
+import { IconButton } from "@radix-ui/themes";
+import { AddFolder } from "@/components/AddFolder";
 
 export const FolderList = () => {
-  const [folderList, setFolderList] = useState<Folder[]>([]);
+  const [folderList, setFolderList] = useState<FolderResItem[]>([]);
   const [showStatus, setModalStatus] = useModal();
-  const [currentFolder, setCurrentFolder] = useState<Folder | null>(null);
+  const [editStatus, setEditStatus] = useModal();
+  const [currentFolder, setCurrentFolder] = useState<FolderResItem | null>(null);
 
-  const handleEditFolder = (folder: Folder) => {
+  const handleEditFolder = (folder: FolderResItem) => {
     if (folder?.uuid) {
+      setCurrentFolder(folder);
+      setEditStatus(true);
     }
   };
 
-  const handleDeleteFolder = (folder: Folder) => {
+  const handleDeleteFolder = (folder: FolderResItem) => {
     if (folder?.uuid) {
       setCurrentFolder(folder);
       setModalStatus(true);
     }
   };
 
-  const columnHelper = createColumnHelper<Folder>();
+  const columnHelper = createColumnHelper<FolderResItem>();
   const columns = [
     {
       accessorKey: "name",
       header: "Name",
       size: "auto",
-      cell(props: CellContext<Folder, string>): JSX.Element {
+      cell(props: CellContext<FolderResItem, string>): JSX.Element {
         return (
           <div className="flex items-center">
             <FolderIcon size={16} className="mr-3" />
@@ -42,22 +46,19 @@ export const FolderList = () => {
     },
     columnHelper.accessor((row) => `${row.uuid}-opt`, {
       id: "opt",
-      header: "Action",
+      header: "",
       size: 100,
-      cell(props: CellContext<Folder, string>): JSX.Element {
+      cell(props: CellContext<FolderResItem, string>): JSX.Element {
         const record = props.row.original;
 
         return (
           <div className="flex space-x-1">
-            <Icon className="w-6 h-6" onClick={() => handleEditFolder(record)}>
+            <IconButton variant="ghost" color="gray" onClick={() => handleEditFolder(record)}>
               <Edit size={14} />
-            </Icon>
-            <Icon
-              className="w-6 h-6"
-              onClick={() => handleDeleteFolder(record)}
-            >
+            </IconButton>
+            <IconButton variant="ghost" color="red" onClick={() => handleDeleteFolder(record)}>
               <Trash2 size={14} />
-            </Icon>
+            </IconButton>
           </div>
         );
       },
@@ -71,7 +72,7 @@ export const FolderList = () => {
   };
 
   useEffect(() => {
-    console.log('folder effect')
+    console.log("folder effect");
     getFolderList();
   }, []);
 
@@ -85,7 +86,15 @@ export const FolderList = () => {
       <DialogDeleteFolder
         dialogStatus={showStatus}
         setDialogStatus={setModalStatus}
-        folder={currentFolder as Folder & FeedResItem}
+        folder={currentFolder}
+        afterConfirm={getFolderList}
+        afterCancel={() => {}}
+      />
+      <AddFolder
+        action="edit"
+        dialogStatus={editStatus}
+        setDialogStatus={setEditStatus}
+        folder={currentFolder}
         afterConfirm={getFolderList}
         afterCancel={() => {}}
       />

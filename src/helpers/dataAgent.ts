@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api";
-import { Article, ArticleResItem, Channel, FeedResItem, Folder } from "../db";
+import { Article, ArticleResItem, Channel, FeedResItem, FolderResItem } from "../db";
 import { request } from "@/helpers/request";
 import { AxiosRequestConfig, AxiosResponse } from "axios";
 
@@ -28,7 +28,7 @@ export const updateFolder = async (
   return invoke("update_folder", { uuid, name });
 };
 
-export const getFolders = async ():  Promise<AxiosResponse<Folder[]>> => {
+export const getFolders = async ():  Promise<AxiosResponse<FolderResItem[]>> => {
   return request.get("folders", {});
 };
 

@@ -79,7 +79,11 @@ export interface ArticleResItem {
   media_object: string;
 }
 
-export interface Folder {
+export interface FolderResItem {
+  id: number;
   uuid: string;
   name: string;
+  sort: number;
+  create_date: string;
+  update_date: string;
 }

@@ -16,9 +16,11 @@ export interface DialogProps {
 
 export const DialogUnsubscribeFeed = React.memo((props: DialogProps) => {
   const { feed, dialogStatus, setDialogStatus, afterConfirm, afterCancel, trigger } = props;
+  const [loading, setLoading] = useState(false);
 
   const confirmUnsubscribe = () => {
     if (feed?.uuid) {
+      setLoading(true);
       dataAgent
         .deleteChannel(feed.uuid)
         .then(() => {
@@ -31,6 +33,9 @@ export const DialogUnsubscribeFeed = React.memo((props: DialogProps) => {
             description: err.message,
             duration: 2000,
           });
+        })
+        .finally(() => {
+          setLoading(false);
         });
     }
   };
@@ -49,11 +54,12 @@ export const DialogUnsubscribeFeed = React.memo((props: DialogProps) => {
           {feed && <span className="text-primary font-bold ml-1">{feed?.title}</span>}
         </AlertDialog.Description>
         <Flex gap="3" mt="4" justify="end">
-          <AlertDialog.Cancel onClick={() => handleCancel()}>Cancel</AlertDialog.Cancel>
-          <Button
-            className="text-destructive-foreground bg-destructive hover:bg-[hsl(var(--destructive)/0.9)]"
-            onClick={() => confirmUnsubscribe()}
-          >
+          <AlertDialog.Cancel onClick={() => handleCancel()}>
+            <Button variant="soft" color="gray">
+              Cancel
+            </Button>
+          </AlertDialog.Cancel>
+          <Button variant="solid" color="red" onClick={() => confirmUnsubscribe()}>
             Unsubscribe
           </Button>
         </Flex>

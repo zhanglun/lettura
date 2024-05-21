@@ -1,13 +1,12 @@
 import React, { useEffect, useRef, useState, ChangeEvent } from "react";
 import * as dataAgent from "../../helpers/dataAgent";
-import { Folder, Folder as Folder2, Loader2 } from "lucide-react";
-import { FeedResItem } from "@/db";
+import { FolderResItem } from "@/db";
 import { useBearStore } from "@/stores";
 import { Dialog, TextField, Tooltip, Button } from "@radix-ui/themes";
 
 export interface AddFolderProps {
   action: "add" | "edit";
-  folder?: FeedResItem | null;
+  folder?: FolderResItem | null;
   dialogStatus: boolean;
   trigger?: React.ReactNode;
   setDialogStatus: (status: boolean) => void;
@@ -21,7 +20,7 @@ export const AddFolder = (props: AddFolderProps) => {
     getFeedList: state.getFeedList,
   }));
   const { dialogStatus, setDialogStatus, afterConfirm, afterCancel, trigger } = props;
-  const [name, setName] = useState("");
+  const [name, setName] = useState(folder?.name);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [confirming, setConfirming] = useState(false);
@@ -90,7 +89,7 @@ export const AddFolder = (props: AddFolderProps) => {
     }
 
     if (action === "edit" && folder) {
-      setName(folder.title);
+      setName(folder.name);
     }
   }, [dialogStatus]);
 

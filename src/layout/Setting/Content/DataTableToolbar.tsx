@@ -5,7 +5,7 @@ import { Table } from "@tanstack/react-table";
 import * as dataAgent from "@/helpers/dataAgent";
 import { DataTableFacetedFilter } from "./DataTableFacetedFilter";
 import { useEffect, useState } from "react";
-import { Folder } from "@/db";
+import { FolderResItem } from "@/db";
 import { TextField, Button } from "@radix-ui/themes";
 
 interface DataTableToolbarProps<TData> {
@@ -29,7 +29,7 @@ export function DataTableToolbar<TData>({
   table,
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0;
-  const [folderList, setFolderList] = useState<Folder[]>([]);
+  const [folderList, setFolderList] = useState<FolderResItem[]>([]);
 
   const getFolderList = () => {
     dataAgent.getFolders().then(({ data }) => {
@@ -52,7 +52,7 @@ export function DataTableToolbar<TData>({
           }
           className="w-[150px] lg:w-[250px]"
         />
-        {table.getColumn("folder") && folderList.length > 0 && (
+        {/* {table.getColumn("folder") && folderList.length > 0 && (
           <DataTableFacetedFilter
             column={table.getColumn("health_status")}
             title="Folder"
@@ -64,7 +64,7 @@ export function DataTableToolbar<TData>({
               };
             })}
           />
-        )}
+        )} */}
         {table.getColumn("health_status") && (
           <DataTableFacetedFilter
             column={table.getColumn("health_status")}
