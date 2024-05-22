@@ -3,7 +3,7 @@ import { Column } from "@tanstack/react-table";
 import { Check, LucideIcon, PlusCircle } from "lucide-react";
 
 import { cn } from "@/helpers/cn";
-import { Button, Badge, Popover, Separator } from "@radix-ui/themes";
+import { Button, Badge, Popover, Separator, Checkbox } from "@radix-ui/themes";
 import {
   Command,
   CommandEmpty,
@@ -41,14 +41,10 @@ export function DataTableFacetedFilter<TData, TValue>({
           {selectedValues?.size > 0 && (
             <>
               <Separator orientation="vertical" className="mx-2 h-4" />
-              <Badge className="rounded-sm px-1 font-normal lg:hidden">
-                {selectedValues.size}
-              </Badge>
+              <Badge className="rounded-sm px-1 font-normal lg:hidden">{selectedValues.size}</Badge>
               <div className="hidden space-x-1 lg:flex">
                 {selectedValues.size > 2 ? (
-                  <Badge className="rounded-sm px-1 font-normal">
-                    {selectedValues.size} selected
-                  </Badge>
+                  <Badge className="rounded-sm px-1 font-normal">{selectedValues.size} selected</Badge>
                 ) : (
                   options
                     .filter((option) => selectedValues.has(option.value))
@@ -84,21 +80,12 @@ export function DataTableFacetedFilter<TData, TValue>({
                       column?.setFilterValue(filterValues.length ? filterValues : undefined);
                     }}
                   >
-                    <div
-                      className={cn(
-                        "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
-                        isSelected ? "bg-primary text-primary-foreground" : "opacity-50 [&_svg]:invisible"
-                      )}
-                    >
-                      <Check className={cn("h-4 w-4")} />
-                    </div>
-                    {option.icon && <option.icon className="mr-2 h-4 w-4 text-muted-foreground" />}
+                    <Checkbox checked={isSelected} className="mr-2" />
+                    {option.icon && <option.icon className="mr-1 h-4 w-4 text-muted-foreground" />}
                     <span>{option.label}</span>
-                    {facets?.get(option.value) && (
-                      <span className="ml-auto flex h-4 w-4 items-center justify-center font-mono text-xs">
-                        {facets.get(option.value)}
-                      </span>
-                    )}
+                    <span className="ml-auto flex h-4 w-4 items-center justify-center font-mono text-xs">
+                      {facets?.get(option.value) || 0}
+                    </span>
                   </CommandItem>
                 );
               })}
