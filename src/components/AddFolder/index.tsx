@@ -16,11 +16,12 @@ export interface AddFolderProps {
 
 export const AddFolder = (props: AddFolderProps) => {
   const { action, folder } = props;
+  console.log("%c Line:19 🥪 folder", "color:#ed9ec7", folder);
   const store = useBearStore((state) => ({
     getFeedList: state.getFeedList,
   }));
   const { dialogStatus, setDialogStatus, afterConfirm, afterCancel, trigger } = props;
-  const [name, setName] = useState(folder?.name);
+  const [name, setName] = useState("");
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [confirming, setConfirming] = useState(false);
@@ -78,7 +79,7 @@ export const AddFolder = (props: AddFolderProps) => {
       setContent("Organize your subscribes");
     }
     if (action === "edit") {
-      setContent("Edit Folder");
+      setTitle("Edit Folder");
       setContent("Update your folder");
     }
   }, [action]);
@@ -89,7 +90,8 @@ export const AddFolder = (props: AddFolderProps) => {
     }
 
     if (action === "edit" && folder) {
-      setName(folder.name);
+      // @ts-ignore
+      setName(folder.name || folder.title);
     }
   }, [dialogStatus]);
 
