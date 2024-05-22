@@ -205,7 +205,7 @@ const ChannelList = (): JSX.Element => {
     <>
       <div
         {...scrollTopProps}
-        className={clsx("height-[calc(100% - var(--app-toolbar-height))] flex-1 overflow-y-auto pb-2 pl-2 pr-2", {
+        className={clsx("flex-1 overflow-y-auto pb-2 pl-2 pr-2", {
           "border-t": scrollTop > 0,
         })}
         ref={listRef}
@@ -410,6 +410,9 @@ const ChannelList = (): JSX.Element => {
           afterConfirm={getFeedList}
           afterCancel={() => store.setFeedContextMenuTarget(null)}
         />
+      </div>
+      <div className="h-[8px]">
+
       </div>
       {refreshing && (
         <div className="sticky bottom-0 left-0 right-0 p-2 text-right">

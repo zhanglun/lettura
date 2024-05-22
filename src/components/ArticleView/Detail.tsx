@@ -164,7 +164,7 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
               src={store.feed?.logo || ico}
               fallback={article.feed_title?.slice(0, 1)}
             ></Avatar>
-            <span className="text-[var(--gray-11)]">{article.feed_title}</span>
+            <span className="text-[var(--gray-12)]">{article.feed_title}</span>
           </div>
           <span>{Dayjs(new Date(pub_date || new Date())).format("YYYY-MM-DD HH:mm")}</span>
           {article.author && <span className={clsx(styles.author)}>· {article.author}</span>}

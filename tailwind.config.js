@@ -110,6 +110,9 @@ module.exports = {
         3: "3px",
         4: "4px",
       },
+      borderColor: {
+        DEFAULT: "var(--gray-6)"
+      },
       fontFamily: {
         sans: ["var(--font-sans)", ...fontFamily.sans],
       },

@@ -103,7 +103,9 @@ export const AddFolder = (props: AddFolderProps) => {
         </Tooltip>
       )}
       <Dialog.Content className="sm:max-w-[425px]">
-        <Dialog.Title className="lex items-center" size="6" mt="2" mb="1">{title}</Dialog.Title>
+        <Dialog.Title className="lex items-center" size="6" mt="2" mb="1">
+          {title}
+        </Dialog.Title>
         <Dialog.Description size="2" mb="4" color="gray">
           {content}
         </Dialog.Description>
