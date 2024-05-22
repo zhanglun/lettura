@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
-
-import { Folder as FolderIcon, Rss, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Rss, Trash2 } from "lucide-react";
 import { open } from "@tauri-apps/api/shell";
 import { Channel } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
@@ -77,11 +76,14 @@ export const Feed = () => {
     columnHelper.accessor((row) => "last-sync-date", {
       id: "last_sync_date",
       header: "Last sync date",
-      size: 160,
       cell(props: CellContext<Channel, string>): JSX.Element {
         const { last_sync_date = "" } = props.row.original;
 
-        return <div className="flex justify-center">{last_sync_date}</div>;
+        return (
+          <div className="flex justify-start w-[180px] px-2">
+            <span>{last_sync_date} </span>
+          </div>
+        );
       },
     }),
     columnHelper.accessor((row) => `${row.uuid}-opt`, {
