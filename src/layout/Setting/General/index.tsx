@@ -65,7 +65,7 @@ export const General = () => {
 
   const [localProxy, setLocalProxy] = useState({} as LocalProxy);
 
-  console.log("%c Line:67 🥥 store.userConfig.local_proxy", "color:#fca650", store.userConfig.local_proxy);
+  console.log("%c Line:67 🥥 store.userConfig.proxy", "color:#fca650", store.userConfig.proxy);
 
   const handleLocalProxyChange = (key: string, val: string) => {
     const p = {
@@ -76,16 +76,16 @@ export const General = () => {
     };
     setLocalProxy(p);
 
-    if (p.ip && p.port) {
+    if (p.server && p.port) {
       store.updateUserConfig({
         ...store.userConfig,
-        local_proxy: p,
+        proxy: p,
       });
     }
   };
 
   useEffect(() => {
-    setLocalProxy(store.userConfig.local_proxy || {} as LocalProxy);
+    setLocalProxy(store.userConfig.proxy || ({} as LocalProxy));
   }, [store.userConfig]);
 
   return (
@@ -94,9 +94,9 @@ export const General = () => {
         <div className="grid gap-1 grid-cols-[120px_10px_60px] items-center">
           <TextField.Root
             type="text"
-            value={localProxy.ip}
+            value={localProxy.server}
             className="tracking-wide"
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleLocalProxyChange("ip", e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleLocalProxyChange("server", e.target.value)}
           />
           <span className="text-center">:</span>
           <TextField.Root
@@ -108,7 +108,7 @@ export const General = () => {
         </div>
       </PanelSection>
       <Separator className="mt-6" size="4" />
-      <PanelSection title="Update Interval (WIP)" subTitle="set the update interval">
+      <PanelSection title="Update Interval (Wserver)" subTitle="set the update interval">
         <Select.Root
           value={store.userConfig.update_interval?.toString()}
           onValueChange={(v: string) => {

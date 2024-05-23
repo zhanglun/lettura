@@ -15,22 +15,22 @@ pub fn create_client() -> reqwest::Client {
   let user_config = config::get_user_config();
   let client_builder = reqwest::Client::builder();
 
-  if let Some(config) = user_config {
-    if let Some(proxy) = config.local_proxy {
-      log::info!("user_config.local_proxy {:?}", proxy);
+  // if let Some(config) = user_config {
+  //   if let Some(proxy) = config.local_proxy {
+  //     log::info!("user_config.local_proxy {:?}", proxy);
 
-      let mut scheme = String::from("socks5h://");
+  //     let mut scheme = String::from("socks5h://");
 
-      scheme.push_str(&proxy.ip.to_string());
-      scheme.push_str(":");
-      scheme.push_str(&proxy.port.to_string());
+  //     scheme.push_str(&proxy.ip.to_string());
+  //     scheme.push_str(":");
+  //     scheme.push_str(&proxy.port.to_string());
 
-      return client_builder
-        .proxy(reqwest::Proxy::all(scheme).unwrap())
-        .build()
-        .unwrap();
-    }
-  }
+  //     return client_builder
+  //       .proxy(reqwest::Proxy::all(scheme).unwrap())
+  //       .build()
+  //       .unwrap();
+  //   }
+  // }
 
   client_builder.build().unwrap()
 }

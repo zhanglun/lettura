@@ -20,6 +20,7 @@ export enum RouteConfig {
   SETTINGS = "/settings",
   SETTINGS_GENERAL = "/settings/general",
   SETTINGS_APPEARANCE = "/settings/appearance",
+  SETTINGS_PROXY = "/settings/proxy",
   SETTINGS_SHORTCUT = "/settings/shortcut",
   SETTINGS_NOTIFICATION = "/settings/notification",
   SETTINGS_FEED_MANAGER = "/settings/feed_manager",

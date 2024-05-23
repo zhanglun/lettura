@@ -1,5 +1,5 @@
 import { Outlet, useNavigate } from "react-router-dom";
-import { Cog, Database, Keyboard, Palette, Rss } from "lucide-react";
+import { Cog, Database, Keyboard, Palette, Rss, Waypoints } from "lucide-react";
 import { RouteConfig } from "../../config";
 import { Link } from "@/layout/Setting/Link";
 import { Heading } from "@radix-ui/themes";
@@ -24,6 +24,12 @@ export function SettingPage() {
                 <span className="flex items-center">
                   <Palette size={16} className="mr-3" />
                   Appearance
+                </span>
+              </Link>
+              <Link to={RouteConfig.SETTINGS_PROXY}>
+                <span className="flex items-center">
+                  <Waypoints size={16} className="mr-3" />
+                  Proxy
                 </span>
               </Link>
               <Link to={RouteConfig.SETTINGS_SHORTCUT}>

@@ -206,12 +206,6 @@ pub fn init_process(window: Window) {
 }
 
 #[command]
-pub fn update_proxy(ip: String, port: String) -> usize {
-  config::update_proxy(ip, port);
-  1
-}
-
-#[command]
 pub fn update_threads(threads: i32) -> usize {
   config::update_threads(threads);
   1

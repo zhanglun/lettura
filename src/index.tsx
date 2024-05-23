@@ -7,7 +7,6 @@ import ErrorPage from "./ErrorPage";
 import { RouteConfig } from "./config";
 import { ArticleContainer } from "./layout/Article";
 import { SearchPage } from "./layout/Search";
-import { LocalPage } from "./layout/Local";
 import { FreshRSSPage } from "./layout/FreshRSS";
 
 import "./index.css";
@@ -17,7 +16,7 @@ import { General } from "./layout/Setting/General";
 import { Shortcut } from "./layout/Setting/ShortCut";
 import { FeedManager } from "./layout/Setting/Content";
 import { ImportAndExport } from "./layout/Setting/ImportAndExport";
-import { useBearStore } from "./stores";
+import { ProxySetting } from "./layout/Setting/Proxy";
 
 const router = createBrowserRouter([
   {
@@ -70,6 +69,10 @@ const router = createBrowserRouter([
           {
             path: RouteConfig.SETTINGS_APPEARANCE,
             element: <Appearance />,
+          },
+          {
+            path: RouteConfig.SETTINGS_PROXY,
+            element: <ProxySetting />,
           },
           {
             path: RouteConfig.SETTINGS_SHORTCUT,

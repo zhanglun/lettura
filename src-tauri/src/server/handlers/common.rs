@@ -1,20 +1,55 @@
-use actix_web::{get, post, web, Responder, Result};
+use actix_web::{get, post, put, web, HttpResponse, Responder, Result};
 use serde::Deserialize;
+use serde_json::json;
 
 use crate::core::common;
 use crate::core::config;
 
 #[get("/api/user-config")]
 pub async fn handle_get_user_config() -> Result<impl Responder> {
-  let user_config = config::load_or_initial();
-
-  log::info!("===> USER CONFIG {:?}", user_config);
+  let user_config = config::get_user_config();
 
   Ok(web::Json(user_config))
 }
 
 #[post("/api/user-config")]
-pub async fn handle_update_user_config(user_cfg: web::Json<config::UserConfig>) -> Result<impl Responder> {
+pub async fn handle_update_user_config(
+  user_cfg: web::Json<config::UserConfig>,
+) -> Result<impl Responder> {
+  let result = config::update_user_config(user_cfg.0);
+  Ok(web::Json(result))
+}
+
+#[get("/api/proxy")]
+pub async fn handle_get_proxy() -> Result<impl Responder> {
+  let user_config = config::get_user_config();
+
+  let proxy = user_config.proxy;
+  let proxy_rules = user_config.proxy_rules;
+  // letHttpResponse::Ok().json()
+
+  Ok(web::Json(json!({
+    "proxy": proxy,
+    "proxy_rules": proxy_rules,
+  })))
+}
+
+#[put("/api/proxy")]
+pub async fn handle_add_proxy(proxy_cfg: web::Json<config::Proxy>) -> Result<impl Responder> {
+  let result = config::add_proxy(proxy_cfg.into_inner());
+
+  let response = match result {
+    Ok(proxies) => HttpResponse::Ok().json(proxies),
+    Err(err) => HttpResponse::Ok().json(json!({"error": err.to_string()})),
+  };
+
+  Ok(response)
+}
+
+#[post("/api/proxy-rules")]
+pub async fn handle_set_proxy_rules(
+  user_cfg: web::Json<config::UserConfig>,
+) -> Result<impl Responder> {
   let result = config::update_user_config(user_cfg.0);
   Ok(web::Json(result))
 }
@@ -31,7 +66,7 @@ pub async fn handle_search(search: web::Query<SearchRequest>) -> Result<impl Res
   let result = common::Common::global_search(common::GlobalSearchQuery {
     query: search.query.to_string(),
     limit: search.limit.clone(),
-    cursor: search.cursor.clone()
+    cursor: search.cursor.clone(),
   });
 
   Ok(web::Json(result))
@@ -51,6 +86,8 @@ pub fn config(cfg: &mut web::ServiceConfig) {
   cfg
     .service(handle_get_user_config)
     .service(handle_update_user_config)
+    .service(handle_get_proxy)
+    .service(handle_add_proxy)
     .service(handle_search)
     .service(handle_get_stared)
     .service(handle_update_stared);

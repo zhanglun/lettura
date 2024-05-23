@@ -114,7 +114,6 @@ async fn main() {
       cmd::fetch_feed,
       cmd::add_feed,
       cmd::update_user_config,
-      cmd::update_proxy,
       cmd::update_threads,
       cmd::update_theme,
       cmd::create_folder,

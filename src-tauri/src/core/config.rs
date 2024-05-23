@@ -1,5 +1,6 @@
+use chrono::{Local, TimeZone, Utc};
 use dotenv::dotenv;
-use chrono::{TimeZone, Utc};
+use log::log;
 use serde::{Deserialize, Serialize};
 use std::{env, fs, path, path::PathBuf};
 use toml;
@@ -15,17 +16,11 @@ pub enum ColorScheme {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct LocalProxy {
-  pub ip: String,
+pub struct Proxy {
+  pub server: String,
   pub port: String,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct RemoteProxy {
-  ip: String,
-  port: String,
-  username: String,
-  password: String,
+  pub username: Option<String>,
+  pub password: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -62,7 +57,6 @@ macro_rules! generate_set_property {
     };
 }
 
-
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UserConfig {
   pub threads: i32,
@@ -72,10 +66,11 @@ pub struct UserConfig {
   pub update_interval: u64,
   pub last_sync_time: String,
 
-  pub local_proxy: Option<LocalProxy>,
+  pub proxy: Option<Vec<Proxy>>,
   pub customize_style: CustomizeStyle,
   pub purge_on_days: u64,
-  pub purge_unread_articles: bool
+  pub purge_unread_articles: bool,
+  pub proxy_rules: Vec<String>,
 }
 
 impl Default for UserConfig {
@@ -85,8 +80,12 @@ impl Default for UserConfig {
       theme: String::from('1'),
       color_scheme: ColorScheme::System,
       update_interval: 0,
-      last_sync_time: Utc.timestamp_millis_opt(0).unwrap().to_rfc3339_opts(chrono::SecondsFormat::Secs, true),
-      local_proxy: None,
+      last_sync_time: Utc
+        .timestamp_millis_opt(0)
+        .unwrap()
+        .to_rfc3339_opts(chrono::SecondsFormat::Secs, true),
+      proxy: None,
+      proxy_rules: vec![],
       customize_style: CustomizeStyle::default(),
       purge_on_days: 0,
       purge_unread_articles: true,
@@ -98,7 +97,6 @@ impl UserConfig {
   generate_set_property!(self, set_threads, threads, i32);
   generate_set_property!(self, set_theme, theme, String);
   generate_set_property!(self, set_update_interval, update_interval, u64);
-  generate_set_property!(self, set_local_proxy, local_proxy, Option<LocalProxy>);
   generate_set_property!(self, set_purge_on_days, purge_on_days, u64);
   generate_set_property!(self, set_purge_unread_articles, purge_unread_articles, bool);
 
@@ -119,6 +117,23 @@ impl UserConfig {
         UserConfig::default()
       }
       None => UserConfig::default(),
+    }
+  }
+
+  pub fn add_proxy(&mut self, proxy: Proxy) -> Result<(), String> {
+    let server_port = format!("{}:{}", proxy.server, proxy.port);
+    if self.proxy.as_ref().map_or(true, |proxies| {
+      !proxies
+        .iter()
+        .any(|p| format!("{}:{}", p.server, p.port) == server_port)
+    }) {
+      match &mut self.proxy {
+        Some(proxies) => proxies.push(proxy),
+        None => self.proxy = Some(vec![proxy]),
+      }
+      Ok(())
+    } else {
+      Err(format!("Duplicate ip+port combination: {}", server_port))
     }
   }
 }
@@ -147,11 +162,22 @@ pub fn get_user_config_path() -> PathBuf {
   }
 }
 
-pub fn get_user_config() -> Option<UserConfig> {
+pub fn get_user_config() -> UserConfig {
   let user_config_path = get_user_config_path();
+
+  println!("===> {:?}", user_config_path);
 
   if !user_config_path.exists() {
     fs::File::create(&user_config_path).expect("create user config failed");
+    let data = UserConfig::default();
+
+    let content = toml::to_string(&data).unwrap();
+
+    fs::write(&user_config_path, content).expect("update threads error");
+
+    println!("====> return default");
+
+    return data;
   }
 
   let content = match fs::read_to_string(&user_config_path) {
@@ -159,12 +185,25 @@ pub fn get_user_config() -> Option<UserConfig> {
     Err(_) => "".to_string(),
   };
 
+  println!("====> return default {:?}", content);
+
   let data: Option<UserConfig> = match toml::from_str(&content) {
-    Ok(data) => Some(data),
-    Err(_) => None,
+    Ok(data) => {
+      println!("====> data 11 return default {:?}", data);
+      Some(data)
+    },
+    Err(_) => {
+      eprintln!("Unable to load data from `{:?}`", content);
+      Some(UserConfig::default())
+    },
   };
 
-  data
+  println!("====> data return default {:?}", data);
+
+  match data {
+    Some(data) => data,
+    None => UserConfig::default(),
+  }
 }
 
 pub fn load_or_initial() -> Option<UserConfig> {
@@ -188,35 +227,62 @@ pub fn load_or_initial() -> Option<UserConfig> {
   };
 
   if !data.contains_key("customize_style") {
-    data.insert(String::from("customize_style"), toml::Value::try_from::<CustomizeStyle>(CustomizeStyle::default()).unwrap());
+    data.insert(
+      String::from("customize_style"),
+      toml::Value::try_from::<CustomizeStyle>(CustomizeStyle::default()).unwrap(),
+    );
   }
 
   if !data.contains_key("threads") {
-    data.insert(String::from("threads"), toml::Value::try_from::<i32>(5).unwrap());
+    data.insert(
+      String::from("threads"),
+      toml::Value::try_from::<i32>(5).unwrap(),
+    );
   }
 
   if !data.contains_key("theme") {
-    data.insert(String::from("theme"), toml::Value::try_from::<String>(String::from("system")).unwrap());
+    data.insert(
+      String::from("theme"),
+      toml::Value::try_from::<String>(String::from("system")).unwrap(),
+    );
   }
 
   if !data.contains_key("color_scheme") {
-    data.insert(String::from("color_scheme"), toml::Value::try_from::<ColorScheme>(ColorScheme::System).unwrap());
+    data.insert(
+      String::from("color_scheme"),
+      toml::Value::try_from::<ColorScheme>(ColorScheme::System).unwrap(),
+    );
   }
 
   if !data.contains_key("update_interval") {
-    data.insert(String::from("update_interval"), toml::Value::try_from::<i32>(0).unwrap());
+    data.insert(
+      String::from("update_interval"),
+      toml::Value::try_from::<i32>(0).unwrap(),
+    );
   }
 
   if !data.contains_key("last_sync_time") {
-    data.insert(String::from("last_sync_time"), toml::Value::try_from::<String>(Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Secs, true)).unwrap());
+    data.insert(
+      String::from("last_sync_time"),
+      toml::Value::try_from::<String>(
+        Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Secs, true),
+      )
+      .unwrap(),
+    );
   }
 
   if !data.contains_key("purge_on_days") {
-    data.insert(String::from("purge_on_days"), toml::Value::try_from::<u64>(0).unwrap());
+    data.insert(
+      String::from("purge_on_days"),
+      toml::Value::try_from::<u64>(0).unwrap(),
+    );
   }
 
   if !data.contains_key("purge_unread_articles") {
-    data.insert(String::from("purge_unread_articles"), toml::Value::try_from::<bool>(true).unwrap());
+    data.insert(
+      String::from("purge_unread_articles"),
+      toml::Value::try_from::<bool>(true).unwrap(),
+    );
   }
 
   log::debug!("USER CONFIG: {:?}", data);
@@ -224,27 +290,28 @@ pub fn load_or_initial() -> Option<UserConfig> {
   Some(data.try_into::<UserConfig>().expect("config data error"))
 }
 
-pub fn update_proxy(ip: String, port: String) -> usize {
-  let data = match get_user_config() {
-    Some(data) => data,
-    None => UserConfig::default(),
-  };
-
+pub fn add_proxy(proxy_cfg: Proxy) -> Result<Option<Vec<Proxy>>, String> {
+  let mut data = get_user_config();
   let user_config_path = get_user_config_path();
-  let a = data.set_local_proxy(Some(LocalProxy {ip, port}));
-  let content = toml::to_string(&a).unwrap();
 
-  fs::write(user_config_path, content).expect("update proxy error");
+  match data.add_proxy(proxy_cfg) {
+    Ok(_) => {
+      let content = toml::to_string(&data).unwrap();
 
-  return 1;
+      match fs::write(user_config_path, content) {
+        Ok(_) => Ok(data.proxy),
+        Err(err) => Err(err.to_string()),
+      }
+    }
+    Err(err) => {
+      println!("{}", err);
+      Err(err.to_string())
+    }
+  }
 }
 
 pub fn update_threads(threads: i32) -> usize {
-  let data = match get_user_config() {
-    Some(data) => data,
-    None => UserConfig::default(),
-  };
-
+  let data = get_user_config();
   let user_config_path = get_user_config_path();
   let a = data.set_threads(threads);
 
@@ -256,11 +323,7 @@ pub fn update_threads(threads: i32) -> usize {
 }
 
 pub fn update_theme(theme: String) -> usize {
-  let data = match get_user_config() {
-    Some(data) => data,
-    None => UserConfig::default(),
-  };
-
+  let data = get_user_config();
   let user_config_path = get_user_config_path();
 
   println!("data {:?}", data);

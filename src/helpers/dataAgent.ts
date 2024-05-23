@@ -147,13 +147,6 @@ export const updateUserConfig = async (cfg: any): Promise<any> => {
   return request.post("/user-config", cfg)
 };
 
-export const updateProxy = async (cfg: LocalProxy): Promise<any> => {
-  return invoke("update_proxy", {
-    ip: cfg.ip,
-    port: cfg.port,
-  });
-};
-
 export const updateThreads = async (threads: number): Promise<any> => {
   return invoke("update_threads", { threads });
 };
