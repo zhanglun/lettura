@@ -1,6 +1,5 @@
 import { request } from "@/helpers/request";
 import { Button, Dialog, TextField } from "@radix-ui/themes";
-import { PlusCircle } from "lucide-react";
 import { ChangeEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -15,6 +14,7 @@ export interface ProxyModalProps {
 
 export const ProxyModal = (props: ProxyModalProps) => {
   const { proxy, dialogStatus, setDialogStatus, afterConfirm, afterCancel, trigger } = props;
+  const [title, setTitle] = useState("");
   const [disabled, setDisabled] = useState(true);
   const [server, setServer] = useState("");
   const [port, setPort] = useState("");
@@ -43,40 +43,49 @@ export const ProxyModal = (props: ProxyModalProps) => {
     };
 
     console.log("%c Line:15 🍅 params", "color:#ea7e5c", params);
+    let fn = proxy
+      ? request.post("proxy", {
+          id: `socks5://${proxy.server}:${proxy.port}`,
+          data: {
+            ...params,
+            enable: proxy.enable,
+          },
+        })
+      : request.put("proxy", {
+          ...params,
+          enable: false,
+        });
 
-    request
-      .put("proxy", {
-        ...params,
-        // is_global: false,
-        enable: false,
-      })
-      .then(({ data }) => {
-        console.log(data);
-        if (data.error) {
-          toast.error(data.error);
-        } else {
-          setDialogStatus(false);
-          reset();
-          afterConfirm();
-        }
-      });
+    fn.then(({ data }) => {
+      console.log(data);
+      if (data.error) {
+        toast.error(data.error);
+      } else {
+        setDialogStatus(false);
+        reset();
+        afterConfirm();
+      }
+    });
   };
 
   useEffect(() => {
     setDisabled(!(server && port));
   }, [server, port]);
 
+  useEffect(() => {
+    setTitle(proxy ? "Edit proxy" : "Add proxy");
+
+    setServer(proxy?.server || "");
+    setPort(proxy?.port || "");
+    setUsername(proxy?.username || "");
+    setPassword(proxy?.password || "");
+  }, [proxy]);
+
   return (
     <Dialog.Root open={dialogStatus} onOpenChange={setDialogStatus}>
-      <Dialog.Trigger>
-        <Button variant="ghost">
-          <PlusCircle />
-          Add Proxy
-        </Button>
-      </Dialog.Trigger>
       <Dialog.Content className="sm:max-w-[425px]">
         <Dialog.Title className="lex items-center" size="6" mt="2" mb="1">
-          Add Proxy
+          {title}
         </Dialog.Title>
         <Dialog.Description size="2" mb="4" color="gray">
           {}

@@ -319,7 +319,34 @@ pub fn update_proxy(id: String, proxy_cfg: Proxy) -> Result<Option<Vec<Proxy>>, 
     .iter_mut()
     .find(|p| format!("socks5://{}:{}", p.server, p.port) == id)
   {
+    proxy.server = proxy_cfg.server;
+    proxy.port = proxy_cfg.port;
     proxy.enable = proxy_cfg.enable;
+    proxy.username = proxy_cfg.username;
+    proxy.password = proxy_cfg.password;
+  }
+
+  data.proxy = Some(proxies);
+
+  let content = toml::to_string(&data).unwrap();
+
+  match fs::write(user_config_path, content) {
+    Ok(_) => Ok(data.proxy),
+    Err(err) => Err(err.to_string()),
+  }
+}
+
+pub fn delete_proxy(id: String, proxy_cfg: Proxy) -> Result<Option<Vec<Proxy>>, String> {
+  let mut data = get_user_config();
+  let user_config_path = get_user_config_path();
+  let mut proxies = data.proxy.unwrap_or_default();
+
+  if let Some(index) = proxies
+    .iter_mut()
+    .position(|p| format!("socks5://{}:{}", p.server, p.port) == id)
+  {
+    println!("index ===> {:?}", index);
+    proxies.remove(index);
   }
 
   data.proxy = Some(proxies);

@@ -1,4 +1,4 @@
-use actix_web::{get, post, put, web, HttpResponse, Responder, Result};
+use actix_web::{get, post, put, delete, web, HttpResponse, Responder, Result};
 use serde::Deserialize;
 use serde::Serialize;
 use serde_json::json;
@@ -58,6 +58,19 @@ pub async fn handle_update_proxy(body: web::Json<UpdateProxyBody>) -> Result<imp
   let body = body.into_inner();
   let result = config::update_proxy(body.id, body.data);
 
+  let response = match result {
+    Ok(proxies) => HttpResponse::Ok().json(proxies),
+    Err(err) => HttpResponse::Ok().json(json!({"error": err.to_string()})),
+  };
+
+  Ok(response)
+}
+
+#[delete("/api/proxy")]
+pub async fn handle_delete_proxy(body: web::Json<UpdateProxyBody>) -> Result<impl Responder> {
+  let body = body.into_inner();
+  let result = config::delete_proxy(body.id, body.data);
+
 
   println!("--->{:?}", result);
 
@@ -112,6 +125,7 @@ pub fn config(cfg: &mut web::ServiceConfig) {
     .service(handle_get_proxy)
     .service(handle_add_proxy)
     .service(handle_update_proxy)
+    .service(handle_delete_proxy)
     .service(handle_search)
     .service(handle_get_stared)
     .service(handle_update_stared);
