@@ -1,5 +1,6 @@
 use actix_web::{get, post, put, web, HttpResponse, Responder, Result};
 use serde::Deserialize;
+use serde::Serialize;
 use serde_json::json;
 
 use crate::core::common;
@@ -37,6 +38,28 @@ pub async fn handle_get_proxy() -> Result<impl Responder> {
 #[put("/api/proxy")]
 pub async fn handle_add_proxy(proxy_cfg: web::Json<config::Proxy>) -> Result<impl Responder> {
   let result = config::add_proxy(proxy_cfg.into_inner());
+
+  let response = match result {
+    Ok(proxies) => HttpResponse::Ok().json(proxies),
+    Err(err) => HttpResponse::Ok().json(json!({"error": err.to_string()})),
+  };
+
+  Ok(response)
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UpdateProxyBody {
+  id: String,
+  data: config::Proxy,
+}
+
+#[post("/api/proxy")]
+pub async fn handle_update_proxy(body: web::Json<UpdateProxyBody>) -> Result<impl Responder> {
+  let body = body.into_inner();
+  let result = config::update_proxy(body.id, body.data);
+
+
+  println!("--->{:?}", result);
 
   let response = match result {
     Ok(proxies) => HttpResponse::Ok().json(proxies),
@@ -88,6 +111,7 @@ pub fn config(cfg: &mut web::ServiceConfig) {
     .service(handle_update_user_config)
     .service(handle_get_proxy)
     .service(handle_add_proxy)
+    .service(handle_update_proxy)
     .service(handle_search)
     .service(handle_get_stared)
     .service(handle_update_stared);

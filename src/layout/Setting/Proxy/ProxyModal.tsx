@@ -48,7 +48,7 @@ export const ProxyModal = (props: ProxyModalProps) => {
       .put("proxy", {
         ...params,
         // is_global: false,
-        // enable: false,
+        enable: false,
       })
       .then(({ data }) => {
         console.log(data);

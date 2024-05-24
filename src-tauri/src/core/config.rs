@@ -1,6 +1,5 @@
-use chrono::{Local, TimeZone, Utc};
+use chrono::{TimeZone, Utc};
 use dotenv::dotenv;
-use log::log;
 use serde::{Deserialize, Serialize};
 use std::{env, fs, path, path::PathBuf};
 use toml;
@@ -21,6 +20,7 @@ pub struct Proxy {
   pub port: String,
   pub username: Option<String>,
   pub password: Option<String>,
+  pub enable: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -191,11 +191,11 @@ pub fn get_user_config() -> UserConfig {
     Ok(data) => {
       println!("====> data 11 return default {:?}", data);
       Some(data)
-    },
+    }
     Err(_) => {
       eprintln!("Unable to load data from `{:?}`", content);
       Some(UserConfig::default())
-    },
+    }
   };
 
   println!("====> data return default {:?}", data);
@@ -307,6 +307,28 @@ pub fn add_proxy(proxy_cfg: Proxy) -> Result<Option<Vec<Proxy>>, String> {
       println!("{}", err);
       Err(err.to_string())
     }
+  }
+}
+
+pub fn update_proxy(id: String, proxy_cfg: Proxy) -> Result<Option<Vec<Proxy>>, String> {
+  let mut data = get_user_config();
+  let user_config_path = get_user_config_path();
+  let mut proxies = data.proxy.unwrap_or_default();
+
+  if let Some(proxy) = proxies
+    .iter_mut()
+    .find(|p| format!("socks5://{}:{}", p.server, p.port) == id)
+  {
+    proxy.enable = proxy_cfg.enable;
+  }
+
+  data.proxy = Some(proxies);
+
+  let content = toml::to_string(&data).unwrap();
+
+  match fs::write(user_config_path, content) {
+    Ok(_) => Ok(data.proxy),
+    Err(err) => Err(err.to_string()),
   }
 }
 

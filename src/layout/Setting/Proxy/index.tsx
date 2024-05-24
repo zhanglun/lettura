@@ -6,19 +6,45 @@ import { useEffect, useState } from "react";
 import { request } from "@/helpers/request";
 import { useModal } from "@/components/Modal/useModal";
 
-export const ProxyItem = ({ proxy }) => {
+export interface ProxyItemProps {
+  proxy: LocalProxy;
+}
+
+export const ProxyItem = ({ proxy }: ProxyItemProps) => {
+  const [enable, setEnable] = useState(proxy.enable);
+
+  function changeProxyStatus(checked: boolean) {
+    request
+      .post("proxy", {
+        id: `socks5://${proxy.server}:${proxy.port}`,
+        data: {
+          ...proxy,
+          enable: checked,
+        },
+      })
+      .then((res) => {
+        setEnable(checked);
+      });
+  }
+
   return (
-    <div className="flex justify-between items-center p-4 border my-2 rounded hover:bg-[var(--gray-2)]">
-      <div>
-        {proxy.protocol || "sock5"}://{proxy.server}:{proxy.port}
+    <div className=" p-4 border my-2 rounded hover:bg-[var(--gray-2)]">
+      <div className="flex justify-between items-center">
+        <div>
+          socks5://{proxy.server}:{proxy.port}
+        </div>
+        <div className="flex items-center flex-row gap-3">
+          <IconButton size="2" variant="ghost" color="gray" className="text-[var(--gray-12)]">
+            <Edit size="16" strokeWidth={1.5} />
+          </IconButton>
+          <IconButton size="2" variant="ghost" color="gray" className="text-[var(--gray-12)]">
+            <Trash2 size="16" strokeWidth={1.5} />
+          </IconButton>
+          <Switch checked={enable} onCheckedChange={(checked) => changeProxyStatus(checked)} />
+        </div>
       </div>
-      <div className="flex items-center flex-row gap-3">
-        <IconButton size="2" variant="ghost" color="gray" className="text-[var(--gray-12)]">
-          <Edit size="16" strokeWidth={1.5} />
-        </IconButton>
-        <IconButton size="2" variant="ghost" color="gray" className="text-[var(--gray-12)]">
-          <Trash2 size="16" strokeWidth={1.5} />
-        </IconButton>
+      <div className="mt-3">
+        <IconButton variant="ghost" color="gray">Add subscribe</IconButton>
       </div>
     </div>
   );
@@ -42,16 +68,14 @@ export const ProxySetting = () => {
   return (
     <Panel title="Proxy Settings">
       <PanelSection title="Proxy" subTitle="">
-        <Switch />
-      </PanelSection>
-      <div>
         <ProxyModal
           dialogStatus={proxyModalStatus}
           setDialogStatus={setProxyModalStatus}
           afterConfirm={getProxyList}
           afterCancel={() => {}}
         />
-      </div>
+      </PanelSection>
+      <div></div>
       <div>
         {proxyList.map((proxy) => {
           return <ProxyItem proxy={proxy} />;
