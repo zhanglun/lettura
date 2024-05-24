@@ -98,7 +98,7 @@ export const ProxySetting = () => {
 
   return (
     <Panel title="Proxy Settings">
-      <PanelSection title="Proxy" subTitle="">
+      <PanelSection title="Proxy" subTitle="use proxy server for connection">
         <Button variant="ghost" onClick={() => setProxyModalStatus(true)}>
           <PlusCircle size="16" strokeWidth={1.5} />
           Add Proxy

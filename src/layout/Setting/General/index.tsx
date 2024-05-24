@@ -90,25 +90,7 @@ export const General = () => {
 
   return (
     <Panel title="General">
-      <PanelSection title="Proxy" subTitle="use a proxy server for connection">
-        <div className="grid gap-1 grid-cols-[120px_10px_60px] items-center">
-          <TextField.Root
-            type="text"
-            value={localProxy.server}
-            className="tracking-wide"
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleLocalProxyChange("server", e.target.value)}
-          />
-          <span className="text-center">:</span>
-          <TextField.Root
-            type="text"
-            className="tracking-wide"
-            value={localProxy.port}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleLocalProxyChange("port", e.target.value)}
-          />
-        </div>
-      </PanelSection>
-      <Separator className="mt-6" size="4" />
-      <PanelSection title="Update Interval (Wserver)" subTitle="set the update interval">
+      <PanelSection title="Update Interval (🚧WIP)" subTitle="set the update interval">
         <Select.Root
           value={store.userConfig.update_interval?.toString()}
           onValueChange={(v: string) => {
