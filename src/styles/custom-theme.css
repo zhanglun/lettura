@@ -11,38 +11,290 @@
 @import "@radix-ui/colors/indigo.css";
 @import "@radix-ui/colors/indigo-dark.css";
 
-:root[data-color-scheme="luckin"],
-[data-color-scheme="luckin"] {
-  --primary: 214 100% 18%;
+:root,
+.light,
+.light-theme {
+  --default-1: #fcfcfd;
+  --default-2: #f9f9fa;
+  --default-3: #f0f0f2;
+  --default-4: #e8e8eb;
+  --default-5: #e1e1e4;
+  --default-6: #d9d9dd;
+  --default-7: #ceced3;
+  --default-8: #bbbbc1;
+  --default-9: #18181b;
+  --default-10: #2f2f32;
+  --default-11: #636369;
+  --default-12: #1f1f22;
+
+  --default-a1: #00005503;
+  --default-a2: #00002b06;
+  --default-a3: #0000220f;
+  --default-a4: #00002217;
+  --default-a5: #00001a1e;
+  --default-a6: #00001b26;
+  --default-a7: #00001b31;
+  --default-a8: #00001744;
+  --default-a9: #000003e7;
+  --default-a10: #000004d0;
+  --default-a11: #00000a9c;
+  --default-a12: #000003e0;
+
+  --default-contrast: #fff;
+  --default-surface: #f8f8f9cc;
+  --default-indicator: #18181b;
+  --default-track: #18181b;
+
+  --accent-1: var(--default-1);
+  --accent-2: var(--default-2);
+  --accent-3: var(--default-3);
+  --accent-4: var(--default-4);
+  --accent-5: var(--default-5);
+  --accent-6: var(--default-6);
+  --accent-7: var(--default-7);
+  --accent-8: var(--default-8);
+  --accent-9: var(--default-9);
+  --accent-10: var(--default-10);
+  --accent-11: var(--default-11);
+  --accent-12: var(--default-12);
+
+  --accent-a1: var(--default-a1);
+  --accent-a2: var(--default-a2);
+  --accent-a3: var(--default-a3);
+  --accent-a4: var(--default-a4);
+  --accent-a5: var(--default-a5);
+  --accent-a6: var(--default-a6);
+  --accent-a7: var(--default-a7);
+  --accent-a8: var(--default-a8);
+  --accent-a9: var(--default-a9);
+  --accent-a10: var(--default-a10);
+  --accent-a11: var(--default-a11);
+  --accent-a12: var(--default-a12);
+
+  --accent-contrast: var(--default-contrast);
+  --accent-surface: var(--default-surface);
+  --accent-indicator: var(--default-indicator);
+  --accent-track: var(--default-track);
 }
 
-:root[data-color-scheme="starbucks"],
-[data-color-scheme="starbucks"] {
-  --primary: 160 100% 22%;
+@supports (color: color(display-p3 1 1 1)) {
+  @media (color-gamut: p3) {
+    :root,
+    .light,
+    .light-theme {
+      --default-1: oklch(99.1% 0.001 285.9);
+      --default-2: oklch(98.2% 0.002 285.9);
+      --default-3: oklch(95.6% 0.003 285.9);
+      --default-4: oklch(93.1% 0.004 285.9);
+      --default-5: oklch(91% 0.005 285.9);
+      --default-6: oklch(88.8% 0.005 285.9);
+      --default-7: oklch(85.3% 0.007 285.9);
+      --default-8: oklch(79.4% 0.009 285.9);
+      --default-9: oklch(21% 0.006 285.9);
+      --default-10: oklch(30.7% 0.006 285.9);
+      --default-11: oklch(50.3% 0.008 285.9);
+      --default-12: oklch(24.1% 0.006 285.9);
+
+      --default-a1: color(display-p3 0.024 0.024 0.349 / 0.012);
+      --default-a2: color(display-p3 0.024 0.024 0.184 / 0.024);
+      --default-a3: color(display-p3 0.004 0.004 0.137 / 0.059);
+      --default-a4: color(display-p3 0.012 0.012 0.141 / 0.091);
+      --default-a5: color(display-p3 0.004 0.004 0.106 / 0.118);
+      --default-a6: color(display-p3 0.008 0.008 0.114 / 0.15);
+      --default-a7: color(display-p3 0.008 0.008 0.11 / 0.193);
+      --default-a8: color(display-p3 0.004 0.004 0.078 / 0.267);
+      --default-a9: color(display-p3 0 0 0.012 / 0.906);
+      --default-a10: color(display-p3 0 0 0.016 / 0.816);
+      --default-a11: color(display-p3 0 0 0.031 / 0.612);
+      --default-a12: color(display-p3 0 0 0.012 / 0.879);
+
+      --default-contrast: #fff;
+      --default-surface: color(display-p3 0.973 0.973 0.976 / 0.8);
+      --default-indicator: oklch(21% 0.006 285.9);
+      --default-track: oklch(21% 0.006 285.9);
+
+      --default-a1: color(display-p3 0.024 0.024 0.349 / 0.012);
+      --default-a2: color(display-p3 0.024 0.024 0.184 / 0.024);
+      --default-a3: color(display-p3 0.004 0.004 0.137 / 0.059);
+      --default-a4: color(display-p3 0.012 0.012 0.141 / 0.091);
+      --default-a5: color(display-p3 0.004 0.004 0.106 / 0.118);
+      --default-a6: color(display-p3 0.008 0.008 0.114 / 0.15);
+      --default-a7: color(display-p3 0.008 0.008 0.11 / 0.193);
+      --default-a8: color(display-p3 0.004 0.004 0.078 / 0.267);
+      --default-a9: color(display-p3 0 0 0.012 / 0.906);
+      --default-a10: color(display-p3 0 0 0.016 / 0.816);
+      --default-a11: color(display-p3 0 0 0.031 / 0.612);
+      --default-a12: color(display-p3 0 0 0.012 / 0.879);
+
+      --default-contrast: #fff;
+      --default-surface: color(display-p3 0.973 0.973 0.976 / 0.8);
+      --default-indicator: oklch(21% 0.006 285.9);
+      --default-track: oklch(21% 0.006 285.9);
+
+      --accent-1: var(--default-1);
+      --accent-2: var(--default-2);
+      --accent-3: var(--default-3);
+      --accent-4: var(--default-4);
+      --accent-5: var(--default-5);
+      --accent-6: var(--default-6);
+      --accent-7: var(--default-7);
+      --accent-8: var(--default-8);
+      --accent-9: var(--default-9);
+      --accent-10: var(--default-10);
+      --accent-11: var(--default-11);
+      --accent-12: var(--default-12);
+
+      --accent-a1: var(--default-a1);
+      --accent-a2: var(--default-a2);
+      --accent-a3: var(--default-a3);
+      --accent-a4: var(--default-a4);
+      --accent-a5: var(--default-a5);
+      --accent-a6: var(--default-a6);
+      --accent-a7: var(--default-a7);
+      --accent-a8: var(--default-a8);
+      --accent-a9: var(--default-a9);
+      --accent-a10: var(--default-a10);
+      --accent-a11: var(--default-a11);
+      --accent-a12: var(--default-a12);
+
+      --accent-contrast: var(--default-contrast);
+      --accent-surface: var(--default-surface);
+      --accent-indicator: var(--default-indicator);
+      --accent-track: var(--default-track);
+    }
+  }
 }
 
-:root[data-color-scheme="tims"],
-[data-color-scheme="tims"] {
-  --primary: 350 85% 42%;
+.dark,
+.dark-theme {
+  --default-1: #111;
+  --default-2: #191919;
+  --default-3: #232323;
+  --default-4: #2a2a2a;
+  --default-5: #313131;
+  --default-6: #3a3a3a;
+  --default-7: #484848;
+  --default-8: #616161;
+  --default-9: #fafafa;
+  --default-10: #f1f1f1;
+  --default-11: #b4b4b4;
+  --default-12: #eee;
+
+  --default-a1: #00000000;
+  --default-a2: #ffffff09;
+  --default-a3: #ffffff13;
+  --default-a4: #ffffff1b;
+  --default-a5: #ffffff22;
+  --default-a6: #ffffff2c;
+  --default-a7: #ffffff3b;
+  --default-a8: #ffffff56;
+  --default-a9: #fffffffa;
+  --default-a10: #fffffff0;
+  --default-a11: #ffffffaf;
+  --default-a12: #ffffffed;
+
+  --default-contrast: #311921;
+  --default-surface: #21212180;
+  --default-indicator: #fafafa;
+  --default-track: #fafafa;
+
+  --accent-1: var(--default-1);
+  --accent-2: var(--default-2);
+  --accent-3: var(--default-3);
+  --accent-4: var(--default-4);
+  --accent-5: var(--default-5);
+  --accent-6: var(--default-6);
+  --accent-7: var(--default-7);
+  --accent-8: var(--default-8);
+  --accent-9: var(--default-9);
+  --accent-10: var(--default-10);
+  --accent-11: var(--default-11);
+  --accent-12: var(--default-12);
+
+  --accent-a1: var(--default-a1);
+  --accent-a2: var(--default-a2);
+  --accent-a3: var(--default-a3);
+  --accent-a4: var(--default-a4);
+  --accent-a5: var(--default-a5);
+  --accent-a6: var(--default-a6);
+  --accent-a7: var(--default-a7);
+  --accent-a8: var(--default-a8);
+  --accent-a9: var(--default-a9);
+  --accent-a10: var(--default-a10);
+  --accent-a11: var(--default-a11);
+  --accent-a12: var(--default-a12);
+
+  --accent-contrast: var(--default-contrast);
+  --accent-surface: var(--default-surface);
+  --accent-indicator: var(--default-indicator);
+  --accent-track: var(--default-track);
 }
 
-/* :root {
-  --sideItemActiveBackground: rgba(255, 255, 255, 0.6);
-  --sideItemHoverBackground: rgba(210, 210, 210, 0.6);
-  --borderLine: theme(colors.zinc.200);
-  --canvasBackground: theme(colors.neutral.100);
-  --canvasForeground: theme(colors.zinc.700);
-  --panelBackground: theme(colors.white);
-  --panelForeground: theme(colors.zinc.700);
-}
+@supports (color: color(display-p3 1 1 1)) {
+  @media (color-gamut: p3) {
+    .dark,
+    .dark-theme {
+      --default-1: oklch(17.8% 0 0);
+      --default-2: oklch(21.5% 0 0);
+      --default-3: oklch(25.5% 0 0);
+      --default-4: oklch(28.4% 0 0);
+      --default-5: oklch(31.4% 0 0);
+      --default-6: oklch(35% 0 0);
+      --default-7: oklch(40.2% 0 0);
+      --default-8: oklch(49.2% 0 0);
+      --default-9: oklch(98.5% 0 0);
+      --default-10: oklch(95.7% 0 0);
+      --default-11: oklch(77% 0 0);
+      --default-12: oklch(94.9% 0 0);
 
-[data-color-scheme="dark"],
-.dark {
-  --sideItemActiveBackground: rgb(98 98 98 / 60%);
-  --sideItemHoverBackground: rgb(85 85 85 / 60%);
-  --borderLine: theme(colors.zinc.700);
-  --canvasBackground: #3b3b3b;
-  --canvasForeground: theme(colors.zinc.100);
-  --panelBackground: #333;
-  --panelForeground: theme(colors.zinc.300);
-} */
+      --default-a1: color(display-p3 0 0 0 / 0);
+      --default-a2: color(display-p3 1 1 1 / 0.034);
+      --default-a3: color(display-p3 1 1 1 / 0.076);
+      --default-a4: color(display-p3 1 1 1 / 0.105);
+      --default-a5: color(display-p3 1 1 1 / 0.134);
+      --default-a6: color(display-p3 1 1 1 / 0.172);
+      --default-a7: color(display-p3 1 1 1 / 0.231);
+      --default-a8: color(display-p3 1 1 1 / 0.336);
+      --default-a9: color(display-p3 1 1 1 / 0.979);
+      --default-a10: color(display-p3 1 1 1 / 0.941);
+      --default-a11: color(display-p3 1 1 1 / 0.685);
+      --default-a12: color(display-p3 1 1 1 / 0.929);
+
+      --default-contrast: #311921;
+      --default-surface: color(display-p3 0.125 0.125 0.125 / 0.5);
+      --default-indicator: oklch(98.5% 0 0);
+      --default-track: oklch(98.5% 0 0);
+
+      --accent-1: var(--default-1);
+      --accent-2: var(--default-2);
+      --accent-3: var(--default-3);
+      --accent-4: var(--default-4);
+      --accent-5: var(--default-5);
+      --accent-6: var(--default-6);
+      --accent-7: var(--default-7);
+      --accent-8: var(--default-8);
+      --accent-9: var(--default-9);
+      --accent-10: var(--default-10);
+      --accent-11: var(--default-11);
+      --accent-12: var(--default-12);
+
+      --accent-a1: var(--default-a1);
+      --accent-a2: var(--default-a2);
+      --accent-a3: var(--default-a3);
+      --accent-a4: var(--default-a4);
+      --accent-a5: var(--default-a5);
+      --accent-a6: var(--default-a6);
+      --accent-a7: var(--default-a7);
+      --accent-a8: var(--default-a8);
+      --accent-a9: var(--default-a9);
+      --accent-a10: var(--default-a10);
+      --accent-a11: var(--default-a11);
+      --accent-a12: var(--default-a12);
+
+      --accent-contrast: var(--default-contrast);
+      --accent-surface: var(--default-surface);
+      --accent-indicator: var(--default-indicator);
+      --accent-track: var(--default-track);
+    }
+  }
+}

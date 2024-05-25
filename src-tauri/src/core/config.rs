@@ -77,7 +77,7 @@ impl Default for UserConfig {
   fn default() -> Self {
     Self {
       threads: 1,
-      theme: String::from('1'),
+      theme: String::from("default"),
       color_scheme: ColorScheme::System,
       update_interval: 0,
       last_sync_time: Utc

@@ -15,6 +15,7 @@ export const AccentItem = (props: {
   onClick: (accent: Accent) => void;
 }) => {
   const { variable, name, active, onClick } = props;
+  const bgColor = `bg-[${variable}]/50`
 
   return (
     <div onClick={() => onClick({ name, variable })}>
@@ -26,10 +27,8 @@ export const AccentItem = (props: {
           style={{ backgroundColor: `${variable}`, borderColor: `${variable}` }}
         >
           <div
-            className={clsx("w-3 h-3 rounded-full", {
-              "bg-white/50": !active,
-              "bg-white/90": active,
-            })}
+            className={clsx("w-3 h-3 rounded-full")}
+            style={{ backgroundColor: active ? `var(--${name}-3)` : `var(--${name}-8)`}}
           ></div>
         </div>
       </Tooltip>
@@ -37,26 +36,24 @@ export const AccentItem = (props: {
   );
 };
 
-export const Accent = () => {
-  const ACCENTS = [
-    {
-      name: "ruby",
-      variable: "var(--ruby-10)",
-    },
-    {
-      name: "indigo",
-      variable: "var(--indigo-10)",
-    },
-    {
-      name: "tomato",
-      variable: "var(--tomato-10)",
-    },
-    {
-      name: "iris",
-      variable: "var(--iris-10)",
-    },
-  ];
+const ACCENTS = [
+  "default",
+  "brown",
+  "ruby",
+  "crimson",
+  "pink",
+  "purple",
+  "violet",
+  "iris",
+  "indigo",
+  "teal",
+  "jade",
+].map((name: string) => ({
+  name,
+  variable: `var(--${name}-9)`,
+}));
 
+export const Accent = () => {
   const store = useBearStore((state) => ({
     userConfig: state.userConfig,
     updateUserConfig: state.updateUserConfig,
@@ -77,7 +74,7 @@ export const Accent = () => {
   };
 
   return (
-    <div className="flex gap-4 items-center">
+    <div className="flex gap-4 items-center flex-wrap">
       {ACCENTS.map((accent: { name: string; variable: string }, i) => {
         return <AccentItem {...accent} active={accent.name === currentTheme} onClick={handleClick} key={i} />;
       })}

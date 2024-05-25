@@ -51,7 +51,7 @@ export const ColorScheme = () => {
             "border-2 border-black rounded-lg h-14 flex cursor-pointer items-center justify-center",
             "bg-black text-white",
             {
-              "border-[var(--accent-10)]": store.userConfig.color_scheme === "dark",
+              "border-[var(--accent-10)!important]": store.userConfig.color_scheme === "dark",
             }
           )}
           onClick={() => handleThemeChange("dark")}

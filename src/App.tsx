@@ -59,7 +59,7 @@ function App() {
     <Theme
       className="w-[100vw] h-[100vh]"
       // @ts-ignore
-      accentColor={store.userConfig.theme || "indigo"}
+      accentColor={store.userConfig.theme || "default"}
       panelBackground="translucent"
     >
       <div className="h-full max-h-full ">
