@@ -1,6 +1,5 @@
-use serde::{Serialize};
+use serde::Serialize;
 use tauri::{command, Window};
-use tokio::sync::{mpsc, Mutex};
 use uuid::Uuid;
 
 use crate::core::config;
@@ -204,12 +203,6 @@ pub fn init_process(window: Window) {
       )
       .unwrap();
   });
-}
-
-#[command]
-pub fn update_proxy(ip: String, port: String) -> usize {
-  config::update_proxy(ip, port);
-  1
 }
 
 #[command]

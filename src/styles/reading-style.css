@@ -7,10 +7,9 @@
   --mono-font: "JetBrains Mono", monospace !important;
 
   --app-feedlist-width: 230px;
-  --app-article-width: 290px;
-  --app-toolbar-height: 50px;
-  --app-setting-sidebar-width: 200px;
-  --view-helpbar-width: 50px;
+  --app-article-width: 300px;
+  --app-toolbar-height: 48px;
+  --view-helpbar-width: 48px;
 
   --reading-editable-font-size: 14;
   --reading-editable-line-width: 450;
@@ -18,7 +17,7 @@
   --reading-editable-typeface: "Source Serif VF", Georgia, Serif;
   /* auto generate */
 
-  --reading-scale: 1.2;
+  --reading-scale: 1.4;
   --reading-root-size: 16; /* This is to replicate the browser base size for math purposes */
 
   --reading-base-fs: calc(
@@ -97,6 +96,9 @@
 
   --reading-font-monospace: "Roboto Mono VF", "SFMono-Regular", Consolas,
     "Liberation Mono", Menlo, Courier, monospace;
+
+  /* Text selection colour */
+  --text-selection-background-color: #3297FD /* default value chosen from https://stackoverflow.com/questions/16094837/what-is-the-browser-default-background-color-when-selecting-text */
 }
 
 .reading-content {
@@ -105,11 +107,11 @@
   font-family: var(--reading-font-body);
   font-size: var(--reading-p-font-size);
 
-  & * {
+  * {
     max-width: 100%;
   }
 
-  & ::selection {
+  ::selection {
     background-color: var(--text-selection-background-color) !important;
   }
 
@@ -208,7 +210,7 @@
   }
 
   & img {
-    margin: 0 auto;
-    border: 1px solid var(--color-primary);
+    margin: 40px auto !important;
+    border: 2px solid var(--color-primary);
   }
 }

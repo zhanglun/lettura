@@ -13,12 +13,20 @@ export const ColorScheme = () => {
       color_scheme: value,
     });
 
-    if (value === "system") {
-      document.documentElement.dataset.colorScheme = window.matchMedia("(prefers-color-scheme: dark)").matches
+    let mode = value || "light";
+
+    if (value === 'system') {
+      mode = window.matchMedia(
+        "(prefers-color-scheme: dark)"
+      ).matches
         ? "dark"
         : "light";
+    }
+
+    if (mode === 'dark') {
+      document.body.classList.add("dark-theme");
     } else {
-      document.documentElement.dataset.colorScheme = value;
+      document.body.classList.remove("dark-theme");
     }
   }
   return (
@@ -26,9 +34,9 @@ export const ColorScheme = () => {
       <div>
         <div
           className={clsx(
-            "border rounded-lg h-14 flex cursor-pointer items-center justify-center dark:bg-foreground dark:text-background",
+            "border-2 rounded-lg h-14 flex cursor-pointer items-center justify-center bg-white text-black dark:outline-none",
             {
-              "ring-2": store.userConfig.theme === "light",
+              "border-[var(--accent-10)]": store.userConfig.color_scheme === "light",
             }
           )}
           onClick={() => handleThemeChange("light")}
@@ -40,11 +48,10 @@ export const ColorScheme = () => {
       <div>
         <div
           className={clsx(
-            "border rounded-lg h-14 flex cursor-pointer items-center justify-center",
-            "bg-foreground text-background",
-            "dark:bg-background dark:text-foreground",
+            "border-2 border-black rounded-lg h-14 flex cursor-pointer items-center justify-center",
+            "bg-black text-white",
             {
-              "ring-2": store.userConfig.theme === "dark",
+              "border-[var(--accent-10)!important]": store.userConfig.color_scheme === "dark",
             }
           )}
           onClick={() => handleThemeChange("dark")}
@@ -56,20 +63,20 @@ export const ColorScheme = () => {
       <div>
         <div
           className={clsx(
-            "border rounded-lg h-14 cursor-pointer",
-            "bg-gradient-to-br from-background from-50%  via-foreground via-0% to-foreground",
+            "border-2 rounded-lg h-14 cursor-pointer",
+            "bg-gradient-to-br from-white from-50%  via-black via-0% to-black",
             "dark:from-foreground dark:from-50% dark:via-background dark:via-0% dark:to-background",
             {
-              "ring-2": store.userConfig.theme === "system",
+              "border-[var(--accent-10)]": store.userConfig.color_scheme === "system",
             }
           )}
           onClick={() => handleThemeChange("system")}
         >
           <div className="h-full flex items-center justify-center gap-2 ">
-            <span className="text-background dark:text-foreground mix-blend-difference contrast">
+            <span className="text-white mix-blend-difference constrast">
               <Sun size={20} />
             </span>
-            <span className="text-background dark:text-foreground">
+            <span className="text-white mix-blend-difference contrast">
               <Moon size={19} />
             </span>
           </div>

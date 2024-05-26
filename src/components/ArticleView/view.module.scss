@@ -19,44 +19,6 @@
   font-size: 28px;
 }
 
-.meta {
-  font-size: 14px;
-  color: var(--text-color);
-  display: grid;
-  grid-template-columns: auto auto 1fr;
-  grid-column-gap: 12px;
-}
-
-.author,
-.time {
-  align-self: center;
-  height: 20px;
-  line-height: 20px;
-}
-
-.channelInfo {
-  display: flex;
-  align-items: center;
-  height: 20px;
-  line-height: 20px;
-}
-
-.channelInfo img {
-  width: 20px;
-  height: 20px;
-  margin-right: 6px;
-}
-
-.placeholder {
-  width: 50%;
-  height: 100%;
-  margin: 0 auto;
-  background-image: url('../../styles/images/mountain.webp');
-  background-size: 80%;
-  background-repeat: no-repeat;
-  background-position: center;
-}
-
 .helpBar {
   position: fixed;
   top: 160px;

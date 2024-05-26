@@ -60,11 +60,18 @@ pub fn delete_folder(uuid: String) -> (usize, usize) {
 
   println!(" ===> {:?}", folder);
 
-  if folder.len() == 1 {
+  return if folder.len() == 1 {
     let relations = schema::feed_metas::dsl::feed_metas
       .filter(schema::feed_metas::folder_uuid.eq_any(vec![String::from(&uuid)]))
       .load::<models::FeedMeta>(&mut connection)
       .expect("Expect get feed meta");
+
+    diesel::delete(
+      schema::feed_metas::dsl::feed_metas.filter(schema::feed_metas::folder_uuid.eq(&uuid)),
+    )
+    .execute(&mut connection)
+    .expect("Expect delete feed meta");
+
     let channel_uuids = relations.into_iter().map(|item| item.uuid).collect();
 
     println!("{:?}", channel_uuids);
@@ -74,11 +81,10 @@ pub fn delete_folder(uuid: String) -> (usize, usize) {
     diesel::delete(schema::folders::dsl::folders.filter(schema::folders::uuid.eq(&uuid)))
       .execute(&mut connection)
       .expect("Expect delete folder");
-
-    return (1, channels);
+    (1, channels)
   } else {
-    return (0, 0);
-  }
+    (0, 0)
+  };
 }
 
 pub fn update_folder(uuid: String, name: String) -> (usize, String) {
@@ -117,6 +123,12 @@ mod tests {
   #[test]
   fn test_get_folders() {
     let result = get_folders();
+    println!("{:?}", result);
+  }
+
+  #[test]
+  fn test_delete_folder() {
+    let result = delete_folder("97b60ec4-a319-4941-be99-52264f05f801".to_string());
     println!("{:?}", result);
   }
 }

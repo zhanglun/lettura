@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
-
-import { Folder as FolderIcon, Rss, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Rss, Trash2 } from "lucide-react";
 import { open } from "@tauri-apps/api/shell";
-import { Channel, Folder } from "@/db";
+import { Channel } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
 import { busChannel } from "@/helpers/busChannel";
 import { DataTable } from "./DataTable";
@@ -10,19 +9,12 @@ import { CellContext, createColumnHelper } from "@tanstack/react-table";
 import { getChannelFavicon } from "@/helpers/parseXML";
 import { DialogUnsubscribeFeed } from "./DialogUnsubscribeFeed";
 import { useModal } from "@/components/Modal/useModal";
-import { Icon } from "@/components/Icon";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
+import { Avatar, Badge, HoverCard, IconButton } from "@radix-ui/themes";
 
 export const Feed = () => {
   const [list, setList] = useState<(Channel & { parent_uuid: String })[]>([]);
   const [showStatus, setModalStatus] = useModal();
-  const [renderList, setRenderList] = useState<
-    (Channel & { parent_uuid: String })[]
-  >([]);
+  const [renderList, setRenderList] = useState<(Channel & { parent_uuid: String })[]>([]);
   const [filterParams, setFilterParams] = useState<{
     searchText?: string;
     folderUuid?: string;
@@ -45,40 +37,13 @@ export const Feed = () => {
         const { title, link } = props.row.original;
 
         return (
-          <div>
-            <div className="flex items-center">
-              <img
-                src={getChannelFavicon(link)}
-                alt=""
-                className="w-6 h-6 rounded-full mr-2"
-              />
-              <a
-                className="font-bold hover:underline"
-                href={link}
-                target={"_blank"}
-                rel="noreferrer"
-              >
-                {title}
-              </a>
-            </div>
+          <div className="flex items-center gap-2">
+            <Avatar src={getChannelFavicon(link)} fallback={title.slice(0, 1)} alt={title} size="1" />
+            <a className="font-bold hover:underline" href={link} target={"_blank"} rel="noreferrer">
+              {title}
+            </a>
+            {props.row.original.folder_name && <Badge>{props.row.original.folder_name}</Badge>}
           </div>
-        );
-      },
-    },
-    {
-      accessorKey: "folder",
-      header: "Folder",
-      size: "fix-content",
-      cell(props: CellContext<Channel, string>): JSX.Element {
-        return (
-          <>
-            {props.row.original.folder_name && (
-              <div className="flex space-x-2 items-center">
-                <FolderIcon size={16} />{" "}
-                <span>{props.row.original.folder_name}</span>
-              </div>
-            )}
-          </>
         );
       },
     },
@@ -90,18 +55,16 @@ export const Feed = () => {
 
         return (
           <div className="flex justify-center">
-            {health_status === 0 && (
-              <div className="w-3 h-3 rounded-full bg-green-600" />
-            )}
+            {health_status === 0 && <div className="w-3 h-3 rounded-full bg-green-600" />}
             {health_status === 1 && (
-              <HoverCard>
-                <HoverCardTrigger>
+              <HoverCard.Root>
+                <HoverCard.Trigger>
                   <div className="w-3 h-3 rounded-full bg-red-600" />
-                </HoverCardTrigger>
-                <HoverCardContent>
+                </HoverCard.Trigger>
+                <HoverCard.Content>
                   <p>{failure_reason}</p>
-                </HoverCardContent>
-              </HoverCard>
+                </HoverCard.Content>
+              </HoverCard.Root>
             )}
           </div>
         );
@@ -113,44 +76,34 @@ export const Feed = () => {
     columnHelper.accessor((row) => "last-sync-date", {
       id: "last_sync_date",
       header: "Last sync date",
-      size: 160,
       cell(props: CellContext<Channel, string>): JSX.Element {
         const { last_sync_date = "" } = props.row.original;
 
-        return <div className="flex justify-center">{last_sync_date}</div>;
+        return (
+          <div className="flex justify-start w-[180px] px-2">
+            <span>{last_sync_date} </span>
+          </div>
+        );
       },
     }),
     columnHelper.accessor((row) => `${row.uuid}-opt`, {
       id: "opt",
-      header: "Action",
+      header: "",
       size: 110,
       cell(props: CellContext<Channel, string>): JSX.Element {
         return (
           <div className="flex space-x-1">
-            <Icon
-              className="w-6 h-6"
-              onClick={() => open(props.row.original.feed_url)}
-            >
+            <IconButton variant="ghost" color="gray" onClick={() => open(props.row.original.feed_url)}>
               <Rss size={14} />
-            </Icon>
-            <Icon
-              className="w-6 h-6"
-              onClick={() => handleUnSubscribe(props.row.original)}
-            >
+            </IconButton>
+            <IconButton variant="ghost" color="red" onClick={() => handleUnSubscribe(props.row.original)}>
               <Trash2 size={14} />
-            </Icon>
+            </IconButton>
           </div>
         );
       },
     }),
   ];
-
-  const handleSearch = (v: string) => {
-    setFilterParams({
-      ...filterParams,
-      searchText: v,
-    });
-  };
 
   const getList = async (params = {}) => {
     dataAgent.getChannels(params).then(({ data }) => {
@@ -164,8 +117,7 @@ export const Feed = () => {
     const { searchText = "", folderUuid = "" } = filterParams;
     const result = list.filter((item) => {
       return (
-        (item.title.indexOf(searchText) > -1 ||
-          item.feed_url.indexOf(searchText) > -1) &&
+        (item.title.indexOf(searchText) > -1 || item.feed_url.indexOf(searchText) > -1) &&
         item.parent_uuid === folderUuid
       );
     });
@@ -186,7 +138,7 @@ export const Feed = () => {
   }, []);
 
   return (
-    <div className="pt-2">
+    <div className="">
       <DataTable
         // @ts-ignore
         columns={columns}

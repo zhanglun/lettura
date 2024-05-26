@@ -68,16 +68,17 @@ pub fn delete_feed(uuid: String) -> usize {
 
 pub fn batch_delete_feed(channel_uuids: Vec<String>) -> usize {
   let mut connection = db::establish_connection();
-  let result =
-    diesel::delete(schema::feeds::dsl::feeds.filter(schema::feeds::uuid.eq_any(&channel_uuids)))
-      .execute(&mut connection)
-      .expect("Expect delete channel");
 
   diesel::delete(
     schema::articles::dsl::articles.filter(schema::articles::feed_uuid.eq_any(&channel_uuids)),
   )
   .execute(&mut connection)
-  .expect("Expect delete channel");
+  .expect("Expect delete article in channel");
+
+  let result =
+    diesel::delete(schema::feeds::dsl::feeds.filter(schema::feeds::uuid.eq_any(&channel_uuids)))
+      .execute(&mut connection)
+      .expect("Expect delete channel");
 
   result
 }

@@ -2,6 +2,11 @@
 @import "./custom-components.css";
 @import "./reading-style.css";
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
 * {
   box-sizing: border-box;
 }
@@ -17,10 +22,8 @@ body {
 }
 
 body {
-  font-family: var(--sans-font);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: hsl(var(--foreground));
 }
 
 #root {
@@ -53,7 +56,7 @@ code {
 /* ===== Scrollbar CSS ===== */
 
 div, ul {
-  scrollbar-gutter: stable;
+  /* scrollbar-gutter: stable; */
 }
 
 ::-webkit-scrollbar {

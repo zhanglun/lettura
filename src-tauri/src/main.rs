@@ -91,7 +91,7 @@ async fn main() {
 
       match env::var("LETTURA_ENV") {
         Ok(_env) => {
-          main_window.set_title("Lettura dev").unwrap();
+          main_window.set_title("Lettura in developing").unwrap();
         }
         Err(_) => {}
       }
@@ -114,13 +114,11 @@ async fn main() {
       cmd::fetch_feed,
       cmd::add_feed,
       cmd::update_user_config,
-      cmd::update_proxy,
       cmd::update_threads,
       cmd::update_theme,
       cmd::create_folder,
       cmd::delete_folder,
       cmd::update_folder,
-      cmd::get_folders,
       cmd::move_channel_into_folder,
       cmd::init_process,
       cmd::update_icon,

@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api";
-import { Article, ArticleResItem, Channel, FeedResItem, Folder } from "../db";
+import { Article, ArticleResItem, Channel, FeedResItem, FolderResItem } from "../db";
 import { request } from "@/helpers/request";
 import { AxiosRequestConfig, AxiosResponse } from "axios";
 
@@ -28,8 +28,8 @@ export const updateFolder = async (
   return invoke("update_folder", { uuid, name });
 };
 
-export const getFolders = async (): Promise<Folder[]> => {
-  return invoke("get_folders");
+export const getFolders = async ():  Promise<AxiosResponse<FolderResItem[]>> => {
+  return request.get("folders", {});
 };
 
 export const updateFeedSort = async (
@@ -145,13 +145,6 @@ export const getUserConfig = async (): Promise<any> => {
 
 export const updateUserConfig = async (cfg: any): Promise<any> => {
   return request.post("/user-config", cfg)
-};
-
-export const updateProxy = async (cfg: LocalProxy): Promise<any> => {
-  return invoke("update_proxy", {
-    ip: cfg.ip,
-    port: cfg.port,
-  });
 };
 
 export const updateThreads = async (threads: number): Promise<any> => {

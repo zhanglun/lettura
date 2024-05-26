@@ -1,8 +1,8 @@
 mod handlers;
 
-use std::sync::Mutex;
-use actix_web::{http, middleware, web, App, HttpServer};
 use actix_cors::Cors;
+use actix_web::{http, middleware, web, App, HttpServer};
+use std::sync::Mutex;
 use tauri::AppHandle;
 
 struct TauriAppState {
@@ -30,6 +30,7 @@ pub async fn init(app: AppHandle) -> std::io::Result<()> {
       .configure(handlers::common::config)
       .configure(handlers::article::config)
       .configure(handlers::feed::config)
+      .configure(handlers::folder::config)
   })
   .bind(("127.0.0.1", 1105))?
   .run()

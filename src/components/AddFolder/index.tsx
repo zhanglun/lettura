@@ -1,24 +1,12 @@
 import React, { useEffect, useRef, useState, ChangeEvent } from "react";
 import * as dataAgent from "../../helpers/dataAgent";
-
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Folder, Folder as Folder2, Loader2 } from "lucide-react";
-import { Button } from "../ui/button";
-import { FeedResItem } from "@/db";
+import { FolderResItem } from "@/db";
 import { useBearStore } from "@/stores";
+import { Dialog, TextField, Tooltip, Button } from "@radix-ui/themes";
 
 export interface AddFolderProps {
   action: "add" | "edit";
-  folder?: FeedResItem | null;
+  folder?: FolderResItem | null;
   dialogStatus: boolean;
   trigger?: React.ReactNode;
   setDialogStatus: (status: boolean) => void;
@@ -28,12 +16,14 @@ export interface AddFolderProps {
 
 export const AddFolder = (props: AddFolderProps) => {
   const { action, folder } = props;
+  console.log("%c Line:19 🥪 folder", "color:#ed9ec7", folder);
   const store = useBearStore((state) => ({
     getFeedList: state.getFeedList,
-  }))
-  const { dialogStatus, setDialogStatus, afterConfirm, afterCancel, trigger } =
-    props;
+  }));
+  const { dialogStatus, setDialogStatus, afterConfirm, afterCancel, trigger } = props;
   const [name, setName] = useState("");
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
   const [confirming, setConfirming] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -53,8 +43,8 @@ export const AddFolder = (props: AddFolderProps) => {
   };
 
   const handleSave = async () => {
-    if(!name) {
-      return false
+    if (!name) {
+      return false;
     }
 
     setConfirming(true);
@@ -68,18 +58,31 @@ export const AddFolder = (props: AddFolderProps) => {
     }
 
     p.then((res) => {
-      console.log("🚀 ~ file: index.tsx:59 ~ p.then ~ res:", res)
+      console.log("🚀 ~ file: index.tsx:59 ~ p.then ~ res:", res);
       if (res[0] > 0) {
-        store.getFeedList()
+        store.getFeedList();
         afterConfirm();
         handleCancel();
       }
-    }).catch((err) => {
-      console.log("🚀 ~ file: index.tsx:66 ~ p.then ~ err:", err)
-    }).finally(() => {
-      setConfirming(false);
-    });
+    })
+      .catch((err) => {
+        console.log("🚀 ~ file: index.tsx:66 ~ p.then ~ err:", err);
+      })
+      .finally(() => {
+        setConfirming(false);
+      });
   };
+
+  useEffect(() => {
+    if (action === "add") {
+      setTitle("Add Folder");
+      setContent("Organize your subscribes");
+    }
+    if (action === "edit") {
+      setTitle("Edit Folder");
+      setContent("Update your folder");
+    }
+  }, [action]);
 
   useEffect(() => {
     if (dialogStatus && inputRef && inputRef.current) {
@@ -87,53 +90,41 @@ export const AddFolder = (props: AddFolderProps) => {
     }
 
     if (action === "edit" && folder) {
-      setName(folder.title);
+      // @ts-ignore
+      setName(folder.name || folder.title);
     }
   }, [dialogStatus]);
 
   return (
-    <Dialog open={dialogStatus} onOpenChange={setDialogStatus}>
-      {trigger && <DialogTrigger>{trigger}</DialogTrigger>}
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle className="text-2xl flex items-center">
-            {action === "add" ? "Create Folder" : "Edit Folder"}
-          </DialogTitle>
-          <DialogDescription>
-            {action === "add"
-              ? "Organize your subscribes"
-              : "update your folder"}
-          </DialogDescription>
-        </DialogHeader>
-        <div className="pb-5">
-          <div className="mb-3">
-            <Input
-              type="text"
-              value={name}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                handleNameChange(e.target.value)
-              }
-              ref={inputRef}
-            />
-          </div>
-          <div>
-            <Button
-              className="w-full"
-              onClick={handleSave}
-              disabled={confirming || !name}
-            >
-              {confirming ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Saving
-                </>
-              ) : (
-                "Save"
-              )}
+    <Dialog.Root open={dialogStatus} onOpenChange={setDialogStatus}>
+      {trigger && (
+        <Tooltip content={title}>
+          <Dialog.Trigger>{trigger}</Dialog.Trigger>
+        </Tooltip>
+      )}
+      <Dialog.Content className="sm:max-w-[425px]">
+        <Dialog.Title className="lex items-center" size="6" mt="2" mb="1">
+          {title}
+        </Dialog.Title>
+        <Dialog.Description size="2" mb="4" color="gray">
+          {content}
+        </Dialog.Description>
+        <div className="py-3">
+          <TextField.Root
+            value={name}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => handleNameChange(e.target.value)}
+            ref={inputRef}
+          ></TextField.Root>
+          <div className="flex justify-end gap-3 mt-4">
+            <Dialog.Close>
+              <Button variant="soft">Cancel</Button>
+            </Dialog.Close>
+            <Button onClick={handleSave} disabled={confirming || !name} loading={confirming}>
+              {confirming ? "Saving" : "Save"}
             </Button>
           </div>
         </div>
-      </DialogContent>
-    </Dialog>
+      </Dialog.Content>
+    </Dialog.Root>
   );
 };

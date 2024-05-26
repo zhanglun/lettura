@@ -54,6 +54,8 @@ pub struct ArticleQueryItem {
   #[diesel(sql_type = Text)]
   pub description: String,
   #[diesel(sql_type = Text)]
+  pub author: String,
+  #[diesel(sql_type = Text)]
   pub pub_date: String,
   #[diesel(sql_type = Text)]
   pub create_date: String,
@@ -126,6 +128,7 @@ impl Article {
               A.title,
               A.feed_url,
               A.description as description,
+              A.author,
               A.pub_date,
               A.create_date,
               A.read_status,
@@ -154,6 +157,7 @@ impl Article {
           A.title,
           A.feed_url,
           A.description as description,
+          A.author,
           A.pub_date,
           A.create_date,
           A.read_status,
@@ -177,6 +181,7 @@ impl Article {
           A.title,
           A.feed_url,
           A.description as description,
+          A.author,
           A.pub_date,
           A.create_date,
           A.read_status,
@@ -187,7 +192,7 @@ impl Article {
           articles as A
         ON C.uuid = A.feed_uuid
         WHERE A.starred = 1
-        "
+        ",
       );
     } else {
       query = query.sql(
@@ -201,6 +206,7 @@ impl Article {
             A.title,
             A.feed_url,
             A.description as description,
+            A.author,
             A.pub_date,
             A.create_date,
             A.read_status,
@@ -353,10 +359,11 @@ impl Article {
     let article = Self::get_article_with_uuid(String::from(&uuid));
 
     if let Some(article) = article {
-      let res = diesel::update(schema::articles::dsl::articles.filter(schema::articles::uuid.eq(&uuid)))
-        .set(schema::articles::starred.eq(status as i32))
-        .execute(&mut connection)
-        .unwrap_or(0);
+      let res =
+        diesel::update(schema::articles::dsl::articles.filter(schema::articles::uuid.eq(&uuid)))
+          .set(schema::articles::starred.eq(status as i32))
+          .execute(&mut connection)
+          .unwrap_or(0);
       res
     } else {
       0
@@ -418,30 +425,26 @@ impl Article {
   }
 
   pub fn purge_articles() -> usize {
-    let user_config = get_user_config();
+    let cfg = get_user_config();
 
-    if let Some(cfg) = user_config {
-      if cfg.purge_on_days == 0 {
-        return 0;
-      }
-
-      let expired_date = Utc::now().naive_utc() - Duration::days(cfg.purge_on_days as i64);
-      let mut connection = establish_connection();
-      let mut query = diesel::delete(schema::articles::dsl::articles).into_boxed();
-
-      if !cfg.purge_unread_articles {
-        query = query.filter(schema::articles::read_status.eq(2));
-      }
-
-      let query = query.filter(schema::articles::create_date.lt(expired_date));
-
-      let result = query.execute(&mut connection).expect("purge failed!");
-
-      log::info!("{:?} articles purged", result);
-
-      return result;
+    if cfg.purge_on_days == 0 {
+      return 0;
     }
 
-    0
+    let expired_date = Utc::now().naive_utc() - Duration::days(cfg.purge_on_days as i64);
+    let mut connection = establish_connection();
+    let mut query = diesel::delete(schema::articles::dsl::articles).into_boxed();
+
+    if !cfg.purge_unread_articles {
+      query = query.filter(schema::articles::read_status.eq(2));
+    }
+
+    let query = query.filter(schema::articles::create_date.lt(expired_date));
+
+    let result = query.execute(&mut connection).expect("purge failed!");
+
+    log::info!("{:?} articles purged", result);
+
+    return result;
   }
 }

@@ -1,78 +1,70 @@
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useBearStore } from "@/stores";
+import { Tooltip } from "@radix-ui/themes";
 import clsx from "clsx";
 import { useState } from "react";
 
 export interface Accent {
   name: string;
-  hsl: string;
+  variable: string;
 }
 
 export const AccentItem = (props: {
   name: string;
-  hsl: string;
+  variable: string;
   active: boolean;
   onClick: (accent: Accent) => void;
 }) => {
-  const { hsl, name, active, onClick } = props;
+  const { variable, name, active, onClick } = props;
+  const bgColor = `bg-[${variable}]/50`
 
   return (
-    <div onClick={() => onClick({ name, hsl })}>
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger>
-            <div
-              className={clsx("w-10 h-10 rounded-full flex items-center justify-center", "border-2", {
-                "shadow-[inset_0px_0px_0_2px_white]": active,
-              })}
-              style={{ backgroundColor: `hsl(${hsl})`, borderColor: `hsl(${hsl})` }}
-            >
-              <div
-                className={clsx("w-3 h-3 rounded-full", {
-                  "bg-white/50": !active,
-                  "bg-white/90": active,
-                })}
-              ></div>
-            </div>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>{name}</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+    <div onClick={() => onClick({ name, variable })}>
+      <Tooltip content={name}>
+        <div
+          className={clsx("w-10 h-10 rounded-full flex items-center justify-center", "border-2", {
+            "shadow-[inset_0px_0px_0_2px_white]": active,
+          })}
+          style={{ backgroundColor: `${variable}`, borderColor: `${variable}` }}
+        >
+          <div
+            className={clsx("w-3 h-3 rounded-full")}
+            style={{ backgroundColor: active ? `var(--${name}-3)` : `var(--${name}-8)`}}
+          ></div>
+        </div>
+      </Tooltip>
     </div>
   );
 };
 
-export const Accent = () => {
-  const ACCENTS = [
-    {
-      name: "black",
-      hsl: "0 0% 13%",
-    },
-    {
-      name: "luckin",
-      hsl: "214 100% 18%",
-    },
-    {
-      name: "starbucks",
-      hsl: "160 100% 22%",
-    },
-    {
-      name: "tims",
-      hsl: "350 85% 42%",
-    },
-  ];
+const ACCENTS = [
+  "default",
+  "brown",
+  "ruby",
+  "crimson",
+  "pink",
+  "purple",
+  "violet",
+  "iris",
+  "indigo",
+  "teal",
+  "jade",
+].map((name: string) => ({
+  name,
+  variable: `var(--${name}-9)`,
+}));
 
+export const Accent = () => {
   const store = useBearStore((state) => ({
     userConfig: state.userConfig,
     updateUserConfig: state.updateUserConfig,
   }));
   const [currentTheme, setCurrentTheme] = useState(store.userConfig.theme);
-  const handleClick = (accent: { name: string; hsl: string }) => {
-    const { name, hsl } = accent;
+  const handleClick = (accent: { name: string; variable: string }) => {
+    const { name, variable } = accent;
 
-    document.documentElement.style.setProperty(`--primary`, hsl as string);
+    document.documentElement.style.setProperty(`--primary`, variable as string);
+    document.documentElement.dataset.accent = name;
+
     store.updateUserConfig({
       ...store.userConfig,
       theme: name,
@@ -82,9 +74,9 @@ export const Accent = () => {
   };
 
   return (
-    <div className="flex gap-4 items-center">
-      {ACCENTS.map((accent: { name: string; hsl: string }) => {
-        return <AccentItem {...accent} active={accent.name === currentTheme} onClick={handleClick} />;
+    <div className="flex gap-4 items-center flex-wrap">
+      {ACCENTS.map((accent: { name: string; variable: string }, i) => {
+        return <AccentItem {...accent} active={accent.name === currentTheme} onClick={handleClick} key={i} />;
       })}
     </div>
   );

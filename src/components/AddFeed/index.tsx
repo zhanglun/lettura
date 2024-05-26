@@ -1,25 +1,13 @@
-import React, { ChangeEvent, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import * as dataAgent from "@/helpers/dataAgent";
 import { useModal } from "../Modal/useModal";
 
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+import { Avatar, Button, Dialog, Kbd, TextField, Tooltip } from "@radix-ui/themes";
 import { Icon } from "../Icon";
 import { ArrowLeft, Loader2, Plus } from "lucide-react";
 import { toast } from "sonner";
-import { TooltipBox } from "../TooltipBox";
 import { useBearStore } from "@/stores";
-import { Kbd } from "@/components/Kbd";
 
 export const AddFeedChannel = (props: any) => {
   const store = useBearStore((state) => ({
@@ -120,105 +108,75 @@ export const AddFeedChannel = (props: any) => {
   }, [showStatus]);
 
   return (
-    <Dialog open={showStatus} onOpenChange={handleStatusChange}>
-      <TooltipBox
+    <Dialog.Root open={showStatus} onOpenChange={handleStatusChange}>
+      <Tooltip
         content={
           <>
-            Create new subscribe <Kbd val="c" className="ml-3" />
+            Create new subscribe <Kbd className="ml-3">c</Kbd>
           </>
         }
         side="right"
         className="w-full"
       >
-        <DialogTrigger asChild>{props.children}</DialogTrigger>
-      </TooltipBox>
-      <DialogContent className="sm:max-w-[465px]">
-        <DialogHeader>
-          <DialogTitle className="flex items-center text-2xl">
-            {step === 2 && (
-              <Icon className="mr-2 h-6 w-6 p-1" onClick={() => setStep(1)}>
-                <ArrowLeft size={16} />
-              </Icon>
-            )}
-            Subscribe
-          </DialogTitle>
-          <DialogDescription>
-            Follow your favorite sources and never miss a story
-          </DialogDescription>
-        </DialogHeader>
-        <div className="pb-5">
+        <Dialog.Trigger>{props.children}</Dialog.Trigger>
+      </Tooltip>
+      <Dialog.Content className="sm:max-w-[465px]">
+        <Dialog.Title className="lex items-center" size="6" mt="2" mb="1">
+          {step === 2 && (
+            <Icon className="mr-2 h-6 w-6 p-1" onClick={() => setStep(1)}>
+              <ArrowLeft size={16} />
+            </Icon>
+          )}
+          Subscribe
+        </Dialog.Title>
+        <Dialog.Description size="2" mb="4" color="gray">
+          Follow your favorite sources and never miss a story
+        </Dialog.Description>
+        <div className="py-3">
           {step === 1 && (
-            <div>
-              <div className="mb-3">
-                <Input
-                  type="text"
-                  placeholder={""}
-                  ref={inputRef}
-                  disabled={loading}
-                  value={feedUrl}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                    handleInputChange(e.target.value)
-                  }
-                />
-              </div>
-              <div>
-                <Button
-                  className="w-full"
-                  onClick={handleLoad}
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Loading
-                    </>
-                  ) : (
-                    "Load"
-                  )}
+            <>
+              <TextField.Root
+                placeholder=""
+                ref={inputRef}
+                disabled={loading}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => handleInputChange(e.target.value)}
+              ></TextField.Root>
+              <div className="flex justify-end gap-3 mt-4">
+                <Dialog.Close>
+                  <Button variant="soft">Cancel</Button>
+                </Dialog.Close>
+                <Button onClick={handleLoad} disabled={loading} loading={loading}>
+                  {loading ? "Loading" : "Load"}
                 </Button>
               </div>
-            </div>
+            </>
           )}
           {step === 2 && (
-            <div>
+            <>
               <div className="mb-3 rounded border p-3">
                 <div className="mb-4 flex items-start gap-3">
-                  <div className="flex-0 h-[80px] w-[80px] overflow-hidden rounded-lg">
-                    <img src={feed.logo} className="" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="mb-3 text-lg font-bold leading-5">
-                      {feed.title}
-                    </div>
-                    <div className="break-all text-sm text-stone-500">
-                      {feedUrl}
-                    </div>
+                  <Avatar fallback={feed.title.slice(0, 1)} src={feed.logo} size="6" />
+                  <div className="flex-1 pt-2">
+                    <div className="mb-3 text-lg font-bold leading-5">{feed.title}</div>
+                    <div className="break-all text-sm text-stone-500">{feedUrl}</div>
                   </div>
                 </div>
                 <div>
                   <div className="text-md">{feed.description}</div>
                 </div>
               </div>
-              <div>
-                <Button
-                  className="w-full"
-                  onClick={handleSave}
-                  disabled={confirming}
-                >
-                  {confirming ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Subscribing
-                    </>
-                  ) : (
-                    "Subscribe"
-                  )}
+              <div className="flex justify-end gap-3 mt-4">
+                <Dialog.Close>
+                  <Button variant="soft">Cancel</Button>
+                </Dialog.Close>
+                <Button onClick={handleSave} disabled={confirming} loading={confirming}>
+                  {confirming ? "Subscribing" : "Subscribe"}
                 </Button>
               </div>
-            </div>
+            </>
           )}
         </div>
-      </DialogContent>
-    </Dialog>
+      </Dialog.Content>
+    </Dialog.Root>
   );
 };

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { ArticleItem } from "../ArticleItem";
-import { Skeleton } from "../ui/skeleton";
+import { Skeleton } from "@radix-ui/themes";
 import { useIntersectionObserver } from "./useIntersectionObserver";
 import { ArticleResItem } from "@/db";
 import { Snail } from "lucide-react";
@@ -53,14 +53,14 @@ export const ArticleList = React.memo(React.forwardRef<HTMLDivElement, any>((pro
   }, [loadRefVisible, isReachingEnd]);
 
   return (
-    <div className="" ref={ref}>
+    <div className="w-full" ref={ref}>
       {isEmpty ? (
         <div className="absolute top-1/2 -translate-y-1/2 w-full flex flex-col justify-center items-center gap-1 text-muted-foreground">
           <Snail size={34} strokeWidth={1} />
           <p>Yay, no matching items.</p>
         </div>
       ) : null}
-      <ul className="m-0 grid gap-2 pt-2 pr-1 pb-1 pl-2">{renderList()}</ul>
+      <ul className="m-0 grid gap-1 pt-2 pr-1 pb-1 pl-2">{renderList()}</ul>
       <div ref={loadRef} className="pt-1">
         {isLoading && (
           <div className="p-3 pl-6 grid gap-1 relative">

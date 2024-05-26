@@ -1,6 +1,6 @@
 import linkifyStr from "linkify-string";
 import he from "he";
-import { Button } from "@/components/ui/button";
+import { Button } from "@radix-ui/themes";
 import { Podcast, db } from "@/helpers/podcastDB";
 import { toast } from "sonner";
 import { busChannel } from "@/helpers/busChannel";

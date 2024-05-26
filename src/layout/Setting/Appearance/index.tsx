@@ -5,7 +5,7 @@ import { useBearStore } from "@/stores";
 import classNames from "classnames";
 import { Accent } from "./Accent";
 import { ColorScheme } from "./ColorScheme";
-import { Separator } from "@/components/ui/separator";
+import { Separator } from "@radix-ui/themes";
 
 export const Appearance = () => {
   const store = useBearStore((state) => ({
@@ -32,11 +32,11 @@ export const Appearance = () => {
       <PanelSection title="Color scheme" subTitle="Choose Lettura's default color scheme">
         <ColorScheme />
       </PanelSection>
-      <Separator className="mt-6" />
+      <Separator className="mt-6" size="4" />
       <PanelSection title="Accent" subTitle="Choose Lettura's accent color">
         <Accent />
       </PanelSection>
-      <Separator className="mt-6" />
+      <Separator className="mt-6" size="4" />
       <PanelSection title="Style" subTitle="Set the view styles you want to use when you are reading.">
         <div className="w-[304px]">
           <CustomizeStyle styleConfig={store.userConfig.customize_style} />

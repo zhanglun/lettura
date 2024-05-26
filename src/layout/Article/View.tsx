@@ -4,10 +4,10 @@ import { ScrollBox, ScrollBoxRefObject } from "@/components/ArticleView/ScrollBo
 import { useBearStore } from "@/stores";
 import { useEffect, useRef } from "react";
 import { ReadingOptions } from "./ReadingOptions";
-import { Separator } from "@/components/ui/separator";
 import { ToolbarItemNavigator } from "./ToolBar";
 import { StarAndRead } from "@/layout/Article/StarAndRead";
 import { PlayerSwitcher } from "@/components/PodcastPlayer/PlayerSwitch";
+import { Separator } from "@radix-ui/themes";
 
 export interface ArticleViewProps {
   goNext: () => void;
@@ -34,18 +34,14 @@ export function View(props: ArticleViewProps) {
   return (
     <div className="flex-1">
       <div
-        className={
-          "h-[var(--app-toolbar-height)] flex items-center justify-end px-2 space-x-0.5 border-b relative z-10"
-        }
+        className={"h-[var(--app-toolbar-height)] flex items-center justify-end px-2 space-x-2 border-b relative z-10"}
       >
         {store.article && <StarAndRead article={store.article} />}
-        <Separator orientation={"vertical"} className={"h-4 mx-2"} />
+        <Separator orientation={"vertical"} className={"h-4"} />
         <ToolbarItemNavigator goNext={props.goNext} goPrev={props.goPrev} />
-        <span>
-          <Separator orientation="vertical" className="h-4 mx-2" />
-        </span>
+        <Separator orientation="vertical" className="h-4" />
         <ReadingOptions />
-        <Separator orientation="vertical" className="h-4 mx-2" />
+        <Separator orientation="vertical" className="h-4" />
         <PlayerSwitcher />
       </div>
       <AnimatePresence>

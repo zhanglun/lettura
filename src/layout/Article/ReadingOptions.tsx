@@ -1,26 +1,18 @@
 import React, { useEffect } from "react";
-import clsx from "clsx";
-import { Icon } from "@/components/Icon";
 import { ExternalLink, Ghost, Link, Paintbrush, Share } from "lucide-react";
 import { useBearStore } from "@/stores";
 import { Article } from "@/db";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { CustomizeStyle } from "@/layout/Setting/CustomizeStyle";
 import { open } from "@tauri-apps/api/shell";
 import * as dataAgent from "@/helpers/dataAgent";
-import { useToast } from "@/components/ui/use-toast";
-import { TooltipBox } from "@/components/TooltipBox";
+import { toast } from "sonner";
+import { IconButton, Popover, Tooltip } from "@radix-ui/themes";
 
 export interface NavigatorProps {
   listRef?: any;
 }
 
 export const ReadingOptions = (props: NavigatorProps) => {
-  const { toast } = useToast();
   const store = useBearStore((state) => ({
     article: state.article,
     articleList: state.articleList,
@@ -80,9 +72,7 @@ export const ReadingOptions = (props: NavigatorProps) => {
 
     navigator.clipboard.writeText(link).then(
       function () {
-        toast({
-          description: "Copied",
-        });
+        toast("Copied");
       },
       function (err) {
         console.error("Async: Could not copy text: ", err);
@@ -92,20 +82,20 @@ export const ReadingOptions = (props: NavigatorProps) => {
 
   return (
     <>
-      <Popover>
-        <PopoverTrigger>
-          <TooltipBox content="Customize style">
-            <Icon>
+      <Popover.Root>
+        <Tooltip content="Customize style">
+          <Popover.Trigger>
+            <IconButton size="2" variant="ghost" color="gray" className="text-[var(--gray-12)]">
               <Paintbrush size={16} />
-            </Icon>
-          </TooltipBox>
-        </PopoverTrigger>
-        <PopoverContent className="w-[340px]">
+            </IconButton>
+          </Popover.Trigger>
+        </Tooltip>
+        <Popover.Content className="w-[340px]">
           <CustomizeStyle styleConfig={store.userConfig.customize_style} />
-        </PopoverContent>
-      </Popover>
-      {/* <TooltipBox content="View full page">
-        <Icon
+        </Popover.Content>
+      </Popover.Root>
+      {/* <Tooltip content="View full page">
+        <IconButton size="2" variant="ghost" color="gray" className="text-[var(--gray-12)]"
           onClick={handleViewSourcePage}
           disable={!store.article}
           active={store.viewOrigin}
@@ -114,18 +104,24 @@ export const ReadingOptions = (props: NavigatorProps) => {
             size={16}
             className={clsx({ "animate-bounce": store.viewOrigin })}
           />
-        </Icon>
-      </TooltipBox> */}
-      <TooltipBox content="Open in browser">
-        <Icon onClick={() => openInBrowser()}>
+        </IconButton>
+      </Tooltip> */}
+      <Tooltip content="Open in browser">
+        <IconButton
+          size="2"
+          variant="ghost"
+          color="gray"
+          className="text-[var(--gray-12)]"
+          onClick={() => openInBrowser()}
+        >
           <ExternalLink size={16} />
-        </Icon>
-      </TooltipBox>
-      <TooltipBox content="Copy link">
-        <Icon onClick={handleCopyLink}>
+        </IconButton>
+      </Tooltip>
+      <Tooltip content="Copy link">
+        <IconButton size="2" variant="ghost" color="gray" className="text-[var(--gray-12)]" onClick={handleCopyLink}>
           <Link size={16} />
-        </Icon>
-      </TooltipBox>
+        </IconButton>
+      </Tooltip>
     </>
   );
 };

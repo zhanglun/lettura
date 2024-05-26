@@ -1,9 +1,7 @@
 import React, { useEffect, useRef } from "react";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { X } from "lucide-react";
-import { ToolbarItemNavigator } from "@/layout/Article/ToolBar";
 import { Icon } from "../Icon";
-import { Separator } from "@/components/ui/separator";
+import { Separator,Dialog } from "@radix-ui/themes";
 import { ReadingOptions } from "@/layout/Article/ReadingOptions";
 import { ArticleDetail } from "@/components/ArticleView/Detail";
 import { ScrollBox, ScrollBoxRefObject } from "./ScrollBox";
@@ -43,9 +41,9 @@ export const ArticleDialogView = (
   }, [article]);
 
   return (
-    <Dialog open={ dialogStatus } onOpenChange={ handleDialogChange }>
-      { trigger && <DialogTrigger>{ trigger }</DialogTrigger> }
-      <DialogContent className="p-0 min-w-[960px] is-scroll">
+    <Dialog.Root open={ dialogStatus } onOpenChange={ handleDialogChange }>
+      { trigger && <Dialog.Trigger>{ trigger }</Dialog.Trigger> }
+      <Dialog.Content className="p-0 min-w-[960px] is-scroll">
         <ScrollBox className="h-[94vh]" ref={scrollBoxRef}>
           <>
             <div className="sticky left-0 right-0 top-0 z-[3]">
@@ -69,7 +67,7 @@ export const ArticleDialogView = (
             {/* </div> */ }
           </>
         </ScrollBox>
-      </DialogContent>
-    </Dialog>
+      </Dialog.Content>
+    </Dialog.Root>
   );
 };

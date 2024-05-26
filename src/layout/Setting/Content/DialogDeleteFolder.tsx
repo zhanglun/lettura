@@ -1,22 +1,12 @@
-import React, {useState} from "react";
-import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import {Button} from "@/components/ui/button";
-import {Channel, FeedResItem, Folder} from "@/db";
+import React, { useState } from "react";
+import { toast } from "sonner";
+import { Button, AlertDialog, Flex } from "@radix-ui/themes";
+import { Channel, FeedResItem, FolderResItem } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
-import {busChannel} from "@/helpers/busChannel";
-import {useToast} from "@/components/ui/use-toast";
+import { busChannel } from "@/helpers/busChannel";
 
 export interface DialogProps {
-  folder: FeedResItem & Folder | null;
+  folder?: FolderResItem | null;
   dialogStatus: boolean;
   trigger?: React.ReactNode;
   setDialogStatus: (status: boolean) => void;
@@ -25,15 +15,7 @@ export interface DialogProps {
 }
 
 export const DialogDeleteFolder = React.memo((props: DialogProps) => {
-  const {toast} = useToast();
-  const {
-    folder,
-    dialogStatus,
-    setDialogStatus,
-    afterConfirm,
-    afterCancel,
-    trigger,
-  } = props;
+  const { folder, dialogStatus, setDialogStatus, afterConfirm, afterCancel, trigger } = props;
 
   const confirmDelete = () => {
     if (folder?.uuid) {
@@ -45,9 +27,7 @@ export const DialogDeleteFolder = React.memo((props: DialogProps) => {
           setDialogStatus(false);
         })
         .catch((err) => {
-          toast({
-            variant: "destructive",
-            title: "Ops! Something wrong~",
+          toast.error("Ops! Something wrong~", {
             description: err.message,
             duration: 2000,
           });
@@ -60,33 +40,25 @@ export const DialogDeleteFolder = React.memo((props: DialogProps) => {
   };
 
   return (
-    <AlertDialog open={dialogStatus} onOpenChange={setDialogStatus}>
-      {trigger && <AlertDialogTrigger>{trigger}</AlertDialogTrigger>}
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-          <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete the data
-            relates with
-            {folder && (
-              <span className="text-primary font-bold ml-1">
-                {folder?.title || folder?.name}
-              </span>
-            )}
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel onClick={() => handleCancel()}>
-            Cancel
-          </AlertDialogCancel>
-          <Button
-            className="text-destructive-foreground bg-destructive hover:bg-[hsl(var(--destructive)/0.9)]"
-            onClick={() => confirmDelete()}
-          >
+    <AlertDialog.Root open={dialogStatus} onOpenChange={setDialogStatus}>
+      {trigger && <AlertDialog.Trigger>{trigger}</AlertDialog.Trigger>}
+      <AlertDialog.Content>
+        <AlertDialog.Title>Are you absolutely sure?</AlertDialog.Title>
+        <AlertDialog.Description>
+          This action cannot be undone. This will permanently delete the data relates with
+          {folder && <span className="text-primary font-bold ml-1">{folder?.name}</span>}
+        </AlertDialog.Description>
+        <Flex gap="3" mt="4" justify="end">
+          <AlertDialog.Cancel onClick={() => handleCancel()}>
+            <Button variant="soft" color="gray">
+              Cancel
+            </Button>
+          </AlertDialog.Cancel>
+          <Button variant="solid" color="red" onClick={() => confirmDelete()}>
             Delete folder
           </Button>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+        </Flex>
+      </AlertDialog.Content>
+    </AlertDialog.Root>
   );
 });

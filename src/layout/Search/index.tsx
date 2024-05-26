@@ -1,13 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { debounce, throttle } from "lodash";
-import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
+import { Separator,Skeleton, TextField } from "@radix-ui/themes";
 import { SearchResult } from "./Result";
 import { ArticleResItem } from "@/db";
 import { request } from "@/helpers/request";
 import { AxiosResponse } from "axios";
 import { useHotkeys } from "react-hotkeys-hook";
-import { Skeleton } from "@/components/ui/skeleton";
 import useInfiniteScroll from "./useInfiniteScroll";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
@@ -116,7 +114,7 @@ export const SearchPage = () => {
         </h2>
       </div>
       <div className="p-4 bg-background">
-        <Input
+        <TextField.Root
           ref={inputRef}
           type="search"
           placeholder="Search content..."

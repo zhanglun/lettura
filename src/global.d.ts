@@ -4,10 +4,16 @@ declare module "*.css" {
 }
 
 declare interface LocalProxy {
-  protocol: "";
-  ip: string;
+  protocol: string;
+  server: string;
   port: string;
+  username?: string;
+  password?: string;
+  is_global?: boolean;
+  enable?: boolean;
 }
+
+declare type ProxyRule = string[];
 
 declare interface CustomizeStyle {
   typeface: string;
@@ -22,7 +28,7 @@ declare interface UserConfig {
   theme?: string;
   update_interval?: number;
   last_sync_time?: Date;
-  local_proxy?: LocalProxy;
+  proxy?: LocalProxy;
   customize_style?: CustomizeStyle;
 
   purge_on_days: number;

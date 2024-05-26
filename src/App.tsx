@@ -1,14 +1,14 @@
 import { useEffect } from "react";
-import { Outlet } from "react-router-dom";
 import { appWindow } from "@tauri-apps/api/window";
 import { emit, listen } from "@tauri-apps/api/event";
 import { useBearStore } from "@/stores";
-import { CommandPanel } from "./command";
-
-import "./styles/index.css";
+import { LocalPage } from "./layout/Local";
+import { Theme } from "@radix-ui/themes";
+import { Toaster } from "sonner";
 
 function App() {
   const store = useBearStore((state) => ({
+    userConfig: state.userConfig,
     getUserConfig: state.getUserConfig,
     updateSettingDialogStatus: state.updateSettingDialogStatus,
   }));
@@ -24,29 +24,24 @@ function App() {
   }, []);
 
   useEffect(() => {
-    document
-      .getElementById("titlebar-minimize")
-      ?.addEventListener("click", () => appWindow.minimize());
-    document
-      .getElementById("titlebar-maximize")
-      ?.addEventListener("click", () => appWindow.toggleMaximize());
-    document
-      .getElementById("titlebar-close")
-      ?.addEventListener("click", () => appWindow.close());
+    document.getElementById("titlebar-minimize")?.addEventListener("click", () => appWindow.minimize());
+    document.getElementById("titlebar-maximize")?.addEventListener("click", () => appWindow.toggleMaximize());
+    document.getElementById("titlebar-close")?.addEventListener("click", () => appWindow.close());
   }, []);
 
   useEffect(() => {
     store.getUserConfig().then((cfg: UserConfig) => {
-      const { theme, customize_style } = cfg;
+      const { color_scheme, customize_style } = cfg;
+      let mode = color_scheme || "light";
 
-      if (theme === "system") {
-        document.documentElement.dataset.colorScheme = window.matchMedia(
-          "(prefers-color-scheme: dark)"
-        ).matches
-          ? "dark"
-          : "light";
+      if (color_scheme === "system") {
+        mode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      }
+
+      if (mode === "dark") {
+        document.body.classList.add("dark-theme");
       } else {
-        document.documentElement.dataset.colorScheme = theme;
+        document.body.classList.remove("dark-theme");
       }
 
       customize_style &&
@@ -61,12 +56,17 @@ function App() {
   }, []);
 
   return (
-    <>
+    <Theme
+      className="w-[100vw] h-[100vh]"
+      // @ts-ignore
+      accentColor={store.userConfig.theme || "default"}
+      panelBackground="translucent"
+    >
       <div className="h-full max-h-full ">
-        <Outlet />
+        <LocalPage />
       </div>
-      <CommandPanel />
-    </>
+      <Toaster />
+    </Theme>
   );
 }
 

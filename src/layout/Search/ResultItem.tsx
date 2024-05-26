@@ -8,9 +8,9 @@ import { Icon } from "@/components/Icon";
 import { getBestImages } from "@/helpers/parseXML";
 import * as dataAgent from "@/helpers/dataAgent";
 import { ArticleReadStatus } from "@/typing";
-import { TooltipBox } from "@/components/TooltipBox";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 import { StarAndRead } from "@/layout/Article/StarAndRead";
+import { Tooltip } from "@radix-ui/themes";
 
 export interface ResultItemProps {
   article: ArticleResItem;
@@ -18,7 +18,6 @@ export interface ResultItemProps {
 }
 export function ResultItem(props: ResultItemProps) {
   const { article } = props;
-  const { toast } = useToast();
   const [readStatus, setReadStatus] = useState(article.read_status);
   const [banner, setBanner] = useState("");
 
@@ -45,9 +44,7 @@ export function ResultItem(props: ResultItemProps) {
 
     navigator.clipboard.writeText(link).then(
       function () {
-        toast({
-          description: "Copied",
-        });
+        toast("Copied");
       },
       function (err) {
         console.error("Async: Could not copy text: ", err);
@@ -120,16 +117,16 @@ export function ResultItem(props: ResultItemProps) {
         </div>
         <div className="flex items-center gap-1">
           <StarAndRead article={article} />
-          <TooltipBox content="Open in browser">
+          <Tooltip content="Open in browser">
             <Icon className="w-7 h-7" onClick={openInBrowser}>
               <ExternalLink size={16} />
             </Icon>
-          </TooltipBox>
-          <TooltipBox content="Copy link">
+          </Tooltip>
+          <Tooltip content="Copy link">
             <Icon className="w-7 h-7" onClick={handleCopyLink}>
               <Link size={16} />
             </Icon>
-          </TooltipBox>
+          </Tooltip>
         </div>
       </div>
     </div>

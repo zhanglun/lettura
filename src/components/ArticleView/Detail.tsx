@@ -11,6 +11,7 @@ import linkifyStr from "linkify-string";
 import { ArticleResItem } from "@/db";
 import { YoutubeAdapter } from "./adpater/Youtube";
 import { PodcastAdapter } from "./adpater/Podcast";
+import { Avatar, Heading, Separator } from "@radix-ui/themes";
 
 function createMarkup(html: string) {
   return { __html: html };
@@ -72,12 +73,7 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
 
       const href = elem.getAttribute("href") || "";
 
-      if (
-        href &&
-        (href.indexOf("http://") >= 0 ||
-          href.indexOf("https://") >= 0 ||
-          href.indexOf("www.") >= 0)
-      ) {
+      if (href && (href.indexOf("http://") >= 0 || href.indexOf("https://") >= 0 || href.indexOf("www.") >= 0)) {
         open(href);
       } else if (href.indexOf("#") === 0) {
         open(`${article.link}${href}`);
@@ -89,26 +85,14 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
     const { isCommon, isYoutube, isPodcast } = validateFeed(article, medias || []);
 
     if (isYoutube) {
-      return (
-        <YoutubeAdapter
-          article={article}
-          content={pageContent}
-          medias={medias}
-        />
-      );
+      return <YoutubeAdapter article={article} content={pageContent} medias={medias} />;
     } else if (isPodcast) {
-      return (
-        <PodcastAdapter
-          article={article}
-          content={pageContent}
-          medias={medias}
-        />
-      );
+      return <PodcastAdapter article={article} content={pageContent} medias={medias} />;
     } else {
       return (
         <div
           key={article.uuid}
-          className={clsx("reading-content", "text-detail-paragraph")}
+          className={clsx("reading-content")}
           // eslint-disable-next-line react/no-danger
           dangerouslySetInnerHTML={createMarkup(pageContent)}
         />
@@ -130,10 +114,7 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
           let content;
 
           if (data.content && data.description) {
-            content =
-              data.content.length > data.description.length
-                ? data.content
-                : data.description;
+            content = data.content.length > data.description.length ? data.content : data.description;
           } else {
             content = data.description || data.content || "";
           }
@@ -158,11 +139,7 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
 
           try {
             setMedias(JSON.parse(data.media_object));
-            console.log(
-              "%c Line:147 🌽 JSON.parse(data.media_object)",
-              "color:#42b983",
-              JSON.parse(data.media_object)
-            );
+            console.log("%c Line:147 🌽 JSON.parse(data.media_object)", "color:#42b983", JSON.parse(data.media_object));
           } catch (e) {
             setMedias([]);
           }
@@ -175,25 +152,25 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
 
   return (
     <div className="m-auto pt-1 pb-10 px-4 max-w-[calc(var(--reading-editable-line-width)_*_1px)]">
-      <div className="pb-4 border-b border-border">
-        <div className="mt-6 mb-5 text-4xl font-bold text-detail-headline">
+      <div className="pb-4">
+        <Heading className="mt-6 mb-5" size="8">
           {article.title}
-        </div>
-        <div className={clsx(styles.meta)}>
-          <span className={styles.channelInfo}>
-            <img src={store.feed?.logo || ico} alt="" className="rounded" />
-            {article.feed_title}
-          </span>
-          {article.author && (
-            <span className={clsx(styles.author, "text-detail-paragraph")}>
-              {article.author}
-            </span>
-          )}
-          <span className={clsx(styles.time, "text-detail-paragraph")}>
-            {Dayjs(new Date(pub_date || new Date())).format("YYYY-MM-DD HH:mm")}
-          </span>
+        </Heading>
+        <div className="flex items-center gap-2 text-sm sm:flex-wrap">
+          <div className="flex items-center gap-2 rounded-full bg-[var(--gray-4)] pr-3">
+            <Avatar
+              radius="full"
+              className="w-8 h-8"
+              src={store.feed?.logo || ico}
+              fallback={article.feed_title?.slice(0, 1)}
+            ></Avatar>
+            <span className="text-[var(--gray-12)]">{article.feed_title}</span>
+          </div>
+          <span>{Dayjs(new Date(pub_date || new Date())).format("YYYY-MM-DD HH:mm")}</span>
+          {article.author && <span className={clsx(styles.author)}>· {article.author}</span>}
         </div>
       </div>
+      <Separator size="4"/>
       <div className="m-auto pt-1 mt-6" onClick={delegateContentClick}>
         {article.image && (
           <div className="w-full my-4  text-center">

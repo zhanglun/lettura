@@ -1,24 +1,27 @@
-import React from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useState } from "react";
 import { Panel } from "../Panel";
 import { Feed } from "./Feed";
 import { FolderList } from "./FolderList";
+import { SegmentedControl } from "@radix-ui/themes";
 
 export const FeedManager = () => {
+  const [currentSegmented, setCurrentSegmented] = useState("1");
+
   return (
     <Panel title="Content">
-      <Tabs defaultValue="1">
-        <TabsList className="grid w-[240px] grid-cols-2">
-          <TabsTrigger value="1">Feeds</TabsTrigger>
-          <TabsTrigger value="2">Folders</TabsTrigger>
-        </TabsList>
-        <TabsContent value="1">
-          <Feed />
-        </TabsContent>
-        <TabsContent value={"2"}>
-          <FolderList />
-        </TabsContent>
-      </Tabs>
+      <SegmentedControl.Root
+        defaultValue="1"
+        onValueChange={(v: string) => {
+          setCurrentSegmented(v);
+        }}
+      >
+        <SegmentedControl.Item value="1">Feeds</SegmentedControl.Item>
+        <SegmentedControl.Item value="2">Folders</SegmentedControl.Item>
+      </SegmentedControl.Root>
+      <div>
+        {currentSegmented === "1" && <Feed />}
+        {currentSegmented === "2" && <FolderList />}
+      </div>
     </Panel>
   );
 };
