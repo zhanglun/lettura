@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useRef } from "react";
 import { NavLink, useMatch, useNavigate } from "react-router-dom";
 import {
-  RefreshCw,
   Coffee,
   Haze,
   FolderPlus,

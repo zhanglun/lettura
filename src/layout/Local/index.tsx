@@ -70,7 +70,7 @@ export function LocalPage() {
               afterCancel={() => {}}
               trigger={
                 <IconButton variant="ghost" size="2" color="gray" className="text-[var(--gray-12)]">
-                  <FolderPlus size={18} strokeWidth={1.5} />
+                  <FolderPlus size={14} />
                 </IconButton>
               }
             />
@@ -78,12 +78,12 @@ export function LocalPage() {
               <IconButton
                 size="2"
                 loading={refreshing}
-                variant={refreshing ? "soft" : "ghost"}
+                variant="ghost"
                 onClick={startRefresh}
                 color="gray"
                 className="text-[var(--gray-12)]"
               >
-                <RotateCw size={18} strokeWidth={1.5} />
+                <RotateCw size={14} />
               </IconButton>
             </Tooltip>
           </div>
