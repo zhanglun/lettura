@@ -55,3 +55,4 @@ build
 *.db
 lettura.toml
 dev-dist
+target
