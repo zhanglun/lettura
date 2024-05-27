@@ -54,7 +54,7 @@ export const PodcastPlayer = () => {
               <div
                 className={clsx(
                   "flex items-center justify-center rounded-sm pl-[3px]",
-                  "text-primary-foreground bg-foreground/70 cursor-pointer",
+                  "text-white bg-[var(--accent-a3)] cursor-pointer",
                   "absolute bottom-0 left-0 right-0 top-0",
                   "group-hover:visible",
                   {

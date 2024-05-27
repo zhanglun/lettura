@@ -4,6 +4,7 @@ import clsx from "clsx";
 import { Pause, Play, SkipBack, SkipForward } from "lucide-react";
 import { busChannel } from "@/helpers/busChannel";
 import { useBearStore } from "@/stores";
+import { IconButton } from "@radix-ui/themes";
 
 type TimeDisplayProps = {
   time: { minutes: number; seconds: number };
@@ -26,8 +27,7 @@ const formatTime = (currentTime: any) => {
   const minutes = Math.floor(currentTime / 60);
   let seconds = Math.floor(currentTime % 60);
 
-  const formatTime =
-    minutes + ":" + (seconds >= 10 ? String(seconds) : "0" + (seconds % 60));
+  const formatTime = minutes + ":" + (seconds >= 10 ? String(seconds) : "0" + (seconds % 60));
 
   return formatTime;
 };
@@ -116,16 +116,12 @@ export const Player = React.forwardRef((props: PlayerProps, ref) => {
       const playHeadRect: DOMRect = timeline.getBoundingClientRect();
       const left = playHeadRect.left;
       const userClickWidth = e.clientX - left;
-      const userClickWidthInPercent =
-        (userClickWidth * 100) / playHeadRect.width;
+      const userClickWidthInPercent = (userClickWidth * 100) / playHeadRect.width;
 
       playHead.style.width = userClickWidthInPercent + "%";
       player.currentTime = (duration * userClickWidthInPercent) / 100;
 
-      console.log(
-        "🚀 ~ changeCurrentTime ~ player.currentTime:",
-        player.currentTime,
-      );
+      console.log("🚀 ~ changeCurrentTime ~ player.currentTime:", player.currentTime);
     }
   };
 
@@ -140,8 +136,7 @@ export const Player = React.forwardRef((props: PlayerProps, ref) => {
       const playHeadRect: DOMRect = timeline.getBoundingClientRect();
       const left = playHeadRect.left;
       const userClickWidth = e.clientX - left;
-      const userClickWidthInPercent =
-        (userClickWidth * 100) / playHeadRect.width;
+      const userClickWidthInPercent = (userClickWidth * 100) / playHeadRect.width;
 
       if (userClickWidthInPercent <= 100) {
         hoverPlayHead.style.width = userClickWidthInPercent + "%";
@@ -176,14 +171,14 @@ export const Player = React.forwardRef((props: PlayerProps, ref) => {
         }
       }
     },
-    [list],
+    [list]
   );
 
   function renderPlayButton() {
     if (pause) {
-      return <Play size={26} strokeWidth={1} className="pl-[3px]" />;
+      return <Play size={26} className="pl-[3px]" />;
     } else if (!pause) {
-      return <Pause size={26} strokeWidth={1} />;
+      return <Pause size={26} />;
     }
   }
 
@@ -206,21 +201,9 @@ export const Player = React.forwardRef((props: PlayerProps, ref) => {
       }
 
       if (timelineRef.current) {
-        timelineRef.current.removeEventListener(
-          "click",
-          changeCurrentTime,
-          false,
-        );
-        timelineRef.current.removeEventListener(
-          "mousemove",
-          hoverTimeLine,
-          false,
-        );
-        timelineRef.current.removeEventListener(
-          "mouseout",
-          resetTimeLine,
-          false,
-        );
+        timelineRef.current.removeEventListener("click", changeCurrentTime, false);
+        timelineRef.current.removeEventListener("mousemove", hoverTimeLine, false);
+        timelineRef.current.removeEventListener("mouseout", resetTimeLine, false);
       }
     };
   }, []);
@@ -257,21 +240,15 @@ export const Player = React.forwardRef((props: PlayerProps, ref) => {
     <div className="m-auto w-full">
       <div className="bg-muted before:bg-muted relative m-auto w-full rounded-sm pt-[100%] shadow-md before:absolute before:left-0 before:top-0 before:h-full before:w-full before:content-['']">
         {list[currentAudio]?.thumbnail && (
-          <img
-            alt="uri"
-            src={list[currentAudio]?.thumbnail}
-            className="absolute left-0 top-0 rounded-md"
-          />
+          <img alt="uri" src={list[currentAudio]?.thumbnail} className="absolute left-0 top-0 rounded-md" />
         )}
       </div>
       <div>
         <div className="mt-4 text-center">{list[currentAudio]?.title}</div>
-        <div className="text-muted-foreground my-1 text-center text-sm">
-          {list[currentAudio]?.feed_title}
-        </div>
+        <div className="text-muted-foreground my-1 text-center text-sm">{list[currentAudio]?.feed_title}</div>
       </div>
       <div className="my-3 flex justify-center">
-        <div className="bg-accent w-full rounded-md">
+        <div className="bg-[var(--gray-3)] w-full rounded-md">
           <audio ref={playerRef} preload="true">
             <source src={list[currentAudio]?.mediaURL} />
             Your browser does not support the audio element.
@@ -281,50 +258,46 @@ export const Player = React.forwardRef((props: PlayerProps, ref) => {
             <div
               ref={timelineRef}
               id="timeline"
-              className="bg-muted-foreground/80 group relative m-auto h-1 w-full cursor-pointer rounded-md"
+              className="bg-[var(--gray-6)] group relative m-auto h-1 w-full cursor-pointer rounded-md"
             >
               <div
                 ref={playHeadRef}
                 id="playhead"
-                className="bg-primary relative z-[2] h-1 w-0 rounded-md"
+                className="bg-[var(--gray-12)] relative z-[2] h-1 w-0 rounded-md"
               ></div>
               <div
                 ref={hoverPlayHeadRef}
                 className={clsx(
                   "absolute top-0 z-[1] h-1 w-0 rounded-md bg-slate-600 opacity-0 transition-opacity duration-300 ease-in group-hover:opacity-100 group-hover:before:opacity-100 group-hover:after:opacity-100",
-                  "before:opacity-1 before:absolute before:-right-[23px] before:-top-[40px] before:z-10 before:block before:rounded-md before:bg-slate-800 before:p-1 before:text-center before:text-white before:content-[attr(data-content)]",
-                  "after:absolute after:-right-[8px] after:-top-[8px] after:block after:rounded-md after:border-l-[8px_solid_transparent] after:border-r-[8px_solid_transparent] after:border-t-[8px_solid] after:border-t-slate-800 after:bg-slate-800 after:text-white after:opacity-0 after:content-['']",
+                  "before:opacity-1 before:absolute before:-right-[23px] before:-top-[30px] before:z-10 before:block before:rounded-md before:bg-slate-800 before:p-1 before:text-center before:text-white before:content-[attr(data-content)]",
+                  "after:absolute after:-right-[12px] after:-top-[8px] after:block after:rounded-md after:border-l-[8px_solid_transparent] after:border-r-[8px_solid_transparent] after:border-t-[8px_solid] after:border-t-slate-800 after:bg-slate-800 after:text-white after:opacity-0 after:content-[''] text-xs"
                 )}
                 data-content="0:00"
               ></div>
             </div>
             <TimeDisplay time={maxTime} />
           </div>
-          <div className="flex items-center justify-center gap-8 py-3 pt-1">
-            <SkipBack
-              size={20}
-              onClick={prevSong}
-              className="text-accent-foreground hover:text-accent-foreground/80 cursor-pointer transition-all"
-            />
-            <div
+          <div className="flex items-center justify-center gap-8 py-4 pt-1">
+            <IconButton radius="full" variant="ghost" color="gray">
+              <SkipBack size={20} onClick={prevSong} />
+            </IconButton>
+            <IconButton
               className={clsx(
-                "h-[42px] w-[42px]",
-                "flex items-center justify-center",
-                "bg-foreground rounded-full",
-                "text-background",
-                "cursor-pointer",
                 "hover:scale-110",
-                "transition-all",
+                "transition-all"
               )}
+              radius="full" variant="ghost" color="gray"
+              size="3"
               onClick={onPlayButtonClick}
             >
               {renderPlayButton()}
-            </div>
-            <SkipForward
-              size={20}
-              onClick={nextSong}
-              className="text-accent-foreground hover:text-accent-foreground/80 cursor-pointer transition-all"
-            />
+            </IconButton>
+            <IconButton radius="full" variant="ghost" color="gray">
+              <SkipForward
+                size={20}
+                onClick={nextSong}
+              />
+            </IconButton>
           </div>
         </div>
       </div>

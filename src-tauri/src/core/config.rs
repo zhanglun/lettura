@@ -206,90 +206,6 @@ pub fn get_user_config() -> UserConfig {
   }
 }
 
-pub fn load_or_initial() -> Option<UserConfig> {
-  let user_config_path = get_user_config_path();
-
-  if !user_config_path.exists() {
-    fs::File::create(&user_config_path).expect("create user config failed");
-  }
-
-  let content = match fs::read_to_string(&user_config_path) {
-    Ok(content) => content,
-    Err(_) => "".to_string(),
-  };
-
-  let mut data = match content.parse::<toml::Table>() {
-    Ok(data) => data,
-    Err(err) => {
-      println!("error ==> {:?}", err);
-      toml::map::Map::new()
-    }
-  };
-
-  if !data.contains_key("customize_style") {
-    data.insert(
-      String::from("customize_style"),
-      toml::Value::try_from::<CustomizeStyle>(CustomizeStyle::default()).unwrap(),
-    );
-  }
-
-  if !data.contains_key("threads") {
-    data.insert(
-      String::from("threads"),
-      toml::Value::try_from::<i32>(5).unwrap(),
-    );
-  }
-
-  if !data.contains_key("theme") {
-    data.insert(
-      String::from("theme"),
-      toml::Value::try_from::<String>(String::from("system")).unwrap(),
-    );
-  }
-
-  if !data.contains_key("color_scheme") {
-    data.insert(
-      String::from("color_scheme"),
-      toml::Value::try_from::<ColorScheme>(ColorScheme::System).unwrap(),
-    );
-  }
-
-  if !data.contains_key("update_interval") {
-    data.insert(
-      String::from("update_interval"),
-      toml::Value::try_from::<i32>(0).unwrap(),
-    );
-  }
-
-  if !data.contains_key("last_sync_time") {
-    data.insert(
-      String::from("last_sync_time"),
-      toml::Value::try_from::<String>(
-        Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Secs, true),
-      )
-      .unwrap(),
-    );
-  }
-
-  if !data.contains_key("purge_on_days") {
-    data.insert(
-      String::from("purge_on_days"),
-      toml::Value::try_from::<u64>(0).unwrap(),
-    );
-  }
-
-  if !data.contains_key("purge_unread_articles") {
-    data.insert(
-      String::from("purge_unread_articles"),
-      toml::Value::try_from::<bool>(true).unwrap(),
-    );
-  }
-
-  log::debug!("USER CONFIG: {:?}", data);
-
-  Some(data.try_into::<UserConfig>().expect("config data error"))
-}
-
 pub fn add_proxy(proxy_cfg: Proxy) -> Result<Option<Vec<Proxy>>, String> {
   let mut data = get_user_config();
   let user_config_path = get_user_config_path();
@@ -396,16 +312,4 @@ pub fn update_user_config(cfg: UserConfig) -> String {
   fs::write(user_config_path, &content).expect("update threads error");
 
   return content;
-}
-
-#[cfg(test)]
-mod tests {
-  use super::*;
-
-  #[test]
-  fn test_load_or_initial() {
-    let res = load_or_initial();
-
-    println!("test_load_or_initial res {:?}", res);
-  }
 }
