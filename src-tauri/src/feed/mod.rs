@@ -35,6 +35,38 @@ pub fn create_client() -> reqwest::Client {
   client_builder.build().unwrap()
 }
 
+pub fn find_proxy(url: &str) -> Option<config::Proxy>{
+  let user_config = config::get_user_config();
+  let proxies = user_config.proxy;
+  let rules = user_config.proxy_rules;
+
+  let mut server_port = "";
+
+  for elem in rules.iter() {
+    let parts: Vec<_> = elem.split(",").collect();
+
+    if parts.len() >= 2 && parts[1] == url {
+      server_port = parts[0].clone();
+    }
+  }
+
+   match proxies {
+    Some(proxies) => {
+      for proxy in proxies.into_iter() {
+        let key = format!("{}:{}", proxy.server, proxy.port);
+
+        if key == server_port && proxy.enable {
+          return Some(proxy);
+        }
+      }
+      None
+    },
+    None => {
+      None
+    }
+  }
+}
+
 /// request feed, parse Feeds
 ///
 /// # Examples
@@ -45,6 +77,10 @@ pub fn create_client() -> reqwest::Client {
 pub async fn parse_feed(url: &str) -> Result<feed_rs::model::Feed, String> {
   let client = create_client();
   let result = client.get(url).send().await;
+
+  let proxy = find_proxy(url);
+
+  println!("proxy !!!==>{:?}", proxy);
 
   let a = match result {
     Ok(response) => match response.status() {

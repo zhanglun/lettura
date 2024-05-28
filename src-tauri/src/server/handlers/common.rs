@@ -50,13 +50,14 @@ pub async fn handle_add_proxy(proxy_cfg: web::Json<config::Proxy>) -> Result<imp
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UpdateProxyBody {
   id: String,
-  data: config::Proxy,
+  proxy: config::Proxy,
+  rules: Vec<String>,
 }
 
 #[post("/api/proxy")]
 pub async fn handle_update_proxy(body: web::Json<UpdateProxyBody>) -> Result<impl Responder> {
   let body = body.into_inner();
-  let result = config::update_proxy(body.id, body.data);
+  let result = config::update_proxy(body.id, body.proxy, body.rules);
 
   let response = match result {
     Ok(proxies) => HttpResponse::Ok().json(proxies),
@@ -69,7 +70,7 @@ pub async fn handle_update_proxy(body: web::Json<UpdateProxyBody>) -> Result<imp
 #[delete("/api/proxy")]
 pub async fn handle_delete_proxy(body: web::Json<UpdateProxyBody>) -> Result<impl Responder> {
   let body = body.into_inner();
-  let result = config::delete_proxy(body.id, body.data);
+  let result = config::delete_proxy(body.id, body.proxy);
 
 
   println!("--->{:?}", result);

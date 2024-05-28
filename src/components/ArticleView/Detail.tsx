@@ -160,7 +160,7 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
           <div className="flex items-center gap-2 rounded-full bg-[var(--gray-4)] pr-3">
             <Avatar
               radius="full"
-              className="w-8 h-8"
+              className="w-6 h-6"
               src={store.feed?.logo || ico}
               fallback={article.feed_title?.slice(0, 1)}
             ></Avatar>

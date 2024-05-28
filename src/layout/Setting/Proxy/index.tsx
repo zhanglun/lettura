@@ -2,7 +2,7 @@ import { Button, IconButton, Switch } from "@radix-ui/themes";
 import { Panel, PanelSection } from "../Panel";
 import { Edit, PlusCircle, Trash2 } from "lucide-react";
 import { ProxyModal } from "./ProxyModal";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { request } from "@/helpers/request";
 import { useModal } from "@/components/Modal/useModal";
 
@@ -10,9 +10,10 @@ export interface ProxyItemProps {
   proxy: LocalProxy;
   onEdit: () => void;
   onDelete: () => void;
+  onRuleChange: () => void;
 }
 
-export const ProxyItem = ({ proxy, onEdit, onDelete }: ProxyItemProps) => {
+export const ProxyItem = ({ proxy, onEdit, onDelete, onRuleChange }: ProxyItemProps) => {
   const [enable, setEnable] = useState(proxy.enable);
 
   function changeProxyStatus(checked: boolean) {
@@ -51,24 +52,21 @@ export const ProxyItem = ({ proxy, onEdit, onDelete }: ProxyItemProps) => {
           <Switch checked={enable} onCheckedChange={(checked) => changeProxyStatus(checked)} />
         </div>
       </div>
-      <div className="mt-3">
-        <IconButton size="2" variant="ghost" color="gray">
-          Add subscribe
-        </IconButton>
-      </div>
     </div>
   );
 };
 
 export const ProxySetting = () => {
   const [proxyModalStatus, setProxyModalStatus] = useModal();
+  const [proxyRuleModalStatus, setProxyRuleModalStatus] = useModal();
   const [proxyList, setProxyList] = useState<LocalProxy[]>([]);
   const [selectProxy, setSelectProxy] = useState<LocalProxy | null>(null);
+  const [rules, setRules] = useState<string[]>([]);
 
   function getProxyList() {
     request.get("/proxy").then(({ data }) => {
       setProxyList(data.proxy || []);
-      console.log("%c Line:14 🍕 data", "color:#ed9ec7", data);
+      setRules(data.proxy_rules);
     });
   }
 
@@ -76,6 +74,22 @@ export const ProxySetting = () => {
     setProxyModalStatus(true);
     setSelectProxy(p);
   }
+
+  function handleChangeRule(p: LocalProxy) {
+    setProxyRuleModalStatus(true);
+    setSelectProxy(p);
+  }
+
+  const filterSelectFeed = useMemo(() => {
+    if (selectProxy) {
+      const { server, port } = selectProxy;
+      return rules.filter((rule) => {
+        return rule.indexOf(`${server}:${port}`) >= 0;
+      }).map((r) => r.split(',')[1]);
+    }
+
+    return [];
+  }, [rules, selectProxy]);
 
   function handleDeleteProxy(p: LocalProxy) {
     request
@@ -108,6 +122,7 @@ export const ProxySetting = () => {
           setDialogStatus={setProxyModalStatus}
           afterConfirm={getProxyList}
           proxy={selectProxy}
+          filterSelectFeed={filterSelectFeed}
           afterCancel={() => {
             setSelectProxy(null);
           }}
@@ -117,7 +132,12 @@ export const ProxySetting = () => {
       <div>
         {proxyList.map((proxy) => {
           return (
-            <ProxyItem proxy={proxy} onEdit={() => handleEditProxy(proxy)} onDelete={() => handleDeleteProxy(proxy)} />
+            <ProxyItem
+              proxy={proxy}
+              onEdit={() => handleEditProxy(proxy)}
+              onDelete={() => handleDeleteProxy(proxy)}
+              onRuleChange={() => handleChangeRule(proxy)}
+            />
           );
         })}
       </div>

@@ -1,7 +1,11 @@
 use chrono::{TimeZone, Utc};
 use dotenv::dotenv;
 use serde::{Deserialize, Serialize};
-use std::{env, fs, path, path::PathBuf};
+use std::{
+  collections::HashSet,
+  env, fs,
+  path::{self, PathBuf},
+};
 use toml;
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -67,10 +71,11 @@ pub struct UserConfig {
   pub last_sync_time: String,
 
   pub proxy: Option<Vec<Proxy>>,
+  pub proxy_rules: Vec<String>,
+
   pub customize_style: CustomizeStyle,
   pub purge_on_days: u64,
   pub purge_unread_articles: bool,
-  pub proxy_rules: Vec<String>,
 }
 
 impl Default for UserConfig {
@@ -226,10 +231,15 @@ pub fn add_proxy(proxy_cfg: Proxy) -> Result<Option<Vec<Proxy>>, String> {
   }
 }
 
-pub fn update_proxy(id: String, proxy_cfg: Proxy) -> Result<Option<Vec<Proxy>>, String> {
+pub fn update_proxy(
+  id: String,
+  proxy_cfg: Proxy,
+  allow_list: Vec<String>,
+) -> Result<Option<Vec<Proxy>>, String> {
   let mut data = get_user_config();
   let user_config_path = get_user_config_path();
   let mut proxies = data.proxy.unwrap_or_default();
+  let mut rules: Vec<String> = vec![];
 
   if let Some(proxy) = proxies
     .iter_mut()
@@ -240,9 +250,23 @@ pub fn update_proxy(id: String, proxy_cfg: Proxy) -> Result<Option<Vec<Proxy>>, 
     proxy.enable = proxy_cfg.enable;
     proxy.username = proxy_cfg.username;
     proxy.password = proxy_cfg.password;
+
+    rules = allow_list
+      .into_iter()
+      .map(|l| format!("{}:{},{}", proxy.server, proxy.port, l))
+      .collect();
   }
 
+  let set: HashSet<String> = data
+    .proxy_rules
+    .into_iter()
+    .chain(rules.into_iter())
+    .collect();
+
+  rules = set.into_iter().collect();
+
   data.proxy = Some(proxies);
+  data.proxy_rules = rules;
 
   let content = toml::to_string(&data).unwrap();
 
