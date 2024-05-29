@@ -632,7 +632,7 @@ pub async fn update_icon(uuid: &str, url: &str) -> usize {
 }
 
 pub async fn fetch_site_favicon(url: &str) -> Option<String> {
-  let client = feed::create_client();
+  let client = feed::create_client("");
   let response = client.get(url).send().await.unwrap();
   let html = response.text().await.unwrap();
   let url = String::from(url);

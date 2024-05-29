@@ -1,8 +1,6 @@
-import { request } from "@/helpers/request";
-import { Avatar, Badge, Button, Checkbox, Dialog, Popover, Separator, TextField } from "@radix-ui/themes";
-import { ChangeEvent, useCallback, useEffect, useState } from "react";
-import { toast } from "sonner";
-import { PlusCircle } from "lucide-react";
+import { Avatar,  Button, Checkbox, Popover } from "@radix-ui/themes";
+import { useEffect, useState } from "react";
+import { Plus, PlusCircle } from "lucide-react";
 import {
   Command,
   CommandEmpty,
@@ -23,45 +21,21 @@ export interface AddProxyRuleModalProps {
 
 export const AddProxyRuleModal = (props: AddProxyRuleModalProps) => {
   const { feedList, value, onValueChange } = props;
-  const [selectedValues, setSelectValues] = useState<FeedResItem[]>([]);
-
-  // const handleSave = () => {
-  //   const params = {
-  //
-  //   };
-  //
-  //   console.log("%c Line:15 🍅 params", "color:#ea7e5c", params);
-  //   let fn = proxy
-  //     ? request.post("proxy", {
-  //         id: `socks5://${proxy.server}:${proxy.port}`,
-  //         data: {
-  //           ...params,
-  //           enable: proxy.enable,
-  //         },
-  //       })
-  //     : request.put("proxy", {
-  //         ...params,
-  //         enable: false,
-  //       });
-  //
-  //   fn.then(({ data }) => {
-  //     console.log(data);
-  //     if (data.error) {
-  //       toast.error(data.error);
-  //    } else {
-  //     }
-  //   });
-  // };
+  const [selectedValues, setSelectValues] = useState<FeedResItem[]>(value);
 
   function handleChange(values: FeedResItem[]) {
     onValueChange(values);
   }
 
+  useEffect(() => {
+    setSelectValues(value);
+  }, [value])
+
   return (
     <Popover.Root>
       <Popover.Trigger>
-        <Button variant="outline">
-          <PlusCircle size={16} />
+        <Button variant="surface">
+          <Plus size={16} /> Select subscribes
         </Button>
       </Popover.Trigger>
       <Popover.Content className="w-[462px] p-0" align="start">
@@ -71,7 +45,7 @@ export const AddProxyRuleModal = (props: AddProxyRuleModalProps) => {
             <CommandEmpty>No results found.</CommandEmpty>
             <CommandGroup>
               {feedList.map((option) => {
-                const isSelected = selectedValues.some((s) => s.link === option.link);
+                const isSelected = selectedValues.some((s) => s.feed_url === option.feed_url);
                 return (
                   <CommandItem
                     key={option.id}
@@ -79,7 +53,7 @@ export const AddProxyRuleModal = (props: AddProxyRuleModalProps) => {
                       let values = [];
 
                       if (isSelected) {
-                        values = selectedValues.filter((s) => s.link !== option.link);
+                        values = selectedValues.filter((s) => s.feed_url !== option.feed_url);
                       } else {
                         values = [...selectedValues, option];
                       }
@@ -94,22 +68,13 @@ export const AddProxyRuleModal = (props: AddProxyRuleModalProps) => {
                       fallback={option.title.slice(0, 1)}
                       alt={option.title}
                       size="1"
+                      className="mr-2"
                     />
                     <span>{option.title}</span>
                   </CommandItem>
                 );
               })}
             </CommandGroup>
-            {selectedValues.length > 0 && (
-              <>
-                <CommandSeparator />
-                <CommandGroup>
-                  <CommandItem onSelect={() => {}} className="justify-center text-center">
-                    Clear filters
-                  </CommandItem>
-                </CommandGroup>
-              </>
-            )}
           </CommandList>
         </Command>
       </Popover.Content>

@@ -51,7 +51,7 @@ impl PageScraper {
   }
 
   pub async fn fetch_page(url: &str) -> Option<String> {
-    let client = feed::create_client();
+    let client = feed::create_client("");
     let response = client.get(url).send().await;
 
     let result = match response {
@@ -70,7 +70,7 @@ impl PageScraper {
   }
 
   pub async fn get_first_image_or_og_image(url: &str) -> Option<String> {
-    let client = feed::create_client();
+    let client = feed::create_client("");
     let res = client.get(url).send().await.ok()?;
     let body = res.text().await.ok()?;
     let document = scraper::Html::parse_document(&body);

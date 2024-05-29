@@ -20,7 +20,7 @@ export const ProxyItem = ({ proxy, onEdit, onDelete, onRuleChange }: ProxyItemPr
     request
       .post("proxy", {
         id: `socks5://${proxy.server}:${proxy.port}`,
-        data: {
+        proxy: {
           ...proxy,
           enable: checked,
         },
@@ -83,6 +83,7 @@ export const ProxySetting = () => {
   const filterSelectFeed = useMemo(() => {
     if (selectProxy) {
       const { server, port } = selectProxy;
+        console.log("%c Line:87 🍡 rules", "color:#3f7cff", rules);
       return rules.filter((rule) => {
         return rule.indexOf(`${server}:${port}`) >= 0;
       }).map((r) => r.split(',')[1]);
@@ -96,7 +97,7 @@ export const ProxySetting = () => {
       .delete("/proxy", {
         data: {
           id: `socks5://${p.server}:${p.port}`,
-          data: {
+          proxy: {
             ...p,
           },
         },
