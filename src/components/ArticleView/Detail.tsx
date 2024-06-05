@@ -7,7 +7,7 @@ import { useBearStore } from "@/stores";
 import * as dataAgent from "@/helpers/dataAgent";
 import { open } from "@tauri-apps/api/shell";
 import xss, { getDefaultWhiteList } from "xss";
-import linkifyStr from "linkify-string";
+import DOMPurify from 'dompurify';
 import { ArticleResItem } from "@/db";
 import { YoutubeAdapter } from "./adpater/Youtube";
 import { PodcastAdapter } from "./adpater/Podcast";
@@ -127,14 +127,18 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
             return a;
           });
 
+          console.log("%c Line:131 🍭 content", "color:#4fff4B", content);
+
           setPageContent(
-            xss(content, {
-              whiteList: {
-                ...getDefaultWhiteList(),
-                iframe: [],
-                button: [],
-              },
-            })
+            DOMPurify.sanitize(content)
+            // xss(content, {
+            //   whiteList: {
+            //     ...getDefaultWhiteList(),
+            //     iframe: [],
+            //     button: [],
+            //   },
+            //   css: false,
+            // })
           );
 
           try {
