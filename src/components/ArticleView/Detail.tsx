@@ -6,11 +6,10 @@ import { getChannelFavicon } from "@/helpers/parseXML";
 import { useBearStore } from "@/stores";
 import * as dataAgent from "@/helpers/dataAgent";
 import { open } from "@tauri-apps/api/shell";
-import xss, { getDefaultWhiteList } from "xss";
 import DOMPurify from 'dompurify';
 import { ArticleResItem } from "@/db";
-import { YoutubeAdapter } from "./adpater/Youtube";
-import { PodcastAdapter } from "./adpater/Podcast";
+import { YoutubeAdapter } from "./adapter/Youtube";
+import { PodcastAdapter } from "./adapter/Podcast";
 import { Avatar, Heading, Separator } from "@radix-ui/themes";
 
 function createMarkup(html: string) {

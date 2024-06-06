@@ -200,17 +200,18 @@
 
   & a {
     text-decoration: underline;
-    text-decoration-style: dashed;
     transition: all 0.3s;
-    color: var(--color-primary);
+    color: var(--accent-9);
 
     &:hover {
-      text-decoration-style: wavy;
+      text-decoration: none;
+      background-color: var(--accent-9);
+      color: var(--accent-contrast) !important;
     }
   }
 
   & img {
     display: inline-block;
-    border: 1px solid var(--color-primary);
+    border: 1px solid var(--gray-7);
   }
 }
