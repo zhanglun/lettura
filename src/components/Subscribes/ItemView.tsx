@@ -28,7 +28,7 @@ export const ItemView: FC<CardProps> = ({ uuid, text, feed, index, isExpanded, t
   const store = useBearStore((state) => ({
     feed: state.feed,
     setFeed: state.setFeed,
-    getFeedList: state.getFeedList,
+    getSubscribes: state.getSubscribes,
     setFeedContextMenuTarget: state.setFeedContextMenuTarget,
     feedContextMenuTarget: state.feedContextMenuTarget,
     feedContextMenuStatus: state.feedContextMenuStatus,

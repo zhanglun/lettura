@@ -160,7 +160,7 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
           {article.title}
         </Heading>
         <div className="flex items-center gap-2 text-sm sm:flex-wrap">
-          <div className="flex items-center gap-2 rounded-full bg-[var(--gray-4)] pr-3">
+          <div className="flex items-center gap-2 rounded-full bg-[var(--gray-4)] py-0.5 pl-0.5 pr-3">
             <Avatar
               radius="full"
               className="w-6 h-6"

@@ -54,7 +54,7 @@ const ChannelList = (): JSX.Element => {
   const [deleteFolderStatus, setDeleteFolderStatus] = useModal();
   const [editFeedStatus, setEditFeedStatus] = useModal();
   const [showStatus, setModalStatus] = useModal();
-  const [feedList, setFeedList, getFeedList, refreshing, setRefreshing, done, setDone, startRefresh] = useRefresh();
+  const [feedList, setFeedList, getSubscribes, refreshing, setRefreshing, done, setDone, startRefresh] = useRefresh();
   const store = useBearStore((state) => ({
     feed: state.feed,
     setFeed: state.setFeed,
@@ -79,9 +79,9 @@ const ChannelList = (): JSX.Element => {
   }, []);
 
   useEffect(() => {
-    getFeedList();
+    getSubscribes();
     const unsubscribeGetChannels = busChannel.on("getChannels", () => {
-      getFeedList();
+      getSubscribes();
     });
 
     return () => {
@@ -116,7 +116,7 @@ const ChannelList = (): JSX.Element => {
       toast.promise(dataAgent.markAllRead({ uuid, isToday: !!isToday, isAll: !!isAll }), {
         loading: "Loading...",
         success: (data) => {
-          getFeedList();
+          getSubscribes();
           store.initCollectionMetas();
 
           if (store.feed?.uuid === uuid) {
@@ -185,7 +185,7 @@ const ChannelList = (): JSX.Element => {
       store.setFeedContextMenuTarget(null);
     }
 
-    getFeedList();
+    getSubscribes();
   };
 
   const afterUnsubscribeFeed = () => {
@@ -197,7 +197,7 @@ const ChannelList = (): JSX.Element => {
       store.setFeedContextMenuTarget(null);
     }
 
-    getFeedList();
+    getSubscribes();
   };
 
   return (
@@ -398,7 +398,7 @@ const ChannelList = (): JSX.Element => {
           feed={store.feedContextMenuTarget}
           dialogStatus={editFeedStatus}
           setDialogStatus={setEditFeedStatus}
-          afterConfirm={getFeedList}
+          afterConfirm={getSubscribes}
           afterCancel={() => store.setFeedContextMenuTarget(null)}
         />
         <AddFolder
@@ -406,7 +406,7 @@ const ChannelList = (): JSX.Element => {
           folder={store.feedContextMenuTarget as FolderResItem | null}
           dialogStatus={editFolderDialogStatus}
           setDialogStatus={setEditFolderDialogStatus}
-          afterConfirm={getFeedList}
+          afterConfirm={getSubscribes}
           afterCancel={() => store.setFeedContextMenuTarget(null)}
         />
       </div>

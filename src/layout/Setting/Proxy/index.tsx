@@ -1,19 +1,22 @@
-import { Button, IconButton, Switch } from "@radix-ui/themes";
+import { Badge, Button, Flex, IconButton, Switch } from "@radix-ui/themes";
 import { Panel, PanelSection } from "../Panel";
 import { Edit, PlusCircle, Trash2 } from "lucide-react";
 import { ProxyModal } from "./ProxyModal";
 import { useEffect, useMemo, useState } from "react";
 import { request } from "@/helpers/request";
 import { useModal } from "@/components/Modal/useModal";
+import { useBearStore } from "@/stores";
+import { FeedResItem } from "@/db";
 
 export interface ProxyItemProps {
   proxy: LocalProxy;
+  bindFeeds: FeedResItem[];
   onEdit: () => void;
   onDelete: () => void;
   onRuleChange: () => void;
 }
 
-export const ProxyItem = ({ proxy, onEdit, onDelete, onRuleChange }: ProxyItemProps) => {
+export const ProxyItem = ({ proxy, bindFeeds, onEdit, onDelete, onRuleChange }: ProxyItemProps) => {
   const [enable, setEnable] = useState(proxy.enable);
 
   function changeProxyStatus(checked: boolean) {
@@ -52,14 +55,23 @@ export const ProxyItem = ({ proxy, onEdit, onDelete, onRuleChange }: ProxyItemPr
           <Switch checked={enable} onCheckedChange={(checked) => changeProxyStatus(checked)} />
         </div>
       </div>
+      <div className="flex gap-2 flex-wrap mt-3">
+        {bindFeeds.map((feed) => {
+          return <Badge>{feed.title}</Badge>;
+        })}
+      </div>
     </div>
   );
 };
 
 export const ProxySetting = () => {
+  const store = useBearStore((state) => ({
+    subscribes: state.subscribes,
+  }));
   const [proxyModalStatus, setProxyModalStatus] = useModal();
   const [proxyRuleModalStatus, setProxyRuleModalStatus] = useModal();
   const [proxyList, setProxyList] = useState<LocalProxy[]>([]);
+  const [feedList, setFeedList] = useState<FeedResItem[]>([]);
   const [selectProxy, setSelectProxy] = useState<LocalProxy | null>(null);
   const [rules, setRules] = useState<string[]>([]);
 
@@ -83,14 +95,29 @@ export const ProxySetting = () => {
   const filterSelectFeed = useMemo(() => {
     if (selectProxy) {
       const { server, port } = selectProxy;
-        console.log("%c Line:87 🍡 rules", "color:#3f7cff", rules);
-      return rules.filter((rule) => {
-        return rule.indexOf(`${server}:${port}`) >= 0;
-      }).map((r) => r.split(',')[1]);
+      console.log("%c Line:87 🍡 rules", "color:#3f7cff", rules);
+      return rules
+        .filter((rule) => {
+          return rule.indexOf(`${server}:${port}`) >= 0;
+        })
+        .map((r) => r.split(",")[1]);
     }
 
     return [];
   }, [rules, selectProxy]);
+
+  function getSelectFeedResItem(proxy: LocalProxy, rules: string[]) {
+    const { server, port } = proxy;
+    const urls = rules
+      .filter((rule) => {
+        return rule.indexOf(`${server}:${port}`) >= 0;
+      })
+      .map((r) => r.split(",")[1]);
+
+    return feedList.filter((l) => {
+      return urls.find((f) => f === l.feed_url);
+    });
+  }
 
   function handleDeleteProxy(p: LocalProxy) {
     request
@@ -111,6 +138,22 @@ export const ProxySetting = () => {
     getProxyList();
   }, []);
 
+  useEffect(() => {
+    setFeedList(
+      store.subscribes.reduce((acu, cur) => {
+        if (cur.item_type === "folder" && cur.children && cur.children.length > 0) {
+          acu = acu.concat([...cur.children]);
+        }
+
+        if (cur.item_type === "channel") {
+          acu.push(cur);
+        }
+
+        return acu;
+      }, [] as FeedResItem[])
+    );
+  }, [store.subscribes]);
+
   return (
     <Panel title="Proxy Settings">
       <PanelSection title="Proxy" subTitle="use proxy server for connection">
@@ -123,6 +166,7 @@ export const ProxySetting = () => {
           setDialogStatus={setProxyModalStatus}
           afterConfirm={getProxyList}
           proxy={selectProxy}
+          feedList={feedList}
           filterSelectFeed={filterSelectFeed}
           afterCancel={() => {
             setSelectProxy(null);
@@ -135,6 +179,7 @@ export const ProxySetting = () => {
           return (
             <ProxyItem
               proxy={proxy}
+              bindFeeds={getSelectFeedResItem(proxy, rules)}
               onEdit={() => handleEditProxy(proxy)}
               onDelete={() => handleDeleteProxy(proxy)}
               onRuleChange={() => handleChangeRule(proxy)}

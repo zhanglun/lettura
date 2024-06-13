@@ -146,7 +146,7 @@ export const createArticleSlice: StateCreator<
         }),
       }));
 
-      get().getFeedList();
+      get().getSubscribes();
       get().initCollectionMetas();
 
       return data;

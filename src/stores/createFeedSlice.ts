@@ -31,9 +31,9 @@ export interface FeedSlice {
   feed: FeedResItem | null;
   setFeed: (feed: FeedResItem | null) => void;
   updateFeed: (uuid: string, updater: any) => void;
-  feedList: FeedResItem[];
-  setFeedList: (list: FeedResItem[]) => void;
-  getFeedList: () => any;
+  subscribes: FeedResItem[];
+  setSubscribes: (list: FeedResItem[]) => void;
+  getSubscribes: () => any;
 
   feedContextMenuTarget: FeedResItem | null;
   setFeedContextMenuTarget: (target: FeedResItem | null) => void;
@@ -87,7 +87,7 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
       }
     };
 
-    let list = get().feedList.map((feed) => {
+    let list = get().subscribes.map((feed) => {
       let target: any = feed.uuid === uuid ? feed : null;
       let child: any = feed.children.find((item) => item.uuid === uuid) || null;
 
@@ -110,7 +110,7 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
     console.log("%c Line:102 🍢 list", "color:#ea7e5c", list);
 
     set({
-      feedList: list,
+      subscribes: list,
     });
   },
 
@@ -163,15 +163,15 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
       }));
     }
   },
-  feedList: [],
-  setFeedList: (list: FeedResItem[])=> {
+  subscribes: [],
+  setSubscribes: (list: FeedResItem[])=> {
     set(() => ({
-      feedList: list
+      subscribes: list
     }))
   },
   updateFeed: (uuid: string, updater: any) => {
     set((state) => ({
-      feedList: state.feedList.map((feed) => {
+      subscribes: state.subscribes.map((feed) => {
         return feed.uuid === uuid
           ? {
               ...feed,
@@ -181,7 +181,7 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
       }),
     }));
   },
-  getFeedList: () => {
+  getSubscribes: () => {
     const initUnreadCount = (
       list: any[],
       countCache: { [key: string]: number }
@@ -201,11 +201,11 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
         return item;
       });
     };
-    return Promise.all([dataAgent.getFeeds(), dataAgent.getUnreadTotal()]).then(
+    return Promise.all([dataAgent.getSubscribes(), dataAgent.getUnreadTotal()]).then(
       ([{ data: feedList }, { data: unreadTotal }]) => {
         feedList = initUnreadCount(feedList, unreadTotal);
         set(() => ({
-          feedList: feedList || [],
+          subscribes: feedList || [],
         }));
       }
     );
@@ -225,7 +225,7 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
   },
 
   closeFolder: (uuid: string) => {
-    let list = get().feedList;
+    let list = get().subscribes;
 
     list.forEach(_ => {
       if (_.uuid === uuid) {
@@ -234,12 +234,12 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
     });
 
     set(() => ({
-      feedList: [...list]
+      subscribes: [...list]
     }))
   },
 
   openFolder: (uuid: string) => {
-    let list = get().feedList;
+    let list = get().subscribes;
 
     list.forEach(_ => {
       if (_.uuid === uuid) {
@@ -248,7 +248,7 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
     });
 
     set(() => ({
-      feedList: [...list]
+      subscribes: [...list]
     }))
   },
 
@@ -275,7 +275,7 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
 
           return acu;
         }, {} as { [key: string]: any});
-        let list = get().feedList.map((_) => {
+        let list = get().subscribes.map((_) => {
           if (map[_.uuid]) {
             _.unread += map[_.uuid][1]
 
@@ -299,7 +299,7 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
         })
 
         set(() => ({
-          feedList: list,
+          subscribes: list,
           collectionMeta: collectionMeta,
         }))
 
@@ -311,7 +311,7 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
 
   addNewFeed(feed) {
     set((state) => ({
-      feedList: [feed, ...state.feedList]
+      subscribes: [feed, ...state.subscribes]
     }))
   }
 });

@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import pLimit from "p-limit";
 import { FeedResItem } from "@/db";
-import * as dataAgent from "@/helpers/dataAgent";
 import { useBearStore } from "@/stores";
 
 export const useRefresh = () => {
@@ -11,8 +10,8 @@ export const useRefresh = () => {
 
     setLastSyncTime: state.setLastSyncTime,
 
-    feedList: state.feedList,
-    getFeedList: state.getFeedList,
+    subscribes: state.subscribes,
+    getSubscribes: state.getSubscribes,
     updateFeed: state.updateFeed,
     feed: state.feed,
 
@@ -24,8 +23,8 @@ export const useRefresh = () => {
   const [done, setDone] = useState<number>(0);
   const timeRef = useRef<any>();
 
-  const getFeedList = () => {
-    store.getFeedList();
+  const getSubscribes = () => {
+    store.getSubscribes();
   };
 
   const loadAndUpdate = (channel: FeedResItem) => {
@@ -60,7 +59,7 @@ export const useRefresh = () => {
 
       const { threads = 5 } = config;
       const limit = pLimit(threads);
-      const fns = (store.feedList || []).map((channel: any) => {
+      const fns = (store.subscribes || []).map((channel: any) => {
         return limit(() => loadAndUpdate(channel));
       });
 
@@ -69,7 +68,7 @@ export const useRefresh = () => {
         .finally(() => {
           setRefreshing(false);
           setDone(0);
-          getFeedList();
+          getSubscribes();
           // loop();
         });
     });
@@ -89,9 +88,9 @@ export const useRefresh = () => {
   }
 
   useEffect(() => {
-    console.log("%c Line:93 🥕 feedList", "color:#33a5ff", store.feedList);
+    console.log("%c Line:93 🥕 subscribes", "color:#33a5ff", store.subscribes);
 
-    if (!store.feedList || store.feedList.length === 0) {
+    if (!store.subscribes || store.subscribes.length === 0) {
       return ;
     }
 
@@ -114,12 +113,12 @@ export const useRefresh = () => {
     return () => {
       clearTimeout(timeRef.current);
     };
-  }, [store.feedList, store.userConfig.update_interval]);
+  }, [store.subscribes, store.userConfig.update_interval]);
 
   return [
-    store.feedList,
-    store.getFeedList,
-    getFeedList,
+    store.subscribes,
+    store.getSubscribes,
+    getSubscribes,
     refreshing,
     setRefreshing,
     done,

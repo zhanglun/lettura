@@ -1,15 +1,17 @@
 import { request } from "@/helpers/request";
-import { Avatar, Button, Dialog, TextField } from "@radix-ui/themes";
+import { Avatar, Badge, Button, Dialog, Flex, TextField } from "@radix-ui/themes";
 import { ChangeEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AddProxyRuleModal } from "./AddProxyRuleModal";
 import { FeedResItem } from "@/db";
+import { CrossCircledIcon } from "@radix-ui/react-icons";
 import { getChannelFavicon } from "@/helpers/parseXML";
 import * as dataAgent from "@/helpers/dataAgent";
-import { X } from "lucide-react";
+import { CrossIcon, X } from "lucide-react";
 
 export interface ProxyModalProps {
   proxy?: LocalProxy | null;
+  feedList: FeedResItem[];
   filterSelectFeed: string[];
   dialogStatus: boolean;
   trigger?: React.ReactNode;
@@ -23,14 +25,15 @@ export const ProxyModal =
    *
    */
   (props: ProxyModalProps) => {
-    const { proxy, filterSelectFeed, dialogStatus, setDialogStatus, afterConfirm, afterCancel, trigger } = props;
+    const { proxy, filterSelectFeed, feedList, dialogStatus, setDialogStatus, afterConfirm, afterCancel, trigger } =
+      props;
+    console.log("%c Line:28 🌮 feedList", "color:#e41a6a", feedList);
     const [title, setTitle] = useState("");
     const [disabled, setDisabled] = useState(true);
     const [server, setServer] = useState("");
     const [port, setPort] = useState("");
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    const [list, setList] = useState<FeedResItem[]>([]);
     const [selectFeeds, setSelectFeeds] = useState<FeedResItem[]>([]);
 
     const reset = () => {
@@ -54,13 +57,13 @@ export const ProxyModal =
         reset();
         afterCancel();
       }
-    }
+    };
 
     const handleRemoveFeed = (feed: FeedResItem) => {
-      const idx = selectFeeds.findIndex(f => f.feed_url === feed.feed_url);
+      const idx = selectFeeds.findIndex((f) => f.feed_url === feed.feed_url);
 
       if (idx >= 0) {
-        setSelectFeeds([...selectFeeds.slice(0, idx), ...selectFeeds.slice(idx+1)])
+        setSelectFeeds([...selectFeeds.slice(0, idx), ...selectFeeds.slice(idx + 1)]);
       }
     };
 
@@ -116,23 +119,12 @@ export const ProxyModal =
 
     useEffect(() => {
       setSelectFeeds(
-        list.filter((l) => {
+        feedList.filter((l) => {
           return filterSelectFeed.find((f) => f === l.feed_url);
         })
       );
-    console.log("%c Line:123 🥑 filterSelectFeed", "color:#42b983", filterSelectFeed);
+      console.log("%c Line:123 🥑 filterSelectFeed", "color:#42b983", filterSelectFeed);
     }, [filterSelectFeed]);
-
-    function getFeeds() {
-      dataAgent.getChannels({}).then(({ data }) => {
-        console.log("%c Line:157 🍢 data", "color:#3f7cff", data);
-        setList(data.list || []);
-      });
-    }
-
-    useEffect(() => {
-      getFeeds();
-    }, []);
 
     return (
       <Dialog.Root open={dialogStatus} onOpenChange={handleOpenChange}>
@@ -177,22 +169,31 @@ export const ProxyModal =
             <div>
               <div className="mb-1 mt-3 text-[var(--gray-11)]">Subscribes using proxy</div>
               <div className="mt-3">
-                <AddProxyRuleModal feedList={list} value={selectFeeds} onValueChange={(v) => setSelectFeeds(v)} />
-                <div className="grid grid-cols-3 auto-rows-fr mt-3">
+                <AddProxyRuleModal feedList={feedList} value={selectFeeds} onValueChange={(v) => setSelectFeeds(v)} />
+                {/* <div className="grid grid-cols-3 auto-rows-fr mt-3"> */}
+                <div className="flex gap-2 flex-wrap mt-3">
                   {selectFeeds.map((feed) => {
                     return (
-                      <div className="m-[2px] flex gap-2 items-center p-2 pr-1 hover:bg-[var(--gray-2)] rounded group">
-                        <span className="flex-1 text-xs select-none line-clamp-2 font-medium">{feed.title}</span>
-                        <X
-                          size={20}
-                          strokeWidth={1.5}
-                          className="invisible group-hover:visible text-[var(--gray-8)] hover:text-[var(--gray-12)] cursor-pointer"
+                      // <div className="m-[2px] flex gap-2 items-center p-2 pr-1 hover:bg-[var(--gray-2)] rounded group">
+                      //   <span className="flex-1 text-xs select-none line-clamp-2 font-medium">{feed.title}</span>
+                      //   <X
+                      //     size={20}
+                      //     strokeWidth={1.5}
+                      //     className="invisible group-hover:visible text-[var(--gray-8)] hover:text-[var(--gray-12)] cursor-pointer"
+                      //     onClick={() => handleRemoveFeed(feed)}
+                      //   />
+                      // </div>
+                      <Badge className="group relative">
+                        {feed.title}
+                        <CrossCircledIcon
+                          className="invisible group-hover:visible text-[var(--gray-8)] hover:text-[var(--gray-11)] cursor-pointer absolute -right-1 -top-1"
                           onClick={() => handleRemoveFeed(feed)}
                         />
-                      </div>
+                      </Badge>
                     );
                   })}
                 </div>
+                {/* </div> */}
               </div>
             </div>
             <div className="flex justify-end gap-3 mt-4">
