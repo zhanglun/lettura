@@ -3,7 +3,6 @@ use std::collections::HashMap;
 use chrono::Local;
 use diesel::prelude::*;
 use diesel::sql_types::*;
-use log::info;
 use log::warn;
 use scraper::{Html, Selector};
 use serde::{Deserialize, Serialize};

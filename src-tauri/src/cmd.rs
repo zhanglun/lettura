@@ -176,7 +176,6 @@ pub async fn add_feed(url: String) -> (Option<models::Feed>, usize, String) {
     Ok(res) => {
       let channel_uuid = Uuid::new_v4().hyphenated().to_string();
       let feed = create_feed_model(&channel_uuid, &url, &res);
-      println!("feed {:?}", feed);
       let articles = create_article_models(&channel_uuid, &url, &res);
 
       feed::channel::add_feed(feed, articles)
@@ -242,11 +241,6 @@ pub fn update_folder(uuid: String, name: String) -> (usize, String) {
 }
 
 #[command]
-pub fn get_folders() -> Vec<models::Folder> {
-  feed::folder::get_folders()
-}
-
-#[command]
 pub async fn update_icon(uuid: String, url: String) -> usize {
   let favicon = feed::channel::update_icon(&uuid, &url).await;
 
@@ -277,7 +271,7 @@ mod tests {
 
         println!("{:?}", (Some(feed), String::from("")));
         let articles = create_article_models(&feed_uuid, &url, &res);
-        // println!("{:?}", articles);
+        println!("{:?}", articles);
       }
       Err(err) => {
         println!("err {:?}", (None::<models::NewFeed>, err));
