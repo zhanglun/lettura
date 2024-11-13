@@ -66,7 +66,14 @@ pub fn find_proxy(url: &str) -> Option<config::Proxy> {
 /// ```
 pub async fn parse_feed(url: &str) -> Result<feed_rs::model::Feed, String> {
   let client = create_client(url);
-  let result = client.get(url).send().await;
+  let result = client
+    .get(url)
+    .header(
+      "accept",
+      "text/html,application/xhtml+xml,application/xml;q=0.9,application/atom+xml;q=0.8,*/*;q=0.8",
+    )
+    .send()
+    .await;
 
   let a = match result {
     Ok(response) => match response.status() {
@@ -91,9 +98,12 @@ pub async fn parse_feed(url: &str) -> Result<feed_rs::model::Feed, String> {
           }
         }
       }
+      reqwest::StatusCode::NOT_ACCEPTABLE => {
+        return Err("The server cannot produce a response that matches the accept headers sent by the client.".to_string());
+      }
       reqwest::StatusCode::NOT_FOUND => Err(String::from("Could not find a feed at the location.")),
       _ => {
-        log::error!("o {:?}", response);
+        println!("o {:?}", response);
         Err("Not 200 OK".to_string())
       }
     },
@@ -233,9 +243,8 @@ mod tests {
 
   #[tokio::test]
   async fn test_parse_feed() {
-    let url = "https://www.youtube.com/feeds/videos.xml?channel_id=UCpVm7bg6pXKo1Pr6k5kxG9A";
+    let url = "https://www.treasurydirect.gov/TA_WS/securities/announced/rss";
     let res = parse_feed(url).await;
-
     println!("{:?}", res);
   }
 }
