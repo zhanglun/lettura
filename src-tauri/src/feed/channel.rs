@@ -3,7 +3,6 @@ use std::collections::HashMap;
 use chrono::Local;
 use diesel::prelude::*;
 use diesel::sql_types::*;
-use log::info;
 use log::warn;
 use scraper::{Html, Selector};
 use serde::{Deserialize, Serialize};
@@ -632,7 +631,7 @@ pub async fn update_icon(uuid: &str, url: &str) -> usize {
 }
 
 pub async fn fetch_site_favicon(url: &str) -> Option<String> {
-  let client = feed::create_client();
+  let client = feed::create_client("");
   let response = client.get(url).send().await.unwrap();
   let html = response.text().await.unwrap();
   let url = String::from(url);

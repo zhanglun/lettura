@@ -221,8 +221,8 @@ export const ArticleCol = React.memo(
             {store.viewMeta ? store.viewMeta.title : ""}
           </div>
           <div className={"flex items-center justify-end px-2 space-x-1"}>
-            <Select.Root defaultValue={`${store.currentFilter.id}`} onValueChange={changeFilter} size="2">
-              <Select.Trigger variant="soft" className="hover:bg-[var(--accent-a3)]" />
+            <Select.Root defaultValue={`${store.currentFilter.id}`} onValueChange={changeFilter} size="1">
+              <Select.Trigger variant="surface" color="gray" className="hover:bg-[var(--accent-a3)]" />
               <Select.Content>
                 {store.filterList.map((item) => {
                   return (

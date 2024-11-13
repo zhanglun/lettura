@@ -44,7 +44,7 @@ export const ArticleItem = React.forwardRef((props: { article: ArticleResItem },
   return (
     <li
       className={clsx(
-        "list-none rounded-md p-3 pl-6 grid gap-1 relative select-none",
+        "list-none rounded-md p-2 py-3 pl-5 grid gap-1 relative select-none",
         "group hover:bg-[var(--accent-a3)] hover:cursor-pointer",
         {
           "text-[var(--gray-10)]": readStatus === ArticleReadStatus.READ,
@@ -67,9 +67,9 @@ export const ArticleItem = React.forwardRef((props: { article: ArticleResItem },
             src={getChannelFavicon(article.feed_url)}
             fallback={article.feed_title?.slice(0, 1) || "L"}
             alt={article.feed_title}
-            className="rounded w-5 h-5"
+            className="rounded w-4 h-4"
           />
-          <span className="max-w-[146px] overflow-hidden text-ellipsis mr-1 whitespace-nowrap">
+          <span className="max-w-[94px] overflow-hidden text-ellipsis mr-1 whitespace-nowrap">
             {article.author || article.feed_title}
           </span>
         </div>

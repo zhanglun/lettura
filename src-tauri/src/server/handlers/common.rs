@@ -1,4 +1,4 @@
-use actix_web::{get, post, put, delete, web, HttpResponse, Responder, Result};
+use actix_web::{delete, get, post, put, web, HttpResponse, Responder, Result};
 use serde::Deserialize;
 use serde::Serialize;
 use serde_json::json;
@@ -35,9 +35,16 @@ pub async fn handle_get_proxy() -> Result<impl Responder> {
   })))
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct PutProxyBody {
+  proxy: config::Proxy,
+  rules: Vec<String>,
+}
+
 #[put("/api/proxy")]
-pub async fn handle_add_proxy(proxy_cfg: web::Json<config::Proxy>) -> Result<impl Responder> {
-  let result = config::add_proxy(proxy_cfg.into_inner());
+pub async fn handle_add_proxy(body: web::Json<PutProxyBody>) -> Result<impl Responder> {
+  let body = body.into_inner();
+  let result = config::add_proxy(body.proxy, body.rules);
 
   let response = match result {
     Ok(proxies) => HttpResponse::Ok().json(proxies),
@@ -50,13 +57,14 @@ pub async fn handle_add_proxy(proxy_cfg: web::Json<config::Proxy>) -> Result<imp
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UpdateProxyBody {
   id: String,
-  data: config::Proxy,
+  proxy: config::Proxy,
+  rules: Option<Vec<String>>,
 }
 
 #[post("/api/proxy")]
 pub async fn handle_update_proxy(body: web::Json<UpdateProxyBody>) -> Result<impl Responder> {
   let body = body.into_inner();
-  let result = config::update_proxy(body.id, body.data);
+  let result = config::update_proxy(body.id, body.proxy, body.rules);
 
   let response = match result {
     Ok(proxies) => HttpResponse::Ok().json(proxies),
@@ -66,11 +74,16 @@ pub async fn handle_update_proxy(body: web::Json<UpdateProxyBody>) -> Result<imp
   Ok(response)
 }
 
-#[delete("/api/proxy")]
-pub async fn handle_delete_proxy(body: web::Json<UpdateProxyBody>) -> Result<impl Responder> {
-  let body = body.into_inner();
-  let result = config::delete_proxy(body.id, body.data);
+#[derive(Debug, Serialize, Deserialize)]
+pub struct DeleteProxyBody {
+  id: String,
+  proxy: config::Proxy,
+}
 
+#[delete("/api/proxy")]
+pub async fn handle_delete_proxy(body: web::Json<DeleteProxyBody>) -> Result<impl Responder> {
+  let body = body.into_inner();
+  let result = config::delete_proxy(body.id, body.proxy);
 
   println!("--->{:?}", result);
 

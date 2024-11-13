@@ -6,11 +6,10 @@ import { getChannelFavicon } from "@/helpers/parseXML";
 import { useBearStore } from "@/stores";
 import * as dataAgent from "@/helpers/dataAgent";
 import { open } from "@tauri-apps/api/shell";
-import xss, { getDefaultWhiteList } from "xss";
-import linkifyStr from "linkify-string";
+import DOMPurify from 'dompurify';
 import { ArticleResItem } from "@/db";
-import { YoutubeAdapter } from "./adpater/Youtube";
-import { PodcastAdapter } from "./adpater/Podcast";
+import { YoutubeAdapter } from "./adapter/Youtube";
+import { PodcastAdapter } from "./adapter/Podcast";
 import { Avatar, Heading, Separator } from "@radix-ui/themes";
 
 function createMarkup(html: string) {
@@ -127,14 +126,18 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
             return a;
           });
 
+          console.log("%c Line:131 🍭 content", "color:#4fff4B", content);
+
           setPageContent(
-            xss(content, {
-              whiteList: {
-                ...getDefaultWhiteList(),
-                iframe: [],
-                button: [],
-              },
-            })
+            DOMPurify.sanitize(content)
+            // xss(content, {
+            //   whiteList: {
+            //     ...getDefaultWhiteList(),
+            //     iframe: [],
+            //     button: [],
+            //   },
+            //   css: false,
+            // })
           );
 
           try {
@@ -157,10 +160,10 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
           {article.title}
         </Heading>
         <div className="flex items-center gap-2 text-sm sm:flex-wrap">
-          <div className="flex items-center gap-2 rounded-full bg-[var(--gray-4)] pr-3">
+          <div className="flex items-center gap-2 rounded-full bg-[var(--gray-4)] py-0.5 pl-0.5 pr-3">
             <Avatar
               radius="full"
-              className="w-8 h-8"
+              className="w-6 h-6"
               src={store.feed?.logo || ico}
               fallback={article.feed_title?.slice(0, 1)}
             ></Avatar>

@@ -13,7 +13,7 @@ export const getChannels = async (
   });
 };
 
-export const getFeeds = async (): Promise<AxiosResponse<FeedResItem[]>> => {
+export const getSubscribes = async (): Promise<AxiosResponse<FeedResItem[]>> => {
   return request.get("subscribes");
 };
 

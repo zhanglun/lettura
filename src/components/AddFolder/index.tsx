@@ -18,7 +18,7 @@ export const AddFolder = (props: AddFolderProps) => {
   const { action, folder } = props;
   console.log("%c Line:19 🥪 folder", "color:#ed9ec7", folder);
   const store = useBearStore((state) => ({
-    getFeedList: state.getFeedList,
+    getSubscribes: state.getSubscribes,
   }));
   const { dialogStatus, setDialogStatus, afterConfirm, afterCancel, trigger } = props;
   const [name, setName] = useState("");
@@ -60,7 +60,7 @@ export const AddFolder = (props: AddFolderProps) => {
     p.then((res) => {
       console.log("🚀 ~ file: index.tsx:59 ~ p.then ~ res:", res);
       if (res[0] > 0) {
-        store.getFeedList();
+        store.getSubscribes();
         afterConfirm();
         handleCancel();
       }

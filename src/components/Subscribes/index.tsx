@@ -54,7 +54,7 @@ const ChannelList = (): JSX.Element => {
   const [deleteFolderStatus, setDeleteFolderStatus] = useModal();
   const [editFeedStatus, setEditFeedStatus] = useModal();
   const [showStatus, setModalStatus] = useModal();
-  const [feedList, setFeedList, getFeedList, refreshing, setRefreshing, done, setDone, startRefresh] = useRefresh();
+  const [feedList, setFeedList, getSubscribes, refreshing, setRefreshing, done, setDone, startRefresh] = useRefresh();
   const store = useBearStore((state) => ({
     feed: state.feed,
     setFeed: state.setFeed,
@@ -79,9 +79,9 @@ const ChannelList = (): JSX.Element => {
   }, []);
 
   useEffect(() => {
-    getFeedList();
+    getSubscribes();
     const unsubscribeGetChannels = busChannel.on("getChannels", () => {
-      getFeedList();
+      getSubscribes();
     });
 
     return () => {
@@ -116,7 +116,7 @@ const ChannelList = (): JSX.Element => {
       toast.promise(dataAgent.markAllRead({ uuid, isToday: !!isToday, isAll: !!isAll }), {
         loading: "Loading...",
         success: (data) => {
-          getFeedList();
+          getSubscribes();
           store.initCollectionMetas();
 
           if (store.feed?.uuid === uuid) {
@@ -185,7 +185,7 @@ const ChannelList = (): JSX.Element => {
       store.setFeedContextMenuTarget(null);
     }
 
-    getFeedList();
+    getSubscribes();
   };
 
   const afterUnsubscribeFeed = () => {
@@ -197,7 +197,7 @@ const ChannelList = (): JSX.Element => {
       store.setFeedContextMenuTarget(null);
     }
 
-    getFeedList();
+    getSubscribes();
   };
 
   return (
@@ -209,7 +209,7 @@ const ChannelList = (): JSX.Element => {
         })}
         ref={listRef}
       >
-        <h2 className="mb-2 mt-6 px-4 text-lg font-semibold tracking-tight">Collections</h2>
+        <h2 className="mb-2 mt-6 px-2 text-lg font-semibold tracking-tight">Collections</h2>
         <div>
           <div
             onClick={() => {
@@ -298,7 +298,7 @@ const ChannelList = (): JSX.Element => {
             </NavLink>
           </div>
         </div>
-        <h2 className="mb-2 mt-6 px-4 text-lg font-semibold tracking-tight">Feeds</h2>
+        <h2 className="mb-2 mt-6 px-2 text-lg font-semibold tracking-tight">Feeds</h2>
         <ContextMenu.Root onOpenChange={handleContextMenuChange}>
           <ContextMenu.Trigger>
             <div>
@@ -320,7 +320,10 @@ const ChannelList = (): JSX.Element => {
                   <Pencil size={14} /> Edit folder
                 </ContextMenu.Item>
                 <ContextMenu.Separator />
-                <ContextMenu.Item onClick={() => setDeleteFolderStatus(true)} className="text-[var(--red-10)] hover:text-white">
+                <ContextMenu.Item
+                  onClick={() => setDeleteFolderStatus(true)}
+                  className="text-[var(--red-10)] hover:text-white"
+                >
                   <Trash2 size={14} /> Delete folder
                 </ContextMenu.Item>
               </>
@@ -371,7 +374,10 @@ const ChannelList = (): JSX.Element => {
                       <FileText size={14} /> View detail
                     </ContextMenu.Item>
                     <ContextMenu.Separator />
-                    <ContextMenu.Item onClick={() => setModalStatus(true)} className="text-[var(--red-10)] hover:text-white">
+                    <ContextMenu.Item
+                      onClick={() => setModalStatus(true)}
+                      className="text-[var(--red-10)] hover:text-white"
+                    >
                       <BellOff size={14} /> Unsubscribe
                     </ContextMenu.Item>
                   </>
@@ -398,7 +404,7 @@ const ChannelList = (): JSX.Element => {
           feed={store.feedContextMenuTarget}
           dialogStatus={editFeedStatus}
           setDialogStatus={setEditFeedStatus}
-          afterConfirm={getFeedList}
+          afterConfirm={getSubscribes}
           afterCancel={() => store.setFeedContextMenuTarget(null)}
         />
         <AddFolder
@@ -406,13 +412,11 @@ const ChannelList = (): JSX.Element => {
           folder={store.feedContextMenuTarget as FolderResItem | null}
           dialogStatus={editFolderDialogStatus}
           setDialogStatus={setEditFolderDialogStatus}
-          afterConfirm={getFeedList}
+          afterConfirm={getSubscribes}
           afterCancel={() => store.setFeedContextMenuTarget(null)}
         />
       </div>
-      <div className="h-[8px]">
-
-      </div>
+      <div className="h-[8px]"></div>
       {refreshing && (
         <div className="sticky bottom-0 left-0 right-0 p-2 text-right">
           <span className="mr-3 text-xs">Syncing...</span>

@@ -17,11 +17,17 @@ import { Shortcut } from "./layout/Setting/ShortCut";
 import { FeedManager } from "./layout/Setting/Content";
 import { ImportAndExport } from "./layout/Setting/ImportAndExport";
 import { ProxySetting } from "./layout/Setting/Proxy";
+import { Toaster } from "sonner";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />,
+    element: (
+      <>
+        <App />
+        <Toaster />
+      </>
+    ),
     errorElement: <ErrorPage />,
     children: [
       {

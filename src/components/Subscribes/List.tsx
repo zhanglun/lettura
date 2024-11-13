@@ -15,9 +15,9 @@ import {
 
 export const List = () => {
   const store = useBearStore((state) => ({
-    getFeedList: state.getFeedList,
-    setFeedList: state.setFeedList,
-    feedList: state.feedList,
+    getSubscribes: state.getSubscribes,
+    setSubscribes: state.setSubscribes,
+    subscribes: state.subscribes,
     feed: state.feed,
     openFolder: state.openFolder,
     closeFolder: state.closeFolder,
@@ -145,7 +145,7 @@ export const List = () => {
     console.log("%c Line:225 🍧 list", "color:#2eafb0", list);
 
     setTreeData(() => list);
-    store.setFeedList(list);
+    store.setSubscribes(list);
 
     return list;
   };
@@ -246,8 +246,8 @@ export const List = () => {
   };
 
   useEffect(() => {
-    setTreeData([...store.feedList] as TreeItem[]);
-  }, [store.feedList]);
+    setTreeData([...store.subscribes] as TreeItem[]);
+  }, [store.subscribes]);
 
   return (
     <div>

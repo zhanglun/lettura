@@ -1,7 +1,11 @@
 use chrono::{TimeZone, Utc};
 use dotenv::dotenv;
 use serde::{Deserialize, Serialize};
-use std::{env, fs, path, path::PathBuf};
+use std::{
+  collections::HashSet,
+  env, fs,
+  path::{self, PathBuf},
+};
 use toml;
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -14,7 +18,7 @@ pub enum ColorScheme {
   System,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Proxy {
   pub server: String,
   pub port: String,
@@ -67,10 +71,11 @@ pub struct UserConfig {
   pub last_sync_time: String,
 
   pub proxy: Option<Vec<Proxy>>,
+  pub proxy_rules: Vec<String>,
+
   pub customize_style: CustomizeStyle,
   pub purge_on_days: u64,
   pub purge_unread_articles: bool,
-  pub proxy_rules: Vec<String>,
 }
 
 impl Default for UserConfig {
@@ -171,11 +176,9 @@ pub fn get_user_config() -> UserConfig {
     fs::File::create(&user_config_path).expect("create user config failed");
     let data = UserConfig::default();
 
-    let content = toml::to_string(&data).unwrap();
+    let content = toml::to_string_pretty(&data).unwrap();
 
     fs::write(&user_config_path, content).expect("update threads error");
-
-    println!("====> return default");
 
     return data;
   }
@@ -184,8 +187,6 @@ pub fn get_user_config() -> UserConfig {
     Ok(content) => content,
     Err(_) => "".to_string(),
   };
-
-  println!("====> return default {:?}", content);
 
   let data: Option<UserConfig> = match toml::from_str(&content) {
     Ok(data) => {
@@ -198,105 +199,31 @@ pub fn get_user_config() -> UserConfig {
     }
   };
 
-  println!("====> data return default {:?}", data);
-
   match data {
     Some(data) => data,
     None => UserConfig::default(),
   }
 }
 
-pub fn load_or_initial() -> Option<UserConfig> {
-  let user_config_path = get_user_config_path();
-
-  if !user_config_path.exists() {
-    fs::File::create(&user_config_path).expect("create user config failed");
-  }
-
-  let content = match fs::read_to_string(&user_config_path) {
-    Ok(content) => content,
-    Err(_) => "".to_string(),
-  };
-
-  let mut data = match content.parse::<toml::Table>() {
-    Ok(data) => data,
-    Err(err) => {
-      println!("error ==> {:?}", err);
-      toml::map::Map::new()
-    }
-  };
-
-  if !data.contains_key("customize_style") {
-    data.insert(
-      String::from("customize_style"),
-      toml::Value::try_from::<CustomizeStyle>(CustomizeStyle::default()).unwrap(),
-    );
-  }
-
-  if !data.contains_key("threads") {
-    data.insert(
-      String::from("threads"),
-      toml::Value::try_from::<i32>(5).unwrap(),
-    );
-  }
-
-  if !data.contains_key("theme") {
-    data.insert(
-      String::from("theme"),
-      toml::Value::try_from::<String>(String::from("system")).unwrap(),
-    );
-  }
-
-  if !data.contains_key("color_scheme") {
-    data.insert(
-      String::from("color_scheme"),
-      toml::Value::try_from::<ColorScheme>(ColorScheme::System).unwrap(),
-    );
-  }
-
-  if !data.contains_key("update_interval") {
-    data.insert(
-      String::from("update_interval"),
-      toml::Value::try_from::<i32>(0).unwrap(),
-    );
-  }
-
-  if !data.contains_key("last_sync_time") {
-    data.insert(
-      String::from("last_sync_time"),
-      toml::Value::try_from::<String>(
-        Utc::now().to_rfc3339_opts(chrono::SecondsFormat::Secs, true),
-      )
-      .unwrap(),
-    );
-  }
-
-  if !data.contains_key("purge_on_days") {
-    data.insert(
-      String::from("purge_on_days"),
-      toml::Value::try_from::<u64>(0).unwrap(),
-    );
-  }
-
-  if !data.contains_key("purge_unread_articles") {
-    data.insert(
-      String::from("purge_unread_articles"),
-      toml::Value::try_from::<bool>(true).unwrap(),
-    );
-  }
-
-  log::debug!("USER CONFIG: {:?}", data);
-
-  Some(data.try_into::<UserConfig>().expect("config data error"))
-}
-
-pub fn add_proxy(proxy_cfg: Proxy) -> Result<Option<Vec<Proxy>>, String> {
+pub fn add_proxy(proxy_cfg: Proxy, allow_list: Vec<String>) -> Result<Option<Vec<Proxy>>, String> {
   let mut data = get_user_config();
   let user_config_path = get_user_config_path();
 
-  match data.add_proxy(proxy_cfg) {
+  match data.add_proxy(proxy_cfg.clone()) {
     Ok(_) => {
-      let content = toml::to_string(&data).unwrap();
+      let set: HashSet<String> = data
+        .proxy_rules
+        .into_iter()
+        .chain(
+          allow_list
+            .into_iter()
+            .map(|l| format!("{}:{},{}", proxy_cfg.server, proxy_cfg.port, l)),
+        )
+        .collect();
+
+      data.proxy_rules =  set.into_iter().collect();
+
+      let content = toml::to_string_pretty(&data).unwrap();
 
       match fs::write(user_config_path, content) {
         Ok(_) => Ok(data.proxy),
@@ -310,7 +237,11 @@ pub fn add_proxy(proxy_cfg: Proxy) -> Result<Option<Vec<Proxy>>, String> {
   }
 }
 
-pub fn update_proxy(id: String, proxy_cfg: Proxy) -> Result<Option<Vec<Proxy>>, String> {
+pub fn update_proxy(
+  id: String,
+  proxy_cfg: Proxy,
+  allow_list: Option<Vec<String>>,
+) -> Result<Option<Vec<Proxy>>, String> {
   let mut data = get_user_config();
   let user_config_path = get_user_config_path();
   let mut proxies = data.proxy.unwrap_or_default();
@@ -319,16 +250,47 @@ pub fn update_proxy(id: String, proxy_cfg: Proxy) -> Result<Option<Vec<Proxy>>, 
     .iter_mut()
     .find(|p| format!("socks5://{}:{}", p.server, p.port) == id)
   {
-    proxy.server = proxy_cfg.server;
-    proxy.port = proxy_cfg.port;
-    proxy.enable = proxy_cfg.enable;
-    proxy.username = proxy_cfg.username;
-    proxy.password = proxy_cfg.password;
+    proxy.server = proxy_cfg.server.clone();
+    proxy.port = proxy_cfg.port.clone();
+    proxy.enable = proxy_cfg.enable.clone();
+    proxy.username = proxy_cfg.username.clone();
+    proxy.password = proxy_cfg.password.clone();
+  }
+
+  if allow_list.is_some() {
+    let mut rules: Vec<String> = allow_list
+      .unwrap()
+      .into_iter()
+      .map(|l| {
+        format!(
+          "{}:{},{}",
+          proxy_cfg.clone().server,
+          proxy_cfg.clone().port,
+          l
+        )
+      })
+      .collect();
+    data.proxy_rules.retain(|rule| {
+      !rule.starts_with(&format!("{}:{}", proxy_cfg.server, proxy_cfg.port))
+    });
+
+    let set: HashSet<String> = data
+      .proxy_rules
+      .into_iter()
+      .chain(rules.into_iter())
+      .collect();
+
+    rules = set.into_iter().collect();
+    data.proxy_rules = rules;
+  } else {
+    data.proxy_rules.retain(|rule| {
+      !rule.starts_with(&format!("{}:{},{}", proxy_cfg.server, proxy_cfg.port, rule))
+    });
   }
 
   data.proxy = Some(proxies);
 
-  let content = toml::to_string(&data).unwrap();
+  let content = toml::to_string_pretty(&data).unwrap();
 
   match fs::write(user_config_path, content) {
     Ok(_) => Ok(data.proxy),
@@ -347,11 +309,15 @@ pub fn delete_proxy(id: String, proxy_cfg: Proxy) -> Result<Option<Vec<Proxy>>, 
   {
     println!("index ===> {:?}", index);
     proxies.remove(index);
+
+    data
+      .proxy_rules
+      .retain(|rule| !rule.starts_with(&format!("{}:{}", proxy_cfg.server, proxy_cfg.port)));
   }
 
   data.proxy = Some(proxies);
 
-  let content = toml::to_string(&data).unwrap();
+  let content = toml::to_string_pretty(&data).unwrap();
 
   match fs::write(user_config_path, content) {
     Ok(_) => Ok(data.proxy),
@@ -364,7 +330,7 @@ pub fn update_threads(threads: i32) -> usize {
   let user_config_path = get_user_config_path();
   let a = data.set_threads(threads);
 
-  let content = toml::to_string(&a).unwrap();
+  let content = toml::to_string_pretty(&a).unwrap();
 
   fs::write(user_config_path, content).expect("update threads error");
 
@@ -379,7 +345,7 @@ pub fn update_theme(theme: String) -> usize {
 
   let a = data.set_theme(theme);
 
-  let content = toml::to_string(&a).unwrap();
+  let content = toml::to_string_pretty(&a).unwrap();
 
   println!("content {:?}", content);
 
@@ -391,21 +357,9 @@ pub fn update_theme(theme: String) -> usize {
 pub fn update_user_config(cfg: UserConfig) -> String {
   let user_config_path = get_user_config_path();
 
-  let content = toml::to_string(&cfg).unwrap();
+  let content = toml::to_string_pretty(&cfg).unwrap();
 
   fs::write(user_config_path, &content).expect("update threads error");
 
   return content;
-}
-
-#[cfg(test)]
-mod tests {
-  use super::*;
-
-  #[test]
-  fn test_load_or_initial() {
-    let res = load_or_initial();
-
-    println!("test_load_or_initial res {:?}", res);
-  }
 }

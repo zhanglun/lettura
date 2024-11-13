@@ -136,7 +136,7 @@ export const ImportAndExport = (props: any) => {
   const exportToOPML = () => {
     setExporting(true);
     dataAgent
-      .getFeeds()
+      .getSubscribes()
       .then(({ data: feeds }) => {
         const doc = createOPMLObj(feeds);
         const serializer = new XMLSerializer();

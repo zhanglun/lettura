@@ -35,7 +35,7 @@ export function LocalPage() {
     feed: state.feed,
     updateSettingDialogStatus: state.updateSettingDialogStatus,
   }));
-  const [feedList, setFeedList, getFeedList, refreshing, setRefreshing, done, setDone, startRefresh] = useRefresh();
+  const [feedList, setFeedList, getSubscribes, refreshing, setRefreshing, done, setDone, startRefresh] = useRefresh();
   const [addFolderDialogStatus, setAddFolderDialogStatus] = useModal();
 
   useEffect(() => {
@@ -66,7 +66,7 @@ export function LocalPage() {
               action="add"
               dialogStatus={addFolderDialogStatus}
               setDialogStatus={setAddFolderDialogStatus}
-              afterConfirm={getFeedList}
+              afterConfirm={getSubscribes}
               afterCancel={() => {}}
               trigger={
                 <IconButton variant="ghost" size="2" color="gray" className="text-[var(--gray-12)]">

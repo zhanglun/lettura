@@ -96,9 +96,6 @@
 
   --reading-font-monospace: "Roboto Mono VF", "SFMono-Regular", Consolas,
     "Liberation Mono", Menlo, Courier, monospace;
-
-  /* Text selection colour */
-  --text-selection-background-color: #3297FD /* default value chosen from https://stackoverflow.com/questions/16094837/what-is-the-browser-default-background-color-when-selecting-text */
 }
 
 .reading-content {
@@ -111,9 +108,9 @@
     max-width: 100%;
   }
 
-  ::selection {
+  /* ::selection {
     background-color: var(--text-selection-background-color) !important;
-  }
+  } */
 
   & p {
     font-family: var(--reading-font-body);
@@ -200,17 +197,18 @@
 
   & a {
     text-decoration: underline;
-    text-decoration-style: dashed;
     transition: all 0.3s;
-    color: var(--color-primary);
+    color: var(--accent-9);
 
     &:hover {
-      text-decoration-style: wavy;
+      text-decoration: none;
+      background-color: var(--accent-9);
+      color: var(--accent-contrast) !important;
     }
   }
 
   & img {
-    margin: 40px auto !important;
-    border: 2px solid var(--color-primary);
+    display: inline-block;
+    border: 1px solid var(--gray-7);
   }
 }

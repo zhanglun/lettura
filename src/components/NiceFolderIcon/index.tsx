@@ -9,11 +9,7 @@ export interface NiceFolderIconProps
   size?: number;
 }
 
-export const NiceFolderIcon = ({
-  status,
-  size = 20,
-  ...props
-}: NiceFolderIconProps) => {
+export const NiceFolderIcon = ({ status, size = 18, ...props }: NiceFolderIconProps) => {
   const styles = {
     folder: {
       width: `${size}px`,
@@ -22,11 +18,7 @@ export const NiceFolderIcon = ({
   };
 
   return (
-    <div
-      className={clsx("folder", `folder--${status}`)}
-      style={styles.folder}
-      {...props}
-    >
+    <div className={clsx("folder", `folder--${status}`)} style={styles.folder} {...props}>
       <div className="folder__back">
         <div className="paper"></div>
         <div className="paper"></div>

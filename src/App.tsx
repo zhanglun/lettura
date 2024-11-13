@@ -4,7 +4,7 @@ import { emit, listen } from "@tauri-apps/api/event";
 import { useBearStore } from "@/stores";
 import { LocalPage } from "./layout/Local";
 import { Theme } from "@radix-ui/themes";
-import { Toaster } from "sonner";
+// import { Toaster } from "sonner";
 
 function App() {
   const store = useBearStore((state) => ({
@@ -57,15 +57,15 @@ function App() {
 
   return (
     <Theme
-      className="w-[100vw] h-[100vh]"
+      className="w-[100vw] h-[100vh] "
       // @ts-ignore
       accentColor={store.userConfig.theme || "default"}
       panelBackground="translucent"
     >
+      {/* <Toaster /> */}
       <div className="h-full max-h-full ">
         <LocalPage />
       </div>
-      <Toaster />
     </Theme>
   );
 }
