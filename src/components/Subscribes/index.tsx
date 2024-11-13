@@ -209,7 +209,7 @@ const ChannelList = (): JSX.Element => {
         })}
         ref={listRef}
       >
-        <h2 className="mb-2 mt-6 px-4 text-lg font-semibold tracking-tight">Collections</h2>
+        <h2 className="mb-2 mt-6 px-2 text-lg font-semibold tracking-tight">Collections</h2>
         <div>
           <div
             onClick={() => {
@@ -298,7 +298,7 @@ const ChannelList = (): JSX.Element => {
             </NavLink>
           </div>
         </div>
-        <h2 className="mb-2 mt-6 px-4 text-lg font-semibold tracking-tight">Feeds</h2>
+        <h2 className="mb-2 mt-6 px-2 text-lg font-semibold tracking-tight">Feeds</h2>
         <ContextMenu.Root onOpenChange={handleContextMenuChange}>
           <ContextMenu.Trigger>
             <div>
@@ -320,7 +320,10 @@ const ChannelList = (): JSX.Element => {
                   <Pencil size={14} /> Edit folder
                 </ContextMenu.Item>
                 <ContextMenu.Separator />
-                <ContextMenu.Item onClick={() => setDeleteFolderStatus(true)} className="text-[var(--red-10)] hover:text-white">
+                <ContextMenu.Item
+                  onClick={() => setDeleteFolderStatus(true)}
+                  className="text-[var(--red-10)] hover:text-white"
+                >
                   <Trash2 size={14} /> Delete folder
                 </ContextMenu.Item>
               </>
@@ -371,7 +374,10 @@ const ChannelList = (): JSX.Element => {
                       <FileText size={14} /> View detail
                     </ContextMenu.Item>
                     <ContextMenu.Separator />
-                    <ContextMenu.Item onClick={() => setModalStatus(true)} className="text-[var(--red-10)] hover:text-white">
+                    <ContextMenu.Item
+                      onClick={() => setModalStatus(true)}
+                      className="text-[var(--red-10)] hover:text-white"
+                    >
                       <BellOff size={14} /> Unsubscribe
                     </ContextMenu.Item>
                   </>
@@ -410,9 +416,7 @@ const ChannelList = (): JSX.Element => {
           afterCancel={() => store.setFeedContextMenuTarget(null)}
         />
       </div>
-      <div className="h-[8px]">
-
-      </div>
+      <div className="h-[8px]"></div>
       {refreshing && (
         <div className="sticky bottom-0 left-0 right-0 p-2 text-right">
           <span className="mr-3 text-xs">Syncing...</span>

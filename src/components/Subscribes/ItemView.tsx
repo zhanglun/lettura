@@ -83,13 +83,19 @@ export const ItemView: FC<CardProps> = ({ uuid, text, feed, index, isExpanded, t
         }}
       >
         {feed.item_type === "folder" && <div>{renderNiceFolder(isActive, isExpanded)}</div>}
-        {feed.link && <Avatar size="1" src={ico} alt={feed.title} fallback={feed.title.slice(0, 1)}></Avatar>}
+        {feed.link && (
+          <Avatar
+            size="1"
+            src={ico}
+            alt={feed.title}
+            fallback={feed.title.slice(0, 1)}
+            className="w-[18px] h-[18px]"
+          ></Avatar>
+        )}
         <span className={clsx("shrink grow basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-sm")}>
           {feed.title}
         </span>
-        {unread > 0 && (
-          <span className={clsx("h-4 min-w-[1rem] text-center text-sm font-medium leading-4")}>{unread}</span>
-        )}
+        {unread > 0 && <span className={clsx("h-4 min-w-[1rem] text-center text-[10px] leading-4")}>{unread}</span>}
       </div>
       {props.children}
     </>
