@@ -1,4 +1,4 @@
-import { Text, Link, Heading, Blockquote } from "@radix-ui/themes";
+import { Text, Link, Heading, Blockquote, Quote } from "@radix-ui/themes";
 import HTMLReactParser, { domToReact, HTMLReactParserOptions, DOMNode, attributesToProps } from "html-react-parser";
 
 // 自定义转换函数，用于替换标签
@@ -25,6 +25,10 @@ const options: HTMLReactParserOptions = {
             {domToReact(node.children as DOMNode[], options)}
           </Blockquote>
         );
+      }
+
+      if (node.name === "quote") {
+        return <Quote {...attributesToProps(node.attribs)}>{domToReact(node.children as DOMNode[], options)}</Quote>;
       }
 
       if (node.name === "h1") {

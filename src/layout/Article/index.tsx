@@ -5,7 +5,7 @@ import { ArticleDialogView } from "@/components/ArticleView/DialogView";
 import { open } from "@tauri-apps/api/shell";
 import { View } from "./View";
 import { useQuery } from "@/helpers/parseXML";
-import { PodcastPlayer } from "@/components/PodcastPlayer";
+import { LPodcast } from "@/components/LPodcast";
 import clsx from "clsx";
 import { useRef } from "react";
 
@@ -14,11 +14,10 @@ export const ArticleContainer = () => {
   const store = useBearStore((state) => ({
     article: state.article,
     setArticle: state.setArticle,
-
     articleDialogViewStatus: state.articleDialogViewStatus,
     setArticleDialogViewStatus: state.setArticleDialogViewStatus,
-
     podcastPanelStatus: state.podcastPanelStatus,
+    tracks: state.tracks,
   }));
 
   const articleColRef = useRef<ArticleColRefObject>(null);
@@ -31,24 +30,20 @@ export const ArticleContainer = () => {
   useHotkeys("o", () => openInBrowser());
 
   return (
-    <div
-      className={clsx("relative grid h-[100vh] flex-1 p-2 pl-0", {
-        "gap-2 grid-cols-[1fr_auto]": store.podcastPanelStatus,
-        "grid-cols-[auto_0]": !store.podcastPanelStatus,
-      })}
-    >
-      <div className="bg-panel flex w-full h-full flex-1 overflow-hidden rounded-md border">
-        <ArticleCol feedUuid={feedUuid} type={type} ref={articleColRef} />
-        <View goNext={goNext} goPrev={goPrev} />
+    <div className="relative flex flex-col h-[100vh]">
+      <div className="flex-1 grid grid-cols-1 p-2 pl-0 overflow-hidden">
+        <div className="bg-panel flex w-full h-full flex-1 overflow-hidden rounded-md border">
+          <ArticleCol feedUuid={feedUuid} type={type} ref={articleColRef} />
+          <View goNext={goNext} goPrev={goPrev} />
+        </div>
       </div>
 
-      <div
-        className={clsx({
-          hidden: !store.podcastPanelStatus,
-        })}
-      >
-        <PodcastPlayer />
-      </div>
+      {store.podcastPanelStatus && (
+        <LPodcast
+          tracks={store.tracks}
+          mini={false}
+        />
+      )}
 
       <ArticleDialogView
         article={store.article}

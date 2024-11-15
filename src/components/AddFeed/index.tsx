@@ -8,6 +8,7 @@ import { Icon } from "../Icon";
 import { ArrowLeft, Loader2, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { useBearStore } from "@/stores";
+import { wraperWithRadix } from "../ArticleView/ContentRender";
 
 export const AddFeedChannel = (props: any) => {
   const store = useBearStore((state) => ({
@@ -162,7 +163,7 @@ export const AddFeedChannel = (props: any) => {
                   </div>
                 </div>
                 <div>
-                  <div className="text-md">{feed.description}</div>
+                  <div className="text-md">{wraperWithRadix(feed.description || "No description")}</div>
                 </div>
               </div>
               <div className="flex justify-end gap-3 mt-4">
