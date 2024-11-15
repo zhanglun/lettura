@@ -1,11 +1,16 @@
-import linkifyStr from "linkify-string";
-import he from "he";
 import { Button } from "@radix-ui/themes";
 import { Podcast, db } from "@/helpers/podcastDB";
 import { toast } from "sonner";
 import { busChannel } from "@/helpers/busChannel";
+import { wraperWithRadix } from "../ContentRender";
+import { ArticleResItem } from "@/db";
 
-export function PodcastAdapter(props: any) {
+export interface PodcastAdapter {
+  article: ArticleResItem;
+  content: string;
+  medias: any;
+}
+export function PodcastAdapter(props: PodcastAdapter) {
   const { article, content, medias } = props;
 
   console.log("content", content);
@@ -14,7 +19,6 @@ export function PodcastAdapter(props: any) {
 
   function addToPlayListAndPlay(media: any) {
     const { description, content, thumbnails } = media;
-    console.log("%c Line:17 🌶 media", "color:#ea7e5c", media);
     const mediaURL = content[0].url;
     const mediaType = content[0].content_type;
     const thumbnail = thumbnails[0].image.uri;
@@ -29,7 +33,6 @@ export function PodcastAdapter(props: any) {
       feed_title: article.feed_title,
       pub_date: article.pub_date,
       create_date: article.create_date,
-      update_date: article.update_date,
       starred: article.starred,
       mediaURL,
       mediaType,
@@ -47,7 +50,7 @@ export function PodcastAdapter(props: any) {
           busChannel.emit("addMediaAndPlay", record);
         }, 50);
       })
-      .catch('ConstraintError', () => {
+      .catch("ConstraintError", () => {
         // already in the list, play it immediately
         busChannel.emit("addMediaAndPlay", record);
       });
@@ -58,7 +61,7 @@ export function PodcastAdapter(props: any) {
 
     function renderContent() {
       return content.map((c: any) => {
-        if (c.url && c.content_type.indexOf('audio/') === 0) {
+        if (c.url && c.content_type.indexOf("audio/") === 0) {
           return (
             <figure className="my-3">
               <Button onClick={() => addToPlayListAndPlay(media)}>Play</Button>
@@ -80,30 +83,16 @@ export function PodcastAdapter(props: any) {
       <div>
         <div>{renderThumbnails()}</div>
         <div>{renderContent()}</div>
-        <div
-          className="text-xs text-muted-foreground"
-          style={{ whiteSpace: "pre-line" }}
-          dangerouslySetInnerHTML={{
-            __html: linkifyStr(
-              he.decode((description?.content || "").replace(/<[^<>]+>/gi, ""))
-            ),
-          }}
-        />
+        <div>{wraperWithRadix(description?.content || "")}</div>
       </div>
     );
   }
 
   return (
     <div>
+      <div className="mb-4">{wraperWithRadix(content)}</div>
+
       {medias && medias.length > 0 && <div>{medias.map(renderMediaBox)}</div>}
-      <div
-        key={article.uuid}
-        className={"reading-content mt-6"}
-        // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{
-          __html: content,
-        }}
-      />
     </div>
   );
 }

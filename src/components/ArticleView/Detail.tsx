@@ -11,10 +11,7 @@ import { ArticleResItem } from "@/db";
 import { YoutubeAdapter } from "./adapter/Youtube";
 import { PodcastAdapter } from "./adapter/Podcast";
 import { Avatar, Heading, Separator } from "@radix-ui/themes";
-
-function createMarkup(html: string) {
-  return { __html: html };
-}
+import { CommonAdapter } from "./adapter/Common";
 
 function validateFeed(article: ArticleResItem, medias: any) {
   const { feed_url } = article;
@@ -88,14 +85,7 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
     } else if (isPodcast) {
       return <PodcastAdapter article={article} content={pageContent} medias={medias} />;
     } else {
-      return (
-        <div
-          key={article.uuid}
-          className={clsx("reading-content")}
-          // eslint-disable-next-line react/no-danger
-          dangerouslySetInnerHTML={createMarkup(pageContent)}
-        />
-      );
+      return <CommonAdapter content={pageContent} />;
     }
   }
 
@@ -154,7 +144,7 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
   }, [article]);
 
   return (
-    <div className="m-auto pt-1 pb-10 px-4 max-w-[calc(var(--reading-editable-line-width)_*_1px)]">
+    <div className="m-auto pt-1 pb-20 px-4 max-w-[calc(var(--reading-editable-line-width)_*_1px)]">
       <div className="pb-4">
         <Heading className="mt-6 mb-5" size="8">
           {article.title}
@@ -173,7 +163,7 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
           {article.author && <span className={clsx(styles.author)}>· {article.author}</span>}
         </div>
       </div>
-      <Separator size="4"/>
+      <Separator size="4" />
       <div className="m-auto pt-1 mt-6" onClick={delegateContentClick}>
         {article.image && (
           <div className="w-full my-4  text-center">
