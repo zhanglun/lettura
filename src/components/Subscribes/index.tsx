@@ -209,7 +209,7 @@ const ChannelList = (): JSX.Element => {
         })}
         ref={listRef}
       >
-        <h2 className="mb-2 mt-6 px-2 text-lg font-semibold tracking-tight">Collections</h2>
+        <h2 className="mb-2 mt-6 px-2 font-semibold tracking-tight">Collections</h2>
         <div>
           <div
             onClick={() => {
@@ -298,7 +298,7 @@ const ChannelList = (): JSX.Element => {
             </NavLink>
           </div>
         </div>
-        <h2 className="mb-2 mt-6 px-2 text-lg font-semibold tracking-tight">Feeds</h2>
+        <h2 className="mb-2 mt-6 px-2 font-semibold tracking-tight">Feeds</h2>
         <ContextMenu.Root onOpenChange={handleContextMenuChange}>
           <ContextMenu.Trigger>
             <div>
