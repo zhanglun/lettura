@@ -30,7 +30,7 @@ export const ArticleContainer = () => {
   useHotkeys("o", () => openInBrowser());
 
   return (
-    <div className="relative flex flex-col h-[100vh]">
+    <div className="relative flex flex-col w-full h-[100vh]">
       <div className="flex-1 grid grid-cols-1 p-2 pl-0 overflow-hidden">
         <div className="bg-panel flex w-full h-full flex-1 overflow-hidden rounded-md border">
           <ArticleCol feedUuid={feedUuid} type={type} ref={articleColRef} />
