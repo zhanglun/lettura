@@ -6,6 +6,7 @@ import { MiniPlayer } from './MiniPlayer';
 import { PlayList } from './PlayList';
 import { formatTime } from './utils';
 import clsx from 'clsx';
+import { useBearStore } from '@/stores';
 
 export interface AudioTrack {
   id: string;
@@ -15,18 +16,15 @@ export interface AudioTrack {
 }
 
 interface PodcastPlayerProps {
-  tracks: AudioTrack[];
-  initialTrackId?: string;
   mini?: boolean;
 }
 
 export const LPodcast: React.FC<PodcastPlayerProps> = ({
-  tracks,
-  initialTrackId,
   mini = false
 }) => {
   const [isMini, setIsMini] = useState(mini);
   const [showPlaylist, setShowPlaylist] = useState(false);
+  const bearStore = useBearStore();
   const {
     currentTrack,
     isPlaying,
@@ -40,7 +38,7 @@ export const LPodcast: React.FC<PodcastPlayerProps> = ({
     setProgress,
     playPrevious,
     playNext,
-  } = useAudioPlayer(tracks, initialTrackId);
+  } = useAudioPlayer(bearStore.tracks, bearStore.currentTrackId);
 
   if (isMini) {
     return (
@@ -80,7 +78,7 @@ export const LPodcast: React.FC<PodcastPlayerProps> = ({
           }}
         >
           <PlayList
-            tracks={tracks}
+            tracks={bearStore.tracks}
             currentTrack={currentTrack}
             onTrackSelect={playTrack}
           />

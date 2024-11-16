@@ -1,23 +1,24 @@
 import { Button } from "@radix-ui/themes";
-import { Podcast, db } from "@/helpers/podcastDB";
-import { toast } from "sonner";
-import { busChannel } from "@/helpers/busChannel";
+import { Podcast } from "@/helpers/podcastDB";
 import { wraperWithRadix } from "../ContentRender";
 import { ArticleResItem } from "@/db";
+import { useBearStore } from "@/stores";
 
 export interface PodcastAdapter {
   article: ArticleResItem;
   content: string;
   medias: any;
 }
+
 export function PodcastAdapter(props: PodcastAdapter) {
   const { article, content, medias } = props;
+  const { addToPlayListAndPlay } = useBearStore();
 
   console.log("content", content);
   console.log("medias", medias);
   console.log("article", article);
 
-  function addToPlayListAndPlay(media: any) {
+  function handleAddToPlayListAndPlay(media: any) {
     const { description, content, thumbnails } = media;
     const mediaURL = content[0].url;
     const mediaType = content[0].content_type;
@@ -41,19 +42,8 @@ export function PodcastAdapter(props: PodcastAdapter) {
       add_date: new Date().getTime(),
     } as Podcast;
 
-    db.podcasts
-      .add(record)
-      .then((res: any) => {
-        console.log("%c Line:27 🌮 res", "color:#f5ce50", res);
-        toast.success("start playing");
-        setTimeout(() => {
-          busChannel.emit("addMediaAndPlay", record);
-        }, 50);
-      })
-      .catch("ConstraintError", () => {
-        // already in the list, play it immediately
-        busChannel.emit("addMediaAndPlay", record);
-      });
+    // 直接使用 store 的方法，它会处理数据库操作和状态更新
+    addToPlayListAndPlay(record);
   }
 
   function renderMediaBox(media: any) {
@@ -64,7 +54,7 @@ export function PodcastAdapter(props: PodcastAdapter) {
         if (c.url && c.content_type.indexOf("audio/") === 0) {
           return (
             <figure className="my-3">
-              <Button onClick={() => addToPlayListAndPlay(media)}>Play</Button>
+              <Button onClick={() => handleAddToPlayListAndPlay(media)}>Play</Button>
             </figure>
           );
         }
@@ -91,7 +81,6 @@ export function PodcastAdapter(props: PodcastAdapter) {
   return (
     <div>
       <div className="mb-4">{wraperWithRadix(content)}</div>
-
       {medias && medias.length > 0 && <div>{medias.map(renderMediaBox)}</div>}
     </div>
   );

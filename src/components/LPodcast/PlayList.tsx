@@ -2,18 +2,21 @@ import React from 'react';
 import { Box, Flex, Text } from '@radix-ui/themes';
 import { AudioTrack } from './index';
 import { formatTime } from './utils';
+import { useBearStore } from '@/stores';
 
 interface PlayListProps {
-  tracks: AudioTrack[];
-  currentTrack: AudioTrack | null;
+  onClose: () => void;
   onTrackSelect: (track: AudioTrack) => void;
+  currentTrack: AudioTrack | null;
 }
 
 export const PlayList: React.FC<PlayListProps> = ({
-  tracks,
-  currentTrack,
+  onClose,
   onTrackSelect,
+  currentTrack,
 }) => {
+  const tracks = useBearStore((state) => state.tracks);
+
   return (
     <Box style={{ maxHeight: '200px', overflowY: 'auto' }}>
       {tracks.map((track) => (

@@ -1,17 +1,26 @@
 import { useEffect, useRef, useState } from 'react';
 import { AudioTrack } from './index';
 import { STORAGE_KEYS } from './utils';
+import { useBearStore } from '@/stores';
 
-export const useAudioPlayer = (tracks: AudioTrack[], initialTrackId?: string) => {
+export const useAudioPlayer = () => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [currentTrack, setCurrentTrack] = useState<AudioTrack | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(() => {
     const savedVolume = localStorage.getItem(STORAGE_KEYS.VOLUME);
     return savedVolume ? parseFloat(savedVolume) : 1;
   });
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
+
+  const store = useBearStore((state) => ({
+    currentTrack: state.currentTrack,
+    tracks: state.tracks,
+    podcastPlayingStatus: state.podcastPlayingStatus,
+    updatePodcastPlayingStatus: state.updatePodcastPlayingStatus,
+    setCurrentTrack: state.setCurrentTrack,
+    playNext: state.playNext,
+    playPrev: state.playPrev,
+  }));
 
   // Initialize audio element
   useEffect(() => {
@@ -22,22 +31,16 @@ export const useAudioPlayer = (tracks: AudioTrack[], initialTrackId?: string) =>
     const savedTrackId = localStorage.getItem(STORAGE_KEYS.CURRENT_TRACK);
     const savedProgress = localStorage.getItem(STORAGE_KEYS.PROGRESS);
     
-    if (savedTrackId) {
-      const track = tracks.find(t => t.id === savedTrackId);
+    if (savedTrackId && store.tracks.length > 0) {
+      const track = store.tracks.find(t => t.id === savedTrackId);
       if (track) {
-        setCurrentTrack(track);
+        store.setCurrentTrack(track);
         audioRef.current.src = track.url;
         if (savedProgress) {
           const progress = parseFloat(savedProgress);
           audioRef.current.currentTime = progress;
           setProgress(progress);
         }
-      }
-    } else if (initialTrackId) {
-      const track = tracks.find(t => t.id === initialTrackId);
-      if (track) {
-        setCurrentTrack(track);
-        audioRef.current.src = track.url;
       }
     }
 
@@ -49,73 +52,76 @@ export const useAudioPlayer = (tracks: AudioTrack[], initialTrackId?: string) =>
     };
   }, []);
 
-  // Handle volume changes
+  // Handle track changes
+  useEffect(() => {
+    if (audioRef.current && store.currentTrack) {
+      audioRef.current.src = store.currentTrack.url;
+      if (store.podcastPlayingStatus) {
+        audioRef.current.play();
+      }
+    }
+  }, [store.currentTrack]);
+
+  // Handle playing status changes
   useEffect(() => {
     if (audioRef.current) {
+      if (store.podcastPlayingStatus) {
+        audioRef.current.play();
+      } else {
+        audioRef.current.pause();
+      }
+    }
+  }, [store.podcastPlayingStatus]);
+
+  // Save volume to localStorage
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.VOLUME, volume.toString());
+    if (audioRef.current) {
       audioRef.current.volume = volume;
-      localStorage.setItem(STORAGE_KEYS.VOLUME, volume.toString());
     }
   }, [volume]);
 
-  // Save progress periodically
+  // Save current track and progress
   useEffect(() => {
-    const interval = setInterval(() => {
-      if (audioRef.current && currentTrack) {
-        localStorage.setItem(STORAGE_KEYS.PROGRESS, audioRef.current.currentTime.toString());
-        localStorage.setItem(STORAGE_KEYS.CURRENT_TRACK, currentTrack.id);
-      }
-    }, 1000);
+    if (store.currentTrack) {
+      localStorage.setItem(STORAGE_KEYS.CURRENT_TRACK, store.currentTrack.id);
+    }
+  }, [store.currentTrack]);
 
-    return () => clearInterval(interval);
-  }, [currentTrack]);
-
-  // Update progress and duration
   useEffect(() => {
-    if (!audioRef.current) return;
+    localStorage.setItem(STORAGE_KEYS.PROGRESS, progress.toString());
+  }, [progress]);
+
+  // Set up audio event listeners
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
 
     const handleTimeUpdate = () => {
-      if (audioRef.current) {
-        setProgress(audioRef.current.currentTime);
-      }
+      setProgress(audio.currentTime);
     };
 
     const handleLoadedMetadata = () => {
-      if (audioRef.current) {
-        setDuration(audioRef.current.duration);
-      }
+      setDuration(audio.duration);
     };
 
     const handleEnded = () => {
-      setIsPlaying(false);
-      // Optionally play next track
-      const currentIndex = tracks.findIndex(t => t.id === currentTrack?.id);
-      if (currentIndex < tracks.length - 1) {
-        playTrack(tracks[currentIndex + 1]);
-      }
+      store.playNext();
     };
 
-    audioRef.current.addEventListener('timeupdate', handleTimeUpdate);
-    audioRef.current.addEventListener('loadedmetadata', handleLoadedMetadata);
-    audioRef.current.addEventListener('ended', handleEnded);
+    audio.addEventListener('timeupdate', handleTimeUpdate);
+    audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+    audio.addEventListener('ended', handleEnded);
 
     return () => {
-      if (audioRef.current) {
-        audioRef.current.removeEventListener('timeupdate', handleTimeUpdate);
-        audioRef.current.removeEventListener('loadedmetadata', handleLoadedMetadata);
-        audioRef.current.removeEventListener('ended', handleEnded);
-      }
+      audio.removeEventListener('timeupdate', handleTimeUpdate);
+      audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      audio.removeEventListener('ended', handleEnded);
     };
-  }, [currentTrack, tracks]);
+  }, [store.playNext]);
 
   const togglePlay = () => {
-    if (!audioRef.current || !currentTrack) return;
-
-    if (isPlaying) {
-      audioRef.current.pause();
-    } else {
-      audioRef.current.play();
-    }
-    setIsPlaying(!isPlaying);
+    store.updatePodcastPlayingStatus(!store.podcastPlayingStatus);
   };
 
   const seek = (time: number) => {
@@ -125,26 +131,18 @@ export const useAudioPlayer = (tracks: AudioTrack[], initialTrackId?: string) =>
     }
   };
 
-  const playTrack = (track: AudioTrack) => {
-    if (!audioRef.current || track.id === currentTrack?.id) return;
-
-    audioRef.current.src = track.url;
-    audioRef.current.play();
-    setCurrentTrack(track);
-    setIsPlaying(true);
-    setProgress(0);
-  };
-
   return {
-    currentTrack,
-    isPlaying,
+    currentTrack: store.currentTrack,
+    isPlaying: store.podcastPlayingStatus,
     volume,
     progress,
     duration,
     togglePlay,
     setVolume,
     seek,
-    playTrack,
+    playTrack: store.setCurrentTrack,
     setProgress,
+    playPrevious: store.playPrev,
+    playNext: store.playNext,
   };
 };
