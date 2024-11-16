@@ -38,7 +38,7 @@ export const LPodcast: React.FC<PodcastPlayerProps> = ({
 
   // 从数据库加载播放列表
   const tracks = useLiveQuery(
-    () => db.podcasts.toArray().then(podcasts => 
+    () => db.podcasts.toArray().then(podcasts =>
       podcasts.map(podcast => ({
         id: podcast.uuid,
         title: podcast.title,
@@ -73,7 +73,7 @@ export const LPodcast: React.FC<PodcastPlayerProps> = ({
     setProgress,
     playPrevious,
     playNext,
-  } = useAudioPlayer(bearStore.tracks, bearStore.currentTrackId);
+  } = useAudioPlayer();
 
   return (
     <AnimatePresence mode="wait">
@@ -151,8 +151,8 @@ export const LPodcast: React.FC<PodcastPlayerProps> = ({
                         onTrackSelect={(track) => {
                           playTrack(track);
                         }}
+                        onClose={() => {}}
                         currentTrack={currentTrack}
-                        tracks={bearStore.tracks}
                       />
                     </Popover.Content>
                   </Popover.Root>

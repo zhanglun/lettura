@@ -52,7 +52,7 @@ export const PlayList: React.FC<PlayListProps> = ({
     >
       <ScrollArea type="hover" scrollbars="vertical" style={{ height: 300 }}>
         <Box style={{ width: 300 }}>
-          <Text size="2" weight="medium" mb="2" px="3">
+          <Text size="2" weight="medium" mb="2">
             Playlist ({tracks.length})
           </Text>
           {tracks.map((track, index) => (

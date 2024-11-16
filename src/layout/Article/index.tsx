@@ -1,4 +1,4 @@
-import { useBearStore } from "@/stores";
+import { useRef } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { ArticleCol, ArticleColRefObject } from "@/layout/Article/ArticleCol";
 import { ArticleDialogView } from "@/components/ArticleView/DialogView";
@@ -6,8 +6,7 @@ import { open } from "@tauri-apps/api/shell";
 import { View } from "./View";
 import { useQuery } from "@/helpers/parseXML";
 import { LPodcast } from "@/components/LPodcast";
-import clsx from "clsx";
-import { useRef } from "react";
+import { useBearStore } from "@/stores";
 
 export const ArticleContainer = () => {
   const [, type, feedUuid] = useQuery();
@@ -38,12 +37,7 @@ export const ArticleContainer = () => {
         </div>
       </div>
 
-      {store.podcastPanelStatus && (
-        <LPodcast
-          tracks={store.tracks}
-          mini={false}
-        />
-      )}
+      {store.podcastPanelStatus && <LPodcast mini={false} />}
 
       <ArticleDialogView
         article={store.article}
