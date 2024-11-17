@@ -1,32 +1,78 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Box, Flex, Slider, IconButton, Text } from '@radix-ui/themes';
-import { PlayIcon, PauseIcon, SpeakerLoudIcon, SpeakerOffIcon, ChevronUpIcon, ChevronDownIcon } from '@radix-ui/react-icons';
-import { useAudioPlayer } from './useAudioPlayer';
-import { MiniPlayer } from './MiniPlayer';
-import { PlayList } from './PlayList';
-import { formatTime } from './utils';
-import clsx from 'clsx';
+import React, { useEffect, useRef, useState } from "react";
+import { Box, Flex, Slider, IconButton, Text, Popover, Avatar } from "@radix-ui/themes";
+import {
+  PlayIcon,
+  PauseIcon,
+  SpeakerLoudIcon,
+  SpeakerOffIcon,
+  ChevronUpIcon,
+  ChevronDownIcon,
+  ListBulletIcon,
+  HeartIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+} from "@radix-ui/react-icons";
+import { useAudioPlayer } from "./useAudioPlayer";
+import { MiniPlayer } from "./MiniPlayer";
+import { PlayList } from "./PlayList";
+import { formatTime } from "./utils";
+import { useBearStore } from "@/stores";
+import { motion, AnimatePresence } from "framer-motion";
+import { useLiveQuery } from "dexie-react-hooks";
+import { db } from "@/helpers/podcastDB";
 
 export interface AudioTrack {
   id: string;
   title: string;
   url: string;
   duration?: number;
+  thumbnail?: string;
+  author?: string;
 }
 
 interface PodcastPlayerProps {
-  tracks: AudioTrack[];
-  initialTrackId?: string;
   mini?: boolean;
 }
 
-export const LPodcast: React.FC<PodcastPlayerProps> = ({ 
-  tracks, 
-  initialTrackId,
-  mini = false 
-}) => {
+const slideAnimation = {
+  initial: { y: "100%" },
+  animate: { y: 0 },
+  exit: { y: "100%" },
+  transition: { type: "spring", bounce: 0.2, duration: 0.6 },
+};
+
+export const LPodcast: React.FC<PodcastPlayerProps> = ({ mini = false }) => {
   const [isMini, setIsMini] = useState(mini);
-  const [showPlaylist, setShowPlaylist] = useState(false);
+  const bearStore = useBearStore();
+  const { setTracks, setCurrentTrack } = bearStore;
+
+  // 从数据库加载播放列表
+  const tracks = useLiveQuery(
+    () =>
+      db.podcasts.toArray().then((podcasts) =>
+        podcasts.map((podcast) => ({
+          id: podcast.uuid,
+          title: podcast.title,
+          url: podcast.mediaURL,
+          thumbnail: podcast.thumbnail,
+          author: podcast.feed_title, // 使用 feed_title 作为作者名
+        }))
+      ),
+    [],
+    []
+  );
+
+  // 当 tracks 变化时更新 store
+  useEffect(() => {
+    if (tracks) {
+      setTracks(tracks);
+      // 如果没有当前播放的曲目，设置第一个曲目为当前曲目
+      if (!bearStore.currentTrack && tracks.length > 0) {
+        setCurrentTrack(tracks[0]);
+      }
+    }
+  }, [tracks]);
+
   const {
     currentTrack,
     isPlaying,
@@ -38,113 +84,182 @@ export const LPodcast: React.FC<PodcastPlayerProps> = ({
     seek,
     playTrack,
     setProgress,
-  } = useAudioPlayer(tracks, initialTrackId);
-
-  if (isMini) {
-    return (
-      <MiniPlayer
-        currentTrack={currentTrack}
-        isPlaying={isPlaying}
-        togglePlay={togglePlay}
-        onExpand={() => setIsMini(false)}
-      />
-    );
-  }
+    playPrevious,
+    playNext,
+  } = useAudioPlayer();
 
   return (
-    <Box
-      className="podcast-player"
-      style={{
-        position: 'fixed',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        background: 'var(--color-panel-solid)',
-        borderTop: '1px solid var(--gray-5)',
-        zIndex: 1000,
-      }}
-    >
-      {showPlaylist && (
-        <Box
-          style={{
-            position: 'absolute',
-            bottom: '100%',
-            left: 0,
-            right: 0,
-            background: 'var(--color-panel-solid)',
-            borderTop: '1px solid var(--gray-5)',
-            maxHeight: '300px',
-            overflow: 'auto',
-          }}
+    <AnimatePresence mode="wait">
+      {isMini ? (
+        <motion.div
+          key="mini"
+          initial={slideAnimation.initial}
+          animate={slideAnimation.animate}
+          exit={slideAnimation.exit}
+          transition={slideAnimation.transition}
         >
-          <PlayList
-            tracks={tracks}
+          <MiniPlayer
             currentTrack={currentTrack}
-            onTrackSelect={playTrack}
+            isPlaying={isPlaying}
+            togglePlay={togglePlay}
+            onExpand={() => setIsMini(false)}
           />
-        </Box>
+        </motion.div>
+      ) : (
+        <motion.div
+          key="full"
+          initial={slideAnimation.initial}
+          animate={slideAnimation.animate}
+          exit={slideAnimation.exit}
+          transition={slideAnimation.transition}
+          className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg"
+          style={{ zIndex: 1000 }}
+        >
+          <Box p="3" className="max-w-6xl mx-auto">
+            <Flex gap="4" align="center">
+              {/* Section A: Cover and Info */}
+              <Flex gap="2" align="center" className="w-1/3 min-w-[300px]">
+                {/* Cover image */}
+                <Avatar
+                  size="4"
+                  radius="full"
+                  src={currentTrack?.thumbnail}
+                  fallback={
+                    <div className="w-full h-full flex items-center justify-center text-gray-400">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <circle cx="12" cy="12" r="4" />
+                        <path d="M12 8v8" />
+                        <path d="M8 12h8" />
+                      </svg>
+                    </div>
+                  }
+                />
+
+                {/* Track info */}
+                <Flex direction="column" gap="1" className="min-w-0">
+                  <Text size="2" weight="medium" className="truncate">
+                    {currentTrack?.title || "No track selected"}
+                  </Text>
+                  <Text size="1" color="gray" className="truncate">
+                    {currentTrack?.author || "Unknown artist"}
+                  </Text>
+                </Flex>
+              </Flex>
+
+              {/* Section B: Controls and Progress */}
+              <Flex gap="1" align="center" className="w-1/3 min-w-[520px] ">
+                {/* Playback controls */}
+                <Flex gap="4" align="center" justify="center" className="w-full max-w-[200px] mx-auto">
+                  <IconButton
+                    size="2"
+                    variant="ghost"
+                    onClick={playPrevious}
+                    className="rounded-full text-gray-400 hover:text-gray-900 transition-colors"
+                  >
+                    <ChevronLeftIcon width={20} height={20} />
+                  </IconButton>
+                  <IconButton
+                    size="3"
+                    variant="solid"
+                    onClick={togglePlay}
+                    className="rounded-full hover:scale-105 transition-transform"
+                    style={{
+                      width: '45px',
+                      height: '45px',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    {isPlaying ? (
+                      <PauseIcon style={{ width: '24px', height: '24px' }} />
+                    ) : (
+                      <PlayIcon style={{ width: '24px', height: '24px' }} />
+                    )}
+                  </IconButton>
+                  <IconButton
+                    size="2"
+                    variant="ghost"
+                    onClick={playNext}
+                    className="rounded-full text-gray-400 hover:text-gray-900 transition-colors"
+                  >
+                    <ChevronRightIcon width={20} height={20} />
+                  </IconButton>
+                </Flex>
+
+                {/* Progress */}
+                <Flex direction="column" gap="1" className="flex-1">
+                  <Flex justify="between" align="center">
+                    <Text size="1" color="gray">
+                      {formatTime(progress)}
+                    </Text>
+                    <Text size="1" color="gray">
+                      {formatTime(duration)}
+                    </Text>
+                  </Flex>
+                  <Slider
+                    size="1"
+                    value={[progress]}
+                    max={duration}
+                    step={1}
+                    onValueChange={(value) => seek(value[0])}
+                  />
+                </Flex>
+              </Flex>
+
+              {/* Section C: Additional Controls */}
+              <Flex gap="3" align="center" justify="end" className="w-1/3">
+                {/* Playlist */}
+                <Popover.Root>
+                  <Popover.Trigger>
+                    <IconButton size="2" variant="ghost">
+                      <ListBulletIcon />
+                    </IconButton>
+                  </Popover.Trigger>
+                  <Popover.Content className="p-2">
+                    <PlayList
+                      onTrackSelect={(track) => {
+                        if (track.id !== currentTrack?.id) {
+                          bearStore.setCurrentTrack(track);
+                          bearStore.updatePodcastPlayingStatus(false);
+                        }
+                      }}
+                      onPlay={playTrack}
+                      onClose={() => {}}
+                      currentTrack={currentTrack}
+                      isPlaying={isPlaying}
+                    />
+                  </Popover.Content>
+                </Popover.Root>
+
+                {/* Volume */}
+                <Flex gap="2" align="center" style={{ width: 120 }}>
+                  <IconButton size="2" variant="ghost" onClick={() => setVolume(volume === 0 ? 1 : 0)}>
+                    {volume === 0 ? <SpeakerOffIcon /> : <SpeakerLoudIcon />}
+                  </IconButton>
+                  <Slider size="1" value={[volume]} max={1} step={0.1} onValueChange={(value) => setVolume(value[0])} />
+                </Flex>
+
+                {/* Mini mode toggle */}
+                <IconButton size="2" variant="ghost" onClick={() => setIsMini(true)}>
+                  <ChevronDownIcon />
+                </IconButton>
+              </Flex>
+            </Flex>
+          </Box>
+        </motion.div>
       )}
-      
-      <Flex direction="column" gap="2" p="3">
-        <Flex justify="between" align="center">
-          <Flex align="center" gap="4" style={{ flex: 1 }}>
-            <Flex align="center" gap="2">
-              <IconButton
-                size="2"
-                variant="soft"
-                onClick={togglePlay}
-              >
-                {isPlaying ? <PauseIcon /> : <PlayIcon />}
-              </IconButton>
-              <Text size="2" weight="medium" style={{ maxWidth: '300px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                {currentTrack?.title || 'No track selected'}
-              </Text>
-            </Flex>
-
-            <Flex align="center" gap="2" style={{ flex: 1 }}>
-              <Text size="1" color="gray">
-                {formatTime(progress)}
-              </Text>
-              <Slider
-                size="1"
-                variant="soft"
-                value={[progress]}
-                max={duration || 100}
-                style={{ flex: 1 }}
-                onChange={(value) => seek(value[0])}
-              />
-              <Text size="1" color="gray">
-                {formatTime(duration || 0)}
-              </Text>
-            </Flex>
-          </Flex>
-
-          <Flex align="center" gap="2">
-            <IconButton
-              size="1"
-              variant="ghost"
-              onClick={() => setShowPlaylist(!showPlaylist)}
-            >
-              {showPlaylist ? <ChevronDownIcon /> : <ChevronUpIcon />}
-            </IconButton>
-            <IconButton
-              size="1"
-              variant="ghost"
-              onClick={() => setVolume(volume > 0 ? 0 : 1)}
-            >
-              {volume > 0 ? <SpeakerLoudIcon /> : <SpeakerOffIcon />}
-            </IconButton>
-            <Slider
-              size="1"
-              variant="soft"
-              value={[volume * 100]}
-              max={100}
-              style={{ width: '80px' }}
-              onChange={(value) => setVolume(value[0] / 100)}
-            />
-          </Flex>
-        </Flex>
-      </Flex>
-    </Box>
+    </AnimatePresence>
   );
 };
