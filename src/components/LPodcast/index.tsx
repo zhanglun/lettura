@@ -164,7 +164,7 @@ export const LPodcast: React.FC<PodcastPlayerProps> = ({ mini = false }) => {
                     size="2"
                     variant="ghost"
                     onClick={playPrevious}
-                    className="text-gray-400 hover:text-gray-900 transition-colors"
+                    className="rounded-full text-gray-400 hover:text-gray-900 transition-colors"
                   >
                     <ChevronLeftIcon width={20} height={20} />
                   </IconButton>
@@ -172,7 +172,7 @@ export const LPodcast: React.FC<PodcastPlayerProps> = ({ mini = false }) => {
                     size="3"
                     variant="solid"
                     onClick={togglePlay}
-                    className="rounded-full bg-white hover:scale-105 transition-transform"
+                    className="rounded-full hover:scale-105 transition-transform"
                     style={{
                       width: '45px',
                       height: '45px',
@@ -192,7 +192,7 @@ export const LPodcast: React.FC<PodcastPlayerProps> = ({ mini = false }) => {
                     size="2"
                     variant="ghost"
                     onClick={playNext}
-                    className="text-gray-400 hover:text-gray-900 transition-colors"
+                    className="rounded-full text-gray-400 hover:text-gray-900 transition-colors"
                   >
                     <ChevronRightIcon width={20} height={20} />
                   </IconButton>
@@ -227,13 +227,18 @@ export const LPodcast: React.FC<PodcastPlayerProps> = ({ mini = false }) => {
                       <ListBulletIcon />
                     </IconButton>
                   </Popover.Trigger>
-                  <Popover.Content>
+                  <Popover.Content className="p-2">
                     <PlayList
                       onTrackSelect={(track) => {
-                        playTrack(track);
+                        if (track.id !== currentTrack?.id) {
+                          bearStore.setCurrentTrack(track);
+                          bearStore.updatePodcastPlayingStatus(false);
+                        }
                       }}
+                      onPlay={playTrack}
                       onClose={() => {}}
                       currentTrack={currentTrack}
+                      isPlaying={isPlaying}
                     />
                   </Popover.Content>
                 </Popover.Root>

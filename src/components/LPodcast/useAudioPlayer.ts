@@ -140,7 +140,10 @@ export const useAudioPlayer = () => {
     togglePlay,
     setVolume,
     seek,
-    playTrack: store.setCurrentTrack,
+    playTrack: (track: AudioTrack) => {
+      store.setCurrentTrack(track);
+      store.updatePodcastPlayingStatus(true);
+    },
     setProgress,
     playPrevious: store.playPrev,
     playNext: store.playNext,
