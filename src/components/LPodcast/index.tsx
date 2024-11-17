@@ -9,6 +9,8 @@ import {
   ChevronDownIcon,
   ListBulletIcon,
   HeartIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
 } from "@radix-ui/react-icons";
 import { useAudioPlayer } from "./useAudioPlayer";
 import { MiniPlayer } from "./MiniPlayer";
@@ -53,7 +55,7 @@ export const LPodcast: React.FC<PodcastPlayerProps> = ({ mini = false }) => {
           title: podcast.title,
           url: podcast.mediaURL,
           thumbnail: podcast.thumbnail,
-          author: podcast.author,
+          author: podcast.feed_title, // 使用 feed_title 作为作者名
         }))
       ),
     [],
@@ -113,10 +115,10 @@ export const LPodcast: React.FC<PodcastPlayerProps> = ({ mini = false }) => {
           className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg"
           style={{ zIndex: 1000 }}
         >
-          <Box p="3" className="max-w-5xl mx-auto">
+          <Box p="3" className="max-w-6xl mx-auto">
             <Flex gap="4" align="center">
               {/* Section A: Cover and Info */}
-              <Flex gap="2" align="center" className="w-1/3 min-w-[320px]">
+              <Flex gap="2" align="center" className="w-1/3 min-w-[300px]">
                 {/* Cover image */}
                 <Avatar
                   size="4"
@@ -155,20 +157,44 @@ export const LPodcast: React.FC<PodcastPlayerProps> = ({ mini = false }) => {
               </Flex>
 
               {/* Section B: Controls and Progress */}
-              <Flex gap="1" align="center" className="w-1/3">
+              <Flex gap="1" align="center" className="w-1/3 min-w-[520px] ">
                 {/* Playback controls */}
-                <Flex gap="2" align="center">
-                  <IconButton size="2" variant="ghost" onClick={playPrevious}>
-                    <ChevronUpIcon />
+                <Flex gap="4" align="center" justify="center" className="w-full max-w-[200px] mx-auto">
+                  <IconButton
+                    size="2"
+                    variant="ghost"
+                    onClick={playPrevious}
+                    className="text-gray-400 hover:text-gray-900 transition-colors"
+                  >
+                    <ChevronLeftIcon width={20} height={20} />
                   </IconButton>
-                  <IconButton size="2" variant="ghost" onClick={togglePlay}>
-                    {isPlaying ? <PauseIcon /> : <PlayIcon />}
+                  <IconButton
+                    size="3"
+                    variant="solid"
+                    onClick={togglePlay}
+                    className="rounded-full bg-white hover:scale-105 transition-transform"
+                    style={{
+                      width: '45px',
+                      height: '45px',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    {isPlaying ? (
+                      <PauseIcon style={{ width: '24px', height: '24px' }} />
+                    ) : (
+                      <PlayIcon style={{ width: '24px', height: '24px' }} />
+                    )}
                   </IconButton>
-                  <IconButton size="2" variant="ghost" onClick={playNext}>
-                    <ChevronDownIcon />
-                  </IconButton>
-                  <IconButton size="2" variant="ghost" onClick={() => {}}>
-                    <HeartIcon />
+                  <IconButton
+                    size="2"
+                    variant="ghost"
+                    onClick={playNext}
+                    className="text-gray-400 hover:text-gray-900 transition-colors"
+                  >
+                    <ChevronRightIcon width={20} height={20} />
                   </IconButton>
                 </Flex>
 
