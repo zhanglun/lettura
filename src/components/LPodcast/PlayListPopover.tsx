@@ -1,9 +1,9 @@
-import React from 'react';
-import { IconButton, Popover } from '@radix-ui/themes';
-import { ListBulletIcon } from '@radix-ui/react-icons';
-import { AudioTrack } from './index';
-import { PlayList } from './PlayList';
-import { useBearStore } from '@/stores';
+import React from "react";
+import { IconButton, Popover } from "@radix-ui/themes";
+import { ListBulletIcon } from "@radix-ui/react-icons";
+import { AudioTrack } from "./index";
+import { PlayList } from "./PlayList";
+import { useBearStore } from "@/stores";
 
 interface PlayListPopoverProps {
   currentTrack: AudioTrack | null;
@@ -11,11 +11,7 @@ interface PlayListPopoverProps {
   onPlay?: (track: AudioTrack) => void;
 }
 
-export const PlayListPopover: React.FC<PlayListPopoverProps> = ({
-  currentTrack,
-  isPlaying,
-  onPlay,
-}) => {
+export const PlayListPopover: React.FC<PlayListPopoverProps> = ({ currentTrack, isPlaying, onPlay }) => {
   const bearStore = useBearStore();
 
   const handleTrackSelect = (track: AudioTrack) => {
@@ -32,7 +28,7 @@ export const PlayListPopover: React.FC<PlayListPopoverProps> = ({
           <ListBulletIcon />
         </IconButton>
       </Popover.Trigger>
-      <Popover.Content>
+      <Popover.Content className="p-0 slide-popover" align="end" alignOffset={-30} sideOffset={20}>
         <PlayList
           onTrackSelect={handleTrackSelect}
           onPlay={onPlay}

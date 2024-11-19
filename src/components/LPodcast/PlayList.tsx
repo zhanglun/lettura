@@ -8,56 +8,6 @@ import { PlayIcon } from '@radix-ui/react-icons';
 import clsx from 'clsx';
 import './PlayList.css';
 
-const SpeakerAnimatedIcon = () => {
-  return (
-    <motion.svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M12 7.5v9L7.5 12l4.5-4.5z"
-        fill="currentColor"
-      />
-      <motion.path
-        initial={{ opacity: 0.3 }}
-        animate={{
-          opacity: [0.3, 1, 0.3],
-        }}
-        transition={{
-          duration: 1.5,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-        d="M15 9.5c.7.7 1.2 1.6 1.2 2.5s-.5 1.8-1.2 2.5"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        fill="none"
-      />
-      <motion.path
-        initial={{ opacity: 0.3 }}
-        animate={{
-          opacity: [0.3, 1, 0.3],
-        }}
-        transition={{
-          duration: 1.5,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: 0.2,
-        }}
-        d="M17.5 7c1.4 1.4 2.2 3.2 2.2 5s-.8 3.6-2.2 5"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        fill="none"
-      />
-    </motion.svg>
-  );
-};
-
 const AudioWaveform = () => {
   const bars = [
     { height: [8, 16, 8], delay: 0 },
@@ -89,7 +39,7 @@ const AudioWaveform = () => {
 interface PlayListProps {
   onClose: () => void;
   onTrackSelect: (track: AudioTrack) => void;
-  currentTrack?: AudioTrack;
+  currentTrack?: AudioTrack | null;
   isPlaying?: boolean;
   onPlay?: (track: AudioTrack) => void;
 }
@@ -97,32 +47,20 @@ interface PlayListProps {
 const listAnimation = {
   initial: { opacity: 0, y: 20 },
   animate: { opacity: 1, y: 0 },
-  transition: { type: "spring", bounce: 0.2, duration: 0.6 }
+  transition: { type: "spring", bounce: 0.2, duration: 0.6 },
 };
 
 const itemAnimation = {
   initial: { opacity: 0, x: -20 },
   animate: { opacity: 1, x: 0 },
-  transition: { type: "spring", bounce: 0.2 }
+  transition: { type: "spring", bounce: 0.2 },
 };
 
 const overlayAnimation = {
   initial: { opacity: 0 },
   animate: { opacity: 1 },
   exit: { opacity: 0 },
-  transition: { duration: 0.2 }
-};
-
-const iconAnimation = {
-  animate: {
-    scale: [1, 1.1, 1],
-    opacity: [0.8, 1, 0.8],
-    transition: {
-      duration: 2,
-      repeat: Infinity,
-      ease: "easeInOut"
-    }
-  }
+  transition: { duration: 0.2 },
 };
 
 export const PlayList: React.FC<PlayListProps> = ({
@@ -136,18 +74,10 @@ export const PlayList: React.FC<PlayListProps> = ({
 
   if (tracks.length === 0) {
     return (
-      <motion.div
-        initial={listAnimation.initial}
-        animate={listAnimation.animate}
-        transition={listAnimation.transition}
-      >
+      <motion.div initial={listAnimation.initial} animate={listAnimation.animate} transition={listAnimation.transition}>
         <Flex className="py-8 items-center justify-center flex-col gap-3">
-          <Text className="text-gray-11 text-xl font-medium">
-            暂无播放内容
-          </Text>
-          <Text className="text-gray-9 text-sm">
-            添加一些播客开始收听吧
-          </Text>
+          <Text className="text-gray-11 text-xl font-medium">暂无播放内容</Text>
+          <Text className="text-gray-9 text-sm">添加一些播客开始收听吧</Text>
         </Flex>
       </motion.div>
     );
@@ -158,21 +88,17 @@ export const PlayList: React.FC<PlayListProps> = ({
       initial={listAnimation.initial}
       animate={listAnimation.animate}
       transition={listAnimation.transition}
-      className="bg-background h-[50vh] w-full flex flex-col overflow-hidden"
+      className="bg-background h-[50vh] w-[380px] flex flex-col overflow-hidden"
     >
       <Box className="border-b border-gray-5 bg-background backdrop-blur-sm sticky top-0 z-10">
         <Flex className="px-4 py-3 items-center justify-between">
-          <Text className="text-gray-12 font-medium text-sm">
-            播放列表
-          </Text>
-          <Text className="text-gray-11 text-sm">
-            {tracks.length} 集
-          </Text>
+          <Text className="text-gray-12 font-medium text-sm">播放列表</Text>
+          <Text className="text-gray-11 text-sm">{tracks.length} 集</Text>
         </Flex>
       </Box>
 
       <Box className="flex-1 overflow-y-auto playlist-scroll">
-        <Box className="py-2 w-full">
+        <Box className="py-2 pl-2">
           {tracks.map((track, index) => (
             <motion.div
               key={track.id}
@@ -181,7 +107,7 @@ export const PlayList: React.FC<PlayListProps> = ({
               animate={itemAnimation.animate}
               transition={{
                 ...itemAnimation.transition,
-                delay: index * 0.05
+                delay: index * 0.05,
               }}
               className="w-full"
             >
@@ -189,17 +115,15 @@ export const PlayList: React.FC<PlayListProps> = ({
                 align="center"
                 gap="3"
                 className={clsx(
-                  'playlist-item w-full px-2 py-2 cursor-pointer rounded-md',
-                  track.id === currentTrack?.id
-                    ? 'bg-accent-4 hover:bg-accent-5'
-                    : 'hover:bg-gray-3'
+                  "playlist-item w-full px-2 py-2 cursor-pointer rounded-md",
+                  track.id === currentTrack?.id ? "bg-accent-4 hover:bg-accent-5" : "hover:bg-gray-3"
                 )}
                 onClick={() => onTrackSelect(track)}
               >
                 <Box className="playlist-cover-wrapper relative flex-shrink-0">
                   <Avatar
                     size="3"
-                    src={track.thumbnail || ''}
+                    src={track.thumbnail || ""}
                     fallback={track.title[0]}
                     radius="small"
                     className="w-12 h-12"
@@ -219,7 +143,7 @@ export const PlayList: React.FC<PlayListProps> = ({
                             transition={{
                               type: "spring",
                               stiffness: 260,
-                              damping: 20
+                              damping: 20,
                             }}
                           >
                             <AudioWaveform />
@@ -227,7 +151,7 @@ export const PlayList: React.FC<PlayListProps> = ({
                         </Flex>
                       </motion.div>
                     ) : (
-                      <div 
+                      <div
                         className="play-button-overlay"
                         onClick={(e) => {
                           e.stopPropagation();
@@ -250,10 +174,8 @@ export const PlayList: React.FC<PlayListProps> = ({
                   <Text
                     size="2"
                     className={clsx(
-                      'playlist-text truncate',
-                      track.id === currentTrack?.id
-                        ? 'text-accent-12 font-medium'
-                        : 'text-gray-11'
+                      "playlist-text truncate",
+                      track.id === currentTrack?.id ? "text-accent-12 font-medium" : "text-gray-11"
                     )}
                   >
                     {track.title}
@@ -262,10 +184,8 @@ export const PlayList: React.FC<PlayListProps> = ({
                     <Text
                       size="1"
                       className={clsx(
-                        'playlist-subtext truncate',
-                        track.id === currentTrack?.id
-                          ? 'text-accent-11'
-                          : 'text-gray-10'
+                        "playlist-subtext truncate",
+                        track.id === currentTrack?.id ? "text-accent-11" : "text-gray-10"
                       )}
                     >
                       {track.author}
@@ -278,10 +198,8 @@ export const PlayList: React.FC<PlayListProps> = ({
                     <Text
                       size="1"
                       className={clsx(
-                        'playlist-subtext',
-                        track.id === currentTrack?.id
-                          ? 'text-accent-11'
-                          : 'text-gray-10'
+                        "playlist-subtext",
+                        track.id === currentTrack?.id ? "text-accent-11" : "text-gray-10"
                       )}
                     >
                       {formatTime(track.duration)}

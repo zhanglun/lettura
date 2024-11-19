@@ -1,10 +1,11 @@
-import React from 'react';
-import { Box, Flex, IconButton, Text, Avatar } from '@radix-ui/themes';
-import { PlayIcon, PauseIcon, ChevronUpIcon } from '@radix-ui/react-icons';
-import { AudioTrack } from './index';
-import { motion, AnimatePresence } from 'framer-motion';
-import clsx from 'clsx';
-import './shared.css';
+import React from "react";
+import { Box, Flex, IconButton, Text, Avatar } from "@radix-ui/themes";
+import { PlayIcon, ChevronUpIcon } from "@radix-ui/react-icons";
+import { AudioTrack } from "./index";
+import { motion } from "framer-motion";
+import "./shared.css";
+import { PlayListPopover } from "./PlayListPopover";
+import { useAudioPlayer } from "./useAudioPlayer";
 
 const AudioWaveform = () => {
   const bars = [
@@ -41,14 +42,10 @@ interface MiniPlayerProps {
   onExpand: () => void;
 }
 
-export const MiniPlayer: React.FC<MiniPlayerProps> = ({
-  currentTrack,
-  isPlaying,
-  togglePlay,
-  onExpand,
-}) => {
+export const MiniPlayer: React.FC<MiniPlayerProps> = ({ currentTrack, isPlaying, togglePlay, onExpand }) => {
+  const { playTrack } = useAudioPlayer();
   return (
-    <Box className="bg-[var(--gray-1)] rounded-lg shadow-lg overflow-hidden">
+    <Box className="bg-[var(--gray-1)] rounded-lg shadow-lg overflow-hidden w-[380px]">
       <Flex align="center" className="p-2 gap-3">
         {/* Cover with play/pause overlay */}
         <div className="mini-player-cover">
@@ -102,15 +99,12 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({
 
         {/* Track Info */}
         <Text size="1" className="flex-1 truncate">
-          {currentTrack?.title || 'No track selected'}
+          {currentTrack?.title || "No track selected"}
         </Text>
 
+        <PlayListPopover currentTrack={currentTrack} isPlaying={isPlaying} onPlay={playTrack} />
         {/* Expand Button */}
-        <IconButton
-          size="1"
-          variant="ghost"
-          onClick={onExpand}
-        >
+        <IconButton size="1" variant="ghost" onClick={onExpand}>
           <ChevronUpIcon />
         </IconButton>
       </Flex>
