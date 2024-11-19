@@ -1,7 +1,38 @@
 import React from 'react';
-import { Box, Flex, IconButton, Text } from '@radix-ui/themes';
-import { PlayIcon, PauseIcon, ArrowUpIcon } from '@radix-ui/react-icons';
+import { Box, Flex, IconButton, Text, Avatar } from '@radix-ui/themes';
+import { PlayIcon, PauseIcon, ChevronUpIcon } from '@radix-ui/react-icons';
 import { AudioTrack } from './index';
+import { motion, AnimatePresence } from 'framer-motion';
+import clsx from 'clsx';
+import './shared.css';
+
+const AudioWaveform = () => {
+  const bars = [
+    { height: [8, 16, 8], delay: 0 },
+    { height: [10, 20, 10], delay: 0.2 },
+    { height: [6, 14, 6], delay: 0.4 },
+    { height: [12, 18, 12], delay: 0.6 },
+  ];
+
+  return (
+    <Flex className="h-6 items-center justify-center gap-1">
+      {bars.map((bar, index) => (
+        <motion.div
+          key={index}
+          initial={{ height: bar.height[0] }}
+          animate={{ height: bar.height }}
+          transition={{
+            duration: 0.8,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: bar.delay,
+          }}
+          className="w-0.5 bg-white rounded-[1px]"
+        />
+      ))}
+    </Flex>
+  );
+};
 
 interface MiniPlayerProps {
   currentTrack: AudioTrack | null;
@@ -17,37 +48,70 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({
   onExpand,
 }) => {
   return (
-    <Box
-      className="mini-player"
-      style={{
-        position: 'fixed',
-        bottom: '20px',
-        right: '20px',
-        background: 'var(--color-panel-solid)',
-        padding: '8px',
-        width: '240px',
-        borderRadius: '8px',
-        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-        zIndex: 1000,
-      }}
-    >
-      <Flex align="center" gap="2">
-        <IconButton
-          size="1"
-          variant="soft"
-          onClick={togglePlay}
-        >
-          {isPlaying ? <PauseIcon /> : <PlayIcon />}
-        </IconButton>
-        <Text size="1" style={{ flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+    <Box className="bg-[var(--gray-1)] rounded-lg shadow-lg overflow-hidden">
+      <Flex align="center" className="p-2 gap-3">
+        {/* Cover with play/pause overlay */}
+        <div className="mini-player-cover">
+          <Avatar
+            size="3"
+            radius="medium"
+            src={currentTrack?.thumbnail}
+            fallback={
+              <div className="w-full h-full flex items-center justify-center bg-[var(--gray-3)]">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <circle cx="12" cy="12" r="4" />
+                  <path d="M12 8v8" />
+                  <path d="M8 12h8" />
+                </svg>
+              </div>
+            }
+            className="cursor-pointer"
+          />
+
+          {/* Always visible overlay */}
+          <div className="play-button-overlay !opacity-100" onClick={togglePlay}>
+            {isPlaying ? (
+              <AudioWaveform />
+            ) : (
+              <motion.div
+                animate={{
+                  scale: [1, 1.1, 1],
+                  opacity: [0.8, 1, 0.8],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              >
+                <PlayIcon className="text-white w-5 h-5" />
+              </motion.div>
+            )}
+          </div>
+        </div>
+
+        {/* Track Info */}
+        <Text size="1" className="flex-1 truncate">
           {currentTrack?.title || 'No track selected'}
         </Text>
+
+        {/* Expand Button */}
         <IconButton
           size="1"
           variant="ghost"
           onClick={onExpand}
         >
-          <ArrowUpIcon />
+          <ChevronUpIcon />
         </IconButton>
       </Flex>
     </Box>

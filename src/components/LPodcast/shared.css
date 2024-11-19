@@ -1,0 +1,38 @@
+.playlist-cover-wrapper {
+  position: relative;
+}
+
+.playlist-cover-wrapper .play-button-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(1px);
+  border-radius: 3px;
+  opacity: 0;
+  transition: opacity 200ms ease-in-out;
+}
+
+.playlist-cover-wrapper:hover .play-button-overlay {
+  opacity: 1;
+}
+
+/* Mini player specific styles */
+.mini-player-cover {
+  position: relative;
+}
+
+.mini-player-cover .play-button-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(1px);
+  border-radius: 3px;
+  opacity: 1;
+  transition: opacity 200ms ease-in-out;
+}
