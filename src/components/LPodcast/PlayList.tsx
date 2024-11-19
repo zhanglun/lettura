@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Flex, Text, ScrollArea, Avatar } from '@radix-ui/themes';
+import { Box, Flex, Text, Avatar } from '@radix-ui/themes';
 import { AudioTrack } from './index';
 import { formatTime } from './utils';
 import { useBearStore } from '@/stores';
@@ -171,133 +171,127 @@ export const PlayList: React.FC<PlayListProps> = ({
         </Flex>
       </Box>
 
-      <Box className="flex-1 overflow-hidden">
-        <ScrollArea
-          type="hover"
-          scrollbars="vertical"
-          className="h-full playlist-scroll-area"
-        >
-          <Box className="py-2 w-full">
-            {tracks.map((track, index) => (
-              <motion.div
-                key={track.id}
-                custom={index}
-                initial={itemAnimation.initial}
-                animate={itemAnimation.animate}
-                transition={{
-                  ...itemAnimation.transition,
-                  delay: index * 0.05
-                }}
-                className="w-full"
+      <Box className="flex-1 overflow-y-auto playlist-scroll">
+        <Box className="py-2 w-full">
+          {tracks.map((track, index) => (
+            <motion.div
+              key={track.id}
+              custom={index}
+              initial={itemAnimation.initial}
+              animate={itemAnimation.animate}
+              transition={{
+                ...itemAnimation.transition,
+                delay: index * 0.05
+              }}
+              className="w-full"
+            >
+              <Flex
+                align="center"
+                gap="3"
+                className={clsx(
+                  'playlist-item w-full px-2 py-2 cursor-pointer rounded-md',
+                  track.id === currentTrack?.id
+                    ? 'bg-accent-4 hover:bg-accent-5'
+                    : 'hover:bg-gray-3'
+                )}
+                onClick={() => onTrackSelect(track)}
               >
-                <Flex
-                  align="center"
-                  gap="3"
-                  className={clsx(
-                    'playlist-item w-full px-2 py-2 cursor-pointer rounded-md',
-                    track.id === currentTrack?.id
-                      ? 'bg-accent-4 hover:bg-accent-5'
-                      : 'hover:bg-gray-3'
-                  )}
-                  onClick={() => onTrackSelect(track)}
-                >
-                  <Box className="playlist-cover-wrapper relative flex-shrink-0">
-                    <Avatar
-                      size="3"
-                      src={track.thumbnail || ''}
-                      fallback={track.title[0]}
-                      radius="small"
-                      className="w-12 h-12"
-                    />
-                    <AnimatePresence>
-                      {track.id === currentTrack?.id && isPlaying ? (
-                        <motion.div
-                          initial={overlayAnimation.initial}
-                          animate={overlayAnimation.animate}
-                          exit={overlayAnimation.exit}
-                          transition={overlayAnimation.transition}
-                        >
-                          <Flex className="absolute inset-0 bg-black/30 rounded-sm backdrop-blur-[1px] items-center justify-center">
-                            <motion.div
-                              initial={{ scale: 0.9 }}
-                              animate={{ scale: 1 }}
-                              transition={{
-                                type: "spring",
-                                stiffness: 260,
-                                damping: 20
-                              }}
-                            >
-                              <AudioWaveform />
-                            </motion.div>
-                          </Flex>
-                        </motion.div>
-                      ) : (
-                        <div 
-                          className="play-button-overlay"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (onPlay) {
-                              onPlay(track);
-                            } else {
-                              onTrackSelect(track);
-                            }
-                          }}
-                        >
-                          <div className="play-button">
-                            <PlayIcon width={24} height={24} />
-                          </div>
+                <Box className="playlist-cover-wrapper relative flex-shrink-0">
+                  <Avatar
+                    size="3"
+                    src={track.thumbnail || ''}
+                    fallback={track.title[0]}
+                    radius="small"
+                    className="w-12 h-12"
+                  />
+                  <AnimatePresence>
+                    {track.id === currentTrack?.id && isPlaying ? (
+                      <motion.div
+                        initial={overlayAnimation.initial}
+                        animate={overlayAnimation.animate}
+                        exit={overlayAnimation.exit}
+                        transition={overlayAnimation.transition}
+                      >
+                        <Flex className="absolute inset-0 bg-black/30 rounded-sm backdrop-blur-[1px] items-center justify-center">
+                          <motion.div
+                            initial={{ scale: 0.9 }}
+                            animate={{ scale: 1 }}
+                            transition={{
+                              type: "spring",
+                              stiffness: 260,
+                              damping: 20
+                            }}
+                          >
+                            <AudioWaveform />
+                          </motion.div>
+                        </Flex>
+                      </motion.div>
+                    ) : (
+                      <div 
+                        className="play-button-overlay"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (onPlay) {
+                            onPlay(track);
+                          } else {
+                            onTrackSelect(track);
+                          }
+                        }}
+                      >
+                        <div className="play-button">
+                          <PlayIcon width={24} height={24} />
                         </div>
-                      )}
-                    </AnimatePresence>
-                  </Box>
+                      </div>
+                    )}
+                  </AnimatePresence>
+                </Box>
 
-                  <Flex direction="column" className="flex-1 min-w-0 max-w-[calc(100%-80px)]">
+                <Flex direction="column" className="flex-1 min-w-0 max-w-[calc(100%-80px)]">
+                  <Text
+                    size="2"
+                    className={clsx(
+                      'playlist-text truncate',
+                      track.id === currentTrack?.id
+                        ? 'text-accent-12 font-medium'
+                        : 'text-gray-11'
+                    )}
+                  >
+                    {track.title}
+                  </Text>
+                  {track.author && (
                     <Text
-                      size="2"
+                      size="1"
                       className={clsx(
-                        'playlist-text truncate',
+                        'playlist-subtext truncate',
                         track.id === currentTrack?.id
-                          ? 'text-accent-12 font-medium'
-                          : 'text-gray-11'
+                          ? 'text-accent-11'
+                          : 'text-gray-10'
                       )}
                     >
-                      {track.title}
+                      {track.author}
                     </Text>
-                    {track.author && (
-                      <Text
-                        size="1"
-                        className={clsx(
-                          'playlist-subtext truncate',
-                          track.id === currentTrack?.id
-                            ? 'text-accent-11'
-                            : 'text-gray-10'
-                        )}
-                      >
-                        {track.author}
-                      </Text>
-                    )}
-                  </Flex>
-
-                  {track.duration && (
-                    <Box className="flex-shrink-0 w-20 text-right">
-                      <Text
-                        size="1"
-                        className={clsx(
-                          'playlist-subtext',
-                          track.id === currentTrack?.id
-                            ? 'text-accent-11'
-                            : 'text-gray-10'
-                        )}
-                      >
-                        {formatTime(track.duration)}
-                      </Text>
-                    </Box>
                   )}
                 </Flex>
-              </motion.div>
-            ))}
-          </Box>
-        </ScrollArea>
+
+                {track.duration && (
+                  <Box className="flex-shrink-0 w-20 text-right">
+                    <Text
+                      size="1"
+                      className={clsx(
+                        'playlist-subtext',
+                        track.id === currentTrack?.id
+                          ? 'text-accent-11'
+                          : 'text-gray-10'
+                      )}
+                    >
+                      {formatTime(track.duration)}
+                    </Text>
+                  </Box>
+                )}
+              </Flex>
+            </motion.div>
+          ))}
+        </Box>
       </Box>
     </motion.div>
   );

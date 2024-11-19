@@ -13,13 +13,13 @@ import {
   HeartIcon,
 } from "@radix-ui/react-icons";
 import { useAudioPlayer } from "./useAudioPlayer";
-import { PlayList } from "./PlayList";
 import { MiniPlayer } from "./MiniPlayer";
 import { formatTime } from "./utils";
 import { useBearStore } from "@/stores";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLiveQuery } from "dexie-react-hooks";
 import { db } from "@/helpers/podcastDB";
+import { PlayListPopover } from "./PlayListPopover";
 
 export interface AudioTrack {
   id: string;
@@ -36,12 +36,7 @@ interface LPodcastProps {
 export const LPodcast: React.FC<LPodcastProps> = ({ visible = true }) => {
   const [isMini, setIsMini] = useState(true);
   const bearStore = useBearStore();
-  const {
-    currentTrack,
-    setCurrentTrack,
-    setTracks,
-    podcastPlayingStatus,
-  } = bearStore;
+  const { currentTrack, setCurrentTrack, setTracks, podcastPlayingStatus } = bearStore;
 
   // 从数据库获取播客列表
   const podcasts = useLiveQuery(() => db.podcasts.toArray());
@@ -49,15 +44,15 @@ export const LPodcast: React.FC<LPodcastProps> = ({ visible = true }) => {
   // 转换播客数据为音频轨道
   const tracks = React.useMemo(
     () =>
-      podcasts ? (
-        podcasts.map((podcast) => ({
-          id: podcast.uuid,
-          title: podcast.title,
-          url: podcast.mediaURL,
-          thumbnail: podcast.thumbnail,
-          author: podcast.feed_title,
-        }))
-      ) : [],
+      podcasts
+        ? podcasts.map((podcast) => ({
+            id: podcast.uuid,
+            title: podcast.title,
+            url: podcast.mediaURL,
+            thumbnail: podcast.thumbnail,
+            author: podcast.feed_title,
+          }))
+        : [],
     [podcasts]
   );
 
@@ -108,11 +103,9 @@ export const LPodcast: React.FC<LPodcastProps> = ({ visible = true }) => {
             onExpand={() => setIsMini(false)}
           />
         ) : (
-          <Box
-            className="fixed bottom-0 left-0 right-0 bg-[var(--gray-1)] shadow-lg border-t border-[var(--gray-6)]"
-          >
+          <Box className="fixed bottom-0 left-0 right-0 bg-[var(--gray-1)] shadow-lg border-t border-[var(--gray-6)]">
             <Box p="3" className="max-w-[1200px] mx-auto">
-              <Flex gap="4" align="center">
+              <Flex gap="6" align="center">
                 {/* Section A: Cover and Info */}
                 <Flex gap="2" align="center" className="w-1/3 min-w-[300px]">
                   {/* Cover image */}
@@ -153,9 +146,9 @@ export const LPodcast: React.FC<LPodcastProps> = ({ visible = true }) => {
                 </Flex>
 
                 {/* Section B: Controls and Progress */}
-                <Flex gap="1" align="center" className="w-1/3 min-w-[520px] ">
+                <Flex gap="1" align="center" className="flex-1">
                   {/* Playback controls */}
-                  <Flex gap="4" align="center" justify="center" className="w-full max-w-[200px] mx-auto">
+                  <Flex gap="4" align="center" justify="center" className="w-full max-w-[140px] mx-auto">
                     <IconButton
                       size="2"
                       variant="ghost"
@@ -170,18 +163,18 @@ export const LPodcast: React.FC<LPodcastProps> = ({ visible = true }) => {
                       onClick={togglePlay}
                       className="rounded-full hover:scale-105 transition-transform"
                       style={{
-                        width: '45px',
-                        height: '45px',
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
+                        width: "45px",
+                        height: "45px",
+                        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
                       }}
                     >
                       {isPlaying ? (
-                        <PauseIcon style={{ width: '24px', height: '24px' }} />
+                        <PauseIcon style={{ width: "24px", height: "24px" }} />
                       ) : (
-                        <PlayIcon style={{ width: '24px', height: '24px' }} />
+                        <PlayIcon style={{ width: "24px", height: "24px" }} />
                       )}
                     </IconButton>
                     <IconButton
@@ -195,15 +188,10 @@ export const LPodcast: React.FC<LPodcastProps> = ({ visible = true }) => {
                   </Flex>
 
                   {/* Progress */}
-                  <Flex direction="column" gap="1" className="flex-1">
-                    <Flex justify="between" align="center">
-                      <Text size="1" color="gray">
-                        {formatTime(progress)}
-                      </Text>
-                      <Text size="1" color="gray">
-                        {formatTime(duration)}
-                      </Text>
-                    </Flex>
+                  <Flex direction="row" align="center" gap="1" className="flex-1">
+                    <Text size="1" color="gray">
+                      {formatTime(progress)}
+                    </Text>
                     <Slider
                       size="1"
                       value={[progress]}
@@ -211,40 +199,28 @@ export const LPodcast: React.FC<LPodcastProps> = ({ visible = true }) => {
                       step={1}
                       onValueChange={(value) => seek(value[0])}
                     />
+                    <Text size="1" color="gray">
+                      {formatTime(duration)}
+                    </Text>
                   </Flex>
                 </Flex>
 
                 {/* Section C: Additional Controls */}
-                <Flex gap="3" align="center" justify="end" className="w-1/3">
+                <Flex gap="3" align="center" justify="end" className="max-w-[300px]">
                   {/* Playlist */}
-                  <Popover.Root>
-                    <Popover.Trigger>
-                      <IconButton size="2" variant="ghost">
-                        <ListBulletIcon />
-                      </IconButton>
-                    </Popover.Trigger>
-                    <Popover.Content className="p-2">
-                      <PlayList
-                        onTrackSelect={(track) => {
-                          if (track.id !== currentTrack?.id) {
-                            bearStore.setCurrentTrack(track);
-                            bearStore.updatePodcastPlayingStatus(false);
-                          }
-                        }}
-                        onPlay={playTrack}
-                        onClose={() => {}}
-                        currentTrack={currentTrack}
-                        isPlaying={isPlaying}
-                      />
-                    </Popover.Content>
-                  </Popover.Root>
-
+                  <PlayListPopover currentTrack={currentTrack} isPlaying={isPlaying} onPlay={playTrack} />
                   {/* Volume */}
                   <Flex gap="2" align="center" style={{ width: 120 }}>
                     <IconButton size="2" variant="ghost" onClick={() => setVolume(volume === 0 ? 1 : 0)}>
                       {volume === 0 ? <SpeakerOffIcon /> : <SpeakerLoudIcon />}
                     </IconButton>
-                    <Slider size="1" value={[volume]} max={1} step={0.1} onValueChange={(value) => setVolume(value[0])} />
+                    <Slider
+                      size="1"
+                      value={[volume]}
+                      max={1}
+                      step={0.1}
+                      onValueChange={(value) => setVolume(value[0])}
+                    />
                   </Flex>
 
                   {/* Mini mode toggle */}
