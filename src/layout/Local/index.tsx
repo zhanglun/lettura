@@ -110,10 +110,10 @@ export function LocalPage() {
             </div>
           </AddFeedChannel>
           <SettingPage>
-            <button className={"sidebar-item"}>
+            <div className={"sidebar-item"}>
               <Settings size={16} />
               Settings
-            </button>
+            </div>
           </SettingPage>
         </div>
         <DndProvider backend={HTML5Backend}>

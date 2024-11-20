@@ -22,23 +22,26 @@ export function SettingPage({ children }: SettingPageProps) {
     showModal();
   });
 
+  const handleStatusChange = () => {
+    toggleModal();
+  };
+
   return (
-    <Dialog.Root open={showStatus} onOpenChange={toggleModal}>
-      <Dialog.Trigger asChild>
-        <Tooltip
-          content={
-            <>
-              Go to settings <Kbd className="ml-3">s</Kbd>
-            </>
-          }
-          side="right"
-        >
-          {children}
-        </Tooltip>
-      </Dialog.Trigger>
+    <Dialog.Root open={showStatus} onOpenChange={handleStatusChange}>
+      <Tooltip
+        content={
+          <>
+            Go to settings <Kbd className="ml-3">s</Kbd>
+          </>
+        }
+        side="right"
+        className="w-full"
+      >
+        <Dialog.Trigger>{children}</Dialog.Trigger>
+      </Tooltip>
 
       <Dialog.Content className="max-w-[900px] p-0">
-        <Dialog.Close asChild>
+        <Dialog.Close>
           <IconButton className="absolute right-5 top-5" variant="ghost">
             <Cross2Icon />
           </IconButton>
