@@ -136,7 +136,7 @@ export const PlayList: React.FC<PlayListProps> = ({
                         exit={overlayAnimation.exit}
                         transition={overlayAnimation.transition}
                       >
-                        <Flex className="absolute inset-0 bg-black/30 rounded-sm backdrop-blur-[1px] items-center justify-center">
+                        <Flex className="absolute inset-0 bg-black/30 rounded-[4.5px] backdrop-blur-[1px] items-center justify-center">
                           <motion.div
                             initial={{ scale: 0.9 }}
                             animate={{ scale: 1 }}

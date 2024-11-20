@@ -8,16 +8,18 @@ import { useBearStore } from "@/stores";
 interface PlayListPopoverProps {
   currentTrack: AudioTrack | null;
   isPlaying: boolean;
-  onPlay?: (track: AudioTrack) => void;
 }
 
-export const PlayListPopover: React.FC<PlayListPopoverProps> = ({ currentTrack, isPlaying, onPlay }) => {
+export const PlayListPopover: React.FC<PlayListPopoverProps> = ({ currentTrack, isPlaying }) => {
   const bearStore = useBearStore();
 
   const handleTrackSelect = (track: AudioTrack) => {
     if (track.id !== currentTrack?.id) {
+      // 只更新 store 中的状态，让 useAudioPlayer 的 effect 来处理播放
       bearStore.setCurrentTrack(track);
-      bearStore.updatePodcastPlayingStatus(false);
+      bearStore.updatePodcastPlayingStatus(true);
+    } else {
+      bearStore.updatePodcastPlayingStatus(!isPlaying);
     }
   };
 
@@ -31,7 +33,6 @@ export const PlayListPopover: React.FC<PlayListPopoverProps> = ({ currentTrack, 
       <Popover.Content className="p-0 slide-popover" align="end" alignOffset={-30} sideOffset={20}>
         <PlayList
           onTrackSelect={handleTrackSelect}
-          onPlay={onPlay}
           onClose={() => {}}
           currentTrack={currentTrack}
           isPlaying={isPlaying}

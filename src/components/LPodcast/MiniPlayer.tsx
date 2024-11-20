@@ -5,7 +5,6 @@ import { AudioTrack } from "./index";
 import { motion } from "framer-motion";
 import "./shared.css";
 import { PlayListPopover } from "./PlayListPopover";
-import { useAudioPlayer } from "./useAudioPlayer";
 
 const AudioWaveform = () => {
   const bars = [
@@ -43,9 +42,8 @@ interface MiniPlayerProps {
 }
 
 export const MiniPlayer: React.FC<MiniPlayerProps> = ({ currentTrack, isPlaying, togglePlay, onExpand }) => {
-  const { playTrack } = useAudioPlayer();
   return (
-    <Box className="bg-[var(--gray-1)] rounded-lg shadow-lg overflow-hidden w-[380px]">
+    <Box className="bg-[var(--gray-1)] rounded-lg shadow-lg overflow-hidden w-[380px] border">
       <Flex align="center" className="p-2 gap-3">
         {/* Cover with play/pause overlay */}
         <div className="mini-player-cover">
@@ -102,7 +100,7 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({ currentTrack, isPlaying,
           {currentTrack?.title || "No track selected"}
         </Text>
 
-        <PlayListPopover currentTrack={currentTrack} isPlaying={isPlaying} onPlay={playTrack} />
+        <PlayListPopover currentTrack={currentTrack} isPlaying={isPlaying} />
         {/* Expand Button */}
         <IconButton size="1" variant="ghost" onClick={onExpand}>
           <ChevronUpIcon />

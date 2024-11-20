@@ -54,24 +54,27 @@ export const useAudioPlayer = () => {
 
   // Handle track changes
   useEffect(() => {
-    if (audioRef.current && store.currentTrack) {
-      audioRef.current.src = store.currentTrack.url;
-      if (store.podcastPlayingStatus) {
-        audioRef.current.play();
-      }
-    }
-  }, [store.currentTrack]);
+    const audio = audioRef.current;
+    if (!audio || !store.currentTrack) return;
 
-  // Handle playing status changes
-  useEffect(() => {
-    if (audioRef.current) {
-      if (store.podcastPlayingStatus) {
-        audioRef.current.play();
-      } else {
-        audioRef.current.pause();
-      }
+    // 如果是新的曲目，需要设置新的 src
+    if (audio.src !== store.currentTrack.url) {
+      audio.src = store.currentTrack.url;
     }
-  }, [store.podcastPlayingStatus]);
+
+    // 根据播放状态来控制播放
+    if (store.podcastPlayingStatus) {
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(error => {
+          console.error("播放出错:", error);
+          store.updatePodcastPlayingStatus(false);
+        });
+      }
+    } else {
+      audio.pause();
+    }
+  }, [store.currentTrack, store.podcastPlayingStatus]);
 
   // Save volume to localStorage
   useEffect(() => {
@@ -131,6 +134,21 @@ export const useAudioPlayer = () => {
     }
   };
 
+  const playTrack = (track: AudioTrack) => {
+    if (track.id !== store.currentTrack?.id) {
+      // 先暂停当前播放
+      store.updatePodcastPlayingStatus(false);
+      // 设置新的曲目
+      store.setCurrentTrack(track);
+      // 延迟一帧后开始播放
+      requestAnimationFrame(() => {
+        store.updatePodcastPlayingStatus(true);
+      });
+    } else {
+      store.updatePodcastPlayingStatus(!store.podcastPlayingStatus);
+    }
+  };
+
   return {
     currentTrack: store.currentTrack,
     isPlaying: store.podcastPlayingStatus,
@@ -140,10 +158,7 @@ export const useAudioPlayer = () => {
     togglePlay,
     setVolume,
     seek,
-    playTrack: (track: AudioTrack) => {
-      store.setCurrentTrack(track);
-      store.updatePodcastPlayingStatus(true);
-    },
+    playTrack,
     setProgress,
     playPrevious: store.playPrev,
     playNext: store.playNext,
