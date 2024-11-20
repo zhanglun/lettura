@@ -2,59 +2,81 @@ import { Outlet, useNavigate } from "react-router-dom";
 import { Cog, Database, Keyboard, Palette, Rss, Waypoints } from "lucide-react";
 import { RouteConfig } from "../../config";
 import { Link } from "@/layout/Setting/Link";
-import { Heading } from "@radix-ui/themes";
+import { Dialog, Heading, Kbd, Tabs, Text, Box, Tooltip } from "@radix-ui/themes";
+import { useModal } from "@/components/Modal/useModal";
+import { useHotkeys } from "react-hotkeys-hook";
+import { General } from "./General";
+import { Appearance } from "./Appearance";
+import { Shortcut } from "./ShortCut";
+import { ImportAndExport } from "./ImportAndExport";
 
-export function SettingPage() {
-  const navigate = useNavigate();
+interface SettingPageProps {
+  children: React.ReactNode;
+}
+
+export function SettingPage({ children }: SettingPageProps) {
+  const [showStatus, , showModal, , toggleModal] = useModal();
+
+  useHotkeys("s", () => {
+    showModal();
+  });
 
   return (
-    <div className="flex-1 max-h-full flex flex-row bg-canvas p-2 pl-0">
-      <div className="bg-panel flex w-full h-full flex-1 overflow-hidden rounded-md border">
-        <div className="w-[220px] px-5 border-r">
-          <Heading size="6" className="flex items-center group cursor-pointer pt-5 pb-4 px-2">
-            Settings
-          </Heading>
-          <div className="max-w-[640px] m-auto">
-            <nav className="flex flex-col space-x-0 space-y-1">
-              <Link to={RouteConfig.SETTINGS_GENERAL}>
-                <Cog size={16} className="mr-3" />
-                General
-              </Link>
-              <Link to={RouteConfig.SETTINGS_APPEARANCE}>
-                <span className="flex items-center">
-                  <Palette size={16} className="mr-3" />
-                  Appearance
-                </span>
-              </Link>
-              <Link to={RouteConfig.SETTINGS_PROXY}>
-                <span className="flex items-center">
-                  <Waypoints size={16} className="mr-3" />
-                  Proxy
-                </span>
-              </Link>
-              <Link to={RouteConfig.SETTINGS_SHORTCUT}>
-                <Keyboard size={16} className="mr-3" />
-                Shortcut
-              </Link>
-              <Link to={RouteConfig.SETTINGS_FEED_MANAGER}>
-                <Database size={16} className="mr-3" />
-                Content
-              </Link>
-              <Link to={RouteConfig.SETTINGS_IMPORT}>
-                <span className="flex items-center">
-                  <Rss size={16} className="mr-3" />
-                  Import/Export
-                </span>
-              </Link>
-            </nav>
+    <Dialog.Root open={showStatus} onOpenChange={toggleModal}>
+      <Dialog.Trigger asChild>
+        <Tooltip
+          content={
+            <>
+              Go to settings <Kbd className="ml-3">s</Kbd>
+            </>
+          }
+          side="right"
+        >
+          {children}
+        </Tooltip>
+      </Dialog.Trigger>
+
+      <Dialog.Content className="max-w-[900px]">
+        <div className="flex flex-row">
+          <div className="w-[220px] px-5 border-r">
+            <Heading size="6" className="flex items-center group cursor-pointer pt-5 pb-4 px-2">
+              Settings
+            </Heading>
+            <Tabs.Root defaultValue="General" orientation="vertical">
+              <Tabs.List>
+                <Tabs.Trigger value="General">General</Tabs.Trigger>
+                <Tabs.Trigger value="Appearance">Appearance</Tabs.Trigger>
+                <Tabs.Trigger value="Proxy">Proxy</Tabs.Trigger>
+                <Tabs.Trigger value="Shortcuts">Shortcuts</Tabs.Trigger>
+                <Tabs.Trigger value="Import & Export">Import & Export</Tabs.Trigger>
+              </Tabs.List>
+
+              <Box pt="3">
+                <Tabs.Content value="General">
+                  <General />
+                </Tabs.Content>
+
+                <Tabs.Content value="Appearance">
+                  <Appearance />
+                </Tabs.Content>
+                <Tabs.Content value="Proxy">
+                  <Proxy />
+                </Tabs.Content>
+                <Tabs.Content value="Shortcuts">
+                  <Shortcut />
+                </Tabs.Content>
+
+                <Tabs.Content value="Import & Export">
+                  <ImportAndExport />
+                </Tabs.Content>
+              </Box>
+            </Tabs.Root>
           </div>
+          {/* <div className="flex-1 pt-16 flex justify-center overflow-auto rounded-md px-5">
+            <div className="max-w-[980px] w-full"></div>
+          </div> */}
         </div>
-        <div className="flex-1 pt-16 flex justify-center overflow-auto rounded-md px-5">
-          <div className="max-w-[980px] w-full">
-            <Outlet />
-          </div>
-        </div>
-      </div>
-    </div>
+      </Dialog.Content>
+    </Dialog.Root>
   );
 }

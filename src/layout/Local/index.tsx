@@ -14,6 +14,7 @@ import { AddFeedChannel } from "@/components/AddFeed";
 import { AddFolder } from "@/components/AddFolder";
 import { useRefresh } from "@/components/Subscribes/useRefresh";
 import { IconButton, Tooltip } from "@radix-ui/themes";
+import { SettingPage } from "../Setting";
 
 const spaces = [
   {
@@ -108,19 +109,12 @@ export function LocalPage() {
               New Subscribe
             </div>
           </AddFeedChannel>
-          <Tooltip content="Go to settings" side="right">
-            <>
-              <NavLink
-                to={RouteConfig.SETTINGS_GENERAL}
-                className={({ isActive }) => {
-                  return clsx("sidebar-item", isActive ? "sidebar-item--active" : "");
-                }}
-              >
-                <Settings size={16} />
-                Settings
-              </NavLink>
-            </>
-          </Tooltip>
+          <SettingPage>
+            <button className={"sidebar-item"}>
+              <Settings size={16} />
+              Settings
+            </button>
+          </SettingPage>
         </div>
         <DndProvider backend={HTML5Backend}>
           <ChannelList />

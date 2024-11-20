@@ -10,13 +10,7 @@ import { SearchPage } from "./layout/Search";
 import { FreshRSSPage } from "./layout/FreshRSS";
 
 import "./index.css";
-import { SettingPage } from "./layout/Setting";
-import { Appearance } from "./layout/Setting/Appearance";
-import { General } from "./layout/Setting/General";
-import { Shortcut } from "./layout/Setting/ShortCut";
-import { FeedManager } from "./layout/Setting/Content";
-import { ImportAndExport } from "./layout/Setting/ImportAndExport";
-import { ProxySetting } from "./layout/Setting/Proxy";
+
 import { Toaster } from "sonner";
 
 const router = createBrowserRouter([
@@ -63,36 +57,6 @@ const router = createBrowserRouter([
       {
         path: RouteConfig.SEARCH,
         element: <SearchPage />,
-      },
-      {
-        path: RouteConfig.SETTINGS,
-        element: <SettingPage />,
-        children: [
-          {
-            path: RouteConfig.SETTINGS_GENERAL,
-            element: <General />,
-          },
-          {
-            path: RouteConfig.SETTINGS_APPEARANCE,
-            element: <Appearance />,
-          },
-          {
-            path: RouteConfig.SETTINGS_PROXY,
-            element: <ProxySetting />,
-          },
-          {
-            path: RouteConfig.SETTINGS_SHORTCUT,
-            element: <Shortcut />,
-          },
-          {
-            path: RouteConfig.SETTINGS_FEED_MANAGER,
-            element: <FeedManager />,
-          },
-          {
-            path: RouteConfig.SETTINGS_IMPORT,
-            element: <ImportAndExport />,
-          },
-        ],
       },
     ],
   },
