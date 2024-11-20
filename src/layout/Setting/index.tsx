@@ -9,25 +9,31 @@ import { ProxySetting } from "./Proxy";
 import { ImportAndExport } from "./ImportAndExport";
 import { useState } from "react";
 import { Cross2Icon } from "@radix-ui/react-icons";
+import { useBearStore } from "@/stores";
 
 interface SettingPageProps {
   children: React.ReactNode;
 }
 
 export function SettingPage({ children }: SettingPageProps) {
-  const [showStatus, , showModal, , toggleModal] = useModal();
+  // const [showStatus, , showModal, , toggleModal] = useModal();
+  const store = useBearStore((state) => ({
+    settingDialogStatus: state.settingDialogStatus,
+    updateSettingDialogStatus: state.updateSettingDialogStatus,
+  }));
+
   const [activeTab, setActiveTab] = useState("general");
 
   useHotkeys("s", () => {
-    showModal();
+    store.updateSettingDialogStatus(true);
   });
 
-  const handleStatusChange = () => {
-    toggleModal();
+  const handleStatusChange = (status: boolean) => {
+    store.updateSettingDialogStatus(status);
   };
 
   return (
-    <Dialog.Root open={showStatus} onOpenChange={handleStatusChange}>
+    <Dialog.Root open={store.settingDialogStatus} onOpenChange={handleStatusChange}>
       <Tooltip
         content={
           <>
