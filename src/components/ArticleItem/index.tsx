@@ -44,7 +44,7 @@ export const ArticleItem = React.forwardRef((props: { article: ArticleResItem },
   return (
     <li
       className={clsx(
-        "list-none rounded-md p-2 py-3 pl-5 grid gap-1 relative select-none",
+        "list-none rounded-md p-2 py-2 pl-5 grid gap-1 relative select-none",
         "group hover:bg-[var(--accent-a3)] hover:cursor-pointer",
         {
           "text-[var(--gray-10)]": readStatus === ArticleReadStatus.READ,
@@ -56,9 +56,9 @@ export const ArticleItem = React.forwardRef((props: { article: ArticleResItem },
       id={article.uuid}
     >
       {readStatus === ArticleReadStatus.UNREAD && (
-        <div className="absolute left-2 top-4 w-2 h-2 rounded-full bg-[var(--accent-9)]" />
+        <div className="absolute left-2 top-[16px] w-2 h-2 rounded-full bg-[var(--accent-9)]" />
       )}
-      <div className="font-bold text-sm break-all">{article.title}</div>
+      <div className="font-semibold text-sm break-all">{article.title}</div>
       <div className="text-xs line-clamp-2 break-all">{(article.description || "").replace(/<[^<>]+>/g, "")}</div>
       <div className="flex justify-between items-center text-xs mt-2">
         <div className="flex items-center gap-1.5">

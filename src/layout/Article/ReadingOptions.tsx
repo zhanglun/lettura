@@ -82,7 +82,7 @@ export const ReadingOptions = (props: NavigatorProps) => {
 
   return (
     <>
-      <Popover.Root>
+      {/* <Popover.Root>
         <Tooltip content="Customize style">
           <Popover.Trigger>
             <IconButton size="2" variant="ghost" color="gray" className="text-[var(--gray-12)]">
@@ -93,7 +93,7 @@ export const ReadingOptions = (props: NavigatorProps) => {
         <Popover.Content className="w-[340px]">
           <CustomizeStyle styleConfig={store.userConfig.customize_style} />
         </Popover.Content>
-      </Popover.Root>
+      </Popover.Root> */}
       {/* <Tooltip content="View full page">
         <IconButton size="2" variant="ghost" color="gray" className="text-[var(--gray-12)]"
           onClick={handleViewSourcePage}

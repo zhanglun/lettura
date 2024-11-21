@@ -70,7 +70,7 @@ div, ul {
 ::-webkit-scrollbar-thumb {
   border: 0px solid transparent;
   border-radius: 6px;
-  background-color: #707070;
+  background-color: #808080;
   background-clip: padding-box;
 }
 

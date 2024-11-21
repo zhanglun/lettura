@@ -1,6 +1,6 @@
 {
   "name": "lettura",
-  "version": "0.1.19",
+  "version": "0.1.20",
   "private": true,
   "scripts": {
     "dev": "vite",
@@ -30,8 +30,9 @@
     "dexie-react-hooks": "^1.1.7",
     "dnd-core": "^16.0.1",
     "dompurify": "^3.1.5",
-    "framer-motion": "^10.16.4",
+    "framer-motion": "^10.18.0",
     "he": "^1.2.0",
+    "html-react-parser": "^5.1.18",
     "immutability-helper": "^3.1.1",
     "linkify-string": "^4.1.2",
     "linkifyjs": "^4.1.2",

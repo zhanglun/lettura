@@ -1,20 +1,25 @@
-import linkifyStr from "linkify-string";
-import he from "he";
 import { Button } from "@radix-ui/themes";
-import { Podcast, db } from "@/helpers/podcastDB";
-import { toast } from "sonner";
-import { busChannel } from "@/helpers/busChannel";
+import { Podcast } from "@/helpers/podcastDB";
+import { wraperWithRadix } from "../ContentRender";
+import { ArticleResItem } from "@/db";
+import { useBearStore } from "@/stores";
 
-export function PodcastAdapter(props: any) {
+export interface PodcastAdapter {
+  article: ArticleResItem;
+  content: string;
+  medias: any;
+}
+
+export function PodcastAdapter(props: PodcastAdapter) {
   const { article, content, medias } = props;
+  const { addToPlayListAndPlay } = useBearStore();
 
   console.log("content", content);
   console.log("medias", medias);
   console.log("article", article);
 
-  function addToPlayListAndPlay(media: any) {
+  function handleAddToPlayListAndPlay(media: any) {
     const { description, content, thumbnails } = media;
-    console.log("%c Line:17 🌶 media", "color:#ea7e5c", media);
     const mediaURL = content[0].url;
     const mediaType = content[0].content_type;
     const thumbnail = thumbnails[0].image.uri;
@@ -29,7 +34,6 @@ export function PodcastAdapter(props: any) {
       feed_title: article.feed_title,
       pub_date: article.pub_date,
       create_date: article.create_date,
-      update_date: article.update_date,
       starred: article.starred,
       mediaURL,
       mediaType,
@@ -38,19 +42,8 @@ export function PodcastAdapter(props: any) {
       add_date: new Date().getTime(),
     } as Podcast;
 
-    db.podcasts
-      .add(record)
-      .then((res: any) => {
-        console.log("%c Line:27 🌮 res", "color:#f5ce50", res);
-        toast.success("start playing");
-        setTimeout(() => {
-          busChannel.emit("addMediaAndPlay", record);
-        }, 50);
-      })
-      .catch('ConstraintError', () => {
-        // already in the list, play it immediately
-        busChannel.emit("addMediaAndPlay", record);
-      });
+    // 直接使用 store 的方法，它会处理数据库操作和状态更新
+    addToPlayListAndPlay(record);
   }
 
   function renderMediaBox(media: any) {
@@ -58,10 +51,10 @@ export function PodcastAdapter(props: any) {
 
     function renderContent() {
       return content.map((c: any) => {
-        if (c.url && c.content_type.indexOf('audio/') === 0) {
+        if (c.url && c.content_type.indexOf("audio/") === 0) {
           return (
             <figure className="my-3">
-              <Button onClick={() => addToPlayListAndPlay(media)}>Play</Button>
+              <Button onClick={() => handleAddToPlayListAndPlay(media)}>Play</Button>
             </figure>
           );
         }
@@ -80,30 +73,15 @@ export function PodcastAdapter(props: any) {
       <div>
         <div>{renderThumbnails()}</div>
         <div>{renderContent()}</div>
-        <div
-          className="text-xs text-muted-foreground"
-          style={{ whiteSpace: "pre-line" }}
-          dangerouslySetInnerHTML={{
-            __html: linkifyStr(
-              he.decode((description?.content || "").replace(/<[^<>]+>/gi, ""))
-            ),
-          }}
-        />
+        <div>{wraperWithRadix(description?.content || "")}</div>
       </div>
     );
   }
 
   return (
     <div>
+      <div className="mb-4">{wraperWithRadix(content)}</div>
       {medias && medias.length > 0 && <div>{medias.map(renderMediaBox)}</div>}
-      <div
-        key={article.uuid}
-        className={"reading-content mt-6"}
-        // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{
-          __html: content,
-        }}
-      />
     </div>
   );
 }

@@ -8,7 +8,6 @@ export const PlayerSwitcher = () => {
     podcastPanelStatus: state.podcastPanelStatus,
     updatePodcastPanelStatus: state.updatePodcastPanelStatus,
     podcastPlayingStatus: state.podcastPlayingStatus,
-    updatePodcastPlayingStatus: state.updatePodcastPlayingStatus,
   }));
 
   function togglePlayerPanel() {

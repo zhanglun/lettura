@@ -99,6 +99,12 @@
 }
 
 .reading-content {
+  & img {
+    width: 100%;
+    margin: 0 auto;
+  }
+}
+.reading-content--TODO {
   font-weight: 400;
   line-height: var(--reading-p-line-height);
   font-family: var(--reading-font-body);

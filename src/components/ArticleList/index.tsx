@@ -60,7 +60,7 @@ export const ArticleList = React.memo(React.forwardRef<HTMLDivElement, any>((pro
           <p>Yay, no matching items.</p>
         </div>
       ) : null}
-      <ul className="m-0 grid gap-1 pt-2 pr-1 pb-1 pl-2">{renderList()}</ul>
+      <ul className="m-0 grid gap-[2px] pt-1 pr-0 pb-1 pl-1">{renderList()}</ul>
       <div ref={loadRef} className="pt-1">
         {isLoading && (
           <div className="p-3 pl-6 grid gap-1 relative">

@@ -23,8 +23,29 @@ export function View(props: ArticleViewProps) {
 
   const renderPlaceholder = () => {
     return (
-      <div className="py-10 text-xl">
-        <p>Let's read something</p>
+      <div className="flex flex-col items-center justify-center py-20 text-center">
+        <div className="mb-6">
+          <svg
+            width="120"
+            height="120"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="text-[var(--gray-6)]"
+          >
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+          </svg>
+        </div>
+        <h2 className="text-2xl font-medium text-[var(--gray-12)] mb-2">
+          Ready to Read
+        </h2>
+        <p className="text-[var(--gray-11)] text-base">
+          Select an article from your feed to start reading
+        </p>
       </div>
     );
   };
