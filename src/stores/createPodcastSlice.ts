@@ -78,7 +78,7 @@ export const createPodcastSlice: StateCreator<PodcastSlice, [], [], PodcastSlice
     try {
       // 尝试添加到数据库
       await db.podcasts.add(record);
-      toast.success("start playing");
+      // toast.success("start playing");
     } catch (error: any) {
       if (error.name !== "ConstraintError") {
         throw error;
