@@ -30,9 +30,9 @@ export const useAudioPlayer = () => {
     // Load saved progress
     const savedTrackId = localStorage.getItem(STORAGE_KEYS.CURRENT_TRACK);
     const savedProgress = localStorage.getItem(STORAGE_KEYS.PROGRESS);
-    
+
     if (savedTrackId && store.tracks.length > 0) {
-      const track = store.tracks.find(t => t.id === savedTrackId);
+      const track = store.tracks.find((t) => t.uuid === savedTrackId);
       if (track) {
         store.setCurrentTrack(track);
         audioRef.current.src = track.url;
@@ -66,7 +66,7 @@ export const useAudioPlayer = () => {
     if (store.podcastPlayingStatus) {
       const playPromise = audio.play();
       if (playPromise !== undefined) {
-        playPromise.catch(error => {
+        playPromise.catch((error) => {
           console.error("播放出错:", error);
           store.updatePodcastPlayingStatus(false);
         });
@@ -87,7 +87,7 @@ export const useAudioPlayer = () => {
   // Save current track and progress
   useEffect(() => {
     if (store.currentTrack) {
-      localStorage.setItem(STORAGE_KEYS.CURRENT_TRACK, store.currentTrack.id);
+      localStorage.setItem(STORAGE_KEYS.CURRENT_TRACK, store.currentTrack.uuid);
     }
   }, [store.currentTrack]);
 
@@ -112,14 +112,14 @@ export const useAudioPlayer = () => {
       store.playNext();
     };
 
-    audio.addEventListener('timeupdate', handleTimeUpdate);
-    audio.addEventListener('loadedmetadata', handleLoadedMetadata);
-    audio.addEventListener('ended', handleEnded);
+    audio.addEventListener("timeupdate", handleTimeUpdate);
+    audio.addEventListener("loadedmetadata", handleLoadedMetadata);
+    audio.addEventListener("ended", handleEnded);
 
     return () => {
-      audio.removeEventListener('timeupdate', handleTimeUpdate);
-      audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
-      audio.removeEventListener('ended', handleEnded);
+      audio.removeEventListener("timeupdate", handleTimeUpdate);
+      audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
+      audio.removeEventListener("ended", handleEnded);
     };
   }, [store.playNext]);
 
@@ -135,7 +135,7 @@ export const useAudioPlayer = () => {
   };
 
   const playTrack = (track: AudioTrack) => {
-    if (track.id !== store.currentTrack?.id) {
+    if (track.uuid !== store.currentTrack?.uuid) {
       // 先暂停当前播放
       store.updatePodcastPlayingStatus(false);
       // 设置新的曲目

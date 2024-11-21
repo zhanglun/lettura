@@ -22,11 +22,12 @@ import { db } from "@/helpers/podcastDB";
 import { PlayListPopover } from "./PlayListPopover";
 
 export interface AudioTrack {
-  id: string;
+  uuid: string;
   title: string;
   url: string;
   thumbnail?: string;
   author?: string;
+  duration?: number;
 }
 
 interface LPodcastProps {
@@ -38,15 +39,17 @@ export const LPodcast: React.FC<LPodcastProps> = ({ visible = true }) => {
   const bearStore = useBearStore();
   const { currentTrack, setCurrentTrack, setTracks, podcastPlayingStatus } = bearStore;
 
-  // 从数据库获取播客列表
-  const podcasts = useLiveQuery(() => db.podcasts.toArray());
+  // 获取所有播客数据
+  const podcasts = useLiveQuery(() =>
+    db.podcasts.orderBy("add_date").reverse().toArray()
+  );
 
   // 转换播客数据为音频轨道
   const tracks = React.useMemo(
     () =>
       podcasts
         ? podcasts.map((podcast) => ({
-            id: podcast.uuid,
+            uuid: podcast.uuid,
             title: podcast.title,
             url: podcast.mediaURL,
             thumbnail: podcast.thumbnail,
@@ -208,7 +211,7 @@ export const LPodcast: React.FC<LPodcastProps> = ({ visible = true }) => {
                 {/* Section C: Additional Controls */}
                 <Flex gap="3" align="center" justify="end" className="max-w-[300px]">
                   {/* Playlist */}
-                  <PlayListPopover currentTrack={currentTrack} isPlaying={isPlaying} onPlay={playTrack} />
+                  <PlayListPopover currentTrack={currentTrack} isPlaying={isPlaying} />
                   {/* Volume */}
                   <Flex gap="2" align="center" style={{ width: 120 }}>
                     <IconButton size="2" variant="ghost" onClick={() => setVolume(volume === 0 ? 1 : 0)}>

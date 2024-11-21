@@ -1,12 +1,12 @@
 import React from 'react';
-import { Box, Flex, Text, Avatar } from '@radix-ui/themes';
-import { AudioTrack } from './index';
-import { formatTime } from './utils';
-import { useBearStore } from '@/stores';
-import { motion, AnimatePresence } from 'framer-motion';
-import { PlayIcon } from '@radix-ui/react-icons';
-import clsx from 'clsx';
-import './PlayList.css';
+import { Box, Flex, Text, Avatar, IconButton } from "@radix-ui/themes";
+import { AudioTrack } from "./index";
+import { formatTime } from "./utils";
+import { useBearStore } from "@/stores";
+import { motion, AnimatePresence } from "framer-motion";
+import { PlayIcon, TrashIcon } from "@radix-ui/react-icons";
+import clsx from "clsx";
+import "./PlayList.css";
 
 const AudioWaveform = () => {
   const bars = [
@@ -70,7 +70,10 @@ export const PlayList: React.FC<PlayListProps> = ({
   isPlaying = false,
   onPlay,
 }) => {
-  const tracks = useBearStore((state) => state.tracks);
+  const { tracks, removeTrack } = useBearStore((state) => ({
+    tracks: state.tracks,
+    removeTrack: state.removeTrack,
+  }));
 
   if (tracks.length === 0) {
     return (
@@ -98,10 +101,10 @@ export const PlayList: React.FC<PlayListProps> = ({
       </Box>
 
       <Box className="flex-1 overflow-y-auto playlist-scroll">
-        <Box className="py-2 pl-2">
+        <Box className="py-2 px-2">
           {tracks.map((track, index) => (
             <motion.div
-              key={track.id}
+              key={track.uuid}
               custom={index}
               initial={itemAnimation.initial}
               animate={itemAnimation.animate}
@@ -109,14 +112,14 @@ export const PlayList: React.FC<PlayListProps> = ({
                 ...itemAnimation.transition,
                 delay: index * 0.05,
               }}
-              className="w-full"
+              className="w-full group relative"
             >
               <Flex
                 align="center"
                 gap="3"
                 className={clsx(
                   "playlist-item w-full px-2 py-2 cursor-pointer rounded-md",
-                  track.id === currentTrack?.id ? "bg-accent-4 hover:bg-accent-5" : "hover:bg-gray-3"
+                  track.uuid === currentTrack?.uuid ? "bg-accent-4 hover:bg-accent-5" : "hover:bg-accent-2"
                 )}
                 onClick={() => onTrackSelect(track)}
               >
@@ -129,7 +132,7 @@ export const PlayList: React.FC<PlayListProps> = ({
                     className="w-12 h-12"
                   />
                   <AnimatePresence>
-                    {track.id === currentTrack?.id && isPlaying ? (
+                    {track.uuid === currentTrack?.uuid && isPlaying ? (
                       <motion.div
                         initial={overlayAnimation.initial}
                         animate={overlayAnimation.animate}
@@ -175,7 +178,7 @@ export const PlayList: React.FC<PlayListProps> = ({
                     size="2"
                     className={clsx(
                       "playlist-text truncate",
-                      track.id === currentTrack?.id ? "text-accent-12 font-medium" : "text-gray-11"
+                      track.uuid === currentTrack?.uuid ? "text-accent-12 font-medium" : "text-gray-11"
                     )}
                   >
                     {track.title}
@@ -185,7 +188,7 @@ export const PlayList: React.FC<PlayListProps> = ({
                       size="1"
                       className={clsx(
                         "playlist-subtext truncate",
-                        track.id === currentTrack?.id ? "text-accent-11" : "text-gray-10"
+                        track.uuid === currentTrack?.uuid ? "text-accent-11" : "text-gray-10"
                       )}
                     >
                       {track.author}
@@ -193,13 +196,23 @@ export const PlayList: React.FC<PlayListProps> = ({
                   )}
                 </Flex>
 
+                <TrashIcon
+                  width={16}
+                  height={16}
+                  className="absolute top-6 right-2 invisible text-[var(--gray-a9)] hover:text-[var(--gray-11)] group-hover:visible"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    removeTrack(track);
+                  }}
+                />
+
                 {track.duration && (
                   <Box className="flex-shrink-0 w-20 text-right">
                     <Text
                       size="1"
                       className={clsx(
                         "playlist-subtext",
-                        track.id === currentTrack?.id ? "text-accent-11" : "text-gray-10"
+                        track.uuid === currentTrack?.uuid ? "text-accent-11" : "text-gray-10"
                       )}
                     >
                       {formatTime(track.duration)}
