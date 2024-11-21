@@ -39,8 +39,10 @@ export const LPodcast: React.FC<LPodcastProps> = ({ visible = true }) => {
   const bearStore = useBearStore();
   const { currentTrack, setCurrentTrack, setTracks, podcastPlayingStatus } = bearStore;
 
-  // 从数据库获取播客列表
-  const podcasts = useLiveQuery(() => db.podcasts.toArray());
+  // 获取所有播客数据
+  const podcasts = useLiveQuery(() =>
+    db.podcasts.orderBy("add_date").reverse().toArray()
+  );
 
   // 转换播客数据为音频轨道
   const tracks = React.useMemo(

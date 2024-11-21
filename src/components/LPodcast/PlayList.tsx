@@ -7,7 +7,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { PlayIcon, TrashIcon } from "@radix-ui/react-icons";
 import clsx from "clsx";
 import "./PlayList.css";
-import { remove } from "lodash";
 
 const AudioWaveform = () => {
   const bars = [
