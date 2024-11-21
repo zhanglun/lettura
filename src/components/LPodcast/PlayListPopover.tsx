@@ -14,7 +14,7 @@ export const PlayListPopover: React.FC<PlayListPopoverProps> = ({ currentTrack, 
   const bearStore = useBearStore();
 
   const handleTrackSelect = (track: AudioTrack) => {
-    if (track.id !== currentTrack?.id) {
+    if (track.uuid !== currentTrack?.uuid) {
       // 只更新 store 中的状态，让 useAudioPlayer 的 effect 来处理播放
       bearStore.setCurrentTrack(track);
       bearStore.updatePodcastPlayingStatus(true);

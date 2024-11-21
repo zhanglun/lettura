@@ -22,11 +22,12 @@ import { db } from "@/helpers/podcastDB";
 import { PlayListPopover } from "./PlayListPopover";
 
 export interface AudioTrack {
-  id: string;
+  uuid: string;
   title: string;
   url: string;
   thumbnail?: string;
   author?: string;
+  duration?: number;
 }
 
 interface LPodcastProps {
@@ -46,7 +47,7 @@ export const LPodcast: React.FC<LPodcastProps> = ({ visible = true }) => {
     () =>
       podcasts
         ? podcasts.map((podcast) => ({
-            id: podcast.uuid,
+            uuid: podcast.uuid,
             title: podcast.title,
             url: podcast.mediaURL,
             thumbnail: podcast.thumbnail,
@@ -208,7 +209,7 @@ export const LPodcast: React.FC<LPodcastProps> = ({ visible = true }) => {
                 {/* Section C: Additional Controls */}
                 <Flex gap="3" align="center" justify="end" className="max-w-[300px]">
                   {/* Playlist */}
-                  <PlayListPopover currentTrack={currentTrack} isPlaying={isPlaying} onPlay={playTrack} />
+                  <PlayListPopover currentTrack={currentTrack} isPlaying={isPlaying} />
                   {/* Volume */}
                   <Flex gap="2" align="center" style={{ width: 120 }}>
                     <IconButton size="2" variant="ghost" onClick={() => setVolume(volume === 0 ? 1 : 0)}>
