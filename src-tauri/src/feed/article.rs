@@ -36,6 +36,38 @@ pub struct MarkAllUnreadParam {
 }
 
 #[derive(Debug, Queryable, Serialize, QueryableByName)]
+pub struct ArticleDetailResult {
+  #[diesel(sql_type = Integer)]
+  pub id: i32,
+  #[diesel(sql_type = Text)]
+  pub uuid: String,
+  #[diesel(sql_type = Text)]
+  pub feed_uuid: String,
+  #[diesel(sql_type = Text)]
+  pub feed_title: String,
+  #[diesel(sql_type = Text)]
+  pub feed_logo: String,
+  #[diesel(sql_type = Text)]
+  pub feed_url: String,
+  #[diesel(sql_type = Text)]
+  pub link: String,
+  #[diesel(sql_type = Text)]
+  pub title: String,
+  #[diesel(sql_type = Text)]
+  pub description: String,
+  #[diesel(sql_type = Text)]
+  pub author: String,
+  #[diesel(sql_type = Text)]
+  pub pub_date: String,
+  #[diesel(sql_type = Text)]
+  pub create_date: String,
+  #[diesel(sql_type = Integer)]
+  pub read_status: i32,
+  #[diesel(sql_type = Integer)]
+  pub starred: i32,
+}
+
+#[derive(Debug, Queryable, Serialize, QueryableByName)]
 pub struct ArticleQueryItem {
   #[diesel(sql_type = Integer)]
   pub id: i32,
@@ -275,11 +307,35 @@ impl Article {
     }
   }
 
-  pub fn get_article_with_uuid(uuid: String) -> Option<models::Article> {
+  pub fn get_article_with_uuid(uuid: String) -> Option<ArticleDetailResult> {
     let mut connection = establish_connection();
-    let mut result = schema::articles::dsl::articles
-      .filter(schema::articles::uuid.eq(&uuid))
-      .load::<models::Article>(&mut connection)
+    let query = diesel::sql_query(
+      "
+     SELECT
+              A.id,
+              A.uuid,
+              A.feed_uuid,
+              C.title as feed_title,
+              C.logo as feed_logo,
+              A.feed_url,
+              A.link,
+              A.title,
+              A.description as description,
+              A.author,
+              A.pub_date,
+              A.create_date,
+              A.read_status,
+              A.starred
+            FROM
+              articles as A
+            LEFT JOIN
+              feeds as C ON C.uuid = A.feed_uuid
+            WHERE
+              A.uuid = ?
+    ").bind::<Text, _>(uuid);
+
+    let mut result = query
+      .load::<ArticleDetailResult>(&mut connection)
       .unwrap_or(vec![]);
 
     return if result.len() == 1 {
