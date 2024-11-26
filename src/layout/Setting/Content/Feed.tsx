@@ -6,7 +6,7 @@ import * as dataAgent from "@/helpers/dataAgent";
 import { busChannel } from "@/helpers/busChannel";
 import { DataTable } from "./DataTable";
 import { CellContext, createColumnHelper } from "@tanstack/react-table";
-import { getChannelFavicon } from "@/helpers/parseXML";
+import { getFeedLogo } from "@/helpers/parseXML";
 import { DialogUnsubscribeFeed } from "./DialogUnsubscribeFeed";
 import { useModal } from "@/components/Modal/useModal";
 import { Avatar, Badge, HoverCard, IconButton } from "@radix-ui/themes";
@@ -38,7 +38,7 @@ export const Feed = () => {
 
         return (
           <div className="flex items-center gap-2">
-            <Avatar src={getChannelFavicon(link)} fallback={title.slice(0, 1)} alt={title} size="1" />
+            <Avatar src={getFeedLogo(link)} fallback={title.slice(0, 1)} alt={title} size="1" />
             <a className="font-bold hover:underline" href={link} target={"_blank"} rel="noreferrer">
               {title}
             </a>

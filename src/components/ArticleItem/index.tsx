@@ -1,7 +1,7 @@
 import React, { ForwardedRef, useEffect, useState } from "react";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import { useBearStore } from "@/stores";
-import { getChannelFavicon } from "@/helpers/parseXML";
+import { getFeedLogo } from "@/helpers/parseXML";
 import { ArticleResItem } from "@/db";
 import { ArticleReadStatus } from "@/typing";
 import clsx from "clsx";
@@ -31,7 +31,7 @@ export const ArticleItem = React.forwardRef((props: { article: ArticleResItem },
     updateCurrentArticle(article);
   };
 
-  const ico = getChannelFavicon(article.feed_url);
+  const ico = getFeedLogo(article.feed_url);
 
   useEffect(() => {
     setReadStatus(article.read_status);
@@ -64,7 +64,7 @@ export const ArticleItem = React.forwardRef((props: { article: ArticleResItem },
         <div className="flex items-center gap-1.5">
           <Avatar
             size="1"
-            src={getChannelFavicon(article.feed_url)}
+            src={store.feed?.logo || getFeedLogo(article.feed_url)}
             fallback={article.feed_title?.slice(0, 1) || "L"}
             alt={article.feed_title}
             className="rounded w-4 h-4"

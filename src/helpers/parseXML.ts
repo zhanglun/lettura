@@ -2,7 +2,7 @@ import { useLocation } from "react-router-dom";
 import {ArticleResItem, FeedResItem} from "@/db";
 import {getPageSources} from "@/helpers/dataAgent";
 
-export const getChannelFavicon = (url: string) => {
+export const getFeedLogo = (url: string) => {
   try {
     const hostname = url ? new URL(url).hostname : "";
 

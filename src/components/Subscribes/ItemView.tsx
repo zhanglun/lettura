@@ -4,7 +4,7 @@ import clsx from "clsx";
 import { RouteConfig } from "@/config";
 import { FeedResItem } from "@/db";
 import { useBearStore } from "@/stores";
-import { getChannelFavicon } from "@/helpers/parseXML";
+import { getFeedLogo } from "@/helpers/parseXML";
 import { NiceFolderIcon } from "../NiceFolderIcon";
 import { Avatar } from "@radix-ui/themes";
 
@@ -41,7 +41,7 @@ export const ItemView: FC<CardProps> = ({ uuid, text, feed, index, isExpanded, t
   };
 
   const { unread = 0, link, logo } = feed;
-  const ico = logo || getChannelFavicon(link);
+  const ico = logo || getFeedLogo(link);
 
   function renderNiceFolder(isActive: Boolean, isExpanded: Boolean) {
     let folderStatus: string;
