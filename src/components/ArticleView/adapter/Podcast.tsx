@@ -21,9 +21,12 @@ export function PodcastAdapter(props: PodcastAdapter) {
 
   function handleAddToPlayListAndPlay(media: any) {
     const { description, content, thumbnails } = media;
+
+    if (!content || content.length === 0) return;
+
     const mediaURL = content[0].url;
     const mediaType = content[0].content_type;
-    const thumbnail = thumbnails[0].image.uri;
+    const thumbnail = thumbnails[0]?.image?.uri || article.feed_logo;
     const text = description?.content || article.description;
 
     const record = {
@@ -73,14 +76,16 @@ export function PodcastAdapter(props: PodcastAdapter) {
   }
 
   function createPodcastPageHeader() {
-    const { description, content, thumbnails } = medias[0];
+    const { thumbnails } = medias[0];
     const t = thumbnails[0];
 
     return (
       <div className="flex gap-4 flex-col items-center mb-4">
-        <div className="w-[130px] rounded-lg overflow-hidden">
-          <img src={t.image.uri} alt={t.image.uri} className="object-cover" />
-        </div>
+        {t && (
+          <div className="w-[130px] rounded-lg overflow-hidden">
+            <img src={t.image.uri} alt={t.image.uri} className="object-cover" />
+          </div>
+        )}
         <Heading size="7">{article.title}</Heading>
         <div>
           <div className="flex gap-3 items-center">
