@@ -15,7 +15,6 @@ export const ArticleItem = React.forwardRef((props: { article: ArticleResItem },
     feed: state.feed,
   }));
   const { article } = props;
-  console.log("🚀 ~ file: index.tsx:18 ~ ArticleItem ~ article:", article);
   const [highlight, setHighlight] = useState<boolean>();
   const [readStatus, setReadStatus] = useState(article.read_status);
 

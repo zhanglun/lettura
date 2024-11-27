@@ -8,6 +8,8 @@ export interface Podcast {
   feed_url: string;
   feed_uuid: string;
   feed_title: string;
+  feed_logo: string;
+  author: string;
   description: string;
   pub_date: string;
   create_date: string;
@@ -26,9 +28,9 @@ export class MySubClassedDexie extends Dexie {
     super("Lettura");
 
     //@ts-ignore
-    this.version(1).stores({
+    this.version(1.1).stores({
       podcasts:
-        "++id, &uuid, title, link, feed_url, feed_uuid, feed_title, description, pub_date, create_date, update_date, starred, mediaURL, mediaType, thumbnail, add_date", // Primary key and indexed props
+        "++id, &uuid, title, link, feed_url, feed_uuid, feed_title, feed_logo, author, description, pub_date, create_date, update_date, starred, mediaURL, mediaType, thumbnail, add_date", // Primary key and indexed props
     });
   }
 }
