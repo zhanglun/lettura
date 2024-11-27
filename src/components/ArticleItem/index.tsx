@@ -15,6 +15,7 @@ export const ArticleItem = React.forwardRef((props: { article: ArticleResItem },
     feed: state.feed,
   }));
   const { article } = props;
+  console.log("🚀 ~ file: index.tsx:18 ~ ArticleItem ~ article:", article);
   const [highlight, setHighlight] = useState<boolean>();
   const [readStatus, setReadStatus] = useState(article.read_status);
 
@@ -74,7 +75,7 @@ export const ArticleItem = React.forwardRef((props: { article: ArticleResItem },
           </span>
         </div>
         <div className="whitespace-nowrap">
-          {formatDistanceToNow(parseISO(article.create_date), {
+          {formatDistanceToNow(parseISO(article.pub_date || article.create_date), {
             includeSeconds: true,
             addSuffix: true,
           })}
