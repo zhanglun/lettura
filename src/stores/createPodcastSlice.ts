@@ -128,7 +128,6 @@ export const createPodcastSlice: StateCreator<PodcastSlice, [], [], PodcastSlice
   },
 
   async removeTrack(track: AudioTrack) {
-    console.log("🚀 ~ file: createPodcastSlice.ts:126 ~ removeTrack ~ track:", track);
     const { tracks, setTracks, currentTrack, setCurrentTrack, updatePodcastPlayingStatus, setCurrentPlayingIndex } =
       get();
 

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { AudioTrack } from './index';
 import { STORAGE_KEYS } from './utils';
 import { useBearStore } from '@/stores';
+import { db } from '@/helpers/podcastDB';
 
 export const useAudioPlayer = () => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -27,32 +28,32 @@ export const useAudioPlayer = () => {
     audioRef.current = new Audio();
     audioRef.current.volume = volume;
 
-    // Load saved progress
-    const savedTrackId = localStorage.getItem(STORAGE_KEYS.CURRENT_TRACK);
-    const savedProgress = localStorage.getItem(STORAGE_KEYS.PROGRESS);
-
-    if (savedTrackId && store.tracks.length > 0) {
-      const track = store.tracks.find((t) => t.uuid === savedTrackId);
-      if (track) {
-        store.setCurrentTrack(track);
-        audioRef.current.src = track.url;
-        if (savedProgress) {
-          const progress = parseFloat(savedProgress);
-          audioRef.current.currentTime = progress;
-          setProgress(progress);
+    // Load saved progress from database
+    if (store.currentTrack?.uuid) {
+      db.podcasts.where('uuid').equals(store.currentTrack.uuid).first().then((podcast) => {
+        if (podcast?.progress && audioRef.current) {
+          audioRef.current.currentTime = podcast.progress;
+          setProgress(podcast.progress);
         }
-      }
+      });
     }
 
     return () => {
       if (audioRef.current) {
+        // Save progress before unmounting
+        const currentTime = audioRef.current.currentTime;
+        if (store.currentTrack?.uuid && currentTime > 0) {
+          db.podcasts.where('uuid').equals(store.currentTrack.uuid).modify({
+            progress: currentTime
+          });
+        }
         audioRef.current.pause();
         audioRef.current = null;
       }
     };
-  }, []);
+  }, [store.currentTrack?.uuid, volume]);
 
-  // Handle track changes
+  // Handle track changes and set up audio event listeners
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio || !store.currentTrack) return;
@@ -60,6 +61,13 @@ export const useAudioPlayer = () => {
     // 如果是新的曲目，需要设置新的 src
     if (audio.src !== store.currentTrack.url) {
       audio.src = store.currentTrack.url;
+      // 加载保存的进度
+      db.podcasts.where('uuid').equals(store.currentTrack.uuid).first().then((podcast) => {
+        if (podcast?.progress) {
+          audio.currentTime = podcast.progress;
+          setProgress(podcast.progress);
+        }
+      });
     }
 
     // 根据播放状态来控制播放
@@ -74,34 +82,18 @@ export const useAudioPlayer = () => {
     } else {
       audio.pause();
     }
-  }, [store.currentTrack, store.podcastPlayingStatus]);
 
-  // Save volume to localStorage
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.VOLUME, volume.toString());
-    if (audioRef.current) {
-      audioRef.current.volume = volume;
-    }
-  }, [volume]);
-
-  // Save current track and progress
-  useEffect(() => {
-    if (store.currentTrack) {
-      localStorage.setItem(STORAGE_KEYS.CURRENT_TRACK, store.currentTrack.uuid);
-    }
-  }, [store.currentTrack]);
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.PROGRESS, progress.toString());
-  }, [progress]);
-
-  // Set up audio event listeners
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-
+    // 设置音频事件监听器
     const handleTimeUpdate = () => {
-      setProgress(audio.currentTime);
+      const currentTime = audio.currentTime;
+      setProgress(currentTime);
+      
+      // 每当播放进度更新时，保存到数据库
+      if (store.currentTrack?.uuid) {
+        db.podcasts.where('uuid').equals(store.currentTrack.uuid).modify({
+          progress: currentTime
+        });
+      }
     };
 
     const handleLoadedMetadata = () => {
@@ -109,6 +101,12 @@ export const useAudioPlayer = () => {
     };
 
     const handleEnded = () => {
+      // 播放结束时清除进度
+      if (store.currentTrack?.uuid) {
+        db.podcasts.where('uuid').equals(store.currentTrack.uuid).modify({
+          progress: 0
+        });
+      }
       store.playNext();
     };
 
@@ -121,7 +119,15 @@ export const useAudioPlayer = () => {
       audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
       audio.removeEventListener("ended", handleEnded);
     };
-  }, [store.playNext]);
+  }, [store.currentTrack, store.podcastPlayingStatus]);
+
+  // Save volume to localStorage
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.VOLUME, volume.toString());
+    if (audioRef.current) {
+      audioRef.current.volume = volume;
+    }
+  }, [volume]);
 
   const togglePlay = () => {
     store.updatePodcastPlayingStatus(!store.podcastPlayingStatus);
@@ -131,6 +137,13 @@ export const useAudioPlayer = () => {
     if (audioRef.current) {
       audioRef.current.currentTime = time;
       setProgress(time);
+      
+      // 保存新的播放进度
+      if (store.currentTrack?.uuid) {
+        db.podcasts.where('uuid').equals(store.currentTrack.uuid).modify({
+          progress: time
+        });
+      }
     }
   };
 
