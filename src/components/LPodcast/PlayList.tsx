@@ -115,7 +115,6 @@ export const PlayList: React.FC<PlayListProps> = ({
               className="w-full group relative"
             >
               <Flex
-                align="center"
                 gap="3"
                 className={clsx(
                   "playlist-item w-full px-2 py-2 cursor-pointer rounded-md",
@@ -173,25 +172,25 @@ export const PlayList: React.FC<PlayListProps> = ({
                   </AnimatePresence>
                 </Box>
 
-                <Flex direction="column" className="flex-1 min-w-0 max-w-[calc(100%-80px)]">
+                <Flex direction="column" gap="1" className="flex-1 min-w-0 max-w-[calc(100%-70px)] min-h-0 py-1">
                   <Text
                     size="2"
                     className={clsx(
-                      "playlist-text truncate",
-                      track.uuid === currentTrack?.uuid ? "text-accent-12 font-medium" : "text-gray-11"
+                      "playlist-text truncate font-medium",
+                      track.uuid === currentTrack?.uuid ? "text-accent-12 " : "text-gray-11"
                     )}
                   >
                     {track.title}
                   </Text>
-                  {track.author && (
+                  {(track.author || track.feed_title) && (
                     <Text
                       size="1"
                       className={clsx(
                         "playlist-subtext truncate",
-                        track.uuid === currentTrack?.uuid ? "text-accent-11" : "text-gray-10"
+                        track.uuid === currentTrack?.uuid ? "text-accent-10" : "text-gray-9"
                       )}
                     >
-                      {track.author}
+                      {track.author || track.feed_title}
                     </Text>
                   )}
                 </Flex>
