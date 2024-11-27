@@ -40,7 +40,6 @@ export const LPodcast: React.FC<LPodcastProps> = ({ visible = true }) => {
   const [isMini, setIsMini] = useState(true);
   const bearStore = useBearStore();
   const { currentTrack, setCurrentTrack, setTracks, podcastPlayingStatus } = bearStore;
-  console.log("🚀 ~ file: index.tsx:41 ~ currentTrack:", currentTrack);
 
   // 获取所有播客数据
   const podcasts = useLiveQuery(() => db.podcasts.orderBy("add_date").reverse().toArray());
@@ -54,7 +53,9 @@ export const LPodcast: React.FC<LPodcastProps> = ({ visible = true }) => {
             title: podcast.title,
             url: podcast.mediaURL,
             thumbnail: podcast.thumbnail,
-            author: podcast.feed_title,
+            author: podcast.author,
+            feed_title: podcast.feed_title,
+            feed_logo: podcast.feed_logo,
           }))
         : [],
     [podcasts]
