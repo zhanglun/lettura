@@ -66,6 +66,7 @@ export interface ArticleResItem {
   uuid: string;
   feed_uuid: string;
   feed_title: string;
+  feed_logo?: string;
   feed_url: string;
   title: string;
   link: string;

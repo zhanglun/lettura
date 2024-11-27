@@ -1,16 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
-import clsx from "clsx";
-import styles from "@/components/ArticleView/view.module.scss";
-import Dayjs from "dayjs";
-import { getChannelFavicon } from "@/helpers/parseXML";
-import { useBearStore } from "@/stores";
+import React, { useEffect, useMemo, useState } from "react";
+import { getFeedLogo } from "@/helpers/parseXML";
 import * as dataAgent from "@/helpers/dataAgent";
 import { open } from "@tauri-apps/api/shell";
-import DOMPurify from 'dompurify';
+import DOMPurify from "dompurify";
 import { ArticleResItem } from "@/db";
 import { YoutubeAdapter } from "./adapter/Youtube";
 import { PodcastAdapter } from "./adapter/Podcast";
-import { Avatar, Heading, Separator } from "@radix-ui/themes";
 import { CommonAdapter } from "./adapter/Common";
 
 function validateFeed(article: ArticleResItem, medias: any) {
@@ -41,11 +36,9 @@ export interface ArticleDetailProps {
 
 export const ArticleDetail = (props: ArticleDetailProps) => {
   const { article } = props;
-  const store = useBearStore((state) => ({
-    feed: state.feed,
-  }));
-  const { pub_date, feed_url } = article;
-  const ico = getChannelFavicon(feed_url);
+  const logo = useMemo(() => {
+    return article.feed_logo || getFeedLogo(article.feed_url);
+  }, [article]);
   const [pageContent, setPageContent] = useState("");
   const [medias, setMedias] = useState([]);
   const controller = new AbortController();
@@ -79,13 +72,21 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
 
   function renderMain() {
     const { isCommon, isYoutube, isPodcast } = validateFeed(article, medias || []);
+    console.log("🚀 ~ file: Detail.tsx:75 ~ renderMain ~ isPodcast:", isPodcast);
 
     if (isYoutube) {
       return <YoutubeAdapter article={article} content={pageContent} medias={medias} />;
     } else if (isPodcast) {
       return <PodcastAdapter article={article} content={pageContent} medias={medias} />;
     } else {
-      return <CommonAdapter content={pageContent} />;
+      return (
+        <CommonAdapter
+          article={article}
+          content={pageContent}
+          feedLogo={logo}
+          delegateContentClick={delegateContentClick}
+        />
+      );
     }
   }
 
@@ -143,35 +144,5 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
     };
   }, [article]);
 
-  return (
-    <div className="m-auto pt-1 pb-20 px-4 max-w-[calc(var(--reading-editable-line-width)_*_1px)]">
-      <div className="pb-4">
-        <Heading className="mt-6 mb-5" size="8">
-          {article.title}
-        </Heading>
-        <div className="flex items-center gap-2 text-sm sm:flex-wrap">
-          <div className="flex items-center gap-2 rounded-full bg-[var(--gray-4)] py-0.5 pl-0.5 pr-3">
-            <Avatar
-              radius="full"
-              className="w-6 h-6"
-              src={store.feed?.logo || ico}
-              fallback={article.feed_title?.slice(0, 1)}
-            ></Avatar>
-            <span className="text-[var(--gray-12)]">{article.feed_title}</span>
-          </div>
-          <span>{Dayjs(new Date(pub_date || new Date())).format("YYYY-MM-DD HH:mm")}</span>
-          {article.author && <span className={clsx(styles.author)}>· {article.author}</span>}
-        </div>
-      </div>
-      <Separator size="4" />
-      <div className="m-auto pt-1 mt-6" onClick={delegateContentClick}>
-        {article.image && (
-          <div className="w-full my-4  text-center">
-            <img src={article.image} alt="" className="bg-accent" />
-          </div>
-        )}
-        {renderMain()}
-      </div>
-    </div>
-  );
+  return renderMain();
 };

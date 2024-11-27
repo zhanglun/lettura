@@ -63,6 +63,8 @@ pub struct ArticleDetailResult {
   pub create_date: String,
   #[diesel(sql_type = Integer)]
   pub read_status: i32,
+  #[diesel(sql_type = Text)]
+  pub media_object: String,
   #[diesel(sql_type = Integer)]
   pub starred: i32,
 }
@@ -79,6 +81,8 @@ pub struct ArticleQueryItem {
   pub feed_title: String,
   #[diesel(sql_type = Text)]
   pub feed_url: String,
+  #[diesel(sql_type = Text)]
+  pub feed_logo: String,
   #[diesel(sql_type = Text)]
   pub link: String,
   #[diesel(sql_type = Text)]
@@ -156,6 +160,7 @@ impl Article {
               A.feed_uuid,
               C.title as feed_title,
               C.link as feed_url,
+              C.logo as feed_logo,
               A.link,
               A.title,
               A.feed_url,
@@ -166,9 +171,9 @@ impl Article {
               A.read_status,
               A.starred
             FROM
-              feeds as C
-            LEFT JOIN
               articles as A
+            LEFT JOIN
+              feeds as C
             ON C.uuid = A.feed_uuid
             WHERE C.uuid in ({}) AND A.uuid IS NOT NULL",
         params
@@ -185,6 +190,7 @@ impl Article {
           A.feed_uuid,
           C.title as feed_title,
           C.link as feed_url,
+          C.logo as feed_logo,
           A.link,
           A.title,
           A.feed_url,
@@ -195,9 +201,9 @@ impl Article {
           A.read_status,
           A.starred
         FROM
-          feeds as C
-        LEFT JOIN
           articles as A
+        LEFT JOIN
+          feeds as C
         ON C.uuid = A.feed_uuid
         WHERE DATE(A.create_date) = DATE('now')",
       );
@@ -209,6 +215,7 @@ impl Article {
           A.feed_uuid,
           C.title as feed_title,
           C.link as feed_url,
+          C.logo as feed_logo,
           A.link,
           A.title,
           A.feed_url,
@@ -219,9 +226,9 @@ impl Article {
           A.read_status,
           A.starred
         FROM
-          feeds as C
-        LEFT JOIN
           articles as A
+        LEFT JOIN
+          feeds as C
         ON C.uuid = A.feed_uuid
         WHERE A.starred = 1
         ",
@@ -234,6 +241,7 @@ impl Article {
             A.feed_uuid,
             C.title as feed_title,
             C.link as feed_url,
+            C.logo as feed_logo,
             A.link,
             A.title,
             A.feed_url,
@@ -244,9 +252,9 @@ impl Article {
             A.read_status,
             A.starred
           FROM
-            feeds as C
-          LEFT JOIN
             articles as A
+          LEFT JOIN
+            feeds as C
           ON C.uuid = A.feed_uuid ",
       );
     }
@@ -325,6 +333,7 @@ impl Article {
               A.pub_date,
               A.create_date,
               A.read_status,
+              A.media_object,
               A.starred
             FROM
               articles as A

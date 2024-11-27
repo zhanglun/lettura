@@ -1,8 +1,9 @@
-import { Button } from "@radix-ui/themes";
+import { Avatar, Button, Heading } from "@radix-ui/themes";
 import { Podcast } from "@/helpers/podcastDB";
 import { wraperWithRadix } from "../ContentRender";
 import { ArticleResItem } from "@/db";
 import { useBearStore } from "@/stores";
+import dayjs from "dayjs";
 
 export interface PodcastAdapter {
   article: ArticleResItem;
@@ -61,27 +62,44 @@ export function PodcastAdapter(props: PodcastAdapter) {
       });
     }
 
-    function renderThumbnails() {
-      return thumbnails.map((t: any) => {
-        if (t.image && t.image.uri) {
-          return <img src={t.image.uri} alt={t.image.uri} />;
-        }
-      });
-    }
-
     return (
       <div>
-        <div>{renderThumbnails()}</div>
         <div>{renderContent()}</div>
         <div>{wraperWithRadix(description?.content || "")}</div>
       </div>
     );
   }
 
+  function createPodcastPageHeader() {
+    const { description, content, thumbnails } = medias[0];
+    const t = thumbnails[0];
+
+    return (
+      <div className="flex gap-4 flex-col items-center mb-4">
+        <div className="w-[130px] rounded-lg overflow-hidden">
+          <img src={t.image.uri} alt={t.image.uri} className="object-cover" />
+        </div>
+        <Heading size="7">{article.title}</Heading>
+        <div>
+          <div className="flex gap-3 items-center">
+            <Avatar radius="medium" size="1" src={article.feed_logo} fallback={article.feed_title?.slice(0, 1)} />
+            <span className="font-semibold text-[var(--accent-12)]">
+              {article.feed_title} {article.author}
+            </span>
+            <span className="text-sm text-[var(--gray-12)]">{dayjs(article.pub_date).format("YYYY-MM-DD HH:mm")}</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div>
+    <div className="w-[500px] m-auto py-20">
+      {medias[0] && createPodcastPageHeader()}
+      <div className="flex items-center justify-between mb-4">
+        {medias && medias.length > 0 && <div>{renderMediaBox(medias[0])}</div>}
+      </div>
       <div className="mb-4">{wraperWithRadix(content)}</div>
-      {medias && medias.length > 0 && <div>{medias.map(renderMediaBox)}</div>}
     </div>
   );
 }
