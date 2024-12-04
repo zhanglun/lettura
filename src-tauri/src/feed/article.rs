@@ -118,8 +118,30 @@ impl Article {
   /// get articles
   pub fn get_article(filter: ArticleFilter) -> ArticleQueryResult {
     let mut connection = establish_connection();
-    let mut query = diesel::sql_query("").into_boxed();
+    let mut query = diesel::sql_query("
+    SELECT
+      A.id, A.uuid,
+      A.feed_uuid,
+      C.title as feed_title,
+      C.link as feed_url,
+      C.logo as feed_logo,
+      A.link,
+      A.title,
+      A.feed_url,
+      A.description as description,
+      A.author,
+      A.pub_date,
+      A.create_date,
+      A.read_status,
+      A.starred
+    FROM
+      articles as A
+    LEFT JOIN
+      feeds as C
+    ON C.uuid = A.feed_uuid").into_boxed();
     let mut limit = 12;
+    let mut conditions = vec![];
+    let mut params = vec![];
 
     if let Some(channel_uuid) = filter.feed_uuid {
       let mut relations = vec![];
@@ -152,127 +174,157 @@ impl Article {
         channel_uuids.push(channel_uuid.clone());
       }
 
-      let params = format!("?{}", ", ?".repeat(channel_uuids.len() - 1));
-      query = query.sql(format!(
-        "
-            SELECT
-              A.id, A.uuid,
-              A.feed_uuid,
-              C.title as feed_title,
-              C.link as feed_url,
-              C.logo as feed_logo,
-              A.link,
-              A.title,
-              A.feed_url,
-              A.description as description,
-              A.author,
-              A.pub_date,
-              A.create_date,
-              A.read_status,
-              A.starred
-            FROM
-              articles as A
-            LEFT JOIN
-              feeds as C
-            ON C.uuid = A.feed_uuid
-            WHERE C.uuid in ({}) AND A.uuid IS NOT NULL",
-        params
-      ));
+      let in_params = format!("?{}", ", ?".repeat(channel_uuids.len() - 1));
+      conditions.push(format!("C.uuid in ({}) AND A.uuid IS NOT NULL", in_params));
+      // query = query.sql(format!(
+      //   "
+      //       SELECT
+      //         A.id, A.uuid,
+      //         A.feed_uuid,
+      //         C.title as feed_title,
+      //         C.link as feed_url,
+      //         C.logo as feed_logo,
+      //         A.link,
+      //         A.title,
+      //         A.feed_url,
+      //         A.description as description,
+      //         A.author,
+      //         A.pub_date,
+      //         A.create_date,
+      //         A.read_status,
+      //         A.starred
+      //       FROM
+      //         articles as A
+      //       LEFT JOIN
+      //         feeds as C
+      //       ON C.uuid = A.feed_uuid
+      //       WHERE C.uuid in ({}) AND A.uuid IS NOT NULL",
+      //   params
+      // ));
+
+      // for uuid in channel_uuids {
+      //   query = query.bind::<Text, _>(uuid);
+      // }
 
       for uuid in channel_uuids {
-        query = query.bind::<Text, _>(uuid);
-      }
-    } else if let Some(_is_today) = filter.is_today {
-      query = query.sql(
-        "
-        SELECT
-          A.id, A.uuid,
-          A.feed_uuid,
-          C.title as feed_title,
-          C.link as feed_url,
-          C.logo as feed_logo,
-          A.link,
-          A.title,
-          A.feed_url,
-          A.description as description,
-          A.author,
-          A.pub_date,
-          A.create_date,
-          A.read_status,
-          A.starred
-        FROM
-          articles as A
-        LEFT JOIN
-          feeds as C
-        ON C.uuid = A.feed_uuid
-        WHERE DATE(A.create_date) = DATE('now')",
-      );
-    } else if let Some(_is_starred) = filter.is_starred {
-      query = query.sql(
-        "
-        SELECT
-          A.id, A.uuid,
-          A.feed_uuid,
-          C.title as feed_title,
-          C.link as feed_url,
-          C.logo as feed_logo,
-          A.link,
-          A.title,
-          A.feed_url,
-          A.description as description,
-          A.author,
-          A.pub_date,
-          A.create_date,
-          A.read_status,
-          A.starred
-        FROM
-          articles as A
-        LEFT JOIN
-          feeds as C
-        ON C.uuid = A.feed_uuid
-        WHERE A.starred = 1
-        ",
-      );
-    } else {
-      query = query.sql(
-        "
-          SELECT
-            A.id, A.uuid,
-            A.feed_uuid,
-            C.title as feed_title,
-            C.link as feed_url,
-            C.logo as feed_logo,
-            A.link,
-            A.title,
-            A.feed_url,
-            A.description as description,
-            A.author,
-            A.pub_date,
-            A.create_date,
-            A.read_status,
-            A.starred
-          FROM
-            articles as A
-          LEFT JOIN
-            feeds as C
-          ON C.uuid = A.feed_uuid ",
-      );
-    }
-
-    match filter.read_status {
-      Some(0) => {
-        1;
-      }
-      Some(status) => {
-        query = query
-          .sql(" AND A.read_status = ?")
-          .bind::<Integer, _>(status);
-      }
-      None => {
-        1;
+        params.push(uuid);
       }
     }
 
+    if let Some(_is_today) = filter.is_today {
+      conditions.push("DATE(A.create_date) = DATE('now')".to_string());
+    }
+
+    if let Some(is_starred) = filter.is_starred {
+      conditions.push("A.starred = ?".to_string());
+      params.push(is_starred.to_string());
+    }
+
+    if let Some(read_status) = filter.read_status {
+      if read_status > 0 {
+        conditions.push("A.read_status = ?".to_string());
+        params.push(read_status.to_string());
+      }
+    }
+
+    if conditions.len() > 0 {
+      query = query.sql(format!(" WHERE {}", conditions.join(" AND ")));
+    }
+
+    // else if let Some(_is_today) = filter.is_today {
+    //   query = query.sql(
+    //     "
+    //     SELECT
+    //       A.id, A.uuid,
+    //       A.feed_uuid,
+    //       C.title as feed_title,
+    //       C.link as feed_url,
+    //       C.logo as feed_logo,
+    //       A.link,
+    //       A.title,
+    //       A.feed_url,
+    //       A.description as description,
+    //       A.author,
+    //       A.pub_date,
+    //       A.create_date,
+    //       A.read_status,
+    //       A.starred
+    //     FROM
+    //       articles as A
+    //     LEFT JOIN
+    //       feeds as C
+    //     ON C.uuid = A.feed_uuid
+    //     WHERE DATE(A.create_date) = DATE('now')",
+    //   );
+    // } else if let Some(_is_starred) = filter.is_starred {
+    //   query = query.sql(
+    //     "
+    //     SELECT
+    //       A.id, A.uuid,
+    //       A.feed_uuid,
+    //       C.title as feed_title,
+    //       C.link as feed_url,
+    //       C.logo as feed_logo,
+    //       A.link,
+    //       A.title,
+    //       A.feed_url,
+    //       A.description as description,
+    //       A.author,
+    //       A.pub_date,
+    //       A.create_date,
+    //       A.read_status,
+    //       A.starred
+    //     FROM
+    //       articles as A
+    //     LEFT JOIN
+    //       feeds as C
+    //     ON C.uuid = A.feed_uuid
+    //     WHERE A.starred = 1
+    //     ",
+    //   );
+    // } else {
+    //   query = query.sql(
+    //     "
+    //       SELECT
+    //         A.id, A.uuid,
+    //         A.feed_uuid,
+    //         C.title as feed_title,
+    //         C.link as feed_url,
+    //         C.logo as feed_logo,
+    //         A.link,
+    //         A.title,
+    //         A.feed_url,
+    //         A.description as description,
+    //         A.author,
+    //         A.pub_date,
+    //         A.create_date,
+    //         A.read_status,
+    //         A.starred
+    //       FROM
+    //         articles as A
+    //       LEFT JOIN
+    //         feeds as C
+    //       ON C.uuid = A.feed_uuid ",
+    //   );
+    // }
+
+    // match filter.read_status {
+    //   Some(0) => {
+    //     1;
+    //   }
+    //   Some(status) => {
+    //     query = query
+    //       .sql(" WHERE A.read_status = ?")
+    //       .bind::<Integer, _>(status);
+    //   }
+    //   None => {
+    //     1;
+    //   }
+    // }
+
+    for param in params {
+      query = query.bind::<Text, _>(param);
+    }
     query = query.sql(" ORDER BY A.pub_date DESC ");
 
     if let Some(l) = filter.limit {
@@ -283,6 +335,8 @@ impl Article {
     if let Some(c) = filter.cursor {
       query = query.sql(" OFFSET ?").bind::<Integer, _>((c - 1) * limit);
     }
+
+    log::info!("query: {:?}", diesel::debug_query(&query).to_string());
 
     let result = query
       .load::<ArticleQueryItem>(&mut connection)

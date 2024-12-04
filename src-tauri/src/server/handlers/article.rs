@@ -23,7 +23,6 @@ pub struct StarParam {
 
 #[post("/api/articles/{uuid}/read")]
 pub async fn handle_update_article_read_status(uuid: web::Path<String>, body: web::Json<ReadParam>) -> Result<impl Responder> {
-  println!("%c Line:23 🍞 body {:?}", body);
   let body = body.into_inner();
   let res = feed::article::Article::update_article_read_status(uuid.to_string(), body.read_status);
 
@@ -32,7 +31,6 @@ pub async fn handle_update_article_read_status(uuid: web::Path<String>, body: we
 
 #[post("/api/articles/{uuid}/star")]
 pub async fn handle_update_article_star_status(uuid: web::Path<String>, body: web::Json<StarParam>) -> Result<impl Responder> {
-  println!("%c Line:23 🍞 body {:?}", body);
   let body = body.into_inner();
   let res = feed::article::Article::update_article_star_status(uuid.to_string(), body.starred);
 
