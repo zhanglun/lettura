@@ -1,24 +1,16 @@
-import React, {
-  ForwardedRef,
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { useImperativeHandle, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { ArticleList } from "@/components/ArticleList";
 import { useBearStore } from "@/stores";
-
-import { Filter, CheckCheck, RefreshCw, RotateCw } from "lucide-react";
+import { CheckCheck, RotateCw, Rss, Link } from "lucide-react";
 import { useArticle } from "./useArticle";
 import { loadFeed } from "@/hooks/useLoadFeed";
 import { ArticleReadStatus } from "@/typing";
 import { useHotkeys } from "react-hotkeys-hook";
 import { throttle } from "lodash";
 import { ArticleResItem } from "@/db";
-import { Button, IconButton, Select, Tooltip } from "@radix-ui/themes";
+import { Avatar, HoverCard, IconButton, Select, Tooltip } from "@radix-ui/themes";
+import { getFeedLogo } from "@/helpers/parseXML";
 
 export interface ArticleColRefObject {
   goNext: () => void;
@@ -74,6 +66,8 @@ export const ArticleCol = React.memo(
         );
       }
     };
+
+    const handleUnsubscribeFeed = () => {};
 
     const markAllRead = () => {
       return store.markArticleListAsRead(isToday, isAll).then(() => {
@@ -163,9 +157,6 @@ export const ArticleCol = React.memo(
         nextItem = articles[0];
       }
 
-      console.log("%c Line:162 🥟 articles", "color:#4fff4B", articles);
-      console.log("%c Line:162 🍔 nextItem", "color:#4fff4B", nextItem);
-
       store.updateArticleStatus({ ...nextItem }, ArticleReadStatus.READ);
 
       nextItem.read_status = ArticleReadStatus.READ;
@@ -191,6 +182,38 @@ export const ArticleCol = React.memo(
       }
     }, 300);
 
+    function renderLabel() {
+      if (store.feed && store.feed.item_type === "channel") {
+        const ico = store.feed.logo || getFeedLogo(store.feed.link);
+        return (
+          <HoverCard.Root>
+            <HoverCard.Trigger>
+              <span className="cursor-default">{store.viewMeta ? store.viewMeta.title : ""}</span>
+            </HoverCard.Trigger>
+            <HoverCard.Content size="1" className="p-3 w-[320px] flex gap-3 flex-row">
+              <Avatar size="4" src={ico} fallback={store.feed.title.slice(0, 1)}></Avatar>
+              <div className="flex-1 flex flex-col gap-1">
+                <div className="text-sm font-bold">{store.viewMeta ? store.viewMeta.title : ""}</div>
+                <div className="text-xs text-[var(--gray-11)] break-all">{store.feed.description}</div>
+                <div className="flex gap-4 mt-2">
+                  <IconButton size="2" variant="ghost" color="gray">
+                    <Link size={14} onClick={() => window.open(store.feed?.link, "_blank")} />
+                    <span className="ml-1 text-xs">Home</span>
+                  </IconButton>
+                  <IconButton size="2" variant="ghost" color="gray">
+                    <Rss size={14} onClick={() => window.open(store.feed?.feed_url, "_blank")} />
+                    <span className="ml-1 text-xs">Feed</span>
+                  </IconButton>
+                </div>
+              </div>
+            </HoverCard.Content>
+          </HoverCard.Root>
+        );
+      } else {
+        return <span className="cursor-default">{store.viewMeta ? store.viewMeta.title : ""}</span>;
+      }
+    }
+
     useImperativeHandle(listForwarded, () => {
       return {
         goNext,
@@ -206,9 +229,9 @@ export const ArticleCol = React.memo(
         <div className="h-[var(--app-toolbar-height)] grid grid-cols-[auto_1fr] items-center justify-between border-b">
           <div
             className="
-            flex
-            items-center
-            px-3
+            flex-shrink-0
+            flex-grow-0
+            pl-3
             text-base
             font-bold
             w-full
@@ -218,9 +241,9 @@ export const ArticleCol = React.memo(
             text-article-headline
           "
           >
-            {store.viewMeta ? store.viewMeta.title : ""}
+            {renderLabel()}
           </div>
-          <div className={"flex items-center justify-end px-2 space-x-1"}>
+          <div className={"flex items-center justify-end px-2 gap-x-3"}>
             <Select.Root defaultValue={`${store.currentFilter.id}`} onValueChange={changeFilter} size="1">
               <Select.Trigger variant="surface" color="gray" className="hover:bg-[var(--accent-a3)]" />
               <Select.Content>
@@ -240,7 +263,14 @@ export const ArticleCol = React.memo(
             </Tooltip>
             {!!!isStarred && (
               <Tooltip content="Reload feed">
-                <IconButton onClick={handleRefresh} size="2" variant="ghost" color="gray" className="text-[var(--gray-12)]" loading={isSyncing}>
+                <IconButton
+                  onClick={handleRefresh}
+                  size="2"
+                  variant="ghost"
+                  color="gray"
+                  className="text-[var(--gray-12)]"
+                  loading={isSyncing}
+                >
                   <RotateCw size={14} />
                 </IconButton>
               </Tooltip>

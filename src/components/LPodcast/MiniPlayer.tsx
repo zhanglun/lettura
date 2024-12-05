@@ -97,7 +97,9 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({ currentTrack, isPlaying,
 
         <Flex direction="column" className="flex-1 min-w-0 max-w-[calc(100%-80px)]">
           <div className="text-sm font-medium flex-1 truncate">{currentTrack?.title || "No track selected"}</div>
-          <div className="text-xs flex-1 truncate">{currentTrack?.author || "Unknown artist"}</div>
+          <div className="text-xs flex-1 truncate">
+            {currentTrack?.author || currentTrack?.feed_title || "Unknown artist"}
+          </div>
         </Flex>
 
         <PlayListPopover currentTrack={currentTrack} isPlaying={isPlaying} />

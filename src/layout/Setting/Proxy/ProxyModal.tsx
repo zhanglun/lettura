@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { AddProxyRuleModal } from "./AddProxyRuleModal";
 import { FeedResItem } from "@/db";
 import { CrossCircledIcon } from "@radix-ui/react-icons";
-import { getChannelFavicon } from "@/helpers/parseXML";
+import { getFeedLogo } from "@/helpers/parseXML";
 import * as dataAgent from "@/helpers/dataAgent";
 import { CrossIcon, X } from "lucide-react";
 

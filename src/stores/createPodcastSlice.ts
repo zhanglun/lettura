@@ -91,6 +91,11 @@ export const createPodcastSlice: StateCreator<PodcastSlice, [], [], PodcastSlice
       uuid: record.uuid,
       title: record.title,
       url: record.mediaURL,
+      thumbnail: record.thumbnail,
+      author: record.author,
+      // duration: record.duration,
+      feed_title: record.feed_title,
+      feed_logo: record.feed_logo,
     };
 
     // 更新状态
@@ -123,7 +128,6 @@ export const createPodcastSlice: StateCreator<PodcastSlice, [], [], PodcastSlice
   },
 
   async removeTrack(track: AudioTrack) {
-    console.log("🚀 ~ file: createPodcastSlice.ts:126 ~ removeTrack ~ track:", track);
     const { tracks, setTracks, currentTrack, setCurrentTrack, updatePodcastPlayingStatus, setCurrentPlayingIndex } =
       get();
 

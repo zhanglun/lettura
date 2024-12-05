@@ -28,6 +28,8 @@ export interface AudioTrack {
   thumbnail?: string;
   author?: string;
   duration?: number;
+  feed_title: string;
+  feed_logo: string;
 }
 
 interface LPodcastProps {
@@ -40,9 +42,7 @@ export const LPodcast: React.FC<LPodcastProps> = ({ visible = true }) => {
   const { currentTrack, setCurrentTrack, setTracks, podcastPlayingStatus } = bearStore;
 
   // 获取所有播客数据
-  const podcasts = useLiveQuery(() =>
-    db.podcasts.orderBy("add_date").reverse().toArray()
-  );
+  const podcasts = useLiveQuery(() => db.podcasts.orderBy("add_date").reverse().toArray());
 
   // 转换播客数据为音频轨道
   const tracks = React.useMemo(
@@ -53,7 +53,9 @@ export const LPodcast: React.FC<LPodcastProps> = ({ visible = true }) => {
             title: podcast.title,
             url: podcast.mediaURL,
             thumbnail: podcast.thumbnail,
-            author: podcast.feed_title,
+            author: podcast.author,
+            feed_title: podcast.feed_title,
+            feed_logo: podcast.feed_logo,
           }))
         : [],
     [podcasts]
@@ -143,7 +145,7 @@ export const LPodcast: React.FC<LPodcastProps> = ({ visible = true }) => {
                       {currentTrack?.title || "No track selected"}
                     </Text>
                     <Text size="1" color="gray" className="truncate">
-                      {currentTrack?.author || "Unknown artist"}
+                      {currentTrack?.author || currentTrack?.feed_title || "Unknown artist"}
                     </Text>
                   </Flex>
                 </Flex>

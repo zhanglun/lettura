@@ -11,7 +11,7 @@ import {
   CommandSeparator,
 } from "@/components/ui/command";
 import { FeedResItem } from "@/db";
-import { getChannelFavicon } from "@/helpers/parseXML";
+import { getFeedLogo } from "@/helpers/parseXML";
 
 export interface AddProxyRuleModalProps {
   feedList: FeedResItem[];
@@ -29,7 +29,7 @@ export const AddProxyRuleModal = (props: AddProxyRuleModalProps) => {
 
   useEffect(() => {
     setSelectValues(value);
-  }, [value])
+  }, [value]);
 
   return (
     <Popover.Root>
@@ -64,7 +64,7 @@ export const AddProxyRuleModal = (props: AddProxyRuleModalProps) => {
                   >
                     <Checkbox checked={isSelected} className="mr-2" />
                     <Avatar
-                      src={getChannelFavicon(option.link)}
+                      src={getFeedLogo(option.link)}
                       fallback={option.title.slice(0, 1)}
                       alt={option.title}
                       size="1"
