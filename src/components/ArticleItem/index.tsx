@@ -44,7 +44,7 @@ export const ArticleItem = React.forwardRef((props: { article: ArticleResItem },
   return (
     <li
       className={clsx(
-        "list-none rounded-md p-2 py-2 pl-5 grid gap-1 relative select-none",
+        "list-none rounded-md p-2 py-2 pl-5 flex flex-col gap-1 relative select-none",
         "group hover:bg-[var(--accent-a3)] hover:cursor-pointer",
         {
           "text-[var(--gray-10)]": readStatus === ArticleReadStatus.READ,
@@ -61,7 +61,7 @@ export const ArticleItem = React.forwardRef((props: { article: ArticleResItem },
       <div className="font-semibold text-sm break-all">{article.title}</div>
       <div className="text-xs line-clamp-2 break-all">{(article.description || "").replace(/<[^<>]+>/g, "")}</div>
       <div className="flex justify-between items-center text-xs mt-2">
-        <div className="flex items-center gap-1.5">
+        <div className="flex-1 overflow-hidden flex items-center gap-1.5">
           <Avatar
             size="1"
             src={store.feed?.logo || getFeedLogo(article.feed_url)}
@@ -69,11 +69,11 @@ export const ArticleItem = React.forwardRef((props: { article: ArticleResItem },
             alt={article.feed_title}
             className="rounded w-4 h-4"
           />
-          <span className="max-w-[94px] overflow-hidden text-ellipsis mr-1 whitespace-nowrap">
+          <div className="overflow-hidden text-ellipsis mr-1 whitespace-nowrap">
             {article.author || article.feed_title}
-          </span>
+          </div>
         </div>
-        <div className="whitespace-nowrap">
+        <div className="whitespace-nowrap flex-[0_0_auto] overflow-hidden">
           {formatDistanceToNow(parseISO(article.pub_date || article.create_date), {
             includeSeconds: true,
             addSuffix: true,
