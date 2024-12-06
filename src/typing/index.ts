@@ -13,5 +13,4 @@ export enum SettingTabKey {
   PROXY = "proxy",
   SHORTCUTS = "shortcuts",
   IMPORTANDEXPORT = "import_and_export",
-  ABOUT = "about",
 }

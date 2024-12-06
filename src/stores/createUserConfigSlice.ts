@@ -21,7 +21,9 @@ export interface UserConfigSlice {
 
   settingDialogStatus: boolean;
   updateSettingDialogStatus: (status: boolean) => void;
-  settingActiveTab: string;
+
+  aboutDialogStatus: boolean;
+  updateAboutDialogStatus: (status: boolean) => void;
 }
 
 export const createUserConfigSlice: StateCreator<UserConfigSlice> = (set, get) => ({
@@ -86,10 +88,16 @@ export const createUserConfigSlice: StateCreator<UserConfigSlice> = (set, get) =
   },
 
   settingDialogStatus: false,
-  settingActiveTab: "general",
   updateSettingDialogStatus: (status: boolean) => {
     set(() => ({
       settingDialogStatus: status,
+    }));
+  },
+
+  aboutDialogStatus: false,
+  updateAboutDialogStatus: (status: boolean) => {
+    set(() => ({
+      aboutDialogStatus: status,
     }));
   },
 });

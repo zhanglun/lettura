@@ -6,10 +6,9 @@ import { Appearance } from "./Appearance";
 import { Shortcut } from "./ShortCut";
 import { ProxySetting } from "./Proxy";
 import { ImportAndExport } from "./ImportAndExport";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import { useBearStore } from "@/stores";
-import { About } from "./About";
 import { SettingTabKey } from "@/typing";
 
 interface SettingPageProps {
@@ -22,7 +21,7 @@ export function SettingPage({ children }: SettingPageProps) {
     updateSettingDialogStatus: state.updateSettingDialogStatus,
   }));
 
-  const [activeTab, setActiveTab] = useState(SettingTabKey.GENERAL);
+  const [activeTab, setActiveTab] = useState<SettingTabKey>(SettingTabKey.GENERAL);
 
   useHotkeys("s", () => {
     store.updateSettingDialogStatus(true);
@@ -30,6 +29,10 @@ export function SettingPage({ children }: SettingPageProps) {
 
   const handleStatusChange = (status: boolean) => {
     store.updateSettingDialogStatus(status);
+
+    if (!status) {
+      setActiveTab(SettingTabKey.GENERAL);
+    }
   };
 
   return (
@@ -114,17 +117,6 @@ export function SettingPage({ children }: SettingPageProps) {
                 <Waypoints className="w-4 h-4" />
                 Import & Export
               </button>
-              <button
-                onClick={() => setActiveTab(SettingTabKey.ABOUT)}
-                className={`w-full px-5 py-2.5 flex items-center gap-3 text-sm transition-colors ${
-                  activeTab === SettingTabKey.ABOUT
-                    ? "bg-[#f3f4f6] dark:bg-[#2d2d2d] text-[#0f172a] dark:text-white"
-                    : "text-[#6b7280] hover:bg-[#f9fafb] dark:hover:bg-[#1d1d1d]"
-                }`}
-              >
-                <Waypoints className="w-4 h-4" />
-                About
-              </button>
             </nav>
           </div>
           <div className="flex-1 p-6 overflow-auto">
@@ -133,7 +125,6 @@ export function SettingPage({ children }: SettingPageProps) {
             {activeTab === SettingTabKey.PROXY && <ProxySetting />}
             {activeTab === SettingTabKey.SHORTCUTS && <Shortcut />}
             {activeTab === SettingTabKey.IMPORTANDEXPORT && <ImportAndExport />}
-            {activeTab === SettingTabKey.ABOUT && <About />}
           </div>
         </div>
       </Dialog.Content>

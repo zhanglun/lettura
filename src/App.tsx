@@ -4,17 +4,24 @@ import { emit, listen } from "@tauri-apps/api/event";
 import { useBearStore } from "@/stores";
 import { LocalPage } from "./layout/Local";
 import { Theme } from "@radix-ui/themes";
-// import { Toaster } from "sonner";
+import { SettingTabKey } from "./typing";
+import { DialogAboutApp } from "./components/About";
 
 function App() {
   const store = useBearStore((state) => ({
     userConfig: state.userConfig,
     getUserConfig: state.getUserConfig,
     updateSettingDialogStatus: state.updateSettingDialogStatus,
+    updateAboutDialogStatus: state.updateAboutDialogStatus,
   }));
 
   useEffect(() => {
-    listen("go-to-settings", () => {
+    listen("about_lettura", (data) => {
+      console.log("🚀 ~ file: App.tsx:20 ~ listen ~ data:", data);
+      store.updateAboutDialogStatus(true);
+    });
+
+    listen("go_to_settings", () => {
       store.updateSettingDialogStatus(true);
     });
 
@@ -66,6 +73,7 @@ function App() {
       <div className="h-full max-h-full ">
         <LocalPage />
       </div>
+      <DialogAboutApp />
     </Theme>
   );
 }
