@@ -1,6 +1,5 @@
 import { Cog, Database, Keyboard, Palette, Rss, Settings, Waypoints } from "lucide-react";
 import { Dialog, Heading, IconButton, Kbd, Tooltip } from "@radix-ui/themes";
-import { useModal } from "@/components/Modal/useModal";
 import { useHotkeys } from "react-hotkeys-hook";
 import { General } from "./General";
 import { Appearance } from "./Appearance";
@@ -10,19 +9,20 @@ import { ImportAndExport } from "./ImportAndExport";
 import { useState } from "react";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import { useBearStore } from "@/stores";
+import { About } from "./About";
+import { SettingTabKey } from "@/typing";
 
 interface SettingPageProps {
   children: React.ReactNode;
 }
 
 export function SettingPage({ children }: SettingPageProps) {
-  // const [showStatus, , showModal, , toggleModal] = useModal();
   const store = useBearStore((state) => ({
     settingDialogStatus: state.settingDialogStatus,
     updateSettingDialogStatus: state.updateSettingDialogStatus,
   }));
 
-  const [activeTab, setActiveTab] = useState("general");
+  const [activeTab, setActiveTab] = useState(SettingTabKey.GENERAL);
 
   useHotkeys("s", () => {
     store.updateSettingDialogStatus(true);
@@ -60,9 +60,9 @@ export function SettingPage({ children }: SettingPageProps) {
             </div>
             <nav className="py-4">
               <button
-                onClick={() => setActiveTab("general")}
+                onClick={() => setActiveTab(SettingTabKey.GENERAL)}
                 className={`w-full px-5 py-2.5 flex items-center gap-3 text-sm transition-colors ${
-                  activeTab === "general"
+                  activeTab === SettingTabKey.GENERAL
                     ? "bg-[#f3f4f6] dark:bg-[#2d2d2d] text-[#0f172a] dark:text-white"
                     : "text-[#6b7280] hover:bg-[#f9fafb] dark:hover:bg-[#1d1d1d]"
                 }`}
@@ -71,9 +71,9 @@ export function SettingPage({ children }: SettingPageProps) {
                 General
               </button>
               <button
-                onClick={() => setActiveTab("appearance")}
+                onClick={() => setActiveTab(SettingTabKey.APPEARANCE)}
                 className={`w-full px-5 py-2.5 flex items-center gap-3 text-sm transition-colors ${
-                  activeTab === "appearance"
+                  activeTab === SettingTabKey.APPEARANCE
                     ? "bg-[#f3f4f6] dark:bg-[#2d2d2d] text-[#0f172a] dark:text-white"
                     : "text-[#6b7280] hover:bg-[#f9fafb] dark:hover:bg-[#1d1d1d]"
                 }`}
@@ -82,9 +82,9 @@ export function SettingPage({ children }: SettingPageProps) {
                 Appearance
               </button>
               <button
-                onClick={() => setActiveTab("proxy")}
+                onClick={() => setActiveTab(SettingTabKey.PROXY)}
                 className={`w-full px-5 py-2.5 flex items-center gap-3 text-sm transition-colors ${
-                  activeTab === "proxy"
+                  activeTab === SettingTabKey.PROXY
                     ? "bg-[#f3f4f6] dark:bg-[#2d2d2d] text-[#0f172a] dark:text-white"
                     : "text-[#6b7280] hover:bg-[#f9fafb] dark:hover:bg-[#1d1d1d]"
                 }`}
@@ -93,9 +93,9 @@ export function SettingPage({ children }: SettingPageProps) {
                 Proxy
               </button>
               <button
-                onClick={() => setActiveTab("shortcuts")}
+                onClick={() => setActiveTab(SettingTabKey.SHORTCUTS)}
                 className={`w-full px-5 py-2.5 flex items-center gap-3 text-sm transition-colors ${
-                  activeTab === "shortcuts"
+                  activeTab === SettingTabKey.SHORTCUTS
                     ? "bg-[#f3f4f6] dark:bg-[#2d2d2d] text-[#0f172a] dark:text-white"
                     : "text-[#6b7280] hover:bg-[#f9fafb] dark:hover:bg-[#1d1d1d]"
                 }`}
@@ -104,9 +104,9 @@ export function SettingPage({ children }: SettingPageProps) {
                 Shortcuts
               </button>
               <button
-                onClick={() => setActiveTab("import-export")}
+                onClick={() => setActiveTab(SettingTabKey.IMPORTANDEXPORT)}
                 className={`w-full px-5 py-2.5 flex items-center gap-3 text-sm transition-colors ${
-                  activeTab === "import-export"
+                  activeTab === SettingTabKey.IMPORTANDEXPORT
                     ? "bg-[#f3f4f6] dark:bg-[#2d2d2d] text-[#0f172a] dark:text-white"
                     : "text-[#6b7280] hover:bg-[#f9fafb] dark:hover:bg-[#1d1d1d]"
                 }`}
@@ -114,14 +114,26 @@ export function SettingPage({ children }: SettingPageProps) {
                 <Waypoints className="w-4 h-4" />
                 Import & Export
               </button>
+              <button
+                onClick={() => setActiveTab(SettingTabKey.ABOUT)}
+                className={`w-full px-5 py-2.5 flex items-center gap-3 text-sm transition-colors ${
+                  activeTab === SettingTabKey.ABOUT
+                    ? "bg-[#f3f4f6] dark:bg-[#2d2d2d] text-[#0f172a] dark:text-white"
+                    : "text-[#6b7280] hover:bg-[#f9fafb] dark:hover:bg-[#1d1d1d]"
+                }`}
+              >
+                <Waypoints className="w-4 h-4" />
+                About
+              </button>
             </nav>
           </div>
           <div className="flex-1 p-6 overflow-auto">
-            {activeTab === "general" && <General />}
-            {activeTab === "appearance" && <Appearance />}
-            {activeTab === "proxy" && <ProxySetting />}
-            {activeTab === "shortcuts" && <Shortcut />}
-            {activeTab === "import-export" && <ImportAndExport />}
+            {activeTab === SettingTabKey.GENERAL && <General />}
+            {activeTab === SettingTabKey.APPEARANCE && <Appearance />}
+            {activeTab === SettingTabKey.PROXY && <ProxySetting />}
+            {activeTab === SettingTabKey.SHORTCUTS && <Shortcut />}
+            {activeTab === SettingTabKey.IMPORTANDEXPORT && <ImportAndExport />}
+            {activeTab === SettingTabKey.ABOUT && <About />}
           </div>
         </div>
       </Dialog.Content>
