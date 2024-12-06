@@ -24,6 +24,8 @@ export interface UserConfigSlice {
 
   aboutDialogStatus: boolean;
   updateAboutDialogStatus: (status: boolean) => void;
+  appMetadata: any;
+  updateAppMetadata: (metadata: any) => void;
 }
 
 export const createUserConfigSlice: StateCreator<UserConfigSlice> = (set, get) => ({
@@ -98,6 +100,12 @@ export const createUserConfigSlice: StateCreator<UserConfigSlice> = (set, get) =
   updateAboutDialogStatus: (status: boolean) => {
     set(() => ({
       aboutDialogStatus: status,
+    }));
+  },
+  appMetadata: {},
+  updateAppMetadata: (metadata: any) => {
+    set(() => ({
+      appMetadata: metadata,
     }));
   },
 });

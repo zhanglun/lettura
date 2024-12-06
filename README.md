@@ -3,6 +3,7 @@
   <img src="./src/logo.svg" width="360px"/>
 </p>
 <h1 align="center">Lettura</h1>
+<h3 align="center">Follow your favorite content and never miss a story.</h3>
 
 Another free and open-source feed reader for macOS and Window.
 

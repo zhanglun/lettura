@@ -2,6 +2,7 @@ use std::env;
 use tauri::utils::assets::EmbeddedAssets;
 use tauri::{CustomMenuItem, Menu, MenuItem, Submenu, Context, WindowMenuEvent};
 use serde_json::json;
+use sys_info;
 
 pub struct AppMenu {
 
@@ -103,7 +104,10 @@ impl AppMenu {
             .stdout;
         let react_version = String::from_utf8_lossy(&react_version).trim().to_string();
 
-        let os = std::env::consts::OS.to_string();
+        let os = match sys_info::os_release() {
+            Ok(version) => format!("{} {}", std::env::consts::OS, version),
+            Err(_) => std::env::consts::OS.to_string(),
+        };
 
         let node_version = Command::new("node")
             .args(["-v"])

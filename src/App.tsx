@@ -4,7 +4,6 @@ import { emit, listen } from "@tauri-apps/api/event";
 import { useBearStore } from "@/stores";
 import { LocalPage } from "./layout/Local";
 import { Theme } from "@radix-ui/themes";
-import { SettingTabKey } from "./typing";
 import { DialogAboutApp } from "./components/About";
 
 function App() {
@@ -13,12 +12,17 @@ function App() {
     getUserConfig: state.getUserConfig,
     updateSettingDialogStatus: state.updateSettingDialogStatus,
     updateAboutDialogStatus: state.updateAboutDialogStatus,
+    updateAppMetadata: state.updateAppMetadata,
   }));
 
   useEffect(() => {
-    listen("about_lettura", (data) => {
-      console.log("🚀 ~ file: App.tsx:20 ~ listen ~ data:", data);
+    listen("about_lettura", ({ payload }: { payload: string }) => {
       store.updateAboutDialogStatus(true);
+      try {
+        store.updateAppMetadata(JSON.parse(payload));
+      } catch (err) {
+        console.error(err);
+      }
     });
 
     listen("go_to_settings", () => {
