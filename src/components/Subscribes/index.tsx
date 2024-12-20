@@ -54,7 +54,7 @@ const ChannelList = (): JSX.Element => {
   const [deleteFolderStatus, setDeleteFolderStatus] = useModal();
   const [editFeedStatus, setEditFeedStatus] = useModal();
   const [showStatus, setModalStatus] = useModal();
-  const [feedList, setFeedList, getSubscribes, refreshing, setRefreshing, done, setDone, startRefresh] = useRefresh();
+  const { subscribes: feedList, getSubscribes, refreshing, done } = useRefresh();
   const store = useBearStore((state) => ({
     feed: state.feed,
     setFeed: state.setFeed,

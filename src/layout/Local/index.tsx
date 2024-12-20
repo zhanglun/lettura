@@ -36,7 +36,7 @@ export function LocalPage() {
     feed: state.feed,
     updateSettingDialogStatus: state.updateSettingDialogStatus,
   }));
-  const [feedList, setFeedList, getSubscribes, refreshing, setRefreshing, done, setDone, startRefresh] = useRefresh();
+  const { getSubscribes, refreshing, startRefresh } = useRefresh();
   const [addFolderDialogStatus, setAddFolderDialogStatus] = useModal();
 
   useEffect(() => {

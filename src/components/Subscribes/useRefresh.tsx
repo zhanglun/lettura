@@ -54,13 +54,25 @@ export const useRefresh = () => {
     setRefreshing(true);
 
     store.getUserConfig().then((config: UserConfig) => {
-      console.log("set last sync time");
+      if (!config) return;
+
       store.setLastSyncTime(new Date());
 
       const { threads = 5 } = config;
       const limit = pLimit(threads);
+      const errors = [];
       const fns = (store.subscribes || []).map((channel: any) => {
-        return limit(() => loadAndUpdate(channel));
+        return limit(() => {
+          try {
+            return loadAndUpdate(channel);
+          } catch (err) {
+            errors.push({
+              channel,
+              error: err,
+            });
+            return Promise.resolve(); // 继续执行下一个请求
+          }
+        });
       });
 
       Promise.all(fns)
@@ -91,7 +103,7 @@ export const useRefresh = () => {
     console.log("%c Line:93 🥕 subscribes", "color:#33a5ff", store.subscribes);
 
     if (!store.subscribes || store.subscribes.length === 0) {
-      return ;
+      return;
     }
 
     // if (!store.userConfig.last_sync_time) {
@@ -115,14 +127,13 @@ export const useRefresh = () => {
     };
   }, [store.subscribes, store.userConfig.update_interval]);
 
-  return [
-    store.subscribes,
-    store.getSubscribes,
+  return {
+    subscribes: store.subscribes,
     getSubscribes,
     refreshing,
     setRefreshing,
     done,
     setDone,
     startRefresh,
-  ] as const;
+  } as const;
 };
