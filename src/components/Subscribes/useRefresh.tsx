@@ -64,7 +64,13 @@ export const useRefresh = () => {
       const fns = (store.subscribes || []).map((channel: any) => {
         return limit(() => {
           try {
-            return loadAndUpdate(channel);
+            // return loadAndUpdate(channel);
+            return new Promise((resolve, reject) => {
+              setTimeout(() => {
+                console.log("=====》");
+                resolve("1");
+              }, 1000);
+            });
           } catch (err) {
             errors.push({
               channel,
@@ -86,16 +92,17 @@ export const useRefresh = () => {
     });
   };
 
-  function loop() {
+  function loop(cfg: UserConfig) {
     if (timeRef.current) {
-      clearTimeout(timeRef.current);
+      clearInterval(timeRef.current);
     }
 
-    if (store.userConfig.update_interval) {
-      timeRef.current = setTimeout(() => {
+    if (cfg.update_interval) {
+      timeRef.current = setInterval(() => {
         startRefresh();
-        loop();
-      }, store?.userConfig?.update_interval * 60 * 60 * 1000);
+        // }, cfg.update_interval * 60 * 60 * 1000);
+      }, 3000);
+    } else {
     }
   }
 
@@ -135,5 +142,6 @@ export const useRefresh = () => {
     done,
     setDone,
     startRefresh,
+    loop,
   } as const;
 };
