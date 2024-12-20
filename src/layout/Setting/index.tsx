@@ -10,6 +10,8 @@ import { useEffect, useState } from "react";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import { useBearStore } from "@/stores";
 import { SettingTabKey } from "@/typing";
+import "./index.css";
+import clsx from "clsx";
 
 interface SettingPageProps {
   children: React.ReactNode;
@@ -56,63 +58,53 @@ export function SettingPage({ children }: SettingPageProps) {
           </IconButton>
         </Dialog.Close>
         <div className="flex flex-row h-[600px]">
-          <div className="w-[220px] border-r border-[#e5e7eb] dark:border-[#2d2d2d]">
-            <div className="flex items-center gap-2 px-5 py-4 border-b border-[#e5e7eb] dark:border-[#2d2d2d]">
+          <div className="w-[220px] border-r bg-canvas">
+            <div className="flex items-center gap-2 px-5 py-4">
               <Settings className="w-5 h-5" />
-              <Heading size="4">Settings</Heading>
+              <Heading size="5">Settings</Heading>
             </div>
-            <nav className="py-4">
+            <nav className="py-3 px-2">
               <button
                 onClick={() => setActiveTab(SettingTabKey.GENERAL)}
-                className={`w-full px-5 py-2.5 flex items-center gap-3 text-sm transition-colors ${
-                  activeTab === SettingTabKey.GENERAL
-                    ? "bg-[#f3f4f6] dark:bg-[#2d2d2d] text-[#0f172a] dark:text-white"
-                    : "text-[#6b7280] hover:bg-[#f9fafb] dark:hover:bg-[#1d1d1d]"
-                }`}
+                className={clsx("setting-tab-item", {
+                  "setting-tab-item--active": activeTab === SettingTabKey.GENERAL,
+                })}
               >
                 <Cog className="w-4 h-4" />
                 General
               </button>
               <button
                 onClick={() => setActiveTab(SettingTabKey.APPEARANCE)}
-                className={`w-full px-5 py-2.5 flex items-center gap-3 text-sm transition-colors ${
-                  activeTab === SettingTabKey.APPEARANCE
-                    ? "bg-[#f3f4f6] dark:bg-[#2d2d2d] text-[#0f172a] dark:text-white"
-                    : "text-[#6b7280] hover:bg-[#f9fafb] dark:hover:bg-[#1d1d1d]"
-                }`}
+                className={clsx("setting-tab-item", {
+                  "setting-tab-item--active": activeTab === SettingTabKey.APPEARANCE,
+                })}
               >
                 <Palette className="w-4 h-4" />
                 Appearance
               </button>
               <button
                 onClick={() => setActiveTab(SettingTabKey.PROXY)}
-                className={`w-full px-5 py-2.5 flex items-center gap-3 text-sm transition-colors ${
-                  activeTab === SettingTabKey.PROXY
-                    ? "bg-[#f3f4f6] dark:bg-[#2d2d2d] text-[#0f172a] dark:text-white"
-                    : "text-[#6b7280] hover:bg-[#f9fafb] dark:hover:bg-[#1d1d1d]"
-                }`}
+                className={clsx("setting-tab-item", {
+                  "setting-tab-item--active": activeTab === SettingTabKey.PROXY,
+                })}
               >
                 <Database className="w-4 h-4" />
                 Proxy
               </button>
               <button
                 onClick={() => setActiveTab(SettingTabKey.SHORTCUTS)}
-                className={`w-full px-5 py-2.5 flex items-center gap-3 text-sm transition-colors ${
-                  activeTab === SettingTabKey.SHORTCUTS
-                    ? "bg-[#f3f4f6] dark:bg-[#2d2d2d] text-[#0f172a] dark:text-white"
-                    : "text-[#6b7280] hover:bg-[#f9fafb] dark:hover:bg-[#1d1d1d]"
-                }`}
+                className={clsx("setting-tab-item", {
+                  "setting-tab-item--active": activeTab === SettingTabKey.SHORTCUTS,
+                })}
               >
                 <Keyboard className="w-4 h-4" />
                 Shortcuts
               </button>
               <button
                 onClick={() => setActiveTab(SettingTabKey.IMPORTANDEXPORT)}
-                className={`w-full px-5 py-2.5 flex items-center gap-3 text-sm transition-colors ${
-                  activeTab === SettingTabKey.IMPORTANDEXPORT
-                    ? "bg-[#f3f4f6] dark:bg-[#2d2d2d] text-[#0f172a] dark:text-white"
-                    : "text-[#6b7280] hover:bg-[#f9fafb] dark:hover:bg-[#1d1d1d]"
-                }`}
+                className={clsx("setting-tab-item", {
+                  "setting-tab-item--active": activeTab === SettingTabKey.IMPORTANDEXPORT,
+                })}
               >
                 <Waypoints className="w-4 h-4" />
                 Import & Export

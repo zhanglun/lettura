@@ -5,6 +5,7 @@ import { useBearStore } from "@/stores";
 import { LocalPage } from "./layout/Local";
 import { Theme } from "@radix-ui/themes";
 import { DialogAboutApp } from "./components/About";
+import { tauri } from "@tauri-apps/api";
 
 function App() {
   const store = useBearStore((state) => ({

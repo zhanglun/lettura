@@ -17,10 +17,9 @@ export const Panel = (props: PanelProps) => {
   return (
     <div className="space-y-6 outline-none">
       <div className="mb-5">
-        <Heading size="6" weight="medium">{title}</Heading>
+        <Heading size="3">{title}</Heading>
         {subTitle && <p className="text-sm mb-3 mt-2 text-[var(--gray-11)]">{subTitle}</p>}
       </div>
-      <Separator className="mt-5" size="4" />
       <div className="space-y-5">{children}</div>
     </div>
   );
