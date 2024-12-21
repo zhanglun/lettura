@@ -74,7 +74,7 @@ export const ArticleItem = React.forwardRef((props: { article: ArticleResItem },
           </div>
         </div>
         <div className="whitespace-nowrap flex-[0_0_auto] overflow-hidden">
-          {formatDistanceToNow(parseISO(article.pub_date || article.create_date), {
+          {formatDistanceToNow(new Date(article.pub_date || article.create_date), {
             includeSeconds: true,
             addSuffix: true,
           })}
