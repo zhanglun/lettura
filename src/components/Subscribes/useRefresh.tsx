@@ -53,6 +53,8 @@ export const useRefresh = () => {
 
     setRefreshing(true);
 
+    console.log("🚀 ~ file: useRefresh.tsx:51 ~ startRefresh ~ refreshing:", refreshing)
+
     store.getUserConfig().then((config: UserConfig) => {
       if (!config) return;
 
@@ -62,24 +64,10 @@ export const useRefresh = () => {
       const limit = pLimit(threads);
       const errors = [];
       const fns = (store.subscribes || []).map((channel: any) => {
-        return limit(() => {
-          try {
-            // return loadAndUpdate(channel);
-            return new Promise((resolve, reject) => {
-              setTimeout(() => {
-                console.log("=====》");
-                resolve("1");
-              }, 1000);
-            });
-          } catch (err) {
-            errors.push({
-              channel,
-              error: err,
-            });
-            return Promise.resolve(); // 继续执行下一个请求
-          }
-        });
+        return limit(() => loadAndUpdate(channel));
       });
+
+      setRefreshing(true)
 
       Promise.all(fns)
         .then((res) => {})
@@ -93,15 +81,17 @@ export const useRefresh = () => {
   };
 
   function loop(cfg: UserConfig) {
+    console.log("🚀 ~ file: useRefresh.tsx:96 ~ loop ~ cfg:", cfg)
     if (timeRef.current) {
       clearInterval(timeRef.current);
     }
 
     if (cfg.update_interval) {
+      startRefresh();
+
       timeRef.current = setInterval(() => {
         startRefresh();
-        // }, cfg.update_interval * 60 * 60 * 1000);
-      }, 3000);
+      }, cfg.update_interval * 60 * 60 * 1000);
     } else {
     }
   }
@@ -127,11 +117,7 @@ export const useRefresh = () => {
     //   startRefresh();
     // }
 
-    // loop();
-
-    return () => {
-      clearTimeout(timeRef.current);
-    };
+    // loop(store.userConfig);
   }, [store.subscribes, store.userConfig.update_interval]);
 
   return {
