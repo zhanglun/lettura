@@ -89,7 +89,7 @@ export function LocalPage() {
             </Tooltip>
           </div>
         </div>
-        <div className="px-2 pb-3">
+        <div className="mt-4 px-2 pb-3">
           <Tooltip content="Search content" side="right">
             <>
               <NavLink
