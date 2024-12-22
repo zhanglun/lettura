@@ -10,13 +10,13 @@ export interface AddFolderProps {
   dialogStatus: boolean;
   trigger?: React.ReactNode;
   setDialogStatus: (status: boolean) => void;
-  afterConfirm: () => void;
-  afterCancel: () => void;
+  afterConfirm?: () => void;
+  afterCancel?: () => void;
 }
 
 export const AddFolder = (props: AddFolderProps) => {
   const { action, folder } = props;
-  console.log("%c Line:19 🥪 folder", "color:#ed9ec7", folder);
+  console.log("%c Line:19 🥪 folder", "color:#ed9ec7", props);
   const store = useBearStore((state) => ({
     getSubscribes: state.getSubscribes,
   }));
@@ -35,11 +35,7 @@ export const AddFolder = (props: AddFolderProps) => {
     setConfirming(false);
     setName("");
     setDialogStatus(false);
-    afterCancel();
-  };
-
-  const handleStatusChange = () => {
-    handleCancel();
+    afterCancel && afterCancel();
   };
 
   const handleSave = async () => {
@@ -61,7 +57,7 @@ export const AddFolder = (props: AddFolderProps) => {
       console.log("🚀 ~ file: index.tsx:59 ~ p.then ~ res:", res);
       if (res[0] > 0) {
         store.getSubscribes();
-        afterConfirm();
+        afterConfirm && afterConfirm();
         handleCancel();
       }
     })
