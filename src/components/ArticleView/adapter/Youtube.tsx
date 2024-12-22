@@ -38,8 +38,15 @@ export function YoutubeAdapter(props: any) {
         if (/youtube.com\/v/.test(c.url)) {
           const videoId = c.url.split("/").pop();
           return (
-            <div>
-              <iframe src={`https://www.youtube.com/embed/${videoId}`} width="100%" height="360" />
+            <div className="relative">
+              <div className="aspect-video bg-gray-200 animate-pulse" />
+              <iframe
+                src={`https://www.youtube.com/embed/${videoId}`}
+                width="100%"
+                height="360"
+                className="absolute inset-0 w-full h-full"
+                loading="lazy"
+              />
             </div>
           );
         }
