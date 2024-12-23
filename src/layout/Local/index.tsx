@@ -36,7 +36,7 @@ export function LocalPage() {
     feed: state.feed,
     updateSettingDialogStatus: state.updateSettingDialogStatus,
   }));
-  const [feedList, setFeedList, getSubscribes, refreshing, setRefreshing, done, setDone, startRefresh] = useRefresh();
+  const { getSubscribes, refreshing, startRefresh } = useRefresh();
   const [addFolderDialogStatus, setAddFolderDialogStatus] = useModal();
 
   useEffect(() => {
@@ -89,7 +89,7 @@ export function LocalPage() {
             </Tooltip>
           </div>
         </div>
-        <div className="px-2 pb-3">
+        <div className="mt-4 px-2 pb-3">
           <Tooltip content="Search content" side="right">
             <>
               <NavLink

@@ -56,6 +56,8 @@ pub struct ArticleDetailResult {
   #[diesel(sql_type = Text)]
   pub description: String,
   #[diesel(sql_type = Text)]
+  pub content: String,
+  #[diesel(sql_type = Text)]
   pub author: String,
   #[diesel(sql_type = Text)]
   pub pub_date: String,
@@ -383,6 +385,7 @@ impl Article {
               A.link,
               A.title,
               A.description as description,
+              A.content as content,
               A.author,
               A.pub_date,
               A.create_date,

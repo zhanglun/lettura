@@ -16,17 +16,19 @@ export interface UserConfigSlice {
   podcastPanelStatus: boolean;
   updatePodcastPanelStatus: (status: boolean) => void;
 
-  podcastPlayingStatus: boolean,
+  podcastPlayingStatus: boolean;
   updatePodcastPlayingStatus: (status: boolean) => void;
 
   settingDialogStatus: boolean;
   updateSettingDialogStatus: (status: boolean) => void;
+
+  aboutDialogStatus: boolean;
+  updateAboutDialogStatus: (status: boolean) => void;
+  appMetadata: any;
+  updateAppMetadata: (metadata: any) => void;
 }
 
-export const createUserConfigSlice: StateCreator<UserConfigSlice> = (
-  set,
-  get
-) => ({
+export const createUserConfigSlice: StateCreator<UserConfigSlice> = (set, get) => ({
   userConfig: {} as UserConfig,
 
   getUserConfig: () => {
@@ -53,7 +55,7 @@ export const createUserConfigSlice: StateCreator<UserConfigSlice> = (
     get().updateUserConfig({
       ...get().userConfig,
       last_sync_time: t,
-    })
+    });
   },
 
   viewOrigin: false,
@@ -76,22 +78,34 @@ export const createUserConfigSlice: StateCreator<UserConfigSlice> = (
   podcastPanelStatus: false,
   updatePodcastPanelStatus: (status: boolean) => {
     set(() => ({
-      podcastPanelStatus: status
-    }))
+      podcastPanelStatus: status,
+    }));
   },
 
   podcastPlayingStatus: false,
   updatePodcastPlayingStatus: (status: boolean) => {
     set(() => ({
-      podcastPlayingStatus: status
-    }))
+      podcastPlayingStatus: status,
+    }));
   },
 
   settingDialogStatus: false,
   updateSettingDialogStatus: (status: boolean) => {
     set(() => ({
-      settingDialogStatus: status
-    }))
+      settingDialogStatus: status,
+    }));
   },
 
+  aboutDialogStatus: false,
+  updateAboutDialogStatus: (status: boolean) => {
+    set(() => ({
+      aboutDialogStatus: status,
+    }));
+  },
+  appMetadata: {},
+  updateAppMetadata: (metadata: any) => {
+    set(() => ({
+      appMetadata: metadata,
+    }));
+  },
 });

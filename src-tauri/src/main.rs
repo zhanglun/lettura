@@ -41,18 +41,6 @@ fn handle_window_event(event: GlobalWindowEvent<Wry>) {
   }
 }
 
-fn send_to_webview<R: tauri::Runtime>(
-  event_name: String,
-  message: String,
-  manager: &impl Manager<R>,
-) {
-  println!("Event Name {:?}", event_name);
-
-  manager
-    .emit_all(&event_name, format!("rs: {}", message))
-    .unwrap();
-}
-
 #[tokio::main]
 async fn main() {
   core::config::UserConfig::init_config();

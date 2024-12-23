@@ -117,6 +117,11 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
             return a;
           });
 
+          content = content.replace(/<img\s+(?:[^>]*?\s+)?src="([^"]*)"[^>]*>/g, (match, src) => {
+            const absoluteUrl = new URL(src, article.link).href;
+            return `<img src="${absoluteUrl}" />`;
+          });
+
           console.log("%c Line:131 🍭 content", "color:#4fff4B", content);
 
           setPageContent(

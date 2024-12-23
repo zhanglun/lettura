@@ -53,15 +53,21 @@ export const useRefresh = () => {
 
     setRefreshing(true);
 
+    console.log("🚀 ~ file: useRefresh.tsx:51 ~ startRefresh ~ refreshing:", refreshing);
+
     store.getUserConfig().then((config: UserConfig) => {
-      console.log("set last sync time");
+      if (!config) return;
+
       store.setLastSyncTime(new Date());
 
       const { threads = 5 } = config;
       const limit = pLimit(threads);
+      const errors = [];
       const fns = (store.subscribes || []).map((channel: any) => {
         return limit(() => loadAndUpdate(channel));
       });
+
+      setRefreshing(true);
 
       Promise.all(fns)
         .then((res) => {})
@@ -74,55 +80,30 @@ export const useRefresh = () => {
     });
   };
 
-  function loop() {
+  function loop(cfg: UserConfig) {
+    console.log("🚀 ~ file: useRefresh.tsx:96 ~ loop ~ cfg:", cfg);
     if (timeRef.current) {
-      clearTimeout(timeRef.current);
+      clearInterval(timeRef.current);
     }
 
-    if (store.userConfig.update_interval) {
-      timeRef.current = setTimeout(() => {
+    if (cfg.update_interval) {
+      startRefresh();
+
+      timeRef.current = setInterval(() => {
         startRefresh();
-        loop();
-      }, store?.userConfig?.update_interval * 60 * 60 * 1000);
+      }, cfg.update_interval * 60 * 60 * 1000);
+    } else {
     }
   }
 
-  useEffect(() => {
-    console.log("%c Line:93 🥕 subscribes", "color:#33a5ff", store.subscribes);
-
-    if (!store.subscribes || store.subscribes.length === 0) {
-      return ;
-    }
-
-    // if (!store.userConfig.last_sync_time) {
-    //   startRefresh();
-    // }
-
-    // if (
-    //   store.userConfig.update_interval &&
-    //   store.userConfig.last_sync_time &&
-    //   new Date().getTime() -
-    //     new Date(store.userConfig.last_sync_time).getTime() >
-    //     store.userConfig.update_interval * 60 * 60 * 1000
-    // ) {
-    //   startRefresh();
-    // }
-
-    // loop();
-
-    return () => {
-      clearTimeout(timeRef.current);
-    };
-  }, [store.subscribes, store.userConfig.update_interval]);
-
-  return [
-    store.subscribes,
-    store.getSubscribes,
+  return {
+    subscribes: store.subscribes,
     getSubscribes,
     refreshing,
     setRefreshing,
     done,
     setDone,
     startRefresh,
-  ] as const;
+    loop,
+  } as const;
 };

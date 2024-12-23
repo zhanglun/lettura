@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "Lettura",
-    "version": "0.1.21"
+    "version": "0.1.22-alpha.0"
   },
   "tauri": {
     "allowlist": {

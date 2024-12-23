@@ -258,7 +258,8 @@ mod tests {
       // "http://www.youtube.com/feeds/videos.xml?channel_id=UCpVm7bg6pXKo1Pr6k5kxG9A".to_string();
     // let url = "https://medium.com/feed/google-design".to_string();
     // let url = "https://www.ximalaya.com/album/70501228.xml".to_string();
-    let url = "http://www.ximalaya.com/album/3558668.xml".to_string();
+    // let url = "http://www.ximalaya.com/album/3558668.xml".to_string();
+    let url = "https://gapis.money/rss.xml".to_string();
 
     println!("{:?}", url);
 
@@ -269,7 +270,7 @@ mod tests {
         let feed_uuid = Uuid::new_v4().hyphenated().to_string();
         let feed = create_feed_model(&feed_uuid, &url, &res).clone();
 
-        println!("{:?}", (Some(feed), String::from("")));
+        println!("====>S{:?}", (Some(feed), String::from("")));
         let articles = create_article_models(&feed_uuid, &url, &res);
         println!("{:?}", articles);
       }

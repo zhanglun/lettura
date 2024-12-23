@@ -1,10 +1,10 @@
 [package]
 name = "lettura"
-version = "0.1.21"
-description = "Your RSS reader"
+version = "0.1.22-alpha.0"
+description = "Follow your favorite content and never miss a story"
 authors = ["zhanglun1410@gmail.com"]
 license = ""
-repository = ""
+repository = "https://github.com/zhanglun/lettura"
 default-run = "lettura"
 edition = "2021"
 build = "src/build.rs"
@@ -39,6 +39,7 @@ tauri-plugin-log = { git = "https://github.com/tauri-apps/plugins-workspace", br
 tauri-plugin-single-instance = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
 actix-web = "4.4.0"
 actix-cors = "*"
+sys-info = "0.9"
 
 [features]
 default = [ "custom-protocol" ]

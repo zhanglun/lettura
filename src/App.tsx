@@ -4,17 +4,30 @@ import { emit, listen } from "@tauri-apps/api/event";
 import { useBearStore } from "@/stores";
 import { LocalPage } from "./layout/Local";
 import { Theme } from "@radix-ui/themes";
-// import { Toaster } from "sonner";
+import { DialogAboutApp } from "./components/About";
+import { useRefresh } from "./components/Subscribes/useRefresh";
 
 function App() {
   const store = useBearStore((state) => ({
     userConfig: state.userConfig,
     getUserConfig: state.getUserConfig,
     updateSettingDialogStatus: state.updateSettingDialogStatus,
+    updateAboutDialogStatus: state.updateAboutDialogStatus,
+    updateAppMetadata: state.updateAppMetadata,
   }));
+  const { loop } = useRefresh();
 
   useEffect(() => {
-    listen("go-to-settings", () => {
+    listen("about_lettura", ({ payload }: { payload: string }) => {
+      store.updateAboutDialogStatus(true);
+      try {
+        store.updateAppMetadata(JSON.parse(payload));
+      } catch (err) {
+        console.error(err);
+      }
+    });
+
+    listen("go_to_settings", () => {
       store.updateSettingDialogStatus(true);
     });
 
@@ -52,6 +65,8 @@ function App() {
             customize_style[key as keyof CustomizeStyle] as string
           );
         });
+
+      loop(cfg);
     });
   }, []);
 
@@ -66,6 +81,7 @@ function App() {
       <div className="h-full max-h-full ">
         <LocalPage />
       </div>
+      <DialogAboutApp />
     </Theme>
   );
 }
