@@ -2577,7 +2577,7 @@ checksum = "bbd2bcb4c963f2ddae06a2efc7e9f3591312473c50c6685e1f298068316e66fe"
 
 [[package]]
 name = "lettura"
-version = "0.1.22-alpha.0"
+version = "0.1.22"
 dependencies = [
  "actix-cors",
  "actix-web",
