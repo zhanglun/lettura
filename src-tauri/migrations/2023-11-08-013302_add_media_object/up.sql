@@ -52,7 +52,7 @@ INSERT INTO articles (
                             title,
                             link,
                             feed_url,
-                            feed_uuid,
+                            channel_uuid,
                             description,
                             author,
                             pub_date,
