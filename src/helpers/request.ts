@@ -1,11 +1,13 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 
+const port = window.localStorage.getItem('port');
+
 const env = import.meta.env;
 
 if (env.DEV) {
-  axios.defaults.baseURL = 'http://localhost:1105/api';
+  axios.defaults.baseURL = `http://localhost:${port}/api`;
 } else {
-  axios.defaults.baseURL = 'http://localhost:1105/api';
+  axios.defaults.baseURL = `http://localhost:${port}/api`;
 }
 
 export const createInstance = (config: AxiosRequestConfig): AxiosInstance => {

@@ -266,7 +266,6 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
     return Promise.all(fns)
       .then((resList) => {
         const map = resList.reduce((acu, { data }) => {
-          console.log('===> data', data);
           const [[uuid, values] = []] = Object.entries(data);
 
           if (uuid && values) {

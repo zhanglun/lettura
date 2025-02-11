@@ -18,22 +18,24 @@ function App() {
   const { loop } = useRefresh();
 
   useEffect(() => {
-    listen("about_lettura", ({ payload }: { payload: string }) => {
-      store.updateAboutDialogStatus(true);
-      try {
-        store.updateAppMetadata(JSON.parse(payload));
-      } catch (err) {
-        console.error(err);
-      }
-    });
+    if (window.__TAURI_IPC__ as any) {
+      listen("about_lettura", ({ payload }: { payload: string }) => {
+        store.updateAboutDialogStatus(true);
+        try {
+          store.updateAppMetadata(JSON.parse(payload));
+        } catch (err) {
+          console.error(err);
+        }
+      });
 
-    listen("go_to_settings", () => {
-      store.updateSettingDialogStatus(true);
-    });
+      listen("go_to_settings", () => {
+        store.updateSettingDialogStatus(true);
+      });
 
-    listen("check_for_updates", async (e) => {
-      emit("tauri://update");
-    });
+      listen("check_for_updates", async (e) => {
+        emit("tauri://update");
+      });
+    }
   }, []);
 
   useEffect(() => {
@@ -43,6 +45,7 @@ function App() {
   }, []);
 
   useEffect(() => {
+    console.log("app render");
     store.getUserConfig().then((cfg: UserConfig) => {
       const { color_scheme, customize_style } = cfg;
       let mode = color_scheme || "light";

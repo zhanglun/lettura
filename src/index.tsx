@@ -1,5 +1,7 @@
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
+import { Toaster } from "sonner";
+import { invoke } from "@tauri-apps/api";
 
 import reportWebVitals from "./reportWebVitals";
 import App from "./App";
@@ -10,8 +12,7 @@ import { SearchPage } from "./layout/Search";
 import { FreshRSSPage } from "./layout/FreshRSS";
 
 import "./index.css";
-
-import { Toaster } from "sonner";
+import { listen } from "@tauri-apps/api/event";
 
 const router = createBrowserRouter([
   {
@@ -64,7 +65,11 @@ const router = createBrowserRouter([
 const domNode = document.getElementById("root") as HTMLElement;
 const root = createRoot(domNode);
 
-root.render(<RouterProvider router={router} />);
+invoke("get_server_port").then((port) => {
+  console.log("🚀 ~ invoke ~ port:", port);
+  window.localStorage.setItem("port", port as string);
+  root.render(<RouterProvider router={router} />);
+});
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

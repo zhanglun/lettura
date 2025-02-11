@@ -88,6 +88,7 @@ async fn main() {
 
       std::thread::spawn(move || {
         server::init(*boxed_handle).unwrap();
+        main_window.emit("get_server_port", ()).unwrap();
       });
 
       feed::article::Article::purge_articles();
