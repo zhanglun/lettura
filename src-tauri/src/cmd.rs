@@ -247,6 +247,12 @@ pub async fn update_icon(uuid: String, url: String) -> usize {
   favicon
 }
 
+#[command]
+pub async fn get_server_port () -> u16{
+  let cfg = config::get_user_config();
+  return cfg.port;
+}
+
 #[cfg(test)]
 mod tests {
   use super::*;

@@ -110,6 +110,7 @@ async fn main() {
       cmd::move_channel_into_folder,
       cmd::init_process,
       cmd::update_icon,
+      cmd::get_server_port,
     ])
     .build(context)
     .expect("error while running tauri Application")

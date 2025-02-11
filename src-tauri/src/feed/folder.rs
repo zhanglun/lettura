@@ -58,8 +58,6 @@ pub fn delete_folder(uuid: String) -> (usize, usize) {
     .load::<models::Folder>(&mut connection)
     .expect("Expect find folder");
 
-  println!(" ===> {:?}", folder);
-
   return if folder.len() == 1 {
     let relations = schema::feed_metas::dsl::feed_metas
       .filter(schema::feed_metas::folder_uuid.eq_any(vec![String::from(&uuid)]))

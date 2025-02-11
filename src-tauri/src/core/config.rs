@@ -76,6 +76,7 @@ pub struct UserConfig {
   pub customize_style: CustomizeStyle,
   pub purge_on_days: u64,
   pub purge_unread_articles: bool,
+  pub port: u16,
 }
 
 impl Default for UserConfig {
@@ -94,6 +95,7 @@ impl Default for UserConfig {
       customize_style: CustomizeStyle::default(),
       purge_on_days: 0,
       purge_unread_articles: true,
+      port: 3456,
     }
   }
 }
@@ -101,6 +103,7 @@ impl Default for UserConfig {
 impl UserConfig {
   generate_set_property!(self, set_threads, threads, i32);
   generate_set_property!(self, set_theme, theme, String);
+  generate_set_property!(self, set_port, port,  u16);
   generate_set_property!(self, set_update_interval, update_interval, u64);
   generate_set_property!(self, set_purge_on_days, purge_on_days, u64);
   generate_set_property!(self, set_purge_unread_articles, purge_unread_articles, bool);
@@ -170,8 +173,6 @@ pub fn get_user_config_path() -> PathBuf {
 pub fn get_user_config() -> UserConfig {
   let user_config_path = get_user_config_path();
 
-  println!("===> {:?}", user_config_path);
-
   if !user_config_path.exists() {
     fs::File::create(&user_config_path).expect("create user config failed");
     let data = UserConfig::default();
@@ -190,7 +191,6 @@ pub fn get_user_config() -> UserConfig {
 
   let data: Option<UserConfig> = match toml::from_str(&content) {
     Ok(data) => {
-      println!("====> data 11 return default {:?}", data);
       Some(data)
     }
     Err(_) => {
@@ -307,7 +307,6 @@ pub fn delete_proxy(id: String, proxy_cfg: Proxy) -> Result<Option<Vec<Proxy>>, 
     .iter_mut()
     .position(|p| format!("socks5://{}:{}", p.server, p.port) == id)
   {
-    println!("index ===> {:?}", index);
     proxies.remove(index);
 
     data
@@ -344,6 +343,21 @@ pub fn update_theme(theme: String) -> usize {
   println!("data {:?}", data);
 
   let a = data.set_theme(theme);
+
+  let content = toml::to_string_pretty(&a).unwrap();
+
+  println!("content {:?}", content);
+
+  fs::write(user_config_path, content).expect("update theme error");
+
+  return 1;
+}
+
+pub fn update_port(port: u16) -> usize {
+  let data = get_user_config();
+  let user_config_path = get_user_config_path();
+
+  let a = data.set_port(port);
 
   let content = toml::to_string_pretty(&a).unwrap();
 

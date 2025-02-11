@@ -35,7 +35,6 @@ pub async fn handle_get_subscribes() -> Result<impl Responder> {
 
 #[post("/api/update-feed-sort")]
 pub async fn handle_update_feed_sort(body: web::Json<Vec<feed::channel::FeedSort>>) -> Result<impl Responder> {
-  info!("body ===> {:?}", body.to_vec());
   let result = feed::channel::update_feed_sort(body.to_vec());
 
   Ok(web::Json(result))
