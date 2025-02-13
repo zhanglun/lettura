@@ -11,6 +11,7 @@ if (env.DEV) {
 }
 
 export const createInstance = (config: AxiosRequestConfig): AxiosInstance => {
+  axios.defaults.baseURL = `http://localhost:${port}/api`;
   return axios.create(config);
 }
 

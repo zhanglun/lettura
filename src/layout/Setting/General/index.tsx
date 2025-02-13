@@ -1,7 +1,9 @@
 import { Panel, PanelSection } from "../Panel";
 import { useBearStore } from "@/stores";
 import { TextField, Select, Switch, Separator } from "@radix-ui/themes";
-import { useEffect, useState } from "react";
+import { invoke } from "@tauri-apps/api";
+import { debounce } from "lodash";
+import { ChangeEvent, useEffect, useState } from "react";
 
 const intervalOptions = [
   {
@@ -62,31 +64,6 @@ export const General = () => {
     userConfig: state.userConfig,
     updateUserConfig: state.updateUserConfig,
   }));
-
-  const [localProxy, setLocalProxy] = useState({} as LocalProxy);
-
-  console.log("%c Line:67 🥥 store.userConfig.proxy", "color:#fca650", store.userConfig.proxy);
-
-  const handleLocalProxyChange = (key: string, val: string) => {
-    const p = {
-      ...localProxy,
-      ...{
-        [key]: val,
-      },
-    };
-    setLocalProxy(p);
-
-    if (p.server && p.port) {
-      store.updateUserConfig({
-        ...store.userConfig,
-        proxy: p,
-      });
-    }
-  };
-
-  useEffect(() => {
-    setLocalProxy(store.userConfig.proxy || ({} as LocalProxy));
-  }, [store.userConfig]);
 
   return (
     <Panel title="General">
@@ -162,7 +139,6 @@ export const General = () => {
           </Select.Root>
         </div>
       </PanelSection>
-      <Separator className="mt-6" size="4" />
       <PanelSection title="Purge unread articles">
         <div>
           <Switch

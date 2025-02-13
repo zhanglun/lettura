@@ -1,11 +1,13 @@
+use actix_web::web;
 use serde::Serialize;
-use tauri::{command, Window};
+use tauri::{command, State, Window};
 use uuid::Uuid;
 
 use crate::core::config;
-use crate::feed;
 use crate::feed::WrappedMediaObject;
 use crate::models;
+use crate::server::stop_server;
+use crate::{feed, server, AppState};
 
 #[derive(Debug, Serialize)]
 pub struct FeedFetchResponse {
@@ -144,7 +146,12 @@ pub fn create_article_models(
       None => String::from(""),
     };
 
-    let media_object = entry.media.clone().into_iter().map(|m| WrappedMediaObject(m)).collect::<Vec<WrappedMediaObject>>();
+    let media_object = entry
+      .media
+      .clone()
+      .into_iter()
+      .map(|m| WrappedMediaObject(m))
+      .collect::<Vec<WrappedMediaObject>>();
     let json = serde_json::to_string(&media_object).unwrap();
 
     let s = models::NewArticle {
@@ -248,7 +255,7 @@ pub async fn update_icon(uuid: String, url: String) -> usize {
 }
 
 #[command]
-pub async fn get_server_port () -> u16{
+pub async fn get_server_port() -> u16 {
   let cfg = config::get_user_config();
   return cfg.port;
 }
@@ -261,7 +268,7 @@ mod tests {
   async fn test_parse_feed() {
     // let url = "https://www.ximalaya.com/album/70501228.xml".to_string();
     // let url =
-      // "http://www.youtube.com/feeds/videos.xml?channel_id=UCpVm7bg6pXKo1Pr6k5kxG9A".to_string();
+    // "http://www.youtube.com/feeds/videos.xml?channel_id=UCpVm7bg6pXKo1Pr6k5kxG9A".to_string();
     // let url = "https://medium.com/feed/google-design".to_string();
     // let url = "https://www.ximalaya.com/album/70501228.xml".to_string();
     // let url = "http://www.ximalaya.com/album/3558668.xml".to_string();

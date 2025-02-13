@@ -8,9 +8,12 @@ extern crate diesel;
 extern crate diesel_migrations;
 extern crate dotenv;
 
+use actix_web::dev::ServerHandle;
+use actix_web::{http, middleware, web, App, HttpResponse, HttpServer};
 use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 use log::LevelFilter;
-use tauri::{GlobalWindowEvent, Manager, WindowEvent, Wry};
+use serde::{Deserialize, Serialize};
+use tauri::{AppHandle, GlobalWindowEvent, Manager, State, WindowEvent, Wry};
 use tauri_plugin_log::{fern, LogTarget};
 use tokio;
 
@@ -22,7 +25,10 @@ mod models;
 mod schema;
 mod server;
 
-use std::env;
+use std::{
+  env,
+  sync::{Arc, Mutex},
+};
 
 pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!("./migrations");
 
@@ -41,16 +47,33 @@ fn handle_window_event(event: GlobalWindowEvent<Wry>) {
   }
 }
 
+// 全局状态
+pub struct AppState {
+  // app: Mutex<Option<AppHandle>>, // Tauri 的 AppHandle
+  server: Mutex<Option<ServerHandle>>, // Actix Web 的 ServerHandle
+}
+
+impl AppState {
+  fn new() -> Self {
+      Self {
+          // app: Mutex::new(None),
+          server: Mutex::new(None)
+      }
+  }
+}
+
+
 #[tokio::main]
 async fn main() {
-  core::config::UserConfig::init_config();
-
+  let user_config = core::config::UserConfig::init_config();
   let context = tauri::generate_context!();
   let mut connection = db::establish_connection();
 
   connection
     .run_pending_migrations(MIGRATIONS)
     .expect("Error migrating");
+
+  let shared_state = AppState::new();
 
   let window = tauri::Builder::default();
 
@@ -73,7 +96,8 @@ async fn main() {
         .build(),
     )
     .setup(move |app| {
-      let app_handle = app.handle();
+      app.manage(shared_state);
+      let app_handle = app.handle().clone();
 
       let main_window = app.get_window("main").unwrap();
 
@@ -84,10 +108,12 @@ async fn main() {
         Err(_) => {}
       }
 
-      let boxed_handle = Box::new(app_handle);
+      // let state_clone = shared_state.clone();
+      let port = user_config.port.clone();
 
       std::thread::spawn(move || {
-        server::init(*boxed_handle).unwrap();
+        let state = app_handle.state::<AppState>();
+        server::start_server(port, state).unwrap();
         main_window.emit("get_server_port", ()).unwrap();
       });
 

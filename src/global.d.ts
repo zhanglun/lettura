@@ -23,6 +23,7 @@ declare interface CustomizeStyle {
 }
 
 declare interface UserConfig {
+  port?: number;
   threads?: number;
   color_scheme?: string;
   theme?: string;
