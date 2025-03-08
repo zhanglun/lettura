@@ -5,19 +5,20 @@
 <h1 align="center">Lettura</h1>
 <h3 align="center">Follow your favorite content and never miss a story.</h3>
 
-Another free and open-source feed reader for macOS and Window.
+Another free and open-source feed reader designed to deliver an exceptional reading experience across multiple platforms.
 
 <a href="https://www.producthunt.com/posts/lettura?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-lettura" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=414450&theme=light" alt="Lettura - Follow&#0032;your&#0032;favorite&#0032;content&#0032;and&#0032;never&#0032;miss&#0032;a&#0032;story | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
 
 <a href="https://www.buymeacoffee.com/zhanglun"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=zhanglun&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff" /></a>
 
-It supports RSS, Atom.
+### Features
 
-> JSON Feed support will coming soon
-
-And this project is under construction.
-
-Pre-release version is [here](https://github.com/zhanglun/lettura/releases), you can download it and try to subscribe some feeds.
+* **Cross-Platform Compatibility**: Seamlessly access your feeds on macOS, Windows, and soon Linux, ensuring your reading experience is uninterrupted regardless of your operating system.
+* **Lightning-Fast Performance**: Built with speed in mind, Lettura ensures that you can browse and read your favorite content without any lag or delay.
+* **Beautiful and Intuitive UI**: Thanks to the elegant design from @shadcn/ui, Lettura offers a clean, distraction-free interface that makes reading a pleasure.
+* **Powerful Search Functionality**: Quickly find the content you need with our efficient search feature that works across all your subscribed feeds.
+* **Keyboard Shortcuts**: Master your reading experience with easy-to-use keyboard shortcuts that let you navigate and interact with nearly every function without lifting a finger.
+* **Podcast playback support**: Enjoy your favorite audio content directly within the app without missing a single episode.
 
 <p align="center">
   <img src="./screenshots/1.png" width="90%"/>
@@ -55,7 +56,7 @@ pnpm tauri build
 
 You can get more details about building Tauri app in [here](https://tauri.app/v1/guides/distribution/publishing)
 
-## Repo Activuty
+## Repo Activity
 
 ![Alt](https://repobeats.axiom.co/api/embed/a1f5a08afeb1006c8f78055fac24b46eb6eb0527.svg "Repobeats analytics image")
 
