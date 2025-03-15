@@ -144,7 +144,12 @@ impl Serialize for WrappedMediaContent {
     state.serialize_field("url", &self.0.url)?;
     state.serialize_field(
       "content_type",
-      &self.0.content_type.clone().unwrap().to_string(),
+      &self
+        .0
+        .content_type
+        .clone()
+        .map(|ct| ct.to_string())
+        .unwrap_or_else(|| String::from("unknown")),
     )?;
     state.serialize_field("height", &self.0.height)?;
     state.serialize_field("width", &self.0.width)?;

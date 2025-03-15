@@ -26,7 +26,7 @@ export interface ArticleListRefType {
 }
 
 export const ArticleList = React.memo(
-  React.forwardRef<HTMLDivElement, any>((props: ArticleListProps, ref) => {
+  React.forwardRef<HTMLDivElement, ArticleListProps>((props: ArticleListProps, ref) => {
     const { articles, isEmpty, isLoading, isReachingEnd, size, setSize } = props;
     const loadRef = useRef<HTMLDivElement | null>(null);
     const entry = useIntersectionObserver(loadRef, {});

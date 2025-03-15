@@ -51,7 +51,6 @@ pub fn create_feed_model(
   url: &String,
   res: &feed_rs::model::Feed,
 ) -> models::NewFeed {
-  println!("res{:?}", res);
   let title = match &res.title {
     Some(link) => link.content.to_string(),
     None => String::from(""),

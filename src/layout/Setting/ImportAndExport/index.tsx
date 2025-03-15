@@ -7,13 +7,44 @@ import { Channel, FeedResItem } from "@/db";
 import { writeTextFile } from "@tauri-apps/api/fs";
 import { save } from "@tauri-apps/api/dialog";
 import { busChannel } from "@/helpers/busChannel";
-import { Button } from "@radix-ui/themes";
+import { Button, Progress } from "@radix-ui/themes";
+import { toast } from "sonner";
 
 export interface ImportItem {
   title: string;
   link: string;
   feed_url: string;
+  loading: boolean;
+  import_status: string;
 }
+
+/**
+ * ImportAndExport component provides functionality to import and export
+ * feed subscriptions using OPML files. It allows users to upload an OPML file
+ * to import feeds into the application and export current subscriptions as
+ * an OPML file for backup or sharing.
+ *
+ * Props:
+ * - `props`: any - Additional properties to pass to the component.
+ *
+ * State:
+ * - `file`: File | undefined - The selected file for import.
+ * - `importing`: boolean - A flag indicating if import operation is in progress.
+ * - `exporting`: boolean - A flag indicating if export operation is in progress.
+ * - `importedList`: ImportItem[] - List of imported feed items from OPML.
+ * - `done`: number - Counter for completed import tasks.
+ *
+ * Methods:
+ * - `parserOPML(source: string): ImportItem[]`: Parses OPML XML string and
+ *   returns an array of feed import items.
+ * - `addFeed(url: string)`: Adds a feed by URL and updates progress.
+ * - `importFromOPML()`: Initiates import process for feeds from the imported list.
+ * - `handleFileChange(e: React.ChangeEvent<HTMLInputElement>)`: Handles file
+ *   selection and reads the file content for import.
+ * - `createOPMLObj(feeds: FeedResItem[])`: Creates an OPML document from
+ *   current subscriptions.
+ * - `exportToOPML()`: Exports current subscriptions to an OPML file.
+ */
 
 export const ImportAndExport = (props: any) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -38,19 +69,24 @@ export const ImportAndExport = (props: any) => {
           title,
           link,
           feed_url,
+          loading: false,
+          import_status: "not_started",
         };
       })
       .filter((item) => item.title && item.feed_url && item.link);
   };
 
-  const addChannel = (url: string) => {
+  const addFeed = (url: string, item: ImportItem) => {
     return dataAgent
       .subscribeFeed(url)
       .then((res) => {
         busChannel.emit("getChannels");
+        item.import_status = "success";
         return res;
       })
-      .catch(() => {
+      .catch((e) => {
+        console.error(e);
+        item.import_status = "failed";
         return Promise.resolve();
       })
       .finally(() => {
@@ -60,17 +96,21 @@ export const ImportAndExport = (props: any) => {
 
   const importFromOPML = () => {
     const fns = importedList.map((_) => {
-      return addChannel(_.feed_url);
+      return addFeed(_.feed_url, _);
     });
 
     setImporting(true);
 
-    const pool = promisePool({ limit: 5, fns });
+    const pool = promisePool({ limit: 10, fns });
 
     pool.run().then((res) => {
       window.setTimeout(() => {
         setImporting(false);
         setDone(0);
+        setFile(undefined);
+        const fileInput = document.getElementById("uploadInput") as HTMLInputElement;
+        fileInput.value = "";
+        toast.success(`Imported ${res.length} feeds!`);
       }, 500);
     });
   };
@@ -84,7 +124,15 @@ export const ImportAndExport = (props: any) => {
         const xmlString = reader.result as string;
         const list = parserOPML(xmlString);
 
-        setImportedList(list);
+        setImportedList(
+          list.map((item) => {
+            return {
+              ...item,
+              loading: false,
+              import_status: "not_started",
+            };
+          })
+        );
       };
 
       reader.readAsText(e.target.files[0]);
@@ -187,10 +235,12 @@ export const ImportAndExport = (props: any) => {
               }}
             />
           </div>
-          <Button onClick={importFromOPML} disabled={importing || !file}>
+          <Button onClick={importFromOPML} disabled={importing || !file} loading={importing}>
             Import
-            <>{importing ? `${done}/${importedList.length}` : ""}</>
           </Button>
+        </div>
+        <div className="my-2">
+          {importing && <Progress value={importing ? (done / importedList.length) * 100 : 0} />}
         </div>
       </PanelSection>
       <PanelSection title="OPML Export">

@@ -63,7 +63,7 @@ export function SettingPage({ children }: SettingPageProps) {
               <Settings className="w-5 h-5" />
               <Heading size="5">Settings</Heading>
             </div>
-            <nav className="py-3 px-2">
+            <nav className="py-3 px-2 space-y-2">
               <button
                 onClick={() => setActiveTab(SettingTabKey.GENERAL)}
                 className={clsx("setting-tab-item", {

@@ -204,7 +204,7 @@ const ChannelList = (): JSX.Element => {
     <>
       <div
         {...scrollTopProps}
-        className={clsx("flex-1 overflow-y-auto pb-2 pl-2 pr-2", {
+        className={clsx("flex-1 overflow-y-auto pb-2 pl-1 pr-1 scrollbar-gutter", {
           "border-t": scrollTop > 0,
         })}
         ref={listRef}

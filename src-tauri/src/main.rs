@@ -9,11 +9,9 @@ extern crate diesel_migrations;
 extern crate dotenv;
 
 use actix_web::dev::ServerHandle;
-use actix_web::{http, middleware, web, App, HttpResponse, HttpServer};
 use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 use log::LevelFilter;
-use serde::{Deserialize, Serialize};
-use tauri::{AppHandle, GlobalWindowEvent, Manager, State, WindowEvent, Wry};
+use tauri::{GlobalWindowEvent, Manager, State, WindowEvent, Wry};
 use tauri_plugin_log::{fern, LogTarget};
 use tokio;
 
@@ -27,7 +25,7 @@ mod server;
 
 use std::{
   env,
-  sync::{Arc, Mutex},
+  sync::{Mutex},
 };
 
 pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!("./migrations");

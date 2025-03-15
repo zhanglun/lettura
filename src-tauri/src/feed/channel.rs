@@ -401,8 +401,6 @@ pub fn add_feed(feed: models::NewFeed, articles: Vec<models::NewArticle>) -> (Op
       .values(articles)
       .execute(&mut connection);
 
-    println!("articles {:?}", articles);
-
     return (result.0, articles.unwrap_or(0), result.2);
   }
 
