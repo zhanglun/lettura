@@ -2,23 +2,26 @@ import React, { useEffect, useRef, useState } from "react";
 import pLimit from "p-limit";
 import { FeedResItem } from "@/db";
 import { useBearStore } from "@/stores";
+import { useShallow } from "zustand/react/shallow";
 
 export const useRefresh = () => {
-  const store = useBearStore((state) => ({
-    userConfig: state.userConfig,
-    getUserConfig: state.getUserConfig,
+  const store = useBearStore(
+    useShallow((state) => ({
+      userConfig: state.userConfig,
+      getUserConfig: state.getUserConfig,
 
-    setLastSyncTime: state.setLastSyncTime,
+      setLastSyncTime: state.setLastSyncTime,
 
-    subscribes: state.subscribes,
-    getSubscribes: state.getSubscribes,
-    updateFeed: state.updateFeed,
-    feed: state.feed,
+      subscribes: state.subscribes,
+      getSubscribes: state.getSubscribes,
+      updateFeed: state.updateFeed,
+      feed: state.feed,
 
-    collectionMeta: state.collectionMeta,
-    updateCollectionMeta: state.updateCollectionMeta,
-    syncArticles: state.syncArticles,
-  }));
+      collectionMeta: state.collectionMeta,
+      updateCollectionMeta: state.updateCollectionMeta,
+      syncArticles: state.syncArticles,
+    }))
+  );
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [done, setDone] = useState<number>(0);
   const timeRef = useRef<any>();

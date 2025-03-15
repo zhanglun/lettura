@@ -11,6 +11,7 @@ import { throttle } from "lodash";
 import { ArticleResItem } from "@/db";
 import { Avatar, HoverCard, IconButton, Select, Tooltip } from "@radix-ui/themes";
 import { getFeedLogo } from "@/helpers/parseXML";
+import { useShallow } from "zustand/react/shallow";
 
 export interface ArticleColRefObject {
   goNext: () => void;
@@ -25,7 +26,7 @@ export const ArticleCol = React.memo(
     const [isSyncing, setIsSyncing] = useState(false);
     const listRef = useRef<HTMLDivElement>(null);
 
-    const store = useBearStore((state) => ({
+    const store = useBearStore(useShallow((state) => ({
       viewMeta: state.viewMeta,
       article: state.article,
       setArticle: state.setArticle,
@@ -42,7 +43,7 @@ export const ArticleCol = React.memo(
       setFilter: state.setFilter,
 
       userConfig: state.userConfig,
-    }));
+    })));
 
     const { articles, isLoading, size, mutate, setSize, isEmpty, isReachingEnd, isToday, isAll, isStarred } =
       useArticle({

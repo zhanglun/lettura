@@ -38,6 +38,7 @@ import { DialogDeleteFolder } from "@/layout/Setting/Content/DialogDeleteFolder"
 import { loadFeed } from "@/hooks/useLoadFeed";
 import clsx from "clsx";
 import { useScrollTop } from "@/hooks/useScrollTop";
+import { useShallow } from "zustand/react/shallow";
 
 type NavClass = {
   isActive: boolean;
@@ -55,21 +56,23 @@ const ChannelList = (): JSX.Element => {
   const [editFeedStatus, setEditFeedStatus] = useModal();
   const [showStatus, setModalStatus] = useModal();
   const { subscribes: feedList, getSubscribes, refreshing, done } = useRefresh();
-  const store = useBearStore((state) => ({
-    feed: state.feed,
-    setFeed: state.setFeed,
-    updateFeed: state.updateFeed,
-    feedContextMenuTarget: state.feedContextMenuTarget,
-    setFeedContextMenuTarget: state.setFeedContextMenuTarget,
-    setFeedContextMenuStatus: state.setFeedContextMenuStatus,
-    articleList: state.articleList,
-    setArticleList: state.setArticleList,
+  const store = useBearStore(
+    useShallow((state) => ({
+      feed: state.feed,
+      setFeed: state.setFeed,
+      updateFeed: state.updateFeed,
+      feedContextMenuTarget: state.feedContextMenuTarget,
+      setFeedContextMenuTarget: state.setFeedContextMenuTarget,
+      setFeedContextMenuStatus: state.setFeedContextMenuStatus,
+      articleList: state.articleList,
+      setArticleList: state.setArticleList,
 
-    setViewMeta: state.setViewMeta,
-    collectionMeta: state.collectionMeta,
-    initCollectionMetas: state.initCollectionMetas,
-    syncArticles: state.syncArticles,
-  }));
+      setViewMeta: state.setViewMeta,
+      collectionMeta: state.collectionMeta,
+      initCollectionMetas: state.initCollectionMetas,
+      syncArticles: state.syncArticles,
+    }))
+  );
 
   const [, , feedUuid] = useQuery();
   const [scrollTop, scrollTopProps] = useScrollTop();

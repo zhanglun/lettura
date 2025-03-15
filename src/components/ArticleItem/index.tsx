@@ -6,14 +6,17 @@ import { ArticleResItem } from "@/db";
 import { ArticleReadStatus } from "@/typing";
 import clsx from "clsx";
 import { Avatar } from "@radix-ui/themes";
+import { useShallow } from "zustand/react/shallow";
 
 export const ArticleItem = React.forwardRef((props: { article: ArticleResItem }, ref: ForwardedRef<HTMLLIElement>) => {
-  const store = useBearStore((state) => ({
-    updateArticleStatus: state.updateArticleStatus,
-    article: state.article,
-    setArticle: state.setArticle,
-    feed: state.feed,
-  }));
+  const store = useBearStore(
+    useShallow((state) => ({
+      updateArticleStatus: state.updateArticleStatus,
+      article: state.article,
+      setArticle: state.setArticle,
+      feed: state.feed,
+    }))
+  );
   const { article } = props;
   const [highlight, setHighlight] = useState<boolean>();
   const [readStatus, setReadStatus] = useState(article.read_status);

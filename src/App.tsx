@@ -6,15 +6,16 @@ import { LocalPage } from "./layout/Local";
 import { Theme } from "@radix-ui/themes";
 import { DialogAboutApp } from "./components/About";
 import { useRefresh } from "./components/Subscribes/useRefresh";
+import { useShallow } from "zustand/react/shallow";
 
 function App() {
-  const store = useBearStore((state) => ({
+  const store = useBearStore(useShallow((state) => ({
     userConfig: state.userConfig,
     getUserConfig: state.getUserConfig,
     updateSettingDialogStatus: state.updateSettingDialogStatus,
     updateAboutDialogStatus: state.updateAboutDialogStatus,
     updateAppMetadata: state.updateAppMetadata,
-  }));
+  })));
   const { loop } = useRefresh();
 
   useEffect(() => {

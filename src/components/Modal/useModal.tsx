@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 
 export const useModal = (): [
   status: boolean,
@@ -11,7 +11,7 @@ export const useModal = (): [
   const showModal = () => setShowStatus(true);
   const hideModal = () => setShowStatus(false);
   const toggleModal = () => setShowStatus(!showStatus);
-  const setModalStatus = (v: boolean) => setShowStatus(v);
+  const setModalStatus = (v: boolean) => useCallback(() => setShowStatus(v), []);
 
   return [showStatus, setModalStatus, showModal, hideModal, toggleModal];
 };

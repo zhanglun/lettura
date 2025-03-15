@@ -1,8 +1,9 @@
-import React, { useEffect, useRef, useState, ChangeEvent } from "react";
+import React, { useEffect, useRef, useState, useMemo, ChangeEvent } from "react";
 import * as dataAgent from "../../helpers/dataAgent";
 import { FolderResItem } from "@/db";
 import { useBearStore } from "@/stores";
 import { Dialog, TextField, Tooltip, Button } from "@radix-ui/themes";
+import { useShallow } from "zustand/react/shallow";
 
 export interface AddFolderProps {
   action: "add" | "edit";
@@ -14,16 +15,14 @@ export interface AddFolderProps {
   afterCancel?: () => void;
 }
 
-export const AddFolder = (props: AddFolderProps) => {
+export const AddFolder = React.memo((props: AddFolderProps) => {
   const { action, folder } = props;
   console.log("%c Line:19 🥪 folder", "color:#ed9ec7", props);
-  const store = useBearStore((state) => ({
+  const store = useBearStore(useShallow((state) => ({
     getSubscribes: state.getSubscribes,
-  }));
+  })));
   const { dialogStatus, setDialogStatus, afterConfirm, afterCancel, trigger } = props;
   const [name, setName] = useState("");
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
   const [confirming, setConfirming] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -69,14 +68,21 @@ export const AddFolder = (props: AddFolderProps) => {
       });
   };
 
-  useEffect(() => {
+  const title = useMemo(() => {
     if (action === "add") {
-      setTitle("Add Folder");
-      setContent("Organize your subscribes");
+      return "Add Folder";
     }
     if (action === "edit") {
-      setTitle("Edit Folder");
-      setContent("Update your folder");
+      return "Edit Folder";
+    }
+  }, [action]);
+
+  const content = useMemo(() => {
+    if (action === "add") {
+      return "Organize your subscribes";
+    }
+    if (action === "edit") {
+      return "Update your folder";
     }
   }, [action]);
 
@@ -123,4 +129,4 @@ export const AddFolder = (props: AddFolderProps) => {
       </Dialog.Content>
     </Dialog.Root>
   );
-};
+});

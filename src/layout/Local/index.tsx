@@ -1,9 +1,10 @@
-import { useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Outlet, NavLink, useMatch, useNavigate } from "react-router-dom";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import clsx from "clsx";
 import { Search, PlusCircle, Settings, FolderPlus, RotateCw } from "lucide-react";
+import { useShallow } from "zustand/react/shallow";
 import { ChannelList } from "../../components/Subscribes";
 import { useBearStore } from "@/stores";
 import { RouteConfig } from "@/config";
@@ -29,13 +30,16 @@ const spaces = [
   // },
 ];
 
-export function LocalPage() {
+export const LocalPage = React.memo(function () {
+  console.log("LocalPage")
   const navigate = useNavigate();
   const matched = useMatch(RouteConfig.LOCAL);
-  const store = useBearStore((state) => ({
-    feed: state.feed,
-    updateSettingDialogStatus: state.updateSettingDialogStatus,
-  }));
+  const store = useBearStore(
+    useShallow((state) => ({
+      feed: state.feed,
+      updateSettingDialogStatus: state.updateSettingDialogStatus,
+    }))
+  );
   const { getSubscribes, refreshing, startRefresh } = useRefresh();
   const [addFolderDialogStatus, setAddFolderDialogStatus] = useModal();
 
@@ -54,6 +58,8 @@ export function LocalPage() {
     }
   }, [matched]);
 
+  const getSubscribesCallback = useCallback(getSubscribes, [getSubscribes]);
+
   return (
     <div className="flex flex-row h-full bg-canvas">
       <div
@@ -67,7 +73,7 @@ export function LocalPage() {
               action="add"
               dialogStatus={addFolderDialogStatus}
               setDialogStatus={setAddFolderDialogStatus}
-              afterConfirm={getSubscribes}
+              afterConfirm={getSubscribesCallback}
               afterCancel={() => {}}
               trigger={
                 <IconButton variant="ghost" size="2" color="gray" className="text-[var(--gray-12)]">
@@ -124,4 +130,4 @@ export function LocalPage() {
       <Outlet />
     </div>
   );
-}
+});
