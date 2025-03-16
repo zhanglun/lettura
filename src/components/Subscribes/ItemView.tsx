@@ -7,6 +7,7 @@ import { useBearStore } from "@/stores";
 import { getFeedLogo } from "@/helpers/parseXML";
 import { NiceFolderIcon } from "../NiceFolderIcon";
 import { Avatar } from "@radix-ui/themes";
+import { useShallow } from "zustand/react/shallow";
 
 export interface CardProps {
   uuid: any;
@@ -25,14 +26,13 @@ export interface CardProps {
 export const ItemView: FC<CardProps> = ({ uuid, text, feed, index, isExpanded, toggleFolder, ...props }) => {
   const { isActive, level } = props;
   const navigate = useNavigate();
-  const store = useBearStore((state) => ({
-    feed: state.feed,
+  const store = useBearStore(useShallow((state) => ({
     setFeed: state.setFeed,
     getSubscribes: state.getSubscribes,
     setFeedContextMenuTarget: state.setFeedContextMenuTarget,
     feedContextMenuTarget: state.feedContextMenuTarget,
     feedContextMenuStatus: state.feedContextMenuStatus,
-  }));
+  })));
 
   const handleToggle = () => {
     if (feed.item_type === "folder") {
@@ -69,6 +69,7 @@ export const ItemView: FC<CardProps> = ({ uuid, text, feed, index, isExpanded, t
           "pl-5": level === 2,
         })}
         onContextMenu={() => {
+          console.log('content menu')
           store.setFeedContextMenuTarget(feed);
         }}
         key={feed.title}
