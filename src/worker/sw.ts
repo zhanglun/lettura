@@ -72,3 +72,5 @@ function textResponse (text: string, status = 200): Response {
 //     client.postMessage({ type, args })
 //   })
 // }
+
+console.log({ version })

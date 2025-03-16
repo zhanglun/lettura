@@ -30,7 +30,6 @@ import { useModal } from "../Modal/useModal";
 import { open } from "@tauri-apps/api/shell";
 import { DialogEditFeed } from "@/layout/Setting/Content/DialogEditFeed";
 import { useQuery } from "@/helpers/parseXML";
-import { useRefresh } from "./useRefresh";
 import { ListContainer } from "./ListContainer";
 import { copyText } from "@/helpers/copyText";
 import { toast } from "sonner";
@@ -55,7 +54,6 @@ const ChannelList = (): JSX.Element => {
   const [deleteFolderStatus, setDeleteFolderStatus] = useModal();
   const [editFeedStatus, setEditFeedStatus] = useModal();
   const [showStatus, setModalStatus] = useModal();
-  const { subscribes: feedList, getSubscribes, refreshing, done } = useRefresh();
   const store = useBearStore(
     useShallow((state) => ({
       feed: state.feed,
@@ -71,6 +69,11 @@ const ChannelList = (): JSX.Element => {
       collectionMeta: state.collectionMeta,
       initCollectionMetas: state.initCollectionMetas,
       syncArticles: state.syncArticles,
+
+      subscribes: state.subscribes,
+      getSubscribes: state.getSubscribes,
+
+      globalSyncStatus: state.globalSyncStatus,
     }))
   );
 
@@ -82,9 +85,9 @@ const ChannelList = (): JSX.Element => {
   }, []);
 
   useEffect(() => {
-    getSubscribes();
+    store.getSubscribes();
     const unsubscribeGetChannels = busChannel.on("getChannels", () => {
-      getSubscribes();
+      store.getSubscribes();
     });
 
     return () => {
@@ -119,7 +122,7 @@ const ChannelList = (): JSX.Element => {
       toast.promise(dataAgent.markAllRead({ uuid, isToday: !!isToday, isAll: !!isAll }), {
         loading: "Loading...",
         success: (data) => {
-          getSubscribes();
+          store.getSubscribes();
           store.initCollectionMetas();
 
           if (store.feed?.uuid === uuid) {
@@ -138,12 +141,12 @@ const ChannelList = (): JSX.Element => {
   };
 
   useEffect(() => {
-    feedList.forEach((feed) => {
+    store.subscribes.forEach((feed) => {
       if (feed.uuid === feedUuid) {
         store.setFeed(feed);
       }
     });
-  }, [feedList]);
+  }, [store.subscribes]);
 
   const listRef = useRef<HTMLDivElement>(null);
   const handleListScroll = useCallback(() => {
@@ -188,7 +191,7 @@ const ChannelList = (): JSX.Element => {
       store.setFeedContextMenuTarget(null);
     }
 
-    getSubscribes();
+    store.getSubscribes();
   };
 
   const afterUnsubscribeFeed = () => {
@@ -200,7 +203,7 @@ const ChannelList = (): JSX.Element => {
       store.setFeedContextMenuTarget(null);
     }
 
-    getSubscribes();
+    store.getSubscribes();
   };
 
   return (
@@ -407,7 +410,7 @@ const ChannelList = (): JSX.Element => {
           feed={store.feedContextMenuTarget}
           dialogStatus={editFeedStatus}
           setDialogStatus={setEditFeedStatus}
-          afterConfirm={getSubscribes}
+          afterConfirm={store.getSubscribes}
           afterCancel={() => store.setFeedContextMenuTarget(null)}
         />
         <AddFolder
@@ -415,17 +418,17 @@ const ChannelList = (): JSX.Element => {
           folder={store.feedContextMenuTarget as FolderResItem | null}
           dialogStatus={editFolderDialogStatus}
           setDialogStatus={setEditFolderDialogStatus}
-          afterConfirm={getSubscribes}
+          afterConfirm={store.getSubscribes}
           afterCancel={() => store.setFeedContextMenuTarget(null)}
         />
       </div>
       <div className="h-[8px]"></div>
-      {refreshing && (
+      {store.globalSyncStatus && (
         <div className="sticky bottom-0 left-0 right-0 p-2 text-right">
           <span className="mr-3 text-xs">Syncing...</span>
-          <span className="text-foreground text-xs">
+          {/* <span className="text-foreground text-xs">
             {done}/{feedList.length}
-          </span>
+          </span> */}
         </div>
       )}
     </>
