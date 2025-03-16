@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Outlet, NavLink, useMatch, useNavigate } from "react-router-dom";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -33,11 +33,8 @@ const spaces = [
 
 export const LocalPage = React.memo(function () {
   console.log("LocalPage");
-  const navigate = useNavigate();
-  const matched = useMatch(RouteConfig.LOCAL);
   const store = useBearStore(
     useShallow((state) => ({
-      feed: state.feed,
       updateSettingDialogStatus: state.updateSettingDialogStatus,
       getSubscribes: state.getSubscribes,
 
@@ -50,22 +47,6 @@ export const LocalPage = React.memo(function () {
   const [addFolderDialogStatus, setAddFolderDialogStatus] = useModal();
   const { startRefresh } = useRefresh();
 
-  useEffect(() => {
-    if (store.feed && matched) {
-      const { feed } = store;
-
-      navigate(
-        `${RouteConfig.LOCAL_FEED.replace(/:uuid/, feed.uuid)}?feedUuid=${feed.uuid}&feedUrl=${feed.feed_url}&type=${
-          feed.item_type
-        }`,
-        {
-          replace: true,
-        }
-      );
-    }
-  }, [matched]);
-
-  const getSubscribesCallback = useCallback(store.getSubscribes, [store.getSubscribes]);
 
   return (
     <div className="flex flex-row h-full bg-canvas">
@@ -80,7 +61,7 @@ export const LocalPage = React.memo(function () {
               action="add"
               dialogStatus={addFolderDialogStatus}
               setDialogStatus={setAddFolderDialogStatus}
-              afterConfirm={getSubscribesCallback}
+              afterConfirm={store.getSubscribes}
               afterCancel={() => {}}
               trigger={
                 <IconButton variant="ghost" size="2" color="gray" className="text-[var(--gray-12)]">
