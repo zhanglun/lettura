@@ -34,6 +34,7 @@ export interface FeedSlice {
   subscribes: FeedResItem[];
   setSubscribes: (list: FeedResItem[]) => void;
   getSubscribes: () => any;
+  getSubscribesFromStore: () => FeedResItem[];
 
   feedContextMenuTarget: FeedResItem | null;
   setFeedContextMenuTarget: (target: FeedResItem | null) => void;
@@ -45,13 +46,15 @@ export interface FeedSlice {
 
   syncArticles: (feed: FeedResItem) => Promise<any>;
   addNewFeed: (feed: FeedResItem) => void;
+
+  /**
+   * global sysnc status
+   */
+  globalSyncStatus: boolean;
+  setGlobalSyncStatus: (status: boolean) => void;
 }
 
-export const createFeedSlice: StateCreator<FeedSlice> = (
-  set,
-  get,
-  ...args
-) => ({
+export const createFeedSlice: StateCreator<FeedSlice> = (set, get, ...args) => ({
   viewMeta: {
     title: "",
     unread: 0,
@@ -164,10 +167,10 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
     }
   },
   subscribes: [],
-  setSubscribes: (list: FeedResItem[])=> {
+  setSubscribes: (list: FeedResItem[]) => {
     set(() => ({
-      subscribes: list
-    }))
+      subscribes: list,
+    }));
   },
   updateFeed: (uuid: string, updater: any) => {
     set((state) => ({
@@ -182,10 +185,7 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
     }));
   },
   getSubscribes: () => {
-    const initUnreadCount = (
-      list: any[],
-      countCache: { [key: string]: number }
-    ) => {
+    const initUnreadCount = (list: any[], countCache: { [key: string]: number }) => {
       return list.map((item) => {
         item.unread = countCache[item.uuid] || 0;
         item.is_expanded = false;
@@ -211,6 +211,14 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
     );
   },
 
+  /**
+   * Return the subscribes data from the store
+   * @returns {FeedResItem[]}
+   */
+  getSubscribesFromStore: () => {
+    return get().subscribes;
+  },
+
   feedContextMenuTarget: null,
   setFeedContextMenuTarget: (target: Channel | null) => {
     set(() => ({
@@ -227,38 +235,38 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
   closeFolder: (uuid: string) => {
     let list = get().subscribes;
 
-    list.forEach(_ => {
+    list.forEach((_) => {
       if (_.uuid === uuid) {
         _.is_expanded = false;
       }
     });
 
     set(() => ({
-      subscribes: [...list]
-    }))
+      subscribes: [...list],
+    }));
   },
 
   openFolder: (uuid: string) => {
     let list = get().subscribes;
 
-    list.forEach(_ => {
+    list.forEach((_) => {
       if (_.uuid === uuid) {
         _.is_expanded = true;
       }
     });
 
     set(() => ({
-      subscribes: [...list]
-    }))
+      subscribes: [...list],
+    }));
   },
 
   syncArticles(feed: FeedResItem): Promise<any> {
-    const {children} = feed;
+    const { children } = feed;
     const limit = pLimit(5);
-    const fns = (children?.length > 0 ? children : [{...feed}]).map((_) => {
+    const fns = (children?.length > 0 ? children : [{ ...feed }]).map((_) => {
       return limit(() => {
         return dataAgent.syncFeed("feed", _.uuid);
-      })
+      });
     });
 
     const collectionMeta = get().collectionMeta;
@@ -273,44 +281,50 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
           }
 
           return acu;
-        }, {} as { [key: string]: any});
+        }, {} as { [key: string]: any });
         let list = get().subscribes.map((_) => {
           if (map[_.uuid]) {
-            _.unread += map[_.uuid][1]
+            _.unread += map[_.uuid][1];
 
-            collectionMeta.today.unread += map[_.uuid][1]
-            collectionMeta.total.unread += map[_.uuid][1]
+            collectionMeta.today.unread += map[_.uuid][1];
+            collectionMeta.total.unread += map[_.uuid][1];
           }
 
           if (_.children) {
-            _.children.forEach(child => {
+            _.children.forEach((child) => {
               if (map[child.uuid]) {
                 child.unread += map[child.uuid][1];
                 _.unread += map[child.uuid][1];
 
-                collectionMeta.today.unread += map[child.uuid][1]
-                collectionMeta.total.unread += map[child.uuid][1]
+                collectionMeta.today.unread += map[child.uuid][1];
+                collectionMeta.total.unread += map[child.uuid][1];
               }
-            })
+            });
           }
 
           return _;
-        })
+        });
 
         set(() => ({
           subscribes: list,
           collectionMeta: collectionMeta,
-        }))
+        }));
 
         return map;
-      }).finally(() => {
-    })
+      })
+      .finally(() => {});
   },
-
 
   addNewFeed(feed) {
     set((state) => ({
-      subscribes: [feed, ...state.subscribes]
-    }))
-  }
+      subscribes: [feed, ...state.subscribes],
+    }));
+  },
+
+  globalSyncStatus: false,
+  setGlobalSyncStatus(status) {
+    set(() => ({
+      globalSyncStatus: status,
+    }));
+  },
 });

@@ -5,7 +5,6 @@ import { useBearStore } from "@/stores";
 import { LocalPage } from "./layout/Local";
 import { Theme } from "@radix-ui/themes";
 import { DialogAboutApp } from "./components/About";
-import { useRefresh } from "./components/Subscribes/useRefresh";
 import { useShallow } from "zustand/react/shallow";
 
 function App() {
@@ -16,7 +15,6 @@ function App() {
     updateAboutDialogStatus: state.updateAboutDialogStatus,
     updateAppMetadata: state.updateAppMetadata,
   })));
-  const { loop } = useRefresh();
 
   useEffect(() => {
     if (window.__TAURI_IPC__ as any) {
@@ -69,8 +67,6 @@ function App() {
             customize_style[key as keyof CustomizeStyle] as string
           );
         });
-
-      loop(cfg);
     });
   }, []);
 

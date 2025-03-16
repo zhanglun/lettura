@@ -13,7 +13,8 @@ import { SpaceSwitcher } from "@/components/SpaceSwitcher";
 import { useModal } from "@/components/Modal/useModal";
 import { AddFeedChannel } from "@/components/AddFeed";
 import { AddFolder } from "@/components/AddFolder";
-import { useRefresh } from "@/components/Subscribes/useRefresh";
+// import { useRefresh } from "@/components/Subscribes/useRefresh";
+import { useRefresh } from "@/hooks/useRefresh";
 import { IconButton, Tooltip } from "@radix-ui/themes";
 import { SettingPage } from "../Setting";
 
@@ -31,17 +32,23 @@ const spaces = [
 ];
 
 export const LocalPage = React.memo(function () {
-  console.log("LocalPage")
+  console.log("LocalPage");
   const navigate = useNavigate();
   const matched = useMatch(RouteConfig.LOCAL);
   const store = useBearStore(
     useShallow((state) => ({
       feed: state.feed,
       updateSettingDialogStatus: state.updateSettingDialogStatus,
+      getSubscribes: state.getSubscribes,
+
+      globalSyncStatus: state.globalSyncStatus,
     }))
   );
-  const { getSubscribes, refreshing, startRefresh } = useRefresh();
+
+  console.log("Hooks: useRefresh-LocalPage-rendered");
+
   const [addFolderDialogStatus, setAddFolderDialogStatus] = useModal();
+  const { startRefresh } = useRefresh();
 
   useEffect(() => {
     if (store.feed && matched) {
@@ -58,7 +65,7 @@ export const LocalPage = React.memo(function () {
     }
   }, [matched]);
 
-  const getSubscribesCallback = useCallback(getSubscribes, [getSubscribes]);
+  const getSubscribesCallback = useCallback(store.getSubscribes, [store.getSubscribes]);
 
   return (
     <div className="flex flex-row h-full bg-canvas">
@@ -84,7 +91,7 @@ export const LocalPage = React.memo(function () {
             <Tooltip content="Update">
               <IconButton
                 size="2"
-                loading={refreshing}
+                loading={store.globalSyncStatus}
                 variant="ghost"
                 onClick={startRefresh}
                 color="gray"

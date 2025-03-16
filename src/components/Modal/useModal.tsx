@@ -7,6 +7,7 @@ export const useModal = (): [
   hideModal: () => void,
   toggleStatus: () => void,
 ] => {
+  console.log("Hooks: useModal called")
   const [showStatus, setShowStatus] = useState(false);
   const showModal = () => setShowStatus(true);
   const hideModal = () => setShowStatus(false);

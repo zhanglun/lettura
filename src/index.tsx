@@ -65,11 +65,13 @@ const router = createBrowserRouter([
 const domNode = document.getElementById("root") as HTMLElement;
 const root = createRoot(domNode);
 
-invoke("get_server_port").then((port) => {
-  console.log("🚀 ~ invoke ~ port:", port);
-  window.localStorage.setItem("port", port as string);
-  root.render(<RouterProvider router={router} />);
-});
+// invoke("get_server_port").then((port) => {
+//   console.log("🚀 ~ invoke ~ port:", port);
+//   window.localStorage.setItem("port", port as string);
+//   root.render(<RouterProvider router={router} />);
+// });
+
+root.render(<RouterProvider router={router} />);
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
