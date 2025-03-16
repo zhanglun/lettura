@@ -98,4 +98,8 @@
   .sidebar-item--active {
     @apply text-accent-foreground after:opacity-100 after:scale-100 after:bg-sidebar-active after:shadow-[0px_0px_0px_1px_rgba(60,64,67,0.00),0px_1.5px_4px_rgba(60,64,67,0.03),0px_3px_10px_rgba(60,64,67,0.1)] border;
   }
+
+  .sidebar-item--hover:not(.sidebar-item--active) {
+    @apply after:opacity-100 after:scale-100 after:bg-sidebar-hover;
+  }
 }

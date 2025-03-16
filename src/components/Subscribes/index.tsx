@@ -47,8 +47,11 @@ const ChannelList = (): JSX.Element => {
       feed: state.feed,
       setFeed: state.setFeed,
       updateFeed: state.updateFeed,
+
       feedContextMenuTarget: state.feedContextMenuTarget,
       setFeedContextMenuTarget: state.setFeedContextMenuTarget,
+      setFeedContextMenuStatus: state.setFeedContextMenuStatus,
+
       articleList: state.articleList,
       setArticleList: state.setArticleList,
 
@@ -141,6 +144,7 @@ const ChannelList = (): JSX.Element => {
   }, []);
 
   const handleContextMenuChange = (status: boolean) => {
+    store.setFeedContextMenuStatus(status);
   };
 
   useEffect(() => {

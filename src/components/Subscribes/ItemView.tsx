@@ -62,7 +62,7 @@ export const ItemView: FC<CardProps> = ({ uuid, text, feed, index, isExpanded, t
       <div
         className={clsx("sidebar-item", {
           "sidebar-item--active": isActive,
-          "shadow-[inset_0_0_0_2px_var(--color-primary)]":
+          "sidebar-item--hover":
             store.feedContextMenuStatus &&
             store.feedContextMenuTarget &&
             store.feedContextMenuTarget.uuid === feed.uuid,
