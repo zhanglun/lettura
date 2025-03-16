@@ -5,6 +5,8 @@ import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
 
 export const useRefresh = () => {
+  console.log("Hooks: useRefresh called")
+
   const store = useBearStore(
     useShallow((state) => ({
       userConfig: state.userConfig,

@@ -41,6 +41,9 @@ export const LocalPage = React.memo(function () {
     }))
   );
   const { getSubscribes, refreshing, startRefresh } = useRefresh();
+
+  console.log('Hooks: useRefresh-LocalPage-rendered');
+
   const [addFolderDialogStatus, setAddFolderDialogStatus] = useModal();
 
   useEffect(() => {
