@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { NavLink, useMatch, useNavigate } from "react-router-dom";
 import {
   Coffee,
@@ -50,10 +50,10 @@ const ChannelList = (): JSX.Element => {
   const isAll = useMatch(RouteConfig.LOCAL_ALL);
   const isStarred = useMatch(RouteConfig.LOCAL_STARRED);
   const navigate = useNavigate();
-  const [editFolderDialogStatus, setEditFolderDialogStatus] = useModal();
-  const [deleteFolderStatus, setDeleteFolderStatus] = useModal();
-  const [editFeedStatus, setEditFeedStatus] = useModal();
-  const [showStatus, setModalStatus] = useModal();
+  const [editFolderDialogStatus, setEditFolderDialogStatus] = useState(false);
+  const [deleteFolderStatus, setDeleteFolderStatus] = useState(false);
+  const [editFeedStatus, setEditFeedStatus] = useState(false);
+  const [showStatus, setModalStatus] = useState(false);
   const store = useBearStore(
     useShallow((state) => ({
       feed: state.feed,
