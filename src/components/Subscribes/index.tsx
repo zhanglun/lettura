@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useMatch, useNavigate } from "react-router-dom";
+import { useMatch } from "react-router-dom";
 import {
   CheckCheck,
   Pencil,
@@ -33,9 +33,11 @@ import clsx from "clsx";
 import { useScrollTop } from "@/hooks/useScrollTop";
 import { useShallow } from "zustand/react/shallow";
 import { CollectionMeta } from "./CollectionMeta";
+import { useTranslation } from "react-i18next";
 
 const ChannelList = (): JSX.Element => {
   console.log("ChannelList rendered")
+  const { t } = useTranslation();
   const isToday = useMatch(RouteConfig.LOCAL_TODAY);
   const isAll = useMatch(RouteConfig.LOCAL_ALL);
   const [editFolderDialogStatus, setEditFolderDialogStatus] = useState(false);
@@ -198,7 +200,7 @@ const ChannelList = (): JSX.Element => {
         ref={listRef}
       >
         <CollectionMeta />
-        <h2 className="mb-2 mt-6 px-2 font-semibold tracking-tight">Feeds</h2>
+        <h2 className="mb-2 mt-6 px-2 font-semibold tracking-tight">{t("Feeds")}</h2>
         <ContextMenu.Root onOpenChange={handleContextMenuChange}>
           <ContextMenu.Trigger>
             <div>
@@ -211,20 +213,20 @@ const ChannelList = (): JSX.Element => {
                 markAllRead();
               }}
             >
-              <CheckCheck size={14} /> Mark all as read
+              <CheckCheck size={14} /> {t("Mark all as read")}
             </ContextMenu.Item>
             <ContextMenu.Separator />
             {store.feedContextMenuTarget?.item_type === "folder" && (
               <>
                 <ContextMenu.Item onSelect={() => setEditFolderDialogStatus(true)}>
-                  <Pencil size={14} /> Edit folder
+                  <Pencil size={14} /> {t("Edit folder")}
                 </ContextMenu.Item>
                 <ContextMenu.Separator />
                 <ContextMenu.Item
                   onClick={() => setDeleteFolderStatus(true)}
                   className="text-[var(--red-10)] hover:text-white"
                 >
-                  <Trash2 size={14} /> Delete folder
+                  <Trash2 size={14} /> {t("Delete folder")}
                 </ContextMenu.Item>
               </>
             )}
@@ -235,7 +237,7 @@ const ChannelList = (): JSX.Element => {
                     <ContextMenu.Item
                       onClick={() => store.feedContextMenuTarget?.link && open(store.feedContextMenuTarget?.link)}
                     >
-                      <ExternalLink size={14} /> Open Home Page
+                      <ExternalLink size={14} /> {t("Open home page")}
                     </ContextMenu.Item>
                     <ContextMenu.Separator />
                     <ContextMenu.Item
@@ -248,7 +250,7 @@ const ChannelList = (): JSX.Element => {
                         )
                       }
                     >
-                      <Link size={14} /> Copy Feed URL
+                      <Link size={14} /> {t("Copy feed URL")}
                     </ContextMenu.Item>
                     <ContextMenu.Item
                       onClick={() =>
@@ -260,25 +262,25 @@ const ChannelList = (): JSX.Element => {
                         )
                       }
                     >
-                      <Link2 size={14} /> Copy Home Page URL
+                      <Link2 size={14} /> {t("Copy home page URL")}
                     </ContextMenu.Item>
                     <ContextMenu.Separator />
                     <ContextMenu.Item onClick={() => reloadFeedIcon(store.feedContextMenuTarget)}>
-                      <Image size={14} /> Reload icon
+                      <Image size={14} /> {t("Reload icon")}
                     </ContextMenu.Item>
                     <ContextMenu.Item onClick={() => reloadFeedData(store.feedContextMenuTarget)}>
-                      <Rss size={14} /> Reload feeds
+                      <Rss size={14} /> {t("Reload feeds")}
                     </ContextMenu.Item>
                     <ContextMenu.Separator />
                     <ContextMenu.Item onClick={() => setEditFeedStatus(true)}>
-                      <FileText size={14} /> View detail
+                      <FileText size={14} /> {t("View detail")}
                     </ContextMenu.Item>
                     <ContextMenu.Separator />
                     <ContextMenu.Item
                       onClick={() => setModalStatus(true)}
                       className="text-[var(--red-10)] hover:text-white"
                     >
-                      <BellOff size={14} /> Unsubscribe
+                      <BellOff size={14} /> {t("Unsubscribe")}
                     </ContextMenu.Item>
                   </>
                 )}

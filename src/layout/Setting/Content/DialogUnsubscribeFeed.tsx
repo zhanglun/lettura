@@ -4,6 +4,7 @@ import { FeedResItem } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
 import { busChannel } from "@/helpers/busChannel";
 import { toast } from "sonner";
+import { useTranslation, Trans } from "react-i18next";
 
 export interface DialogProps {
   feed: FeedResItem | null;
@@ -15,6 +16,7 @@ export interface DialogProps {
 }
 
 export const DialogUnsubscribeFeed = React.memo((props: DialogProps) => {
+  const { t } = useTranslation();
   const { feed, dialogStatus, setDialogStatus, afterConfirm, afterCancel, trigger } = props;
   const [loading, setLoading] = useState(false);
 
@@ -48,19 +50,25 @@ export const DialogUnsubscribeFeed = React.memo((props: DialogProps) => {
     <AlertDialog.Root open={dialogStatus} onOpenChange={setDialogStatus}>
       {trigger && <AlertDialog.Trigger>{trigger}</AlertDialog.Trigger>}
       <AlertDialog.Content>
-        <AlertDialog.Title>Are you absolutely sure?</AlertDialog.Title>
+        <AlertDialog.Title>{t("Are you absolutely sure?")}</AlertDialog.Title>
         <AlertDialog.Description>
-          This action cannot be undone. This will permanently delete the data relates with
-          {feed && <span className="text-primary font-bold ml-1">{feed?.title}</span>}
+          <Trans
+            i18nKey={"This action cannot be undone. This will permanently delete the data relates with"}
+            components={{ bold: <strong /> }}
+            values={{
+              title: feed?.title,
+            }}
+            shouldUnescape={true}
+          ></Trans>
         </AlertDialog.Description>
         <Flex gap="3" mt="4" justify="end">
           <AlertDialog.Cancel onClick={() => handleCancel()}>
             <Button variant="soft" color="gray">
-              Cancel
+              {t("Cancel")}
             </Button>
           </AlertDialog.Cancel>
           <Button variant="solid" color="red" onClick={() => confirmUnsubscribe()}>
-            Unsubscribe
+            {t("Unsubscribe")}
           </Button>
         </Flex>
       </AlertDialog.Content>

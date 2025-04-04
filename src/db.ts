@@ -83,7 +83,7 @@ export interface ArticleResItem {
 export interface FolderResItem {
   id: number;
   uuid: string;
-  name: string;
+  title: string;
   sort: number;
   create_date: string;
   update_date: string;
