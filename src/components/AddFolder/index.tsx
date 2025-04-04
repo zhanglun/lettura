@@ -4,6 +4,7 @@ import { FolderResItem } from "@/db";
 import { useBearStore } from "@/stores";
 import { Dialog, TextField, Tooltip, Button } from "@radix-ui/themes";
 import { useShallow } from "zustand/react/shallow";
+import { useTranslation } from "react-i18next";
 
 export interface AddFolderProps {
   action: "add" | "edit";
@@ -16,11 +17,14 @@ export interface AddFolderProps {
 }
 
 export const AddFolder = React.memo((props: AddFolderProps) => {
+  const { t } = useTranslation();
   const { action, folder } = props;
   console.log("%c Line:19 🥪 folder", "color:#ed9ec7", props);
-  const store = useBearStore(useShallow((state) => ({
-    getSubscribes: state.getSubscribes,
-  })));
+  const store = useBearStore(
+    useShallow((state) => ({
+      getSubscribes: state.getSubscribes,
+    }))
+  );
   const { dialogStatus, setDialogStatus, afterConfirm, afterCancel, trigger } = props;
   const [name, setName] = useState("");
   const [confirming, setConfirming] = useState(false);
@@ -70,19 +74,19 @@ export const AddFolder = React.memo((props: AddFolderProps) => {
 
   const title = useMemo(() => {
     if (action === "add") {
-      return "Add Folder";
+      return t("Add folder");
     }
     if (action === "edit") {
-      return "Edit Folder";
+      return t("Edit folder");
     }
   }, [action]);
 
   const content = useMemo(() => {
     if (action === "add") {
-      return "Organize your subscribes";
+      return t("Organize your subscribes");
     }
     if (action === "edit") {
-      return "Update your folder";
+      return t("Update your folder");
     }
   }, [action]);
 
@@ -119,10 +123,10 @@ export const AddFolder = React.memo((props: AddFolderProps) => {
           ></TextField.Root>
           <div className="flex justify-end gap-3 mt-4">
             <Dialog.Close>
-              <Button variant="soft">Cancel</Button>
+              <Button variant="soft">{t("Cancel")}</Button>
             </Dialog.Close>
             <Button onClick={handleSave} disabled={confirming || !name} loading={confirming}>
-              {confirming ? "Saving" : "Save"}
+              {confirming ? t("Saving") : t("Save")}
             </Button>
           </div>
         </div>

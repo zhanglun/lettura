@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { toast } from "sonner";
 import { Button, AlertDialog, Flex } from "@radix-ui/themes";
-import { Channel, FeedResItem, FolderResItem } from "@/db";
+import { FolderResItem } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
 import { busChannel } from "@/helpers/busChannel";
+import { useTranslation, Trans } from "react-i18next";
 
 export interface DialogProps {
   folder?: FolderResItem | null;
@@ -15,7 +16,9 @@ export interface DialogProps {
 }
 
 export const DialogDeleteFolder = React.memo((props: DialogProps) => {
+  const { t } = useTranslation();
   const { folder, dialogStatus, setDialogStatus, afterConfirm, afterCancel, trigger } = props;
+  console.log("🚀 ~ DialogDeleteFolder ~ folder:", folder)
 
   const confirmDelete = () => {
     if (folder?.uuid) {
@@ -43,19 +46,24 @@ export const DialogDeleteFolder = React.memo((props: DialogProps) => {
     <AlertDialog.Root open={dialogStatus} onOpenChange={setDialogStatus}>
       {trigger && <AlertDialog.Trigger>{trigger}</AlertDialog.Trigger>}
       <AlertDialog.Content>
-        <AlertDialog.Title>Are you absolutely sure?</AlertDialog.Title>
+        <AlertDialog.Title>{t("Are you absolutely sure?")}</AlertDialog.Title>
         <AlertDialog.Description>
-          This action cannot be undone. This will permanently delete the data relates with
-          {folder && <span className="text-primary font-bold ml-1">{folder?.name}</span>}
+          <Trans
+            i18nKey={"This action cannot be undone. This will permanently delete the data relates with"}
+            components={{ bold: <strong /> }}
+            values={{
+              title: folder?.title,
+            }}
+          ></Trans>
         </AlertDialog.Description>
         <Flex gap="3" mt="4" justify="end">
           <AlertDialog.Cancel onClick={() => handleCancel()}>
             <Button variant="soft" color="gray">
-              Cancel
+              {t("Cancel")}
             </Button>
           </AlertDialog.Cancel>
           <Button variant="solid" color="red" onClick={() => confirmDelete()}>
-            Delete folder
+            {t("Delete folder")}
           </Button>
         </Flex>
       </AlertDialog.Content>

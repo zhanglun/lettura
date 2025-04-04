@@ -1,8 +1,7 @@
-import React, { useEffect } from "react";
-import { Icon } from "@/components/Icon";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useBearStore } from "@/stores";
 import { IconButton, Tooltip } from "@radix-ui/themes";
+import { useTranslation } from "react-i18next";
 
 export interface NavigatorProps {
   goNext: () => void;
@@ -10,6 +9,7 @@ export interface NavigatorProps {
 }
 
 export const ToolbarItemNavigator = (props: NavigatorProps) => {
+  const { t } = useTranslation();
   const store = useBearStore((state) => ({
     hasMoreNext: state.hasMoreNext,
     hasMorePrev: state.hasMorePrev,
@@ -25,7 +25,7 @@ export const ToolbarItemNavigator = (props: NavigatorProps) => {
 
   return (
     <>
-      <Tooltip content="Previous article">
+      <Tooltip content={t("Previous article")}>
         <IconButton
           size="2"
           variant="ghost"
@@ -37,7 +37,7 @@ export const ToolbarItemNavigator = (props: NavigatorProps) => {
           <ChevronUp size={16} />
         </IconButton>
       </Tooltip>
-      <Tooltip content="Next article">
+      <Tooltip content={t("Next article")}>
         <IconButton
           size="2"
           variant="ghost"

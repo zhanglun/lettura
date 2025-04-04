@@ -1,43 +1,12 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { NavLink, useMatch, useNavigate } from "react-router-dom";
-import {
-  Coffee,
-  Haze,
-  FolderPlus,
-  CheckCheck,
-  Pencil,
-  Trash2,
-  Rss,
-  Image,
-  ExternalLink,
-  BellOff,
-  FileText,
-  Link,
-  Link2,
-  Star,
-} from "lucide-react";
+import React, { useEffect } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
+import { Coffee, Haze, Star } from "lucide-react";
 import classNames from "classnames";
-import { listen } from "@tauri-apps/api/event";
 import { RouteConfig } from "@/config";
-import { FeedResItem, FolderResItem } from "@/db";
-import * as dataAgent from "@/helpers/dataAgent";
-import { busChannel } from "@/helpers/busChannel";
 import { useBearStore } from "@/stores";
-import { AddFolder } from "../AddFolder";
-import { ContextMenu } from "@radix-ui/themes";
-import { DialogUnsubscribeFeed } from "@/layout/Setting/Content/DialogUnsubscribeFeed";
-import { useModal } from "../Modal/useModal";
-import { open } from "@tauri-apps/api/shell";
-import { DialogEditFeed } from "@/layout/Setting/Content/DialogEditFeed";
-import { useQuery } from "@/helpers/parseXML";
-import { ListContainer } from "./ListContainer";
-import { copyText } from "@/helpers/copyText";
-import { toast } from "sonner";
-import { DialogDeleteFolder } from "@/layout/Setting/Content/DialogDeleteFolder";
-import { loadFeed } from "@/hooks/useLoadFeed";
 import clsx from "clsx";
-import { useScrollTop } from "@/hooks/useScrollTop";
 import { useShallow } from "zustand/react/shallow";
+import { useTranslation } from "react-i18next";
 
 type NavClass = {
   isActive: boolean;
@@ -46,6 +15,7 @@ type NavClass = {
 };
 
 const CollectionMeta = (): JSX.Element => {
+  const { t } = useTranslation();
   console.log("CollectionMeta rendered");
   const navigate = useNavigate();
   const store = useBearStore(
@@ -64,13 +34,13 @@ const CollectionMeta = (): JSX.Element => {
 
   return (
     <>
-      <h2 className="mb-2 mt-6 px-2 font-semibold tracking-tight">Collections</h2>
+      <h2 className="mb-2 mt-6 px-2 font-semibold tracking-tight">{t("Collections")}</h2>
       <div>
         <div
           onClick={() => {
             store.setFeed(null);
             store.setViewMeta({
-              title: "Today",
+              title: t("Today"),
               isToday: true,
               isAll: false,
             });
@@ -84,7 +54,7 @@ const CollectionMeta = (): JSX.Element => {
           >
             <Haze size={16} />
             <span className="shrink grow basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-sm">
-              Today
+              {t("Today")}
             </span>
             {store.collectionMeta.today.unread > 0 && (
               <span
@@ -101,7 +71,7 @@ const CollectionMeta = (): JSX.Element => {
           onClick={() => {
             store.setFeed(null);
             store.setViewMeta({
-              title: "All Items",
+              title: t("All Items"),
               isToday: false,
               isAll: true,
             });
@@ -115,7 +85,7 @@ const CollectionMeta = (): JSX.Element => {
           >
             <Coffee size={16} />
             <span className="shrink grow basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-sm">
-              All Items
+              {t("All Items")}
             </span>
             {store.collectionMeta.total.unread > 0 && (
               <span
@@ -132,7 +102,7 @@ const CollectionMeta = (): JSX.Element => {
           onClick={() => {
             store.setFeed(null);
             store.setViewMeta({
-              title: "Starred",
+              title: t("Starred"),
               isToday: false,
               isAll: false,
               isStarred: true,
@@ -148,7 +118,7 @@ const CollectionMeta = (): JSX.Element => {
           >
             <Star size={16} />
             <span className="shrink grow basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-sm">
-              Starred
+              {t("Starred")}
             </span>
           </NavLink>
         </div>

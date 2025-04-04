@@ -8,6 +8,7 @@ import { ToolbarItemNavigator } from "./ToolBar";
 import { StarAndRead } from "@/layout/Article/StarAndRead";
 import { PlayerSwitcher } from "@/components/PodcastPlayer/PlayerSwitch";
 import { Separator } from "@radix-ui/themes";
+import { useTranslation } from "react-i18next";
 
 export interface ArticleViewProps {
   goNext: () => void;
@@ -20,6 +21,7 @@ export function View(props: ArticleViewProps) {
     feed: state.feed,
     article: state.article,
   }));
+  const { t } = useTranslation();
 
   const renderPlaceholder = () => {
     return (
@@ -41,10 +43,10 @@ export function View(props: ArticleViewProps) {
           </svg>
         </div>
         <h2 className="text-2xl font-medium text-[var(--gray-12)] mb-2">
-          Ready to Read
+          {t("Ready to Read")}
         </h2>
         <p className="text-[var(--gray-11)] text-base">
-          Select an article from your feed to start reading
+          {t("Select an article from your subscribe to start reading")}
         </p>
       </div>
     );

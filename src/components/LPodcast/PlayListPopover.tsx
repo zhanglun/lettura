@@ -30,7 +30,7 @@ export const PlayListPopover: React.FC<PlayListPopoverProps> = ({ currentTrack, 
           <ListBulletIcon />
         </IconButton>
       </Popover.Trigger>
-      <Popover.Content className="p-0 slide-popover" align="end" alignOffset={-30} sideOffset={20}>
+      <Popover.Content className="p-0 slide-popover shadow-sm border" align="end" alignOffset={-30} sideOffset={20}>
         <PlayList
           onTrackSelect={handleTrackSelect}
           onClose={() => {}}
