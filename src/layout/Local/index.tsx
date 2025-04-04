@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Outlet, NavLink } from "react-router-dom";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -11,7 +11,6 @@ import { useBearStore } from "@/stores";
 import { RouteConfig } from "@/config";
 
 import { SpaceSwitcher } from "@/components/SpaceSwitcher";
-import { useModal } from "@/components/Modal/useModal";
 import { AddFeedChannel } from "@/components/AddFeed";
 import { AddFolder } from "@/components/AddFolder";
 import { useRefresh } from "@/hooks/useRefresh";
@@ -44,9 +43,8 @@ export const LocalPage = React.memo(function () {
 
   console.log("Hooks: useRefresh-LocalPage-rendered");
 
-  const [addFolderDialogStatus, setAddFolderDialogStatus] = useModal();
+  const [addFolderDialogStatus, setAddFolderDialogStatus] = useState(false);
   const { startRefresh } = useRefresh();
-
 
   return (
     <div className="flex flex-row h-full bg-canvas">
