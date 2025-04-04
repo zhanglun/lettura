@@ -12,12 +12,14 @@ import { useBearStore } from "@/stores";
 import { SettingTabKey } from "@/typing";
 import "./index.css";
 import clsx from "clsx";
+import { useTranslation } from "react-i18next";
 
 interface SettingPageProps {
   children: React.ReactNode;
 }
 
 export function SettingPage({ children }: SettingPageProps) {
+  const { t } = useTranslation();
   const store = useBearStore((state) => ({
     settingDialogStatus: state.settingDialogStatus,
     updateSettingDialogStatus: state.updateSettingDialogStatus,
@@ -42,7 +44,7 @@ export function SettingPage({ children }: SettingPageProps) {
       <Tooltip
         content={
           <>
-            Go to settings <Kbd className="ml-3">s</Kbd>
+            {t("Go to settings")} <Kbd className="ml-3">s</Kbd>
           </>
         }
         side="right"

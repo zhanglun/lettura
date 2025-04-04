@@ -13,6 +13,7 @@ import { FreshRSSPage } from "./layout/FreshRSS";
 
 import "./index.css";
 import { listen } from "@tauri-apps/api/event";
+import "./i18n";
 
 const router = createBrowserRouter([
   {
@@ -65,7 +66,7 @@ const router = createBrowserRouter([
 const domNode = document.getElementById("root") as HTMLElement;
 const root = createRoot(domNode);
 
-if (typeof window.__TAURI_IPC__ === 'function') {
+if (typeof window.__TAURI_IPC__ === "function") {
   invoke("get_server_port").then((port) => {
     console.log("🚀 ~ invoke ~ port:", port);
     window.localStorage.setItem("port", port as string);

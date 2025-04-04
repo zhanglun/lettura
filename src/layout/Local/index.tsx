@@ -1,8 +1,9 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Outlet, NavLink, useMatch, useNavigate } from "react-router-dom";
+import React from "react";
+import { Outlet, NavLink } from "react-router-dom";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import clsx from "clsx";
+import { useTranslation } from 'react-i18next';
 import { Search, PlusCircle, Settings, FolderPlus, RotateCw } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 import { ChannelList } from "../../components/Subscribes";
@@ -13,7 +14,6 @@ import { SpaceSwitcher } from "@/components/SpaceSwitcher";
 import { useModal } from "@/components/Modal/useModal";
 import { AddFeedChannel } from "@/components/AddFeed";
 import { AddFolder } from "@/components/AddFolder";
-// import { useRefresh } from "@/components/Subscribes/useRefresh";
 import { useRefresh } from "@/hooks/useRefresh";
 import { IconButton, Tooltip } from "@radix-ui/themes";
 import { SettingPage } from "../Setting";
@@ -32,7 +32,7 @@ const spaces = [
 ];
 
 export const LocalPage = React.memo(function () {
-  console.log("LocalPage");
+  const { t } = useTranslation();
   const store = useBearStore(
     useShallow((state) => ({
       updateSettingDialogStatus: state.updateSettingDialogStatus,
@@ -69,7 +69,7 @@ export const LocalPage = React.memo(function () {
                 </IconButton>
               }
             />
-            <Tooltip content="Update">
+            <Tooltip content={t("Update")}>
               <IconButton
                 size="2"
                 loading={store.globalSyncStatus}
@@ -84,7 +84,7 @@ export const LocalPage = React.memo(function () {
           </div>
         </div>
         <div className="mt-4 px-2 pb-3">
-          <Tooltip content="Search content" side="right">
+          <Tooltip content={t('Search content')} side="right">
             <>
               <NavLink
                 to={RouteConfig.SEARCH}
@@ -93,20 +93,20 @@ export const LocalPage = React.memo(function () {
                 }}
               >
                 <Search size={16} />
-                Search
+                {t('Search')}
               </NavLink>
             </>
           </Tooltip>
           <AddFeedChannel>
             <div className={"sidebar-item"}>
               <PlusCircle size={16} />
-              New Subscribe
+              {t('New Subscribe')}
             </div>
           </AddFeedChannel>
           <SettingPage>
             <div className={"sidebar-item"}>
               <Settings size={16} />
-              Settings
+              {t('Settings')}
             </div>
           </SettingPage>
         </div>

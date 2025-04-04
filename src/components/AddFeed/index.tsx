@@ -9,8 +9,10 @@ import { ArrowLeft, Loader2, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { useBearStore } from "@/stores";
 import { wraperWithRadix } from "../ArticleView/ContentRender";
+import { useTranslation } from "react-i18next";
 
 export const AddFeedChannel = (props: any) => {
+  const { t } = useTranslation();
   const store = useBearStore((state) => ({
     initCollectionMetas: state.initCollectionMetas,
     addNewFeed: state.addNewFeed,
@@ -113,7 +115,7 @@ export const AddFeedChannel = (props: any) => {
       <Tooltip
         content={
           <>
-            Create new subscribe <Kbd className="ml-3">c</Kbd>
+            {t("Create new subscribe")} <Kbd className="ml-3">c</Kbd>
           </>
         }
         side="right"
@@ -128,10 +130,10 @@ export const AddFeedChannel = (props: any) => {
               <ArrowLeft size={16} />
             </Icon>
           )}
-          Subscribe
+          {t("Create new subscribe")}
         </Dialog.Title>
         <Dialog.Description size="2" mb="4" color="gray">
-          Follow your favorite sources and never miss a story
+          {t("Follow your favorite sources and never miss a story")}
         </Dialog.Description>
         <div className="py-3">
           {step === 1 && (
@@ -144,10 +146,10 @@ export const AddFeedChannel = (props: any) => {
               ></TextField.Root>
               <div className="flex justify-end gap-3 mt-4">
                 <Dialog.Close>
-                  <Button variant="soft">Cancel</Button>
+                  <Button variant="soft">{t("Cancel")}</Button>
                 </Dialog.Close>
                 <Button onClick={handleLoad} disabled={loading} loading={loading}>
-                  {loading ? "Loading" : "Load"}
+                  {loading ? t("Loading") : t("Load")}
                 </Button>
               </div>
             </>
@@ -168,10 +170,10 @@ export const AddFeedChannel = (props: any) => {
               </div>
               <div className="flex justify-end gap-3 mt-4">
                 <Dialog.Close>
-                  <Button variant="soft">Cancel</Button>
+                  <Button variant="soft">{t("Cancel")}</Button>
                 </Dialog.Close>
                 <Button onClick={handleSave} disabled={confirming} loading={confirming}>
-                  {confirming ? "Subscribing" : "Subscribe"}
+                  {confirming ? "Subscribing" : t("Subscribe")}
                 </Button>
               </div>
             </>
