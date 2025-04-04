@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { PlayIcon, TrashIcon } from "@radix-ui/react-icons";
 import clsx from "clsx";
 import "./PlayList.css";
+import { useTranslation } from 'react-i18next';
 
 const AudioWaveform = () => {
   const bars = [
@@ -70,6 +71,7 @@ export const PlayList: React.FC<PlayListProps> = ({
   isPlaying = false,
   onPlay,
 }) => {
+  const { t } = useTranslation();
   const { tracks, removeTrack } = useBearStore((state) => ({
     tracks: state.tracks,
     removeTrack: state.removeTrack,
@@ -95,8 +97,8 @@ export const PlayList: React.FC<PlayListProps> = ({
     >
       <Box className="border-b border-gray-5 bg-background backdrop-blur-sm sticky top-0 z-10">
         <Flex className="px-4 py-3 items-center justify-between">
-          <Text className="text-gray-12 font-medium text-sm">播放列表</Text>
-          <Text className="text-gray-11 text-sm">{tracks.length} 集</Text>
+          <Text className="text-gray-12 font-medium text-sm">{t("Playlist")}</Text>
+          {/* <Text className="text-gray-11 text-sm">{tracks.length} 集</Text> */}
         </Flex>
       </Box>
 

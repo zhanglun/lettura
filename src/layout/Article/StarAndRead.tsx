@@ -4,6 +4,7 @@ import { ArticleReadStatus, ArticleStarStatus } from "@/typing";
 import React, { useEffect, useState } from "react";
 import { ArticleResItem } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
+import { useTranslation } from "react-i18next";
 
 export interface StarAndReadProps {
   article: ArticleResItem;
@@ -11,6 +12,7 @@ export interface StarAndReadProps {
 
 export function StarAndRead(props: StarAndReadProps) {
   const { article } = props;
+  const { t } = useTranslation();
   const [readStatus, setReadStatus] = useState<number>();
   const [starred, setStarred] = useState<number>();
 
@@ -55,7 +57,7 @@ export function StarAndRead(props: StarAndReadProps) {
   return (
     <div className="flex items-center space-x-3">
       {article.starred === ArticleStarStatus.UNSTAR && (
-        <Tooltip content="Star it">
+        <Tooltip content={t("Star it")}>
           <IconButton
             variant="ghost"
             size="2"
@@ -71,7 +73,7 @@ export function StarAndRead(props: StarAndReadProps) {
         </Tooltip>
       )}
       {article.starred === ArticleStarStatus.STARRED && (
-        <Tooltip content="Unstar it">
+        <Tooltip content={t("Unstar it")}>
           <IconButton
             variant="ghost"
             size="2"
@@ -87,7 +89,7 @@ export function StarAndRead(props: StarAndReadProps) {
         </Tooltip>
       )}
       {article.read_status === ArticleReadStatus.UNREAD && (
-        <Tooltip content="Mark as read">
+        <Tooltip content={t("Mark as read")}>
           <IconButton
             variant="ghost"
             size="2"
@@ -103,7 +105,7 @@ export function StarAndRead(props: StarAndReadProps) {
         </Tooltip>
       )}
       {article.read_status === ArticleReadStatus.READ && (
-        <Tooltip content="Mark as unread">
+        <Tooltip content={t("Mark as unread")}>
           <IconButton
             variant="ghost"
             size="2"

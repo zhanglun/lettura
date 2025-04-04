@@ -12,6 +12,7 @@ import { ArticleResItem } from "@/db";
 import { Avatar, HoverCard, IconButton, Select, Tooltip } from "@radix-ui/themes";
 import { getFeedLogo } from "@/helpers/parseXML";
 import { useShallow } from "zustand/react/shallow";
+import { useTranslation } from "react-i18next";
 
 export interface ArticleColRefObject {
   goNext: () => void;
@@ -20,6 +21,7 @@ export interface ArticleColRefObject {
 
 export const ArticleCol = React.memo(
   React.forwardRef<ArticleColRefObject, any>((props: { feedUuid?: string; type?: string }, listForwarded) => {
+    const { t } = useTranslation();
     const { feedUuid, type } = props;
     // @ts-ignore
     const params: { name: string } = useParams();
@@ -257,13 +259,13 @@ export const ArticleCol = React.memo(
                 })}
               </Select.Content>
             </Select.Root>
-            <Tooltip content="Mark all as read">
+            <Tooltip content={t("Mark all as read")}>
               <IconButton onClick={markAllRead} size="2" variant="ghost" color="gray" className="text-[var(--gray-12)]">
                 <CheckCheck size={14} />
               </IconButton>
             </Tooltip>
             {!!!isStarred && (
-              <Tooltip content="Reload feed">
+              <Tooltip content={t("Reload feeds")}>
                 <IconButton
                   onClick={handleRefresh}
                   size="2"

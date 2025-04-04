@@ -1,18 +1,19 @@
-import React, { useEffect } from "react";
-import { ExternalLink, Ghost, Link, Paintbrush, Share } from "lucide-react";
+import React  from "react";
+import { ExternalLink, Link } from "lucide-react";
 import { useBearStore } from "@/stores";
 import { Article } from "@/db";
-import { CustomizeStyle } from "@/layout/Setting/CustomizeStyle";
 import { open } from "@tauri-apps/api/shell";
 import * as dataAgent from "@/helpers/dataAgent";
 import { toast } from "sonner";
-import { IconButton, Popover, Tooltip } from "@radix-ui/themes";
+import { IconButton, Tooltip } from "@radix-ui/themes";
+import { useTranslation } from "react-i18next";
 
 export interface NavigatorProps {
   listRef?: any;
 }
 
 export const ReadingOptions = (props: NavigatorProps) => {
+  const { t } = useTranslation();
   const store = useBearStore((state) => ({
     article: state.article,
     articleList: state.articleList,
@@ -106,7 +107,7 @@ export const ReadingOptions = (props: NavigatorProps) => {
           />
         </IconButton>
       </Tooltip> */}
-      <Tooltip content="Open in browser">
+      <Tooltip content={t("Open in browser")}>
         <IconButton
           size="2"
           variant="ghost"
@@ -117,7 +118,7 @@ export const ReadingOptions = (props: NavigatorProps) => {
           <ExternalLink size={16} />
         </IconButton>
       </Tooltip>
-      <Tooltip content="Copy link">
+      <Tooltip content={t("Copy link")}>
         <IconButton size="2" variant="ghost" color="gray" className="text-[var(--gray-12)]" onClick={handleCopyLink}>
           <Link size={16} />
         </IconButton>
