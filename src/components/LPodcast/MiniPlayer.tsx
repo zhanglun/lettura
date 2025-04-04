@@ -43,7 +43,7 @@ interface MiniPlayerProps {
 
 export const MiniPlayer: React.FC<MiniPlayerProps> = ({ currentTrack, isPlaying, togglePlay, onExpand }) => {
   return (
-    <Box className="bg-[var(--gray-1)] rounded-lg shadow-lg overflow-hidden w-[380px] border">
+    <Box className="bg-[var(--gray-1)] rounded-lg shadow-sm overflow-hidden w-[380px] border">
       <Flex align="center" className="p-2 gap-3">
         {/* Cover with play/pause overlay */}
         <div className="mini-player-cover">

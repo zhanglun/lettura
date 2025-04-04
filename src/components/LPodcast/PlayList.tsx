@@ -90,10 +90,10 @@ export const PlayList: React.FC<PlayListProps> = ({
 
   return (
     <motion.div
-      initial={listAnimation.initial}
-      animate={listAnimation.animate}
-      transition={listAnimation.transition}
-      className="bg-background h-[50vh] w-[380px] flex flex-col overflow-hidden"
+      // initial={listAnimation.initial}
+      // animate={listAnimation.animate}
+      // transition={listAnimation.transition}
+      className="bg-background h-[50vh] w-[379px] flex flex-col overflow-hidden"
     >
       <Box className="border-b border-gray-5 bg-background backdrop-blur-sm sticky top-0 z-10">
         <Flex className="px-4 py-3 items-center justify-between">
@@ -102,7 +102,7 @@ export const PlayList: React.FC<PlayListProps> = ({
         </Flex>
       </Box>
 
-      <Box className="flex-1 overflow-y-auto playlist-scroll">
+      <Box className="flex-1 overflow-y-auto scrollbar-gutter">
         <Box className="py-2 px-2">
           {tracks.map((track, index) => (
             <motion.div

@@ -1,16 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Avatar, Box, Flex, IconButton, Popover, Slider, Text } from "@radix-ui/themes";
+import { Avatar, Box, Flex, IconButton, Slider, Text } from "@radix-ui/themes";
 import {
   ChevronDownIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-  ListBulletIcon,
   PlayIcon,
   PauseIcon,
   SpeakerLoudIcon,
   SpeakerOffIcon,
-  ChevronUpIcon,
-  HeartIcon,
 } from "@radix-ui/react-icons";
 import { useAudioPlayer } from "./useAudioPlayer";
 import { MiniPlayer } from "./MiniPlayer";
@@ -98,7 +95,7 @@ export const LPodcast: React.FC<LPodcastProps> = ({ visible = true }) => {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 20 }}
         transition={{ duration: 0.2 }}
-        className="fixed bottom-6 right-6 z-50"
+        className="fixed bottom-5 right-5 z-50"
       >
         {isMini ? (
           <MiniPlayer
@@ -108,7 +105,7 @@ export const LPodcast: React.FC<LPodcastProps> = ({ visible = true }) => {
             onExpand={() => setIsMini(false)}
           />
         ) : (
-          <Box className="fixed bottom-0 left-0 right-0 bg-[var(--gray-1)] shadow-lg border-t border-[var(--gray-6)]">
+          <Box className="fixed bottom-0 left-0 right-0 bg-[var(--gray-1)] shadow-sm border-t border-[var(--gray-6)]">
             <Box p="3" className="max-w-[1200px] mx-auto">
               <Flex gap="6" align="center">
                 {/* Section A: Cover and Info */}
@@ -211,7 +208,7 @@ export const LPodcast: React.FC<LPodcastProps> = ({ visible = true }) => {
                 </Flex>
 
                 {/* Section C: Additional Controls */}
-                <Flex gap="3" align="center" justify="end" className="max-w-[300px]">
+                <Flex gap="3" align="center" justify="end" className="">
                   {/* Playlist */}
                   <PlayListPopover currentTrack={currentTrack} isPlaying={isPlaying} />
                   {/* Volume */}
