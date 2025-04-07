@@ -1,73 +1,78 @@
 import { Panel, PanelSection } from "../Panel";
 import { useBearStore } from "@/stores";
-import { TextField, Select, Switch, Separator } from "@radix-ui/themes";
-import { invoke } from "@tauri-apps/api";
-import { debounce } from "lodash";
-import { ChangeEvent, useEffect, useState } from "react";
+import { Select, Switch, Separator } from "@radix-ui/themes";
+import { useTranslation } from "react-i18next";
+import i18next from "i18next";
 
 const intervalOptions = [
   {
     value: 0,
-    label: "Manual",
+    label: i18next.t("Manual"),
   },
   {
     value: 1,
-    label: "1 hour",
+    label: `1 ${i18next.t("hour")}`,
   },
   {
     value: 6,
-    label: "6 hour",
+    label: `6 ${i18next.t("hour")}`,
   },
   {
     value: 12,
-    label: "12 hours",
+    label: `12 ${i18next.t("hours")}`,
   },
   {
     value: 24,
-    label: "24 hours",
+    label: `24 ${i18next.t("hours")}`,
   },
 ];
 
 const purgeOptions = [
   {
     value: 0,
-    label: "Never",
+    label: i18next.t("Never"),
   },
   {
     value: 1,
-    label: "today",
+    label: i18next.t("today"),
   },
   {
     value: 7,
-    label: "one week",
+    label: i18next.t("one week"),
   },
   {
     value: 14,
-    label: "two weeks",
+    label: i18next.t("two weeks"),
   },
   {
     value: 30,
-    label: "a month",
+    label: i18next.t("a month"),
   },
   {
     value: 180,
-    label: "six month",
+    label: i18next.t("six month"),
   },
   {
     value: 360,
-    label: "one year",
+    label: i18next.t("one year"),
   },
 ];
 
+const langs = {
+  en: { nativeName: "English" },
+  zh: { nativeName: "中文" },
+};
+
 export const General = () => {
+  const { t, i18n } = useTranslation();
   const store = useBearStore((state) => ({
     userConfig: state.userConfig,
     updateUserConfig: state.updateUserConfig,
   }));
 
   return (
-    <Panel title="General">
-      <PanelSection title="Update Interval (🚧WIP)" subTitle="set the update interval">
+    <Panel title={t("General")}>
+      <PanelSection title={t("Update Interval")} subTitle={t("set the update interval")}>
         <Select.Root
           value={store.userConfig.update_interval?.toString()}
           onValueChange={(v: string) => {
@@ -92,7 +97,7 @@ export const General = () => {
         </Select.Root>
       </PanelSection>
       <Separator className="mt-6" size="4" />
-      <PanelSection title="Thread" subTitle="set the concurrent number of requests (from 1 to 5)">
+      <PanelSection title={t("Thread")} subTitle={t("set the concurrent number of requests (from 1 to 5)")}>
         <Select.Root
           value={store.userConfig.threads?.toString()}
           onValueChange={(v: string) => {
@@ -115,7 +120,7 @@ export const General = () => {
         </Select.Root>
       </PanelSection>
       <Separator className="mt-6" size="4" />
-      <PanelSection title="Purge articles older than" subTitle="save your disk">
+      <PanelSection title={t("Purge articles older than")} subTitle={t("save your disk")}>
         <div className="flex items-center gap-2">
           <Select.Root
             value={store.userConfig.purge_on_days?.toString()}
@@ -139,7 +144,7 @@ export const General = () => {
           </Select.Root>
         </div>
       </PanelSection>
-      <PanelSection title="Purge unread articles">
+      <PanelSection title={t("Purge unread articles")}>
         <div>
           <Switch
             checked={store.userConfig.purge_unread_articles}
@@ -151,6 +156,29 @@ export const General = () => {
             }}
             aria-readonly
           />
+        </div>
+      </PanelSection>
+      <Separator className="mt-6" size="4" />
+      <PanelSection title={t("Language")}>
+        <div className="flex items-center gap-2">
+          <Select.Root
+            // value={store.userConfig.purge_on_days?.toString()}
+            onValueChange={(v: string) => {
+              console.log(v);
+              i18n.changeLanguage(v);
+            }}
+          >
+            <Select.Trigger />
+            <Select.Content>
+              {Object.keys(langs).map((key: string) => {
+                return (
+                  <Select.Item key={key} value={key}>
+                    {langs[key].nativeName}
+                  </Select.Item>
+                );
+              })}
+            </Select.Content>
+          </Select.Root>
         </div>
       </PanelSection>
     </Panel>

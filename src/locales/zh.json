@@ -48,5 +48,33 @@
   "Next article": "下一篇",
   "Open in browser": "在浏览器中打开",
   "Copy link": "复制链接",
-  "Playlist": "播放列表"
+  "Playlist": "播放列表",
+
+  "General": "通用",
+  "Update Interval":"更新间隔",
+  "set the update interval": "设置自动更新的间隔时间",
+  "Manual": "手动",
+  "hour": "小时",
+  "hours": "小时",
+
+  "Never": "从不",
+  "today": "今天",
+  "one week": "一周",
+  "two weeks": "两周",
+  "a month": "一个月",
+  "six month": "六个月",
+  "one year": "一年",
+
+  "Thread": "并发数量",
+  "set the concurrent number of requests (from 1 to 5)": "设置并发请求数（从1到5）",
+  "Purge articles older than": "清理文章",
+  "save your disk": "自动清理超过指定时间的文章",
+  "Purge unread articles": "清理未读文章",
+
+  "Language": "语言",
+
+  "Appearance": "外观",
+  "Proxy": "代理",
+  "Shortcuts": "快捷键",
+  "Import & Export": "导入/导出"
 }
