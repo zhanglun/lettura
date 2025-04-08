@@ -58,7 +58,7 @@ const purgeOptions = [
   },
 ];
 
-const langs = {
+const langs: { [key: string]: { nativeName: string } } = {
   en: { nativeName: "English" },
   zh: { nativeName: "中文" },
 };
