@@ -75,6 +75,23 @@
 
   "Appearance": "外观",
   "Proxy": "代理",
+  "Proxy Settings": "代理设置",
+  "Add Proxy": "添加代理",
+  "you can try to use proxy server for connection when feed cant access": "当订阅无法访问时，您可以尝试使用代理服务器进行连接",
+
   "Shortcuts": "快捷键",
-  "Import & Export": "导入/导出"
+  "Subscribe feed": "添加订阅",
+  "View next article": "下一篇文章",
+  "View previous article": "上一篇文章",
+  "Scroll down": "向下滚动",
+  "Scroll up": "向上滚动",
+  "Open link in browser": "在浏览器中打开链接",
+  "Import & Export": "导入/导出",
+  "Import/Export": "导入/导出",
+  "Exporting": "导出中",
+  "Import": "导入",
+  "OPML Import": "导入文件",
+  "OPML Export": "导出文件",
+  "Browse file": "选择文件",
+  "Download OPML subscriptions file": "下载 OPML 文件"
 }

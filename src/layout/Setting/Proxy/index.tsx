@@ -7,6 +7,7 @@ import { request } from "@/helpers/request";
 import { useModal } from "@/components/Modal/useModal";
 import { useBearStore } from "@/stores";
 import { FeedResItem } from "@/db";
+import { useTranslation } from "react-i18next";
 
 export interface ProxyItemProps {
   proxy: LocalProxy;
@@ -65,10 +66,11 @@ export const ProxyItem = ({ proxy, bindFeeds, onEdit, onDelete, onRuleChange }: 
 };
 
 export const ProxySetting = () => {
+  const { t } = useTranslation();
   const store = useBearStore((state) => ({
     subscribes: state.subscribes,
   }));
-  const [proxyModalStatus, setProxyModalStatus] = useModal();
+  const [proxyModalStatus, setProxyModalStatus] = useState<boolean>(false);
   const [proxyRuleModalStatus, setProxyRuleModalStatus] = useModal();
   const [proxyList, setProxyList] = useState<LocalProxy[]>([]);
   const [feedList, setFeedList] = useState<FeedResItem[]>([]);
@@ -155,11 +157,11 @@ export const ProxySetting = () => {
   }, [store.subscribes]);
 
   return (
-    <Panel title="Proxy Settings">
-      <PanelSection title="Proxy" subTitle="use proxy server for connection">
+    <Panel title={t("Proxy Settings")}>
+      <PanelSection title={t("Proxy")} subTitle={t("you can try to use proxy server for connection when feed cant access")}>
         <Button variant="ghost" onClick={() => setProxyModalStatus(true)}>
           <PlusCircle size="16" strokeWidth={1.5} />
-          Add Proxy
+          {t("Add Proxy")}
         </Button>
         <ProxyModal
           dialogStatus={proxyModalStatus}
@@ -175,9 +177,10 @@ export const ProxySetting = () => {
       </PanelSection>
       <div></div>
       <div>
-        {proxyList.map((proxy) => {
+        {proxyList.map((proxy, idx) => {
           return (
             <ProxyItem
+              key={idx}
               proxy={proxy}
               bindFeeds={getSelectFeedResItem(proxy, rules)}
               onEdit={() => handleEditProxy(proxy)}
