@@ -1,4 +1,4 @@
-import React, { useImperativeHandle, useRef, useState } from "react";
+import React, { useImperativeHandle, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { ArticleList } from "@/components/ArticleList";
 import { useBearStore } from "@/stores";
@@ -13,6 +13,7 @@ import { Avatar, HoverCard, IconButton, Select, Tooltip } from "@radix-ui/themes
 import { getFeedLogo } from "@/helpers/parseXML";
 import { useShallow } from "zustand/react/shallow";
 import { useTranslation } from "react-i18next";
+import i18next from "i18next";
 
 export interface ArticleColRefObject {
   goNext: () => void;
@@ -40,7 +41,6 @@ export const ArticleCol = React.memo(
       setHasMorePrev: state.setHasMorePrev,
       setHasMoreNext: state.setHasMoreNext,
 
-      filterList: state.filterList,
       currentFilter: state.currentFilter,
       setFilter: state.setFilter,
 
@@ -52,7 +52,20 @@ export const ArticleCol = React.memo(
         feedUuid,
         type,
       });
-
+    const filterList = useMemo(() => [
+      {
+        id: 0,
+        title: i18next.t("All articles"),
+      },
+      {
+        id: 1,
+        title: i18next.t("Unread"),
+      },
+      {
+        id: 2,
+        title: i18next.t("Read"),
+      },
+    ], []);
     const handleRefresh = () => {
       if (store.feed && store.feed.uuid) {
         setIsSyncing(true);
@@ -79,9 +92,9 @@ export const ArticleCol = React.memo(
     };
 
     const changeFilter = (id: any) => {
-      if (store.filterList.some((_) => _.id === parseInt(id, 10))) {
+      if (filterList.some((_) => _.id === parseInt(id, 10))) {
         store.setFilter({
-          ...store.filterList.filter((_) => _.id === parseInt(id, 10))[0],
+          ...filterList.filter((_) => _.id === parseInt(id, 10))[0],
         });
       }
     };
@@ -250,7 +263,7 @@ export const ArticleCol = React.memo(
             <Select.Root defaultValue={`${store.currentFilter.id}`} onValueChange={changeFilter} size="1">
               <Select.Trigger variant="surface" color="gray" className="hover:bg-[var(--accent-a3)]" />
               <Select.Content>
-                {store.filterList.map((item) => {
+                {filterList.map((item) => {
                   return (
                     <Select.Item key={`${item.id}`} value={`${item.id}`}>
                       {item.title}

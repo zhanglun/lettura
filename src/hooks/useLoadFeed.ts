@@ -1,5 +1,6 @@
 import { toast } from "sonner";
 import { FeedResItem } from "@/db";
+import i18next from "i18next";
 
 export function loadFeed(
   feed: FeedResItem,
@@ -8,7 +9,7 @@ export function loadFeed(
   fail: (...args: any[]) => any
 ) {
   const toastId = toast("Sonner");
-  toast.loading("Start reloading, Please wait...", {
+  toast.loading(i18next.t("Start reloading, Please wait..."), {
     id: toastId,
   });
 
@@ -18,7 +19,7 @@ export function loadFeed(
       [string, number, string]
     ];
     if (message) {
-      toast.error(`Something wrong!`, {
+      toast.error(i18next.t(`Ops! Something wrong~`), {
         id: toastId,
         description: message,
       });
@@ -27,8 +28,8 @@ export function loadFeed(
       success();
       toast.success(
         num > 0
-          ? `We have ${num} new pieces of data from ${title}`
-          : `${title} is already up to date.`,
+          ? i18next.t('We have {{num}} new pieces of data from {{title}}', { num, title })
+          : i18next.t('{{title}} is already up to date, no new content found', { title }),
         {
           id: toastId,
         }
@@ -36,9 +37,9 @@ export function loadFeed(
     }
   }).catch((e) => {
       fail();
-      toast.error(`Something wrong!`, {
+      toast.error(i18next.t(`Ops! Something wrong~`), {
         id: toastId,
-        description: e.message,
+        description: i18next.t(e.message),
       });
   });
 }

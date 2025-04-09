@@ -1,4 +1,4 @@
-import { Cog, Database, Keyboard, Palette, Rss, Settings, Waypoints } from "lucide-react";
+import { Cog, Database, Keyboard, Palette, Settings, Waypoints } from "lucide-react";
 import { Dialog, Heading, IconButton, Kbd, Tooltip } from "@radix-ui/themes";
 import { useHotkeys } from "react-hotkeys-hook";
 import { General } from "./General";
@@ -6,13 +6,14 @@ import { Appearance } from "./Appearance";
 import { Shortcut } from "./ShortCut";
 import { ProxySetting } from "./Proxy";
 import { ImportAndExport } from "./ImportAndExport";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import { useBearStore } from "@/stores";
 import { SettingTabKey } from "@/typing";
-import "./index.css";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
+
+import "./index.css";
 
 interface SettingPageProps {
   children: React.ReactNode;
@@ -63,7 +64,7 @@ export function SettingPage({ children }: SettingPageProps) {
           <div className="w-[220px] border-r bg-canvas">
             <div className="flex items-center gap-2 px-5 py-4">
               <Settings className="w-5 h-5" />
-              <Heading size="5">Settings</Heading>
+              <Heading size="5">{t("Settings")}</Heading>
             </div>
             <nav className="py-3 px-2 space-y-2">
               <button
@@ -73,7 +74,7 @@ export function SettingPage({ children }: SettingPageProps) {
                 })}
               >
                 <Cog className="w-4 h-4" />
-                General
+                {t("General")}
               </button>
               <button
                 onClick={() => setActiveTab(SettingTabKey.APPEARANCE)}
@@ -82,7 +83,7 @@ export function SettingPage({ children }: SettingPageProps) {
                 })}
               >
                 <Palette className="w-4 h-4" />
-                Appearance
+                {t("Appearance")}
               </button>
               <button
                 onClick={() => setActiveTab(SettingTabKey.PROXY)}
@@ -91,7 +92,7 @@ export function SettingPage({ children }: SettingPageProps) {
                 })}
               >
                 <Database className="w-4 h-4" />
-                Proxy
+                {t("Proxy")}
               </button>
               <button
                 onClick={() => setActiveTab(SettingTabKey.SHORTCUTS)}
@@ -100,7 +101,7 @@ export function SettingPage({ children }: SettingPageProps) {
                 })}
               >
                 <Keyboard className="w-4 h-4" />
-                Shortcuts
+                {t("Shortcuts")}
               </button>
               <button
                 onClick={() => setActiveTab(SettingTabKey.IMPORTANDEXPORT)}
@@ -109,7 +110,7 @@ export function SettingPage({ children }: SettingPageProps) {
                 })}
               >
                 <Waypoints className="w-4 h-4" />
-                Import & Export
+                {t("Import & Export")}
               </button>
             </nav>
           </div>

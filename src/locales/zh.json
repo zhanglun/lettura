@@ -40,6 +40,11 @@
   "Are you absolutely sure?": "你确定吗？",
   "This action cannot be undone. This will permanently delete the data relates with": "此操作无法撤消。这将永久删除与 <bold>{{title}}</bold> 相关的数据",
 
+  "All articles": "全部文章",
+  "Unread": "未读文章",
+  "Read": "已读文章",
+  "Yay, no matching items.": "哎呀，没有找到内容",
+
   "Star it": "添加星标",
   "Unstar it": "取消星标",
   "Mark as read": "标记为已读",
@@ -48,5 +53,60 @@
   "Next article": "下一篇",
   "Open in browser": "在浏览器中打开",
   "Copy link": "复制链接",
-  "Playlist": "播放列表"
+  "Playlist": "播放列表",
+
+  "General": "通用",
+  "Update Interval":"更新间隔",
+  "set the update interval": "设置自动更新的间隔时间",
+  "Manual": "手动",
+  "hour": "小时",
+  "hours": "小时",
+
+  "Never": "从不",
+  "today": "今天",
+  "one week": "一周",
+  "two weeks": "两周",
+  "a month": "一个月",
+  "six month": "六个月",
+  "one year": "一年",
+
+  "Thread": "并发数量",
+  "set the concurrent number of requests (from 1 to 5)": "设置并发请求数（从1到5）",
+  "Purge articles older than": "清理文章",
+  "save your disk": "自动清理超过指定时间的文章",
+  "Purge unread articles": "清理未读文章",
+
+  "Language": "语言",
+
+  "Appearance": "外观",
+  "Proxy": "代理",
+  "Proxy Settings": "代理设置",
+  "Add Proxy": "添加代理",
+  "you can try to use proxy server for connection when feed cant access": "当订阅无法访问时，您可以尝试使用代理服务器进行连接",
+
+  "Shortcuts": "快捷键",
+  "Subscribe feed": "添加订阅",
+  "View next article": "下一篇文章",
+  "View previous article": "上一篇文章",
+  "Scroll down": "向下滚动",
+  "Scroll up": "向上滚动",
+  "Open link in browser": "在浏览器中打开链接",
+  "Import & Export": "导入/导出",
+  "Import/Export": "导入/导出",
+  "Exporting": "导出中",
+  "Import": "导入",
+  "OPML Import": "导入文件",
+  "OPML Export": "导出文件",
+  "Browse file": "选择文件",
+  "Download OPML subscriptions file": "下载 OPML 文件",
+
+  "Unable to subscribe": "无法订阅",
+  "The content you are trying to subscribe already exists.": "您尝试订阅的内容已存在。",
+  "Your subscribe is ready! Please enjoy it!": "您的订阅已完成！敬请享用！",
+  "Current URL copied to clipboard": "当前 URL 已复制到剪贴板",
+  "Paste it wherever you like": "粘贴到你喜欢的地方",
+  "Ops! Something wrong~": "哪里有点不对！",
+  "Start reloading, Please wait...": "开始加载，请稍候...",
+  "{{title}} is already up to date, no new content found": "{{title}} 已经是最新的了，没有发现新内容",
+  "We have {{num}} new pieces of data from {{title}}": "{{title}} 加载完成，增加了{{num}}条新的内容"
 }

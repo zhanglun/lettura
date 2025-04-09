@@ -78,7 +78,6 @@ export const createPodcastSlice: StateCreator<PodcastSlice, [], [], PodcastSlice
     try {
       // 尝试添加到数据库
       await db.podcasts.add(record);
-      // toast.success("start playing");
     } catch (error: any) {
       if (error.name !== "ConstraintError") {
         throw error;
@@ -138,10 +137,8 @@ export const createPodcastSlice: StateCreator<PodcastSlice, [], [], PodcastSlice
     // 从数据库中删除
     try {
       await db.podcasts.where("uuid").equals(track.uuid).delete();
-      toast.success("已从播放列表中移除");
     } catch (error) {
       console.error("Failed to delete podcast from database:", error);
-      toast.error("删除失败，请重试");
       return;
     }
 

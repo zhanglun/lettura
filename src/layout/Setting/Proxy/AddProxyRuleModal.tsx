@@ -45,6 +45,7 @@ export const AddProxyRuleModal = (props: AddProxyRuleModalProps) => {
             <CommandEmpty>No results found.</CommandEmpty>
             <CommandGroup>
               {feedList.map((option) => {
+                console.log("🚀 ~ {feedList.map ~ option:", option)
                 const isSelected = selectedValues.some((s) => s.feed_url === option.feed_url);
                 return (
                   <CommandItem

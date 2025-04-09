@@ -9,6 +9,8 @@ import { save } from "@tauri-apps/api/dialog";
 import { busChannel } from "@/helpers/busChannel";
 import { Button, Progress } from "@radix-ui/themes";
 import { toast } from "sonner";
+import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 
 export interface ImportItem {
   title: string;
@@ -47,6 +49,7 @@ export interface ImportItem {
  */
 
 export const ImportAndExport = (props: any) => {
+  const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File>();
   const [importing, setImporting] = useState(false);
@@ -110,7 +113,6 @@ export const ImportAndExport = (props: any) => {
         setFile(undefined);
         const fileInput = document.getElementById("uploadInput") as HTMLInputElement;
         fileInput.value = "";
-        toast.success(`Imported ${res.length} feeds!`);
       }, 500);
     });
   };
@@ -217,12 +219,12 @@ export const ImportAndExport = (props: any) => {
   };
 
   return (
-    <Panel title="Import/Export">
-      <PanelSection title="OPML Import">
+    <Panel title={t("Import/Export")}>
+      <PanelSection title={t("OPML Import")}>
         <div className="flex w-full items-center space-x-2">
           <div className="border-dashed border-3 rounded relative min-w-[360px] h-[34px] transition-all hover:border-[var(--gray-10)]">
             <label htmlFor="uploadInput" className="block text-center leading-7 text-sm font-medium cursor-pointer">
-              {file ? file.name : "Browse file"}
+              {file ? file.name : t("Browse file")}
             </label>
             <input
               id="uploadInput"
@@ -236,22 +238,22 @@ export const ImportAndExport = (props: any) => {
             />
           </div>
           <Button onClick={importFromOPML} disabled={importing || !file} loading={importing}>
-            Import
+            {t("Import")}
           </Button>
         </div>
         <div className="my-2">
           {importing && <Progress value={importing ? (done / importedList.length) * 100 : 0} />}
         </div>
       </PanelSection>
-      <PanelSection title="OPML Export">
+      <PanelSection title={t("OPML Export")}>
         <Button onClick={exportToOPML}>
           {exporting ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Exporting
+              {t("Exporting")}
             </>
           ) : (
-            <>Download OPML subscriptions file</>
+            <>{t("Download OPML subscriptions file")}</>
           )}
         </Button>
       </PanelSection>

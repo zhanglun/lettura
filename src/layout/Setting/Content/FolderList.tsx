@@ -39,7 +39,7 @@ export const FolderList = () => {
         return (
           <div className="flex items-center">
             <FolderIcon size={16} className="mr-3" />
-            <span>{props.row.original.name}</span>
+            <span>{props.row.original.title}</span>
           </div>
         );
       },
