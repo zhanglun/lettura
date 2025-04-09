@@ -28,7 +28,6 @@ export interface ArticleSlice {
   setArticleDialogViewStatus: (status: boolean) => void;
 
   currentFilter: { id: number; title: string };
-  filterList: { id: number; title: string }[];
   setFilter: any;
 }
 
@@ -160,20 +159,6 @@ export const createArticleSlice: StateCreator<
     }));
   },
 
-  filterList: [
-    {
-      id: 0,
-      title: "All",
-    },
-    {
-      id: 1,
-      title: "Unread",
-    },
-    {
-      id: 2,
-      title: "Read",
-    },
-  ],
   currentFilter: {
     id: 1,
     title: "Unread",

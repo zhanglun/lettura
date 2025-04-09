@@ -40,6 +40,10 @@
   "Are you absolutely sure?": "你确定吗？",
   "This action cannot be undone. This will permanently delete the data relates with": "此操作无法撤消。这将永久删除与 <bold>{{title}}</bold> 相关的数据",
 
+  "All articles": "全部文章",
+  "Unread": "未读文章",
+  "Read": "已读文章",
+
   "Star it": "添加星标",
   "Unstar it": "取消星标",
   "Mark as read": "标记为已读",

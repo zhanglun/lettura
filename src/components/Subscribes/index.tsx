@@ -318,15 +318,11 @@ const ChannelList = (): JSX.Element => {
           afterCancel={() => store.setFeedContextMenuTarget(null)}
         />
       </div>
-      <div className="h-[8px]"></div>
-      {store.globalSyncStatus && (
+      {/* {store.globalSyncStatus && (
         <div className="sticky bottom-0 left-0 right-0 p-2 text-right">
-          <span className="mr-3 text-xs">Syncing...</span>
-          {/* <span className="text-foreground text-xs">
-            {done}/{feedList.length}
-          </span> */}
+          <div className="h-[8px]"></div>
         </div>
-      )}
+      )} */}
     </>
   );
 };

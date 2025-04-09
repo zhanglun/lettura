@@ -26,7 +26,6 @@ i18n
     // interpolation: {
     //   escapeValue: false, // react already safes from xss
     // },
-    fallbackLng: "cn", //默认当前环境的语言
     // detection: {
     //   caches: ["localStorage", "sessionStorage", "cookie"],
     // },

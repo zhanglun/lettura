@@ -3,60 +3,7 @@ import { useBearStore } from "@/stores";
 import { Select, Switch, Separator } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
 import i18next from "i18next";
-
-const intervalOptions = [
-  {
-    value: 0,
-    label: i18next.t("Manual"),
-  },
-  {
-    value: 1,
-    label: `1 ${i18next.t("hour")}`,
-  },
-  {
-    value: 6,
-    label: `6 ${i18next.t("hour")}`,
-  },
-  {
-    value: 12,
-    label: `12 ${i18next.t("hours")}`,
-  },
-  {
-    value: 24,
-    label: `24 ${i18next.t("hours")}`,
-  },
-];
-
-const purgeOptions = [
-  {
-    value: 0,
-    label: i18next.t("Never"),
-  },
-  {
-    value: 1,
-    label: i18next.t("today"),
-  },
-  {
-    value: 7,
-    label: i18next.t("one week"),
-  },
-  {
-    value: 14,
-    label: i18next.t("two weeks"),
-  },
-  {
-    value: 30,
-    label: i18next.t("a month"),
-  },
-  {
-    value: 180,
-    label: i18next.t("six month"),
-  },
-  {
-    value: 360,
-    label: i18next.t("one year"),
-  },
-];
+import { useMemo } from "react";
 
 const langs: { [key: string]: { nativeName: string } } = {
   en: { nativeName: "English" },
@@ -65,6 +12,66 @@ const langs: { [key: string]: { nativeName: string } } = {
 
 export const General = () => {
   const { t, i18n } = useTranslation();
+
+  const intervalOptions = useMemo(
+    () => [
+      {
+        value: 0,
+        label: i18next.t("Manual"),
+      },
+      {
+        value: 1,
+        label: `1 ${i18next.t("hour")}`,
+      },
+      {
+        value: 6,
+        label: `6 ${i18next.t("hour")}`,
+      },
+      {
+        value: 12,
+        label: `12 ${i18next.t("hours")}`,
+      },
+      {
+        value: 24,
+        label: `24 ${i18next.t("hours")}`,
+      },
+    ],
+    []
+  );
+
+  const purgeOptions = useMemo(
+    () => [
+      {
+        value: 0,
+        label: i18next.t("Never"),
+      },
+      {
+        value: 1,
+        label: i18next.t("today"),
+      },
+      {
+        value: 7,
+        label: i18next.t("one week"),
+      },
+      {
+        value: 14,
+        label: i18next.t("two weeks"),
+      },
+      {
+        value: 30,
+        label: i18next.t("a month"),
+      },
+      {
+        value: 180,
+        label: i18next.t("six month"),
+      },
+      {
+        value: 360,
+        label: i18next.t("one year"),
+      },
+    ],
+    []
+  );
   const store = useBearStore((state) => ({
     userConfig: state.userConfig,
     updateUserConfig: state.updateUserConfig,
