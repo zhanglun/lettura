@@ -79,8 +79,27 @@
   "Language": "语言",
 
   "Appearance": "外观",
+  "Mode": "主题",
+  "Light": "亮色",
+  "Dark": "暗色",
+  "Auto": "自动",
+  "Accent color": "强调色",
+  "default": "默认",
+  "brown": "棕色",
+  "ruby": "宝石红",
+  "crimson": "深红色",
+  "pink": "粉色",
+  "purple": "紫色",
+  "violet": "紫罗兰色",
+  "iris": "鸢尾色",
+  "indigo": "靛蓝",
+  "teal": "青色",
+  "jade": "翡翠色",
+
+
+  "Style": "样式",
+
   "Proxy": "代理",
-  "Proxy Settings": "代理设置",
   "Add Proxy": "添加代理",
   "you can try to use proxy server for connection when feed cant access": "当订阅无法访问时，您可以尝试使用代理服务器进行连接",
 

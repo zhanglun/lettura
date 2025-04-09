@@ -1,8 +1,10 @@
 import clsx from "clsx";
 import { Moon, Sun } from "lucide-react";
 import { useBearStore } from "@/stores";
+import { useTranslation } from "react-i18next";
 
 export const ColorScheme = () => {
+  const { t } = useTranslation()
   const store = useBearStore((state) => ({
     userConfig: state.userConfig,
     updateUserConfig: state.updateUserConfig,
@@ -43,7 +45,7 @@ export const ColorScheme = () => {
         >
           <Sun size={20} />
         </div>
-        <div className="mt-1 text-center text-sm">Light</div>
+        <div className="mt-1 text-center text-sm">{t("Light")}</div>
       </div>
       <div>
         <div
@@ -58,7 +60,7 @@ export const ColorScheme = () => {
         >
           <Moon size={20} />
         </div>
-        <div className="mt-1 text-center text-sm">Dark</div>
+        <div className="mt-1 text-center text-sm">{t("Dark")}</div>
       </div>
       <div>
         <div
@@ -81,7 +83,8 @@ export const ColorScheme = () => {
             </span>
           </div>
         </div>
-        <div className="mt-1 text-center text-sm">Auto</div>
+        <div className="mt-1 text-center text-sm">{t(
+          "Auto")}</div>
       </div>
     </div>
   );
