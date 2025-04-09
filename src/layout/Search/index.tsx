@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { debounce, throttle } from "lodash";
-import { Separator,Skeleton, TextField } from "@radix-ui/themes";
+import { IconButton, Separator, Skeleton, TextField } from "@radix-ui/themes";
 import { SearchResult } from "./Result";
 import { ArticleResItem } from "@/db";
 import { request } from "@/helpers/request";
@@ -8,8 +8,9 @@ import { AxiosResponse } from "axios";
 import { useHotkeys } from "react-hotkeys-hook";
 import useInfiniteScroll from "./useInfiniteScroll";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft } from "lucide-react";
-import { Icon } from "@/components/Icon";
+import { X } from "lucide-react";
+import { MainPanel } from "@/components/MainPanel";
+import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 
 export const SearchPage = () => {
   const [isFetching, setIsFetching] = useState(false);
@@ -43,6 +44,13 @@ export const SearchPage = () => {
     val && debounceSearch(val);
   };
 
+  const clearQuery = () => {
+    setQuery("");
+    setResultList([]);
+
+    inputRef.current?.focus();
+  };
+
   const getList = (params: any) => {
     const text = params.query || query;
 
@@ -74,10 +82,7 @@ export const SearchPage = () => {
       });
   };
 
-  const [lastElementRef] = useInfiniteScroll(
-    hasMore ? () => getList({}) : () => {},
-    isFetching
-  );
+  const [lastElementRef] = useInfiniteScroll(hasMore ? () => getList({}) : () => {}, isFetching);
 
   const goPrev = useCallback(
     throttle(() => {
@@ -101,50 +106,54 @@ export const SearchPage = () => {
   }, []);
 
   return (
-    <div className="flex flex-col h-[calc(100vh-theme(margin.4))] m-2 bg-card rounded-md">
-      <div className="p-4">
-        <h2 className="flex items-center gap-3 text-xl text-foreground tracking-tight font-bold cursor-pointer group">
-          <Icon
-            onClick={goBack}
-            className="text-muted-foreground group-hover:text-foreground"
+    <MainPanel>
+      <div className="flex flex-col w-full h-[calc(100vh-theme(margin.4))] bg-card rounded-md">
+        <div className="p-3 bg-background">
+          <TextField.Root
+            ref={inputRef}
+            type="search"
+            value={query}
+            placeholder="Search content in your Lettura"
+            onChange={handleSearch}
+            className=""
           >
-            <ChevronLeft />
-          </Icon>
-          Search content in your Lettura
-        </h2>
-      </div>
-      <div className="p-4 bg-background">
-        <TextField.Root
-          ref={inputRef}
-          type="search"
-          placeholder="Search content..."
-          onChange={handleSearch}
-        />
-      </div>
-      <Separator />
-      <div className="overflow-auto flex-1">
-        <div className="max-w-[840px] m-auto py-4">
-          <SearchResult query={query} resultList={resultList} />
-          <div ref={loadRef}>
-            {isFetching && (
-              <div className="p-3 pl-6 grid gap-1 relative">
-                <Skeleton className="h-5 w-full" />
-                <div>
-                  <Skeleton className="h-3 w-full" />
-                </div>
-                <div>
-                  <Skeleton className="h-3 w-full m-[-2px]" />
-                </div>
-                <div>
-                  <Skeleton className="h-3 w-32" />
-                </div>
-              </div>
+            <TextField.Slot>
+              <MagnifyingGlassIcon height="16" width="16" />
+            </TextField.Slot>
+            {query.length > 0 && (
+              <TextField.Slot>
+                <IconButton size="1" variant="ghost" onClick={clearQuery}>
+                  <X height="14" width="14" />
+                </IconButton>
+              </TextField.Slot>
             )}
-          </div>
-          <div ref={lastElementRef}></div>
+          </TextField.Root>
         </div>
+        <Separator className="w-full" />
+        <div className="overflow-auto flex-1">
+          <div className="max-w-[840px] m-auto py-4">
+            <SearchResult query={query} resultList={resultList} />
+            <div ref={loadRef}>
+              {isFetching && (
+                <div className="p-3 pl-6 grid gap-1 relative">
+                  <Skeleton className="h-5 w-full" />
+                  <div>
+                    <Skeleton className="h-3 w-full" />
+                  </div>
+                  <div>
+                    <Skeleton className="h-3 w-full m-[-2px]" />
+                  </div>
+                  <div>
+                    <Skeleton className="h-3 w-32" />
+                  </div>
+                </div>
+              )}
+            </div>
+            <div ref={lastElementRef}></div>
+          </div>
+        </div>
+        <div className="p-4"></div>
       </div>
-      <div className="p-4"></div>
-    </div>
+    </MainPanel>
   );
 };

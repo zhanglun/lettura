@@ -8,6 +8,7 @@ import { useQuery } from "@/helpers/parseXML";
 import { LPodcast } from "@/components/LPodcast";
 import { useBearStore } from "@/stores";
 import { motion, AnimatePresence } from "framer-motion";
+import { MainPanel } from "@/components/MainPanel";
 
 export const ArticleContainer = () => {
   const [, type, feedUuid] = useQuery();
@@ -34,25 +35,22 @@ export const ArticleContainer = () => {
   const shouldShowPodcast = store.tracks?.length > 0 || store.podcastPlayingStatus;
 
   return (
-    <div className="relative flex flex-col w-full h-[100vh]">
-      <div className="flex-1 grid grid-cols-1 p-2 pl-0 overflow-hidden">
-        <div className="bg-panel flex w-full h-full flex-1 overflow-hidden rounded-md border">
-          <ArticleCol feedUuid={feedUuid} type={type} ref={articleColRef} />
-          <View goNext={goNext} goPrev={goPrev} />
-          <LPodcast visible={shouldShowPodcast} />
-        </div>
-      </div>
-
-      <ArticleDialogView
-        article={store.article}
-        dialogStatus={store.articleDialogViewStatus}
-        setDialogStatus={store.setArticleDialogViewStatus}
-        afterConfirm={() => {}}
-        afterCancel={() => {
-          store.setArticle(null);
-          console.log("store.article", store.article);
-        }}
-      />
-    </div>
+    <MainPanel>
+      <>
+        <ArticleCol feedUuid={feedUuid} type={type} ref={articleColRef} />
+        <View goNext={goNext} goPrev={goPrev} />
+        <LPodcast visible={shouldShowPodcast} />
+        <ArticleDialogView
+          article={store.article}
+          dialogStatus={store.articleDialogViewStatus}
+          setDialogStatus={store.setArticleDialogViewStatus}
+          afterConfirm={() => {}}
+          afterCancel={() => {
+            store.setArticle(null);
+            console.log("store.article", store.article);
+          }}
+        />
+      </>
+    </MainPanel>
   );
 };
