@@ -1,16 +1,16 @@
 import { formatDistanceToNow, parseISO } from "date-fns";
-import { CheckCircle2, Circle, ExternalLink, Link, Star } from "lucide-react";
+import { ExternalLink, Link } from "lucide-react";
 import { ArticleResItem } from "@/db";
 import clsx from "clsx";
 import React, { useEffect, useState } from "react";
 import { open } from "@tauri-apps/api/shell";
 import { Icon } from "@/components/Icon";
-import { getBestImages } from "@/helpers/parseXML";
+import { getBestImages, getFeedLogo } from "@/helpers/parseXML";
 import * as dataAgent from "@/helpers/dataAgent";
 import { ArticleReadStatus } from "@/typing";
 import { toast } from "sonner";
 import { StarAndRead } from "@/layout/Article/StarAndRead";
-import { Tooltip } from "@radix-ui/themes";
+import { Avatar, Tooltip } from "@radix-ui/themes";
 
 export interface ResultItemProps {
   article: ArticleResItem;
@@ -18,6 +18,7 @@ export interface ResultItemProps {
 }
 export function ResultItem(props: ResultItemProps) {
   const { article } = props;
+  console.log("🚀 ~ ResultItem ~ article:", article);
   const [readStatus, setReadStatus] = useState(article.read_status);
   const [banner, setBanner] = useState("");
 
@@ -25,17 +26,11 @@ export function ResultItem(props: ResultItemProps) {
     props.onView(article);
 
     if (article.read_status === ArticleReadStatus.UNREAD) {
-      dataAgent
-        .updateArticleReadStatus(article.uuid, ArticleReadStatus.READ)
-        .then(() => {
-          article.read_status = ArticleReadStatus.READ;
-          console.log(
-            "%c Line:26 🍑 article.read_status",
-            "color:#b03734",
-            article.read_status
-          );
-          setReadStatus(ArticleReadStatus.READ);
-        });
+      dataAgent.updateArticleReadStatus(article.uuid, ArticleReadStatus.READ).then(() => {
+        article.read_status = ArticleReadStatus.READ;
+        console.log("%c Line:26 🍑 article.read_status", "color:#b03734", article.read_status);
+        setReadStatus(ArticleReadStatus.READ);
+      });
     }
   }
 
@@ -57,9 +52,7 @@ export function ResultItem(props: ResultItemProps) {
   }
 
   useEffect(() => {
-    let match_img = (article.description || article.description).match(
-      /<img.*?src="(.*?)"/
-    );
+    let match_img = (article.description || article.description).match(/<img.*?src="(.*?)"/);
 
     console.log("%c Line:45 🍔 match_img", "color:#93c0a4", match_img);
 
@@ -79,43 +72,34 @@ export function ResultItem(props: ResultItemProps) {
   return (
     <div
       className={clsx(
-        "list-none rounded-sm p-3 pl-6 grid gap-1 relative select-none",
-        "group hover:bg-accent hover:cursor-pointer",
+        "list-none rounded-md p-2 py-2 pl-5 flex flex-col gap-1 relative select-none",
+        "group hover:bg-[var(--accent-a3)] hover:cursor-pointer",
         {
-          "text-foreground": readStatus === ArticleReadStatus.UNREAD,
-          "text-[hsl(var(--foreground)_/_80%)]":
-            readStatus === ArticleReadStatus.READ,
+          "text-[var(--gray-10)]": readStatus === ArticleReadStatus.READ,
         }
       )}
       onClick={handleClick}
     >
-      <div className="w-full text-base font-medium text-ellipsis overflow-hidden whitespace-nowrap leading-7">
-        {article.title}
-      </div>
-      <div className="text-sm text-muted-foreground leading-6">
-        {article.feed_title}
-      </div>
-      <div className="flex gap-4">
-        {banner && (
-          <div className="flex-0 w-[180px] h-[100px] overflow-hidden bg-muted">
-            <div
-              className="w-full h-full bg-cover bg-center transition-all group-hover:scale-[1.5] "
-              style={{ backgroundImage: `url(${banner})` }}
-            ></div>
-          </div>
-        )}
-        <div className="flex-1 text-sm text-foreground my-1 line-clamp-5">
+      <div className="flex-1 overflow-hidden flex items-center gap-1.5">
+        <Avatar
+          size="1"
+          src={getFeedLogo(article.feed_url)}
+          fallback={article.feed_title?.slice(0, 1) || "L"}
+          alt={article.feed_title}
+          className="rounded w-5 h-4"
+        />
+
+        <div className="grow-1 shrink-0 text-sm font-bold">{article.title}</div>
+        <div className="grow-0 shrink-1 text-xs overflow-hidden text-ellipsis mr-1 whitespace-nowrap">
           {article.description.replace(/(<([^>]+)>)/gi, "")}
         </div>
-      </div>
-      <div className="flex justify-between items-center mt-2">
-        <div className="text-xs">
+        <div className="grow-1 shrink-0 text-xs">
           {formatDistanceToNow(parseISO(article.create_date), {
             includeSeconds: true,
             addSuffix: true,
           })}
         </div>
-        <div className="flex items-center gap-1">
+        <div className="grow-1 shrink-0 flex items-center">
           <StarAndRead article={article} />
           <Tooltip content="Open in browser">
             <Icon className="w-7 h-7" onClick={openInBrowser}>
@@ -129,6 +113,19 @@ export function ResultItem(props: ResultItemProps) {
           </Tooltip>
         </div>
       </div>
+      {/* <div className="flex gap-4">
+        {banner && (
+          <div className="flex-0 w-[126px] h-[70px] overflow-hidden bg-muted">
+            <div
+              className="w-full h-full bg-cover bg-center transition-all group-hover:scale-[1.5] "
+              style={{ backgroundImage: `url(${banner})` }}
+            ></div>
+          </div>
+        )}
+        <div className="flex-1 text-sm text-foreground my-1 line-clamp-5">
+          {article.description.replace(/(<([^>]+)>)/gi, "")}
+        </div>
+      </div> */}
     </div>
   );
 }

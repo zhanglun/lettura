@@ -131,7 +131,7 @@ export const SearchPage = () => {
         </div>
         <Separator className="w-full" />
         <div className="overflow-auto flex-1">
-          <div className="max-w-[840px] m-auto py-4">
+          <div className="m-auto">
             <SearchResult query={query} resultList={resultList} />
             <div ref={loadRef}>
               {isFetching && (
