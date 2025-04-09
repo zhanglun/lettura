@@ -6,8 +6,10 @@ import classNames from "classnames";
 import { Accent } from "./Accent";
 import { ColorScheme } from "./ColorScheme";
 import { Separator } from "@radix-ui/themes";
+import { useTranslation } from "react-i18next";
 
 export const Appearance = () => {
+  const { t } = useTranslation()
   const store = useBearStore((state) => ({
     userConfig: state.userConfig,
     updateUserConfig: state.updateUserConfig,
@@ -26,18 +28,17 @@ export const Appearance = () => {
 
   return (
     <Panel
-      title="Appearance"
-      subTitle="Customize the appearance of the app. Automatically switch between day and night themes."
+      title={t("Appearance")}
     >
-      <PanelSection title="Color scheme" subTitle="Choose Lettura's default color scheme">
+      <PanelSection title={t("Mode")}>
         <ColorScheme />
       </PanelSection>
       <Separator className="mt-6" size="4" />
-      <PanelSection title="Accent" subTitle="Choose Lettura's accent color">
+      <PanelSection title={t("Accent color")}>
         <Accent />
       </PanelSection>
       <Separator className="mt-6" size="4" />
-      <PanelSection title="Style" subTitle="Set the view styles you want to use when you are reading.">
+      <PanelSection title={t("Style")}>
         <div className="w-[304px]">
           <CustomizeStyle styleConfig={store.userConfig.customize_style} />
         </div>

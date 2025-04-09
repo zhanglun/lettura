@@ -157,7 +157,7 @@ export const ProxySetting = () => {
   }, [store.subscribes]);
 
   return (
-    <Panel title={t("Proxy Settings")}>
+    <Panel title={t("Proxy")}>
       <PanelSection title={t("Proxy")} subTitle={t("you can try to use proxy server for connection when feed cant access")}>
         <Button variant="ghost" onClick={() => setProxyModalStatus(true)}>
           <PlusCircle size="16" strokeWidth={1.5} />
