@@ -1,6 +1,7 @@
 import { useBearStore } from "@/stores";
 import { Tooltip } from "@radix-ui/themes";
 import clsx from "clsx";
+import i18next from "i18next";
 import { useState } from "react";
 
 export interface Accent {
@@ -19,15 +20,15 @@ export const AccentItem = (props: {
 
   return (
     <div onClick={() => onClick({ name, variable })}>
-      <Tooltip content={name}>
+      <Tooltip content={i18next.t(name)}>
         <div
-          className={clsx("w-10 h-10 rounded-full flex items-center justify-center", "border-2", {
+          className={clsx("w-7 h-7 rounded-full flex items-center justify-center", "border-2", {
             "shadow-[inset_0px_0px_0_2px_white]": active,
           })}
           style={{ backgroundColor: `${variable}`, borderColor: `${variable}` }}
         >
           <div
-            className={clsx("w-3 h-3 rounded-full")}
+            className={clsx("w-2 h-2 rounded-full")}
             style={{ backgroundColor: active ? `var(--${name}-3)` : `var(--${name}-8)`}}
           ></div>
         </div>
