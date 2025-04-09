@@ -92,5 +92,15 @@
   "OPML Import": "OPML Import",
   "OPML Export": "OPML Export",
   "Browse file": "Browse file",
-  "Download OPML subscriptions file": "Download OPML subscriptions file"
+  "Download OPML subscriptions file": "Download OPML subscriptions file",
+
+  "Unable to subscribe": "Unable to subscribe",
+  "The content you are trying to subscribe already exists.": "The content you are trying to subscribe already exists.",
+  "Your subscribe is ready! Please enjoy it!": "Your subscribe is ready! Please enjoy it!",
+  "Current URL copied to clipboard": "Current URL copied to clipboard",
+  "Paste it wherever you like": "Paste it wherever you like",
+  "Ops! Something wrong~": "Ops! Something wrong~",
+  "Start reloading, Please wait...": "Start reloading, Please wait...",
+  "{{title}} is already up to date, no new content found": "{{title}} is already up to date, no new content found",
+  "We have {{num}} new pieces of data from {{title}}": "We have {{num}} new pieces of data from {{title}}"
 }

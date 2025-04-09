@@ -244,8 +244,8 @@ const ChannelList = (): JSX.Element => {
                       onClick={() =>
                         store.feedContextMenuTarget?.feed_url &&
                         copyText(store.feedContextMenuTarget?.feed_url).then(() =>
-                          toast.message("Current URL copied to clipboard", {
-                            description: "Paste it wherever you like",
+                          toast.message(t("Current URL copied to clipboard"), {
+                            description: t("Paste it wherever you like"),
                           })
                         )
                       }
@@ -256,8 +256,8 @@ const ChannelList = (): JSX.Element => {
                       onClick={() =>
                         store.feedContextMenuTarget?.link &&
                         copyText(store.feedContextMenuTarget?.link).then(() =>
-                          toast.message("Current URL copied to clipboard", {
-                            description: "Paste it wherever you like",
+                          toast.message(t("Current URL copied to clipboard"), {
+                            description: t("Paste it wherever you like"),
                           })
                         )
                       }

@@ -31,8 +31,8 @@ export const DialogUnsubscribeFeed = React.memo((props: DialogProps) => {
           setDialogStatus(false);
         })
         .catch((err) => {
-          toast.error("Ops! Something wrong~", {
-            description: err.message,
+          toast.error(t("Ops! Something wrong~"), {
+            description: t(err.message),
             duration: 2000,
           });
         })

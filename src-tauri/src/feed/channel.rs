@@ -386,7 +386,7 @@ pub fn add_feed(feed: models::NewFeed, articles: Vec<models::NewArticle>) -> (Op
         return (
           None,
           0,
-          "The feed you are trying to save already exists.".to_string(),
+          "The content you are trying to subscribe already exists.".to_string(),
         );
       } else {
         return (None, 0, error.to_string());
@@ -395,8 +395,6 @@ pub fn add_feed(feed: models::NewFeed, articles: Vec<models::NewArticle>) -> (Op
   };
 
   if result.1 == 1 {
-    println!("start insert articles");
-
     let articles = diesel::insert_or_ignore_into(schema::articles::dsl::articles)
       .values(articles)
       .execute(&mut connection);

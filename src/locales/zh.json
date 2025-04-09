@@ -43,6 +43,7 @@
   "All articles": "全部文章",
   "Unread": "未读文章",
   "Read": "已读文章",
+  "Yay, no matching items.": "哎呀，没有找到内容",
 
   "Star it": "添加星标",
   "Unstar it": "取消星标",
@@ -97,5 +98,15 @@
   "OPML Import": "导入文件",
   "OPML Export": "导出文件",
   "Browse file": "选择文件",
-  "Download OPML subscriptions file": "下载 OPML 文件"
+  "Download OPML subscriptions file": "下载 OPML 文件",
+
+  "Unable to subscribe": "无法订阅",
+  "The content you are trying to subscribe already exists.": "您尝试订阅的内容已存在。",
+  "Your subscribe is ready! Please enjoy it!": "您的订阅已完成！敬请享用！",
+  "Current URL copied to clipboard": "当前 URL 已复制到剪贴板",
+  "Paste it wherever you like": "粘贴到你喜欢的地方",
+  "Ops! Something wrong~": "哪里有点不对！",
+  "Start reloading, Please wait...": "开始加载，请稍候...",
+  "{{title}} is already up to date, no new content found": "{{title}} 已经是最新的了，没有发现新内容",
+  "We have {{num}} new pieces of data from {{title}}": "{{title}} 加载完成，增加了{{num}}条新的内容"
 }

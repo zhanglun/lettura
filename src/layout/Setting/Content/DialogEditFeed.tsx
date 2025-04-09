@@ -7,6 +7,7 @@ import Dayjs from "dayjs";
 import { Separator, Dialog } from "@radix-ui/themes";
 import { Link2 } from "lucide-react";
 import { useBearStore } from "@/stores";
+import { useTranslation } from "react-i18next";
 
 export interface DialogEditFeedProps {
   feed: FeedResItem | null;
@@ -18,6 +19,7 @@ export interface DialogEditFeedProps {
 }
 
 export const DialogEditFeed = React.memo((props: DialogEditFeedProps) => {
+  const { t } = useTranslation()
   const store = useBearStore((state) => ({
     setFeedContextMenuTarget: state.setFeedContextMenuTarget,
   }));
@@ -32,8 +34,8 @@ export const DialogEditFeed = React.memo((props: DialogEditFeedProps) => {
           setDialogStatus(false);
         })
         .catch((err) => {
-          toast.error("Ops! Something wrong~", {
-            description: err.message,
+          toast.error(t("Ops! Something wrong~"), {
+            description: t(err.message),
             duration: 2000,
           });
         });

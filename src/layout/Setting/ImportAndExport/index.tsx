@@ -113,7 +113,6 @@ export const ImportAndExport = (props: any) => {
         setFile(undefined);
         const fileInput = document.getElementById("uploadInput") as HTMLInputElement;
         fileInput.value = "";
-        toast.success(`Imported ${res.length} feeds!`);
       }, 500);
     });
   };

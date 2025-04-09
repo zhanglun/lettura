@@ -1,17 +1,19 @@
-import { Panel, PanelSection } from "../Panel";
-import { useBearStore } from "@/stores";
-import { Select, Switch, Separator } from "@radix-ui/themes";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import i18next from "i18next";
-import { useMemo } from "react";
-
-const langs: { [key: string]: { nativeName: string } } = {
-  en: { nativeName: "English" },
-  zh: { nativeName: "中文" },
-};
+import { Select, Switch, Separator } from "@radix-ui/themes";
+import { Panel, PanelSection } from "../Panel";
+import { useBearStore } from "@/stores";
 
 export const General = () => {
   const { t, i18n } = useTranslation();
+  const [lang, setLang] = useState(localStorage.getItem('lang') || navigator.language);
+  const langs: { [key: string]: { nativeName: string } } = useMemo(() =>  {
+    return {
+      en: { nativeName: "English" },
+      zh: { nativeName: "中文" },
+    }
+  }, []);
 
   const intervalOptions = useMemo(
     () => [
@@ -36,7 +38,7 @@ export const General = () => {
         label: `24 ${i18next.t("hours")}`,
       },
     ],
-    []
+    [lang]
   );
 
   const purgeOptions = useMemo(
@@ -70,7 +72,7 @@ export const General = () => {
         label: i18next.t("one year"),
       },
     ],
-    []
+    [lang]
   );
   const store = useBearStore((state) => ({
     userConfig: state.userConfig,
@@ -169,10 +171,11 @@ export const General = () => {
       <PanelSection title={t("Language")}>
         <div className="flex items-center gap-2">
           <Select.Root
-            // value={store.userConfig.purge_on_days?.toString()}
+            value={lang}
             onValueChange={(v: string) => {
-              console.log(v);
               i18n.changeLanguage(v);
+              window.localStorage.setItem('lang', v)
+              setLang(v)
             }}
           >
             <Select.Trigger />

@@ -35,8 +35,8 @@ export const AddFeedChannel = (props: any) => {
         const [feed, message] = res;
         if (!feed) {
           console.log("%c Line:40 🥤 !feed", "color:#f5ce50", !feed);
-          toast.error("Unable to subscribe", {
-            description: message,
+          toast.error(t("Unable to subscribe"), {
+            description: t(message),
             duration: 2000,
           });
 
@@ -84,9 +84,9 @@ export const AddFeedChannel = (props: any) => {
 
           store.addNewFeed(res[0]);
           handleCancel();
-          toast.success("Your subscribe is ready! Please enjoy it!");
+          toast.success(t("Your subscribe is ready! Please enjoy it!"));
         } else {
-          toast.error("Unable to subscribe", {
+          toast.error(t("Unable to subscribe"), {
             description: res[2],
             duration: 2000,
           });

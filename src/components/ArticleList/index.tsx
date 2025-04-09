@@ -5,6 +5,7 @@ import { Skeleton } from "@radix-ui/themes";
 import { useIntersectionObserver } from "./useIntersectionObserver";
 import { ArticleResItem } from "@/db";
 import { Snail } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export type ArticleListProps = {
   feedUuid?: string;
@@ -28,6 +29,7 @@ export interface ArticleListRefType {
 export const ArticleList = React.memo(
   React.forwardRef<HTMLDivElement, ArticleListProps>((props: ArticleListProps, ref) => {
     const { articles, isEmpty, isLoading, isReachingEnd, size, setSize } = props;
+    const { t } = useTranslation();
     const loadRef = useRef<HTMLDivElement | null>(null);
     const entry = useIntersectionObserver(loadRef, {});
     const loadRefVisible = !!entry?.isIntersecting;
@@ -59,7 +61,7 @@ export const ArticleList = React.memo(
         {isEmpty ? (
           <div className="absolute top-1/2 -translate-y-1/2 w-full flex flex-col justify-center items-center gap-1 text-muted-foreground">
             <Snail size={34} strokeWidth={1} />
-            <p>Yay, no matching items.</p>
+            <p>{t("Yay, no matching items.")}</p>
           </div>
         ) : null}
         <ul className="m-0 flex flex-col gap-[2px] pt-1 pr-0 pb-1 pl-1">{renderList()}</ul>
