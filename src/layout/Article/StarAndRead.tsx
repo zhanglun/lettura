@@ -55,7 +55,7 @@ export function StarAndRead(props: StarAndReadProps) {
   }, [article.starred]);
 
   return (
-    <div className="flex items-center space-x-3">
+    <div className="flex items-center gap-4">
       {article.starred === ArticleStarStatus.UNSTAR && (
         <Tooltip content={t("Star it")}>
           <IconButton

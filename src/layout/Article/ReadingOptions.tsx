@@ -26,7 +26,7 @@ export const ReadingOptions = ({ article }: { article: ArticleResItem }) => {
   };
 
   return (
-    <div className="flex items-center space-x-3">
+    <div className="flex items-center gap-4">
       <Tooltip content={t("Open in browser")}>
         <IconButton
           size="2"

@@ -19,9 +19,7 @@ export interface ResultItemProps {
 }
 export function ResultItem(props: ResultItemProps) {
   const { article } = props;
-  console.log("🚀 ~ ResultItem ~ article:", article);
   const [readStatus, setReadStatus] = useState(article.read_status);
-  const [banner, setBanner] = useState("");
 
   function handleClick() {
     props.onView(article);
@@ -34,37 +32,6 @@ export function ResultItem(props: ResultItemProps) {
       });
     }
   }
-
-  function handleCopyLink() {
-    const { link } = article;
-
-    navigator.clipboard.writeText(link).then(
-      function () {
-        toast("Copied");
-      },
-      function (err) {
-        console.error("Async: Could not copy text: ", err);
-      }
-    );
-  }
-
-  function openInBrowser() {
-    article && open(article?.link);
-  }
-
-  useEffect(() => {
-    let match_img = (article.description || article.description).match(/<img.*?src="(.*?)"/);
-
-    console.log("%c Line:45 🍔 match_img", "color:#93c0a4", match_img);
-
-    if (match_img?.[1]) {
-      setBanner(match_img[1]);
-    } else {
-      getBestImages([article]).then((res) => {
-        setBanner(res[0].image);
-      });
-    }
-  }, [article]);
 
   useEffect(() => {
     setReadStatus(article.read_status);
@@ -103,7 +70,7 @@ export function ResultItem(props: ResultItemProps) {
               addSuffix: true,
             })}
           </div>
-          <div className="grow-1 shrink-0 flex items-center gap-3">
+          <div className="grow-1 shrink-0 flex items-center gap-4">
             <StarAndRead article={article} />
             <ReadingOptions article={article} />
           </div>
