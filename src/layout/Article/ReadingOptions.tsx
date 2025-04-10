@@ -1,24 +1,19 @@
 import { ExternalLink, Link } from "lucide-react";
-import { useBearStore } from "@/stores";
-import { Article } from "@/db";
+import { Article, ArticleResItem } from "@/db";
 import { open } from "@tauri-apps/api/shell";
 import { toast } from "sonner";
 import { IconButton, Tooltip } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
 
-export const ReadingOptions = () => {
+export const ReadingOptions = ({ article }: { article: ArticleResItem }) => {
   const { t } = useTranslation();
-  const store = useBearStore((state) => ({
-    article: state.article,
-    setArticle: state.setArticle,
-  }));
 
   const openInBrowser = () => {
-    store.article && open(store.article?.link);
+    article && open(article?.link);
   };
 
   const handleCopyLink = () => {
-    const { link } = store.article as Article;
+    const { link } = article;
 
     navigator.clipboard.writeText(link).then(
       function () {
@@ -31,7 +26,7 @@ export const ReadingOptions = () => {
   };
 
   return (
-    <>
+    <div className="flex items-center space-x-3">
       <Tooltip content={t("Open in browser")}>
         <IconButton
           size="2"
@@ -48,6 +43,6 @@ export const ReadingOptions = () => {
           <Link size={16} />
         </IconButton>
       </Tooltip>
-    </>
+    </div>
   );
 };

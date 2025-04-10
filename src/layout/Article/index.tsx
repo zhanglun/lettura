@@ -7,7 +7,6 @@ import { View } from "./View";
 import { useQuery } from "@/helpers/parseXML";
 import { LPodcast } from "@/components/LPodcast";
 import { useBearStore } from "@/stores";
-import { motion, AnimatePresence } from "framer-motion";
 import { MainPanel } from "@/components/MainPanel";
 
 export const ArticleContainer = () => {

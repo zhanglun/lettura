@@ -11,6 +11,7 @@ import { ArticleReadStatus } from "@/typing";
 import { toast } from "sonner";
 import { StarAndRead } from "@/layout/Article/StarAndRead";
 import { Avatar, Tooltip } from "@radix-ui/themes";
+import { ReadingOptions } from "../Article/ReadingOptions";
 
 export interface ResultItemProps {
   article: ArticleResItem;
@@ -72,7 +73,7 @@ export function ResultItem(props: ResultItemProps) {
   return (
     <div
       className={clsx(
-        "list-none rounded-md p-2 py-2 pl-5 flex flex-col gap-1 relative select-none",
+        "list-none rounded-md pr-2 pl-5 flex flex-col gap-1 relative select-none",
         "group hover:bg-[var(--accent-a3)] hover:cursor-pointer",
         {
           "text-[var(--gray-10)]": readStatus === ArticleReadStatus.READ,
@@ -80,52 +81,34 @@ export function ResultItem(props: ResultItemProps) {
       )}
       onClick={handleClick}
     >
-      <div className="flex-1 overflow-hidden flex items-center gap-1.5">
-        <Avatar
-          size="1"
-          src={getFeedLogo(article.feed_url)}
-          fallback={article.feed_title?.slice(0, 1) || "L"}
-          alt={article.feed_title}
-          className="rounded w-5 h-4"
-        />
+      <div className="py-2 border-b flex gap-2 items-center justify-between">
+        <div className="overflow-hidden flex gap-2 items-center">
+          <Avatar
+            size="1"
+            src={getFeedLogo(article.feed_url)}
+            fallback={article.feed_title?.slice(0, 1) || "L"}
+            alt={article.feed_title}
+            className="rounded w-5 h-5"
+          />
 
-        <div className="grow-1 shrink-0 text-sm font-bold">{article.title}</div>
-        <div className="grow-0 shrink-1 text-xs overflow-hidden text-ellipsis mr-1 whitespace-nowrap">
-          {article.description.replace(/(<([^>]+)>)/gi, "")}
+          <div className="grow-1 shrink-0 text-sm font-bold">{article.title}</div>
+          <div className="grow-0 shrink-1 text-xs overflow-hidden text-ellipsis mr-1 whitespace-nowrap">
+            {article.description.replace(/(<([^>]+)>)/gi, "")}
+          </div>
         </div>
-        <div className="grow-1 shrink-0 text-xs">
-          {formatDistanceToNow(parseISO(article.create_date), {
-            includeSeconds: true,
-            addSuffix: true,
-          })}
-        </div>
-        <div className="grow-1 shrink-0 flex items-center">
-          <StarAndRead article={article} />
-          <Tooltip content="Open in browser">
-            <Icon className="w-7 h-7" onClick={openInBrowser}>
-              <ExternalLink size={16} />
-            </Icon>
-          </Tooltip>
-          <Tooltip content="Copy link">
-            <Icon className="w-7 h-7" onClick={handleCopyLink}>
-              <Link size={16} />
-            </Icon>
-          </Tooltip>
+        <div className="shrink-0 grow-1 flex gap-3 items-center">
+          <div className="grow-1 shrink-0 text-xs mx-3">
+            {formatDistanceToNow(parseISO(article.create_date), {
+              includeSeconds: true,
+              addSuffix: true,
+            })}
+          </div>
+          <div className="grow-1 shrink-0 flex items-center gap-3">
+            <StarAndRead article={article} />
+            <ReadingOptions article={article} />
+          </div>
         </div>
       </div>
-      {/* <div className="flex gap-4">
-        {banner && (
-          <div className="flex-0 w-[126px] h-[70px] overflow-hidden bg-muted">
-            <div
-              className="w-full h-full bg-cover bg-center transition-all group-hover:scale-[1.5] "
-              style={{ backgroundImage: `url(${banner})` }}
-            ></div>
-          </div>
-        )}
-        <div className="flex-1 text-sm text-foreground my-1 line-clamp-5">
-          {article.description.replace(/(<([^>]+)>)/gi, "")}
-        </div>
-      </div> */}
     </div>
   );
 }

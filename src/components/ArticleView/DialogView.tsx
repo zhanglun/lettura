@@ -53,7 +53,7 @@ export const ArticleDialogView = (
                 <span>
                   <Separator orientation="vertical" className="h-4 mx-2"/>
                 </span>
-                <ReadingOptions/>
+                <ReadingOptions article={article}/>
               </div>
               <span className="absolute right-2 top-[50%] mt-[-16px]">
                 <Icon onClick={ () => handleDialogChange(false) }>

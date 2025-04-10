@@ -63,7 +63,7 @@ export function View(props: ArticleViewProps) {
         <Separator orientation={"vertical"} className={"h-4"} />
         <ToolbarItemNavigator goNext={props.goNext} goPrev={props.goPrev} />
         <Separator orientation="vertical" className="h-4" />
-        <ReadingOptions />
+        {store.article && <ReadingOptions article={store.article} />}
         <Separator orientation="vertical" className="h-4" />
         <PlayerSwitcher />
       </div>
