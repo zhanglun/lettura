@@ -1,19 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { debounce, throttle } from "lodash";
-import { IconButton, Separator, Skeleton, TextField } from "@radix-ui/themes";
+import { debounce } from "lodash";
+import { IconButton, Skeleton, TextField } from "@radix-ui/themes";
+import { AxiosResponse } from "axios";
+import { X } from "lucide-react";
+import clsx from "clsx";
 import { SearchResult } from "./Result";
 import { ArticleResItem } from "@/db";
 import { request } from "@/helpers/request";
-import { AxiosResponse } from "axios";
-import { useHotkeys } from "react-hotkeys-hook";
 import useInfiniteScroll from "./useInfiniteScroll";
-import { useNavigate } from "react-router-dom";
-import { X } from "lucide-react";
 import { MainPanel } from "@/components/MainPanel";
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
-import { ArticleDetail } from "@/components/ArticleView/Detail";
 import { View } from "../Article/View";
-import clsx from "clsx";
 
 export const SearchPage = () => {
   const [isFetching, setIsFetching] = useState(false);
@@ -35,17 +32,23 @@ export const SearchPage = () => {
     []
   );
 
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value as string;
+  const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const val = (e.target as HTMLInputElement).value as string;
+
+    if (e.key === "Enter" && val) {
+      debounceSearch(val);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = (e.target as HTMLInputElement).value as string;
 
     setQuery(val);
-
-    val && debounceSearch(val);
   };
 
   const handleClose = () => {
     setCurrentArticle(null);
-  }
+  };
 
   const clearQuery = () => {
     setQuery("");
@@ -58,6 +61,10 @@ export const SearchPage = () => {
     const text = params.query || query;
 
     if (!text || !hasMore) {
+      return;
+    }
+
+    if (!hasMore) {
       return;
     }
 
@@ -87,23 +94,6 @@ export const SearchPage = () => {
 
   const [lastElementRef] = useInfiniteScroll(hasMore ? () => getList({}) : () => {}, isFetching);
 
-  const goPrev = useCallback(
-    throttle(() => {
-      console.warn("goPrev");
-    }, 300),
-    []
-  );
-
-  const goNext = useCallback(
-    throttle(() => {
-      console.warn("goNext");
-    }, 300),
-    []
-  );
-
-  useHotkeys("n", goNext);
-  useHotkeys("Shift+n", goPrev);
-
   useEffect(() => {
     inputRef.current && inputRef.current.focus();
   }, []);
@@ -123,8 +113,8 @@ export const SearchPage = () => {
               type="search"
               value={query}
               placeholder="Search content in your Lettura"
-              onChange={handleSearch}
-              className=""
+              onChange={handleChange}
+              onKeyUp={handleSearch}
             >
               <TextField.Slot>
                 <MagnifyingGlassIcon height="16" width="16" />
