@@ -1,17 +1,11 @@
 import { formatDistanceToNow, parseISO } from "date-fns";
-import { ExternalLink, Link } from "lucide-react";
 import { ArticleResItem } from "@/db";
 import clsx from "clsx";
-import React, { useEffect, useState } from "react";
-import { open } from "@tauri-apps/api/shell";
-import { Icon } from "@/components/Icon";
-import { getBestImages, getFeedLogo } from "@/helpers/parseXML";
+import { useEffect, useState } from "react";
+import { getFeedLogo } from "@/helpers/parseXML";
 import * as dataAgent from "@/helpers/dataAgent";
 import { ArticleReadStatus } from "@/typing";
-import { toast } from "sonner";
-import { StarAndRead } from "@/layout/Article/StarAndRead";
-import { Avatar, Tooltip } from "@radix-ui/themes";
-import { ReadingOptions } from "../Article/ReadingOptions";
+import { Avatar } from "@radix-ui/themes";
 
 export interface ResultItemProps {
   article: ArticleResItem;
@@ -70,10 +64,10 @@ export function ResultItem(props: ResultItemProps) {
               addSuffix: true,
             })}
           </div>
-          <div className="grow-1 shrink-0 flex items-center gap-4">
+          {/* <div className="grow-1 shrink-0 flex items-center gap-4">
             <StarAndRead article={article} />
             <ReadingOptions article={article} />
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

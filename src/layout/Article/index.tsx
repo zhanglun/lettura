@@ -37,7 +37,7 @@ export const ArticleContainer = () => {
     <MainPanel>
       <>
         <ArticleCol feedUuid={feedUuid} type={type} ref={articleColRef} />
-        <View goNext={goNext} goPrev={goPrev} />
+        <View article={store.article} goNext={goNext} goPrev={goPrev} />
         <LPodcast visible={shouldShowPodcast} />
         <ArticleDialogView
           article={store.article}

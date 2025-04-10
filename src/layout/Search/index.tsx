@@ -11,6 +11,9 @@ import { useNavigate } from "react-router-dom";
 import { X } from "lucide-react";
 import { MainPanel } from "@/components/MainPanel";
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
+import { ArticleDetail } from "@/components/ArticleView/Detail";
+import { View } from "../Article/View";
+import clsx from "clsx";
 
 export const SearchPage = () => {
   const [isFetching, setIsFetching] = useState(false);
@@ -20,11 +23,7 @@ export const SearchPage = () => {
   const [resultList, setResultList] = useState<ArticleResItem[]>([]);
   const loadRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const navigate = useNavigate();
-
-  const goBack = () => {
-    navigate(-1);
-  };
+  const [currentArticle, setCurrentArticle] = useState<ArticleResItem | null>(null);
 
   const debounceSearch = useCallback(
     debounce((query: string) => {
@@ -43,6 +42,10 @@ export const SearchPage = () => {
 
     val && debounceSearch(val);
   };
+
+  const handleClose = () => {
+    setCurrentArticle(null);
+  }
 
   const clearQuery = () => {
     setQuery("");
@@ -107,44 +110,53 @@ export const SearchPage = () => {
 
   return (
     <MainPanel>
-      <div className="flex flex-col w-full h-[calc(100vh-theme(margin.4))] bg-card rounded-md">
-        <div className="p-3 bg-background border-b">
-          <TextField.Root
-            ref={inputRef}
-            type="search"
-            value={query}
-            placeholder="Search content in your Lettura"
-            onChange={handleSearch}
-            className=""
-          >
-            <TextField.Slot>
-              <MagnifyingGlassIcon height="16" width="16" />
-            </TextField.Slot>
-            {query.length > 0 && (
+      <div className="w-full h-[calc(100vh-theme(margin.4))] flex flex-row">
+        <div
+          className={clsx("flex flex-col", {
+            "w-full": !currentArticle,
+            "w-[400px] border-r": currentArticle,
+          })}
+        >
+          <div className="h-[var(--app-toolbar-height)] px-2 pt-2 bg-background border-b">
+            <TextField.Root
+              ref={inputRef}
+              type="search"
+              value={query}
+              placeholder="Search content in your Lettura"
+              onChange={handleSearch}
+              className=""
+            >
               <TextField.Slot>
-                <IconButton size="1" variant="ghost" onClick={clearQuery}>
-                  <X height="14" width="14" />
-                </IconButton>
+                <MagnifyingGlassIcon height="16" width="16" />
               </TextField.Slot>
-            )}
-          </TextField.Root>
-        </div>
-        <div className="overflow-auto flex-1">
-          <div className="m-auto">
-            <SearchResult query={query} resultList={resultList} />
-            <div ref={loadRef}>
-              {isFetching && (
-                <div className="p-3 grid gap-1 relative">
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-full" />
-                </div>
+              {query.length > 0 && (
+                <TextField.Slot>
+                  <IconButton size="1" variant="ghost" onClick={clearQuery}>
+                    <X height="14" width="14" />
+                  </IconButton>
+                </TextField.Slot>
               )}
+            </TextField.Root>
+          </div>
+          <div className="relative flex-1 overflow-auto scrollbar-gutter">
+            <div className="p-2">
+              <SearchResult query={query} resultList={resultList} onArticleClick={setCurrentArticle} />
+              <div ref={loadRef}>
+                {isFetching && (
+                  <div className="p-3 grid gap-1 relative">
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-full" />
+                  </div>
+                )}
+              </div>
+              <div ref={lastElementRef}></div>
             </div>
-            <div ref={lastElementRef}></div>
           </div>
         </div>
-        <div className="p-4"></div>
+        <div className="flex-1">
+          {currentArticle && <View article={currentArticle} closable onClose={handleClose} />}
+        </div>
       </div>
     </MainPanel>
   );

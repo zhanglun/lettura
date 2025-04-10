@@ -12,7 +12,6 @@ import { SearchPage } from "./layout/Search";
 import { FreshRSSPage } from "./layout/FreshRSS";
 
 import "./index.css";
-import { listen } from "@tauri-apps/api/event";
 import "./i18n";
 
 const router = createBrowserRouter([
