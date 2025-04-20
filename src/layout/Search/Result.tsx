@@ -1,48 +1,56 @@
+import { useState } from "react";
+import { FixedSizeList as List } from "react-window";
+import InfiniteLoader from "react-window-infinite-loader";
 import { ArticleResItem } from "@/db";
 import { ResultItem } from "./ResultItem";
-import { ArticleDialogView } from "@/components/ArticleView/DialogView";
-import { useState } from "react";
-import { useBearStore } from "@/stores";
 
-export interface SearchResultProps
-  extends React.HTMLAttributes<HTMLDivElement> {
-  query: string;
+export interface SearchResultProps extends React.HTMLAttributes<HTMLDivElement> {
   resultList: ArticleResItem[];
+  height: number;
   onArticleClick: (article: ArticleResItem) => void;
+  moreItemsLoading: boolean;
+  loadMore: any;
+  hasNextPage: boolean;
 }
 
 export function SearchResult(props: SearchResultProps) {
-  const { resultList } = props;
-  const [ currentArticle, setCurrentArticle ] = useState<ArticleResItem | null>(
-    null
-  );
+  const { resultList = [], height, moreItemsLoading, loadMore, hasNextPage } = props;
+  const itemCount = hasNextPage ? resultList.length + 1 : resultList.length;
+  console.log("🚀 ~ SearchResult ~ resultList:", resultList);
+  const [currentArticle, setCurrentArticle] = useState<ArticleResItem | null>(null);
 
   function handelViewResultItem(article: ArticleResItem) {
     setCurrentArticle(article);
-    props.onArticleClick(article)
-  }
-
-  function renderResultList(list: ArticleResItem[]) {
-    return (
-      <div>
-        { list.map((article) => {
-          return (
-            <ResultItem
-              key={ article.uuid }
-              article={ article }
-              onView={ handelViewResultItem }
-            />
-          );
-        }) }
-      </div>
-    );
+    props.onArticleClick(article);
   }
 
   return (
-    <>
-      <div className="">
-        { renderResultList(resultList) }
-      </div>
-    </>
+    <InfiniteLoader isItemLoaded={(index) => index < resultList.length} itemCount={itemCount} loadMoreItems={loadMore}>
+      {({ onItemsRendered, ref }) => (
+        <List
+          height={height}
+          width={"100%"}
+          itemCount={itemCount}
+          itemSize={10}
+          onItemsRendered={onItemsRendered}
+          ref={ref}
+          overscanCount={4}
+        >
+          {({ index, style }) => {
+            const itemLoading = index === resultList.length;
+
+            if (itemLoading) {
+              // return loading state
+              return "loading";
+            } else {
+              // return item
+              return (
+                <ResultItem key={resultList[index]?.uuid} article={resultList[index]} onView={handelViewResultItem} />
+              );
+            }
+          }}
+        </List>
+      )}
+    </InfiniteLoader>
   );
 }

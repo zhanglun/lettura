@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { debounce } from "lodash";
+import { debounce, get } from "lodash";
 import { IconButton, Skeleton, TextField } from "@radix-ui/themes";
 import { AxiosResponse } from "axios";
 import { X } from "lucide-react";
@@ -19,6 +19,7 @@ export const SearchPage = () => {
   const [hasMore, setHasMore] = useState(true);
   const [resultList, setResultList] = useState<ArticleResItem[]>([]);
   const loadRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [currentArticle, setCurrentArticle] = useState<ArticleResItem | null>(null);
 
@@ -92,7 +93,9 @@ export const SearchPage = () => {
       });
   };
 
-  const [lastElementRef] = useInfiniteScroll(hasMore ? () => getList({}) : () => {}, isFetching);
+  function loadMore() {
+    getList({ cursor: cursor });
+  }
 
   useEffect(() => {
     inputRef.current && inputRef.current.focus();
@@ -128,10 +131,16 @@ export const SearchPage = () => {
               )}
             </TextField.Root>
           </div>
-          <div className="relative flex-1 overflow-auto scrollbar-gutter">
-            <div className="p-2">
-              <SearchResult query={query} resultList={resultList} onArticleClick={setCurrentArticle} />
-              <div ref={loadRef}>
+          <div className="relative flex-1 overflow-auto scrollbar-gutter" ref={scrollRef}>
+              <SearchResult
+                resultList={resultList}
+                height={(scrollRef.current?.clientHeight || 16) - 16}
+                onArticleClick={setCurrentArticle}
+                hasNextPage={hasMore}
+                moreItemsLoading={isFetching}
+                loadMore={loadMore}
+              />
+              {/* <div ref={loadRef}>
                 {isFetching && (
                   <div className="p-3 grid gap-1 relative">
                     <Skeleton className="h-4 w-full" />
@@ -139,9 +148,8 @@ export const SearchPage = () => {
                     <Skeleton className="h-4 w-full" />
                   </div>
                 )}
-              </div>
-              <div ref={lastElementRef}></div>
-            </div>
+              </div> */}
+              {/* <div ref={lastElementRef}></div> */}
           </div>
         </div>
         <div className="flex-1">

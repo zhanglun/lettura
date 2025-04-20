@@ -13,6 +13,11 @@ export interface ResultItemProps {
 }
 export function ResultItem(props: ResultItemProps) {
   const { article } = props;
+
+  if (!article) {
+    return;
+  }
+
   const [readStatus, setReadStatus] = useState(article.read_status);
 
   function handleClick() {
