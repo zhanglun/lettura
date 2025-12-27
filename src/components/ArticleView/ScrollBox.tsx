@@ -1,4 +1,4 @@
-import classNames from "classnames";
+import clsx from "clsx";
 import { useHotkeys } from "react-hotkeys-hook";
 import React, { useImperativeHandle, useRef } from "react";
 
@@ -44,7 +44,7 @@ export const ScrollBox = React.forwardRef((props: ScrollBoxProps, ref: any) => {
   useHotkeys("k", scrollUp);
 
   return (
-    <div className={classNames("overflow-y-auto", className)} ref={scrollRef}>
+    <div className={clsx("overflow-y-auto", className)} ref={scrollRef}>
       {children}
     </div>
   );

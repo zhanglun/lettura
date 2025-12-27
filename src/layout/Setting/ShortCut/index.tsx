@@ -1,6 +1,6 @@
 import React from "react";
 import { Panel, PanelSection } from "../Panel";
-import classNames from "classnames";
+import clsx from "clsx";
 import { Kbd, Separator } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
 
@@ -14,7 +14,7 @@ export const KeyBox = (props: { name: string[] | string; description: string }) 
 
           name.split(" ").forEach((s) => {
             if (s === "+") {
-              group.push(<span key={s} className={classNames("inline-block text-[0.75em] px-1 py-0 align-text-top")}>+</span>);
+              group.push(<span key={s} className={clsx("inline-block text-[0.75em] px-1 py-0 align-text-top")}>+</span>);
             } else {
               group.push(<Kbd key={s}>{s}</Kbd>);
             }

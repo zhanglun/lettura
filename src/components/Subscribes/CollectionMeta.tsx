@@ -1,10 +1,9 @@
 import React, { useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Coffee, Haze, Star } from "lucide-react";
-import classNames from "classnames";
+import clsx from "clsx";
 import { RouteConfig } from "@/config";
 import { useBearStore } from "@/stores";
-import clsx from "clsx";
 import { useShallow } from "zustand/react/shallow";
 import { useTranslation } from "react-i18next";
 
@@ -58,7 +57,7 @@ const CollectionMeta = (): JSX.Element => {
             </span>
             {store.collectionMeta.today.unread > 0 && (
               <span
-                className={classNames(
+                className={clsx(
                   "-mr-1 h-4 min-w-[1rem] px-1 flex items-center justify-center text-sm font-medium leading-4 rounded"
                 )}
               >
@@ -89,7 +88,7 @@ const CollectionMeta = (): JSX.Element => {
             </span>
             {store.collectionMeta.total.unread > 0 && (
               <span
-                className={classNames(
+                className={clsx(
                   "-mr-1 h-4 min-w-[1rem] px-1 flex items-center justify-center text-sm font-medium leading-4 rounded"
                 )}
               >

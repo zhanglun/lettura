@@ -1,4 +1,4 @@
-import classNames from "classnames";
+import clsx from "clsx";
 import React, { ReactNode } from "react";
 
 export interface IconProps {
@@ -21,7 +21,7 @@ export const Icon = (props: IconProps) => {
   return (
     <span
       onClick={onClick}
-      className={classNames(
+      className={clsx(
         "flex items-center justify-center rounded hover:text-accent-foreground hover:bg-accent",
         {
           "text-muted cursor-not-allowed hover:bg-transparent hover:text-muted":

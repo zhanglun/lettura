@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Panel, PanelSection } from "../Panel";
 import { CustomizeStyle } from "@/layout/Setting/CustomizeStyle";
 import { useBearStore } from "@/stores";
-import classNames from "classnames";
+import clsx from "clsx";
 import { Accent } from "./Accent";
 import { ColorScheme } from "./ColorScheme";
 import { Separator } from "@radix-ui/themes";
@@ -43,7 +43,7 @@ export const Appearance = () => {
           <CustomizeStyle styleConfig={store.userConfig.customize_style} />
         </div>
       </PanelSection>
-      <div className={classNames("mt-5 rounded-lg border p-4 break-words", "reading-content")} style={previewStyle}>
+      <div className={clsx("mt-5 rounded-lg border p-4 break-words", "reading-content")} style={previewStyle}>
         <p>
           Stray birds of summer come to my window to sing and fly away. And yellow leaves of autumn, which have no
           songs, flutter and fall there with a sign.
