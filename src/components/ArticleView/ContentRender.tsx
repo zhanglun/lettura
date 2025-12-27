@@ -1,4 +1,5 @@
 import { Text, Link, Heading, Blockquote, Quote } from "@radix-ui/themes";
+import DOMPurify from "dompurify";
 import HTMLReactParser, { domToReact, HTMLReactParserOptions, DOMNode, attributesToProps } from "html-react-parser";
 
 // 自定义转换函数，用于替换标签
@@ -63,5 +64,5 @@ const options: HTMLReactParserOptions = {
 };
 
 export const wraperWithRadix = (content: string) => {
-  return HTMLReactParser(content, options);
+  return HTMLReactParser(DOMPurify .sanitize(content), options);
 };
