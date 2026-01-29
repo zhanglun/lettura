@@ -1,6 +1,12 @@
 import { Text, Link, Heading, Blockquote, Quote } from "@radix-ui/themes";
 import DOMPurify from "dompurify";
-import HTMLReactParser, { domToReact, HTMLReactParserOptions, DOMNode, attributesToProps } from "html-react-parser";
+import HTMLReactParser, {
+  domToReact,
+  HTMLReactParserOptions,
+  DOMNode,
+  attributesToProps,
+} from "html-react-parser";
+import { ImageLazyLoad } from "@/components/ImageLazyLoad/index";
 
 // 自定义转换函数，用于替换标签
 const options: HTMLReactParserOptions = {
@@ -14,7 +20,13 @@ const options: HTMLReactParserOptions = {
 
       if (node.name === "p") {
         return (
-          <Text as="p" size="3" my="4" style={{ letterSpacing: "0.5px" }} {...attributesToProps(node.attribs)}>
+          <Text
+            as="p"
+            size="3"
+            my="4"
+            style={{ letterSpacing: "0.5px" }}
+            {...attributesToProps(node.attribs)}
+          >
             {domToReact(node.children as DOMNode[], options)}
           </Text>
         );
@@ -29,7 +41,11 @@ const options: HTMLReactParserOptions = {
       }
 
       if (node.name === "quote") {
-        return <Quote {...attributesToProps(node.attribs)}>{domToReact(node.children as DOMNode[], options)}</Quote>;
+        return (
+          <Quote {...attributesToProps(node.attribs)}>
+            {domToReact(node.children as DOMNode[], options)}
+          </Quote>
+        );
       }
 
       if (node.name === "h1") {
@@ -55,7 +71,24 @@ const options: HTMLReactParserOptions = {
       }
 
       if (node.name === "a") {
-        return <Link {...attributesToProps(node.attribs)}>{domToReact(node.children as DOMNode[], options)}</Link>;
+        return (
+          <Link {...attributesToProps(node.attribs)}>
+            {domToReact(node.children as DOMNode[], options)}
+          </Link>
+        );
+      }
+
+      if (node.name === "img") {
+        const props = attributesToProps(node.attribs);
+        return (
+          <ImageLazyLoad
+            src={props.src as string}
+            alt={props.alt as string}
+            className={props.className as string}
+            width={props.width as number | string}
+            height={props.height as number | string}
+          />
+        );
       }
     }
 
@@ -64,5 +97,5 @@ const options: HTMLReactParserOptions = {
 };
 
 export const wraperWithRadix = (content: string) => {
-  return HTMLReactParser(DOMPurify .sanitize(content), options);
+  return HTMLReactParser(DOMPurify.sanitize(content), options);
 };

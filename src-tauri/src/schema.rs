@@ -1,6 +1,4 @@
-// @generated automatically by Diesel CLI.
-
-diesel::table! {
+table! {
     articles (id) {
         id -> Integer,
         uuid -> Text,
@@ -20,18 +18,18 @@ diesel::table! {
     }
 }
 
-diesel::table! {
+table! {
     feed_metas (id) {
         id -> Integer,
         uuid -> Text,
-        folder_uuid -> Nullable<Text>,
+        folder_uuid -> Text,
         sort -> Integer,
         create_date -> Timestamp,
         update_date -> Timestamp,
     }
 }
 
-diesel::table! {
+table! {
     feeds (id) {
         id -> Integer,
         uuid -> Text,
@@ -53,7 +51,7 @@ diesel::table! {
     }
 }
 
-diesel::table! {
+table! {
     folders (id) {
         id -> Integer,
         uuid -> Text,
@@ -64,7 +62,7 @@ diesel::table! {
     }
 }
 
-diesel::allow_tables_to_appear_in_same_query!(
+allow_tables_to_appear_in_same_query!(
     articles,
     feed_metas,
     feeds,
