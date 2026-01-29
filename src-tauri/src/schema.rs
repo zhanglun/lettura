@@ -22,7 +22,7 @@ table! {
     feed_metas (id) {
         id -> Integer,
         uuid -> Text,
-        folder_uuid -> Text,
+        folder_uuid -> Nullable<Text>,
         sort -> Integer,
         create_date -> Timestamp,
         update_date -> Timestamp,

@@ -1,5 +1,6 @@
 use super::schema::{articles, feed_metas, feeds, folders};
 use diesel::sql_types::*;
+use diesel::sqlite::Sqlite;
 use serde::Serialize;
 
 #[derive(Debug, Clone, Queryable, Serialize, QueryableByName)]
@@ -71,13 +72,14 @@ pub struct NewFeed {
   pub sort: i32,
 }
 
-#[derive(Debug, Queryable, Serialize, QueryableByName)]
+#[derive(Debug, Queryable, Serialize, QueryableByName, Selectable)]
+#[diesel(check_for_backend(Sqlite))]
 pub struct FeedMeta {
   #[diesel(sql_type = Integer)]
   pub id: i32,
   #[diesel(sql_type = Text)]
   pub uuid: String,
-  #[diesel(sql_type = Text)]
+  #[diesel(sql_type = Nullable<Text>)]
   pub folder_uuid: Option<String>,
   #[diesel(sql_type = Integer)]
   pub sort: i32,
