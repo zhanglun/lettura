@@ -23,10 +23,7 @@ mod models;
 mod schema;
 mod server;
 
-use std::{
-  env,
-  sync::{Mutex},
-};
+use std::{env, sync::Mutex};
 
 pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!("./migrations");
 
@@ -53,13 +50,12 @@ pub struct AppState {
 
 impl AppState {
   fn new() -> Self {
-      Self {
-          // app: Mutex::new(None),
-          server: Mutex::new(None)
-      }
+    Self {
+      // app: Mutex::new(None),
+      server: Mutex::new(None),
+    }
   }
 }
-
 
 #[tokio::main]
 async fn main() {
@@ -136,6 +132,11 @@ async fn main() {
       cmd::init_process,
       cmd::update_icon,
       cmd::get_server_port,
+      cmd::export_opml,
+      cmd::import_opml,
+      core::scheduler::start_scheduler,
+      core::scheduler::stop_scheduler,
+      core::scheduler::is_scheduler_running,
     ])
     .build(context)
     .expect("error while running tauri Application")

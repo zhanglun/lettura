@@ -45,11 +45,9 @@ pub fn delete_feed(uuid: String) -> usize {
   println!("channel {:?}", channel);
 
   return if channel.len() == 1 {
-    diesel::delete(
-      schema::articles::dsl::articles.filter(schema::articles::feed_uuid.eq(&uuid)),
-    )
-    .execute(&mut connection)
-    .expect("Expect delete channel");
+    diesel::delete(schema::articles::dsl::articles.filter(schema::articles::feed_uuid.eq(&uuid)))
+      .execute(&mut connection)
+      .expect("Expect delete channel");
 
     diesel::delete(schema::feed_metas::dsl::feed_metas.filter(schema::feed_metas::uuid.eq(&uuid)))
       .execute(&mut connection)
@@ -364,7 +362,10 @@ pub fn get_last_sort(connection: &mut diesel::SqliteConnection) -> i32 {
   last_sort
 }
 
-pub fn add_feed(feed: models::NewFeed, articles: Vec<models::NewArticle>) -> (Option<models::Feed>, usize, String) {
+pub fn add_feed(
+  feed: models::NewFeed,
+  articles: Vec<models::NewArticle>,
+) -> (Option<models::Feed>, usize, String) {
   let mut connection = db::establish_connection();
   let last_sort = get_last_sort(&mut connection);
   let record = models::NewFeed {

@@ -103,7 +103,7 @@ impl Default for UserConfig {
 impl UserConfig {
   generate_set_property!(self, set_threads, threads, i32);
   generate_set_property!(self, set_theme, theme, String);
-  generate_set_property!(self, set_port, port,  u16);
+  generate_set_property!(self, set_port, port, u16);
   generate_set_property!(self, set_update_interval, update_interval, u64);
   generate_set_property!(self, set_purge_on_days, purge_on_days, u64);
   generate_set_property!(self, set_purge_unread_articles, purge_unread_articles, bool);
@@ -190,9 +190,7 @@ pub fn get_user_config() -> UserConfig {
   };
 
   let data: Option<UserConfig> = match toml::from_str(&content) {
-    Ok(data) => {
-      Some(data)
-    }
+    Ok(data) => Some(data),
     Err(_) => {
       eprintln!("Unable to load data from `{:?}`", content);
       Some(UserConfig::default())
@@ -221,7 +219,7 @@ pub fn add_proxy(proxy_cfg: Proxy, allow_list: Vec<String>) -> Result<Option<Vec
         )
         .collect();
 
-      data.proxy_rules =  set.into_iter().collect();
+      data.proxy_rules = set.into_iter().collect();
 
       let content = toml::to_string_pretty(&data).unwrap();
 
@@ -270,9 +268,9 @@ pub fn update_proxy(
         )
       })
       .collect();
-    data.proxy_rules.retain(|rule| {
-      !rule.starts_with(&format!("{}:{}", proxy_cfg.server, proxy_cfg.port))
-    });
+    data
+      .proxy_rules
+      .retain(|rule| !rule.starts_with(&format!("{}:{}", proxy_cfg.server, proxy_cfg.port)));
 
     let set: HashSet<String> = data
       .proxy_rules

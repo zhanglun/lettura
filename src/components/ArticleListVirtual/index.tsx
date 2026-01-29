@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useImperativeHandle } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArticleItem } from "../ArticleItem";
 import { Skeleton } from "@radix-ui/themes";
@@ -27,16 +27,27 @@ export interface ArticleListVirtualRefType {
 }
 
 export const ArticleListVirtual = React.memo(
-  React.forwardRef<HTMLDivElement, ArticleListVirtualProps>(
+  React.forwardRef<ArticleListVirtualRefType, ArticleListVirtualProps>(
     (props: ArticleListVirtualProps, ref) => {
       const { articles, isEmpty, isLoading, isReachingEnd, size, setSize } =
         props;
       const { t } = useTranslation();
-      const parentRef = useRef<HTMLDivElement>(null);
+      const internalParentRef = useRef<HTMLDivElement>(null);
+
+      useImperativeHandle(
+        ref,
+        () => ({
+          getList: () => console.log("getList called"),
+          markAllRead: () => console.log("markAllRead called"),
+          articlesRef: internalParentRef,
+          innerRef: internalParentRef,
+        }),
+        [],
+      );
 
       const rowVirtualizer = useVirtualizer({
         count: articles.length,
-        getScrollElement: () => parentRef.current,
+        getScrollElement: () => internalParentRef.current,
         estimateSize: () => 100,
         overscan: 4,
       });
@@ -51,8 +62,11 @@ export const ArticleListVirtual = React.memo(
       }, [virtualItems, isReachingEnd, isLoading, size, setSize]);
 
       return (
-        <div className="w-full h-full flex flex-col" ref={ref}>
-          <div ref={parentRef} className="flex-1 overflow-auto">
+        <div className="w-full h-full flex flex-col">
+          <div
+            ref={internalParentRef}
+            className="flex-1 overflow-auto scrollbar-gutter"
+          >
             <div
               className="relative"
               style={{

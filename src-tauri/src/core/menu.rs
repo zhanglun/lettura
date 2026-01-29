@@ -1,12 +1,10 @@
-use std::env;
-use tauri::utils::assets::EmbeddedAssets;
-use tauri::{CustomMenuItem, Menu, MenuItem, Submenu, Context, WindowMenuEvent};
 use serde_json::json;
+use std::env;
 use sys_info;
+use tauri::utils::assets::EmbeddedAssets;
+use tauri::{Context, CustomMenuItem, Menu, MenuItem, Submenu, WindowMenuEvent};
 
-pub struct AppMenu {
-
-}
+pub struct AppMenu {}
 
 impl AppMenu {
   pub fn get_menu(context: &Context<EmbeddedAssets>) -> Menu {
@@ -20,54 +18,60 @@ impl AppMenu {
 
     let _env = env::var("LETTURA_ENV");
     let name = match _env {
-      Ok(_env) => {
-        String::from("Lettura dev")
-      }
-      Err(_) => {
-        context.package_info().name.clone()
-      }
+      Ok(_env) => String::from("Lettura dev"),
+      Err(_) => context.package_info().name.clone(),
     };
 
     let app_menu = Submenu::new(
-        "",
-        Menu::new()
-          // .add_native_item(MenuItem::About(name.into(), AboutMetadata::new()))
-          .add_item(CustomMenuItem::new("about".to_string(), format!("About {}", name)))
-          .add_native_item(MenuItem::Separator)
-          .add_item(CustomMenuItem::new("settings".to_string(), "Settings...").accelerator("CmdOrControl+,"))
-          .add_item(CustomMenuItem::new("check_for_updates".to_string(), "Check for Updates"))
-          .add_native_item(MenuItem::Separator)
-          .add_native_item(MenuItem::Hide)
-          .add_native_item(MenuItem::HideOthers)
-          .add_native_item(MenuItem::Separator)
-          .add_item(CustomMenuItem::new("quit".to_string(), "Quit Lettura").accelerator("CmdOrControl+Q"))
+      "",
+      Menu::new()
+        // .add_native_item(MenuItem::About(name.into(), AboutMetadata::new()))
+        .add_item(CustomMenuItem::new(
+          "about".to_string(),
+          format!("About {}", name),
+        ))
+        .add_native_item(MenuItem::Separator)
+        .add_item(
+          CustomMenuItem::new("settings".to_string(), "Settings...").accelerator("CmdOrControl+,"),
+        )
+        .add_item(CustomMenuItem::new(
+          "check_for_updates".to_string(),
+          "Check for Updates",
+        ))
+        .add_native_item(MenuItem::Separator)
+        .add_native_item(MenuItem::Hide)
+        .add_native_item(MenuItem::HideOthers)
+        .add_native_item(MenuItem::Separator)
+        .add_item(
+          CustomMenuItem::new("quit".to_string(), "Quit Lettura").accelerator("CmdOrControl+Q"),
+        ),
     );
 
     let file_menu = Submenu::new(
-        "File",
-        Menu::new()
-            .add_item(CustomMenuItem::new("new_feed".to_string(), "New Feed"))
-            .add_item(CustomMenuItem::new("new_folder".to_string(), "New Folder")),
+      "File",
+      Menu::new()
+        .add_item(CustomMenuItem::new("new_feed".to_string(), "New Feed"))
+        .add_item(CustomMenuItem::new("new_folder".to_string(), "New Folder")),
     );
 
     let edit_menu = Submenu::new(
-        "Edit",
-        Menu::new()
-            .add_native_item(MenuItem::Copy)
-            .add_native_item(MenuItem::Paste)
-            .add_native_item(MenuItem::Cut)
-            .add_native_item(MenuItem::SelectAll)
-            .add_item(CustomMenuItem::new("undo".to_string(), "Undo"))
-            .add_item(CustomMenuItem::new("redo".to_string(), "Redo")),
+      "Edit",
+      Menu::new()
+        .add_native_item(MenuItem::Copy)
+        .add_native_item(MenuItem::Paste)
+        .add_native_item(MenuItem::Cut)
+        .add_native_item(MenuItem::SelectAll)
+        .add_item(CustomMenuItem::new("undo".to_string(), "Undo"))
+        .add_item(CustomMenuItem::new("redo".to_string(), "Redo")),
     );
 
-    let window_menu = Submenu::new (
+    let window_menu = Submenu::new(
       "Window",
       Menu::new()
         .add_native_item(MenuItem::Minimize)
         .add_native_item(MenuItem::Zoom)
         .add_native_item(MenuItem::CloseWindow)
-        .add_native_item(MenuItem::EnterFullScreen)
+        .add_native_item(MenuItem::EnterFullScreen),
     );
 
     Menu::new()
@@ -98,29 +102,29 @@ impl AppMenu {
         let tauri_version = env!("CARGO_PKG_VERSION").to_string();
 
         let react_version = Command::new("node")
-            .args(["-p", "require('react/package.json').version"])
-            .output()
-            .expect("Failed to get React version")
-            .stdout;
+          .args(["-p", "require('react/package.json').version"])
+          .output()
+          .expect("Failed to get React version")
+          .stdout;
         let react_version = String::from_utf8_lossy(&react_version).trim().to_string();
 
         let os = match sys_info::os_release() {
-            Ok(version) => format!("{} {}", std::env::consts::OS, version),
-            Err(_) => std::env::consts::OS.to_string(),
+          Ok(version) => format!("{} {}", std::env::consts::OS, version),
+          Err(_) => std::env::consts::OS.to_string(),
         };
 
         let node_version = Command::new("node")
-            .args(["-v"])
-            .output()
-            .expect("Failed to get Node version")
-            .stdout;
+          .args(["-v"])
+          .output()
+          .expect("Failed to get Node version")
+          .stdout;
         let node_version = String::from_utf8_lossy(&node_version).trim().to_string();
 
         let rust_version = Command::new("rustc")
-            .args(["--version"])
-            .output()
-            .expect("Failed to get Rust version")
-            .stdout;
+          .args(["--version"])
+          .output()
+          .expect("Failed to get Rust version")
+          .stdout;
         let rust_version = String::from_utf8_lossy(&rust_version).trim().to_string();
 
         let metadata = json!({
@@ -131,7 +135,8 @@ impl AppMenu {
             "OS": os,
             "node": node_version,
             "rust": rust_version,
-        }).to_string();
+        })
+        .to_string();
 
         // Emit the metadata
         event.window().emit("about_lettura", metadata).unwrap();

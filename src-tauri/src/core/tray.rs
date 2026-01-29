@@ -11,8 +11,7 @@ impl Tray {
       .add_native_item(SystemTrayMenuItem::Separator)
       .add_submenu(SystemTraySubmenu::new(
         "More",
-        SystemTrayMenu::new()
-          .add_item(CustomMenuItem::new("restart_app", "Restart Lettura"))
+        SystemTrayMenu::new().add_item(CustomMenuItem::new("restart_app", "Restart Lettura")),
       ))
       .add_native_item(SystemTrayMenuItem::Separator)
       .add_item(CustomMenuItem::new("quit", "Quit").accelerator("CmdOrControl+Q"));
@@ -28,12 +27,12 @@ impl Tray {
 
           window.show().unwrap();
           window.set_focus().unwrap();
-        },
+        }
         "hide_window" => {
           let window = app_handle.get_window("main").unwrap();
 
           window.hide().unwrap();
-        },
+        }
         "restart_app" => api::process::restart(&app_handle.env()),
         "quit" => {
           app_handle.exit(0);

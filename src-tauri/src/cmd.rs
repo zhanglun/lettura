@@ -259,6 +259,16 @@ pub async fn get_server_port() -> u16 {
   return cfg.port;
 }
 
+#[command]
+pub fn export_opml() -> Result<String, String> {
+  feed::opml::export_opml()
+}
+
+#[command]
+pub fn import_opml(opml_content: String) -> Result<feed::opml::OpmlImportResult, String> {
+  feed::opml::import_opml(&opml_content)
+}
+
 #[cfg(test)]
 mod tests {
   use super::*;

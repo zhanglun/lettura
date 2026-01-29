@@ -10,6 +10,7 @@ use serde::{ser::SerializeStruct, Serialize, Serializer};
 pub mod article;
 pub mod channel;
 pub mod folder;
+pub mod opml;
 
 pub fn create_client(url: &str) -> reqwest::Client {
   let proxy = find_proxy(url);

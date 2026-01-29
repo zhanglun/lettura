@@ -1,7 +1,8 @@
 pub mod common;
-pub mod tray;
-pub mod scraper;
-pub mod menu;
 pub mod config;
+pub mod menu;
 pub mod scheduler;
-// pub use self::core::*;
+pub mod scraper;
+pub mod tray;
+
+pub use scheduler::{is_scheduler_running, start_scheduler, stop_scheduler};

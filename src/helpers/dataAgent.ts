@@ -196,3 +196,18 @@ export const updateIcon = async (
 ): Promise<string> => {
   return invoke("update_icon", { uuid, url });
 };
+
+export interface OpmlImportResult {
+  folder_count: number;
+  feed_count: number;
+  failed_count: number;
+  errors: string[];
+}
+
+export const exportOpml = async (): Promise<string> => {
+  return invoke("export_opml");
+};
+
+export const importOpml = async (opmlContent: string): Promise<OpmlImportResult> => {
+  return invoke("import_opml", { opmlContent });
+};

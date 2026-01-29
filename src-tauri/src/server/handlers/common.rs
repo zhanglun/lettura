@@ -108,6 +108,9 @@ pub struct SearchRequest {
   pub query: String,
   pub limit: Option<i32>,
   pub cursor: Option<i32>,
+  pub start_date: Option<String>,
+  pub end_date: Option<String>,
+  pub feed_uuid: Option<String>,
 }
 
 #[get("/api/search")]
@@ -116,6 +119,9 @@ pub async fn handle_search(search: web::Query<SearchRequest>) -> Result<impl Res
     query: search.query.to_string(),
     limit: search.limit.clone(),
     cursor: search.cursor.clone(),
+    start_date: search.start_date.clone(),
+    end_date: search.end_date.clone(),
+    feed_uuid: search.feed_uuid.clone(),
   });
 
   Ok(web::Json(result))

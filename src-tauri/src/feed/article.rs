@@ -120,7 +120,8 @@ impl Article {
   /// get articles
   pub fn get_article(filter: ArticleFilter) -> ArticleQueryResult {
     let mut connection = establish_connection();
-    let mut query = diesel::sql_query("
+    let mut query = diesel::sql_query(
+      "
     SELECT
       A.id, A.uuid,
       A.feed_uuid,
@@ -140,7 +141,9 @@ impl Article {
       articles as A
     LEFT JOIN
       feeds as C
-    ON C.uuid = A.feed_uuid").into_boxed();
+    ON C.uuid = A.feed_uuid",
+    )
+    .into_boxed();
     let mut limit = 12;
     let mut conditions = vec![];
     let mut params = vec![];
@@ -398,7 +401,9 @@ impl Article {
               feeds as C ON C.uuid = A.feed_uuid
             WHERE
               A.uuid = ?
-    ").bind::<Text, _>(uuid);
+    ",
+    )
+    .bind::<Text, _>(uuid);
 
     let mut result = query
       .load::<ArticleDetailResult>(&mut connection)
