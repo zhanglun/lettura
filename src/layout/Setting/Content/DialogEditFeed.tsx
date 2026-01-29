@@ -19,11 +19,18 @@ export interface DialogEditFeedProps {
 }
 
 export const DialogEditFeed = React.memo((props: DialogEditFeedProps) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   const store = useBearStore((state) => ({
     setFeedContextMenuTarget: state.setFeedContextMenuTarget,
   }));
-  const { feed, dialogStatus, setDialogStatus, afterConfirm, afterCancel, trigger } = props;
+  const {
+    feed,
+    dialogStatus,
+    setDialogStatus,
+    afterConfirm,
+    afterCancel,
+    trigger,
+  } = props;
   const confirmUnsubscribe = () => {
     if (feed?.uuid) {
       dataAgent
@@ -57,8 +64,12 @@ export const DialogEditFeed = React.memo((props: DialogEditFeedProps) => {
         <div className="py-6">
           <header className="flex items-center">
             <div>
-              <h3 className="text-2xl font-semibold leading-none tracking-tight text-foreground">{feed?.title}</h3>
-              <p className="mt-2 text-sm text-muted-foreground">{feed?.description}</p>
+              <h3 className="text-2xl font-semibold leading-none tracking-tight text-foreground">
+                {feed?.title}
+              </h3>
+              <p className="mt-2 text-sm text-muted-foreground">
+                {feed?.description}
+              </p>
               <div className="mt-3 space-y-0.5">
                 <a
                   className="text-sm text-muted-foreground hover:text-primary hover:underline flex items-top space-x-1"
@@ -70,7 +81,8 @@ export const DialogEditFeed = React.memo((props: DialogEditFeedProps) => {
                   <span>{feed?.link}</span>
                 </a>
                 <p className="text-sm text-muted-foreground">
-                  Date subscribed: {Dayjs(feed?.create_date).format("YYYY-MM-DD HH:mm")}
+                  Date subscribed:{" "}
+                  {Dayjs(feed?.create_date).format("YYYY-MM-DD HH:mm")}
                 </p>
               </div>
             </div>

@@ -20,8 +20,7 @@ export default function ErrorPage() {
   return (
     <Theme
       className="w-[100vw] h-[100vh]"
-      // @ts-ignore
-      accentColor={store.userConfig.theme || "indigo"}
+      accentColor={(store.userConfig.theme as any) || "indigo"}
       panelBackground="translucent"
     >
       <div id="error-page" className="h-full w-full">
@@ -36,7 +35,12 @@ export default function ErrorPage() {
             <Link className="flex items-center gap-1" onClick={goBack}>
               <ArrowLeftIcon size="18" strokeWidth={1.5} /> Go Back
             </Link>
-            <Link href="https://github.com/zhanglun/lettura/issues/new?assignees=&labels=&projects=&template=bug_report.md&title=" color="red" target="_blank" className="flex items-center gap-1">
+            <Link
+              href="https://github.com/zhanglun/lettura/issues/new?assignees=&labels=&projects=&template=bug_report.md&title="
+              color="red"
+              target="_blank"
+              className="flex items-center gap-1"
+            >
               <BugIcon size="18" strokeWidth={1.5} /> Click to report bugs
             </Link>
           </div>

@@ -1,6 +1,7 @@
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
+import axios from "axios";
+import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 
-const port = window.localStorage.getItem('port');
+const port = window.localStorage.getItem("port");
 
 const env = import.meta.env;
 
@@ -13,7 +14,7 @@ if (env.DEV) {
 export const createInstance = (config: AxiosRequestConfig): AxiosInstance => {
   axios.defaults.baseURL = `http://localhost:${port}/api`;
   return axios.create(config);
-}
+};
 
 export const get = (url: string, config?: AxiosRequestConfig) => {
   const _instance = createInstance(config || {});
@@ -21,7 +22,7 @@ export const get = (url: string, config?: AxiosRequestConfig) => {
   return _instance.get(url, config).then((res: AxiosResponse) => {
     return res;
   });
-}
+};
 
 export const post = (url: string, data: any, config?: AxiosRequestConfig) => {
   const _instance = createInstance(config || {});
@@ -29,7 +30,7 @@ export const post = (url: string, data: any, config?: AxiosRequestConfig) => {
   return _instance.post(url, data, config).then((res: AxiosResponse) => {
     return res;
   });
-}
+};
 
 export const put = (url: string, data: any, config?: AxiosRequestConfig) => {
   const _instance = createInstance(config || {});
@@ -37,8 +38,7 @@ export const put = (url: string, data: any, config?: AxiosRequestConfig) => {
   return _instance.put(url, data, config).then((res: AxiosResponse) => {
     return res;
   });
-}
-
+};
 
 export const _delete = (url: string, config?: AxiosRequestConfig) => {
   const _instance = createInstance(config || {});
@@ -46,14 +46,14 @@ export const _delete = (url: string, config?: AxiosRequestConfig) => {
   return _instance.delete(url, config).then((res: AxiosResponse) => {
     return res;
   });
-}
+};
 
 export const request = {
   get,
   post,
   put,
-  delete: _delete
-}
+  delete: _delete,
+};
 
-//@ts-ignore
-export const fetcher = (...args: any[]) => fetch(...args).then((res) => res.json())
+export const fetcher = (input: RequestInfo | URL, init?: RequestInit) =>
+  fetch(input, init).then((res) => res.json());

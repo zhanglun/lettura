@@ -26,7 +26,7 @@ export function YoutubeAdapter(props: any) {
           const linkText = linkMatch[2] || url;
           return `<p key="${index}">${line.replace(
             linkRegex,
-            `<a href="${url}" target="_blank" rel="noopener noreferrer">${linkText}</a>`
+            `<a href="${url}" target="_blank" rel="noopener noreferrer">${linkText}</a>`,
           )}</p>`;
         }
         return `<p key="${index}">${line}</p>`;

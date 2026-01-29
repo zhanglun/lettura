@@ -1,5 +1,9 @@
 import { createRoot } from "react-dom/client";
-import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
+import {
+  createBrowserRouter,
+  Navigate,
+  RouterProvider,
+} from "react-router-dom";
 import { Toaster } from "sonner";
 import { invoke } from "@tauri-apps/api";
 

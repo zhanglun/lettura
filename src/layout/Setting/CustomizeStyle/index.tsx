@@ -49,7 +49,10 @@ export const CustomizeStyle = (props: CustomizeStyleProps) => {
     ...styleConfig,
   });
 
-  function handleCustomizeStyleChange(key: keyof CustomizeStyle, value: number | string | number[]) {
+  function handleCustomizeStyleChange(
+    key: keyof CustomizeStyle,
+    value: number | string | number[],
+  ) {
     setCfg({
       ...cfg,
       [key]: value,
@@ -63,7 +66,10 @@ export const CustomizeStyle = (props: CustomizeStyleProps) => {
       },
     });
 
-    document.documentElement.style.setProperty(`--reading-editable-${key.replace(/_/gi, "-")}`, value as string);
+    document.documentElement.style.setProperty(
+      `--reading-editable-${key.replace(/_/gi, "-")}`,
+      value as string,
+    );
   }
 
   return (

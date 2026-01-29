@@ -16,9 +16,9 @@ const AudioWaveform = () => {
 
   return (
     <Flex className="h-6 items-center justify-center gap-1">
-      {bars.map((bar, index) => (
+      {bars.map((bar) => (
         <motion.div
-          key={index}
+          key={bar.delay}
           initial={{ height: bar.height[0] }}
           animate={{ height: bar.height }}
           transition={{
@@ -41,7 +41,12 @@ interface MiniPlayerProps {
   onExpand: () => void;
 }
 
-export const MiniPlayer: React.FC<MiniPlayerProps> = ({ currentTrack, isPlaying, togglePlay, onExpand }) => {
+export const MiniPlayer: React.FC<MiniPlayerProps> = ({
+  currentTrack,
+  isPlaying,
+  togglePlay,
+  onExpand,
+}) => {
   return (
     <Box className="bg-[var(--gray-1)] rounded-lg shadow-sm overflow-hidden w-[380px] border">
       <Flex align="center" className="p-2 gap-3">
@@ -74,7 +79,10 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({ currentTrack, isPlaying,
           />
 
           {/* Always visible overlay */}
-          <div className="play-button-overlay !opacity-100" onClick={togglePlay}>
+          <div
+            className="play-button-overlay !opacity-100"
+            onClick={togglePlay}
+          >
             {isPlaying ? (
               <AudioWaveform />
             ) : (
@@ -95,10 +103,17 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({ currentTrack, isPlaying,
           </div>
         </div>
 
-        <Flex direction="column" className="flex-1 min-w-0 max-w-[calc(100%-80px)]">
-          <div className="text-sm font-medium flex-1 truncate">{currentTrack?.title || "No track selected"}</div>
+        <Flex
+          direction="column"
+          className="flex-1 min-w-0 max-w-[calc(100%-80px)]"
+        >
+          <div className="text-sm font-medium flex-1 truncate">
+            {currentTrack?.title || "No track selected"}
+          </div>
           <div className="text-xs flex-1 truncate">
-            {currentTrack?.author || currentTrack?.feed_title || "Unknown artist"}
+            {currentTrack?.author ||
+              currentTrack?.feed_title ||
+              "Unknown artist"}
           </div>
         </Flex>
 

@@ -2,6 +2,7 @@ import { StateCreator } from "zustand";
 import { AudioTrack } from "@/components/LPodcast";
 import { Podcast, db } from "@/helpers/podcastDB";
 import { toast } from "sonner";
+import { showErrorToast } from "@/helpers/errorHandler";
 
 export interface PodcastSlice {
   podcastPanelStatus: boolean;
@@ -20,7 +21,12 @@ export interface PodcastSlice {
   removeTrack: (track: AudioTrack) => void;
 }
 
-export const createPodcastSlice: StateCreator<PodcastSlice, [], [], PodcastSlice> = (set, get) => ({
+export const createPodcastSlice: StateCreator<
+  PodcastSlice,
+  [],
+  [],
+  PodcastSlice
+> = (set, get) => ({
   podcastPanelStatus: false,
   updatePodcastPanelStatus: (status: boolean) => {
     set(() => ({
@@ -57,19 +63,31 @@ export const createPodcastSlice: StateCreator<PodcastSlice, [], [], PodcastSlice
   },
 
   playNext: () => {
-    const { tracks, currentPlayingIndex, setCurrentTrack, setCurrentPlayingIndex } = get();
+    const {
+      tracks,
+      currentPlayingIndex,
+      setCurrentTrack,
+      setCurrentPlayingIndex,
+    } = get();
     if (tracks.length === 0) return;
 
-    const nextIndex = currentPlayingIndex + 1 >= tracks.length ? 0 : currentPlayingIndex + 1;
+    const nextIndex =
+      currentPlayingIndex + 1 >= tracks.length ? 0 : currentPlayingIndex + 1;
     setCurrentPlayingIndex(nextIndex);
     setCurrentTrack(tracks[nextIndex]);
   },
 
   playPrev: () => {
-    const { tracks, currentPlayingIndex, setCurrentTrack, setCurrentPlayingIndex } = get();
+    const {
+      tracks,
+      currentPlayingIndex,
+      setCurrentTrack,
+      setCurrentPlayingIndex,
+    } = get();
     if (tracks.length === 0) return;
 
-    const prevIndex = currentPlayingIndex - 1 < 0 ? tracks.length - 1 : currentPlayingIndex - 1;
+    const prevIndex =
+      currentPlayingIndex - 1 < 0 ? tracks.length - 1 : currentPlayingIndex - 1;
     setCurrentPlayingIndex(prevIndex);
     setCurrentTrack(tracks[prevIndex]);
   },
@@ -108,7 +126,9 @@ export const createPodcastSlice: StateCreator<PodcastSlice, [], [], PodcastSlice
     } = get();
 
     // 检查是否已经在列表中
-    const existingTrackIndex = tracks.findIndex((track) => track.uuid === newTrack.uuid);
+    const existingTrackIndex = tracks.findIndex(
+      (track) => track.uuid === newTrack.uuid,
+    );
     if (existingTrackIndex === -1) {
       // 如果不在列表中，添加到列表末尾并播放
       setTracks([...tracks, newTrack]);
@@ -127,8 +147,14 @@ export const createPodcastSlice: StateCreator<PodcastSlice, [], [], PodcastSlice
   },
 
   async removeTrack(track: AudioTrack) {
-    const { tracks, setTracks, currentTrack, setCurrentTrack, updatePodcastPlayingStatus, setCurrentPlayingIndex } =
-      get();
+    const {
+      tracks,
+      setTracks,
+      currentTrack,
+      setCurrentTrack,
+      updatePodcastPlayingStatus,
+      setCurrentPlayingIndex,
+    } = get();
 
     // 从列表中移除
     const newTracks = tracks.filter((t) => t.uuid !== track.uuid);
@@ -138,7 +164,7 @@ export const createPodcastSlice: StateCreator<PodcastSlice, [], [], PodcastSlice
     try {
       await db.podcasts.where("uuid").equals(track.uuid).delete();
     } catch (error) {
-      console.error("Failed to delete podcast from database:", error);
+      showErrorToast(error, "Failed to delete podcast from database");
       return;
     }
 
@@ -149,7 +175,9 @@ export const createPodcastSlice: StateCreator<PodcastSlice, [], [], PodcastSlice
       setCurrentPlayingIndex(-1);
     } else {
       // 如果删除的音频在当前播放音频之前，需要更新当前播放索引
-      const currentIndex = tracks.findIndex((t) => t.uuid === currentTrack?.uuid);
+      const currentIndex = tracks.findIndex(
+        (t) => t.uuid === currentTrack?.uuid,
+      );
       const removedIndex = tracks.findIndex((t) => t.uuid === track.uuid);
       if (removedIndex < currentIndex) {
         setCurrentPlayingIndex(currentIndex - 1);

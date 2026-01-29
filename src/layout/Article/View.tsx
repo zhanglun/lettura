@@ -1,6 +1,9 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { ArticleDetail } from "@/components/ArticleView/Detail";
-import { ScrollBox, ScrollBoxRefObject } from "@/components/ArticleView/ScrollBox";
+import {
+  ScrollBox,
+  ScrollBoxRefObject,
+} from "@/components/ArticleView/ScrollBox";
 import { useRef } from "react";
 import { ReadingOptions } from "./ReadingOptions";
 import { ToolbarItemNavigator } from "./ToolBar";
@@ -41,8 +44,12 @@ export function View(props: ArticleViewProps) {
             <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
           </svg>
         </div>
-        <h2 className="text-2xl font-medium text-[var(--gray-12)] mb-2">{t("Ready to Read")}</h2>
-        <p className="text-[var(--gray-11)] text-base">{t("Select an article from your subscribe to start reading")}</p>
+        <h2 className="text-2xl font-medium text-[var(--gray-12)] mb-2">
+          {t("Ready to Read")}
+        </h2>
+        <p className="text-[var(--gray-11)] text-base">
+          {t("Select an article from your subscribe to start reading")}
+        </p>
       </div>
     );
   };
@@ -51,7 +58,11 @@ export function View(props: ArticleViewProps) {
 
   return (
     <div className="flex-1">
-      <div className={"h-[var(--app-toolbar-height)] flex items-center justify-end px-3 gap-2 border-b relative z-10"}>
+      <div
+        className={
+          "h-[var(--app-toolbar-height)] flex items-center justify-end px-3 gap-2 border-b relative z-10"
+        }
+      >
         {props.article && (
           <>
             <StarAndRead article={props.article} />
@@ -76,7 +87,13 @@ export function View(props: ArticleViewProps) {
         {props.closable && (
           <>
             <Separator orientation="vertical" className="mx-1" />
-            <IconButton size="2" variant="ghost" color="gray" className="text-[var(--gray-12)]" onClick={props.onClose}>
+            <IconButton
+              size="2"
+              variant="ghost"
+              color="gray"
+              className="text-[var(--gray-12)]"
+              onClick={props.onClose}
+            >
               <X size={16} />
             </IconButton>
           </>
@@ -91,10 +108,17 @@ export function View(props: ArticleViewProps) {
           transition={{ duration: 0.2 }}
           className="overflow-hidden"
         >
-          <ScrollBox className="h-[calc(100vh_-_var(--app-toolbar-height))]" ref={scrollBoxRef}>
+          <ScrollBox
+            className="h-[calc(100vh_-_var(--app-toolbar-height))]"
+            ref={scrollBoxRef}
+          >
             <div className="font-[var(--reading-font-body)] min-h-full m-auto sm:px-5 sm:max-w-xl lg:px-10 lg:max-w-5xl">
               {" "}
-              {props.article ? <ArticleDetail article={props.article} /> : renderPlaceholder()}
+              {props.article ? (
+                <ArticleDetail article={props.article} />
+              ) : (
+                renderPlaceholder()
+              )}
             </div>
           </ScrollBox>
         </motion.article>

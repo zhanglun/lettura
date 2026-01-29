@@ -1,4 +1,11 @@
-import { Cog, Database, Keyboard, Palette, Settings, Waypoints } from "lucide-react";
+import {
+  Cog,
+  Database,
+  Keyboard,
+  Palette,
+  Settings,
+  Waypoints,
+} from "lucide-react";
 import { Dialog, Heading, IconButton, Kbd, Tooltip } from "@radix-ui/themes";
 import { useHotkeys } from "react-hotkeys-hook";
 import { General } from "./General";
@@ -26,7 +33,9 @@ export function SettingPage({ children }: SettingPageProps) {
     updateSettingDialogStatus: state.updateSettingDialogStatus,
   }));
 
-  const [activeTab, setActiveTab] = useState<SettingTabKey>(SettingTabKey.GENERAL);
+  const [activeTab, setActiveTab] = useState<SettingTabKey>(
+    SettingTabKey.GENERAL,
+  );
 
   useHotkeys("s", () => {
     store.updateSettingDialogStatus(true);
@@ -41,7 +50,10 @@ export function SettingPage({ children }: SettingPageProps) {
   };
 
   return (
-    <Dialog.Root open={store.settingDialogStatus} onOpenChange={handleStatusChange}>
+    <Dialog.Root
+      open={store.settingDialogStatus}
+      onOpenChange={handleStatusChange}
+    >
       <Tooltip
         content={
           <>
@@ -70,7 +82,8 @@ export function SettingPage({ children }: SettingPageProps) {
               <button
                 onClick={() => setActiveTab(SettingTabKey.GENERAL)}
                 className={clsx("setting-tab-item", {
-                  "setting-tab-item--active": activeTab === SettingTabKey.GENERAL,
+                  "setting-tab-item--active":
+                    activeTab === SettingTabKey.GENERAL,
                 })}
               >
                 <Cog className="w-4 h-4" />
@@ -79,7 +92,8 @@ export function SettingPage({ children }: SettingPageProps) {
               <button
                 onClick={() => setActiveTab(SettingTabKey.APPEARANCE)}
                 className={clsx("setting-tab-item", {
-                  "setting-tab-item--active": activeTab === SettingTabKey.APPEARANCE,
+                  "setting-tab-item--active":
+                    activeTab === SettingTabKey.APPEARANCE,
                 })}
               >
                 <Palette className="w-4 h-4" />
@@ -97,7 +111,8 @@ export function SettingPage({ children }: SettingPageProps) {
               <button
                 onClick={() => setActiveTab(SettingTabKey.SHORTCUTS)}
                 className={clsx("setting-tab-item", {
-                  "setting-tab-item--active": activeTab === SettingTabKey.SHORTCUTS,
+                  "setting-tab-item--active":
+                    activeTab === SettingTabKey.SHORTCUTS,
                 })}
               >
                 <Keyboard className="w-4 h-4" />
@@ -106,7 +121,8 @@ export function SettingPage({ children }: SettingPageProps) {
               <button
                 onClick={() => setActiveTab(SettingTabKey.IMPORTANDEXPORT)}
                 className={clsx("setting-tab-item", {
-                  "setting-tab-item--active": activeTab === SettingTabKey.IMPORTANDEXPORT,
+                  "setting-tab-item--active":
+                    activeTab === SettingTabKey.IMPORTANDEXPORT,
                 })}
               >
                 <Waypoints className="w-4 h-4" />

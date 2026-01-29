@@ -24,10 +24,8 @@ const Modal = (props: ModalProps) => {
 
   return visible
     ? ReactDOM.createPortal(
-        //@ts-ignore
         <div className="modal-overlay">
           <div className="modal-mask" />
-          {/* @ts-ignore */}
           <div className="modal">
             <div className="modal-header">
               {title ? <div className="modal-title">{title}</div> : null}

@@ -40,7 +40,7 @@ export const ImageLazyLoad = ({
         ref={ref}
         className={clsx(
           "bg-gray-200 dark:bg-gray-800 flex items-center justify-center",
-          className
+          className,
         )}
         style={{ width, height }}
       >
@@ -61,7 +61,7 @@ export const ImageLazyLoad = ({
             <div
               className={clsx(
                 "absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-300",
-                "dark:from-gray-800 dark:to-gray-900 animate-pulse"
+                "dark:from-gray-800 dark:to-gray-900 animate-pulse",
               )}
               style={{ width, height }}
             />
@@ -73,7 +73,7 @@ export const ImageLazyLoad = ({
             onError={handleError}
             className={clsx(
               "transition-opacity duration-300",
-              isLoaded ? "opacity-100" : "opacity-0"
+              isLoaded ? "opacity-100" : "opacity-0",
             )}
             style={{ width, height }}
           />
@@ -82,7 +82,7 @@ export const ImageLazyLoad = ({
         <div
           className={clsx(
             "bg-gradient-to-br from-gray-200 to-gray-300",
-            "dark:from-gray-800 dark:to-gray-900"
+            "dark:from-gray-800 dark:to-gray-900",
           )}
           style={{ width, height }}
         />

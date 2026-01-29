@@ -3,8 +3,14 @@ import { Outlet, NavLink } from "react-router-dom";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import clsx from "clsx";
-import { useTranslation } from 'react-i18next';
-import { Search, PlusCircle, Settings, FolderPlus, RotateCw } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import {
+  Search,
+  PlusCircle,
+  Settings,
+  FolderPlus,
+  RotateCw,
+} from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 import { ChannelList } from "../../components/Subscribes";
 import { useBearStore } from "@/stores";
@@ -38,7 +44,7 @@ export const LocalPage = React.memo(function () {
       getSubscribes: state.getSubscribes,
 
       globalSyncStatus: state.globalSyncStatus,
-    }))
+    })),
   );
 
   console.log("Hooks: useRefresh-LocalPage-rendered");
@@ -62,7 +68,12 @@ export const LocalPage = React.memo(function () {
               afterConfirm={store.getSubscribes}
               afterCancel={() => {}}
               trigger={
-                <IconButton variant="ghost" size="2" color="gray" className="text-[var(--gray-12)]">
+                <IconButton
+                  variant="ghost"
+                  size="2"
+                  color="gray"
+                  className="text-[var(--gray-12)]"
+                >
                   <FolderPlus size={14} />
                 </IconButton>
               }
@@ -82,29 +93,32 @@ export const LocalPage = React.memo(function () {
           </div>
         </div>
         <div className="mt-4 px-2 pb-3">
-          <Tooltip content={t('Search content')} side="right">
+          <Tooltip content={t("Search content")} side="right">
             <>
               <NavLink
                 to={RouteConfig.SEARCH}
                 className={({ isActive }) => {
-                  return clsx("sidebar-item", isActive ? "sidebar-item--active" : "");
+                  return clsx(
+                    "sidebar-item",
+                    isActive ? "sidebar-item--active" : "",
+                  );
                 }}
               >
                 <Search size={16} />
-                {t('Search')}
+                {t("Search")}
               </NavLink>
             </>
           </Tooltip>
           <AddFeedChannel>
             <div className={"sidebar-item"}>
               <PlusCircle size={16} />
-              {t('New Subscribe')}
+              {t("New Subscribe")}
             </div>
           </AddFeedChannel>
           <SettingPage>
             <div className={"sidebar-item"}>
               <Settings size={16} />
-              {t('Settings')}
+              {t("Settings")}
             </div>
           </SettingPage>
         </div>

@@ -22,11 +22,41 @@ declare interface CustomizeStyle {
   line_width: number;
 }
 
+declare type ThemeAccentColor =
+  | "default"
+  | "custom"
+  | "gray"
+  | "gold"
+  | "bronze"
+  | "brown"
+  | "yellow"
+  | "amber"
+  | "orange"
+  | "tomato"
+  | "red"
+  | "ruby"
+  | "crimson"
+  | "pink"
+  | "plum"
+  | "purple"
+  | "violet"
+  | "iris"
+  | "indigo"
+  | "blue"
+  | "cyan"
+  | "teal"
+  | "jade"
+  | "green"
+  | "grass"
+  | "lime"
+  | "mint"
+  | "sky";
+
 declare interface UserConfig {
   port?: number;
   threads?: number;
   color_scheme?: string;
-  theme?: string;
+  theme?: ThemeAccentColor;
   update_interval?: number;
   last_sync_time?: Date;
   proxy?: LocalProxy;

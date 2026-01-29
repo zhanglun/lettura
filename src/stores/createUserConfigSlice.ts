@@ -28,7 +28,10 @@ export interface UserConfigSlice {
   updateAppMetadata: (metadata: any) => void;
 }
 
-export const createUserConfigSlice: StateCreator<UserConfigSlice> = (set, get) => ({
+export const createUserConfigSlice: StateCreator<UserConfigSlice> = (
+  set,
+  get,
+) => ({
   userConfig: {} as UserConfig,
 
   getUserConfig: () => {

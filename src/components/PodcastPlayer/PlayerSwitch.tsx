@@ -16,7 +16,13 @@ export const PlayerSwitcher = () => {
 
   return (
     <Tooltip content="Play podcast">
-      <IconButton size="2" variant="ghost" color="gray" className="text-[var(--gray-12)]" onClick={togglePlayerPanel}>
+      <IconButton
+        size="2"
+        variant="ghost"
+        color="gray"
+        className="text-[var(--gray-12)]"
+        onClick={togglePlayerPanel}
+      >
         <Disc3
           size={16}
           className={clsx({

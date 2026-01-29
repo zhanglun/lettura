@@ -7,12 +7,13 @@ export const useModal = (): [
   hideModal: () => void,
   toggleStatus: () => void,
 ] => {
-  console.log("Hooks: useModal called")
+  console.log("Hooks: useModal called");
   const [showStatus, setShowStatus] = useState(false);
   const showModal = () => setShowStatus(true);
   const hideModal = () => setShowStatus(false);
   const toggleModal = () => setShowStatus(!showStatus);
-  const setModalStatus = (v: boolean) => useCallback(() => setShowStatus(v), []);
+  const setModalStatus = (v: boolean) =>
+    useCallback(() => setShowStatus(v), []);
 
   return [showStatus, setModalStatus, showModal, hideModal, toggleModal];
 };

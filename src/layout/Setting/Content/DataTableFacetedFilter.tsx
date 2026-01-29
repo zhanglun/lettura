@@ -41,15 +41,22 @@ export function DataTableFacetedFilter<TData, TValue>({
           {selectedValues?.size > 0 && (
             <>
               <Separator orientation="vertical" className="mx-2 h-4" />
-              <Badge className="rounded-sm px-1 font-normal lg:hidden">{selectedValues.size}</Badge>
+              <Badge className="rounded-sm px-1 font-normal lg:hidden">
+                {selectedValues.size}
+              </Badge>
               <div className="hidden space-x-1 lg:flex">
                 {selectedValues.size > 2 ? (
-                  <Badge className="rounded-sm px-1 font-normal">{selectedValues.size} selected</Badge>
+                  <Badge className="rounded-sm px-1 font-normal">
+                    {selectedValues.size} selected
+                  </Badge>
                 ) : (
                   options
                     .filter((option) => selectedValues.has(option.value))
                     .map((option) => (
-                      <Badge key={option.value} className="rounded-sm px-1 font-normal">
+                      <Badge
+                        key={option.value}
+                        className="rounded-sm px-1 font-normal"
+                      >
                         {option.label}
                       </Badge>
                     ))
@@ -77,11 +84,15 @@ export function DataTableFacetedFilter<TData, TValue>({
                         selectedValues.add(option.value);
                       }
                       const filterValues = Array.from(selectedValues);
-                      column?.setFilterValue(filterValues.length ? filterValues : undefined);
+                      column?.setFilterValue(
+                        filterValues.length ? filterValues : undefined,
+                      );
                     }}
                   >
                     <Checkbox checked={isSelected} className="mr-2" />
-                    {option.icon && <option.icon className="mr-1 h-4 w-4 text-muted-foreground" />}
+                    {option.icon && (
+                      <option.icon className="mr-1 h-4 w-4 text-muted-foreground" />
+                    )}
                     <span>{option.label}</span>
                     <span className="ml-auto flex h-4 w-4 items-center justify-center font-mono text-xs">
                       {facets?.get(option.value) || 0}

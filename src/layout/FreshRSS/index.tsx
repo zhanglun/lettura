@@ -23,7 +23,7 @@ export function FreshRSSPage() {
         }&feedUrl=${feed.feed_url}&type=${feed.item_type}`,
         {
           replace: true,
-        }
+        },
       );
     }
   }, [matched]);

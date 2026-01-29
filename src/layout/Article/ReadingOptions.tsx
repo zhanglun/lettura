@@ -4,6 +4,7 @@ import { open } from "@tauri-apps/api/shell";
 import { toast } from "sonner";
 import { IconButton, Tooltip } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
+import { showErrorToast } from "@/helpers/errorHandler";
 
 export const ReadingOptions = ({ article }: { article: ArticleResItem }) => {
   const { t } = useTranslation();
@@ -17,11 +18,11 @@ export const ReadingOptions = ({ article }: { article: ArticleResItem }) => {
 
     navigator.clipboard.writeText(link).then(
       function () {
-        toast("Copied");
+        toast(t("Copied"));
       },
       function (err) {
-        console.error("Async: Could not copy text: ", err);
-      }
+        showErrorToast(err, t("Failed to copy link"));
+      },
     );
   };
 
@@ -39,7 +40,13 @@ export const ReadingOptions = ({ article }: { article: ArticleResItem }) => {
         </IconButton>
       </Tooltip>
       <Tooltip content={t("Copy link")}>
-        <IconButton size="2" variant="ghost" color="gray" className="text-[var(--gray-12)]" onClick={handleCopyLink}>
+        <IconButton
+          size="2"
+          variant="ghost"
+          color="gray"
+          className="text-[var(--gray-12)]"
+          onClick={handleCopyLink}
+        >
           <Link size={16} />
         </IconButton>
       </Tooltip>

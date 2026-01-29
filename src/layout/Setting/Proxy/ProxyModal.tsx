@@ -1,5 +1,12 @@
 import { request } from "@/helpers/request";
-import { Avatar, Badge, Button, Dialog, Flex, TextField } from "@radix-ui/themes";
+import {
+  Avatar,
+  Badge,
+  Button,
+  Dialog,
+  Flex,
+  TextField,
+} from "@radix-ui/themes";
 import { ChangeEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AddProxyRuleModal } from "./AddProxyRuleModal";
@@ -25,8 +32,16 @@ export const ProxyModal =
    *
    */
   (props: ProxyModalProps) => {
-    const { proxy, filterSelectFeed, feedList, dialogStatus, setDialogStatus, afterConfirm, afterCancel, trigger } =
-      props;
+    const {
+      proxy,
+      filterSelectFeed,
+      feedList,
+      dialogStatus,
+      setDialogStatus,
+      afterConfirm,
+      afterCancel,
+      trigger,
+    } = props;
     console.log("%c Line:28 🌮 feedList", "color:#e41a6a", feedList);
     const [title, setTitle] = useState("");
     const [disabled, setDisabled] = useState(true);
@@ -63,7 +78,10 @@ export const ProxyModal =
       const idx = selectFeeds.findIndex((f) => f.feed_url === feed.feed_url);
 
       if (idx >= 0) {
-        setSelectFeeds([...selectFeeds.slice(0, idx), ...selectFeeds.slice(idx + 1)]);
+        setSelectFeeds([
+          ...selectFeeds.slice(0, idx),
+          ...selectFeeds.slice(idx + 1),
+        ]);
       }
     };
 
@@ -121,9 +139,13 @@ export const ProxyModal =
       setSelectFeeds(
         feedList.filter((l) => {
           return filterSelectFeed.find((f) => f === l.feed_url);
-        })
+        }),
       );
-      console.log("%c Line:123 🥑 filterSelectFeed", "color:#42b983", filterSelectFeed);
+      console.log(
+        "%c Line:123 🥑 filterSelectFeed",
+        "color:#42b983",
+        filterSelectFeed,
+      );
     }, [filterSelectFeed]);
 
     return (
@@ -142,34 +164,50 @@ export const ProxyModal =
                 placeholder="Server"
                 mb="2"
                 value={server}
-                onChange={(e: ChangeEvent<HTMLInputElement>) => setServer(e.target.value)}
-              ></TextField.Root>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  setServer(e.target.value)
+                }
+              />
               <TextField.Root
                 placeholder="Port"
                 mb="2"
                 value={port}
-                onChange={(e: ChangeEvent<HTMLInputElement>) => setPort(e.target.value)}
-              ></TextField.Root>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  setPort(e.target.value)
+                }
+              />
             </div>
-            <div className="mb-1 mt-3 text-[var(--gray-11)]">Credentials(optional)</div>
+            <div className="mb-1 mt-3 text-[var(--gray-11)]">
+              Credentials(optional)
+            </div>
             <div className="grid grid-cols-2 gap-2">
               <TextField.Root
                 placeholder="Username"
                 mb="2"
                 value={username}
-                onChange={(e: ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)}
-              ></TextField.Root>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  setUsername(e.target.value)
+                }
+              />
               <TextField.Root
                 placeholder="Password"
                 mb="2"
                 value={password}
-                onChange={(e: ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
-              ></TextField.Root>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  setPassword(e.target.value)
+                }
+              />
             </div>
             <div>
-              <div className="mb-1 mt-3 text-[var(--gray-11)]">Subscribes using proxy</div>
+              <div className="mb-1 mt-3 text-[var(--gray-11)]">
+                Subscribes using proxy
+              </div>
               <div className="mt-3">
-                <AddProxyRuleModal feedList={feedList} value={selectFeeds} onValueChange={(v) => setSelectFeeds(v)} />
+                <AddProxyRuleModal
+                  feedList={feedList}
+                  value={selectFeeds}
+                  onValueChange={(v) => setSelectFeeds(v)}
+                />
                 {/* <div className="grid grid-cols-3 auto-rows-fr mt-3"> */}
                 <div className="flex gap-2 flex-wrap mt-3">
                   {selectFeeds.map((feed) => {

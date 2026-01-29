@@ -54,7 +54,11 @@ export interface FeedSlice {
   setGlobalSyncStatus: (status: boolean) => void;
 }
 
-export const createFeedSlice: StateCreator<FeedSlice> = (set, get, ...args) => ({
+export const createFeedSlice: StateCreator<FeedSlice> = (
+  set,
+  get,
+  ...args
+) => ({
   viewMeta: {
     title: "",
     unread: 0,
@@ -185,7 +189,10 @@ export const createFeedSlice: StateCreator<FeedSlice> = (set, get, ...args) => (
     }));
   },
   getSubscribes: () => {
-    const initUnreadCount = (list: any[], countCache: { [key: string]: number }) => {
+    const initUnreadCount = (
+      list: any[],
+      countCache: { [key: string]: number },
+    ) => {
       return list.map((item) => {
         item.unread = countCache[item.uuid] || 0;
         item.is_expanded = false;
@@ -201,14 +208,15 @@ export const createFeedSlice: StateCreator<FeedSlice> = (set, get, ...args) => (
         return item;
       });
     };
-    return Promise.all([dataAgent.getSubscribes(), dataAgent.getUnreadTotal()]).then(
-      ([{ data: feedList }, { data: unreadTotal }]) => {
-        feedList = initUnreadCount(feedList, unreadTotal);
-        set(() => ({
-          subscribes: feedList || [],
-        }));
-      }
-    );
+    return Promise.all([
+      dataAgent.getSubscribes(),
+      dataAgent.getUnreadTotal(),
+    ]).then(([{ data: feedList }, { data: unreadTotal }]) => {
+      feedList = initUnreadCount(feedList, unreadTotal);
+      set(() => ({
+        subscribes: feedList || [],
+      }));
+    });
   },
 
   /**

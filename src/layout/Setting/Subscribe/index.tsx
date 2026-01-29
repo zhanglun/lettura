@@ -65,8 +65,7 @@ export const SettingSubscribe: () => JSX.Element = () => {
             className="input"
             value={feedUrl}
             placeholder="请输入订阅源"
-            // @ts-ignore
-            onChange={(value) => setFeedUrl(value)}
+            onChange={(e) => setFeedUrl(e.target.value)}
           />
           <button onClick={searchFeed}>搜索</button>
         </div>

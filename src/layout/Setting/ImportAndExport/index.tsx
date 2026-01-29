@@ -10,6 +10,7 @@ import { Button } from "@radix-ui/themes";
 import { toast } from "sonner";
 import { t } from "i18next";
 import { useTranslation } from "react-i18next";
+import { showErrorToast, showSuccessToast } from "@/helpers/errorHandler";
 
 export const ImportAndExport = (props: any) => {
   const { t } = useTranslation();
@@ -39,7 +40,7 @@ export const ImportAndExport = (props: any) => {
           toast.success(
             t("Successfully imported {count} feeds", {
               count: result.feed_count,
-            })
+            }),
           );
         }
 
@@ -47,7 +48,7 @@ export const ImportAndExport = (props: any) => {
           toast.success(
             t("Successfully created {count} folders", {
               count: result.folder_count,
-            })
+            }),
           );
         }
 
@@ -55,15 +56,14 @@ export const ImportAndExport = (props: any) => {
           toast.warning(
             t("Failed to import {count} feeds", {
               count: result.failed_count,
-            })
+            }),
           );
           if (result.errors.length > 0) {
             console.error("Import errors:", result.errors);
           }
         }
       } catch (error) {
-        console.error("Import error:", error);
-        toast.error(t("Failed to import OPML file"));
+        showErrorToast(error, t("Failed to import OPML file"));
       } finally {
         setImporting(false);
       }
@@ -86,11 +86,10 @@ export const ImportAndExport = (props: any) => {
 
       if (filePath) {
         await writeTextFile(filePath, opmlContent);
-        toast.success(t("OPML file exported successfully"));
+        showSuccessToast(t("OPML file exported successfully"));
       }
     } catch (error) {
-      console.error("Export error:", error);
-      toast.error(t("Failed to export OPML file"));
+      showErrorToast(error, t("Failed to export OPML file"));
     } finally {
       setExporting(false);
     }
@@ -103,7 +102,11 @@ export const ImportAndExport = (props: any) => {
           <div className="flex-1 text-sm text-gray-11">
             {t("Select an OPML file to import subscriptions")}
           </div>
-          <Button onClick={importFromOPML} disabled={importing} loading={importing}>
+          <Button
+            onClick={importFromOPML}
+            disabled={importing}
+            loading={importing}
+          >
             {t("Import")}
           </Button>
         </div>

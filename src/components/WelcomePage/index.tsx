@@ -8,13 +8,13 @@ export const WelcomePage = () => {
   const navigate = useNavigate();
 
   const goToLocal = () => {
-    navigate(RouteConfig.LOCAL_TODAY)
-  }
+    navigate(RouteConfig.LOCAL_TODAY);
+  };
 
   return (
     <div className="h-full flex items-center justify-center bg-canvas-foreground">
       <div className="w-[40%] max-w-[500px]">
-        <img src={bg} className="w-full" />
+        <img src={bg} className="w-full" alt="Welcome to Lettura" />
       </div>
       <div>
         <Button onClick={goToLocal}>

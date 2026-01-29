@@ -2,7 +2,8 @@ import { Plus, Minus, LucideProps } from "lucide-react";
 import React, { useEffect, useState } from "react";
 
 interface OptionItem {
-  label: string; value: number | string
+  label: string;
+  value: number | string;
 }
 
 export interface ValueStepProps {

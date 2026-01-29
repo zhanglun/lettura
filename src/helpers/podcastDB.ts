@@ -28,7 +28,6 @@ export class MySubClassedDexie extends Dexie {
   constructor() {
     super("Lettura");
 
-    //@ts-ignore
     this.version(1.2).stores({
       podcasts:
         "++id, &uuid, title, link, feed_url, feed_uuid, feed_title, feed_logo, author, description, pub_date, create_date, update_date, starred, mediaURL, mediaType, thumbnail, add_date, progress", // Primary key and indexed props

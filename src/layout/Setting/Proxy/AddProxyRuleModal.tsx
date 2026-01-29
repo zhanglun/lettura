@@ -1,4 +1,4 @@
-import { Avatar,  Button, Checkbox, Popover } from "@radix-ui/themes";
+import { Avatar, Button, Checkbox, Popover } from "@radix-ui/themes";
 import { useEffect, useState } from "react";
 import { Plus, PlusCircle } from "lucide-react";
 import {
@@ -45,8 +45,10 @@ export const AddProxyRuleModal = (props: AddProxyRuleModalProps) => {
             <CommandEmpty>No results found.</CommandEmpty>
             <CommandGroup>
               {feedList.map((option) => {
-                console.log("🚀 ~ {feedList.map ~ option:", option)
-                const isSelected = selectedValues.some((s) => s.feed_url === option.feed_url);
+                console.log("🚀 ~ {feedList.map ~ option:", option);
+                const isSelected = selectedValues.some(
+                  (s) => s.feed_url === option.feed_url,
+                );
                 return (
                   <CommandItem
                     key={option.id}
@@ -54,7 +56,9 @@ export const AddProxyRuleModal = (props: AddProxyRuleModalProps) => {
                       let values = [];
 
                       if (isSelected) {
-                        values = selectedValues.filter((s) => s.feed_url !== option.feed_url);
+                        values = selectedValues.filter(
+                          (s) => s.feed_url !== option.feed_url,
+                        );
                       } else {
                         values = [...selectedValues, option];
                       }

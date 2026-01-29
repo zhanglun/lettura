@@ -10,7 +10,12 @@ export interface CommonAdapterProps {
   delegateContentClick: any;
 }
 
-export const CommonAdapter = ({ article, feedLogo, delegateContentClick, content }: CommonAdapterProps) => {
+export const CommonAdapter = ({
+  article,
+  feedLogo,
+  delegateContentClick,
+  content,
+}: CommonAdapterProps) => {
   const { pub_date } = article;
 
   return (
@@ -26,10 +31,12 @@ export const CommonAdapter = ({ article, feedLogo, delegateContentClick, content
               className="w-6 h-6"
               src={feedLogo}
               fallback={article.feed_title?.slice(0, 1)}
-            ></Avatar>
+            />
             <span className="text-[var(--gray-12)]">{article.feed_title}</span>
           </div>
-          <span>{Dayjs(new Date(pub_date || new Date())).format("YYYY-MM-DD HH:mm")}</span>
+          <span>
+            {Dayjs(new Date(pub_date || new Date())).format("YYYY-MM-DD HH:mm")}
+          </span>
           {article.author && <span>· {article.author}</span>}
         </div>
       </div>

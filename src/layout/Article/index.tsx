@@ -22,7 +22,8 @@ export const ArticleContainer = () => {
   }));
 
   const articleColRef = useRef<ArticleColRefObject>(null);
-  const { goNext, goPrev } = (articleColRef.current || {}) as ArticleColRefObject;
+  const { goNext, goPrev } = (articleColRef.current ||
+    {}) as ArticleColRefObject;
 
   const openInBrowser = () => {
     store.article && open(store.article.link);
@@ -31,7 +32,8 @@ export const ArticleContainer = () => {
   useHotkeys("o", () => openInBrowser());
 
   // 根据条件决定是否显示 LPodcast
-  const shouldShowPodcast = store.tracks?.length > 0 || store.podcastPlayingStatus;
+  const shouldShowPodcast =
+    store.tracks?.length > 0 || store.podcastPlayingStatus;
 
   return (
     <MainPanel>

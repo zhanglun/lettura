@@ -15,7 +15,10 @@ export interface ArticleSlice {
   setCursor: (c: number) => number;
   markArticleListAsRead: (isToday: boolean, isAll: boolean) => any;
 
-  updateArticleStatus: (article: ArticleResItem, status: ArticleReadStatus) => any;
+  updateArticleStatus: (
+    article: ArticleResItem,
+    status: ArticleReadStatus,
+  ) => any;
   updateArticleAndIdx: (ArticleResItem: ArticleResItem, idx?: number) => void;
 
   hasMorePrev: boolean;
@@ -73,11 +76,15 @@ export const createArticleSlice: StateCreator<
       .then((res) => {
         if (res) {
           let isToday = dayjs(
-            dayjs(article.create_date).format("YYYY-MM-DD")
+            dayjs(article.create_date).format("YYYY-MM-DD"),
           ).isSame(dayjs().format("YYYY-MM-DD"));
 
           if (status === ArticleReadStatus.READ) {
-            console.log("%c Line:80 🥪 ArticleReadStatus.READ", "color:#f5ce50", ArticleReadStatus.READ);
+            console.log(
+              "%c Line:80 🥪 ArticleReadStatus.READ",
+              "color:#f5ce50",
+              ArticleReadStatus.READ,
+            );
             get().updateCollectionMeta(isToday ? -1 : 0, -1);
             get().updateUnreadCount(article.feed_uuid, "decrease", 1);
           }
@@ -98,12 +105,12 @@ export const createArticleSlice: StateCreator<
 
   hasMoreNext: true,
   setHasMoreNext: (more: boolean) => {
-    set(() => ({ hasMoreNext: more }))
+    set(() => ({ hasMoreNext: more }));
   },
 
   hasMorePrev: false,
   setHasMorePrev: (more: boolean) => {
-    set(() => ({ hasMorePrev: more }))
+    set(() => ({ hasMorePrev: more }));
   },
 
   cursor: 1,

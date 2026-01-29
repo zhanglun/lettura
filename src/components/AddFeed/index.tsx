@@ -3,13 +3,21 @@ import { useHotkeys } from "react-hotkeys-hook";
 import * as dataAgent from "@/helpers/dataAgent";
 import { useModal } from "../Modal/useModal";
 
-import { Avatar, Button, Dialog, Kbd, TextField, Tooltip } from "@radix-ui/themes";
+import {
+  Avatar,
+  Button,
+  Dialog,
+  Kbd,
+  TextField,
+  Tooltip,
+} from "@radix-ui/themes";
 import { Icon } from "../Icon";
 import { ArrowLeft, Loader2, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { useBearStore } from "@/stores";
 import { wraperWithRadix } from "../ArticleView/ContentRender";
 import { useTranslation } from "react-i18next";
+import { showErrorToast } from "@/helpers/errorHandler";
 
 export const AddFeedChannel = (props: any) => {
   const { t } = useTranslation();
@@ -46,6 +54,9 @@ export const AddFeedChannel = (props: any) => {
         setFeed(feed);
         console.log("%c Line:52 🥑 feed", "color:#7f2b82", feed);
         setStep(2);
+      })
+      .catch((error) => {
+        showErrorToast(error, t("Failed to load feed"));
       })
       .finally(() => {
         setLoading(false);
@@ -91,6 +102,9 @@ export const AddFeedChannel = (props: any) => {
             duration: 2000,
           });
         }
+      })
+      .catch((error) => {
+        showErrorToast(error, t("Failed to subscribe to feed"));
       })
       .finally(() => {
         setConfirming(false);
@@ -142,13 +156,19 @@ export const AddFeedChannel = (props: any) => {
                 placeholder=""
                 ref={inputRef}
                 disabled={loading}
-                onChange={(e: ChangeEvent<HTMLInputElement>) => handleInputChange(e.target.value)}
-              ></TextField.Root>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  handleInputChange(e.target.value)
+                }
+              />
               <div className="flex justify-end gap-3 mt-4">
                 <Dialog.Close>
                   <Button variant="soft">{t("Cancel")}</Button>
                 </Dialog.Close>
-                <Button onClick={handleLoad} disabled={loading} loading={loading}>
+                <Button
+                  onClick={handleLoad}
+                  disabled={loading}
+                  loading={loading}
+                >
                   {loading ? t("Loading") : t("Load")}
                 </Button>
               </div>
@@ -158,21 +178,35 @@ export const AddFeedChannel = (props: any) => {
             <>
               <div className="mb-3 rounded border p-3">
                 <div className="mb-4 flex items-start gap-3">
-                  <Avatar fallback={feed.title.slice(0, 1)} src={feed.logo} size="6" />
+                  <Avatar
+                    fallback={feed.title.slice(0, 1)}
+                    src={feed.logo}
+                    size="6"
+                  />
                   <div className="flex-1 pt-2">
-                    <div className="mb-3 text-lg font-bold leading-5">{feed.title}</div>
-                    <div className="break-all text-sm text-stone-500">{feedUrl}</div>
+                    <div className="mb-3 text-lg font-bold leading-5">
+                      {feed.title}
+                    </div>
+                    <div className="break-all text-sm text-stone-500">
+                      {feedUrl}
+                    </div>
                   </div>
                 </div>
                 <div>
-                  <div className="text-md">{wraperWithRadix(feed.description || "No description")}</div>
+                  <div className="text-md">
+                    {wraperWithRadix(feed.description || "No description")}
+                  </div>
                 </div>
               </div>
               <div className="flex justify-end gap-3 mt-4">
                 <Dialog.Close>
                   <Button variant="soft">{t("Cancel")}</Button>
                 </Dialog.Close>
-                <Button onClick={handleSave} disabled={confirming} loading={confirming}>
+                <Button
+                  onClick={handleSave}
+                  disabled={confirming}
+                  loading={confirming}
+                >
                   {confirming ? "Subscribing" : t("Subscribe")}
                 </Button>
               </div>

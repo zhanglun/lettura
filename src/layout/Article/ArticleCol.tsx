@@ -34,8 +34,7 @@ export const ArticleCol = React.memo(
     (props: { feedUuid?: string; type?: string }, listForwarded) => {
       const { t } = useTranslation();
       const { feedUuid, type } = props;
-      // @ts-ignore
-      const params: { name: string } = useParams();
+      const params = useParams() as { name: string };
       const [isSyncing, setIsSyncing] = useState(false);
       const listRef = useRef<ArticleListVirtualRefType | null>(null);
 
@@ -92,7 +91,7 @@ export const ArticleCol = React.memo(
         [],
       );
       const handleRefresh = () => {
-        if (store.feed && store.feed.uuid) {
+        if (store.feed?.uuid) {
           setIsSyncing(true);
           loadFeed(
             store.feed,
@@ -260,7 +259,7 @@ export const ArticleCol = React.memo(
                   size="4"
                   src={ico}
                   fallback={store.feed.title.slice(0, 1)}
-                ></Avatar>
+                />
                 <div className="flex-1 flex flex-col gap-1">
                   <div className="text-sm font-bold">
                     {store.viewMeta ? store.viewMeta.title : ""}
@@ -360,7 +359,7 @@ export const ArticleCol = React.memo(
                   <CheckCheck size={14} />
                 </IconButton>
               </Tooltip>
-              {!!!isStarred && (
+              {!isStarred && (
                 <Tooltip content={t("Reload feeds")}>
                   <IconButton
                     onClick={handleRefresh}

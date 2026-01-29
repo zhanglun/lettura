@@ -4,7 +4,8 @@ import InfiniteLoader from "react-window-infinite-loader";
 import { ArticleResItem } from "@/db";
 import { ResultItem } from "./ResultItem";
 
-export interface SearchResultProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface SearchResultProps
+  extends React.HTMLAttributes<HTMLDivElement> {
   resultList: ArticleResItem[];
   height: number;
   onArticleClick: (article: ArticleResItem) => void;
@@ -14,10 +15,18 @@ export interface SearchResultProps extends React.HTMLAttributes<HTMLDivElement> 
 }
 
 export function SearchResult(props: SearchResultProps) {
-  const { resultList = [], height, moreItemsLoading, loadMore, hasNextPage } = props;
+  const {
+    resultList = [],
+    height,
+    moreItemsLoading,
+    loadMore,
+    hasNextPage,
+  } = props;
   const itemCount = hasNextPage ? resultList.length + 1 : resultList.length;
   console.log("🚀 ~ SearchResult ~ resultList:", resultList);
-  const [currentArticle, setCurrentArticle] = useState<ArticleResItem | null>(null);
+  const [currentArticle, setCurrentArticle] = useState<ArticleResItem | null>(
+    null,
+  );
 
   function handelViewResultItem(article: ArticleResItem) {
     setCurrentArticle(article);
@@ -25,7 +34,11 @@ export function SearchResult(props: SearchResultProps) {
   }
 
   return (
-    <InfiniteLoader isItemLoaded={(index) => index < resultList.length} itemCount={itemCount} loadMoreItems={loadMore}>
+    <InfiniteLoader
+      isItemLoaded={(index) => index < resultList.length}
+      itemCount={itemCount}
+      loadMoreItems={loadMore}
+    >
       {({ onItemsRendered, ref }) => (
         <List
           height={height}
@@ -45,7 +58,11 @@ export function SearchResult(props: SearchResultProps) {
             } else {
               // return item
               return (
-                <ResultItem key={resultList[index]?.uuid} article={resultList[index]} onView={handelViewResultItem} />
+                <ResultItem
+                  key={resultList[index]?.uuid}
+                  article={resultList[index]}
+                  onView={handelViewResultItem}
+                />
               );
             }
           }}

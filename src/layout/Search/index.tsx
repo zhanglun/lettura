@@ -1,6 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { debounce, get } from "lodash";
-import { IconButton, Skeleton, TextField, Select, Text, Flex, Button } from "@radix-ui/themes";
+import {
+  IconButton,
+  Skeleton,
+  TextField,
+  Select,
+  Text,
+  Flex,
+  Button,
+} from "@radix-ui/themes";
 import { AxiosResponse } from "axios";
 import { X, Calendar, Filter } from "lucide-react";
 import clsx from "clsx";
@@ -11,6 +19,7 @@ import useInfiniteScroll from "./useInfiniteScroll";
 import { MainPanel } from "@/components/MainPanel";
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { View } from "../Article/View";
+import { showErrorToast } from "@/helpers/errorHandler";
 
 export const SearchPage = () => {
   const [isFetching, setIsFetching] = useState(false);
@@ -21,7 +30,9 @@ export const SearchPage = () => {
   const loadRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const [currentArticle, setCurrentArticle] = useState<ArticleResItem | null>(null);
+  const [currentArticle, setCurrentArticle] = useState<ArticleResItem | null>(
+    null,
+  );
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
   const [feedUuid, setFeedUuid] = useState<string>("");
@@ -35,7 +46,7 @@ export const SearchPage = () => {
 
       getList({ query, cursor: 1 });
     }, 200),
-    []
+    [],
   );
 
   const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -99,7 +110,7 @@ export const SearchPage = () => {
           setFeeds(allFeeds);
         }
       } catch (error) {
-        console.error("Failed to load feeds:", error);
+        showErrorToast(error, "Failed to load feeds");
       }
     };
     loadFeeds();
@@ -108,7 +119,7 @@ export const SearchPage = () => {
   const getList = (params: any) => {
     const text = params.query || query;
 
-    if (!text || !hasMore) {
+    if (!(text && hasMore)) {
       return;
     }
 
@@ -139,7 +150,7 @@ export const SearchPage = () => {
         setIsFetching(false);
       })
       .catch((err: any) => {
-        console.log("%c Line:71 🍎 err", "color:#ffdd4d", err);
+        showErrorToast(err, "Failed to search articles");
       });
   };
 
@@ -191,21 +202,48 @@ export const SearchPage = () => {
               {hasActiveFilters && (
                 <>
                   {startDate && (
-                    <Text size="1" as="span" className="px-2 py-1 bg-blue-100 dark:bg-blue-900 rounded">
+                    <Text
+                      size="1"
+                      as="span"
+                      className="px-2 py-1 bg-blue-100 dark:bg-blue-900 rounded"
+                    >
                       From: {startDate}
-                      <X height="10" width="10" className="ml-1 inline cursor-pointer" onClick={() => setStartDate("")} />
+                      <X
+                        height="10"
+                        width="10"
+                        className="ml-1 inline cursor-pointer"
+                        onClick={() => setStartDate("")}
+                      />
                     </Text>
                   )}
                   {endDate && (
-                    <Text size="1" as="span" className="px-2 py-1 bg-blue-100 dark:bg-blue-900 rounded">
+                    <Text
+                      size="1"
+                      as="span"
+                      className="px-2 py-1 bg-blue-100 dark:bg-blue-900 rounded"
+                    >
                       To: {endDate}
-                      <X height="10" width="10" className="ml-1 inline cursor-pointer" onClick={() => setEndDate("")} />
+                      <X
+                        height="10"
+                        width="10"
+                        className="ml-1 inline cursor-pointer"
+                        onClick={() => setEndDate("")}
+                      />
                     </Text>
                   )}
                   {feedUuid && (
-                    <Text size="1" as="span" className="px-2 py-1 bg-green-100 dark:bg-green-900 rounded">
+                    <Text
+                      size="1"
+                      as="span"
+                      className="px-2 py-1 bg-green-100 dark:bg-green-900 rounded"
+                    >
                       {feeds.find((f) => f.uuid === feedUuid)?.title}
-                      <X height="10" width="10" className="ml-1 inline cursor-pointer" onClick={() => setFeedUuid("")} />
+                      <X
+                        height="10"
+                        width="10"
+                        className="ml-1 inline cursor-pointer"
+                        onClick={() => setFeedUuid("")}
+                      />
                     </Text>
                   )}
                   <Button size="1" variant="outline" onClick={clearFilters}>
@@ -228,7 +266,9 @@ export const SearchPage = () => {
                         size="1"
                         type="date"
                         value={startDate}
-                        onChange={(e) => setStartDate((e.target as HTMLInputElement).value)}
+                        onChange={(e) =>
+                          setStartDate((e.target as HTMLInputElement).value)
+                        }
                       />
                     </Flex>
                     <Text size="1">to</Text>
@@ -238,7 +278,9 @@ export const SearchPage = () => {
                         size="1"
                         type="date"
                         value={endDate}
-                        onChange={(e) => setEndDate((e.target as HTMLInputElement).value)}
+                        onChange={(e) =>
+                          setEndDate((e.target as HTMLInputElement).value)
+                        }
                       />
                     </Flex>
                   </Flex>
@@ -250,7 +292,9 @@ export const SearchPage = () => {
                   <Select.Root value={feedUuid} onValueChange={setFeedUuid}>
                     <Select.Trigger>
                       <Text as="span" color="gray">
-                        {feedUuid ? feeds.find((f) => f.uuid === feedUuid)?.title : "All feeds"}
+                        {feedUuid
+                          ? feeds.find((f) => f.uuid === feedUuid)?.title
+                          : "All feeds"}
                       </Text>
                     </Select.Trigger>
                     <Select.Content>
@@ -267,42 +311,58 @@ export const SearchPage = () => {
                   <Text size="1" color="gray">
                     Filters: {startDate && `From ${startDate} `}
                     {endDate && `to ${endDate} `}
-                    {feedUuid && `| Feed: ${feeds.find((f) => f.uuid === feedUuid)?.title}`}
+                    {feedUuid &&
+                      `| Feed: ${
+                        feeds.find((f) => f.uuid === feedUuid)?.title
+                      }`}
                   </Text>
                 )}
               </Flex>
             )}
           </div>
-          <div className="relative flex-1 overflow-auto scrollbar-gutter" ref={scrollRef}>
-              {hasActiveFilters && (
-                <Flex gap="2" align="center" className="px-3 py-2 bg-gray-50 dark:bg-gray-900 border-b text-sm">
-                  <Text color="gray">
-                    Showing results for: "{query}"
+          <div
+            className="relative flex-1 overflow-auto scrollbar-gutter"
+            ref={scrollRef}
+          >
+            {hasActiveFilters && (
+              <Flex
+                gap="2"
+                align="center"
+                className="px-3 py-2 bg-gray-50 dark:bg-gray-900 border-b text-sm"
+              >
+                <Text color="gray">Showing results for: "{query}"</Text>
+                {startDate && (
+                  <Text
+                    as="span"
+                    className="px-2 py-0.5 bg-blue-100 dark:bg-blue-900 rounded text-xs"
+                  >
+                    Date: {startDate} to {endDate || "now"}
                   </Text>
-                  {startDate && (
-                    <Text as="span" className="px-2 py-0.5 bg-blue-100 dark:bg-blue-900 rounded text-xs">
-                      Date: {startDate} to {endDate || "now"}
-                    </Text>
-                  )}
-                  {feedUuid && (
-                    <Text as="span" className="px-2 py-0.5 bg-green-100 dark:bg-green-900 rounded text-xs">
-                      {feeds.find((f) => f.uuid === feedUuid)?.title}
-                    </Text>
-                  )}
-                  <Text color="gray">
-                    ({resultList.length} results)
+                )}
+                {feedUuid && (
+                  <Text
+                    as="span"
+                    className="px-2 py-0.5 bg-green-100 dark:bg-green-900 rounded text-xs"
+                  >
+                    {feeds.find((f) => f.uuid === feedUuid)?.title}
                   </Text>
-                </Flex>
-              )}
-              <SearchResult
-                resultList={resultList}
-                height={(scrollRef.current?.clientHeight || 16) - 16 - (hasActiveFilters ? 40 : 0)}
-                onArticleClick={setCurrentArticle}
-                hasNextPage={hasMore}
-                moreItemsLoading={isFetching}
-                loadMore={loadMore}
-              />
-              {/* <div ref={loadRef}>
+                )}
+                <Text color="gray">({resultList.length} results)</Text>
+              </Flex>
+            )}
+            <SearchResult
+              resultList={resultList}
+              height={
+                (scrollRef.current?.clientHeight || 16) -
+                16 -
+                (hasActiveFilters ? 40 : 0)
+              }
+              onArticleClick={setCurrentArticle}
+              hasNextPage={hasMore}
+              moreItemsLoading={isFetching}
+              loadMore={loadMore}
+            />
+            {/* <div ref={loadRef}>
                 {isFetching && (
                   <div className="p-3 grid gap-1 relative">
                     <Skeleton className="h-4 w-full" />
@@ -311,11 +371,13 @@ export const SearchPage = () => {
                   </div>
                 )}
               </div> */}
-              {/* <div ref={lastElementRef}></div> */}
+            {/* <div ref={lastElementRef}></div> */}
           </div>
         </div>
         <div className="flex-1">
-          {currentArticle && <View article={currentArticle} closable onClose={handleClose} />}
+          {currentArticle && (
+            <View article={currentArticle} closable onClose={handleClose} />
+          )}
         </div>
       </div>
     </MainPanel>

@@ -14,7 +14,7 @@ export const ThemeTag = (props: ThemeTagProps) => {
       setTheme(
         window.matchMedia("(prefers-color-scheme: dark)").matches
           ? "dark"
-          : "light"
+          : "light",
       );
     } else {
       setTheme(scheme);

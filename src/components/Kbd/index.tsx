@@ -1,9 +1,14 @@
 import React from "react";
 import { clsx } from "clsx";
 
-export const Kbd = ({ val, className }: { val: string, className?: string }) => {
-  return <kbd
-    className={ clsx(`
+export const Kbd = ({
+  val,
+  className,
+}: { val: string; className?: string }) => {
+  return (
+    <kbd
+      className={clsx(
+        `
               bg-[#fafafa]
               dark:bg-[hsla(232,15%,94%,0.12)]
               rounded-[0.1rem]
@@ -17,8 +22,11 @@ export const Kbd = ({ val, className }: { val: string, className?: string }) => 
               py-0
               align-text-top
               break-words
-              `, className) }
-  >
-    { val }
-  </kbd>
-}
+              `,
+        className,
+      )}
+    >
+      {val}
+    </kbd>
+  );
+};

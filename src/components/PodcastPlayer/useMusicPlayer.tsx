@@ -5,18 +5,18 @@ export function secondsToMinutesAndSeconds(time: number) {
   const seconds = Math.floor(time - minutes * 60);
 
   return {
-      minutes,
-      seconds
-  }
+    minutes,
+    seconds,
+  };
 }
 
 export function numberToPercent(n: number, max_n: number) {
-  const percentage = n == 0 ? 0 : (n / max_n) * 100;
-  return percentage
+  const percentage = n === 0 ? 0 : (n / max_n) * 100;
+  return percentage;
 }
 
 export function percentOf(n: number, percentage: number) {
-  return n * percentage / 100
+  return (n * percentage) / 100;
 }
 
 export const useMusicPlayer = () => {
@@ -47,7 +47,7 @@ export const useMusicPlayer = () => {
   useEffect(() => {
     updateTime(0);
 
-    if (src != "") {
+    if (src !== "") {
       audio.current.src = src;
     }
 
@@ -63,7 +63,7 @@ export const useMusicPlayer = () => {
 
   useEffect(() => {
     if (isPlaying) {
-      console.log('is main')
+      console.log("is main");
       audio.current.play();
     } else {
       audio.current.pause();
@@ -77,6 +77,6 @@ export const useMusicPlayer = () => {
     currentTime,
     updateTime,
     maxTime,
-    setSrc
-  }
+    setSrc,
+  };
 };

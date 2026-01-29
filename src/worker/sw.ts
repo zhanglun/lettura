@@ -1,4 +1,4 @@
-import { precacheAndRoute } from 'workbox-precaching'
+import { precacheAndRoute } from "workbox-precaching";
 
 precacheAndRoute(self.__WB_MANIFEST);
 
@@ -11,34 +11,34 @@ precacheAndRoute(self.__WB_MANIFEST);
 // Even tho this is not really a module and cannot be: ServiceWorkers
 // cannot be modules.
 
-export type Version = number
+export type Version = number;
 
-const version: Version = 0
+const version: Version = 0;
 
-if (process.env.NODE_ENV === 'development') {
-  console.debug({ version })
+if (process.env.NODE_ENV === "development") {
+  console.debug({ version });
 }
 
 // NOTE: The default context is just Worker and we need to be the more specific ServiceWorker
-declare let self: ServiceWorkerGlobalScope
+declare let self: ServiceWorkerGlobalScope;
 
-const errorResponse = textResponse('error', 500)
+const errorResponse = textResponse("error", 500);
 
-self.addEventListener('install', (e: ExtendableEvent) => {
-  e.waitUntil(self.skipWaiting())
-})
+self.addEventListener("install", (e: ExtendableEvent) => {
+  e.waitUntil(self.skipWaiting());
+});
 
-self.addEventListener('activate', (e: ExtendableEvent) => {
-  e.waitUntil(self.clients.claim())
-})
+self.addEventListener("activate", (e: ExtendableEvent) => {
+  e.waitUntil(self.clients.claim());
+});
 
-self.addEventListener('message', (e: ExtendableMessageEvent) => {
+self.addEventListener("message", (e: ExtendableMessageEvent) => {
   try {
-    console.debug('received a message', e.data, e)
+    console.debug("received a message", e.data, e);
   } catch (err) {
-    console.error('error processing message', e.data, err)
+    console.error("error processing message", e.data, err);
   }
-})
+});
 
 // self.addEventListener('fetch', (e: FetchEvent) => {
 //   try {
@@ -57,13 +57,13 @@ self.addEventListener('message', (e: ExtendableMessageEvent) => {
 //   }
 // })
 
-function textResponse (text: string, status = 200): Response {
+function textResponse(text: string, status = 200): Response {
   return new Response(text, {
     status,
     headers: {
-      'content-type': 'text/plain'
-    }
-  })
+      "content-type": "text/plain",
+    },
+  });
 }
 
 // async function postMessageToAllClients ({ type, args }: { type: string, args: unknown[] }): Promise<void> {
@@ -73,4 +73,4 @@ function textResponse (text: string, status = 200): Response {
 //   })
 // }
 
-console.log({ version })
+console.log({ version });

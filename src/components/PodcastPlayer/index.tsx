@@ -16,7 +16,8 @@ function createThumbnail(thumbnail: any) {
 }
 
 export const PodcastPlayer = () => {
-  const list = useLiveQuery(() => db.podcasts.toCollection().reverse().toArray()) || [];
+  const list =
+    useLiveQuery(() => db.podcasts.toCollection().reverse().toArray()) || [];
   const [current, setCurrent] = useState<any>(null);
   const [playing, setPlaying] = useState<boolean>(false);
 
@@ -59,7 +60,7 @@ export const PodcastPlayer = () => {
                   "group-hover:visible",
                   {
                     invisible: current?.uuid !== _.uuid,
-                  }
+                  },
                 )}
                 onClick={() => playRecord(_)}
               >
@@ -81,7 +82,9 @@ export const PodcastPlayer = () => {
               <p className="mb-1 shrink grow basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-sm font-bold">
                 {_.title}
               </p>
-              <p className="text-muted-foreground mb-2 text-xs">{_.feed_title}</p>
+              <p className="text-muted-foreground mb-2 text-xs">
+                {_.feed_title}
+              </p>
               <p className="text-muted-foreground line-clamp-2 text-xs leading-normal">
                 {(description || _.description).replace(/(<([^>]+)>)/gi, "")}
               </p>
@@ -106,7 +109,11 @@ export const PodcastPlayer = () => {
   }
 
   return (
-    <div className={clsx("bg-panel flex h-[calc(100vh_-theme(padding.4))] w-[320px] flex-col shadow rounded-md p-2")}>
+    <div
+      className={clsx(
+        "bg-panel flex h-[calc(100vh_-theme(padding.4))] w-[320px] flex-col shadow rounded-md p-2",
+      )}
+    >
       <Player list={list} onPlayingStatusChange={handlePlayingStatusChange} />
       <div className="flex-1 overflow-auto">{renderList()}</div>
     </div>

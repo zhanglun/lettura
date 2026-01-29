@@ -36,7 +36,7 @@ import { CollectionMeta } from "./CollectionMeta";
 import { useTranslation } from "react-i18next";
 
 const ChannelList = (): JSX.Element => {
-  console.log("ChannelList rendered")
+  console.log("ChannelList rendered");
   const { t } = useTranslation();
   const isToday = useMatch(RouteConfig.LOCAL_TODAY);
   const isAll = useMatch(RouteConfig.LOCAL_ALL);
@@ -63,7 +63,7 @@ const ChannelList = (): JSX.Element => {
       getSubscribes: state.getSubscribes,
 
       globalSyncStatus: state.globalSyncStatus,
-    }))
+    })),
   );
 
   const [, , feedUuid] = useQuery();
@@ -95,7 +95,7 @@ const ChannelList = (): JSX.Element => {
         () => {
           // TODO: get article List
         },
-        () => {}
+        () => {},
       );
     }
   };
@@ -104,23 +104,26 @@ const ChannelList = (): JSX.Element => {
     if (store.feedContextMenuTarget) {
       const { uuid } = store.feedContextMenuTarget;
 
-      toast.promise(dataAgent.markAllRead({ uuid, isToday: !!isToday, isAll: !!isAll }), {
-        loading: "Loading...",
-        success: (data) => {
-          store.getSubscribes();
+      toast.promise(
+        dataAgent.markAllRead({ uuid, isToday: !!isToday, isAll: !!isAll }),
+        {
+          loading: "Loading...",
+          success: (data) => {
+            store.getSubscribes();
 
-          if (store.feed?.uuid === uuid) {
-            store.setArticleList(
-              store.articleList.map((_) => {
-                _.read_status = 2;
-                return _;
-              })
-            );
-          }
-          return `Done!😀`;
+            if (store.feed?.uuid === uuid) {
+              store.setArticleList(
+                store.articleList.map((_) => {
+                  _.read_status = 2;
+                  return _;
+                }),
+              );
+            }
+            return "Done!😀";
+          },
+          error: "Error🤢",
         },
-        error: "Error🤢",
-      });
+      );
     }
   };
 
@@ -194,20 +197,28 @@ const ChannelList = (): JSX.Element => {
     <>
       <div
         {...scrollTopProps}
-        className={clsx("flex-1 overflow-y-auto pb-2 pl-1 pr-1 scrollbar-gutter", {
-          "border-t": scrollTop > 0,
-        })}
+        className={clsx(
+          "flex-1 overflow-y-auto pb-2 pl-1 pr-1 scrollbar-gutter",
+          {
+            "border-t": scrollTop > 0,
+          },
+        )}
         ref={listRef}
       >
         <CollectionMeta />
-        <h2 className="mb-2 mt-6 px-2 font-semibold tracking-tight">{t("Feeds")}</h2>
+        <h2 className="mb-2 mt-6 px-2 font-semibold tracking-tight">
+          {t("Feeds")}
+        </h2>
         <ContextMenu.Root onOpenChange={handleContextMenuChange}>
           <ContextMenu.Trigger>
             <div>
               <ListContainer />
             </div>
           </ContextMenu.Trigger>
-          <ContextMenu.Content key={store.feedContextMenuTarget?.uuid || "0"} alignOffset={0}>
+          <ContextMenu.Content
+            key={store.feedContextMenuTarget?.uuid || "0"}
+            alignOffset={0}
+          >
             <ContextMenu.Item
               onClick={() => {
                 markAllRead();
@@ -218,7 +229,9 @@ const ChannelList = (): JSX.Element => {
             <ContextMenu.Separator />
             {store.feedContextMenuTarget?.item_type === "folder" && (
               <>
-                <ContextMenu.Item onSelect={() => setEditFolderDialogStatus(true)}>
+                <ContextMenu.Item
+                  onSelect={() => setEditFolderDialogStatus(true)}
+                >
                   <Pencil size={14} /> {t("Edit folder")}
                 </ContextMenu.Item>
                 <ContextMenu.Separator />
@@ -235,7 +248,10 @@ const ChannelList = (): JSX.Element => {
                 {store.feedContextMenuTarget?.item_type !== "folder" && (
                   <>
                     <ContextMenu.Item
-                      onClick={() => store.feedContextMenuTarget?.link && open(store.feedContextMenuTarget?.link)}
+                      onClick={() =>
+                        store.feedContextMenuTarget?.link &&
+                        open(store.feedContextMenuTarget?.link)
+                      }
                     >
                       <ExternalLink size={14} /> {t("Open home page")}
                     </ContextMenu.Item>
@@ -243,10 +259,14 @@ const ChannelList = (): JSX.Element => {
                     <ContextMenu.Item
                       onClick={() =>
                         store.feedContextMenuTarget?.feed_url &&
-                        copyText(store.feedContextMenuTarget?.feed_url).then(() =>
-                          toast.message(t("Current URL copied to clipboard"), {
-                            description: t("Paste it wherever you like"),
-                          })
+                        copyText(store.feedContextMenuTarget?.feed_url).then(
+                          () =>
+                            toast.message(
+                              t("Current URL copied to clipboard"),
+                              {
+                                description: t("Paste it wherever you like"),
+                              },
+                            ),
                         )
                       }
                     >
@@ -258,17 +278,25 @@ const ChannelList = (): JSX.Element => {
                         copyText(store.feedContextMenuTarget?.link).then(() =>
                           toast.message(t("Current URL copied to clipboard"), {
                             description: t("Paste it wherever you like"),
-                          })
+                          }),
                         )
                       }
                     >
                       <Link2 size={14} /> {t("Copy home page URL")}
                     </ContextMenu.Item>
                     <ContextMenu.Separator />
-                    <ContextMenu.Item onClick={() => reloadFeedIcon(store.feedContextMenuTarget)}>
+                    <ContextMenu.Item
+                      onClick={() =>
+                        reloadFeedIcon(store.feedContextMenuTarget)
+                      }
+                    >
                       <Image size={14} /> {t("Reload icon")}
                     </ContextMenu.Item>
-                    <ContextMenu.Item onClick={() => reloadFeedData(store.feedContextMenuTarget)}>
+                    <ContextMenu.Item
+                      onClick={() =>
+                        reloadFeedData(store.feedContextMenuTarget)
+                      }
+                    >
                       <Rss size={14} /> {t("Reload feeds")}
                     </ContextMenu.Item>
                     <ContextMenu.Separator />

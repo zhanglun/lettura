@@ -69,8 +69,7 @@ export function DataTableToolbar<TData>({
           <DataTableFacetedFilter
             column={table.getColumn("health_status")}
             title="Status"
-            // @ts-ignore
-            options={statuses}
+            options={statuses as any}
           />
         )}
         {isFiltered && (

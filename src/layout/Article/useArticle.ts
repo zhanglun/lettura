@@ -41,21 +41,20 @@ export function useArticle(props: UseArticleProps) {
       cursor: pageIndex + 1,
     }; // SWR key
   };
-  const { data, isLoading, size, mutate, setSize } =
-    useSWRInfinite(
-      getKey,
-      (q) =>
-        request
-          .get("/articles", {
-            params: { ...q },
-          })
-          .then((res) => res.data),
-      {
-        revalidateIfStale: true,
-        revalidateOnFocus: true,
-        revalidateOnReconnect: true,
-      }
-    );
+  const { data, isLoading, size, mutate, setSize } = useSWRInfinite(
+    getKey,
+    (q) =>
+      request
+        .get("/articles", {
+          params: { ...q },
+        })
+        .then((res) => res.data),
+    {
+      revalidateIfStale: true,
+      revalidateOnFocus: true,
+      revalidateOnReconnect: true,
+    },
+  );
 
   const list = data
     ? data.reduce((acu, cur) => acu.concat(cur.list || []), [])

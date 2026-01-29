@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
-import { AudioTrack } from './index';
-import { STORAGE_KEYS } from './utils';
-import { useBearStore } from '@/stores';
-import { db } from '@/helpers/podcastDB';
+import { useEffect, useRef, useState } from "react";
+import { AudioTrack } from "./index";
+import { STORAGE_KEYS } from "./utils";
+import { useBearStore } from "@/stores";
+import { db } from "@/helpers/podcastDB";
+import { showErrorToast } from "@/helpers/errorHandler";
 
 export const useAudioPlayer = () => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -30,12 +31,16 @@ export const useAudioPlayer = () => {
 
     // Load saved progress from database
     if (store.currentTrack?.uuid) {
-      db.podcasts.where('uuid').equals(store.currentTrack.uuid).first().then((podcast) => {
-        if (podcast?.progress && audioRef.current) {
-          audioRef.current.currentTime = podcast.progress;
-          setProgress(podcast.progress);
-        }
-      });
+      db.podcasts
+        .where("uuid")
+        .equals(store.currentTrack.uuid)
+        .first()
+        .then((podcast) => {
+          if (podcast?.progress && audioRef.current) {
+            audioRef.current.currentTime = podcast.progress;
+            setProgress(podcast.progress);
+          }
+        });
     }
 
     return () => {
@@ -43,8 +48,8 @@ export const useAudioPlayer = () => {
         // Save progress before unmounting
         const currentTime = audioRef.current.currentTime;
         if (store.currentTrack?.uuid && currentTime > 0) {
-          db.podcasts.where('uuid').equals(store.currentTrack.uuid).modify({
-            progress: currentTime
+          db.podcasts.where("uuid").equals(store.currentTrack.uuid).modify({
+            progress: currentTime,
           });
         }
         audioRef.current.pause();
@@ -56,18 +61,22 @@ export const useAudioPlayer = () => {
   // Handle track changes and set up audio event listeners
   useEffect(() => {
     const audio = audioRef.current;
-    if (!audio || !store.currentTrack) return;
+    if (!(audio && store.currentTrack)) return;
 
     // 如果是新的曲目，需要设置新的 src
     if (audio.src !== store.currentTrack.url) {
       audio.src = store.currentTrack.url;
       // 加载保存的进度
-      db.podcasts.where('uuid').equals(store.currentTrack.uuid).first().then((podcast) => {
-        if (podcast?.progress) {
-          audio.currentTime = podcast.progress;
-          setProgress(podcast.progress);
-        }
-      });
+      db.podcasts
+        .where("uuid")
+        .equals(store.currentTrack.uuid)
+        .first()
+        .then((podcast) => {
+          if (podcast?.progress) {
+            audio.currentTime = podcast.progress;
+            setProgress(podcast.progress);
+          }
+        });
     }
 
     // 根据播放状态来控制播放
@@ -75,7 +84,7 @@ export const useAudioPlayer = () => {
       const playPromise = audio.play();
       if (playPromise !== undefined) {
         playPromise.catch((error) => {
-          console.error("播放出错:", error);
+          showErrorToast(error, "Failed to play audio");
           store.updatePodcastPlayingStatus(false);
         });
       }
@@ -87,11 +96,11 @@ export const useAudioPlayer = () => {
     const handleTimeUpdate = () => {
       const currentTime = audio.currentTime;
       setProgress(currentTime);
-      
+
       // 每当播放进度更新时，保存到数据库
       if (store.currentTrack?.uuid) {
-        db.podcasts.where('uuid').equals(store.currentTrack.uuid).modify({
-          progress: currentTime
+        db.podcasts.where("uuid").equals(store.currentTrack.uuid).modify({
+          progress: currentTime,
         });
       }
     };
@@ -103,8 +112,8 @@ export const useAudioPlayer = () => {
     const handleEnded = () => {
       // 播放结束时清除进度
       if (store.currentTrack?.uuid) {
-        db.podcasts.where('uuid').equals(store.currentTrack.uuid).modify({
-          progress: 0
+        db.podcasts.where("uuid").equals(store.currentTrack.uuid).modify({
+          progress: 0,
         });
       }
       store.playNext();
@@ -137,11 +146,11 @@ export const useAudioPlayer = () => {
     if (audioRef.current) {
       audioRef.current.currentTime = time;
       setProgress(time);
-      
+
       // 保存新的播放进度
       if (store.currentTrack?.uuid) {
-        db.podcasts.where('uuid').equals(store.currentTrack.uuid).modify({
-          progress: time
+        db.podcasts.where("uuid").equals(store.currentTrack.uuid).modify({
+          progress: time,
         });
       }
     }

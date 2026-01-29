@@ -28,7 +28,7 @@ export const Icon = (props: IconProps) => {
             disable,
         },
         { "bg-muted": active },
-        className
+        className,
       )}
     >
       {children}

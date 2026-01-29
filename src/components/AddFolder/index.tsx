@@ -1,4 +1,10 @@
-import React, { useEffect, useRef, useState, useMemo, ChangeEvent } from "react";
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  useMemo,
+  ChangeEvent,
+} from "react";
 import * as dataAgent from "../../helpers/dataAgent";
 import { FolderResItem } from "@/db";
 import { useBearStore } from "@/stores";
@@ -23,9 +29,10 @@ export const AddFolder = React.memo((props: AddFolderProps) => {
   const store = useBearStore(
     useShallow((state) => ({
       getSubscribes: state.getSubscribes,
-    }))
+    })),
   );
-  const { dialogStatus, setDialogStatus, afterConfirm, afterCancel, trigger } = props;
+  const { dialogStatus, setDialogStatus, afterConfirm, afterCancel, trigger } =
+    props;
   const [name, setName] = useState("");
   const [confirming, setConfirming] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -38,7 +45,7 @@ export const AddFolder = React.memo((props: AddFolderProps) => {
     setConfirming(false);
     setName("");
     setDialogStatus(false);
-    afterCancel && afterCancel();
+    afterCancel?.();
   };
 
   const handleSave = async () => {
@@ -60,7 +67,7 @@ export const AddFolder = React.memo((props: AddFolderProps) => {
       console.log("🚀 ~ file: index.tsx:59 ~ p.then ~ res:", res);
       if (res[0] > 0) {
         store.getSubscribes();
-        afterConfirm && afterConfirm();
+        afterConfirm?.();
         handleCancel();
       }
     })
@@ -96,8 +103,7 @@ export const AddFolder = React.memo((props: AddFolderProps) => {
     }
 
     if (action === "edit" && folder) {
-      // @ts-ignore
-      setName(folder.name || folder.title);
+      setName(folder.title);
     }
   }, [dialogStatus]);
 
@@ -118,14 +124,20 @@ export const AddFolder = React.memo((props: AddFolderProps) => {
         <div className="py-3">
           <TextField.Root
             value={name}
-            onChange={(e: ChangeEvent<HTMLInputElement>) => handleNameChange(e.target.value)}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              handleNameChange(e.target.value)
+            }
             ref={inputRef}
-          ></TextField.Root>
+          />
           <div className="flex justify-end gap-3 mt-4">
             <Dialog.Close>
               <Button variant="soft">{t("Cancel")}</Button>
             </Dialog.Close>
-            <Button onClick={handleSave} disabled={confirming || !name} loading={confirming}>
+            <Button
+              onClick={handleSave}
+              disabled={confirming || !name}
+              loading={confirming}
+            >
               {confirming ? t("Saving") : t("Save")}
             </Button>
           </div>

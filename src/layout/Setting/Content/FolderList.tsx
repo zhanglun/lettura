@@ -13,7 +13,9 @@ export const FolderList = () => {
   const [folderList, setFolderList] = useState<FolderResItem[]>([]);
   const [showStatus, setModalStatus] = useModal();
   const [editStatus, setEditStatus] = useModal();
-  const [currentFolder, setCurrentFolder] = useState<FolderResItem | null>(null);
+  const [currentFolder, setCurrentFolder] = useState<FolderResItem | null>(
+    null,
+  );
 
   const handleEditFolder = (folder: FolderResItem) => {
     if (folder?.uuid) {
@@ -53,10 +55,18 @@ export const FolderList = () => {
 
         return (
           <div className="flex space-x-1">
-            <IconButton variant="ghost" color="gray" onClick={() => handleEditFolder(record)}>
+            <IconButton
+              variant="ghost"
+              color="gray"
+              onClick={() => handleEditFolder(record)}
+            >
               <Edit size={14} />
             </IconButton>
-            <IconButton variant="ghost" color="red" onClick={() => handleDeleteFolder(record)}>
+            <IconButton
+              variant="ghost"
+              color="red"
+              onClick={() => handleDeleteFolder(record)}
+            >
               <Trash2 size={14} />
             </IconButton>
           </div>
@@ -78,11 +88,7 @@ export const FolderList = () => {
 
   return (
     <div>
-      <DataTable
-        // @ts-ignore
-        columns={columns}
-        data={folderList}
-      />
+      <DataTable columns={columns as any} data={folderList} />
       <DialogDeleteFolder
         dialogStatus={showStatus}
         setDialogStatus={setModalStatus}

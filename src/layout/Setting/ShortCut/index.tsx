@@ -4,7 +4,10 @@ import clsx from "clsx";
 import { Kbd, Separator } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
 
-export const KeyBox = (props: { name: string[] | string; description: string }) => {
+export const KeyBox = (props: {
+  name: string[] | string;
+  description: string;
+}) => {
   return (
     <div className="w-full flex justify-between py-2">
       <span className="text-sm">{props.description}</span>
@@ -14,13 +17,26 @@ export const KeyBox = (props: { name: string[] | string; description: string }) 
 
           name.split(" ").forEach((s) => {
             if (s === "+") {
-              group.push(<span key={s} className={clsx("inline-block text-[0.75em] px-1 py-0 align-text-top")}>+</span>);
+              group.push(
+                <span
+                  key={s}
+                  className={clsx(
+                    "inline-block text-[0.75em] px-1 py-0 align-text-top",
+                  )}
+                >
+                  +
+                </span>,
+              );
             } else {
               group.push(<Kbd key={s}>{s}</Kbd>);
             }
           });
 
-          return <span className="mx-2" key={name}>{group}</span>;
+          return (
+            <span className="mx-2" key={name}>
+              {group}
+            </span>
+          );
         })}
       </span>
     </div>
@@ -38,7 +54,10 @@ export const Shortcut = () => {
           <Separator size="4" />
           <KeyBox name="n" description={t("View next article")} />
           <Separator size="4" />
-          <KeyBox name={["Shift + n"]} description={t("View previous article")} />
+          <KeyBox
+            name={["Shift + n"]}
+            description={t("View previous article")}
+          />
           <Separator size="4" />
           <KeyBox name="j" description={t("Scroll down")} />
           <Separator size="4" />

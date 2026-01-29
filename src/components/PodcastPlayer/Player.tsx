@@ -27,7 +27,9 @@ const formatTime = (currentTime: any) => {
   const minutes = Math.floor(currentTime / 60);
   let seconds = Math.floor(currentTime % 60);
 
-  const formatTime = minutes + ":" + (seconds >= 10 ? String(seconds) : "0" + (seconds % 60));
+  const formatTime = `${minutes}:${
+    seconds >= 10 ? String(seconds) : `0${seconds % 60}`
+  }`;
 
   return formatTime;
 };
@@ -74,7 +76,7 @@ export const Player = React.forwardRef((props: PlayerProps, ref) => {
     setCurrentMedia(list[(currentAudio + list.length - 1) % list.length]);
     updatePlayer(list[(currentAudio + list.length - 1) % list.length]);
 
-    playerRef.current && playerRef.current.play();
+    playerRef.current?.play();
   };
 
   const nextSong = () => {
@@ -82,7 +84,7 @@ export const Player = React.forwardRef((props: PlayerProps, ref) => {
     setCurrentMedia(list[(currentAudio + 1) % list.length]);
     updatePlayer(list[(currentAudio + 1) % list.length]);
 
-    playerRef.current && playerRef.current.play();
+    playerRef.current?.play();
   };
 
   const timeUpdate = () => {
@@ -94,7 +96,7 @@ export const Player = React.forwardRef((props: PlayerProps, ref) => {
       const duration = player.duration;
       const playPercent = 100 * (player.currentTime / duration);
 
-      playHead.style.width = playPercent + "%";
+      playHead.style.width = `${playPercent}%`;
       setCurrentTime(secondsToMinutesAndSeconds(player.currentTime));
     }
   };
@@ -116,12 +118,16 @@ export const Player = React.forwardRef((props: PlayerProps, ref) => {
       const playHeadRect: DOMRect = timeline.getBoundingClientRect();
       const left = playHeadRect.left;
       const userClickWidth = e.clientX - left;
-      const userClickWidthInPercent = (userClickWidth * 100) / playHeadRect.width;
+      const userClickWidthInPercent =
+        (userClickWidth * 100) / playHeadRect.width;
 
-      playHead.style.width = userClickWidthInPercent + "%";
+      playHead.style.width = `${userClickWidthInPercent}%`;
       player.currentTime = (duration * userClickWidthInPercent) / 100;
 
-      console.log("🚀 ~ changeCurrentTime ~ player.currentTime:", player.currentTime);
+      console.log(
+        "🚀 ~ changeCurrentTime ~ player.currentTime:",
+        player.currentTime,
+      );
     }
   };
 
@@ -136,10 +142,11 @@ export const Player = React.forwardRef((props: PlayerProps, ref) => {
       const playHeadRect: DOMRect = timeline.getBoundingClientRect();
       const left = playHeadRect.left;
       const userClickWidth = e.clientX - left;
-      const userClickWidthInPercent = (userClickWidth * 100) / playHeadRect.width;
+      const userClickWidthInPercent =
+        (userClickWidth * 100) / playHeadRect.width;
 
       if (userClickWidthInPercent <= 100) {
-        hoverPlayHead.style.width = userClickWidthInPercent + "%";
+        hoverPlayHead.style.width = `${userClickWidthInPercent}%`;
       }
 
       const time = (duration * userClickWidthInPercent) / 100;
@@ -151,27 +158,27 @@ export const Player = React.forwardRef((props: PlayerProps, ref) => {
   };
 
   const resetTimeLine = () => {
-    if (hoverPlayHeadRef && hoverPlayHeadRef.current) {
-      hoverPlayHeadRef.current.style.width = 0 + "";
+    if (hoverPlayHeadRef?.current) {
+      hoverPlayHeadRef.current.style.width = `${0}`;
     }
   };
 
   const receiveNewRecord = useCallback(
     (record: any) => {
       console.log("%c Line:154 🍅 record", "color:#3f7cff", record);
-      if (list && list.length) {
+      if (list?.length) {
         for (let i = 0; i < list.length; i++) {
           if (list[i].uuid === record.uuid) {
             setCurrentAudio(i);
             setCurrentMedia(list[i]);
             updatePlayer(list[i]);
-            playerRef.current && playerRef.current.play();
+            playerRef.current?.play();
             setPause(false);
           }
         }
       }
     },
-    [list]
+    [list],
   );
 
   function renderPlayButton() {
@@ -201,9 +208,21 @@ export const Player = React.forwardRef((props: PlayerProps, ref) => {
       }
 
       if (timelineRef.current) {
-        timelineRef.current.removeEventListener("click", changeCurrentTime, false);
-        timelineRef.current.removeEventListener("mousemove", hoverTimeLine, false);
-        timelineRef.current.removeEventListener("mouseout", resetTimeLine, false);
+        timelineRef.current.removeEventListener(
+          "click",
+          changeCurrentTime,
+          false,
+        );
+        timelineRef.current.removeEventListener(
+          "mousemove",
+          hoverTimeLine,
+          false,
+        );
+        timelineRef.current.removeEventListener(
+          "mouseout",
+          resetTimeLine,
+          false,
+        );
       }
     };
   }, []);
@@ -240,12 +259,18 @@ export const Player = React.forwardRef((props: PlayerProps, ref) => {
     <div className="m-auto w-full">
       <div className="bg-muted before:bg-muted relative m-auto w-full rounded-sm pt-[100%] shadow-md before:absolute before:left-0 before:top-0 before:h-full before:w-full before:content-['']">
         {list[currentAudio]?.thumbnail && (
-          <img alt="uri" src={list[currentAudio]?.thumbnail} className="absolute left-0 top-0 rounded-md" />
+          <img
+            alt="uri"
+            src={list[currentAudio]?.thumbnail}
+            className="absolute left-0 top-0 rounded-md"
+          />
         )}
       </div>
       <div>
         <div className="mt-4 text-center">{list[currentAudio]?.title}</div>
-        <div className="text-muted-foreground my-1 text-center text-sm">{list[currentAudio]?.feed_title}</div>
+        <div className="text-muted-foreground my-1 text-center text-sm">
+          {list[currentAudio]?.feed_title}
+        </div>
       </div>
       <div className="my-3 flex justify-center">
         <div className="bg-[var(--gray-3)] w-full rounded-md">
@@ -264,16 +289,16 @@ export const Player = React.forwardRef((props: PlayerProps, ref) => {
                 ref={playHeadRef}
                 id="playhead"
                 className="bg-[var(--gray-12)] relative z-[2] h-1 w-0 rounded-md"
-              ></div>
+              />
               <div
                 ref={hoverPlayHeadRef}
                 className={clsx(
                   "absolute top-0 z-[1] h-1 w-0 rounded-md bg-slate-600 opacity-0 transition-opacity duration-300 ease-in group-hover:opacity-100 group-hover:before:opacity-100 group-hover:after:opacity-100",
                   "before:opacity-1 before:absolute before:-right-[23px] before:-top-[30px] before:z-10 before:block before:rounded-md before:bg-slate-800 before:p-1 before:text-center before:text-white before:content-[attr(data-content)]",
-                  "after:absolute after:-right-[12px] after:-top-[8px] after:block after:rounded-md after:border-l-[8px_solid_transparent] after:border-r-[8px_solid_transparent] after:border-t-[8px_solid] after:border-t-slate-800 after:bg-slate-800 after:text-white after:opacity-0 after:content-[''] text-xs"
+                  "after:absolute after:-right-[12px] after:-top-[8px] after:block after:rounded-md after:border-l-[8px_solid_transparent] after:border-r-[8px_solid_transparent] after:border-t-[8px_solid] after:border-t-slate-800 after:bg-slate-800 after:text-white after:opacity-0 after:content-[''] text-xs",
                 )}
                 data-content="0:00"
-              ></div>
+              />
             </div>
             <TimeDisplay time={maxTime} />
           </div>
@@ -282,21 +307,17 @@ export const Player = React.forwardRef((props: PlayerProps, ref) => {
               <SkipBack size={20} onClick={prevSong} />
             </IconButton>
             <IconButton
-              className={clsx(
-                "hover:scale-110",
-                "transition-all"
-              )}
-              radius="full" variant="ghost" color="gray"
+              className={clsx("hover:scale-110", "transition-all")}
+              radius="full"
+              variant="ghost"
+              color="gray"
               size="3"
               onClick={onPlayButtonClick}
             >
               {renderPlayButton()}
             </IconButton>
             <IconButton radius="full" variant="ghost" color="gray">
-              <SkipForward
-                size={20}
-                onClick={nextSong}
-              />
+              <SkipForward size={20} onClick={nextSong} />
             </IconButton>
           </div>
         </div>

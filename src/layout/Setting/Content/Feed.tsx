@@ -5,7 +5,8 @@ import { Channel } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
 import { busChannel } from "@/helpers/busChannel";
 import { DataTable } from "./DataTable";
-import { CellContext, createColumnHelper } from "@tanstack/react-table";
+import type { CellContext, ColumnDef } from "@tanstack/react-table";
+import { createColumnHelper } from "@tanstack/react-table";
 import { getFeedLogo } from "@/helpers/parseXML";
 import { DialogUnsubscribeFeed } from "./DialogUnsubscribeFeed";
 import { useModal } from "@/components/Modal/useModal";
@@ -14,7 +15,9 @@ import { Avatar, Badge, HoverCard, IconButton } from "@radix-ui/themes";
 export const Feed = () => {
   const [list, setList] = useState<(Channel & { parent_uuid: String })[]>([]);
   const [showStatus, setModalStatus] = useModal();
-  const [renderList, setRenderList] = useState<(Channel & { parent_uuid: String })[]>([]);
+  const [renderList, setRenderList] = useState<
+    (Channel & { parent_uuid: String })[]
+  >([]);
   const [filterParams, setFilterParams] = useState<{
     searchText?: string;
     folderUuid?: string;
@@ -38,11 +41,23 @@ export const Feed = () => {
 
         return (
           <div className="flex items-center gap-2">
-            <Avatar src={getFeedLogo(link)} fallback={title.slice(0, 1)} alt={title} size="1" />
-            <a className="font-bold hover:underline" href={link} target={"_blank"} rel="noreferrer">
+            <Avatar
+              src={getFeedLogo(link)}
+              fallback={title.slice(0, 1)}
+              alt={title}
+              size="1"
+            />
+            <a
+              className="font-bold hover:underline"
+              href={link}
+              target={"_blank"}
+              rel="noreferrer"
+            >
               {title}
             </a>
-            {props.row.original.folder_name && <Badge>{props.row.original.folder_name}</Badge>}
+            {props.row.original.folder_name && (
+              <Badge>{props.row.original.folder_name}</Badge>
+            )}
           </div>
         );
       },
@@ -55,7 +70,9 @@ export const Feed = () => {
 
         return (
           <div className="flex justify-center">
-            {health_status === 0 && <div className="w-3 h-3 rounded-full bg-green-600" />}
+            {health_status === 0 && (
+              <div className="w-3 h-3 rounded-full bg-green-600" />
+            )}
             {health_status === 1 && (
               <HoverCard.Root>
                 <HoverCard.Trigger>
@@ -93,10 +110,18 @@ export const Feed = () => {
       cell(props: CellContext<Channel, string>): JSX.Element {
         return (
           <div className="flex space-x-1">
-            <IconButton variant="ghost" color="gray" onClick={() => open(props.row.original.feed_url)}>
+            <IconButton
+              variant="ghost"
+              color="gray"
+              onClick={() => open(props.row.original.feed_url)}
+            >
               <Rss size={14} />
             </IconButton>
-            <IconButton variant="ghost" color="red" onClick={() => handleUnSubscribe(props.row.original)}>
+            <IconButton
+              variant="ghost"
+              color="red"
+              onClick={() => handleUnSubscribe(props.row.original)}
+            >
               <Trash2 size={14} />
             </IconButton>
           </div>
@@ -117,7 +142,8 @@ export const Feed = () => {
     const { searchText = "", folderUuid = "" } = filterParams;
     const result = list.filter((item) => {
       return (
-        (item.title.indexOf(searchText) > -1 || item.feed_url.indexOf(searchText) > -1) &&
+        (item.title.indexOf(searchText) > -1 ||
+          item.feed_url.indexOf(searchText) > -1) &&
         item.parent_uuid === folderUuid
       );
     });
@@ -139,11 +165,7 @@ export const Feed = () => {
 
   return (
     <div className="">
-      <DataTable
-        // @ts-ignore
-        columns={columns}
-        data={renderList}
-      />
+      <DataTable columns={columns as any} data={renderList} />
       <DialogUnsubscribeFeed
         dialogStatus={showStatus}
         setDialogStatus={setModalStatus}

@@ -7,12 +7,14 @@ import { useBearStore } from "@/stores";
 
 export const General = () => {
   const { t, i18n } = useTranslation();
-  const [lang, setLang] = useState(localStorage.getItem('lang') || navigator.language);
-  const langs: { [key: string]: { nativeName: string } } = useMemo(() =>  {
+  const [lang, setLang] = useState(
+    localStorage.getItem("lang") || navigator.language,
+  );
+  const langs: { [key: string]: { nativeName: string } } = useMemo(() => {
     return {
       en: { nativeName: "English" },
       zh: { nativeName: "中文" },
-    }
+    };
   }, []);
 
   const intervalOptions = useMemo(
@@ -38,7 +40,7 @@ export const General = () => {
         label: `24 ${i18next.t("hours")}`,
       },
     ],
-    [lang]
+    [lang],
   );
 
   const purgeOptions = useMemo(
@@ -72,7 +74,7 @@ export const General = () => {
         label: i18next.t("one year"),
       },
     ],
-    [lang]
+    [lang],
   );
   const store = useBearStore((state) => ({
     userConfig: state.userConfig,
@@ -81,7 +83,10 @@ export const General = () => {
 
   return (
     <Panel title={t("General")}>
-      <PanelSection title={t("Update Interval")} subTitle={t("set the update interval")}>
+      <PanelSection
+        title={t("Update Interval")}
+        subTitle={t("set the update interval")}
+      >
         <Select.Root
           value={store.userConfig.update_interval?.toString()}
           onValueChange={(v: string) => {
@@ -106,7 +111,10 @@ export const General = () => {
         </Select.Root>
       </PanelSection>
       <Separator className="mt-6" size="4" />
-      <PanelSection title={t("Thread")} subTitle={t("set the concurrent number of requests (from 1 to 5)")}>
+      <PanelSection
+        title={t("Thread")}
+        subTitle={t("set the concurrent number of requests (from 1 to 5)")}
+      >
         <Select.Root
           value={store.userConfig.threads?.toString()}
           onValueChange={(v: string) => {
@@ -129,7 +137,10 @@ export const General = () => {
         </Select.Root>
       </PanelSection>
       <Separator className="mt-6" size="4" />
-      <PanelSection title={t("Purge articles older than")} subTitle={t("save your disk")}>
+      <PanelSection
+        title={t("Purge articles older than")}
+        subTitle={t("save your disk")}
+      >
         <div className="flex items-center gap-2">
           <Select.Root
             value={store.userConfig.purge_on_days?.toString()}
@@ -174,8 +185,8 @@ export const General = () => {
             value={lang}
             onValueChange={(v: string) => {
               i18n.changeLanguage(v);
-              window.localStorage.setItem('lang', v)
-              setLang(v)
+              window.localStorage.setItem("lang", v);
+              setLang(v);
             }}
           >
             <Select.Trigger />

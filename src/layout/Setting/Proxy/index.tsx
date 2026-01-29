@@ -17,7 +17,13 @@ export interface ProxyItemProps {
   onRuleChange: () => void;
 }
 
-export const ProxyItem = ({ proxy, bindFeeds, onEdit, onDelete, onRuleChange }: ProxyItemProps) => {
+export const ProxyItem = ({
+  proxy,
+  bindFeeds,
+  onEdit,
+  onDelete,
+  onRuleChange,
+}: ProxyItemProps) => {
   const [enable, setEnable] = useState(proxy.enable);
 
   function changeProxyStatus(checked: boolean) {
@@ -41,7 +47,13 @@ export const ProxyItem = ({ proxy, bindFeeds, onEdit, onDelete, onRuleChange }: 
           socks5://{proxy.server}:{proxy.port}
         </div>
         <div className="flex items-center flex-row gap-3">
-          <IconButton size="2" variant="ghost" color="gray" className="text-[var(--gray-12)]" onClick={() => onEdit()}>
+          <IconButton
+            size="2"
+            variant="ghost"
+            color="gray"
+            className="text-[var(--gray-12)]"
+            onClick={() => onEdit()}
+          >
             <Edit size="16" strokeWidth={1.5} />
           </IconButton>
           <IconButton
@@ -53,7 +65,10 @@ export const ProxyItem = ({ proxy, bindFeeds, onEdit, onDelete, onRuleChange }: 
           >
             <Trash2 size="16" strokeWidth={1.5} />
           </IconButton>
-          <Switch checked={enable} onCheckedChange={(checked) => changeProxyStatus(checked)} />
+          <Switch
+            checked={enable}
+            onCheckedChange={(checked) => changeProxyStatus(checked)}
+          />
         </div>
       </div>
       <div className="flex gap-2 flex-wrap mt-3">
@@ -143,7 +158,11 @@ export const ProxySetting = () => {
   useEffect(() => {
     setFeedList(
       store.subscribes.reduce((acu, cur) => {
-        if (cur.item_type === "folder" && cur.children && cur.children.length > 0) {
+        if (
+          cur.item_type === "folder" &&
+          cur.children &&
+          cur.children.length > 0
+        ) {
           acu = acu.concat([...cur.children]);
         }
 
@@ -152,13 +171,18 @@ export const ProxySetting = () => {
         }
 
         return acu;
-      }, [] as FeedResItem[])
+      }, [] as FeedResItem[]),
     );
   }, [store.subscribes]);
 
   return (
     <Panel title={t("Proxy")}>
-      <PanelSection title={t("Proxy")} subTitle={t("you can try to use proxy server for connection when feed cant access")}>
+      <PanelSection
+        title={t("Proxy")}
+        subTitle={t(
+          "you can try to use proxy server for connection when feed cant access",
+        )}
+      >
         <Button variant="ghost" onClick={() => setProxyModalStatus(true)}>
           <PlusCircle size="16" strokeWidth={1.5} />
           {t("Add Proxy")}
@@ -175,12 +199,12 @@ export const ProxySetting = () => {
           }}
         />
       </PanelSection>
-      <div></div>
+      <div />
       <div>
-        {proxyList.map((proxy, idx) => {
+        {proxyList.map((proxy) => {
           return (
             <ProxyItem
-              key={idx}
+              key={`${proxy.server}:${proxy.port}`}
               proxy={proxy}
               bindFeeds={getSelectFeedResItem(proxy, rules)}
               onEdit={() => handleEditProxy(proxy)}

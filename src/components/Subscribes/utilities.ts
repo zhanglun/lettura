@@ -3,7 +3,7 @@ import { FeedResItem } from "@/db";
 function flatten(
   items: FeedResItem[],
   parentId: string | null = null,
-  depth = 0
+  depth = 0,
 ): FeedResItem[] {
   return items.reduce<FeedResItem[]>((acc, item, index) => {
     return [
@@ -16,7 +16,7 @@ function flatten(
 
 export function findItemDeep(
   items: TreeItem[],
-  itemId: string
+  itemId: string,
 ): TreeItem | undefined {
   for (const item of items) {
     const { uuid, children = [] } = item;
@@ -45,7 +45,7 @@ export function removeItem(items: FeedResItem[], uuid: string) {
       continue;
     }
 
-    if (item.children && item.children.length) {
+    if (item.children?.length) {
       item.children = removeItem(item.children, uuid);
     }
 
@@ -55,10 +55,9 @@ export function removeItem(items: FeedResItem[], uuid: string) {
   return newItems;
 }
 
-
 export function findFolderAndIndex(
   items: FeedResItem[],
-  uuid: string
+  uuid: string,
 ): [number, FeedResItem] {
   const index = items.findIndex((item) => item.uuid === uuid);
 
@@ -72,7 +71,7 @@ export function findFolderAndIndex(
 export function adjustedTargetIndex(
   targetIndex: number,
   foundIndex: number,
-  position: string | null
+  position: string | null,
 ) {
   if (position !== "top") {
     targetIndex += 1;
@@ -92,7 +91,7 @@ export interface TreeItem extends FeedResItem {
 export function getParent(items: TreeItem[], uuid: string): TreeItem | null {
   for (const item of items) {
     if (item.children && item.children.length > 0) {
-      if (item.children.some(child => child.uuid === uuid)) {
+      if (item.children.some((child) => child.uuid === uuid)) {
         return item; // 找到了父级元素
       } else {
         const foundParent = getParent(item.children as TreeItem[], uuid);

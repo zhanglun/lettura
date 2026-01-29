@@ -17,7 +17,14 @@ export interface DialogProps {
 
 export const DialogUnsubscribeFeed = React.memo((props: DialogProps) => {
   const { t } = useTranslation();
-  const { feed, dialogStatus, setDialogStatus, afterConfirm, afterCancel, trigger } = props;
+  const {
+    feed,
+    dialogStatus,
+    setDialogStatus,
+    afterConfirm,
+    afterCancel,
+    trigger,
+  } = props;
   const [loading, setLoading] = useState(false);
 
   const confirmUnsubscribe = () => {
@@ -53,13 +60,15 @@ export const DialogUnsubscribeFeed = React.memo((props: DialogProps) => {
         <AlertDialog.Title>{t("Are you absolutely sure?")}</AlertDialog.Title>
         <AlertDialog.Description>
           <Trans
-            i18nKey={"This action cannot be undone. This will permanently delete the data relates with"}
+            i18nKey={
+              "This action cannot be undone. This will permanently delete the data relates with"
+            }
             components={{ bold: <strong /> }}
             values={{
               title: feed?.title,
             }}
             shouldUnescape={true}
-          ></Trans>
+          />
         </AlertDialog.Description>
         <Flex gap="3" mt="4" justify="end">
           <AlertDialog.Cancel onClick={() => handleCancel()}>
@@ -67,7 +76,11 @@ export const DialogUnsubscribeFeed = React.memo((props: DialogProps) => {
               {t("Cancel")}
             </Button>
           </AlertDialog.Cancel>
-          <Button variant="solid" color="red" onClick={() => confirmUnsubscribe()}>
+          <Button
+            variant="solid"
+            color="red"
+            onClick={() => confirmUnsubscribe()}
+          >
             {t("Unsubscribe")}
           </Button>
         </Flex>

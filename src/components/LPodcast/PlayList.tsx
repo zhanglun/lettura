@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import { Box, Flex, Text, Avatar, IconButton } from "@radix-ui/themes";
 import { AudioTrack } from "./index";
 import { formatTime } from "./utils";
@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { PlayIcon, TrashIcon } from "@radix-ui/react-icons";
 import clsx from "clsx";
 import "./PlayList.css";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 
 const AudioWaveform = () => {
   const bars = [
@@ -19,9 +19,9 @@ const AudioWaveform = () => {
 
   return (
     <Flex className="h-6 items-center justify-center gap-1">
-      {bars.map((bar, index) => (
+      {bars.map((bar) => (
         <motion.div
-          key={index}
+          key={bar.delay}
           initial={{ height: bar.height[0] }}
           animate={{ height: bar.height }}
           transition={{
@@ -79,7 +79,11 @@ export const PlayList: React.FC<PlayListProps> = ({
 
   if (tracks.length === 0) {
     return (
-      <motion.div initial={listAnimation.initial} animate={listAnimation.animate} transition={listAnimation.transition}>
+      <motion.div
+        initial={listAnimation.initial}
+        animate={listAnimation.animate}
+        transition={listAnimation.transition}
+      >
         <Flex className="py-8 items-center justify-center flex-col gap-3">
           <Text className="text-gray-11 text-xl font-medium">暂无播放内容</Text>
           <Text className="text-gray-9 text-sm">添加一些播客开始收听吧</Text>
@@ -97,7 +101,9 @@ export const PlayList: React.FC<PlayListProps> = ({
     >
       <Box className="border-b border-gray-5 bg-background backdrop-blur-sm sticky top-0 z-10">
         <Flex className="px-4 py-3 items-center justify-between">
-          <Text className="text-gray-12 font-medium text-sm">{t("Playlist")}</Text>
+          <Text className="text-gray-12 font-medium text-sm">
+            {t("Playlist")}
+          </Text>
           {/* <Text className="text-gray-11 text-sm">{tracks.length} 集</Text> */}
         </Flex>
       </Box>
@@ -120,7 +126,9 @@ export const PlayList: React.FC<PlayListProps> = ({
                 gap="3"
                 className={clsx(
                   "playlist-item w-full px-2 py-2 cursor-pointer rounded-md",
-                  track.uuid === currentTrack?.uuid ? "bg-accent-4 hover:bg-accent-5" : "hover:bg-accent-2"
+                  track.uuid === currentTrack?.uuid
+                    ? "bg-accent-4 hover:bg-accent-5"
+                    : "hover:bg-accent-2",
                 )}
                 onClick={() => onTrackSelect(track)}
               >
@@ -174,12 +182,18 @@ export const PlayList: React.FC<PlayListProps> = ({
                   </AnimatePresence>
                 </Box>
 
-                <Flex direction="column" gap="1" className="flex-1 min-w-0 max-w-[calc(100%-70px)] min-h-0 py-1">
+                <Flex
+                  direction="column"
+                  gap="1"
+                  className="flex-1 min-w-0 max-w-[calc(100%-70px)] min-h-0 py-1"
+                >
                   <Text
                     size="2"
                     className={clsx(
                       "playlist-text truncate font-medium",
-                      track.uuid === currentTrack?.uuid ? "text-accent-12 " : "text-gray-11"
+                      track.uuid === currentTrack?.uuid
+                        ? "text-accent-12 "
+                        : "text-gray-11",
                     )}
                   >
                     {track.title}
@@ -189,7 +203,9 @@ export const PlayList: React.FC<PlayListProps> = ({
                       size="1"
                       className={clsx(
                         "playlist-subtext truncate",
-                        track.uuid === currentTrack?.uuid ? "text-accent-10" : "text-gray-9"
+                        track.uuid === currentTrack?.uuid
+                          ? "text-accent-10"
+                          : "text-gray-9",
                       )}
                     >
                       {track.author || track.feed_title}
@@ -213,7 +229,9 @@ export const PlayList: React.FC<PlayListProps> = ({
                       size="1"
                       className={clsx(
                         "playlist-subtext",
-                        track.uuid === currentTrack?.uuid ? "text-accent-11" : "text-gray-10"
+                        track.uuid === currentTrack?.uuid
+                          ? "text-accent-11"
+                          : "text-gray-10",
                       )}
                     >
                       {formatTime(track.duration)}

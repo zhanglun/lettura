@@ -24,11 +24,17 @@ export function ResultItem(props: ResultItemProps) {
     props.onView(article);
 
     if (article.read_status === ArticleReadStatus.UNREAD) {
-      dataAgent.updateArticleReadStatus(article.uuid, ArticleReadStatus.READ).then(() => {
-        article.read_status = ArticleReadStatus.READ;
-        console.log("%c Line:26 🍑 article.read_status", "color:#b03734", article.read_status);
-        setReadStatus(ArticleReadStatus.READ);
-      });
+      dataAgent
+        .updateArticleReadStatus(article.uuid, ArticleReadStatus.READ)
+        .then(() => {
+          article.read_status = ArticleReadStatus.READ;
+          console.log(
+            "%c Line:26 🍑 article.read_status",
+            "color:#b03734",
+            article.read_status,
+          );
+          setReadStatus(ArticleReadStatus.READ);
+        });
     }
   }
 
@@ -43,7 +49,7 @@ export function ResultItem(props: ResultItemProps) {
         "group hover:bg-[var(--accent-a3)] hover:cursor-pointer",
         {
           "text-[var(--gray-10)]": readStatus === ArticleReadStatus.READ,
-        }
+        },
       )}
       onClick={handleClick}
     >
@@ -57,7 +63,9 @@ export function ResultItem(props: ResultItemProps) {
             className="rounded w-5 h-5"
           />
 
-          <div className="grow-1 shrink-0 text-sm font-bold">{article.title}</div>
+          <div className="grow-1 shrink-0 text-sm font-bold">
+            {article.title}
+          </div>
           <div className="grow-0 shrink-1 text-xs overflow-hidden text-ellipsis mr-1 whitespace-nowrap">
             {article.description.replace(/(<([^>]+)>)/gi, "")}
           </div>

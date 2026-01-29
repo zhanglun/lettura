@@ -15,14 +15,17 @@ interface SpaceSwitcherProps {
 }
 
 export function SpaceSwitcher({ isCollapsed, spaces }: SpaceSwitcherProps) {
-  const [selectedSpace, setSelectedSpace] = React.useState<string>(spaces[0].route);
+  const [selectedSpace, setSelectedSpace] = React.useState<string>(
+    spaces[0].route,
+  );
 
   return (
     <Select.Root defaultValue={selectedSpace} onValueChange={setSelectedSpace}>
       <Select.Trigger
         className={cn(
           "h-8 w-[120px] border-none",
-          isCollapsed && "flex h-9 w-9 shrink-0 items-center justify-center p-0 [&>span]:w-auto [&>svg]:hidden",
+          isCollapsed &&
+            "flex h-9 w-9 shrink-0 items-center justify-center p-0 [&>span]:w-auto [&>svg]:hidden",
         )}
         aria-label="Select Space"
       >

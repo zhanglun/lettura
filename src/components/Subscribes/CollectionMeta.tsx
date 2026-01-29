@@ -24,7 +24,7 @@ const CollectionMeta = (): JSX.Element => {
 
       collectionMeta: state.collectionMeta,
       initCollectionMetas: state.initCollectionMetas,
-    }))
+    })),
   );
 
   useEffect(() => {
@@ -33,7 +33,9 @@ const CollectionMeta = (): JSX.Element => {
 
   return (
     <>
-      <h2 className="mb-2 mt-6 px-2 font-semibold tracking-tight">{t("Collections")}</h2>
+      <h2 className="mb-2 mt-6 px-2 font-semibold tracking-tight">
+        {t("Collections")}
+      </h2>
       <div>
         <div
           onClick={() => {
@@ -48,7 +50,10 @@ const CollectionMeta = (): JSX.Element => {
           <NavLink
             to={RouteConfig.LOCAL_TODAY}
             className={({ isActive }) => {
-              return clsx("sidebar-item", isActive ? "sidebar-item--active" : "");
+              return clsx(
+                "sidebar-item",
+                isActive ? "sidebar-item--active" : "",
+              );
             }}
           >
             <Haze size={16} />
@@ -58,7 +63,7 @@ const CollectionMeta = (): JSX.Element => {
             {store.collectionMeta.today.unread > 0 && (
               <span
                 className={clsx(
-                  "-mr-1 h-4 min-w-[1rem] px-1 flex items-center justify-center text-sm font-medium leading-4 rounded"
+                  "-mr-1 h-4 min-w-[1rem] px-1 flex items-center justify-center text-sm font-medium leading-4 rounded",
                 )}
               >
                 {store.collectionMeta.today.unread}
@@ -79,7 +84,10 @@ const CollectionMeta = (): JSX.Element => {
           <NavLink
             to={RouteConfig.LOCAL_ALL}
             className={({ isActive }) => {
-              return clsx("sidebar-item", isActive ? "sidebar-item--active" : "");
+              return clsx(
+                "sidebar-item",
+                isActive ? "sidebar-item--active" : "",
+              );
             }}
           >
             <Coffee size={16} />
@@ -89,7 +97,7 @@ const CollectionMeta = (): JSX.Element => {
             {store.collectionMeta.total.unread > 0 && (
               <span
                 className={clsx(
-                  "-mr-1 h-4 min-w-[1rem] px-1 flex items-center justify-center text-sm font-medium leading-4 rounded"
+                  "-mr-1 h-4 min-w-[1rem] px-1 flex items-center justify-center text-sm font-medium leading-4 rounded",
                 )}
               >
                 {store.collectionMeta.total.unread}
@@ -112,7 +120,10 @@ const CollectionMeta = (): JSX.Element => {
           <NavLink
             to={RouteConfig.LOCAL_STARRED}
             className={({ isActive }) => {
-              return clsx("sidebar-item", isActive ? "sidebar-item--active" : "");
+              return clsx(
+                "sidebar-item",
+                isActive ? "sidebar-item--active" : "",
+              );
             }}
           >
             <Star size={16} />

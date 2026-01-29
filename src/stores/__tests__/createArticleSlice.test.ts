@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { create } from 'zustand';
-import { createArticleSlice, ArticleSlice } from '../createArticleSlice';
-import { createFeedSlice, FeedSlice } from '../createFeedSlice';
-import { ArticleResItem } from '@/db';
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import { create } from "zustand";
+import { createArticleSlice, ArticleSlice } from "../createArticleSlice";
+import { createFeedSlice, FeedSlice } from "../createFeedSlice";
+import { ArticleResItem } from "@/db";
 
 const createTestStore = () =>
   create<ArticleSlice & FeedSlice>((set, get, ...args) => ({
@@ -10,15 +10,15 @@ const createTestStore = () =>
     ...createArticleSlice(set, get as any, ...args),
   }));
 
-describe('createArticleSlice', () => {
+describe("createArticleSlice", () => {
   let store: ReturnType<typeof createTestStore>;
 
   beforeEach(() => {
     store = createTestStore();
   });
 
-  describe('initial state', () => {
-    it('should initialize with default values', () => {
+  describe("initial state", () => {
+    it("should initialize with default values", () => {
       const state = store.getState();
 
       expect(state.article).toBeNull();
@@ -29,27 +29,27 @@ describe('createArticleSlice', () => {
       expect(state.articleDialogViewStatus).toBe(false);
       expect(state.currentFilter).toEqual({
         id: 1,
-        title: 'Unread',
+        title: "Unread",
       });
     });
   });
 
-  describe('setArticle', () => {
-    it('should set the current article', () => {
+  describe("setArticle", () => {
+    it("should set the current article", () => {
       const article: ArticleResItem = {
-        uuid: 'test-uuid',
-        feed_uuid: 'feed-uuid',
-        feed_title: 'Test Feed',
-        feed_url: 'https://example.com',
-        title: 'Test Article',
-        link: 'https://example.com/article',
-        image: 'https://example.com/image.jpg',
-        description: 'Test description',
-        author: 'Test Author',
-        create_date: '2024-01-01',
+        uuid: "test-uuid",
+        feed_uuid: "feed-uuid",
+        feed_title: "Test Feed",
+        feed_url: "https://example.com",
+        title: "Test Article",
+        link: "https://example.com/article",
+        image: "https://example.com/image.jpg",
+        description: "Test description",
+        author: "Test Author",
+        create_date: "2024-01-01",
         read_status: 0,
         starred: 0,
-        media_object: '',
+        media_object: "",
       };
 
       store.getState().setArticle(article);
@@ -57,27 +57,27 @@ describe('createArticleSlice', () => {
       expect(store.getState().article).toEqual(article);
     });
 
-    it('should set article to null', () => {
+    it("should set article to null", () => {
       store.getState().setArticle(null);
 
       expect(store.getState().article).toBeNull();
     });
 
-    it('should not mutate original article object', () => {
+    it("should not mutate original article object", () => {
       const article: ArticleResItem = {
-        uuid: 'test-uuid',
-        feed_uuid: 'feed-uuid',
-        feed_title: 'Test Feed',
-        feed_url: 'https://example.com',
-        title: 'Test Article',
-        link: 'https://example.com/article',
-        image: 'https://example.com/image.jpg',
-        description: 'Test description',
-        author: 'Test Author',
-        create_date: '2024-01-01',
+        uuid: "test-uuid",
+        feed_uuid: "feed-uuid",
+        feed_title: "Test Feed",
+        feed_url: "https://example.com",
+        title: "Test Article",
+        link: "https://example.com/article",
+        image: "https://example.com/image.jpg",
+        description: "Test description",
+        author: "Test Author",
+        create_date: "2024-01-01",
         read_status: 0,
         starred: 0,
-        media_object: '',
+        media_object: "",
       };
 
       const original = { ...article };
@@ -87,38 +87,38 @@ describe('createArticleSlice', () => {
     });
   });
 
-  describe('setArticleList', () => {
-    it('should set the article list', () => {
+  describe("setArticleList", () => {
+    it("should set the article list", () => {
       const articles: ArticleResItem[] = [
         {
-          uuid: 'article-1',
-          feed_uuid: 'feed-uuid',
-          feed_title: 'Test Feed',
-          feed_url: 'https://example.com',
-          title: 'Article 1',
-          link: 'https://example.com/article1',
-          image: 'https://example.com/image1.jpg',
-          description: 'Description 1',
-          author: 'Author 1',
-          create_date: '2024-01-01',
+          uuid: "article-1",
+          feed_uuid: "feed-uuid",
+          feed_title: "Test Feed",
+          feed_url: "https://example.com",
+          title: "Article 1",
+          link: "https://example.com/article1",
+          image: "https://example.com/image1.jpg",
+          description: "Description 1",
+          author: "Author 1",
+          create_date: "2024-01-01",
           read_status: 0,
           starred: 0,
-          media_object: '',
+          media_object: "",
         },
         {
-          uuid: 'article-2',
-          feed_uuid: 'feed-uuid',
-          feed_title: 'Test Feed',
-          feed_url: 'https://example.com',
-          title: 'Article 2',
-          link: 'https://example.com/article2',
-          image: 'https://example.com/image2.jpg',
-          description: 'Description 2',
-          author: 'Author 2',
-          create_date: '2024-01-02',
+          uuid: "article-2",
+          feed_uuid: "feed-uuid",
+          feed_title: "Test Feed",
+          feed_url: "https://example.com",
+          title: "Article 2",
+          link: "https://example.com/article2",
+          image: "https://example.com/image2.jpg",
+          description: "Description 2",
+          author: "Author 2",
+          create_date: "2024-01-02",
           read_status: 0,
           starred: 0,
-          media_object: '',
+          media_object: "",
         },
       ];
 
@@ -128,47 +128,47 @@ describe('createArticleSlice', () => {
       expect(store.getState().articleList).toHaveLength(2);
     });
 
-    it('should handle empty array', () => {
+    it("should handle empty array", () => {
       store.getState().setArticleList([]);
 
       expect(store.getState().articleList).toEqual([]);
       expect(store.getState().articleList).toHaveLength(0);
     });
 
-    it('should replace entire list (not append)', () => {
+    it("should replace entire list (not append)", () => {
       const articles1: ArticleResItem[] = [
         {
-          uuid: 'article-1',
-          feed_uuid: 'feed-uuid',
-          feed_title: 'Test Feed',
-          feed_url: 'https://example.com',
-          title: 'Article 1',
-          link: 'https://example.com/article1',
-          image: 'https://example.com/image1.jpg',
-          description: 'Description 1',
-          author: 'Author 1',
-          create_date: '2024-01-01',
+          uuid: "article-1",
+          feed_uuid: "feed-uuid",
+          feed_title: "Test Feed",
+          feed_url: "https://example.com",
+          title: "Article 1",
+          link: "https://example.com/article1",
+          image: "https://example.com/image1.jpg",
+          description: "Description 1",
+          author: "Author 1",
+          create_date: "2024-01-01",
           read_status: 0,
           starred: 0,
-          media_object: '',
+          media_object: "",
         },
       ];
 
       const articles2: ArticleResItem[] = [
         {
-          uuid: 'article-2',
-          feed_uuid: 'feed-uuid',
-          feed_title: 'Test Feed',
-          feed_url: 'https://example.com',
-          title: 'Article 2',
-          link: 'https://example.com/article2',
-          image: 'https://example.com/image2.jpg',
-          description: 'Description 2',
-          author: 'Author 2',
-          create_date: '2024-01-02',
+          uuid: "article-2",
+          feed_uuid: "feed-uuid",
+          feed_title: "Test Feed",
+          feed_url: "https://example.com",
+          title: "Article 2",
+          link: "https://example.com/article2",
+          image: "https://example.com/image2.jpg",
+          description: "Description 2",
+          author: "Author 2",
+          create_date: "2024-01-02",
           read_status: 0,
           starred: 0,
-          media_object: '',
+          media_object: "",
         },
       ];
 
@@ -177,25 +177,25 @@ describe('createArticleSlice', () => {
 
       store.getState().setArticleList(articles2);
       expect(store.getState().articleList).toHaveLength(1);
-      expect(store.getState().articleList[0].uuid).toBe('article-2');
+      expect(store.getState().articleList[0].uuid).toBe("article-2");
     });
 
-    it('should not mutate original array', () => {
+    it("should not mutate original array", () => {
       const articles: ArticleResItem[] = [
         {
-          uuid: 'article-1',
-          feed_uuid: 'feed-uuid',
-          feed_title: 'Test Feed',
-          feed_url: 'https://example.com',
-          title: 'Article 1',
-          link: 'https://example.com/article1',
-          image: 'https://example.com/image1.jpg',
-          description: 'Description 1',
-          author: 'Author 1',
-          create_date: '2024-01-01',
+          uuid: "article-1",
+          feed_uuid: "feed-uuid",
+          feed_title: "Test Feed",
+          feed_url: "https://example.com",
+          title: "Article 1",
+          link: "https://example.com/article1",
+          image: "https://example.com/image1.jpg",
+          description: "Description 1",
+          author: "Author 1",
+          create_date: "2024-01-01",
           read_status: 0,
           starred: 0,
-          media_object: '',
+          media_object: "",
         },
       ];
 
@@ -206,41 +206,41 @@ describe('createArticleSlice', () => {
     });
   });
 
-  describe('setCursor', () => {
-    it('should set the cursor value', () => {
+  describe("setCursor", () => {
+    it("should set the cursor value", () => {
       store.getState().setCursor(5);
 
       expect(store.getState().cursor).toBe(5);
     });
 
-    it('should return the cursor value', () => {
+    it("should return the cursor value", () => {
       const result = store.getState().setCursor(10);
 
       expect(result).toBe(10);
       expect(store.getState().cursor).toBe(10);
     });
 
-    it('should handle zero cursor', () => {
+    it("should handle zero cursor", () => {
       store.getState().setCursor(0);
 
       expect(store.getState().cursor).toBe(0);
     });
 
-    it('should handle negative cursor (edge case)', () => {
+    it("should handle negative cursor (edge case)", () => {
       store.getState().setCursor(-1);
 
       expect(store.getState().cursor).toBe(-1);
     });
   });
 
-  describe('setHasMorePrev', () => {
-    it('should set hasMorePrev to true', () => {
+  describe("setHasMorePrev", () => {
+    it("should set hasMorePrev to true", () => {
       store.getState().setHasMorePrev(true);
 
       expect(store.getState().hasMorePrev).toBe(true);
     });
 
-    it('should set hasMorePrev to false', () => {
+    it("should set hasMorePrev to false", () => {
       store.getState().setHasMorePrev(true);
       expect(store.getState().hasMorePrev).toBe(true);
 
@@ -249,29 +249,29 @@ describe('createArticleSlice', () => {
     });
   });
 
-  describe('setHasMoreNext', () => {
-    it('should set hasMoreNext to true', () => {
+  describe("setHasMoreNext", () => {
+    it("should set hasMoreNext to true", () => {
       store.getState().setHasMoreNext(false);
       store.getState().setHasMoreNext(true);
 
       expect(store.getState().hasMoreNext).toBe(true);
     });
 
-    it('should set hasMoreNext to false', () => {
+    it("should set hasMoreNext to false", () => {
       store.getState().setHasMoreNext(false);
 
       expect(store.getState().hasMoreNext).toBe(false);
     });
   });
 
-  describe('setArticleDialogViewStatus', () => {
-    it('should set dialog status to true', () => {
+  describe("setArticleDialogViewStatus", () => {
+    it("should set dialog status to true", () => {
       store.getState().setArticleDialogViewStatus(true);
 
       expect(store.getState().articleDialogViewStatus).toBe(true);
     });
 
-    it('should set dialog status to false', () => {
+    it("should set dialog status to false", () => {
       store.getState().setArticleDialogViewStatus(true);
       expect(store.getState().articleDialogViewStatus).toBe(true);
 
@@ -280,18 +280,18 @@ describe('createArticleSlice', () => {
     });
   });
 
-  describe('setFilter', () => {
-    it('should set current filter', () => {
-      const filter = { id: 2, title: 'All' };
+  describe("setFilter", () => {
+    it("should set current filter", () => {
+      const filter = { id: 2, title: "All" };
 
       store.getState().setFilter(filter);
 
       expect(store.getState().currentFilter).toEqual(filter);
     });
 
-    it('should replace entire filter object', () => {
-      const filter1 = { id: 1, title: 'Unread' };
-      const filter2 = { id: 3, title: 'Starred' };
+    it("should replace entire filter object", () => {
+      const filter1 = { id: 1, title: "Unread" };
+      const filter2 = { id: 3, title: "Starred" };
 
       store.getState().setFilter(filter1);
       expect(store.getState().currentFilter).toEqual(filter1);
@@ -300,8 +300,8 @@ describe('createArticleSlice', () => {
       expect(store.getState().currentFilter).toEqual(filter2);
     });
 
-    it('should handle custom filter', () => {
-      const customFilter = { id: 99, title: 'Custom Filter' };
+    it("should handle custom filter", () => {
+      const customFilter = { id: 99, title: "Custom Filter" };
 
       store.getState().setFilter(customFilter);
 
@@ -309,8 +309,8 @@ describe('createArticleSlice', () => {
     });
   });
 
-  describe('state immutability', () => {
-    it('should not allow direct mutation of article', () => {
+  describe("state immutability", () => {
+    it("should not allow direct mutation of article", () => {
       const state = store.getState();
 
       expect(() => {
@@ -318,26 +318,26 @@ describe('createArticleSlice', () => {
       }).not.toThrow();
 
       const article: ArticleResItem = {
-        uuid: 'test',
-        feed_uuid: 'feed',
-        feed_title: 'Feed',
-        feed_url: 'https://example.com',
-        title: 'Title',
-        link: 'https://example.com',
-        image: 'https://example.com/image.jpg',
-        description: 'Desc',
-        author: 'Author',
-        create_date: '2024-01-01',
+        uuid: "test",
+        feed_uuid: "feed",
+        feed_title: "Feed",
+        feed_url: "https://example.com",
+        title: "Title",
+        link: "https://example.com",
+        image: "https://example.com/image.jpg",
+        description: "Desc",
+        author: "Author",
+        create_date: "2024-01-01",
         read_status: 0,
         starred: 0,
-        media_object: '',
+        media_object: "",
       };
 
       store.getState().setArticle(article);
       expect(store.getState().article).toEqual(article);
     });
 
-    it('should not allow direct mutation of articleList', () => {
+    it("should not allow direct mutation of articleList", () => {
       const state = store.getState();
 
       expect(() => {
@@ -350,22 +350,22 @@ describe('createArticleSlice', () => {
     });
   });
 
-  describe('updateArticleAndIdx', () => {
-    it('should update article', () => {
+  describe("updateArticleAndIdx", () => {
+    it("should update article", () => {
       const article: ArticleResItem = {
-        uuid: 'test-uuid',
-        feed_uuid: 'feed-uuid',
-        feed_title: 'Test Feed',
-        feed_url: 'https://example.com',
-        title: 'Test Article',
-        link: 'https://example.com/article',
-        image: 'https://example.com/image.jpg',
-        description: 'Test description',
-        author: 'Test Author',
-        create_date: '2024-01-01',
+        uuid: "test-uuid",
+        feed_uuid: "feed-uuid",
+        feed_title: "Test Feed",
+        feed_url: "https://example.com",
+        title: "Test Article",
+        link: "https://example.com/article",
+        image: "https://example.com/image.jpg",
+        description: "Test description",
+        author: "Test Author",
+        create_date: "2024-01-01",
         read_status: 0,
         starred: 0,
-        media_object: '',
+        media_object: "",
       };
 
       store.getState().updateArticleAndIdx(article);
@@ -373,21 +373,21 @@ describe('createArticleSlice', () => {
       expect(store.getState().article).toEqual(article);
     });
 
-    it('should accept optional idx parameter', () => {
+    it("should accept optional idx parameter", () => {
       const article: ArticleResItem = {
-        uuid: 'test-uuid',
-        feed_uuid: 'feed-uuid',
-        feed_title: 'Test Feed',
-        feed_url: 'https://example.com',
-        title: 'Test Article',
-        link: 'https://example.com/article',
-        image: 'https://example.com/image.jpg',
-        description: 'Test description',
-        author: 'Test Author',
-        create_date: '2024-01-01',
+        uuid: "test-uuid",
+        feed_uuid: "feed-uuid",
+        feed_title: "Test Feed",
+        feed_url: "https://example.com",
+        title: "Test Article",
+        link: "https://example.com/article",
+        image: "https://example.com/image.jpg",
+        description: "Test description",
+        author: "Test Author",
+        create_date: "2024-01-01",
         read_status: 0,
         starred: 0,
-        media_object: '',
+        media_object: "",
       };
 
       store.getState().updateArticleAndIdx(article, 5);

@@ -4,7 +4,7 @@ import { useBearStore } from "@/stores";
 import { useTranslation } from "react-i18next";
 
 export const ColorScheme = () => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   const store = useBearStore((state) => ({
     userConfig: state.userConfig,
     updateUserConfig: state.updateUserConfig,
@@ -17,15 +17,13 @@ export const ColorScheme = () => {
 
     let mode = value || "light";
 
-    if (value === 'system') {
-      mode = window.matchMedia(
-        "(prefers-color-scheme: dark)"
-      ).matches
+    if (value === "system") {
+      mode = window.matchMedia("(prefers-color-scheme: dark)").matches
         ? "dark"
         : "light";
     }
 
-    if (mode === 'dark') {
+    if (mode === "dark") {
       document.body.classList.add("dark-theme");
     } else {
       document.body.classList.remove("dark-theme");
@@ -38,8 +36,9 @@ export const ColorScheme = () => {
           className={clsx(
             "border-2 rounded-lg h-14 flex cursor-pointer items-center justify-center bg-white text-black dark:outline-none",
             {
-              "border-[var(--accent-10)]": store.userConfig.color_scheme === "light",
-            }
+              "border-[var(--accent-10)]":
+                store.userConfig.color_scheme === "light",
+            },
           )}
           onClick={() => handleThemeChange("light")}
         >
@@ -53,8 +52,9 @@ export const ColorScheme = () => {
             "border-2 border-black rounded-lg h-14 flex cursor-pointer items-center justify-center",
             "bg-black text-white",
             {
-              "border-[var(--accent-10)!important]": store.userConfig.color_scheme === "dark",
-            }
+              "border-[var(--accent-10)!important]":
+                store.userConfig.color_scheme === "dark",
+            },
           )}
           onClick={() => handleThemeChange("dark")}
         >
@@ -69,8 +69,9 @@ export const ColorScheme = () => {
             "bg-gradient-to-br from-white from-50%  via-black via-0% to-black",
             "dark:from-foreground dark:from-50% dark:via-background dark:via-0% dark:to-background",
             {
-              "border-[var(--accent-10)]": store.userConfig.color_scheme === "system",
-            }
+              "border-[var(--accent-10)]":
+                store.userConfig.color_scheme === "system",
+            },
           )}
           onClick={() => handleThemeChange("system")}
         >
@@ -83,8 +84,7 @@ export const ColorScheme = () => {
             </span>
           </div>
         </div>
-        <div className="mt-1 text-center text-sm">{t(
-          "Auto")}</div>
+        <div className="mt-1 text-center text-sm">{t("Auto")}</div>
       </div>
     </div>
   );

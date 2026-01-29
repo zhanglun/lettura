@@ -56,13 +56,18 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
       }
     }
 
-    if (elem && elem.getAttribute("href")) {
+    if (elem?.getAttribute("href")) {
       e.preventDefault();
       e.stopPropagation();
 
       const href = elem.getAttribute("href") || "";
 
-      if (href && (href.indexOf("http://") >= 0 || href.indexOf("https://") >= 0 || href.indexOf("www.") >= 0)) {
+      if (
+        href &&
+        (href.indexOf("http://") >= 0 ||
+          href.indexOf("https://") >= 0 ||
+          href.indexOf("www.") >= 0)
+      ) {
         open(href);
       } else if (href.indexOf("#") === 0) {
         open(`${article.link}${href}`);
@@ -71,13 +76,31 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
   }
 
   function renderMain() {
-    const { isCommon, isYoutube, isPodcast } = validateFeed(article, medias || []);
-    console.log("🚀 ~ file: Detail.tsx:75 ~ renderMain ~ isPodcast:", isPodcast);
+    const { isCommon, isYoutube, isPodcast } = validateFeed(
+      article,
+      medias || [],
+    );
+    console.log(
+      "🚀 ~ file: Detail.tsx:75 ~ renderMain ~ isPodcast:",
+      isPodcast,
+    );
 
     if (isYoutube) {
-      return <YoutubeAdapter article={article} content={pageContent} medias={medias} />;
+      return (
+        <YoutubeAdapter
+          article={article}
+          content={pageContent}
+          medias={medias}
+        />
+      );
     } else if (isPodcast) {
-      return <PodcastAdapter article={article} content={pageContent} medias={medias} />;
+      return (
+        <PodcastAdapter
+          article={article}
+          content={pageContent}
+          medias={medias}
+        />
+      );
     } else {
       return (
         <CommonAdapter
@@ -104,7 +127,10 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
           let content;
 
           if (data.content && data.description) {
-            content = data.content.length > data.description.length ? data.content : data.description;
+            content =
+              data.content.length > data.description.length
+                ? data.content
+                : data.description;
           } else {
             content = data.description || data.content || "";
           }
@@ -117,15 +143,18 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
             return a;
           });
 
-          content = content.replace(/<img\s+(?:[^>]*?\s+)?src="([^"]*)"[^>]*>/g, (match, src) => {
-            const absoluteUrl = new URL(src, article.link).href;
-            return `<img src="${absoluteUrl}" />`;
-          });
+          content = content.replace(
+            /<img\s+(?:[^>]*?\s+)?src="([^"]*)"[^>]*>/g,
+            (match, src) => {
+              const absoluteUrl = new URL(src, article.link).href;
+              return `<img src="${absoluteUrl}" />`;
+            },
+          );
 
           console.log("%c Line:131 🍭 content", "color:#4fff4B", content);
 
           setPageContent(
-            DOMPurify.sanitize(content)
+            DOMPurify.sanitize(content),
             // xss(content, {
             //   whiteList: {
             //     ...getDefaultWhiteList(),
@@ -138,7 +167,11 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
 
           try {
             setMedias(JSON.parse(data.media_object));
-            console.log("%c Line:147 🌽 JSON.parse(data.media_object)", "color:#42b983", JSON.parse(data.media_object));
+            console.log(
+              "%c Line:147 🌽 JSON.parse(data.media_object)",
+              "color:#42b983",
+              JSON.parse(data.media_object),
+            );
           } catch (e) {
             setMedias([]);
           }

@@ -135,9 +135,9 @@ export const SubscribeItem: FC<CardProps> = memo(
         ref={ref}
         style={{ opacity }}
         className={clsx("relative rounded-md border border-transparent", {
-          [`indicator-middle`]: isOver && insertTileIndicator === "middle",
-          [`indicator-top`]: isOver && insertTileIndicator === "top",
-          [`indicator-bottom`]: isOver && insertTileIndicator === "bottom",
+          ["indicator-middle"]: isOver && insertTileIndicator === "middle",
+          ["indicator-top"]: isOver && insertTileIndicator === "top",
+          ["indicator-bottom"]: isOver && insertTileIndicator === "bottom",
         })}
         data-handler-uuid={handlerId}
       >
@@ -148,7 +148,7 @@ export const SubscribeItem: FC<CardProps> = memo(
           text={feed.title}
           feed={{ ...feed }}
           isActive={isActive}
-          isExpanded={isExpanded || false}
+          isExpanded={isExpanded}
           toggleFolder={toggleFolder}
         >
           {props.children && (

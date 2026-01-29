@@ -4,7 +4,14 @@ import { SubscribeItem } from "./SubscribeItem";
 import { useBearStore } from "@/stores";
 import { FeedResItem } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
-import { adjustedTargetIndex, findFolderAndIndex, findItemDeep, getParent, removeItem, TreeItem } from "./utilities";
+import {
+  adjustedTargetIndex,
+  findFolderAndIndex,
+  findItemDeep,
+  getParent,
+  removeItem,
+  TreeItem,
+} from "./utilities";
 import { useShallow } from "zustand/react/shallow";
 
 export const List = () => {
@@ -16,10 +23,14 @@ export const List = () => {
       feed: state.feed,
       openFolder: state.openFolder,
       closeFolder: state.closeFolder,
-    }))
+    })),
   );
   const [treeData, setTreeData] = useState<TreeItem[]>([]);
-  const moveItem = (dragItem: TreeItem, dropResult: TreeItem, position: string | null): TreeItem[] => {
+  const moveItem = (
+    dragItem: TreeItem,
+    dropResult: TreeItem,
+    position: string | null,
+  ): TreeItem[] => {
     const dragUuid = dragItem.uuid;
     const dropUuid = dropResult.uuid;
     let list = [...treeData];
@@ -29,62 +40,102 @@ export const List = () => {
     const dragItemParent = getParent(list, dragUuid);
     const dropItemParent = getParent(list, dropUuid);
 
-    if (dragUuid == dropUuid || dragUuid === dropItemParent?.uuid) {
+    if (dragUuid === dropUuid || dragUuid === dropItemParent?.uuid) {
       return list;
     }
 
     if (
       (dragItemParent && dropItemParent) ||
-      (dragItemParent && !dropItemParent && dropResult.item_type === "folder" && position === "middle")
+      (dragItemParent &&
+        !dropItemParent &&
+        dropResult.item_type === "folder" &&
+        position === "middle")
     ) {
       // from folder to folder
       console.log("%c Line:58 🍑 from folder to folder", "color:#ffdd4d");
-      const [dragItemParentIndex] = findFolderAndIndex(treeData, dragItemParent.uuid);
-      const [dropItemParentIndex] = findFolderAndIndex(treeData, dropItemParent?.uuid || dropResult.uuid);
+      const [dragItemParentIndex] = findFolderAndIndex(
+        treeData,
+        dragItemParent.uuid,
+      );
+      const [dropItemParentIndex] = findFolderAndIndex(
+        treeData,
+        dropItemParent?.uuid || dropResult.uuid,
+      );
 
       dragItemParent.children = removeItem(dragItemParent.children, dragUuid);
-      const indexInFolder = (dropItemParent || dropResult).children.findIndex((item) => item.uuid === dragUuid);
-      (dropItemParent || dropResult).children = update((dropItemParent || dropResult).children, {
-        $splice: [
-          [indexInFolder, indexInFolder > -1 ? 1 : 0],
-          [adjustedTargetIndex(dropIndex, indexInFolder, position), 0, dragItem as FeedResItem],
-        ],
-      });
+      const indexInFolder = (dropItemParent || dropResult).children.findIndex(
+        (item) => item.uuid === dragUuid,
+      );
+      (dropItemParent || dropResult).children = update(
+        (dropItemParent || dropResult).children,
+        {
+          $splice: [
+            [indexInFolder, indexInFolder > -1 ? 1 : 0],
+            [
+              adjustedTargetIndex(dropIndex, indexInFolder, position),
+              0,
+              dragItem as FeedResItem,
+            ],
+          ],
+        },
+      );
 
       list[dragItemParentIndex] = dragItemParent;
       list[dropItemParentIndex] = dropItemParent || dropResult;
     } else if (dragItemParent && !dropItemParent) {
       // from folder to global
-      const [dragItemParentIndex] = findFolderAndIndex(treeData, dragItemParent.uuid);
-      const [dropItemParentIndex] = findFolderAndIndex(treeData, dropResult.uuid);
+      const [dragItemParentIndex] = findFolderAndIndex(
+        treeData,
+        dragItemParent.uuid,
+      );
+      const [dropItemParentIndex] = findFolderAndIndex(
+        treeData,
+        dropResult.uuid,
+      );
 
       dragItemParent.children = removeItem(dragItemParent.children, dragUuid);
       list[dragItemParentIndex] = dragItemParent;
       list = update(list, {
-        $splice: [[adjustedTargetIndex(dropItemParentIndex, -1, position), 0, dragItem]],
+        $splice: [
+          [adjustedTargetIndex(dropItemParentIndex, -1, position), 0, dragItem],
+        ],
       });
     } else if (
       (!dragItemParent && dropItemParent) ||
-      (!dragItemParent && !dropItemParent && dragItem.item_type === "channel" && dropResult.item_type === "folder")
+      (!(dragItemParent || dropItemParent) &&
+        dragItem.item_type === "channel" &&
+        dropResult.item_type === "folder")
     ) {
-      const [dropItemParentIndex] = findFolderAndIndex(treeData, dropItemParent?.uuid || dropResult.uuid);
+      const [dropItemParentIndex] = findFolderAndIndex(
+        treeData,
+        dropItemParent?.uuid || dropResult.uuid,
+      );
 
-      const indexInFolder = (dropItemParent || dropResult).children.findIndex((item) => item.uuid === dragUuid);
+      const indexInFolder = (dropItemParent || dropResult).children.findIndex(
+        (item) => item.uuid === dragUuid,
+      );
 
       dragItem.folder_uuid = dropItemParent?.uuid || dropResult.uuid;
-      (dropItemParent || dropResult).children = update((dropItemParent || dropResult).children, {
-        $splice: [
-          [indexInFolder, indexInFolder > -1 ? 1 : 0],
-          [adjustedTargetIndex(dropIndex, indexInFolder, position), 0, dragItem as FeedResItem],
-        ],
-      });
+      (dropItemParent || dropResult).children = update(
+        (dropItemParent || dropResult).children,
+        {
+          $splice: [
+            [indexInFolder, indexInFolder > -1 ? 1 : 0],
+            [
+              adjustedTargetIndex(dropIndex, indexInFolder, position),
+              0,
+              dragItem as FeedResItem,
+            ],
+          ],
+        },
+      );
 
       list[dropItemParentIndex] = dropItemParent || dropResult;
       list = update(list, {
         $splice: [[dragIndex, 1]],
       });
       // from global to folder
-    } else if (!dragItemParent && !dropItemParent) {
+    } else if (!(dragItemParent || dropItemParent)) {
       list = update(list, {
         $splice: [
           [dragIndex, 1],
@@ -101,7 +152,11 @@ export const List = () => {
     return list;
   };
 
-  const onSubscribeItemDrop = (dragItem: TreeItem, dropResult: TreeItem, position: string | null) => {
+  const onSubscribeItemDrop = (
+    dragItem: TreeItem,
+    dropResult: TreeItem,
+    position: string | null,
+  ) => {
     let list = moveItem(dragItem, dropResult, position);
     requestUpdateOrder(list);
   };
@@ -139,7 +194,7 @@ export const List = () => {
         uuid: string;
         folder_uuid: string;
         sort: number;
-      }[]
+      }[],
     );
 
     dataAgent.updateFeedSort(body).then((res) => {
@@ -159,7 +214,9 @@ export const List = () => {
 
     // setTreeData([...newTreeData]);
 
-    folder.is_expanded ? store.openFolder(folderId) : store.closeFolder(folderId);
+    folder.is_expanded
+      ? store.openFolder(folderId)
+      : store.closeFolder(folderId);
   };
 
   const renderList = () => {
@@ -179,10 +236,9 @@ export const List = () => {
           toggleFolder={toggleFolder}
           onDrop={onSubscribeItemDrop}
         >
-          {feed.children &&
-            feed.children.map((child, idx) => {
-              return renderFeed(child as TreeItem, idx, 2);
-            })}
+          {feed.children?.map((child, idx) => {
+            return renderFeed(child as TreeItem, idx, 2);
+          })}
         </SubscribeItem>
       );
     };

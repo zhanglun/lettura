@@ -1,10 +1,16 @@
 import { invoke } from "@tauri-apps/api";
-import { Article, ArticleResItem, Channel, FeedResItem, FolderResItem } from "../db";
+import {
+  Article,
+  ArticleResItem,
+  Channel,
+  FeedResItem,
+  FolderResItem,
+} from "../db";
 import { request } from "@/helpers/request";
 import { AxiosRequestConfig, AxiosResponse } from "axios";
 
 export const getChannels = async (
-  filter: any
+  filter: any,
 ): Promise<AxiosResponse<{ list: (Channel & { parent_uuid: String })[] }>> => {
   return request.get("feeds", {
     params: {
@@ -13,7 +19,9 @@ export const getChannels = async (
   });
 };
 
-export const getSubscribes = async (): Promise<AxiosResponse<FeedResItem[]>> => {
+export const getSubscribes = async (): Promise<
+  AxiosResponse<FeedResItem[]>
+> => {
   return request.get("subscribes");
 };
 
@@ -23,12 +31,12 @@ export const createFolder = async (name: string): Promise<number> => {
 
 export const updateFolder = async (
   uuid: string,
-  name: string
+  name: string,
 ): Promise<number> => {
   return invoke("update_folder", { uuid, name });
 };
 
-export const getFolders = async ():  Promise<AxiosResponse<FolderResItem[]>> => {
+export const getFolders = async (): Promise<AxiosResponse<FolderResItem[]>> => {
   return request.get("folders", {});
 };
 
@@ -38,7 +46,7 @@ export const updateFeedSort = async (
     uuid: string;
     folder_uuid: string;
     sort: number;
-  }[]
+  }[],
 ): Promise<any> => {
   return request.post("update-feed-sort", sorts);
 };
@@ -46,7 +54,7 @@ export const updateFeedSort = async (
 export const moveChannelIntoFolder = async (
   channelUuid: string,
   folderUuid: string,
-  sort: number
+  sort: number,
 ): Promise<any> => {
   return invoke("move_channel_into_folder", {
     channelUuid,
@@ -60,16 +68,14 @@ export const moveChannelIntoFolder = async (
  * @param {String} uuid  channel 的 uuid
  */
 export const deleteChannel = async (uuid: string) => {
-  return request.delete(`feeds/${ uuid }`);
+  return request.delete(`feeds/${uuid}`);
 };
 
 export const deleteFolder = async (uuid: string) => {
   return invoke("delete_folder", { uuid });
 };
 
-export const getArticleList = async (
-  filter: any
-) => {
+export const getArticleList = async (filter: any) => {
   const req = request.get("articles", {
     params: {
       ...filter,
@@ -79,19 +85,21 @@ export const getArticleList = async (
   return req;
 };
 
-export const fetchFeed = async (url: string): Promise<[ any, string ]> => {
+export const fetchFeed = async (url: string): Promise<[any, string]> => {
   return invoke("fetch_feed", { url });
 };
 
-export const subscribeFeed = async (url: string): Promise<[ FeedResItem, number, string ]> => {
+export const subscribeFeed = async (
+  url: string,
+): Promise<[FeedResItem, number, string]> => {
   return invoke("add_feed", { url });
 };
 
 export const syncFeed = async (
   feed_type: string,
-  uuid: string
-): Promise<AxiosResponse<{ [key: string]: [ string, number, string ] }>> => {
-  return request.get(`/feeds/${ uuid }/sync`, {
+  uuid: string,
+): Promise<AxiosResponse<{ [key: string]: [string, number, string] }>> => {
+  return request.get(`/feeds/${uuid}/sync`, {
     params: {
       feed_type,
     },
@@ -114,22 +122,21 @@ export const getCollectionMetas = async (): Promise<
 
 export const updateArticleReadStatus = async (
   article_uuid: string,
-  read_status: number
+  read_status: number,
 ) => {
-  return request.post(`/articles/${ article_uuid }/read`, {
-    read_status
+  return request.post(`/articles/${article_uuid}/read`, {
+    read_status,
   });
 };
 
 export const updateArticleStarStatus = async (
   article_uuid: string,
-  star_status: number
+  star_status: number,
 ) => {
-  return request.post(`/articles/${ article_uuid }/star`, {
-    starred: star_status
+  return request.post(`/articles/${article_uuid}/star`, {
+    starred: star_status,
   });
 };
-
 
 export const markAllRead = async (body: {
   uuid?: string;
@@ -144,7 +151,7 @@ export const getUserConfig = async (): Promise<any> => {
 };
 
 export const updateUserConfig = async (cfg: any): Promise<any> => {
-  return request.post("/user-config", cfg)
+  return request.post("/user-config", cfg);
 };
 
 export const updateThreads = async (threads: number): Promise<any> => {
@@ -165,15 +172,15 @@ export const initProcess = async (): Promise<any> => {
 
 export const getArticleDetail = async (
   uuid: string,
-  config: AxiosRequestConfig
+  config: AxiosRequestConfig,
 ): Promise<AxiosResponse<ArticleResItem>> => {
-  return request.get(`articles/${ uuid }`, config);
+  return request.get(`articles/${uuid}`, config);
 };
 
 export const getBestImage = async (
-  url: String
+  url: String,
 ): Promise<AxiosResponse<string>> => {
-  return request.get(`image-proxy`, {
+  return request.get("image-proxy", {
     params: {
       url,
     },
@@ -181,9 +188,9 @@ export const getBestImage = async (
 };
 
 export const getPageSources = async (
-  url: string
+  url: string,
 ): Promise<AxiosResponse<string>> => {
-  return request.get(`article-proxy`, {
+  return request.get("article-proxy", {
     params: {
       url,
     },
@@ -192,7 +199,7 @@ export const getPageSources = async (
 
 export const updateIcon = async (
   uuid: String,
-  url: string
+  url: string,
 ): Promise<string> => {
   return invoke("update_icon", { uuid, url });
 };
@@ -204,10 +211,23 @@ export interface OpmlImportResult {
   errors: string[];
 }
 
+/**
+ * 导出所有订阅为 OPML 格式
+ *
+ * @returns {Promise<string>} OPML 格式的订阅数据
+ */
 export const exportOpml = async (): Promise<string> => {
   return invoke("export_opml");
 };
 
-export const importOpml = async (opmlContent: string): Promise<OpmlImportResult> => {
+/**
+ * 从 OPML 内容导入订阅
+ *
+ * @param {string} opmlContent - OPML 格式的订阅数据
+ * @returns {Promise<OpmlImportResult>} 导入结果，包含文件夹数量、订阅数量、失败数量和错误信息
+ */
+export const importOpml = async (
+  opmlContent: string,
+): Promise<OpmlImportResult> => {
   return invoke("import_opml", { opmlContent });
 };

@@ -17,8 +17,15 @@ export interface DialogProps {
 
 export const DialogDeleteFolder = React.memo((props: DialogProps) => {
   const { t } = useTranslation();
-  const { folder, dialogStatus, setDialogStatus, afterConfirm, afterCancel, trigger } = props;
-  console.log("🚀 ~ DialogDeleteFolder ~ folder:", folder)
+  const {
+    folder,
+    dialogStatus,
+    setDialogStatus,
+    afterConfirm,
+    afterCancel,
+    trigger,
+  } = props;
+  console.log("🚀 ~ DialogDeleteFolder ~ folder:", folder);
 
   const confirmDelete = () => {
     if (folder?.uuid) {
@@ -49,12 +56,14 @@ export const DialogDeleteFolder = React.memo((props: DialogProps) => {
         <AlertDialog.Title>{t("Are you absolutely sure?")}</AlertDialog.Title>
         <AlertDialog.Description>
           <Trans
-            i18nKey={"This action cannot be undone. This will permanently delete the data relates with"}
+            i18nKey={
+              "This action cannot be undone. This will permanently delete the data relates with"
+            }
             components={{ bold: <strong /> }}
             values={{
               title: folder?.title,
             }}
-          ></Trans>
+          />
         </AlertDialog.Description>
         <Flex gap="3" mt="4" justify="end">
           <AlertDialog.Cancel onClick={() => handleCancel()}>
