@@ -25,7 +25,6 @@ export interface AddFolderProps {
 export const AddFolder = React.memo((props: AddFolderProps) => {
   const { t } = useTranslation();
   const { action, folder } = props;
-  console.log("%c Line:19 🥪 folder", "color:#ed9ec7", props);
   const store = useBearStore(
     useShallow((state) => ({
       getSubscribes: state.getSubscribes,
@@ -86,7 +85,7 @@ export const AddFolder = React.memo((props: AddFolderProps) => {
     if (action === "edit") {
       return t("Edit folder");
     }
-  }, [action]);
+  }, [action, t]);
 
   const content = useMemo(() => {
     if (action === "add") {
@@ -95,7 +94,7 @@ export const AddFolder = React.memo((props: AddFolderProps) => {
     if (action === "edit") {
       return t("Update your folder");
     }
-  }, [action]);
+  }, [action, t]);
 
   useEffect(() => {
     if (dialogStatus && inputRef && inputRef.current) {
@@ -105,7 +104,7 @@ export const AddFolder = React.memo((props: AddFolderProps) => {
     if (action === "edit" && folder) {
       setName(folder.title);
     }
-  }, [dialogStatus]);
+  }, [dialogStatus, action, folder]);
 
   return (
     <Dialog.Root open={dialogStatus} onOpenChange={setDialogStatus}>

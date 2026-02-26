@@ -197,8 +197,9 @@ fn import_feed(title: &str, feed_url: &str, folder_uuid: Option<String>) -> Resu
     if let Some(folder_uuid) = folder_uuid {
       let feed_uuid = &existing_feed[0].uuid;
 
-      let feed_meta_count: i64 = diesel::select(diesel::dsl::count(schema::feed_metas::dsl::uuid))
+      let feed_meta_count: i64 = schema::feed_metas::dsl::feed_metas
         .filter(schema::feed_metas::dsl::uuid.eq(feed_uuid))
+        .count()
         .get_result::<i64>(&mut connection)
         .map_err(|e| format!("Database error: {}", e))?;
 

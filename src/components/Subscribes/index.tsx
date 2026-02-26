@@ -129,11 +129,11 @@ const ChannelList = (): JSX.Element => {
 
   useEffect(() => {
     store.subscribes.forEach((feed) => {
-      if (feed.uuid === feedUuid) {
+      if (feed.uuid === feedUuid && feed.uuid !== store.feed?.uuid) {
         store.setFeed(feed);
       }
     });
-  }, [store.subscribes]);
+  }, [store.subscribes, feedUuid, store.feed?.uuid]);
 
   const listRef = useRef<HTMLDivElement>(null);
   const handleListScroll = useCallback(() => {

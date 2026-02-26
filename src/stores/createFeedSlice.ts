@@ -157,18 +157,15 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
     console.log("%c Line:148 🥛 feed", "color:#fca650", feed);
     set(() => ({
       feed: feed,
+      viewMeta: feed
+        ? {
+            title: feed.title,
+            unread: feed.unread,
+            isToday: false,
+            isAll: false,
+          }
+        : get().viewMeta,
     }));
-
-    if (feed) {
-      set(() => ({
-        viewMeta: {
-          title: feed.title,
-          unread: feed.unread,
-          isToday: false,
-          isAll: false,
-        },
-      }));
-    }
   },
   subscribes: [],
   setSubscribes: (list: FeedResItem[]) => {

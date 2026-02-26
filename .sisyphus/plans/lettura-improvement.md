@@ -110,7 +110,7 @@ Each TODO follows RED-GREEN-REFACTOR:
    - Expected: PASS (still)
 
 **Test Setup Task:**
-- [ ] 0. Setup Test Infrastructure
+- [x] 0. Setup Test Infrastructure
   - Install: `pnpm add -D vitest @testing-library/react @testing-library/jest-dom`
   - Config: Create `vitest.config.ts`
   - Verify: `pnpm test --help` → shows help
@@ -254,9 +254,9 @@ Parallel Speedup: ~30% faster than sequential
     - package.json shows current dependency structure for consistent formatting
 
   **Acceptance Criteria**:
-  - [ ] package.json contains "@tanstack/react-virtual" and "react-intersection-observer"
-  - [ ] pnpm install completes without errors
-  - [ ] node_modules/.pnpm/@tanstack+react-virtual* directory exists
+  - [x] package.json contains "@tanstack/react-virtual" and "react-intersection-observer"
+  - [x] pnpm install completes without errors
+  - [x] node_modules/.pnpm/@tanstack+react-virtual* directory exists
 
   **Automated Verification**:
   ```bash
@@ -310,12 +310,12 @@ Parallel Speedup: ~30% faster than sequential
     - Example repo: https://github.com/TanStack/virtual/tree/main/examples/react/basic
 
   **Acceptance Criteria**:
-  - [ ] Component created at src/components/ArticleListVirtual/index.tsx
-  - [ ] Uses useVirtualizer from @tanstack/react-virtual
-  - [ ] Renders ArticleItem for each visible item
-  - [ ] Matches ArticleList styling (animations, spacing)
-  - [ ] TypeScript compilation succeeds
-  - [ ] Exports ArticleListVirtual as default
+  - [x] Component created at src/components/ArticleListVirtual/index.tsx
+  - [x] Uses useVirtualizer from @tanstack/react-virtual
+  - [x] Renders ArticleItem for each visible item
+  - [x] Matches ArticleList styling (animations, spacing)
+  - [x] TypeScript compilation succeeds
+  - [x] Exports ArticleListVirtual as default
 
   **Automated Verification**:
   ```typescript
@@ -364,12 +364,12 @@ Parallel Speedup: ~30% faster than sequential
     - Lazy loading patterns: https://web.dev/lazy-loading-images/
 
   **Acceptance Criteria**:
-  - [ ] Component created at src/components/ImageLazyLoad/index.tsx
-  - [ ] Uses Intersection Observer API
-  - [ ] Shows placeholder before load
-  - [ ] Renders img with src after intersecting
-  - [ ] Handles error state with fallback
-  - [ ] TypeScript compilation succeeds
+  - [x] Component created at src/components/ImageLazyLoad/index.tsx
+  - [x] Uses Intersection Observer API
+  - [x] Shows placeholder before load
+  - [x] Renders img with src after intersecting
+  - [x] Handles error state with fallback
+  - [x] TypeScript compilation succeeds
 
   **Automated Verification**:
   ```typescript
@@ -416,12 +416,12 @@ Parallel Speedup: ~30% faster than sequential
     - `src/components/ArticleList/index.tsx:10-20` - ArticleListProps interface
 
   **Acceptance Criteria**:
-  - [ ] ArticleCol.tsx imports ArticleListVirtual instead of ArticleList
-  - [ ] ArticleCol passes height/width props to virtual list
-  - [ ] Virtual list renders same number of articles as before
-  - [ ] Scrolling works smoothly
-  - [ ] Framer Motion animations preserved
-  - [ ] All article list views updated (not just one)
+  - [x] ArticleCol.tsx imports ArticleListVirtual instead of ArticleList
+  - [x] ArticleCol passes height/width props to virtual list
+  - [x] Virtual list renders same number of articles as before
+  - [x] Scrolling works smoothly
+  - [x] Framer Motion animations preserved
+  - [x] All article list views updated (not just one)
 
   **Automated Verification**:
   ```bash
@@ -474,11 +474,11 @@ Parallel Speedup: ~30% faster than sequential
     - Custom HTML parsing with lazy loading: https://stackoverflow.com/questions/64771504/how-to-lazy-load-images-in-html-react-parsed-content
 
   **Acceptance Criteria**:
-  - [ ] ContentRender uses ImageLazyLoad for all img tags
-  - [ ] Images appear with placeholders initially
-  - [ ] Images load as user scrolls (verify with DevTools Network tab)
-  - [ ] Broken images show fallback
-  - [ ] Article content displays correctly
+  - [x] ContentRender uses ImageLazyLoad for all img tags
+  - [x] Images appear with placeholders initially
+  - [x] Images load as user scrolls (verify with DevTools Network tab)
+  - [x] Broken images show fallback
+  - [x] Article content displays correctly
 
   **Automated Verification**:
   ```bash
@@ -534,10 +534,10 @@ Parallel Speedup: ~30% faster than sequential
     - SQLite indexing: https://www.sqlite.org/queryplanner.html
 
   **Acceptance Criteria**:
-  - [ ] Migration file created (e.g., migrations/XXXXX_add_indexes.sql)
-  - [ ] Indexes added for read_status, feed_uuid, pub_date
-  - [ ] Diesel migrations run successfully
-  - [ ] Query performance improved (measure with EXPLAIN QUERY PLAN)
+  - [x] Migration file created (e.g., migrations/XXXXX_add_indexes.sql)
+  - [x] Indexes added for read_status, feed_uuid, pub_date
+  - [x] Diesel migrations run successfully
+  - [x] Query performance improved (measure with EXPLAIN QUERY PLAN)
 
   **Automated Verification**:
   ```bash
@@ -595,11 +595,11 @@ Parallel Speedup: ~30% faster than sequential
     - Example vitest.config.ts: https://github.com/vitest-dev/vitest/blob/main/examples/react/vitest.config.ts
 
   **Acceptance Criteria**:
-  - [ ] package.json has "test": "vitest" script
-  - [ ] vitest.config.ts created with React DOM environment
-  - [ ] Example test file created at `src/__tests__/example.test.tsx`
-  - [ ] `pnpm test` runs successfully (passes example test)
-  - [ ] Coverage reporting configured (optional)
+  - [x] package.json has "test": "vitest" script
+  - [x] vitest.config.ts created with React DOM environment
+  - [x] Example test file created at `src/__tests__/example.test.tsx`
+  - [x] `pnpm test` runs successfully (passes example test)
+  - [x] Coverage reporting configured (optional)
 
   **Automated Verification**:
   ```bash
@@ -653,12 +653,12 @@ Parallel Speedup: ~30% faster than sequential
     - Vitest expect API: https://vitest.dev/api/expect
 
   **Acceptance Criteria**:
-  - [ ] Test file for ArticleSlice created (≥ 5 tests)
-  - [ ] Test file for FeedSlice created (≥ 5 tests)
-  - [ ] Test file for UserConfigSlice created (≥ 3 tests)
-  - [ ] All slice actions tested (setters, getters)
-  - [ ] State immutability verified
-  - [ ] `pnpm test src/stores` passes all tests
+  - [x] Test file for ArticleSlice created (≥ 5 tests)
+  - [x] Test file for FeedSlice created (≥ 5 tests)
+  - [x] Test file for UserConfigSlice created (≥ 3 tests)
+  - [x] All slice actions tested (setters, getters)
+  - [x] State immutability verified
+  - [x] `pnpm test src/stores` passes all tests
 
   **Automated Verification**:
   ```bash
@@ -710,11 +710,11 @@ Parallel Speedup: ~30% faster than sequential
     - Axios mocking: https://axios-http.com/docs/mocking
 
   **Acceptance Criteria**:
-  - [ ] Test file for request helpers created (≥ 5 tests)
-  - [ ] Test file for dataAgent created (≥ 5 tests)
-  - [ ] Mock fetch/axios in tests
-  - [ ] Error paths tested
-  - [ ] `pnpm test src/helpers` passes all tests
+  - [x] Test file for request helpers created (≥ 5 tests)
+  - [x] Test file for dataAgent created (≥ 5 tests)
+  - [x] Mock fetch/axios in tests
+  - [x] Error paths tested
+  - [x] `pnpm test src/helpers` passes all tests
 
   **Automated Verification**:
   ```bash
@@ -772,13 +772,13 @@ Parallel Speedup: ~30% faster than sequential
     - Tauri background tasks: https://tauri.app/v1/guides/features/command
 
   **Acceptance Criteria**:
-  - [ ] Scheduler implemented with tokio::spawn
-  - [ ] Reads sync interval from user config
-  - [ ] Calls sync_articles for each feed periodically
-  - [ ] Respects thread limit (uses pLimit pattern)
-  - [ ] Exposes start/stop scheduler Tauri commands
-  - [ ] Logs errors without crashing
-  - [ ] Compiles without Rust errors
+  - [x] Scheduler implemented with tokio::spawn
+  - [x] Reads sync interval from user config
+  - [x] Calls sync_articles for each feed periodically
+  - [x] Respects thread limit (uses pLimit pattern)
+  - [x] Exposes start/stop scheduler Tauri commands
+  - [x] Logs errors without crashing
+  - [x] Compiles without Rust errors
 
   **Automated Verification**:
   ```bash
@@ -836,13 +836,13 @@ Parallel Speedup: ~30% faster than sequential
     - OPML import examples: https://github.com/RSS-Bridge/rss-bridge/issues/XXX (search for OPML handling)
 
   **Acceptance Criteria**:
-  - [ ] OPML parser crate added to Cargo.toml
-  - [ ] Tauri command `export_opml` returns valid OPML XML
-  - [ ] Tauri command `import_opml` accepts OPML XML and creates feeds
-  - [ ] Settings page has Import/Export buttons
-  - [ ] File dialog opens on button click
-  - [ ] Import creates feeds and folders correctly
-  - [ ] Errors displayed with toast notifications
+  - [x] OPML parser crate added to Cargo.toml
+  - [x] Tauri command `export_opml` returns valid OPML XML
+  - [x] Tauri command `import_opml` accepts OPML XML and creates feeds
+  - [x] Settings page has Import/Export buttons
+  - [x] File dialog opens on button click
+  - [x] Import creates feeds and folders correctly
+  - [x] Errors displayed with toast notifications
 
   **Automated Verification**:
   ```bash
@@ -904,14 +904,14 @@ Parallel Speedup: ~30% faster than sequential
     - Advanced search syntax: https://www.algolia.com/doc/guides/building-search-ui/ui-and-ux/search-bar/advanced-filters
 
   **Acceptance Criteria**:
-  - [ ] Backend accepts date filter parameters
-  - [ ] Backend accepts feed_uuid filter
-  - [ ] Search page has filter UI components
-  - [ ] Advanced search syntax works (e.g., "term1 AND term2")
-  - [ ] Filter chips display active filters
-  - [ ] Clear filters button resets all filters
-  - [ ] TypeScript compilation succeeds
-  - [ ] Search results update correctly with filters
+  - [x] Backend accepts date filter parameters
+  - [x] Backend accepts feed_uuid filter
+  - [x] Search page has filter UI components
+  - [x] Advanced search syntax works (e.g., "term1 AND term2")
+  - [x] Filter chips display active filters
+  - [x] Clear filters button resets all filters
+  - [x] TypeScript compilation succeeds
+  - [x] Search results update correctly with filters
 
   **Automated Verification**:
   ```bash
@@ -972,11 +972,11 @@ Parallel Speedup: ~30% faster than sequential
     - TypeScript @ts-ignore: https://www.typescriptlang.org/docs/handbook/2-types-from-types.html#ts-ignore
 
   **Acceptance Criteria**:
-  - [ ] All @ts-ignore removed
-  - [ ] Type-only imports use `import type` syntax
-  - [ ] All useEffect dependencies complete
-  - [ ] `tsc --noEmit` returns 0 errors
-  - [ ] LSP shows 0 errors/warnings
+  - [x] All @ts-ignore removed
+  - [x] Type-only imports use `import type` syntax
+  - [x] All useEffect dependencies complete
+  - [x] `tsc --noEmit` returns 0 errors
+  - [x] LSP shows 0 errors/warnings
 
   **Automated Verification**:
   ```bash
@@ -1057,7 +1057,7 @@ Parallel Speedup: ~30% faster than sequential
    
    **Commit**: `feat: add error notifications with sonner toast`
    - Files: src/helpers/errorHandler.ts, src/components/ErrorBoundary/index.tsx, src/App.tsx
-  - [ ] Toast animations match app theme
+  - [x] Toast animations match app theme
 
   **Automated Verification**:
   ```bash

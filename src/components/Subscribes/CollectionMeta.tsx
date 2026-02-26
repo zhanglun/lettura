@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Coffee, Haze, Star } from "lucide-react";
 import clsx from "clsx";
@@ -13,23 +13,21 @@ type NavClass = {
   isTransitioning: boolean;
 };
 
+const collectionMetaSelector = (state: any) => ({
+  setFeed: state.setFeed,
+  setViewMeta: state.setViewMeta,
+  collectionMeta: state.collectionMeta,
+  initCollectionMetas: state.initCollectionMetas,
+});
+
 const CollectionMeta = (): JSX.Element => {
   const { t } = useTranslation();
-  console.log("CollectionMeta rendered");
   const navigate = useNavigate();
-  const store = useBearStore(
-    useShallow((state) => ({
-      setFeed: state.setFeed,
-      setViewMeta: state.setViewMeta,
-
-      collectionMeta: state.collectionMeta,
-      initCollectionMetas: state.initCollectionMetas,
-    })),
-  );
+  const store = useBearStore(useShallow(collectionMetaSelector));
 
   useEffect(() => {
     store.initCollectionMetas();
-  }, []);
+  }, [store.initCollectionMetas]);
 
   return (
     <>

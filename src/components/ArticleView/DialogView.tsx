@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useCallback } from "react";
 import { X } from "lucide-react";
 import { Icon } from "../Icon";
 import { Separator, Dialog } from "@radix-ui/themes";
@@ -28,13 +28,13 @@ export const ArticleDialogView = (
   } = props;
 
   const scrollBoxRef = useRef<ScrollBoxRefObject>(null);
-  const handleDialogChange = (status: boolean) => {
+  const handleDialogChange = useCallback((status: boolean) => {
     setDialogStatus(status);
 
     if (!status) {
       afterCancel();
     }
-  };
+  }, [setDialogStatus, afterCancel]);
 
   useEffect(() => {
     scrollBoxRef.current?.scrollToTop();

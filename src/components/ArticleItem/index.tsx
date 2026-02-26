@@ -43,7 +43,7 @@ export const ArticleItem = React.forwardRef(
 
     useEffect(() => {
       setHighlight(store.article?.id === article.id);
-    }, [store.article, article]);
+    }, [store.article?.id, article.id]);
 
     return (
       <li

@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useMemo, useRef } from "react";
 import { appWindow } from "@tauri-apps/api/window";
 import { emit, listen } from "@tauri-apps/api/event";
 import { useBearStore } from "@/stores";
@@ -21,9 +21,20 @@ function App() {
     })),
   );
 
+  const accentColor = useMemo(() => {
+    return store.userConfig.theme === "default" ||
+      store.userConfig.theme === "custom"
+      ? "indigo"
+      : store.userConfig.theme || "indigo";
+  }, [store.userConfig.theme]);
+
   useEffect(() => {
     if (window.__TAURI_IPC__ as any) {
-      listen("about_lettura", ({ payload }: { payload: string }) => {
+      const aboutUnsubscribe = listen("about_lettura", ({
+        payload,
+      }: {
+        payload: string;
+      }) => {
         store.updateAboutDialogStatus(true);
         try {
           store.updateAppMetadata(JSON.parse(payload));
@@ -32,13 +43,19 @@ function App() {
         }
       });
 
-      listen("go_to_settings", () => {
+      const settingsUnsubscribe = listen("go_to_settings", () => {
         store.updateSettingDialogStatus(true);
       });
 
-      listen("check_for_updates", async () => {
+      const updateUnsubscribe = listen("check_for_updates", async () => {
         emit("tauri://update");
       });
+
+      return () => {
+        aboutUnsubscribe.then((unsub) => unsub());
+        settingsUnsubscribe.then((unsub) => unsub());
+        updateUnsubscribe.then((unsub) => unsub());
+      };
     }
   }, [
     store.updateAboutDialogStatus,
@@ -47,55 +64,66 @@ function App() {
   ]);
 
   useEffect(() => {
-    document
-      .getElementById("titlebar-minimize")
-      ?.addEventListener("click", () => appWindow.minimize());
-    document
-      .getElementById("titlebar-maximize")
-      ?.addEventListener("click", () => appWindow.toggleMaximize());
-    document
-      .getElementById("titlebar-close")
-      ?.addEventListener("click", () => appWindow.close());
+    const minBtn = document.getElementById("titlebar-minimize");
+    const maxBtn = document.getElementById("titlebar-maximize");
+    const closeBtn = document.getElementById("titlebar-close");
+
+    const handleMinimize = () => appWindow.minimize();
+    const handleMaximize = () => appWindow.toggleMaximize();
+    const handleClose = () => appWindow.close();
+
+    minBtn?.addEventListener("click", handleMinimize);
+    maxBtn?.addEventListener("click", handleMaximize);
+    closeBtn?.addEventListener("click", handleClose);
+
+    return () => {
+      minBtn?.removeEventListener("click", handleMinimize);
+      maxBtn?.removeEventListener("click", handleMaximize);
+      closeBtn?.removeEventListener("click", handleClose);
+    };
   }, []);
 
+  const hasFetchedConfig = useRef(false);
+  const getUserConfigRef = useRef(store.getUserConfig);
+
+  getUserConfigRef.current = store.getUserConfig;
+
   useEffect(() => {
-    console.log("app render");
-    store.getUserConfig().then((cfg: UserConfig) => {
-      const { color_scheme, customize_style } = cfg;
-      let mode = color_scheme || "light";
+    if (!hasFetchedConfig.current) {
+      hasFetchedConfig.current = true;
+      console.log("app render");
+      getUserConfigRef.current().then((cfg: UserConfig) => {
+        const { color_scheme, customize_style } = cfg;
+        let mode = color_scheme || "light";
 
-      if (color_scheme === "system") {
-        mode = window.matchMedia("(prefers-color-scheme: dark)").matches
-          ? "dark"
-          : "light";
-      }
-
-      if (mode === "dark") {
-        document.body.classList.add("dark-theme");
-      } else {
-        document.body.classList.remove("dark-theme");
-      }
-
-      if (customize_style && Object.keys(customize_style).length) {
-        for (const key of Object.keys(customize_style)) {
-          document.documentElement.style.setProperty(
-            `--reading-editable-${key.replace(/_/gi, "-")}`,
-            customize_style[key as keyof CustomizeStyle] as string,
-          );
+        if (color_scheme === "system") {
+          mode = window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light";
         }
-      }
-    });
-  }, [store.getUserConfig]);
+
+        if (mode === "dark") {
+          document.body.classList.add("dark-theme");
+        } else {
+          document.body.classList.remove("dark-theme");
+        }
+
+        if (customize_style && Object.keys(customize_style).length) {
+          for (const key of Object.keys(customize_style)) {
+            document.documentElement.style.setProperty(
+              `--reading-editable-${key.replace(/_/gi, "-")}`,
+              customize_style[key as keyof CustomizeStyle] as string,
+            );
+          }
+        }
+      });
+    }
+  }, []);
 
   return (
     <Theme
       className="w-[100vw] h-[100vh] "
-      accentColor={
-        store.userConfig.theme === "default" ||
-        store.userConfig.theme === "custom"
-          ? "indigo"
-          : store.userConfig.theme || "indigo"
-      }
+      accentColor={accentColor}
       panelBackground="translucent"
     >
       <Toaster />

@@ -1,4 +1,11 @@
-import React, { useImperativeHandle, useMemo, useRef, useState } from "react";
+import React, {
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+  useCallback,
+  useEffect,
+} from "react";
 import { useParams } from "react-router-dom";
 import {
   ArticleListVirtual,
@@ -115,13 +122,16 @@ export const ArticleCol = React.memo(
         });
       };
 
-      const changeFilter = (id: any) => {
-        if (filterList.some((_) => _.id === parseInt(id, 10))) {
-          store.setFilter({
-            ...filterList.filter((_) => _.id === parseInt(id, 10))[0],
-          });
-        }
-      };
+      const changeFilter = useCallback(
+        (id: any) => {
+          if (filterList.some((_) => _.id === parseInt(id, 10))) {
+            store.setFilter({
+              ...filterList.filter((_) => _.id === parseInt(id, 10))[0],
+            });
+          }
+        },
+        [filterList, store.setFilter],
+      );
 
       function calculateItemPosition(
         direction: "up" | "down",
@@ -226,12 +236,15 @@ export const ArticleCol = React.memo(
         return [false];
       };
 
-      const goPrev = throttle(() => {
+      const goPrevRef = useRef<(() => void) | null>(null);
+      const goNextRef = useRef<(() => void) | null>(null);
+
+      goPrevRef.current = throttle(() => {
         console.warn("goPrev");
         goPreviousArticle();
       }, 300);
 
-      const goNext = throttle(() => {
+      goNextRef.current = throttle(() => {
         console.warn("goNext");
         const [shouldLoad] = goNextArticle();
         console.log("%c Line:111 🍏 shouldLoad", "color:#42b983", shouldLoad);
@@ -240,6 +253,21 @@ export const ArticleCol = React.memo(
           // getList({ cursor: store.cursor + 1 });
         }
       }, 300);
+
+      useEffect(() => {
+        return () => {
+          goPrevRef.current = null;
+          goNextRef.current = null;
+        };
+      }, []);
+
+      const goPrev = useCallback(() => {
+        goPrevRef.current?.();
+      }, []);
+
+      const goNext = useCallback(() => {
+        goNextRef.current?.();
+      }, []);
 
       function renderLabel() {
         if (store.feed && store.feed.item_type === "channel") {
@@ -309,12 +337,10 @@ export const ArticleCol = React.memo(
       useHotkeys("Shift+n", goPrev);
 
       return (
-        <div className="shrink-0 grow-0 w-[var(--app-article-width)] border-r flex flex-col h-full">
-          <div className="h-[var(--app-toolbar-height)] grid grid-cols-[auto_1fr] items-center justify-between border-b">
+        <div className="w-[var(--app-article-width)] border-r flex flex-col h-full">
+          <div className="h-[var(--app-toolbar-height)] grid grid-cols-[auto_1fr] items-center justify-between border-b shrink-0">
             <div
               className="
-            flex-shrink-0
-            flex-grow-0
             pl-3
             text-base
             font-bold
@@ -375,20 +401,18 @@ export const ArticleCol = React.memo(
               )}
             </div>
           </div>
-          <div className="relative flex-1">
-            <ArticleListVirtual
-              ref={listRef}
-              articles={articles}
-              title={params.name}
-              type={type}
-              feedUuid={feedUuid}
-              isLoading={isLoading}
-              isEmpty={isEmpty}
-              isReachingEnd={isReachingEnd}
-              size={size}
-              setSize={setSize}
-            />
-          </div>
+          <ArticleListVirtual
+            ref={listRef}
+            articles={articles}
+            title={params.name}
+            type={type}
+            feedUuid={feedUuid}
+            isLoading={isLoading}
+            isEmpty={isEmpty}
+            isReachingEnd={isReachingEnd}
+            size={size}
+            setSize={setSize}
+          />
         </div>
       );
     },

@@ -41,7 +41,6 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
   }, [article]);
   const [pageContent, setPageContent] = useState("");
   const [medias, setMedias] = useState([]);
-  const controller = new AbortController();
 
   function delegateContentClick(e: React.MouseEvent<HTMLElement>) {
     let elem = null;
@@ -114,6 +113,7 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
   }
 
   useEffect(() => {
+    const controller = new AbortController();
     setPageContent("");
 
     article &&

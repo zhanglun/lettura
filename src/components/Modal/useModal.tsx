@@ -12,8 +12,7 @@ export const useModal = (): [
   const showModal = () => setShowStatus(true);
   const hideModal = () => setShowStatus(false);
   const toggleModal = () => setShowStatus(!showStatus);
-  const setModalStatus = (v: boolean) =>
-    useCallback(() => setShowStatus(v), []);
+  const setModalStatus = useCallback((v: boolean) => setShowStatus(v), []);
 
   return [showStatus, setModalStatus, showModal, hideModal, toggleModal];
 };

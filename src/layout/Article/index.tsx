@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useCallback } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { ArticleCol, ArticleColRefObject } from "@/layout/Article/ArticleCol";
 import { ArticleDialogView } from "@/components/ArticleView/DialogView";
@@ -8,28 +8,39 @@ import { useQuery } from "@/helpers/parseXML";
 import { LPodcast } from "@/components/LPodcast";
 import { useBearStore } from "@/stores";
 import { MainPanel } from "@/components/MainPanel";
+import { useShallow } from "zustand/react/shallow";
 
 export const ArticleContainer = () => {
   const [, type, feedUuid] = useQuery();
-  const store = useBearStore((state) => ({
-    article: state.article,
-    setArticle: state.setArticle,
-    articleDialogViewStatus: state.articleDialogViewStatus,
-    setArticleDialogViewStatus: state.setArticleDialogViewStatus,
-    podcastPanelStatus: state.podcastPanelStatus,
-    tracks: state.tracks,
-    podcastPlayingStatus: state.podcastPlayingStatus,
-  }));
+  const store = useBearStore(
+    useShallow((state) => ({
+      article: state.article,
+      setArticle: state.setArticle,
+      articleDialogViewStatus: state.articleDialogViewStatus,
+      setArticleDialogViewStatus: state.setArticleDialogViewStatus,
+      podcastPanelStatus: state.podcastPanelStatus,
+      tracks: state.tracks,
+      podcastPlayingStatus: state.podcastPlayingStatus,
+    })),
+  );
 
   const articleColRef = useRef<ArticleColRefObject>(null);
   const { goNext, goPrev } = (articleColRef.current ||
     {}) as ArticleColRefObject;
 
-  const openInBrowser = () => {
+  const openInBrowser = useCallback(() => {
     store.article && open(store.article.link);
-  };
+  }, [store]);
 
-  useHotkeys("o", () => openInBrowser());
+  const handleGoNext = useCallback(() => {
+    goNext?.();
+  }, [goNext]);
+
+  const handleGoPrev = useCallback(() => {
+    goPrev?.();
+  }, [goPrev]);
+
+  useHotkeys("o", openInBrowser);
 
   // 根据条件决定是否显示 LPodcast
   const shouldShowPodcast =
@@ -39,7 +50,11 @@ export const ArticleContainer = () => {
     <MainPanel>
       <>
         <ArticleCol feedUuid={feedUuid} type={type} ref={articleColRef} />
-        <View article={store.article} goNext={goNext} goPrev={goPrev} />
+        <View
+          article={store.article}
+          goNext={handleGoNext}
+          goPrev={handleGoPrev}
+        />
         <LPodcast visible={shouldShowPodcast} />
         <ArticleDialogView
           article={store.article}

@@ -54,13 +54,13 @@ export function View(props: ArticleViewProps) {
     );
   };
 
-  const scrollBoxRef = useRef<ScrollBoxRefObject>(null);
+   const scrollBoxRef = useRef<ScrollBoxRefObject>(null);
 
-  return (
-    <div className="flex-1">
+   return (
+    <div className="flex-1 min-w-0">
       <div
         className={
-          "h-[var(--app-toolbar-height)] flex items-center justify-end px-3 gap-2 border-b relative z-10"
+          "h-[var(--app-toolbar-height)] flex items-center justify-end px-3 gap-2 border-b relative z-10 shrink-0"
         }
       >
         {props.article && (

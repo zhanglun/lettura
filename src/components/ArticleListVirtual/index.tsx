@@ -1,11 +1,15 @@
-import React, { useEffect, useRef, useImperativeHandle } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, {
+  useEffect,
+  useRef,
+  useImperativeHandle,
+  useCallback,
+  useState,
+} from "react";
 import { ArticleItem } from "../ArticleItem";
 import { Skeleton } from "@radix-ui/themes";
 import type { ArticleResItem } from "@/db";
 import { Snail } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { useVirtualizer } from "@tanstack/react-virtual";
 
 export type ArticleListVirtualProps = {
   feedUuid?: string;
@@ -33,6 +37,7 @@ export const ArticleListVirtual = React.memo(
         props;
       const { t } = useTranslation();
       const internalParentRef = useRef<HTMLDivElement>(null);
+      const [isScrolled, setIsScrolled] = useState(false);
 
       useImperativeHandle(
         ref,
@@ -45,67 +50,66 @@ export const ArticleListVirtual = React.memo(
         [],
       );
 
-      const rowVirtualizer = useVirtualizer({
-        count: articles.length,
-        getScrollElement: () => internalParentRef.current,
-        estimateSize: () => 100,
-        overscan: 4,
-      });
+      const isLoadingMoreRef = useRef(false);
 
-      const virtualItems = rowVirtualizer.getVirtualItems();
+      const loadMore = useCallback(() => {
+        if (!(isReachingEnd || isLoading || isLoadingMoreRef.current)) {
+          isLoadingMoreRef.current = true;
+          setSize(size + 1);
+          setTimeout(() => {
+            isLoadingMoreRef.current = false;
+          }, 1000);
+        }
+      }, [isReachingEnd, isLoading, size, setSize]);
+
+      const handleScroll = useCallback(() => {
+        if (!internalParentRef.current) return;
+        const { scrollTop, scrollHeight, clientHeight } =
+          internalParentRef.current;
+        const scrollPercentage = (scrollTop + clientHeight) / scrollHeight;
+        const isAtBottom = scrollPercentage > 0.9;
+
+        if (isAtBottom && !isScrolled) {
+          setIsScrolled(true);
+          loadMore();
+        } else if (!isAtBottom && isScrolled) {
+          setIsScrolled(false);
+        }
+      }, [isScrolled, loadMore]);
 
       useEffect(() => {
-        const lastItem = virtualItems[virtualItems.length - 1];
-        if (lastItem && !isReachingEnd && !isLoading) {
-          setSize(size + 1);
-        }
-      }, [virtualItems, isReachingEnd, isLoading, size, setSize]);
+        if (!internalParentRef.current) return;
+
+        const scrollElement = internalParentRef.current;
+        scrollElement.addEventListener("scroll", handleScroll, {
+          passive: true,
+        });
+        return () => {
+          scrollElement.removeEventListener("scroll", handleScroll);
+        };
+      }, [handleScroll]);
 
       return (
-        <div className="w-full h-full flex flex-col">
-          <div
-            ref={internalParentRef}
-            className="flex-1 overflow-auto scrollbar-gutter"
-          >
-            <div
-              className="relative"
-              style={{
-                height: `${rowVirtualizer.getTotalSize()}px`,
-              }}
-            >
-              {isEmpty ? (
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col justify-center items-center gap-1 text-muted-foreground">
-                  <Snail size={34} strokeWidth={1} />
-                  <p>{t("Yay, no matching items.")}</p>
-                </div>
-              ) : (
-                <AnimatePresence>
-                  {virtualItems.map((virtualRow) => {
-                    const article = articles[virtualRow.index];
-                    return (
-                      <motion.div
-                        key={virtualRow.key}
-                        data-index={virtualRow.index}
-                        ref={rowVirtualizer.measureElement}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        transition={{ duration: 0.2 }}
-                        className="absolute top-0 left-0 w-full"
-                        style={{
-                          transform: `translateY(${virtualRow.start}px)`,
-                        }}
-                      >
-                        <ArticleItem article={article} />
-                      </motion.div>
-                    );
-                  })}
-                </AnimatePresence>
-              )}
+        <div
+          ref={internalParentRef}
+          className="w-full flex-1 overflow-y-auto scrollbar-gutter"
+        >
+          {isEmpty ? (
+            <div className="flex flex-col justify-center items-center gap-1 text-muted-foreground min-h-full py-20">
+              <Snail size={34} strokeWidth={1} />
+              <p>{t("Yay, no matching items.")}</p>
             </div>
-          </div>
+          ) : (
+            <ul className="py-2 px-1 list-none m-0">
+              {articles.map((article, index) => (
+                <li key={`${article.uuid}-${index}`}>
+                  <ArticleItem article={article} />
+                </li>
+              ))}
+            </ul>
+          )}
           {isLoading && (
-            <div className="p-2 pl-6 grid gap-1 relative">
+            <div className="p-2 pl-6 grid gap-1 relative shrink-0">
               <Skeleton className="h-5 w-full" />
               <div>
                 <Skeleton className="h-3 w-full" />
