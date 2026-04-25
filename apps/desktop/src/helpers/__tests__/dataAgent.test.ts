@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core";
 import * as dataAgent from "@/helpers/dataAgent";
 import { request } from "@/helpers/request";
 
-vi.mock("@tauri-apps/api");
+vi.mock("@tauri-apps/api/core");
 vi.mock("@/helpers/request", () => ({
   request: {
     get: vi.fn(),

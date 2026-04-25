@@ -5,7 +5,7 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import { Toaster } from "sonner";
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core";
 
 import reportWebVitals from "./reportWebVitals";
 import App from "./App";
@@ -69,7 +69,7 @@ const router = createBrowserRouter([
 const domNode = document.getElementById("root") as HTMLElement;
 const root = createRoot(domNode);
 
-if (typeof window.__TAURI_IPC__ === "function") {
+if (typeof (window as any).__TAURI_INTERNALS__ !== "undefined") {
   invoke("get_server_port").then((port) => {
     console.log("🚀 ~ invoke ~ port:", port);
     window.localStorage.setItem("port", port as string);

@@ -110,7 +110,10 @@ impl UserConfig {
 
   /// init use config
   pub fn init_config() -> UserConfig {
-    let home_dir = tauri::api::path::home_dir();
+    let home_dir = env::var("HOME")
+      .or_else(|_| env::var("USERPROFILE"))
+      .map(std::path::PathBuf::from)
+      .ok();
     match home_dir {
       Some(home_dir) => {
         let app_config = path::Path::new(&home_dir);
@@ -158,8 +161,11 @@ pub fn get_user_config_path() -> PathBuf {
       user_config
     }
     Err(_) => {
-      let home_dir = &tauri::api::path::home_dir().unwrap();
-      let user_config = path::Path::new(home_dir);
+      let home_dir = env::var("HOME")
+        .or_else(|_| env::var("USERPROFILE"))
+        .map(std::path::PathBuf::from)
+        .unwrap_or_else(|_| std::path::PathBuf::from("/"));
+      let user_config = path::Path::new(&home_dir);
       let user_config = user_config.join(".lettura");
       let user_config = user_config.join("lettura.toml");
 

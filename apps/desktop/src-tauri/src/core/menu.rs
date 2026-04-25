@@ -1,154 +1,125 @@
 use serde_json::json;
 use std::env;
+use std::process::Command;
 use sys_info;
-use tauri::utils::assets::EmbeddedAssets;
-use tauri::{Context, CustomMenuItem, Menu, MenuItem, Submenu, WindowMenuEvent};
+use tauri::{
+    menu::{MenuBuilder, MenuItemBuilder, SubmenuBuilder},
+    App, Emitter, Runtime,
+};
 
-pub struct AppMenu {}
-
-impl AppMenu {
-  pub fn get_menu(context: &Context<EmbeddedAssets>) -> Menu {
-    #[allow(unused_mut)]
-    let mut disable_item =
-      CustomMenuItem::new("disable-menu", "Disable menu").accelerator("CmdOrControl+D");
-    #[cfg(target_os = "macos")]
-    {
-      disable_item = disable_item.native_image(tauri::NativeImage::MenuOnState);
-    }
-
+pub fn setup_menu<R: Runtime>(app: &App<R>) -> tauri::Result<()> {
     let _env = env::var("LETTURA_ENV");
     let name = match _env {
-      Ok(_env) => String::from("Lettura dev"),
-      Err(_) => context.package_info().name.clone(),
+        Ok(_env) => String::from("Lettura dev"),
+        Err(_) => app.package_info().name.clone(),
     };
 
-    let app_menu = Submenu::new(
-      "",
-      Menu::new()
-        // .add_native_item(MenuItem::About(name.into(), AboutMetadata::new()))
-        .add_item(CustomMenuItem::new(
-          "about".to_string(),
-          format!("About {}", name),
-        ))
-        .add_native_item(MenuItem::Separator)
-        .add_item(
-          CustomMenuItem::new("settings".to_string(), "Settings...").accelerator("CmdOrControl+,"),
-        )
-        .add_item(CustomMenuItem::new(
-          "check_for_updates".to_string(),
-          "Check for Updates",
-        ))
-        .add_native_item(MenuItem::Separator)
-        .add_native_item(MenuItem::Hide)
-        .add_native_item(MenuItem::HideOthers)
-        .add_native_item(MenuItem::Separator)
-        .add_item(
-          CustomMenuItem::new("quit".to_string(), "Quit Lettura").accelerator("CmdOrControl+Q"),
-        ),
-    );
+    let about = MenuItemBuilder::with_id("about", format!("About {}", name)).build(app)?;
+    let settings = MenuItemBuilder::with_id("settings", "Settings...").accelerator("CmdOrControl+,").build(app)?;
+    let check_updates = MenuItemBuilder::with_id("check_for_updates", "Check for Updates").build(app)?;
+    let quit = MenuItemBuilder::with_id("quit", "Quit Lettura").accelerator("CmdOrControl+Q").build(app)?;
 
-    let file_menu = Submenu::new(
-      "File",
-      Menu::new()
-        .add_item(CustomMenuItem::new("new_feed".to_string(), "New Feed"))
-        .add_item(CustomMenuItem::new("new_folder".to_string(), "New Folder")),
-    );
+    let app_menu = SubmenuBuilder::new(app, "")
+        .item(&about)
+        .separator()
+        .item(&settings)
+        .item(&check_updates)
+        .separator()
+        .hide()
+        .hide_others()
+        .separator()
+        .item(&quit)
+        .build()?;
 
-    let edit_menu = Submenu::new(
-      "Edit",
-      Menu::new()
-        .add_native_item(MenuItem::Copy)
-        .add_native_item(MenuItem::Paste)
-        .add_native_item(MenuItem::Cut)
-        .add_native_item(MenuItem::SelectAll)
-        .add_item(CustomMenuItem::new("undo".to_string(), "Undo"))
-        .add_item(CustomMenuItem::new("redo".to_string(), "Redo")),
-    );
+    let new_feed = MenuItemBuilder::with_id("new_feed", "New Feed").build(app)?;
+    let new_folder = MenuItemBuilder::with_id("new_folder", "New Folder").build(app)?;
 
-    let window_menu = Submenu::new(
-      "Window",
-      Menu::new()
-        .add_native_item(MenuItem::Minimize)
-        .add_native_item(MenuItem::Zoom)
-        .add_native_item(MenuItem::CloseWindow)
-        .add_native_item(MenuItem::EnterFullScreen),
-    );
+    let file_menu = SubmenuBuilder::new(app, "File")
+        .item(&new_feed)
+        .item(&new_folder)
+        .build()?;
 
-    Menu::new()
-      .add_submenu(app_menu)
-      .add_submenu(file_menu)
-      .add_submenu(edit_menu)
-      .add_submenu(window_menu)
-  }
+    let edit_menu = SubmenuBuilder::new(app, "Edit")
+        .copy()
+        .paste()
+        .cut()
+        .select_all()
+        .separator()
+        .item(&MenuItemBuilder::with_id("undo", "Undo").build(app)?)
+        .item(&MenuItemBuilder::with_id("redo", "Redo").build(app)?)
+        .build()?;
 
-  pub fn on_menu_event(event: WindowMenuEvent) {
-    match event.menu_item_id() {
-      "quit" => {
-        std::process::exit(0);
-      }
-      "close" => {
-        event.window().close().unwrap();
-      }
+    let window_menu = SubmenuBuilder::new(app, "Window")
+        .minimize()
+        .maximize()
+        .close_window()
+        .fullscreen()
+        .build()?;
 
-      "about" => {
-        use std::process::Command;
-        use tauri::Manager;
+    let menu = MenuBuilder::new(app)
+        .item(&app_menu)
+        .item(&file_menu)
+        .item(&edit_menu)
+        .item(&window_menu)
+        .build()?;
 
-        let app_handle = event.window().app_handle();
-        let package_info = app_handle.package_info();
-        let name = package_info.name.clone();
-        let version = package_info.version.clone();
+    app.set_menu(menu)?;
 
-        let tauri_version = env!("CARGO_PKG_VERSION").to_string();
+    app.on_menu_event(move |app, event| {
+        match event.id().as_ref() {
+            "about" => {
+                let package_info = app.package_info();
+                let name = package_info.name.clone();
+                let version = package_info.version.clone();
+                let tauri_version = env!("CARGO_PKG_VERSION").to_string();
 
-        let react_version = Command::new("node")
-          .args(["-p", "require('react/package.json').version"])
-          .output()
-          .expect("Failed to get React version")
-          .stdout;
-        let react_version = String::from_utf8_lossy(&react_version).trim().to_string();
+                let react_version = Command::new("node")
+                    .args(["-p", "require('react/package.json').version"])
+                    .output()
+                    .map(|o| String::from_utf8_lossy(&o.stdout).trim().to_string())
+                    .unwrap_or_else(|_| "unknown".to_string());
 
-        let os = match sys_info::os_release() {
-          Ok(version) => format!("{} {}", std::env::consts::OS, version),
-          Err(_) => std::env::consts::OS.to_string(),
-        };
+                let os = match sys_info::os_release() {
+                    Ok(v) => format!("{} {}", std::env::consts::OS, v),
+                    Err(_) => std::env::consts::OS.to_string(),
+                };
 
-        let node_version = Command::new("node")
-          .args(["-v"])
-          .output()
-          .expect("Failed to get Node version")
-          .stdout;
-        let node_version = String::from_utf8_lossy(&node_version).trim().to_string();
+                let node_version = Command::new("node")
+                    .args(["-v"])
+                    .output()
+                    .map(|o| String::from_utf8_lossy(&o.stdout).trim().to_string())
+                    .unwrap_or_else(|_| "unknown".to_string());
 
-        let rust_version = Command::new("rustc")
-          .args(["--version"])
-          .output()
-          .expect("Failed to get Rust version")
-          .stdout;
-        let rust_version = String::from_utf8_lossy(&rust_version).trim().to_string();
+                let rust_version = Command::new("rustc")
+                    .args(["--version"])
+                    .output()
+                    .map(|o| String::from_utf8_lossy(&o.stdout).trim().to_string())
+                    .unwrap_or_else(|_| "unknown".to_string());
 
-        let metadata = json!({
-            "name": name,
-            "version": version,
-            "tauri": tauri_version,
-            "react": react_version,
-            "OS": os,
-            "node": node_version,
-            "rust": rust_version,
-        })
-        .to_string();
+                let metadata = json!({
+                    "name": name,
+                    "version": version,
+                    "tauri": tauri_version,
+                    "react": react_version,
+                    "OS": os,
+                    "node": node_version,
+                    "rust": rust_version,
+                });
 
-        // Emit the metadata
-        event.window().emit("about_lettura", metadata).unwrap();
-      }
-      "check_for_updates" => {
-        event.window().emit("check_for_updates", "").unwrap();
-      }
-      "settings" => {
-        println!("gotosetting");
-        event.window().emit("go_to_settings", "").unwrap();
-      }
-      _ => {}
-    }
-  }
+                let _ = app.emit("about_lettura", metadata);
+            }
+            "settings" => {
+                let _ = app.emit("go_to_settings", ());
+            }
+            "check_for_updates" => {
+                let _ = app.emit("check_for_updates", ());
+            }
+            "quit" => {
+                app.exit(0);
+            }
+            _ => {}
+        }
+    });
+
+    Ok(())
 }

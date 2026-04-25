@@ -1,6 +1,6 @@
 use actix_web::web;
 use serde::Serialize;
-use tauri::{command, State, Window};
+use tauri::{command, Emitter, State, WebviewWindow};
 use uuid::Uuid;
 
 use crate::core::config;
@@ -197,7 +197,7 @@ struct Payload {
 }
 
 #[command]
-pub fn init_process(window: Window) {
+pub fn init_process(window: WebviewWindow) {
   std::thread::spawn(move || loop {
     window
       .emit(

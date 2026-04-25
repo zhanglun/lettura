@@ -21,7 +21,7 @@ import { useBearStore } from "@/stores";
 import { AddFolder } from "../AddFolder";
 import { ContextMenu } from "@radix-ui/themes";
 import { DialogUnsubscribeFeed } from "@/layout/Setting/Content/DialogUnsubscribeFeed";
-import { open } from "@tauri-apps/api/shell";
+import { open } from "@tauri-apps/plugin-shell";
 import { DialogEditFeed } from "@/layout/Setting/Content/DialogEditFeed";
 import { useQuery } from "@/helpers/parseXML";
 import { ListContainer } from "./ListContainer";

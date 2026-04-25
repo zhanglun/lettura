@@ -2,7 +2,7 @@ import { useRef, useCallback } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { ArticleCol, ArticleColRefObject } from "@/layout/Article/ArticleCol";
 import { ArticleDialogView } from "@/components/ArticleView/DialogView";
-import { open } from "@tauri-apps/api/shell";
+import { open } from "@tauri-apps/plugin-shell";
 import { View } from "./View";
 import { useQuery } from "@/helpers/parseXML";
 import { LPodcast } from "@/components/LPodcast";
