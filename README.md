@@ -1,6 +1,6 @@
 
 <p align="center">
-  <img src="./src/logo.svg" width="360px"/>
+  <img src="./apps/desktop/src/logo.svg" width="360px"/>
 </p>
 <h1 align="center">Lettura</h1>
 <h3 align="center">Follow your favorite content and never miss a story.</h3>
@@ -42,16 +42,20 @@ Another free and open-source feed reader designed to deliver an exceptional read
 
 ### Develop and Build
 
-It is easy to start developing
+Desktop app (Tauri):
 
 ```bash
-pnpm tauri dev
+pnpm dev:desktop    # Frontend dev only
+pnpm tauri dev      # Full desktop dev mode
+pnpm tauri build    # Build desktop app
+pnpm test           # Run tests
 ```
 
-And also easy to build.
+Docs site:
 
 ```bash
-pnpm tauri build
+pnpm dev:docs       # Dev server for docs
+pnpm build:docs     # Build docs site
 ```
 
 You can get more details about building Tauri app in [here](https://tauri.app/v1/guides/distribution/publishing)
