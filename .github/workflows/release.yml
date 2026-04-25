@@ -25,7 +25,7 @@ jobs:
           node-version: 18
 
       - name: Get version
-        run: echo "PACKAGE_VERSION=$(node -p "require('./src-tauri/tauri.conf.json').package.version")" >> $GITHUB_ENV
+        run: echo "PACKAGE_VERSION=$(node -p "require('./apps/desktop/src-tauri/tauri.conf.json').package.version")" >> $GITHUB_ENV
       - name: Create release
         id: create-release
         uses: actions/github-script@v6
@@ -79,7 +79,7 @@ jobs:
       - name: Rust cache
         uses: swatinem/rust-cache@v2
         with:
-          workspaces: './src-tauri -> target'
+          workspaces: './apps/desktop/src-tauri -> target'
 
       - name: Sync Pnpm version
         uses: pnpm/action-setup@v2
@@ -112,6 +112,7 @@ jobs:
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD : ${{ secrets.TAURI_KEY_PASSWORD }}
         with:
+          projectPath: apps/desktop
           releaseId: ${{ needs.create-release.outputs.release_id }}
 
   publish-release:

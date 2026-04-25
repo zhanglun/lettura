@@ -1,264 +1,90 @@
 # AGENTS.md
 
-This file provides essential guidelines for AI agents working on the Lettura codebase.
-
-## Project Overview
-
-Lettura is a cross-platform feed reader built with Tauri (Rust backend + React frontend). It uses TypeScript, React, Zustand for state management, and Tailwind CSS with Radix UI for styling.
-
-## Build & Development Commands
-
-```bash
-# Development (starts both Tauri frontend and Rust backend)
-pnpm tauri dev
-
-# Production build
-pnpm tauri build
-
-# Frontend build only
-pnpm build  # runs: tsc && vite build
-
-# Type check
-tsc --noEmit
-
-# Lint (uses Rome)
-npx rome check src/
-
-# Format (uses Rome)
-npx rome format src/
-
-# Run all tests
-pnpm test
-
-# Run single test file
-pnpm test path/to/test.spec.ts
-
-# Run tests in watch mode
-pnpm test -- --watch
-```
-
-**Note**: Vitest is configured with jsdom environment. Test setup file: `src/__tests__/setup.ts`
-
-## TypeScript Configuration
-
-- **Strict mode**: Enabled
-- **Target**: ESNext
-- **Module Resolution**: Node
-- **Path aliases**: `@/*` maps to `./src/*`
-- **Key settings**: `forceConsistentCasingInFileNames`, `isolatedModules`, `jsx: "react-jsx"`
-
-Always run `tsc --noEmit` before committing to catch type errors.
-
-## Code Style Guidelines
-
-### Imports
-
-Import order (from top to bottom):
-1. React and external libraries
-2. Third-party packages
-3. Local modules with `@/` alias
-4. Type imports (if needed)
-
-```tsx
-import React, { useState, useEffect } from "react";
-import { invoke } from "@tauri-apps/api";
-import { toast } from "sonner";
-import { useBearStore } from "@/stores";
-import { ArticleResItem } from "@/db";
-import { showErrorToast } from "@/helpers/errorHandler";
-```
-
-### Formatting (Rome)
-
-- **Indentation**: 2 spaces
-- **Line width**: 80 characters
-- **Line endings**: LF
-- **Quote style**: Single quotes
-- Always format with `npx rome format` before committing
-
-### Naming Conventions
-
-- **Components**: PascalCase (e.g., `DialogAboutApp`, `LocalPage`, `Kbd`)
-- **Hooks**: camelCase with `use` prefix (e.g., `useLoadFeed`, `useScrollTop`)
-- **Functions/Methods**: camelCase (e.g., `setArticle`, `getSubscribes`)
-- **Variables**: camelCase
-- **Constants/Enums**: PascalCase (e.g., `ArticleReadStatus`, `ArticleStarStatus`)
-- **Store slices**: `create[Name]Slice` (e.g., `createArticleSlice`)
-- **Stores**: `use[Name]Store` (e.g., `useBearStore`)
-
-### File Organization
-
-```
-src/
-├── components/     # Reusable UI components (Kbd, Modal, Icon)
-├── layout/         # Page-level components (Article, Search, Setting, Local)
-├── stores/         # Zustand slices and main store
-├── helpers/        # Utilities (dataAgent, request, errorHandler)
-├── hooks/          # Custom React hooks
-├── typing/         # Enums and shared types
-├── db.ts           # Database interfaces (Channel, Article, Feed)
-├── App.tsx         # Root component
-└── index.tsx       # Entry point
-```
-
-### State Management (Zustand)
-
-**Slice pattern**:
-```tsx
-import { StateCreator } from "zustand";
-
-export interface MySlice {
-  value: string;
-  setValue: (val: string) => void;
-}
-
-export const createMySlice: StateCreator<MySlice> = (set, get) => ({
-  value: "",
-  setValue: (val) => set({ value: val }),
-});
-```
-
-**Component usage with selective subscription**:
-```tsx
-const store = useBearStore(
-  useShallow((state) => ({
-    article: state.article,
-    setArticle: state.setArticle,
-  }))
-);
-```
-
-Update state immutably: `set(() => ({ articleList: list }))`
-
-### React Patterns
-
-- Use functional components with hooks exclusively
-- Use `useEffect` for side effects and lifecycle events
-- Use `useShallow` for selective store subscriptions (prevents re-renders)
-- Custom hooks in `hooks/` for complex logic
-- For DOM manipulation: `useEffect` with event listeners
-
-### API Layer
-
-**Tauri commands**:
-```tsx
-import { invoke } from "@tauri-apps/api";
-export const createFolder = async (name: string): Promise<number> => {
-  return invoke("create_folder", { name });
-};
-```
-
-**HTTP requests**:
-```tsx
-import { request } from "@/helpers/request";
-export const getArticles = async () => {
-  return request.get("articles");
-};
-```
-
-Return typed Promises. Chain `.then()` for results.
-
-### Error Handling
-
-Use `src/helpers/errorHandler.ts` for consistent error handling:
-
-```tsx
-import { showErrorToast, showSuccessToast, withErrorToast } from "@/helpers/errorHandler";
-
-// Show error toast
-showErrorToast(error, "Operation failed");
-
-// Show success toast
-showSuccessToast("Saved successfully");
-
-// Wrap async calls with error handling
-const result = await withErrorToast(promise, "Failed to load data");
-```
-
-Error types: `NETWORK`, `SYNC`, `VALIDATION`, `UNKNOWN`
-
-### Internationalization
-
-Use `i18next` for translations:
-
-```tsx
-import { t } from "i18next";
-import i18next from "i18next";
-
-// Get translation
-const message = t("Save successful");
-
-// In components
-{i18next.t("We have {{num}} new items", { num: 5 })}
-```
-
-### Styling
-
-- **Framework**: Tailwind CSS v3 with Radix UI
-- **Theme**: Light/dark via `@radix-ui/themes` `Theme` component
-- **Class utilities**: `clsx` for conditional classes:
-  ```tsx
-  className={clsx("base-class", isActive && "active-class", className)}
-  ```
-- **Custom colors**: Radix color tokens in `tailwind.config.js`
-- Prefer Tailwind utility classes over inline styles
-
-### Type Safety
-
-- **NEVER** use `@ts-ignore`, `@ts-except-error`, or `as any`
-- Define interfaces/types in appropriate files (`typing/`, `db.ts`, component files)
-- Use enums for fixed values (`typing/index.ts`)
-
-### Linting Rules (Rome)
-
-From `rome.json`:
-- `recommended` rules enabled
-- `suspicious.noExplicitAny`: OFF (prefer proper typing)
-- `security.noDangerouslySetInnerHtml`: OFF (used for HTML parsing)
-- `a11y.useKeyWithClickEvents`: OFF (custom keyboard shortcuts)
-
-## Architecture Notes
-
-- **Frontend**: Vite + React 18
-- **Backend**: Rust (Tauri) + Actix-web server
-- **Database**: Diesel ORM with SQLite
-- **State**: Zustand with `subscribeWithSelector` middleware
-- **Styling**: Tailwind CSS + Radix UI
-- **i18n**: i18next
-- **Testing**: Vitest + React Testing Library
-- **Toast**: Sonner
-
-## Before Committing
-
-1. `tsc --noEmit` - type check
-2. `npx rome format src/` - format
-3. `npx rome check src/` - lint
-4. `pnpm test` - run tests
-5. Test manually in `pnpm tauri dev`
-
-## Common Patterns
-
-**New component**:
-```tsx
-import React from "react";
-import { clsx } from "clsx";
-
-interface Props {
-  value: string;
-  className?: string;
-}
-
-export const MyComponent = ({ value, className }: Props) => (
-  <div className={clsx("base-styles", className)}>{value}</div>
-);
-```
-
-**Async operation with error handling**:
-```tsx
-import { withErrorToast } from "@/helpers/errorHandler";
-
-const result = await withErrorToast(
-  dataAgent.fetchData(params),
-  "Failed to fetch data"
-);
-```
+Compact, repo-specific notes for future OpenCode sessions. Trust executable
+config over prose when something conflicts.
+
+## Project shape
+
+- Lettura is a Tauri v1 desktop feed reader: React/Vite frontend plus Rust
+  backend in the `src-tauri` Cargo workspace member.
+- The backend has two communication paths. `src/helpers/dataAgent.ts` mixes
+  Tauri IPC (`invoke`, implemented in `src-tauri/src/cmd.rs`) with localhost
+  HTTP calls (`src/helpers/request.ts`, implemented under
+  `src-tauri/src/server/handlers/`). Check the existing path before adding a
+  new API.
+- Main frontend entrypoints: `src/index.tsx` defines routes and waits for
+  `get_server_port` inside Tauri; `src/App.tsx` is the app shell and Tauri event
+  listener; routes are named in `src/config.ts`.
+- Main Rust entrypoint: `src-tauri/src/main.rs` loads config, opens SQLite,
+  runs embedded Diesel migrations, starts the Actix server, registers Tauri
+  commands, tray/menu handlers, and the scheduler.
+- State is one Zustand store (`useBearStore`) in `src/stores/index.ts`, composed
+  from feed, article, user config, and podcast slices.
+
+## Commands
+
+- Install: `pnpm install` (`.npmrc` sets `auto-install-peers=true`).
+- Frontend dev only: `pnpm dev` (Vite on fixed port 3000).
+- Full desktop dev: `pnpm tauri dev` (runs `pnpm dev` via
+  `src-tauri/tauri.conf.json`).
+- Frontend build/typecheck: `pnpm build` (`tsc && vite build`); Vite outputs to
+  `build/`, not `dist/`.
+- Desktop build: `pnpm tauri build`.
+- Frontend tests: `pnpm test`; focused test: `pnpm test path/to/file.test.ts`.
+- Rust tests: run `cargo test` from repo root (workspace member is
+  `src-tauri`).
+- Lint/format use Rome 11 config, not ESLint/Prettier:
+  `npx rome check src/` and `npx rome format src/`.
+
+## Runtime and storage gotchas
+
+- Vite uses `server.strictPort = true` on port 3000. The Actix API server uses
+  the configured app port, then falls back to 8000-9000 if occupied.
+- Outside Tauri, `src/index.tsx` defaults `localStorage.port` to `3456`; inside
+  Tauri it calls `invoke("get_server_port")` before rendering.
+- Production SQLite DB is `~/.lettura/lettura.db`. With `LETTURA_ENV` set, Rust
+  reads `DATABASE_URL` from env via `dotenv`.
+- User config is TOML (`~/.lettura/lettura.toml` in normal runs; local file in
+  dev mode), not part of the SQLite schema.
+- Podcast data is separate browser-side Dexie/IndexedDB in
+  `src/helpers/podcastDB.ts`.
+- Closing the main window hides it to the system tray instead of quitting.
+
+## Testing notes
+
+- Vitest uses `vitest.config.ts`: globals enabled, jsdom environment, setup file
+  `src/__tests__/setup.ts`.
+- The setup file mocks `localStorage`, `@tauri-apps/api` `invoke`, and global
+  `fetch`; keep that in mind when tests pass without a live Tauri backend.
+- Frontend tests live mainly under `src/stores/__tests__/` and
+  `src/helpers/__tests__/`. Rust tests exist in files such as
+  `src-tauri/src/cmd.rs` and `src-tauri/src/core/scheduler.rs`.
+
+## Styling, PWA, and i18n
+
+- Tailwind v3 + Radix UI theme tokens are configured in `tailwind.config.js`;
+  dark mode is class/data-attribute based and the app toggles `body.dark-theme`.
+- shadcn-style components live in `src/components/ui/`; prefer the existing
+  `cn` helper in `src/helpers/cn.tsx` when composing classes there.
+- PWA is enabled with `vite-plugin-pwa` `injectManifest`; service worker source
+  is `src/worker/sw.ts`.
+- i18n is initialized in `src/i18n.ts`; locale files are
+  `src/locales/en.json` and `src/locales/zh.json`.
+
+## Rust backend notes
+
+- Diesel schema output is `src-tauri/src/schema.rs`; migrations live in
+  `src-tauri/migrations/` and are embedded by `embed_migrations!`.
+- Rust modules are split by concern: `core/` for config/menu/scheduler/tray,
+  `feed/` for article/channel/folder/OPML logic, and `server/` for Actix routes.
+- `LETTURA_ENV` enables debug logging and changes config/database behavior; do
+  not assume dev and production paths are identical.
+
+## CI and release
+
+- `.github/workflows/release.yml` runs on pushes to `release`, creates a draft
+  release, then builds macOS, Ubuntu, and Windows artifacts with Tauri.
+- `.github/workflows/deploy-doc.yml` runs on `master` and deploys the Astro docs
+  app in `docs/` to GitHub Pages.
+- Keep versions synchronized across `package.json`,
+  `src-tauri/tauri.conf.json`, and `src-tauri/Cargo.toml`.

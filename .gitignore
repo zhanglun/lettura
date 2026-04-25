@@ -56,3 +56,4 @@ build
 lettura.toml
 dev-dist
 target
+.astro/
