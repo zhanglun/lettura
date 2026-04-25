@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Rss, Trash2 } from "lucide-react";
-import { open } from "@tauri-apps/api/shell";
+import { open } from "@tauri-apps/plugin-shell";
 import { Channel } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
 import { busChannel } from "@/helpers/busChannel";

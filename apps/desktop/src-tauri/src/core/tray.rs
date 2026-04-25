@@ -1,58 +1,64 @@
-use tauri::{api, AppHandle, CustomMenuItem, Manager};
-use tauri::{SystemTray, SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem, SystemTraySubmenu};
+use tauri::{
+    menu::{MenuBuilder, MenuItemBuilder},
+    tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
+    App, Manager, Runtime,
+};
 
-pub struct Tray {}
+pub fn setup_tray<R: Runtime>(app: &App<R>) -> tauri::Result<()> {
+    let open_window = MenuItemBuilder::with_id("open_window", "Open Lettura").build(app)?;
+    let hide_window = MenuItemBuilder::with_id("hide_window", "Hide Window").build(app)?;
+    let restart_app = MenuItemBuilder::with_id("restart_app", "Restart").build(app)?;
+    let quit = MenuItemBuilder::with_id("quit", "Quit").build(app)?;
 
-impl Tray {
-  pub fn get_tray_menu() -> SystemTray {
-    let menu = SystemTrayMenu::new()
-      .add_item(CustomMenuItem::new("open_window", "Open Lettura"))
-      .add_item(CustomMenuItem::new("hide_window", "Hide Lettura"))
-      .add_native_item(SystemTrayMenuItem::Separator)
-      .add_submenu(SystemTraySubmenu::new(
-        "More",
-        SystemTrayMenu::new().add_item(CustomMenuItem::new("restart_app", "Restart Lettura")),
-      ))
-      .add_native_item(SystemTrayMenuItem::Separator)
-      .add_item(CustomMenuItem::new("quit", "Quit").accelerator("CmdOrControl+Q"));
+    let tray_menu = MenuBuilder::new(app)
+        .item(&open_window)
+        .item(&hide_window)
+        .separator()
+        .item(&restart_app)
+        .separator()
+        .item(&quit)
+        .build()?;
 
-    SystemTray::new().with_menu(menu)
-  }
+    TrayIconBuilder::new()
+        .icon(app.default_window_icon().cloned().unwrap())
+        .menu(&tray_menu)
+        .on_menu_event(|app, event| {
+            match event.id().as_ref() {
+                "open_window" => {
+                    if let Some(window) = app.get_webview_window("main") {
+                        window.show().unwrap();
+                        window.set_focus().unwrap();
+                    }
+                }
+                "hide_window" => {
+                    if let Some(window) = app.get_webview_window("main") {
+                        window.hide().unwrap();
+                    }
+                }
+                "restart_app" => {
+                    app.request_restart();
+                }
+                "quit" => {
+                    app.exit(0);
+                }
+                _ => {}
+            }
+        })
+        .on_tray_icon_event(|tray, event| {
+            if let TrayIconEvent::Click {
+                button: MouseButton::Left,
+                button_state: MouseButtonState::Up,
+                ..
+            } = event
+            {
+                let app = tray.app_handle();
+                if let Some(window) = app.get_webview_window("main") {
+                    window.show().unwrap();
+                    window.set_focus().unwrap();
+                }
+            }
+        })
+        .build(app)?;
 
-  pub fn on_system_tray_event(app_handle: &AppHandle, event: SystemTrayEvent) {
-    match event {
-      SystemTrayEvent::MenuItemClick { id, .. } => match id.as_str() {
-        "open_window" => {
-          let window = app_handle.get_window("main").unwrap();
-
-          window.show().unwrap();
-          window.set_focus().unwrap();
-        }
-        "hide_window" => {
-          let window = app_handle.get_window("main").unwrap();
-
-          window.hide().unwrap();
-        }
-        "restart_app" => api::process::restart(&app_handle.env()),
-        "quit" => {
-          app_handle.exit(0);
-          std::process::exit(0);
-        }
-        _ => {}
-      },
-
-      #[cfg(target_os = "windows")]
-      SystemTrayEvent::LeftClick { .. } => {
-        println!("system tray received a left click");
-        let window = app_handle.get_window("main").unwrap();
-        if window.is_visible().unwrap() {
-          window.hide().unwrap()
-        } else {
-          window.show().unwrap()
-        }
-        // resolve::create_window(app_handle);
-      }
-      _ => {}
-    }
-  }
+    Ok(())
 }

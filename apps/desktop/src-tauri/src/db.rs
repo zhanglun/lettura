@@ -20,7 +20,11 @@ pub fn establish_connection() -> SqliteConnection {
     Err(_) => {
       println!("no LETTURA_ENV");
 
-      let database_url = path::Path::new(&tauri::api::path::home_dir().unwrap())
+      let home_dir = env::var("HOME")
+        .or_else(|_| env::var("USERPROFILE"))
+        .map(std::path::PathBuf::from)
+        .unwrap_or_else(|_| std::path::PathBuf::from("/"));
+      let database_url = path::Path::new(&home_dir)
         .join(".lettura")
         .join("lettura.db");
 

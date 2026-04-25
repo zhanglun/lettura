@@ -5,18 +5,19 @@ config over prose when something conflicts.
 
 ## Project shape
 
-- Lettura is a Tauri v1 desktop feed reader: React/Vite frontend plus Rust
-  backend in the `src-tauri` Cargo workspace member.
+- Lettura is a Tauri v2 desktop feed reader: React/Vite frontend plus Rust
+  backend in the `apps/desktop/src-tauri` Cargo workspace member.
 - The backend has two communication paths. `src/helpers/dataAgent.ts` mixes
-  Tauri IPC (`invoke`, implemented in `src-tauri/src/cmd.rs`) with localhost
-  HTTP calls (`src/helpers/request.ts`, implemented under
-  `src-tauri/src/server/handlers/`). Check the existing path before adding a
-  new API.
+  Tauri IPC (`invoke` from `@tauri-apps/api/core`, implemented in
+  `src-tauri/src/cmd.rs`) with localhost HTTP calls (`src/helpers/request.ts`,
+  implemented under `src-tauri/src/server/handlers/`). Check the existing path
+  before adding a new API.
 - Main frontend entrypoints: `src/index.tsx` defines routes and waits for
   `get_server_port` inside Tauri; `src/App.tsx` is the app shell and Tauri event
   listener; routes are named in `src/config.ts`.
-- Main Rust entrypoint: `src-tauri/src/main.rs` loads config, opens SQLite,
-  runs embedded Diesel migrations, starts the Actix server, registers Tauri
+- Main Rust entrypoint: `src-tauri/src/main.rs` calls `lettura_lib::run()`
+  defined in `src-tauri/src/lib.rs`, which loads config, opens SQLite, runs
+  embedded Diesel migrations, starts the Actix server, registers Tauri
   commands, tray/menu handlers, and the scheduler.
 - State is one Zustand store (`useBearStore`) in `src/stores/index.ts`, composed
   from feed, article, user config, and podcast slices.
@@ -54,8 +55,11 @@ config over prose when something conflicts.
 
 - Vitest uses `vitest.config.ts`: globals enabled, jsdom environment, setup file
   `src/__tests__/setup.ts`.
-- The setup file mocks `localStorage`, `@tauri-apps/api` `invoke`, and global
-  `fetch`; keep that in mind when tests pass without a live Tauri backend.
+- The setup file mocks `localStorage`, `@tauri-apps/api/core` `invoke`,
+  `@tauri-apps/api/event`, `@tauri-apps/api/webviewWindow`,
+  `@tauri-apps/plugin-shell`, `@tauri-apps/plugin-fs`,
+  `@tauri-apps/plugin-dialog`, and global `fetch`; keep that in mind when
+  tests pass without a live Tauri backend.
 - Frontend tests live mainly under `src/stores/__tests__/` and
   `src/helpers/__tests__/`. Rust tests exist in files such as
   `src-tauri/src/cmd.rs` and `src-tauri/src/core/scheduler.rs`.
@@ -77,6 +81,11 @@ config over prose when something conflicts.
   `src-tauri/migrations/` and are embedded by `embed_migrations!`.
 - Rust modules are split by concern: `core/` for config/menu/scheduler/tray,
   `feed/` for article/channel/folder/OPML logic, and `server/` for Actix routes.
+  Tray and menu are built in `setup()` via `TrayIconBuilder`/`MenuBuilder`.
+- Tauri v2 uses a plugin architecture: shell, fs, dialog, http, process,
+  updater, log, and single-instance are separate plugins (both Rust crates and
+  npm packages). Permissions are declared in
+  `src-tauri/capabilities/default.json` instead of v1's allowlist.
 - `LETTURA_ENV` enables debug logging and changes config/database behavior; do
   not assume dev and production paths are identical.
 

@@ -13,9 +13,41 @@ const localStorageMock = {
 };
 global.localStorage = localStorageMock as any;
 
-// Mock @tauri-apps/api
-vi.mock("@tauri-apps/api", () => ({
+// Mock @tauri-apps/api/core
+vi.mock("@tauri-apps/api/core", () => ({
   invoke: vi.fn(),
+}));
+
+// Mock @tauri-apps/api/event
+vi.mock("@tauri-apps/api/event", () => ({
+  emit: vi.fn(),
+  listen: vi.fn(() => Promise.resolve(() => {})),
+}));
+
+// Mock @tauri-apps/api/webviewWindow
+vi.mock("@tauri-apps/api/webviewWindow", () => ({
+  getCurrentWebviewWindow: vi.fn(() => ({
+    minimize: vi.fn(),
+    toggleMaximize: vi.fn(),
+    close: vi.fn(),
+  })),
+}));
+
+// Mock @tauri-apps/plugin-shell
+vi.mock("@tauri-apps/plugin-shell", () => ({
+  open: vi.fn(),
+}));
+
+// Mock @tauri-apps/plugin-fs
+vi.mock("@tauri-apps/plugin-fs", () => ({
+  writeTextFile: vi.fn(),
+  readTextFile: vi.fn(),
+}));
+
+// Mock @tauri-apps/plugin-dialog
+vi.mock("@tauri-apps/plugin-dialog", () => ({
+  save: vi.fn(),
+  open: vi.fn(),
 }));
 
 // Mock fetch globally

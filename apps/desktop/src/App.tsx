@@ -1,5 +1,5 @@
 import { useEffect, useCallback, useMemo, useRef } from "react";
-import { appWindow } from "@tauri-apps/api/window";
+import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { emit, listen } from "@tauri-apps/api/event";
 import { useBearStore } from "@/stores";
 import { LocalPage } from "./layout/Local";
@@ -29,7 +29,7 @@ function App() {
   }, [store.userConfig.theme]);
 
   useEffect(() => {
-    if (window.__TAURI_IPC__ as any) {
+    if ((window as any).__TAURI_INTERNALS__) {
       const aboutUnsubscribe = listen("about_lettura", ({
         payload,
       }: {
@@ -68,9 +68,9 @@ function App() {
     const maxBtn = document.getElementById("titlebar-maximize");
     const closeBtn = document.getElementById("titlebar-close");
 
-    const handleMinimize = () => appWindow.minimize();
-    const handleMaximize = () => appWindow.toggleMaximize();
-    const handleClose = () => appWindow.close();
+    const handleMinimize = () => getCurrentWebviewWindow().minimize();
+    const handleMaximize = () => getCurrentWebviewWindow().toggleMaximize();
+    const handleClose = () => getCurrentWebviewWindow().close();
 
     minBtn?.addEventListener("click", handleMinimize);
     maxBtn?.addEventListener("click", handleMaximize);

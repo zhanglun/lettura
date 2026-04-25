@@ -1,6 +1,6 @@
 import { ExternalLink, Link } from "lucide-react";
 import { Article, ArticleResItem } from "@/db";
-import { open } from "@tauri-apps/api/shell";
+import { open } from "@tauri-apps/plugin-shell";
 import { toast } from "sonner";
 import { IconButton, Tooltip } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";

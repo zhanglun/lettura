@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { getFeedLogo } from "@/helpers/parseXML";
 import * as dataAgent from "@/helpers/dataAgent";
-import { open } from "@tauri-apps/api/shell";
+import { open } from "@tauri-apps/plugin-shell";
 import DOMPurify from "dompurify";
 import { ArticleResItem } from "@/db";
 import { YoutubeAdapter } from "./adapter/Youtube";

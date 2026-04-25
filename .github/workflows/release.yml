@@ -25,7 +25,7 @@ jobs:
           node-version: 18
 
       - name: Get version
-        run: echo "PACKAGE_VERSION=$(node -p "require('./apps/desktop/src-tauri/tauri.conf.json').package.version")" >> $GITHUB_ENV
+        run: echo "PACKAGE_VERSION=$(node -p "require('./apps/desktop/src-tauri/tauri.conf.json').version")" >> $GITHUB_ENV
       - name: Create release
         id: create-release
         uses: actions/github-script@v6
@@ -56,7 +56,7 @@ jobs:
             args: '--target x86_64-apple-darwin'
           - platform: 'macos-latest' # for both Arm and Intelbased Macs
             args: '--target universal-apple-darwin'
-          - platform: 'ubuntu-20.04' # for Tauri v1 you could replace this with ubuntu-20.04.
+          - platform: 'ubuntu-22.04'
             args: ''
           - platform: 'windows-latest'
             args: ''
@@ -66,10 +66,10 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install dependencies (ubuntu only)
-        if: matrix.platform == 'ubuntu-20.04'
+        if: matrix.platform == 'ubuntu-22.04'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libayatana-appindicator3-dev librsvg2-dev
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev
 
       - name: Rust setup
         uses: dtolnay/rust-toolchain@stable
@@ -106,7 +106,7 @@ jobs:
       #     args:  '--target aarch64-apple-darwin'
 
       - name: Build the app
-        uses: tauri-apps/tauri-action@v0.4
+        uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.LETTURA_TOKEN }}
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
