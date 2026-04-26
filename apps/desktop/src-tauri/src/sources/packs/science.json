@@ -1,0 +1,22 @@
+{
+  "id": "science",
+  "name": "Science",
+  "description": "Scientific research, discoveries, and academic insights",
+  "icon": "flask-conical",
+  "language": "en",
+  "tags": ["science", "research", "academic"],
+  "sources": [
+    { "feed_url": "https://www.nature.com/nature.rss", "title": "Nature News", "site_url": "https://www.nature.com", "language": "en" },
+    { "feed_url": "https://www.science.org/rss/express_recent.xml", "title": "Science Magazine", "site_url": "https://www.science.org", "language": "en" },
+    { "feed_url": "https://feeds.arstechnica.com/arstechnica/science", "title": "Ars Technica Science", "site_url": "https://arstechnica.com", "language": "en" },
+    { "feed_url": "https://www.newscientist.com/feed/home/", "title": "New Scientist", "site_url": "https://www.newscientist.com", "language": "en" },
+    { "feed_url": "https://www.scientificamerican.com/feed/", "title": "Scientific American", "site_url": "https://www.scientificamerican.com", "language": "en" },
+    { "feed_url": "https://api.quantamagazine.org/feed/", "title": "Quanta Magazine", "site_url": "https://www.quantamagazine.org", "language": "en" },
+    { "feed_url": "https://www.wired.com/feed/category/science/latest/rss", "title": "Wired Science", "site_url": "https://www.wired.com", "language": "en" },
+    { "feed_url": "https://theconversation.com/us/technology/articles.atom", "title": "The Conversation Science", "site_url": "https://theconversation.com", "language": "en" },
+    { "feed_url": "https://www.eurekalert.org/rss/breakthroughs.xml", "title": "EurekAlert", "site_url": "https://www.eurekalert.org", "language": "en" },
+    { "feed_url": "https://phys.org/rss-feed/", "title": "Phys.org", "site_url": "https://phys.org", "language": "en" },
+    { "feed_url": "https://www.nasa.gov/rss/dyn/breaking_news.rss", "title": "NASA News", "site_url": "https://www.nasa.gov", "language": "en" },
+    { "feed_url": "https://www.space.com/feeds/all", "title": "Space.com", "site_url": "https://www.space.com", "language": "en" }
+  ]
+}

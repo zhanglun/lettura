@@ -1,0 +1,26 @@
+{
+  "id": "tech-news",
+  "name": "Tech News",
+  "description": "Latest technology news and industry updates",
+  "icon": "newspaper",
+  "language": "en",
+  "tags": ["tech", "news", "industry"],
+  "sources": [
+    { "feed_url": "https://techcrunch.com/feed/", "title": "TechCrunch", "site_url": "https://techcrunch.com", "language": "en" },
+    { "feed_url": "https://www.theverge.com/rss/index.xml", "title": "The Verge", "site_url": "https://www.theverge.com", "language": "en" },
+    { "feed_url": "https://feeds.arstechnica.com/arstechnica/index", "title": "Ars Technica", "site_url": "https://arstechnica.com", "language": "en" },
+    { "feed_url": "https://www.wired.com/feed/rss", "title": "Wired", "site_url": "https://www.wired.com", "language": "en" },
+    { "feed_url": "https://www.engadget.com/rss.xml", "title": "Engadget", "site_url": "https://www.engadget.com", "language": "en" },
+    { "feed_url": "https://gizmodo.com/rss", "title": "Gizmodo", "site_url": "https://gizmodo.com", "language": "en" },
+    { "feed_url": "https://www.zdnet.com/news/rss.xml", "title": "ZDNet", "site_url": "https://www.zdnet.com", "language": "en" },
+    { "feed_url": "https://rsshub.app/theinformation", "title": "The Information", "site_url": "https://theinformation.com", "language": "en" },
+    { "feed_url": "https://9to5mac.com/feed/", "title": "9to5Mac", "site_url": "https://9to5mac.com", "language": "en" },
+    { "feed_url": "https://www.androidpolice.com/feed/", "title": "Android Police", "site_url": "https://www.androidpolice.com", "language": "en" },
+    { "feed_url": "https://thenextweb.com/feed/", "title": "The Next Web", "site_url": "https://thenextweb.com", "language": "en" },
+    { "feed_url": "https://www.bleepingcomputer.com/feed/", "title": "BleepingComputer", "site_url": "https://www.bleepingcomputer.com", "language": "en" },
+    { "feed_url": "https://krebsonsecurity.com/feed/", "title": "Krebs on Security", "site_url": "https://krebsonsecurity.com", "language": "en" },
+    { "feed_url": "https://news.ycombinator.com/rss", "title": "Hacker News", "site_url": "https://news.ycombinator.com", "language": "en" },
+    { "feed_url": "https://hnrss.org/frontpage", "title": "Hacker News (enhanced)", "site_url": "https://hnrss.org", "language": "en" },
+    { "feed_url": "https://lobste.rs/rss", "title": "lobste.rs", "site_url": "https://lobste.rs", "language": "en" }
+  ]
+}
