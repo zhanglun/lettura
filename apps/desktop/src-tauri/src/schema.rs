@@ -15,6 +15,9 @@ diesel::table! {
         model_version -> Nullable<Text>,
         create_date -> Timestamp,
         update_date -> Timestamp,
+        is_duplicate -> Bool,
+        duplicate_of -> Nullable<Integer>,
+        information_density -> Nullable<Float>,
     }
 }
 
