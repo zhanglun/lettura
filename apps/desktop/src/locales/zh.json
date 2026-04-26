@@ -172,6 +172,7 @@
   },
 
   "today": {
+    "signals": "关键信号",
     "empty": {
       "no_feeds_title": "还没有订阅源",
       "no_feeds_subtitle": "添加一些 RSS 订阅源，开始阅读今日文章。",
@@ -181,7 +182,48 @@
       "explore_all": "浏览全部文章",
       "error_title": "加载失败",
       "error_subtitle": "加载今日文章时出现了问题，请稍后重试。",
-      "retry": "重试"
+      "retry": "重试",
+      "no_api_key": "AI 功能需要配置 API Key。在设置中配置后即可开始使用。",
+      "go_to_settings": "前往设置",
+      "no_signals": "还没有信号。运行分析来发现关键洞察。",
+      "start_analysis": "开始分析"
+    },
+    "pipeline": {
+      "running": "分析中...",
+      "done": "已更新",
+      "error": "分析失败",
+      "retry": "重试",
+      "stage_fetching_articles": "获取文章中",
+      "stage_generating_embeddings": "生成嵌入向量中",
+      "stage_clustering": "聚类分析中",
+      "stage_generating_summaries": "生成摘要中",
+      "stage_ranking": "排序中",
+      "stage_storing_results": "存储结果中"
+    },
+    "signal_card": {
+      "articles": "篇文章",
+      "sources": "个来源"
+    }
+  },
+  "settings": {
+    "ai": {
+      "title": "AI 配置",
+      "api_key": "API Key",
+      "api_key_placeholder": "sk-...",
+      "model": "模型",
+      "embedding_model": "Embedding 模型",
+      "base_url": "API 端点",
+      "base_url_placeholder": "https://api.openai.com/v1",
+      "pipeline_interval": "Pipeline 间隔（小时）",
+      "validate": "验证",
+      "validating": "验证中...",
+      "save": "保存",
+      "saving": "保存中...",
+      "trigger_pipeline": "立即运行 Pipeline",
+      "validation_success": "API Key 有效",
+      "validation_failed": "验证失败",
+      "saved": "AI 配置已保存",
+      "pipeline_triggered": "Pipeline 已启动"
     }
   }
 }

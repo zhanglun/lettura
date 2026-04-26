@@ -146,6 +146,7 @@
   },
 
   "today": {
+    "signals": "Key Signals",
     "empty": {
       "no_feeds_title": "No Feeds Yet",
       "no_feeds_subtitle": "Add some RSS feeds to start reading today's articles.",
@@ -155,7 +156,48 @@
       "explore_all": "Explore All Articles",
       "error_title": "Failed to Load",
       "error_subtitle": "Something went wrong while loading today's articles. Please try again.",
-      "retry": "Retry"
+      "retry": "Retry",
+      "no_api_key": "AI features require an API Key. Configure it in Settings to get started.",
+      "go_to_settings": "Go to Settings",
+      "no_signals": "No signals yet. Run analysis to discover key insights.",
+      "start_analysis": "Start Analysis"
+    },
+    "pipeline": {
+      "running": "Analyzing...",
+      "done": "Updated",
+      "error": "Analysis failed",
+      "retry": "Retry",
+      "stage_fetching_articles": "Fetching articles",
+      "stage_generating_embeddings": "Generating embeddings",
+      "stage_clustering": "Clustering",
+      "stage_generating_summaries": "Generating summaries",
+      "stage_ranking": "Ranking",
+      "stage_storing_results": "Storing results"
+    },
+    "signal_card": {
+      "articles": "articles",
+      "sources": "sources"
+    }
+  },
+  "settings": {
+    "ai": {
+      "title": "AI Configuration",
+      "api_key": "API Key",
+      "api_key_placeholder": "sk-...",
+      "model": "Model",
+      "embedding_model": "Embedding Model",
+      "base_url": "API Endpoint",
+      "base_url_placeholder": "https://api.openai.com/v1",
+      "pipeline_interval": "Pipeline Interval (hours)",
+      "validate": "Validate",
+      "validating": "Validating...",
+      "save": "Save",
+      "saving": "Saving...",
+      "trigger_pipeline": "Run Pipeline Now",
+      "validation_success": "API Key is valid",
+      "validation_failed": "Validation failed",
+      "saved": "AI configuration saved",
+      "pipeline_triggered": "Pipeline started"
     }
   }
 }
