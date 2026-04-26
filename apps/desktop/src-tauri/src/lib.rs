@@ -23,6 +23,7 @@ mod models;
 mod schema;
 mod server;
 mod sources;
+mod ai;
 
 pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!("./migrations");
 
@@ -95,6 +96,8 @@ pub fn run() {
 
       feed::article::Article::purge_articles();
 
+      ai::pipeline::start_pipeline_timer(app.handle().clone());
+
       Ok(())
     })
     .on_window_event(|window, event| {
@@ -122,6 +125,11 @@ pub fn run() {
       cmd::preview_pack,
       cmd::install_pack,
       cmd::import_opml_as_source,
+      cmd::get_today_signals,
+      cmd::get_ai_config,
+      cmd::save_ai_config,
+      cmd::validate_ai_config,
+      cmd::trigger_pipeline,
       core::scheduler::start_scheduler,
       core::scheduler::stop_scheduler,
       core::scheduler::is_scheduler_running,
