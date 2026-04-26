@@ -59,10 +59,8 @@ export function PodcastAdapter(props: PodcastAdapter) {
       return content.map((c: any) => {
         if (c.url && c.content_type.indexOf("audio/") === 0) {
           return (
-            <figure className="my-3">
-              <Button onClick={() => handleAddToPlayListAndPlay(media)}>
-                Play
-              </Button>
+            <figure className="my-3 relative">
+              <Button onClick={() => handleAddToPlayListAndPlay(media)}>Play</Button>
             </figure>
           );
         }
@@ -91,18 +89,11 @@ export function PodcastAdapter(props: PodcastAdapter) {
         <Heading size="7">{article.title}</Heading>
         <div>
           <div className="flex gap-3 items-center">
-            <Avatar
-              radius="medium"
-              size="1"
-              src={article.feed_logo}
-              fallback={article.feed_title?.slice(0, 1)}
-            />
+            <Avatar radius="medium" size="1" src={article.feed_logo} fallback={article.feed_title?.slice(0, 1)} />
             <span className="font-semibold text-[var(--accent-12)]">
               {article.feed_title} {article.author}
             </span>
-            <span className="text-sm text-[var(--gray-12)]">
-              {dayjs(article.pub_date).format("YYYY-MM-DD HH:mm")}
-            </span>
+            <span className="text-sm text-[var(--gray-12)]">{dayjs(article.pub_date).format("YYYY-MM-DD HH:mm")}</span>
           </div>
         </div>
       </div>
@@ -115,7 +106,7 @@ export function PodcastAdapter(props: PodcastAdapter) {
       <div className="flex items-center justify-between mb-4">
         {medias && medias.length > 0 && <div>{renderMediaBox(medias[0])}</div>}
       </div>
-      <div className="mb-4">{wraperWithRadix(content)}</div>
+      <div className="mb-4 relative">{wraperWithRadix(content)}</div>
     </div>
   );
 }
