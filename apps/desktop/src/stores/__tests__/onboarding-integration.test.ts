@@ -85,7 +85,7 @@ describe("C5-C8: Onboarding integration tests", () => {
       await store.getState().startInstall(["ai", "tech"]);
 
       expect(store.getState().installStatus).toBe("success");
-      expect(store.getState().installResult.installed_sources).toBe(12);
+      expect(store.getState().installResult?.installed_sources).toBe(12);
       expect(store.getState().installProgress).toEqual({ completed: 2, total: 2 });
 
       store.getState().setOnboardingStep("complete");
