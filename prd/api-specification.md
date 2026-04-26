@@ -203,6 +203,7 @@ interface SignalSource {
   feed_uuid: UUID;
   pub_date: Timestamp;
   excerpt?: string;              // 可选的 50 字摘录
+  is_duplicate?: boolean;        // 是否为重复报道（v2.6）
 }
 
 // 错误
@@ -214,6 +215,29 @@ interface SignalSource {
 ```
 
 ### 3.3 `get_signal_detail`
+
+### 3.4 `get_dedup_stats`
+
+> v2.6 新增
+
+```typescript
+// 调用
+const stats = await invoke<DedupStats>("get_dedup_stats");
+
+// 返回类型
+interface DedupStats {
+  total_checked: number;         // 本次 Pipeline 处理的文章数
+  duplicates_found: number;      // 检测到的重复文章数
+  groups_merged: number;         // 合并的去重组数
+  avg_similarity: number;        // 平均相似度（0.0-1.0）
+  last_run: Timestamp;           // 最近一次去重时间
+}
+
+// 错误
+| code              | message                           |
+|-------------------|-----------------------------------|
+| DEDUP_NO_DATA     | Pipeline has not processed today  |
+```
 
 获取单条 Signal 的完整详情（含所有来源文章）。
 
@@ -531,6 +555,7 @@ interface PipelineResult {
 type PipelineStage =
   | "fetching_articles"    // 提取未处理文章
   | "generating_embeddings" // 生成向量
+  | "deduplicating"        // 去重检测 + 信息密度评估（v2.6）
   | "clustering"           // 增量聚类
   | "generating_summaries" // 生成摘要
   | "generating_wim"       // 生成 Why It Matters
@@ -579,6 +604,7 @@ listen('pipeline:failed', (event) => {
 | 2.3 | `get_today_signals`, `get_ai_config`, `save_ai_config`, `validate_ai_config`, `trigger_pipeline` | `pipeline:*` |
 | 2.4 | — (复用 get_today_signals) | — |
 | 2.5 | `get_signal_detail` | — |
+| 2.6 | `get_dedup_stats` | `pipeline:progress` 增加 `deduplicating` 阶段 |
 | 2.7 | `submit_feedback`, `get_feedback_history` | — |
 | 2.9 | `get_topics`, `get_topic_detail` | — |
 | 2.12 | `follow_topic`, `unfollow_topic` | — |

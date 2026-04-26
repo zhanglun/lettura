@@ -31,7 +31,7 @@
 │  │ 💡 Why: This changes the economics   │    │  ← Why It Matters (折叠)
 │  │ of embedding-heavy applications...    │    │
 │  │                                      │    │
-│  │ 📰 5 articles · 3 sources            │    │  ← 来源计数
+│  │ 📰 5 篇相关 · 3 个来源            │    │  ← 来源计数
 │  │                                      │    │
 │  │ 👍 有用  👎 不相关  📌 继续关注       │    │  ← 反馈按钮
 │  │                                      │    │
@@ -104,13 +104,14 @@ graph TD
 ┌────────────────────────────────────────┐
 │ 📰 来源文章                             │
 │                                        │
-│ • OpenAI Blog          2h ago          │  ← SourceItem
+│ • OpenAI Blog          2h ago          │  ← SourceItem（主文章）
 │   "GPT-4o mini: our most              │
 │    cost-efficient model..."            │
 │                                        │
 │ • The Verge            3h ago          │
 │   "OpenAI releases smaller,            │
 │    cheaper AI model..."                │
+│   🔗 相似报道                           │  ← 重复文章标识（灰色小标签）
 │                                        │
 │ • TechCrunch           4h ago          │
 │   "OpenAI makes GPT-4o mini..."        │
@@ -129,6 +130,7 @@ graph TD
 | 点击 "不相关" | onClick | 调用 submit_feedback("not_relevant")，按钮高亮 |
 | 点击 "继续关注" | onClick | 调用 submit_feedback("follow_topic")，按钮高亮 + toast "已加入关注" |
 | 点击来源文章 | onClick | 打开原文阅读器（复用现有 ArticleReader） |
+| hover "🔗 相似报道" 标签 | onMouseEnter | 显示 tooltip："与上方文章相似度 92%"（v2.6） |
 | 下拉刷新 | onPullDown | 触发 get_today_signals 重新加载 |
 | 点击概览旁 "🔄" | onClick | 手动触发 Pipeline（仅 dev 模式） |
 
@@ -298,6 +300,11 @@ Pipeline 状态：
     "why_it_matters": "Why It Matters",
     "sources": "sources",
     "articles": "articles",
+    "related": "related",
+    "dedup": {
+      "similar_report": "Similar report",
+      "similarity": "Similarity"
+    },
     "feedback": {
       "useful": "Useful",
       "not_relevant": "Not Relevant",
@@ -340,6 +347,11 @@ Pipeline 状态：
     "why_it_matters": "为什么重要",
     "sources": "个来源",
     "articles": "篇文章",
+    "related": "篇相关",
+    "dedup": {
+      "similar_report": "相似报道",
+      "similarity": "相似度"
+    },
     "feedback": {
       "useful": "有用",
       "not_relevant": "不相关",

@@ -229,7 +229,8 @@ flowchart TD
 stateDiagram-v2
     [*] --> Created: 新文章入库
     Created --> Embedded: Pipeline 生成 Embedding
-    Embedded --> Clustered: 增量聚类匹配
+    Embedded --> Deduplicated: 去重检测 + 信息密度评估
+    Deduplicated --> Clustered: 增量聚类匹配
     Clustered --> Analyzed: LLM 生成 Summary + WIM
     Analyzed --> Ranked: 计算相关性分数
     Ranked --> TopSignal: 分数 Top 5
@@ -379,7 +380,9 @@ erDiagram
         text why_it_matters
         float relevance_score
         int topic_id "FK → topics"
-        int embedding_id "→ sqlite-vec"
+        boolean is_duplicate "DEFAULT false"
+        int duplicate_of "FK → article_ai_analysis(id)"
+        float information_density "0.0-1.0"
         timestamp ai_processed_at
         string model_version
         timestamp create_date
@@ -500,6 +503,7 @@ graph TB
         AIWIM["why_it_matters.rs<br/>重要性解释"]
         AIPipeline["pipeline.rs<br/>流程编排"]
         AIRank["ranking.rs<br/>排序逻辑"]
+        AIDedup["dedup.rs<br/>去重与信息密度"]
 
         Sources["sources/"]
         SrcSP["starter_pack.rs<br/>Pack 定义/加载/安装"]
@@ -511,6 +515,7 @@ graph TB
         AI --> AIWIM
         AI --> AIPipeline
         AI --> AIRank
+        AI --> AIDedup
         Sources --> SrcSP
         Sources --> SrcService
     end
@@ -621,9 +626,14 @@ flowchart TD
     Spawn --> Fetch["SELECT 未处理文章<br/>(batch 32)"]
 
     Fetch --> Embed["调用 Embedding API<br/>(text-embedding-3-small)"]
-    Embed --> StoreVec["存储向量到 sqlite-vec"]
+    Embed --> StoreVec["存储向量到 article_ai_analysis"]
 
-    StoreVec --> Cluster["增量聚类<br/>匹配现有 centroid"]
+    StoreVec --> Dedup["去重检测<br/>cosine similarity > 0.85"]
+    Dedup -->|"无重复"| Cluster
+    Dedup -->|"有重复"| MarkDup["标记 duplicate_of<br/>保留 content 最长者"]
+    MarkDup --> Store["重复文章跳过 LLM"]
+
+    Cluster["增量聚类<br/>匹配现有 centroid"]
     Cluster -->|"匹配成功"| AssignTopic["分配到已有 Topic"]
     Cluster -->|"距离过大"| NewTopic["创建新 Topic"]
 
@@ -850,7 +860,7 @@ graph LR
 | 2.3 Top Signals MVP | AI Pipeline 最小版 + Signal 卡片 | ai/ 模块, article_ai_analysis, pipeline_runs | async-openai |
 | 2.4 Why It Matters | LLM 生成解释 | ai/llm.rs, ai/why_it_matters.rs | async-openai |
 | 2.5 来源透明 | 展示来源文章 | SignalSourceList 组件 | — |
-| 2.6 去重与压缩 | 基于向量的相似度去重 | sqlite-vec 集成 | sqlite-vec |
+| 2.6 去重与压缩 | 内存 cosine similarity 去重 + 信息密度评估 | ai/dedup.rs, article_ai_analysis 增加 3 列 | — |
 | 2.7 基础反馈闭环 | 用户反馈记录 | user_feedback 表 | — |
 | 2.8 Today 概览 | 一句话概览生成 | ai/summary.rs 扩展 | — |
 | 2.9 Topic 最小引入 | Topic 对象 + 关联 | topics, topic_articles, ai/ranking.rs | — |
