@@ -507,12 +507,10 @@ impl Article {
 
     if relations.len() > 0 {
       for relation in relations {
-        if let Some(folder_uuid) = relation.folder_uuid {
-          if folder_uuid == uuid {
-            let uuid = String::from(relation.uuid);
+        if relation.folder_uuid == uuid {
+          let uuid = String::from(relation.uuid);
 
-            channel_uuids.push(uuid.clone());
-          }
+          channel_uuids.push(uuid.clone());
         }
       }
     } else {
