@@ -277,3 +277,76 @@ export const importOpmlAsSource = async (
 ): Promise<OpmlImportResult> => {
   return invoke("import_opml_as_source", { opmlContent });
 };
+
+export interface SignalSource {
+  article_id: number;
+  title: string;
+  link: string;
+  feed_title: string;
+  feed_uuid: string;
+  pub_date: string;
+  excerpt: string | null;
+}
+
+export interface Signal {
+  id: number;
+  title: string;
+  summary: string;
+  relevance_score: number;
+  source_count: number;
+  sources: SignalSource[];
+  topic_id: number | null;
+  topic_title: string | null;
+  created_at: string;
+}
+
+export interface AIConfigPublic {
+  has_api_key: boolean;
+  model: string;
+  embedding_model: string;
+  base_url: string;
+}
+
+export interface ValidateAIConfigResult {
+  valid: boolean;
+  message: string;
+}
+
+export interface PipelineResult {
+  run_id: number;
+  started: boolean;
+}
+
+export const getTodaySignals = async (limit?: number): Promise<Signal[]> => {
+  return invoke("get_today_signals", { limit });
+};
+
+export const getAIConfig = async (): Promise<AIConfigPublic> => {
+  return invoke("get_ai_config");
+};
+
+export const saveAIConfig = async (config: {
+  apiKey: string;
+  model: string;
+  embeddingModel: string;
+  baseUrl: string;
+  pipelineIntervalHours?: number;
+}): Promise<void> => {
+  return invoke("save_ai_config", {
+    apiKey: config.apiKey,
+    model: config.model,
+    embeddingModel: config.embeddingModel,
+    baseUrl: config.baseUrl,
+    pipelineIntervalHours: config.pipelineIntervalHours,
+  });
+};
+
+export const validateAIConfig = async (): Promise<ValidateAIConfigResult> => {
+  return invoke("validate_ai_config");
+};
+
+export const triggerPipeline = async (
+  runType?: string,
+): Promise<PipelineResult> => {
+  return invoke("trigger_pipeline", { runType });
+};
