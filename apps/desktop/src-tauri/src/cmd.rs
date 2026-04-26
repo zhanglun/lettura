@@ -349,6 +349,12 @@ pub fn get_signal_detail(signal_id: i32) -> Result<crate::ai::pipeline::SignalDe
 }
 
 #[command]
+pub fn get_dedup_stats() -> Result<crate::ai::dedup::DedupStats, String> {
+    let conn = &mut crate::db::establish_connection();
+    crate::ai::dedup::get_dedup_stats(conn).map_err(|e| e.to_string())
+}
+
+#[command]
 pub fn get_today_signals(limit: Option<i32>) -> Result<Vec<crate::ai::pipeline::Signal>, String> {
   let conn = &mut crate::db::establish_connection();
   let limit = limit.unwrap_or(5);
