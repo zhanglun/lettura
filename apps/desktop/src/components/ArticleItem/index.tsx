@@ -1,15 +1,17 @@
 import React, { ForwardedRef, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import { useBearStore } from "@/stores";
 import { getFeedLogo } from "@/helpers/parseXML";
 import { ArticleResItem } from "@/db";
 import { ArticleReadStatus } from "@/typing";
 import clsx from "clsx";
-import { Avatar } from "@radix-ui/themes";
+import { Avatar, Badge } from "@radix-ui/themes";
 import { useShallow } from "zustand/react/shallow";
 
 export const ArticleItem = React.forwardRef(
   (props: { article: ArticleResItem }, ref: ForwardedRef<HTMLLIElement>) => {
+    const { t } = useTranslation();
     const store = useBearStore(
       useShallow((state) => ({
         updateArticleStatus: state.updateArticleStatus,
@@ -21,6 +23,7 @@ export const ArticleItem = React.forwardRef(
     const { article } = props;
     const [highlight, setHighlight] = useState<boolean>();
     const [readStatus, setReadStatus] = useState(article.read_status);
+    const isDuplicate = article.is_duplicate === 1;
 
     const updateCurrentArticle = (article: any) => {
       if (article.read_status === ArticleReadStatus.UNREAD) {
@@ -54,6 +57,7 @@ export const ArticleItem = React.forwardRef(
             "text-[var(--gray-10)]": readStatus === ArticleReadStatus.READ,
             "bg-[var(--accent-4)] text-[var(--accent-11)] hover:bg-[var(--accent-4)]":
               highlight,
+            "opacity-60": isDuplicate,
           },
         )}
         onClick={handleClick}
@@ -63,7 +67,14 @@ export const ArticleItem = React.forwardRef(
         {readStatus === ArticleReadStatus.UNREAD && (
           <div className="absolute left-2 top-[16px] w-2 h-2 rounded-full bg-[var(--accent-9)]" />
         )}
-        <div className="font-semibold text-sm break-all">{article.title}</div>
+        <div className="font-semibold text-sm break-all flex items-center gap-1.5">
+          <span className="break-all">{article.title}</span>
+          {isDuplicate && (
+            <Badge color="gray" variant="soft" size="1" className="shrink-0">
+              {t("article.duplicate")}
+            </Badge>
+          )}
+        </div>
         <div className="text-xs line-clamp-2 break-all">
           {(article.description || "").replace(/<[^<>]+>/g, "")}
         </div>

@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Box,
@@ -11,8 +11,8 @@ import {
 } from "@radix-ui/themes";
 import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
-import { saveAIConfig, validateAIConfig, triggerPipeline } from "@/helpers/dataAgent";
-import { CheckCircle, XCircle, Loader2, Play } from "lucide-react";
+import { saveAIConfig, validateAIConfig, triggerPipeline, getDedupStats } from "@/helpers/dataAgent";
+import { CheckCircle, XCircle, Loader2, Play, Copy } from "lucide-react";
 import { toast } from "sonner";
 
 export function AIConfigPanel() {
@@ -40,6 +40,18 @@ export function AIConfigPanel() {
   } | null>(null);
   const [saving, setSaving] = useState(false);
   const [triggeringPipeline, setTriggeringPipeline] = useState(false);
+  const [dedupStats, setDedupStats] = useState<{
+    total_analyzed: number;
+    duplicates_found: number;
+    duplicate_groups: number;
+    avg_information_density: number;
+  } | null>(null);
+
+  useEffect(() => {
+    getDedupStats()
+      .then(setDedupStats)
+      .catch(() => {});
+  }, []);
 
   const handleValidate = useCallback(async () => {
     if (!apiKey.trim()) return;
@@ -200,6 +212,30 @@ export function AIConfigPanel() {
           </Flex>
         </Flex>
       </Box>
+
+      {dedupStats && dedupStats.total_analyzed > 0 && (
+        <Box mt="4">
+          <Heading size="3" mb="3">{t("settings.ai.dedup_stats_title")}</Heading>
+          <Flex gap="4" wrap="wrap">
+            <Flex direction="column" gap="1">
+              <Text size="1" color="gray">{t("settings.ai.dedup_total")}</Text>
+              <Text size="4" weight="bold">{dedupStats.total_analyzed}</Text>
+            </Flex>
+            <Flex direction="column" gap="1">
+              <Text size="1" color="gray">{t("settings.ai.dedup_duplicates")}</Text>
+              <Text size="4" weight="bold">{dedupStats.duplicates_found}</Text>
+            </Flex>
+            <Flex direction="column" gap="1">
+              <Text size="1" color="gray">{t("settings.ai.dedup_groups")}</Text>
+              <Text size="4" weight="bold">{dedupStats.duplicate_groups}</Text>
+            </Flex>
+            <Flex direction="column" gap="1">
+              <Text size="1" color="gray">{t("settings.ai.dedup_avg_density")}</Text>
+              <Text size="4" weight="bold">{dedupStats.avg_information_density.toFixed(2)}</Text>
+            </Flex>
+          </Flex>
+        </Box>
+      )}
     </Flex>
   );
 }
