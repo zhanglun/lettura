@@ -1,4 +1,6 @@
-table! {
+// @generated automatically by Diesel CLI.
+
+diesel::table! {
     articles (id) {
         id -> Integer,
         uuid -> Text,
@@ -18,18 +20,18 @@ table! {
     }
 }
 
-table! {
+diesel::table! {
     feed_metas (id) {
         id -> Integer,
         uuid -> Text,
-        folder_uuid -> Nullable<Text>,
+        folder_uuid -> Text,
         sort -> Integer,
         create_date -> Timestamp,
         update_date -> Timestamp,
     }
 }
 
-table! {
+diesel::table! {
     feeds (id) {
         id -> Integer,
         uuid -> Text,
@@ -48,10 +50,11 @@ table! {
         last_sync_date -> Timestamp,
         create_date -> Timestamp,
         update_date -> Timestamp,
+        source_id -> Nullable<Integer>,
     }
 }
 
-table! {
+diesel::table! {
     folders (id) {
         id -> Integer,
         uuid -> Text,
@@ -62,4 +65,30 @@ table! {
     }
 }
 
-allow_tables_to_appear_in_same_query!(articles, feed_metas, feeds, folders,);
+diesel::table! {
+    sources (id) {
+        id -> Nullable<Integer>,
+        uuid -> Text,
+        feed_url -> Text,
+        title -> Nullable<Text>,
+        site_url -> Nullable<Text>,
+        source_type -> Text,
+        pack_id -> Nullable<Text>,
+        language -> Text,
+        quality_score -> Float,
+        weight -> Float,
+        is_active -> Bool,
+        create_date -> Timestamp,
+        update_date -> Timestamp,
+    }
+}
+
+diesel::joinable!(feeds -> sources (source_id));
+
+diesel::allow_tables_to_appear_in_same_query!(
+    articles,
+    feed_metas,
+    feeds,
+    folders,
+    sources,
+);
