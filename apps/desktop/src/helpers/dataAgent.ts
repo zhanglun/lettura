@@ -231,3 +231,49 @@ export const importOpml = async (
 ): Promise<OpmlImportResult> => {
   return invoke("import_opml", { opmlContent });
 };
+
+export interface StarterPackSummary {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  language: string;
+  tags: string[];
+  source_count: number;
+}
+
+export interface PackPreview {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  language: string;
+  tags: string[];
+  sources: { feed_url: string; title: string; site_url: string; language: string }[];
+}
+
+export interface PackInstallResult {
+  installed_feeds: number;
+  installed_sources: number;
+  sync_started: boolean;
+}
+
+export const getStarterPacks = async (): Promise<StarterPackSummary[]> => {
+  return invoke("get_starter_packs");
+};
+
+export const previewPack = async (packId: string): Promise<PackPreview> => {
+  return invoke("preview_pack", { packId });
+};
+
+export const installPack = async (
+  packIds: string[],
+): Promise<PackInstallResult> => {
+  return invoke("install_pack", { packIds });
+};
+
+export const importOpmlAsSource = async (
+  opmlContent: string,
+): Promise<OpmlImportResult> => {
+  return invoke("import_opml_as_source", { opmlContent });
+};

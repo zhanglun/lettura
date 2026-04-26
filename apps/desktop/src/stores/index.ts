@@ -4,13 +4,15 @@ import { createFeedSlice } from "@/stores/createFeedSlice";
 import { createArticleSlice } from "@/stores/createArticleSlice";
 import { createUserConfigSlice } from "@/stores/createUserConfigSlice";
 import { createPodcastSlice } from "@/stores/createPodcastSlice";
+import { createOnboardingSlice } from "@/stores/createOnboardingSlice";
 import type { FeedSlice } from "@/stores/createFeedSlice";
 import type { ArticleSlice } from "@/stores/createArticleSlice";
 import type { UserConfigSlice } from "@/stores/createUserConfigSlice";
 import type { PodcastSlice } from "@/stores/createPodcastSlice";
+import type { OnboardingSlice } from "@/stores/createOnboardingSlice";
 
 export const useBearStore = create<
-  FeedSlice & ArticleSlice & UserConfigSlice & PodcastSlice
+  FeedSlice & ArticleSlice & UserConfigSlice & PodcastSlice & OnboardingSlice
 >()(
   subscribeWithSelector((...a) => {
     return {
@@ -18,6 +20,7 @@ export const useBearStore = create<
       ...createArticleSlice(...a),
       ...createUserConfigSlice(...a),
       ...createPodcastSlice(...a),
+      ...createOnboardingSlice(...a),
     };
   }),
 );

@@ -101,5 +101,47 @@
   "Ops! Something wrong~": "Ops! Something wrong~",
   "Start reloading, Please wait...": "Start reloading, Please wait...",
   "{{title}} is already up to date, no new content found": "{{title}} is already up to date, no new content found",
-  "We have {{num}} new pieces of data from {{title}}": "We have {{num}} new pieces of data from {{title}}"
+  "We have {{num}} new pieces of data from {{title}}": "We have {{num}} new pieces of data from {{title}}",
+
+  "onboarding": {
+    "welcome": {
+      "title": "Welcome to Lettura",
+      "subtitle": "Your personal feed reader. Follow your favorite sources and never miss a story.",
+      "get_started": "Get Started",
+      "import_opml": "Import OPML",
+      "import_opml_desc": "Already have subscriptions? Import from an OPML file.",
+      "importing": "Importing...",
+      "import_success": "OPML imported successfully!",
+      "import_error": "Failed to import OPML file"
+    },
+    "select_pack": {
+      "title": "Choose Your Interests",
+      "subtitle": "Select one or more starter packs to get going. You can always add more later.",
+      "sources_count": "{{count}} sources",
+      "confirm_title": "Confirm Installation",
+      "confirm_description": "You are about to install {{count}} packs with a total of {{sources}} sources.",
+      "confirm_button": "Install",
+      "back": "Back",
+      "install": "Install Selected",
+      "none_selected": "Please select at least one pack"
+    },
+    "installing": {
+      "title": "Setting Up Your Feeds",
+      "subtitle": "Installing your selected packs and fetching articles...",
+      "progress": "Installing pack {{current}} of {{total}}...",
+      "success_title": "All Done!",
+      "success_subtitle": "Successfully installed {{feeds}} feeds from {{sources}} sources.",
+      "partial_title": "Partially Completed",
+      "partial_subtitle": "Some feeds could not be installed.",
+      "error_title": "Installation Failed",
+      "error_subtitle": "Something went wrong during installation.",
+      "retry": "Retry",
+      "skip": "Skip"
+    },
+    "complete": {
+      "title": "You're All Set!",
+      "subtitle": "Your feeds are ready. Start exploring your personalized reading list.",
+      "start_reading": "Start Reading"
+    }
+  }
 }
