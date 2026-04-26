@@ -363,3 +363,14 @@ export const getSignalDetail = async (
 ): Promise<SignalDetail> => {
   return invoke("get_signal_detail", { signalId });
 };
+
+export interface DedupStats {
+  total_analyzed: number;
+  duplicates_found: number;
+  duplicate_groups: number;
+  avg_information_density: number;
+}
+
+export const getDedupStats = async (): Promise<DedupStats> => {
+  return invoke("get_dedup_stats");
+};

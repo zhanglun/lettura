@@ -78,6 +78,7 @@ export interface ArticleResItem {
   read_status: number;
   starred: number;
   media_object: string;
+  is_duplicate?: number;
 }
 
 export interface FolderResItem {
