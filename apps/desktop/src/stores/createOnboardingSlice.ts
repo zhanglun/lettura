@@ -70,7 +70,7 @@ export interface OnboardingSlice {
   importOpmlAsSource: (opmlContent: string) => Promise<void>;
 
   // Complete
-  completeOnboarding: () => void;
+  completeOnboarding: () => Promise<void>;
 }
 
 export const createOnboardingSlice: StateCreator<OnboardingSlice> = (
@@ -154,12 +154,16 @@ export const createOnboardingSlice: StateCreator<OnboardingSlice> = (
     }
   },
 
-  completeOnboarding: () => {
+  completeOnboarding: async () => {
     const state = get() as OnboardingSlice & UserConfigSlice;
-    state.updateUserConfig({
-      ...state.userConfig,
-      app: { onboarding_completed: true },
-    });
-    set({ onboardingOpen: false, onboardingStep: "welcome" });
+    try {
+      await state.updateUserConfig({
+        ...state.userConfig,
+        app: { onboarding_completed: true },
+      });
+      set({ onboardingOpen: false, onboardingStep: "welcome" });
+    } catch (err) {
+      console.error("Failed to complete onboarding:", err);
+    }
   },
 });
