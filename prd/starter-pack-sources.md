@@ -13,18 +13,23 @@ Starter Pack 以 JSON 文件分发，存储在 `apps/desktop/src-tauri/src/sourc
   "id": "ai",
   "name": "AI & Machine Learning",
   "description": "AI research, breakthroughs, and industry trends",
-  "icon": "🤖",
+  "icon": "brain",
+  "language": "en",
+  "tags": ["artificial-intelligence", "llm", "tools"],
   "sources": [
     {
       "feed_url": "https://openai.com/news/rss.xml",
       "title": "OpenAI Blog",
       "site_url": "https://openai.com",
-      "language": "en",
-      "is_rsshub": false
+      "language": "en"
     }
   ]
 }
 ```
+
+> **`icon` 字段**：使用 lucide-react 图标名（如 `"brain"`, `"code-2"`, `"rocket"` 等），前端通过 `<DynamicIcon name={pack.icon} />` 渲染。8 个 Pack 对应图标：AI=`brain`, Developer=`code-2`, Startup=`rocket`, Product=`package`, Design=`palette`, Science=`flask-conical`, Business=`briefcase`, Tech News=`newspaper`。
+>
+> **`language` / `tags`**：在 JSON 顶层静态定义，`source_count` 由 Rust 端从 `sources.len()` 动态计算，不在 JSON 中存储。
 
 ---
 
