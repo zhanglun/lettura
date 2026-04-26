@@ -1,4 +1,5 @@
 use crate::ai::config::AiConfig;
+use crate::ai::dedup;
 use crate::ai::embedding::EmbeddingProvider;
 use crate::ai::llm::LLMProvider;
 use crate::ai::ranking;
@@ -289,6 +290,21 @@ async fn execute_pipeline_steps(
             .map_err(|e| PipelineError::DbError(e.to_string()))?;
     }
 
+    emit_progress(app_handle, "deduplicating", 0, 1);
+    let content_lengths: Vec<usize> = unprocessed
+        .iter()
+        .map(|a| a.description.chars().count())
+        .collect();
+    let article_ids: Vec<i32> = unprocessed.iter().map(|a| a.id).collect();
+    let dup_groups = dedup::find_duplicate_groups(&embeddings, &content_lengths);
+    let duplicate_indices: std::collections::HashSet<usize> = dup_groups
+        .iter()
+        .flat_map(|g| g.duplicate_indices.iter().copied())
+        .collect();
+    dedup::persist_dedup_results(conn, &article_ids, &dup_groups, &content_lengths)
+        .map_err(PipelineError::DbError)?;
+    emit_progress(app_handle, "deduplicating", 1, 1);
+
     emit_progress(app_handle, "clustering", 0, 1);
     let clusters = simple_cluster(&embeddings, 0.3);
 
@@ -321,6 +337,12 @@ async fn execute_pipeline_steps(
 
     for cluster in &clusters {
         for &article_idx in cluster {
+            if duplicate_indices.contains(&article_idx) {
+                processed_count += 1;
+                emit_progress(app_handle, "generating_summaries", processed_count, unprocessed.len());
+                continue;
+            }
+
             let article = &unprocessed[article_idx];
             let content = truncate_content(&article.description, 4000);
 
@@ -355,7 +377,8 @@ async fn execute_pipeline_steps(
             .next()
             .unwrap_or(0.5);
 
-        let score = ranking::compute_relevance_score(distance, 0.5, 24.0);
+        let penalty = dedup::density_penalty(&unprocessed[i].description);
+        let score = ranking::compute_relevance_score(distance, 0.5, 24.0, penalty);
         diesel::update(
             article_ai_analysis::table.filter(article_ai_analysis::article_id.eq(article.id)),
         )
@@ -367,6 +390,7 @@ async fn execute_pipeline_steps(
     let top_article_ids: Vec<i32> = article_ai_analysis::table
         .filter(article_ai_analysis::summary.is_not_null())
         .filter(article_ai_analysis::relevance_score.is_not_null())
+        .filter(article_ai_analysis::is_duplicate.eq(false))
         .order(article_ai_analysis::relevance_score.desc())
         .limit(10)
         .select(article_ai_analysis::article_id)

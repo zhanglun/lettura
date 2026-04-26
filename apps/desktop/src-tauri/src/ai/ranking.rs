@@ -4,20 +4,21 @@ pub fn compute_relevance_score(
     cluster_distance: f64,
     source_quality: f64,
     article_age_hours: f64,
+    density_penalty: f64,
 ) -> f64 {
     let distance_score = 1.0 - cluster_distance;
     let time_decay = (-article_age_hours / 168.0).exp();
     let raw = 0.5 * distance_score + 0.3 * source_quality + 0.2 * time_decay;
-    raw.clamp(0.0, 1.0)
+    (raw - density_penalty).clamp(0.0, 1.0)
 }
 
 pub fn rank_articles(
-    articles: &[(i32, f64, f64, f64)],
+    articles: &[(i32, f64, f64, f64, f64)],
 ) -> Vec<(i32, f64)> {
     let mut scored: Vec<(i32, f64)> = articles
         .iter()
-        .map(|(id, distance, quality, age_hours)| {
-            let score = compute_relevance_score(*distance, *quality, *age_hours);
+        .map(|(id, distance, quality, age_hours, density_penalty)| {
+            let score = compute_relevance_score(*distance, *quality, *age_hours, *density_penalty);
             (*id, score)
         })
         .collect();
@@ -43,30 +44,37 @@ mod tests {
 
     #[test]
     fn test_relevance_score_range() {
-        let score = compute_relevance_score(0.2, 0.8, 24.0);
+        let score = compute_relevance_score(0.2, 0.8, 24.0, 0.0);
         assert!((0.0..=1.0).contains(&score));
     }
 
     #[test]
     fn test_higher_quality_gets_higher_score() {
-        let low_quality = compute_relevance_score(0.2, 0.3, 24.0);
-        let high_quality = compute_relevance_score(0.2, 0.9, 24.0);
+        let low_quality = compute_relevance_score(0.2, 0.3, 24.0, 0.0);
+        let high_quality = compute_relevance_score(0.2, 0.9, 24.0, 0.0);
         assert!(high_quality > low_quality);
     }
 
     #[test]
     fn test_closer_distance_gets_higher_score() {
-        let far = compute_relevance_score(0.8, 0.7, 24.0);
-        let close = compute_relevance_score(0.1, 0.7, 24.0);
+        let far = compute_relevance_score(0.8, 0.7, 24.0, 0.0);
+        let close = compute_relevance_score(0.1, 0.7, 24.0, 0.0);
         assert!(close > far);
+    }
+
+    #[test]
+    fn test_density_penalty_reduces_score() {
+        let no_penalty = compute_relevance_score(0.2, 0.8, 24.0, 0.0);
+        let with_penalty = compute_relevance_score(0.2, 0.8, 24.0, 0.3);
+        assert!(no_penalty > with_penalty);
     }
 
     #[test]
     fn test_rank_articles_sorted() {
         let articles = vec![
-            (1, 0.5, 0.5, 48.0),
-            (2, 0.1, 0.9, 2.0),
-            (3, 0.8, 0.3, 72.0),
+            (1, 0.5, 0.5, 48.0, 0.0),
+            (2, 0.1, 0.9, 2.0, 0.0),
+            (3, 0.8, 0.3, 72.0, 0.0),
         ];
         let ranked = rank_articles(&articles);
         assert_eq!(ranked[0].0, 2);
