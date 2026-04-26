@@ -169,5 +169,18 @@
       "subtitle": "您的订阅已准备就绪。开始探索您的个性化阅读列表吧。",
       "start_reading": "开始阅读"
     }
+  },
+
+  "today": {
+    "empty": {
+      "no_feeds_title": "还没有订阅源",
+      "no_feeds_subtitle": "添加一些 RSS 订阅源，开始阅读今日文章。",
+      "add_feeds": "添加订阅源",
+      "no_articles_title": "今天没有新文章",
+      "no_articles_subtitle": "稍后再来看看您的订阅是否有新内容。",
+      "explore_all": "浏览全部文章",
+      "error_title": "加载失败",
+      "error_subtitle": "加载今日文章时出现了问题，请稍后重试。"
+    }
   }
 }

@@ -143,5 +143,18 @@
       "subtitle": "Your feeds are ready. Start exploring your personalized reading list.",
       "start_reading": "Start Reading"
     }
+  },
+
+  "today": {
+    "empty": {
+      "no_feeds_title": "No Feeds Yet",
+      "no_feeds_subtitle": "Add some RSS feeds to start reading today's articles.",
+      "add_feeds": "Add Feeds",
+      "no_articles_title": "No New Articles Today",
+      "no_articles_subtitle": "Check back later for new content from your subscriptions.",
+      "explore_all": "Explore All Articles",
+      "error_title": "Failed to Load",
+      "error_subtitle": "Something went wrong while loading today's articles. Please try again."
+    }
   }
 }
