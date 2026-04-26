@@ -1,6 +1,24 @@
 // @generated automatically by Diesel CLI.
 
 diesel::table! {
+    article_ai_analysis (id) {
+        id -> Nullable<Integer>,
+        article_id -> Integer,
+        signal_title -> Nullable<Text>,
+        summary -> Nullable<Text>,
+        why_it_matters -> Nullable<Text>,
+        relevance_score -> Nullable<Float>,
+        topic_id -> Nullable<Integer>,
+        embedding_id -> Nullable<Integer>,
+        embedding_json -> Nullable<Text>,
+        ai_processed_at -> Nullable<Timestamp>,
+        model_version -> Nullable<Text>,
+        create_date -> Timestamp,
+        update_date -> Timestamp,
+    }
+}
+
+diesel::table! {
     articles (id) {
         id -> Integer,
         uuid -> Text,
@@ -66,6 +84,19 @@ diesel::table! {
 }
 
 diesel::table! {
+    pipeline_runs (id) {
+        id -> Nullable<Integer>,
+        run_type -> Text,
+        status -> Text,
+        articles_processed -> Integer,
+        error_message -> Nullable<Text>,
+        started_at -> Timestamp,
+        finished_at -> Nullable<Timestamp>,
+        create_date -> Timestamp,
+    }
+}
+
+diesel::table! {
     sources (id) {
         id -> Nullable<Integer>,
         uuid -> Text,
@@ -83,12 +114,15 @@ diesel::table! {
     }
 }
 
+diesel::joinable!(article_ai_analysis -> articles (article_id));
 diesel::joinable!(feeds -> sources (source_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
+    article_ai_analysis,
     articles,
     feed_metas,
     feeds,
     folders,
+    pipeline_runs,
     sources,
 );
