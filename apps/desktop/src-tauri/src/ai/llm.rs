@@ -61,13 +61,19 @@ impl LLMProvider for OpenAILLM {
 }
 
 pub struct MockLLM {
-    pub response: String,
+    pub response: Option<String>,
 }
 
 impl MockLLM {
     pub fn new(response: &str) -> Self {
         Self {
-            response: response.to_string(),
+            response: Some(response.to_string()),
+        }
+    }
+
+    pub fn new_failing(error: &str) -> Self {
+        Self {
+            response: Some(format!("__MOCK_ERROR__:{}", error)),
         }
     }
 }
@@ -75,7 +81,13 @@ impl MockLLM {
 #[async_trait]
 impl LLMProvider for MockLLM {
     async fn complete(&self, _prompt: &str, _system: &str) -> Result<String, String> {
-        Ok(self.response.clone())
+        match &self.response {
+            Some(r) if r.starts_with("__MOCK_ERROR__:") => {
+                Err(r.strip_prefix("__MOCK_ERROR__").unwrap().to_string())
+            }
+            Some(r) => Ok(r.clone()),
+            None => Err("MockLLM has no response configured".to_string()),
+        }
     }
 }
 
