@@ -2,7 +2,9 @@ use crate::ai::config::AiConfig;
 use crate::ai::embedding::EmbeddingProvider;
 use crate::ai::llm::LLMProvider;
 use crate::ai::ranking;
+use crate::ai::signal_title;
 use crate::ai::summary;
+use crate::ai::why_it_matters;
 use crate::db;
 use crate::schema::{article_ai_analysis, articles, feeds, pipeline_runs};
 use chrono::Utc;
@@ -24,6 +26,7 @@ pub struct Signal {
     pub id: i32,
     pub title: String,
     pub summary: String,
+    pub why_it_matters: String,
     pub relevance_score: f64,
     pub source_count: i32,
     pub sources: Vec<SignalSource>,
@@ -282,7 +285,31 @@ async fn execute_pipeline_steps(
     emit_progress(app_handle, "clustering", 0, 1);
     let clusters = simple_cluster(&embeddings, 0.3);
 
-    emit_progress(app_handle, "generating_summaries", 0, 1);
+    emit_progress(app_handle, "generating_signal_titles", 0, clusters.len());
+    for (cluster_idx, cluster) in clusters.iter().enumerate() {
+        let titles: Vec<String> = cluster
+            .iter()
+            .map(|&idx| unprocessed[idx].title.clone())
+            .collect();
+
+        let signal_title = signal_title::generate_signal_title_with_fallback(llm_provider, &titles).await;
+
+        if cluster.len() > 1 {
+            if let Some(&rep_idx) = cluster.first() {
+                diesel::update(
+                    article_ai_analysis::table
+                        .filter(article_ai_analysis::article_id.eq(unprocessed[rep_idx].id)),
+                )
+                .set(article_ai_analysis::signal_title.eq(&signal_title))
+                .execute(conn)
+                .ok();
+            }
+        }
+
+        emit_progress(app_handle, "generating_signal_titles", cluster_idx + 1, clusters.len());
+    }
+
+    emit_progress(app_handle, "generating_summaries", 0, unprocessed.len());
     let mut processed_count = 0;
 
     for cluster in &clusters {
@@ -296,7 +323,7 @@ async fn execute_pipeline_steps(
                         article_ai_analysis::table
                             .filter(article_ai_analysis::article_id.eq(article.id)),
                     )
-                    .set(article_ai_analysis::summary.eq(s))
+                    .set(article_ai_analysis::summary.eq(&s))
                     .execute(conn)
                     .ok();
                 }
@@ -328,6 +355,62 @@ async fn execute_pipeline_steps(
         .set(article_ai_analysis::relevance_score.eq(score as f32))
         .execute(conn)
         .ok();
+    }
+
+    let top_article_ids: Vec<i32> = article_ai_analysis::table
+        .filter(article_ai_analysis::summary.is_not_null())
+        .filter(article_ai_analysis::relevance_score.is_not_null())
+        .order(article_ai_analysis::relevance_score.desc())
+        .limit(10)
+        .select(article_ai_analysis::article_id)
+        .load::<i32>(conn)
+        .unwrap_or_default();
+
+    let top_id_set: std::collections::HashSet<i32> = top_article_ids.into_iter().collect();
+
+    emit_progress(app_handle, "generating_wim", 0, top_id_set.len());
+    let mut wim_count = 0;
+    for article in &unprocessed {
+        if !top_id_set.contains(&article.id) {
+            continue;
+        }
+
+        let summary_text: Option<String> = article_ai_analysis::table
+            .filter(article_ai_analysis::article_id.eq(article.id))
+            .select(article_ai_analysis::summary)
+            .first::<Option<String>>(conn)
+            .ok()
+            .flatten();
+
+        let summary_val = match summary_text {
+            Some(ref s) if !s.is_empty() => s.clone(),
+            _ => {
+                wim_count += 1;
+                emit_progress(app_handle, "generating_wim", wim_count, top_id_set.len());
+                continue;
+            }
+        };
+
+        let wim_input = why_it_matters::WimInput {
+            summary: summary_val.clone(),
+            source_count: 1,
+            feed_count: 1,
+            topic_title: None,
+            topic_description: None,
+        };
+
+        let wim = why_it_matters::generate_why_it_matters_with_fallback(llm_provider, &wim_input).await;
+
+        diesel::update(
+            article_ai_analysis::table
+                .filter(article_ai_analysis::article_id.eq(article.id)),
+        )
+        .set(article_ai_analysis::why_it_matters.eq(&wim))
+        .execute(conn)
+        .ok();
+
+        wim_count += 1;
+        emit_progress(app_handle, "generating_wim", wim_count, top_id_set.len());
     }
 
     emit_progress(app_handle, "storing_results", 0, 1);
@@ -434,7 +517,7 @@ fn emit_progress(
 pub fn get_today_signals(conn: &mut SqliteConnection, limit: i32) -> Result<Vec<Signal>, String> {
     let limit = limit.clamp(1, 10);
 
-    let analyses: Vec<(Option<i32>, i32, Option<String>, Option<String>, Option<f32>)> =
+    let analyses: Vec<(Option<i32>, i32, Option<String>, Option<String>, Option<String>, Option<f32>)> =
         article_ai_analysis::table
             .filter(article_ai_analysis::summary.is_not_null())
             .filter(article_ai_analysis::relevance_score.is_not_null())
@@ -445,13 +528,14 @@ pub fn get_today_signals(conn: &mut SqliteConnection, limit: i32) -> Result<Vec<
                 article_ai_analysis::article_id,
                 article_ai_analysis::signal_title,
                 article_ai_analysis::summary,
+                article_ai_analysis::why_it_matters,
                 article_ai_analysis::relevance_score,
             ))
             .load(conn)
             .map_err(|e| e.to_string())?;
 
     let mut signals = Vec::new();
-    for (analysis_id, article_id, signal_title, summary, score) in analyses {
+    for (analysis_id, article_id, signal_title, summary, why_it_matters, score) in analyses {
         let analysis_id = analysis_id.unwrap_or(0);
         let article: Option<(String, String, String)> = articles::table
             .find(article_id)
@@ -470,6 +554,7 @@ pub fn get_today_signals(conn: &mut SqliteConnection, limit: i32) -> Result<Vec<
             id: analysis_id,
             title,
             summary: summary.unwrap_or_default(),
+            why_it_matters: why_it_matters.unwrap_or_default(),
             relevance_score: score.unwrap_or(0.0) as f64,
             source_count: sources.len() as i32,
             sources,
