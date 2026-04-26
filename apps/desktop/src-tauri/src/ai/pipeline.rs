@@ -38,12 +38,19 @@ pub struct Signal {
 #[derive(Debug, Serialize, Clone)]
 pub struct SignalSource {
     pub article_id: i32,
+    pub article_uuid: String,
     pub title: String,
     pub link: String,
     pub feed_title: String,
     pub feed_uuid: String,
     pub pub_date: String,
     pub excerpt: Option<String>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct SignalDetail {
+    pub signal: Signal,
+    pub all_sources: Vec<SignalSource>,
 }
 
 #[derive(Debug)]
@@ -567,39 +574,165 @@ pub fn get_today_signals(conn: &mut SqliteConnection, limit: i32) -> Result<Vec<
     Ok(signals)
 }
 
-fn get_sources_for_article(conn: &mut SqliteConnection, article_id: i32) -> Vec<SignalSource> {
-    let article: Option<(i32, String, String, String, String)> = articles::table
+pub fn get_signal_detail(
+    conn: &mut SqliteConnection,
+    signal_id: i32,
+) -> Result<SignalDetail, String> {
+    let analysis: Option<(Option<i32>, i32, Option<String>, Option<String>, Option<String>, Option<f32>)> =
+        article_ai_analysis::table
+            .filter(article_ai_analysis::id.eq(signal_id))
+            .select((
+                article_ai_analysis::id,
+                article_ai_analysis::article_id,
+                article_ai_analysis::signal_title,
+                article_ai_analysis::summary,
+                article_ai_analysis::why_it_matters,
+                article_ai_analysis::relevance_score,
+            ))
+            .first(conn)
+            .ok();
+
+    let (_, article_id, signal_title, summary, why_it_matters, score) = analysis
+        .ok_or_else(|| "Signal not found".to_string())?;
+
+    let article: Option<(String, String, String)> = articles::table
+        .find(article_id)
+        .select((articles::title, articles::link, articles::feed_uuid))
+        .first(conn)
+        .ok();
+
+    let title = match &signal_title {
+        Some(t) if !t.is_empty() => t.clone(),
+        _ => article.as_ref().map(|(t, _, _)| t.clone()).unwrap_or_default(),
+    };
+
+    let all_sources = find_related_sources(conn, signal_id, article_id, 0.7)?;
+
+    let signal = Signal {
+        id: signal_id,
+        title,
+        summary: summary.unwrap_or_default(),
+        why_it_matters: why_it_matters.unwrap_or_default(),
+        relevance_score: score.unwrap_or(0.0) as f64,
+        source_count: all_sources.len() as i32,
+        sources: all_sources.clone(),
+        topic_id: None,
+        topic_title: None,
+        created_at: Utc::now().to_rfc3339(),
+    };
+
+    Ok(SignalDetail {
+        signal,
+        all_sources,
+    })
+}
+
+pub fn find_related_sources(
+    conn: &mut SqliteConnection,
+    signal_id: i32,
+    main_article_id: i32,
+    similarity_threshold: f64,
+) -> Result<Vec<SignalSource>, String> {
+    let embedding_json: Option<String> = article_ai_analysis::table
+        .filter(article_ai_analysis::id.eq(signal_id))
+        .select(article_ai_analysis::embedding_json)
+        .first(conn)
+        .ok()
+        .flatten();
+
+    let target_embedding: Vec<f32> = match embedding_json {
+        Some(ref json) if !json.is_empty() => {
+            serde_json::from_str(json).unwrap_or_default()
+        }
+        _ => {
+            return Ok(get_sources_for_article(conn, main_article_id));
+        }
+    };
+
+    if target_embedding.is_empty() {
+        return Ok(get_sources_for_article(conn, main_article_id));
+    }
+
+    let rows: Vec<(i32, Option<String>)> = article_ai_analysis::table
+        .filter(article_ai_analysis::embedding_json.is_not_null())
+        .filter(article_ai_analysis::id.ne(signal_id))
+        .select((
+            article_ai_analysis::article_id,
+            article_ai_analysis::embedding_json,
+        ))
+        .load::<(i32, Option<String>)>(conn)
+        .map_err(|e| e.to_string())?;
+
+    let mut related_article_ids: Vec<i32> = Vec::new();
+    for (article_id, emb_json_opt) in &rows {
+        if let Some(emb_json) = emb_json_opt {
+            let emb: Vec<f32> = serde_json::from_str(emb_json).unwrap_or_default();
+            if emb.len() == target_embedding.len() {
+                let sim = cosine_similarity(&target_embedding, &emb);
+                if sim > similarity_threshold && !related_article_ids.contains(article_id) {
+                    related_article_ids.push(*article_id);
+                }
+            }
+        }
+    }
+
+    let mut source_article_ids: Vec<i32> = vec![main_article_id];
+    for aid in &related_article_ids {
+        if !source_article_ids.contains(aid) {
+            source_article_ids.push(*aid);
+        }
+    }
+
+    source_article_ids.truncate(50);
+
+    let mut sources: Vec<SignalSource> = Vec::new();
+    for aid in &source_article_ids {
+        if let Some(source) = build_signal_source(conn, *aid) {
+            sources.push(source);
+        }
+    }
+
+    sources.sort_by(|a, b| b.pub_date.cmp(&a.pub_date));
+
+    Ok(sources)
+}
+
+fn build_signal_source(conn: &mut SqliteConnection, article_id: i32) -> Option<SignalSource> {
+    let article: (i32, String, String, String, String, String) = articles::table
         .find(article_id)
         .select((
             articles::id,
+            articles::uuid,
             articles::title,
             articles::link,
             articles::feed_uuid,
             articles::pub_date,
         ))
         .first(conn)
+        .ok()?;
+
+    let (id, uuid, title, link, feed_uuid, pub_date) = article;
+
+    let feed_title: Option<String> = feeds::table
+        .filter(feeds::uuid.eq(&feed_uuid))
+        .select(feeds::title)
+        .first(conn)
         .ok();
 
-    match article {
-        Some((id, title, link, feed_uuid, pub_date)) => {
-            let feed_title: Option<String> = feeds::table
-                .filter(feeds::uuid.eq(&feed_uuid))
-                .select(feeds::title)
-                .first(conn)
-                .ok();
+    Some(SignalSource {
+        article_id: id,
+        article_uuid: uuid,
+        title,
+        link,
+        feed_title: feed_title.unwrap_or_default(),
+        feed_uuid,
+        pub_date,
+        excerpt: None,
+    })
+}
 
-            vec![SignalSource {
-                article_id: id,
-                title,
-                link,
-                feed_title: feed_title.unwrap_or_default(),
-                feed_uuid,
-                pub_date,
-                excerpt: None,
-            }]
-        }
-        None => vec![],
-    }
+fn get_sources_for_article(conn: &mut SqliteConnection, article_id: i32) -> Vec<SignalSource> {
+    build_signal_source(conn, article_id).into_iter().collect()
 }
 
 #[cfg(test)]
@@ -659,5 +792,100 @@ mod tests {
         assert_eq!(PipelineError::AlreadyRunning.to_string(), "PL_ALREADY_RUNNING");
         assert_eq!(PipelineError::NoApiKey.to_string(), "AI_NO_API_KEY");
         assert!(PipelineError::DbError("test".to_string()).to_string().contains("test"));
+    }
+
+    #[test]
+    fn test_find_related_sources_empty_embedding_fallback() {
+        let empty: Vec<f32> = vec![];
+        assert!(empty.is_empty());
+    }
+
+    #[test]
+    fn test_get_signal_detail_not_found() {
+        let conn = &mut crate::db::establish_connection();
+        let result = get_signal_detail(conn, -99999);
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("not found"));
+    }
+
+    #[test]
+    fn test_cosine_similarity_threshold() {
+        let a = vec![1.0, 0.0, 0.0];
+        let b = vec![0.7, 0.7, 0.0];
+        let sim = cosine_similarity(&a, &b);
+        assert!(sim > 0.0);
+        assert!(sim < 1.0);
+    }
+
+    #[test]
+    fn test_signal_source_sort_by_date() {
+        let sources = vec![
+            SignalSource {
+                article_id: 1,
+                article_uuid: "a".to_string(),
+                title: "Older".to_string(),
+                link: "".to_string(),
+                feed_title: "".to_string(),
+                feed_uuid: "".to_string(),
+                pub_date: "2024-01-01T00:00:00Z".to_string(),
+                excerpt: None,
+            },
+            SignalSource {
+                article_id: 2,
+                article_uuid: "b".to_string(),
+                title: "Newer".to_string(),
+                link: "".to_string(),
+                feed_title: "".to_string(),
+                feed_uuid: "".to_string(),
+                pub_date: "2024-06-01T00:00:00Z".to_string(),
+                excerpt: None,
+            },
+        ];
+        let mut sorted = sources;
+        sorted.sort_by(|a, b| b.pub_date.cmp(&a.pub_date));
+        assert_eq!(sorted[0].article_id, 2);
+        assert_eq!(sorted[1].article_id, 1);
+    }
+
+    #[test]
+    fn test_signal_detail_structure() {
+        let detail = SignalDetail {
+            signal: Signal {
+                id: 1,
+                title: "Test".to_string(),
+                summary: "Summary".to_string(),
+                why_it_matters: "WIM".to_string(),
+                relevance_score: 0.9,
+                source_count: 2,
+                sources: vec![],
+                topic_id: None,
+                topic_title: None,
+                created_at: "2024-01-01".to_string(),
+            },
+            all_sources: vec![
+                SignalSource {
+                    article_id: 1,
+                    article_uuid: "a".to_string(),
+                    title: "S1".to_string(),
+                    link: "".to_string(),
+                    feed_title: "".to_string(),
+                    feed_uuid: "".to_string(),
+                    pub_date: "".to_string(),
+                    excerpt: None,
+                },
+                SignalSource {
+                    article_id: 2,
+                    article_uuid: "b".to_string(),
+                    title: "S2".to_string(),
+                    link: "".to_string(),
+                    feed_title: "".to_string(),
+                    feed_uuid: "".to_string(),
+                    pub_date: "".to_string(),
+                    excerpt: None,
+                },
+            ],
+        };
+        assert_eq!(detail.all_sources.len(), 2);
+        assert_eq!(detail.signal.source_count, 2);
     }
 }

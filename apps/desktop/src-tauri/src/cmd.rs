@@ -343,6 +343,12 @@ pub fn import_opml_as_source(
 }
 
 #[command]
+pub fn get_signal_detail(signal_id: i32) -> Result<crate::ai::pipeline::SignalDetail, String> {
+    let conn = &mut crate::db::establish_connection();
+    crate::ai::pipeline::get_signal_detail(conn, signal_id)
+}
+
+#[command]
 pub fn get_today_signals(limit: Option<i32>) -> Result<Vec<crate::ai::pipeline::Signal>, String> {
   let conn = &mut crate::db::establish_connection();
   let limit = limit.unwrap_or(5);

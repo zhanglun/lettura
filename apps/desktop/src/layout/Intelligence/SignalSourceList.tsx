@@ -1,0 +1,61 @@
+import { Text, Flex } from "@radix-ui/themes";
+import { useTranslation } from "react-i18next";
+import { SignalSource } from "@/stores/createTodaySlice";
+import { SignalSourceItem } from "./SignalSourceItem";
+import { Newspaper } from "lucide-react";
+
+const PREVIEW_COUNT = 5;
+
+interface SignalSourceListProps {
+  sources: SignalSource[];
+  onSourceClick: (articleUuid: string, feedUuid: string) => void;
+  onLoadAll?: () => void;
+  loading?: boolean;
+}
+
+export function SignalSourceList({
+  sources,
+  onSourceClick,
+  onLoadAll,
+  loading,
+}: SignalSourceListProps) {
+  const { t } = useTranslation();
+  const hasMore = sources.length > PREVIEW_COUNT;
+  const displaySources = hasMore ? sources.slice(0, PREVIEW_COUNT) : sources;
+
+  return (
+    <div className="mt-2 pt-2 border-t border-[var(--gray-4)]">
+      <Flex align="center" gap="1" mb="2">
+        <Newspaper size={14} className="text-[var(--gray-9)]" />
+        <Text size="1" weight="medium" className="text-[var(--gray-9)]">
+          {t("today.sources.title")}
+        </Text>
+      </Flex>
+
+      <div className="flex flex-col gap-0.5">
+        {displaySources.map((source) => (
+          <SignalSourceItem
+            key={source.article_id}
+            source={source}
+            onClick={onSourceClick}
+          />
+        ))}
+      </div>
+
+      {hasMore && onLoadAll && (
+        <button
+          className="w-full text-center py-2 mt-1 text-sm text-[var(--gray-9)] hover:text-[var(--gray-11)] transition-colors"
+          onClick={onLoadAll}
+          disabled={loading}
+        >
+          {loading
+            ? t("today.sources.loading", "Loading...")
+            : t("today.sources.show_all", {
+                count: sources.length,
+                defaultValue: `Show all ${sources.length} articles`,
+              })}
+        </button>
+      )}
+    </div>
+  );
+}

@@ -3,6 +3,7 @@ import { invoke } from "@tauri-apps/api/core";
 
 export interface SignalSource {
   article_id: number;
+  article_uuid: string;
   title: string;
   link: string;
   feed_title: string;
@@ -22,6 +23,11 @@ export interface Signal {
   topic_id: number | null;
   topic_title: string | null;
   created_at: string;
+}
+
+export interface SignalDetail {
+  signal: Signal;
+  all_sources: SignalSource[];
 }
 
 export interface AIConfigPublic {
@@ -45,11 +51,16 @@ export interface TodaySlice {
 
   aiConfig: AIConfigPublic | null;
 
+  expandedSignalId: number | null;
+  signalDetails: Record<number, SignalDetail>;
+
   fetchSignals: (limit?: number) => Promise<void>;
   fetchAIConfig: () => Promise<void>;
   setPipelineStatus: (status: PipelineStatus) => void;
   setPipelineProgress: (stage: string, current: number, total: number) => void;
   triggerPipeline: (runType?: string) => Promise<void>;
+  toggleSourceExpand: (signalId: number) => void;
+  fetchSignalDetail: (signalId: number) => Promise<void>;
 }
 
 export const createTodaySlice: StateCreator<TodaySlice> = (set, get) => ({
@@ -63,6 +74,9 @@ export const createTodaySlice: StateCreator<TodaySlice> = (set, get) => ({
   pipelineProgress: 0,
 
   aiConfig: null,
+
+  expandedSignalId: null,
+  signalDetails: {},
 
   fetchSignals: async (limit = 5) => {
     set({ signalsLoading: true, signalsError: null });
@@ -108,6 +122,29 @@ export const createTodaySlice: StateCreator<TodaySlice> = (set, get) => ({
       await invoke("trigger_pipeline", { runType: runType || "manual" });
     } catch (e) {
       set({ pipelineStatus: "error", signalsError: String(e) });
+    }
+  },
+
+  toggleSourceExpand: (signalId) => {
+    const { expandedSignalId } = get();
+    set({
+      expandedSignalId: expandedSignalId === signalId ? null : signalId,
+    });
+  },
+
+  fetchSignalDetail: async (signalId) => {
+    try {
+      const detail: SignalDetail = await invoke("get_signal_detail", {
+        signalId,
+      });
+      set((state) => ({
+        signalDetails: {
+          ...state.signalDetails,
+          [signalId]: detail,
+        },
+      }));
+    } catch (e) {
+      console.error("Failed to fetch signal detail:", e);
     }
   },
 });

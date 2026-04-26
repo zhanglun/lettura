@@ -126,6 +126,7 @@ pub fn run() {
       cmd::install_pack,
       cmd::import_opml_as_source,
       cmd::get_today_signals,
+      cmd::get_signal_detail,
       cmd::get_ai_config,
       cmd::save_ai_config,
       cmd::validate_ai_config,

@@ -208,7 +208,14 @@
     },
     "why_short": "为什么",
     "why_expand": "查看原因",
-    "why_collapse": "收起"
+    "why_collapse": "收起",
+    "sources": {
+      "title": "来源文章",
+      "show_all": "显示全部 {{count}} 篇",
+      "expand": "展开来源",
+      "collapse": "收起来源",
+      "loading": "加载中..."
+    }
   },
   "settings": {
     "ai": {

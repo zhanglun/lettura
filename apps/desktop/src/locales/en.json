@@ -182,7 +182,14 @@
     },
     "why_short": "Why",
     "why_expand": "Show why",
-    "why_collapse": "Hide"
+    "why_collapse": "Hide",
+    "sources": {
+      "title": "Source Articles",
+      "show_all": "Show all {{count}} articles",
+      "expand": "Show sources",
+      "collapse": "Hide sources",
+      "loading": "Loading..."
+    }
   },
   "settings": {
     "ai": {

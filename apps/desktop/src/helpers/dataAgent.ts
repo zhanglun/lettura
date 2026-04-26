@@ -280,6 +280,7 @@ export const importOpmlAsSource = async (
 
 export interface SignalSource {
   article_id: number;
+  article_uuid: string;
   title: string;
   link: string;
   feed_title: string;
@@ -292,6 +293,7 @@ export interface Signal {
   id: number;
   title: string;
   summary: string;
+  why_it_matters: string;
   relevance_score: number;
   source_count: number;
   sources: SignalSource[];
@@ -349,4 +351,15 @@ export const triggerPipeline = async (
   runType?: string,
 ): Promise<PipelineResult> => {
   return invoke("trigger_pipeline", { runType });
+};
+
+export interface SignalDetail {
+  signal: Signal;
+  all_sources: SignalSource[];
+}
+
+export const getSignalDetail = async (
+  signalId: number,
+): Promise<SignalDetail> => {
+  return invoke("get_signal_detail", { signalId });
 };
