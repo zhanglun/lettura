@@ -7,7 +7,7 @@ use crate::core::config;
 use crate::feed::WrappedMediaObject;
 use crate::models;
 use crate::server::stop_server;
-use crate::{feed, server, AppState};
+use crate::{feed, server, AppState, sources};
 
 #[derive(Debug, Serialize)]
 pub struct FeedFetchResponse {
@@ -267,6 +267,76 @@ pub fn export_opml() -> Result<String, String> {
 #[command]
 pub fn import_opml(opml_content: String) -> Result<feed::opml::OpmlImportResult, String> {
   feed::opml::import_opml(&opml_content)
+}
+
+#[command]
+pub fn get_starter_packs() -> Result<Vec<sources::models::StarterPackSummary>, String> {
+  sources::starter_pack::get_all_packs()
+}
+
+#[command]
+pub fn preview_pack(pack_id: String) -> Result<sources::models::PackPreviewResponse, String> {
+  let pack = sources::starter_pack::load_pack(&pack_id)?;
+  Ok(sources::models::PackPreviewResponse {
+    id: pack.id,
+    name: pack.name,
+    description: pack.description,
+    icon: pack.icon,
+    language: pack.language,
+    tags: pack.tags,
+    sources: pack.sources,
+  })
+}
+
+#[command]
+pub async fn install_pack(
+  app: tauri::AppHandle,
+  pack_ids: Vec<String>,
+) -> Result<sources::models::InstallResult, String> {
+  let stats = sources::starter_pack::install_packs_core(&pack_ids)?;
+
+  let sync_started = !stats.new_feed_uuids.is_empty();
+
+  if sync_started {
+    let app_handle = app.clone();
+    let uuids = stats.new_feed_uuids.clone();
+    tokio::spawn(async move {
+      for uuid in uuids {
+        let result = feed::channel::sync_articles(uuid.clone()).await;
+        let status = match result.get(&uuid) {
+          Some((title, count, err)) => {
+            if err.is_empty() {
+              "completed"
+            } else {
+              "failed"
+            }
+          }
+          None => "failed",
+        };
+        let _ = app_handle.emit(
+          "feed:sync_progress",
+          serde_json::json!({
+            "feed_uuid": uuid,
+            "status": status,
+          }),
+        );
+      }
+      let _ = app_handle.emit("feed:sync_complete", serde_json::json!({}));
+    });
+  }
+
+  Ok(sources::models::InstallResult {
+    installed_feeds: stats.installed_feeds,
+    installed_sources: stats.installed_sources,
+    sync_started,
+  })
+}
+
+#[command]
+pub fn import_opml_as_source(
+  opml_content: String,
+) -> Result<sources::source_service::OpmlImportAsSourceResult, String> {
+  sources::source_service::import_opml_as_source(&opml_content)
 }
 
 #[cfg(test)]

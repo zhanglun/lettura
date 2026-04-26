@@ -22,6 +22,7 @@ mod feed;
 mod models;
 mod schema;
 mod server;
+mod sources;
 
 pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!("./migrations");
 
@@ -117,6 +118,10 @@ pub fn run() {
       cmd::get_server_port,
       cmd::export_opml,
       cmd::import_opml,
+      cmd::get_starter_packs,
+      cmd::preview_pack,
+      cmd::install_pack,
+      cmd::import_opml_as_source,
       core::scheduler::start_scheduler,
       core::scheduler::stop_scheduler,
       core::scheduler::is_scheduler_running,
