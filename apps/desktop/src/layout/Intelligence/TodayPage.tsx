@@ -24,10 +24,11 @@ export function TodayPage() {
     })),
   );
 
-  const { error: articleError } = useArticle({});
+  const { error: articleError, isEmpty: articleListEmpty, mutate } = useArticle({});
 
   const hasSubscriptions = store.subscribes.length > 0;
   const hasError = articleError !== null;
+  const showEmptyState = !hasSubscriptions || hasError || (hasSubscriptions && articleListEmpty);
 
   const handleRefReady = useCallback(
     (ref: TodayArticleListRefObject | null) => {
@@ -55,7 +56,7 @@ export function TodayPage() {
 
   const renderEmptyState = () => {
     if (hasError) {
-      return <TodayEmptyState type="load_error" />;
+      return <TodayEmptyState type="load_error" onRetry={() => mutate()} />;
     }
     if (!hasSubscriptions) {
       return <TodayEmptyState type="no_subscriptions" />;
@@ -66,7 +67,7 @@ export function TodayPage() {
   return (
     <MainPanel>
       <>
-        {!hasSubscriptions || hasError ? (
+        {showEmptyState ? (
           renderEmptyState()
         ) : (
           <>

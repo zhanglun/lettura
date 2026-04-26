@@ -9,9 +9,10 @@ type EmptyType = "no_subscriptions" | "no_new_articles" | "load_error";
 
 interface TodayEmptyStateProps {
   type: EmptyType;
+  onRetry?: () => void;
 }
 
-export function TodayEmptyState({ type }: TodayEmptyStateProps) {
+export function TodayEmptyState({ type, onRetry }: TodayEmptyStateProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const store = useBearStore(
@@ -40,6 +41,11 @@ export function TodayEmptyState({ type }: TodayEmptyStateProps) {
         <Text size="2" className="text-[var(--gray-11)] mb-6">
           {t("today.empty.error_subtitle")}
         </Text>
+        {onRetry && (
+          <Button size="2" onClick={onRetry}>
+            {t("today.empty.retry")}
+          </Button>
+        )}
       </div>
     );
   }

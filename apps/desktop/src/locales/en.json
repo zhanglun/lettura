@@ -154,7 +154,8 @@
       "no_articles_subtitle": "Check back later for new content from your subscriptions.",
       "explore_all": "Explore All Articles",
       "error_title": "Failed to Load",
-      "error_subtitle": "Something went wrong while loading today's articles. Please try again."
+      "error_subtitle": "Something went wrong while loading today's articles. Please try again.",
+      "retry": "Retry"
     }
   }
 }

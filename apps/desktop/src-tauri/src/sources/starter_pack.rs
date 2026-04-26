@@ -206,4 +206,24 @@ mod tests {
       assert!(!source.title.is_empty(), "title should not be empty");
     }
   }
+
+  #[test]
+  fn test_install_packs_no_duplicates_on_reinstall() {
+    let result1 = install_packs_core(&["ai".to_string()]).unwrap();
+    assert!(
+      result1.installed_sources > 0,
+      "first install should create sources"
+    );
+    let first_count = result1.installed_sources;
+
+    let result2 = install_packs_core(&["ai".to_string()]).unwrap();
+    assert_eq!(
+      result2.installed_sources, 0,
+      "second install should not create duplicate sources"
+    );
+    assert_eq!(
+      result2.installed_feeds, 0,
+      "second install should not create duplicate feeds"
+    );
+  }
 }

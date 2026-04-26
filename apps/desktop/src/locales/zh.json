@@ -180,7 +180,8 @@
       "no_articles_subtitle": "稍后再来看看您的订阅是否有新内容。",
       "explore_all": "浏览全部文章",
       "error_title": "加载失败",
-      "error_subtitle": "加载今日文章时出现了问题，请稍后重试。"
+      "error_subtitle": "加载今日文章时出现了问题，请稍后重试。",
+      "retry": "重试"
     }
   }
 }
