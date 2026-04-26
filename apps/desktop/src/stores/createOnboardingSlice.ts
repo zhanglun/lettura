@@ -1,4 +1,5 @@
 import { StateCreator } from "zustand";
+import type { UserConfigSlice } from "@/stores/createUserConfigSlice";
 import * as dataAgent from "@/helpers/dataAgent";
 
 export type OnboardingStep = "welcome" | "select-pack" | "installing" | "complete";
@@ -154,7 +155,11 @@ export const createOnboardingSlice: StateCreator<OnboardingSlice> = (
   },
 
   completeOnboarding: () => {
-    dataAgent.updateUserConfig({ app: { onboarding_completed: true } } as any);
+    const state = get() as OnboardingSlice & UserConfigSlice;
+    state.updateUserConfig({
+      ...state.userConfig,
+      app: { onboarding_completed: true },
+    });
     set({ onboardingOpen: false, onboardingStep: "welcome" });
   },
 });
