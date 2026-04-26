@@ -575,8 +575,8 @@ listen('pipeline:failed', (event) => {
 | 版本 | 新增 IPC 命令 | 新增事件 |
 |------|-------------|---------|
 | 2.1 | `get_starter_packs`, `preview_pack`, `install_pack` | `feed:sync_progress` |
-| 2.2 | `get_today_overview`, `get_today_signals` | — |
-| 2.3 | `get_ai_config`, `save_ai_config`, `validate_ai_config`, `trigger_pipeline` | `pipeline:*` |
+| 2.2 | `get_today_overview` | — |
+| 2.3 | `get_today_signals`, `get_ai_config`, `save_ai_config`, `validate_ai_config`, `trigger_pipeline` | `pipeline:*` |
 | 2.4 | — (复用 get_today_signals) | — |
 | 2.5 | `get_signal_detail` | — |
 | 2.7 | `submit_feedback`, `get_feedback_history` | — |
