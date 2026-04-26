@@ -200,6 +200,7 @@
       "stage_generating_summaries": "生成摘要中",
       "stage_generating_wim": "生成重要性分析中",
       "stage_ranking": "排序中",
+      "stage_deduplicating": "去重中",
       "stage_storing_results": "存储结果中"
     },
     "signal_card": {
@@ -235,7 +236,15 @@
       "validation_success": "API Key 有效",
       "validation_failed": "验证失败",
       "saved": "AI 配置已保存",
-      "pipeline_triggered": "Pipeline 已启动"
+      "pipeline_triggered": "Pipeline 已启动",
+      "dedup_stats_title": "去重统计",
+      "dedup_total": "已分析文章",
+      "dedup_duplicates": "发现重复",
+      "dedup_groups": "重复分组",
+      "dedup_avg_density": "平均信息密度"
     }
+  },
+  "article": {
+    "duplicate": "重复"
   }
 }
