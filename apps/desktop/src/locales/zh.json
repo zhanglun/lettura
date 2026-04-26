@@ -196,14 +196,19 @@
       "stage_fetching_articles": "获取文章中",
       "stage_generating_embeddings": "生成嵌入向量中",
       "stage_clustering": "聚类分析中",
+      "stage_generating_signal_titles": "生成信号标题中",
       "stage_generating_summaries": "生成摘要中",
+      "stage_generating_wim": "生成重要性分析中",
       "stage_ranking": "排序中",
       "stage_storing_results": "存储结果中"
     },
     "signal_card": {
       "articles": "篇文章",
       "sources": "个来源"
-    }
+    },
+    "why_short": "为什么",
+    "why_expand": "查看原因",
+    "why_collapse": "收起"
   },
   "settings": {
     "ai": {

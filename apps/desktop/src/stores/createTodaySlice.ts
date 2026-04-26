@@ -15,6 +15,7 @@ export interface Signal {
   id: number;
   title: string;
   summary: string;
+  why_it_matters: string;
   relevance_score: number;
   source_count: number;
   sources: SignalSource[];

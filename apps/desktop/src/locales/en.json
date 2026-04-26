@@ -170,14 +170,19 @@
       "stage_fetching_articles": "Fetching articles",
       "stage_generating_embeddings": "Generating embeddings",
       "stage_clustering": "Clustering",
+      "stage_generating_signal_titles": "Generating signal titles",
       "stage_generating_summaries": "Generating summaries",
+      "stage_generating_wim": "Generating why it matters",
       "stage_ranking": "Ranking",
       "stage_storing_results": "Storing results"
     },
     "signal_card": {
       "articles": "articles",
       "sources": "sources"
-    }
+    },
+    "why_short": "Why",
+    "why_expand": "Show why",
+    "why_collapse": "Hide"
   },
   "settings": {
     "ai": {
