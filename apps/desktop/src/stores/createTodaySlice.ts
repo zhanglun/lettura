@@ -3,6 +3,8 @@ import { invoke } from "@tauri-apps/api/core";
 import {
   submitFeedback as invokeSubmitFeedback,
   type FeedbackType,
+  type TodayOverview as TodayOverviewType,
+  getTodayOverview,
 } from "@/helpers/dataAgent";
 
 export interface SignalSource {
@@ -59,6 +61,10 @@ export interface TodaySlice {
   signalDetails: Record<number, SignalDetail>;
   feedbackMap: Record<number, FeedbackType | null>;
 
+  overview: TodayOverviewType | null;
+  overviewLoading: boolean;
+  overviewError: string | null;
+
   fetchSignals: (limit?: number) => Promise<void>;
   fetchAIConfig: () => Promise<void>;
   setPipelineStatus: (status: PipelineStatus) => void;
@@ -67,6 +73,7 @@ export interface TodaySlice {
   toggleSourceExpand: (signalId: number) => void;
   fetchSignalDetail: (signalId: number) => Promise<void>;
   submitFeedback: (signalId: number, feedbackType: FeedbackType) => Promise<void>;
+  fetchOverview: () => Promise<void>;
 }
 
 export const createTodaySlice: StateCreator<TodaySlice> = (set, get) => ({
@@ -84,6 +91,10 @@ export const createTodaySlice: StateCreator<TodaySlice> = (set, get) => ({
   expandedSignalId: null,
   signalDetails: {},
   feedbackMap: {},
+
+  overview: null,
+  overviewLoading: false,
+  overviewError: null,
 
   fetchSignals: async (limit = 5) => {
     set({ signalsLoading: true, signalsError: null });
@@ -160,5 +171,15 @@ export const createTodaySlice: StateCreator<TodaySlice> = (set, get) => ({
     set((state) => ({
       feedbackMap: { ...state.feedbackMap, [signalId]: feedbackType },
     }));
+  },
+
+  fetchOverview: async () => {
+    set({ overviewLoading: true, overviewError: null });
+    try {
+      const overview = await getTodayOverview();
+      set({ overview, overviewLoading: false });
+    } catch (e) {
+      set({ overviewError: String(e), overviewLoading: false });
+    }
   },
 });

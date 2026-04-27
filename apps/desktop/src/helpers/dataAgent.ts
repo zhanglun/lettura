@@ -411,3 +411,15 @@ export const getFeedbackHistory = async (
     offset: offset ?? 0,
   });
 };
+
+export interface TodayOverview {
+  summary: string;
+  signal_count: number;
+  article_count: number;
+  generated_at: string;
+  is_stale: boolean;
+}
+
+export const getTodayOverview = async (): Promise<TodayOverview> => {
+  return invoke("get_today_overview");
+};
