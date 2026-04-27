@@ -216,6 +216,14 @@
       "expand": "展开来源",
       "collapse": "收起来源",
       "loading": "加载中..."
+    },
+    "feedback": {
+      "useful": "有用",
+      "not_relevant": "不相关",
+      "follow": "继续关注",
+      "toast_useful": "已标记为有用",
+      "toast_not_relevant": "已标记为不相关",
+      "toast_follow": "已加入关注"
     }
   },
   "settings": {

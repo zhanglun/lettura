@@ -190,6 +190,14 @@
       "expand": "Show sources",
       "collapse": "Hide sources",
       "loading": "Loading..."
+    },
+    "feedback": {
+      "useful": "Useful",
+      "not_relevant": "Not Relevant",
+      "follow": "Follow Topic",
+      "toast_useful": "Marked as useful",
+      "toast_not_relevant": "Marked as not relevant",
+      "toast_follow": "Added to follow list"
     }
   },
   "settings": {
