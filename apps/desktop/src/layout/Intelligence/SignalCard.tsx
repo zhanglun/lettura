@@ -1,7 +1,16 @@
 import { Text, Flex } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
 import { Signal } from "@/stores/createTodaySlice";
-import { FileText, Lightbulb, ChevronDown, ChevronUp } from "lucide-react";
+import { FeedbackType } from "@/helpers/dataAgent";
+import {
+  FileText,
+  Lightbulb,
+  ChevronDown,
+  ChevronUp,
+  ThumbsUp,
+  ThumbsDown,
+  BookmarkPlus,
+} from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { RouteConfig } from "@/config";
@@ -127,6 +136,8 @@ export function SignalCard({ signal }: SignalCardProps) {
           </button>
         </Flex>
 
+        <FeedbackButtons signalId={signal.id} />
+
         <div
           className="overflow-hidden transition-all duration-300 ease-in-out"
           style={{
@@ -143,5 +154,76 @@ export function SignalCard({ signal }: SignalCardProps) {
         </div>
       </Flex>
     </div>
+  );
+}
+
+const FEEDBACK_BUTTONS: {
+  type: FeedbackType;
+  icon: typeof ThumbsUp;
+  labelKey: string;
+}[] = [
+  { type: "useful", icon: ThumbsUp, labelKey: "today.feedback.useful" },
+  {
+    type: "not_relevant",
+    icon: ThumbsDown,
+    labelKey: "today.feedback.not_relevant",
+  },
+  {
+    type: "follow_topic",
+    icon: BookmarkPlus,
+    labelKey: "today.feedback.follow",
+  },
+];
+
+function FeedbackButtons({ signalId }: { signalId: number }) {
+  const { t } = useTranslation();
+  const [submitting, setSubmitting] = useState(false);
+
+  const store = useBearStore(
+    useShallow((state) => ({
+      feedbackMap: state.feedbackMap,
+      submitFeedback: state.submitFeedback,
+    })),
+  );
+
+  const existingFeedback = store.feedbackMap[signalId] ?? null;
+
+  const handleSubmit = async (type: FeedbackType) => {
+    if (submitting || existingFeedback) return;
+    setSubmitting(true);
+    try {
+      await store.submitFeedback(signalId, type);
+    } catch (e) {
+      console.error("Failed to submit feedback:", e);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <Flex align="center" gap="3" mt="1">
+      {FEEDBACK_BUTTONS.map(({ type, icon: Icon, labelKey }) => {
+        const isActive = existingFeedback === type;
+        const isDisabled = existingFeedback !== null && !isActive;
+
+        return (
+          <button
+            key={type}
+            onClick={() => handleSubmit(type)}
+            disabled={submitting || isDisabled}
+            className={`flex items-center gap-1 text-sm transition-colors ${
+              isActive
+                ? "text-[var(--accent-9)] font-medium"
+                : isDisabled
+                  ? "text-[var(--gray-6)] cursor-not-allowed"
+                  : "text-[var(--gray-9)] hover:text-[var(--gray-11)]"
+            }`}
+          >
+            <Icon size={14} />
+            <span>{t(labelKey)}</span>
+          </button>
+        );
+      })}
+    </Flex>
   );
 }

@@ -17,8 +17,10 @@ vi.mock("react-i18next", () => ({
 const mockStore = {
   expandedSignalId: null as number | null,
   signalDetails: {} as Record<number, unknown>,
+  feedbackMap: {} as Record<number, string | null>,
   toggleSourceExpand: vi.fn(),
   fetchSignalDetail: vi.fn(),
+  submitFeedback: vi.fn(),
 };
 
 vi.mock("@/stores", () => ({
@@ -76,8 +78,10 @@ describe("SignalCard", () => {
     vi.clearAllMocks();
     mockStore.expandedSignalId = null;
     mockStore.signalDetails = {};
+    mockStore.feedbackMap = {};
     mockStore.toggleSourceExpand = vi.fn();
     mockStore.fetchSignalDetail = vi.fn();
+    mockStore.submitFeedback = vi.fn();
   });
 
   describe("Why It Matters (WIM)", () => {
