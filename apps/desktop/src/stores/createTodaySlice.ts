@@ -1,5 +1,9 @@
 import { StateCreator } from "zustand";
 import { invoke } from "@tauri-apps/api/core";
+import {
+  submitFeedback as invokeSubmitFeedback,
+  type FeedbackType,
+} from "@/helpers/dataAgent";
 
 export interface SignalSource {
   article_id: number;
@@ -53,6 +57,7 @@ export interface TodaySlice {
 
   expandedSignalId: number | null;
   signalDetails: Record<number, SignalDetail>;
+  feedbackMap: Record<number, FeedbackType | null>;
 
   fetchSignals: (limit?: number) => Promise<void>;
   fetchAIConfig: () => Promise<void>;
@@ -61,6 +66,7 @@ export interface TodaySlice {
   triggerPipeline: (runType?: string) => Promise<void>;
   toggleSourceExpand: (signalId: number) => void;
   fetchSignalDetail: (signalId: number) => Promise<void>;
+  submitFeedback: (signalId: number, feedbackType: FeedbackType) => Promise<void>;
 }
 
 export const createTodaySlice: StateCreator<TodaySlice> = (set, get) => ({
@@ -77,6 +83,7 @@ export const createTodaySlice: StateCreator<TodaySlice> = (set, get) => ({
 
   expandedSignalId: null,
   signalDetails: {},
+  feedbackMap: {},
 
   fetchSignals: async (limit = 5) => {
     set({ signalsLoading: true, signalsError: null });
@@ -146,5 +153,12 @@ export const createTodaySlice: StateCreator<TodaySlice> = (set, get) => ({
     } catch (e) {
       console.error("Failed to fetch signal detail:", e);
     }
+  },
+
+  submitFeedback: async (signalId, feedbackType) => {
+    await invokeSubmitFeedback(signalId, feedbackType);
+    set((state) => ({
+      feedbackMap: { ...state.feedbackMap, [signalId]: feedbackType },
+    }));
   },
 });

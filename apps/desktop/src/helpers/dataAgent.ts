@@ -374,3 +374,40 @@ export interface DedupStats {
 export const getDedupStats = async (): Promise<DedupStats> => {
   return invoke("get_dedup_stats");
 };
+
+export type FeedbackType = "useful" | "not_relevant" | "follow_topic";
+
+export interface FeedbackResult {
+  recorded: boolean;
+  updated_score: number | null;
+}
+
+export interface FeedbackEntry {
+  id: number;
+  signal_id: number;
+  signal_title: string;
+  feedback_type: string;
+  created_at: string;
+}
+
+export const submitFeedback = async (
+  signalId: number,
+  feedbackType: FeedbackType,
+  comment?: string,
+): Promise<FeedbackResult> => {
+  return invoke("submit_feedback", {
+    signalId,
+    feedbackType,
+    comment: comment ?? null,
+  });
+};
+
+export const getFeedbackHistory = async (
+  limit?: number,
+  offset?: number,
+): Promise<FeedbackEntry[]> => {
+  return invoke("get_feedback_history", {
+    limit: limit ?? 20,
+    offset: offset ?? 0,
+  });
+};
