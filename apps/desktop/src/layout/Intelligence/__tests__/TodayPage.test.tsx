@@ -41,6 +41,7 @@ const mockStore = {
   setPipelineProgress: vi.fn(),
   triggerPipeline: vi.fn(),
   updateSettingDialogStatus: vi.fn(),
+  fetchOverview: vi.fn(),
 };
 
 vi.mock("@/stores", () => ({
@@ -71,6 +72,12 @@ vi.mock("../PipelineIndicator", () => ({
 vi.mock("../TodayEmptyState", () => ({
   TodayEmptyState: ({ type }: { type: string }) => (
     <div data-testid="empty-state">EmptyState: {type}</div>
+  ),
+}));
+
+vi.mock("../TodayOverview", () => ({
+  TodayOverview: () => (
+    <div data-testid="today-overview">Overview</div>
   ),
 }));
 

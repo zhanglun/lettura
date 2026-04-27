@@ -33,6 +33,7 @@ const mockStore = {
   triggerPipeline: vi.fn(),
   updateSettingDialogStatus: vi.fn(),
   setOnboardingOpen: vi.fn(),
+  fetchOverview: vi.fn(),
 };
 
 vi.mock("@/stores", () => ({
@@ -67,6 +68,11 @@ vi.mock("../TodayEmptyState", () => ({
         </button>
       )}
     </div>
+  ),
+}));
+vi.mock("../TodayOverview", () => ({
+  TodayOverview: () => (
+    <div data-testid="today-overview">Overview</div>
   ),
 }));
 vi.mock("@/components/MainPanel", () => ({
