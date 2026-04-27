@@ -117,8 +117,19 @@ diesel::table! {
     }
 }
 
+diesel::table! {
+    user_feedback (id) {
+        id -> Nullable<Integer>,
+        signal_id -> Integer,
+        feedback_type -> Text,
+        comment -> Nullable<Text>,
+        create_date -> Timestamp,
+    }
+}
+
 diesel::joinable!(article_ai_analysis -> articles (article_id));
 diesel::joinable!(feeds -> sources (source_id));
+diesel::joinable!(user_feedback -> article_ai_analysis (signal_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
     article_ai_analysis,
@@ -128,4 +139,5 @@ diesel::allow_tables_to_appear_in_same_query!(
     folders,
     pipeline_runs,
     sources,
+    user_feedback,
 );
