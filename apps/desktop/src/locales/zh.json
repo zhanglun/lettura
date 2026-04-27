@@ -224,7 +224,12 @@
       "toast_useful": "已标记为有用",
       "toast_not_relevant": "已标记为不相关",
       "toast_follow": "已加入关注"
-    }
+    },
+    "overview": "今日概览",
+    "overview_updated_minutes_ago": "{{minutes}} 分钟前更新",
+    "overview_error": "无法生成概览",
+    "overview_no_data": "今天还没有新内容",
+    "overview_no_api_key": "请先配置 AI API Key"
   },
   "settings": {
     "ai": {

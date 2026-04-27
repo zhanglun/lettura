@@ -198,7 +198,12 @@
       "toast_useful": "Marked as useful",
       "toast_not_relevant": "Marked as not relevant",
       "toast_follow": "Added to follow list"
-    }
+    },
+    "overview": "Today's Overview",
+    "overview_updated_minutes_ago": "{{minutes}} min ago",
+    "overview_error": "Unable to generate overview",
+    "overview_no_data": "No new content today",
+    "overview_no_api_key": "Please configure your AI API Key first"
   },
   "settings": {
     "ai": {
