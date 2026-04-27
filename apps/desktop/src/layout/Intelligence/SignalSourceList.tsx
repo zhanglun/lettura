@@ -2,13 +2,14 @@ import { Text, Flex } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
 import { SignalSource } from "@/stores/createTodaySlice";
 import { SignalSourceItem } from "./SignalSourceItem";
-import { Newspaper } from "lucide-react";
+import { Newspaper, BookOpen } from "lucide-react";
+import { useMemo } from "react";
 
 const PREVIEW_COUNT = 5;
 
 interface SignalSourceListProps {
   sources: SignalSource[];
-  onSourceClick: (articleUuid: string, feedUuid: string) => void;
+  onSourceClick: (articleUuid: string, feedUuid: string, articleId: number) => void;
   onLoadAll?: () => void;
   loading?: boolean;
 }
@@ -20,8 +21,19 @@ export function SignalSourceList({
   loading,
 }: SignalSourceListProps) {
   const { t } = useTranslation();
-  const hasMore = sources.length > PREVIEW_COUNT;
-  const displaySources = hasMore ? sources.slice(0, PREVIEW_COUNT) : sources;
+
+  const sortedSources = useMemo(
+    () =>
+      [...sources].sort((a, b) => {
+        if (!a.pub_date) return 1;
+        if (!b.pub_date) return -1;
+        return new Date(b.pub_date).getTime() - new Date(a.pub_date).getTime();
+      }),
+    [sources],
+  );
+
+  const hasMore = sortedSources.length > PREVIEW_COUNT;
+  const displaySources = hasMore ? sortedSources.slice(0, PREVIEW_COUNT) : sortedSources;
 
   return (
     <div className="mt-2 pt-2 border-t border-[var(--gray-4)]">
@@ -51,11 +63,20 @@ export function SignalSourceList({
           {loading
             ? t("today.sources.loading", "Loading...")
             : t("today.sources.show_all", {
-                count: sources.length,
-                defaultValue: `Show all ${sources.length} articles`,
+                count: sortedSources.length,
+                defaultValue: `Show all ${sortedSources.length} articles`,
               })}
         </button>
       )}
+
+      <div className="mt-3 pt-3 border-t border-[var(--gray-4)]">
+        <Flex align="center" justify="center" gap="2">
+          <BookOpen size={14} className="text-[var(--gray-8)]" />
+          <Text size="1" className="text-[var(--gray-9)]">
+            {t("today.sources.continue_reading_hint")}
+          </Text>
+        </Flex>
+      </div>
     </div>
   );
 }
