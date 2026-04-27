@@ -189,7 +189,9 @@
       "show_all": "Show all {{count}} articles",
       "expand": "Show sources",
       "collapse": "Hide sources",
-      "loading": "Loading..."
+      "loading": "Loading...",
+      "read_original": "Read Original",
+      "continue_reading_hint": "Want to learn more? Click a source above to read the full article."
     },
     "feedback": {
       "useful": "Useful",

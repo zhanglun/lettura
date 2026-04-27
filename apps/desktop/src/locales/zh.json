@@ -215,7 +215,9 @@
       "show_all": "显示全部 {{count}} 篇",
       "expand": "展开来源",
       "collapse": "收起来源",
-      "loading": "加载中..."
+      "loading": "加载中...",
+      "read_original": "阅读原文",
+      "continue_reading_hint": "想了解更多？点击上方来源阅读原文。"
     },
     "feedback": {
       "useful": "有用",
