@@ -1,6 +1,7 @@
 pub mod config;
 pub mod dedup;
 pub mod embedding;
+pub mod feedback;
 pub mod llm;
 pub mod pipeline;
 pub mod ranking;
