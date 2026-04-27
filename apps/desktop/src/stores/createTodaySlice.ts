@@ -60,6 +60,7 @@ export interface TodaySlice {
   expandedSignalId: number | null;
   signalDetails: Record<number, SignalDetail>;
   feedbackMap: Record<number, FeedbackType | null>;
+  scrollPositionMap: Record<number, number>;
 
   overview: TodayOverviewType | null;
   overviewLoading: boolean;
@@ -73,6 +74,7 @@ export interface TodaySlice {
   toggleSourceExpand: (signalId: number) => void;
   fetchSignalDetail: (signalId: number) => Promise<void>;
   submitFeedback: (signalId: number, feedbackType: FeedbackType) => Promise<void>;
+  setScrollPosition: (signalId: number, scrollY: number) => void;
   fetchOverview: () => Promise<void>;
 }
 
@@ -91,6 +93,7 @@ export const createTodaySlice: StateCreator<TodaySlice> = (set, get) => ({
   expandedSignalId: null,
   signalDetails: {},
   feedbackMap: {},
+  scrollPositionMap: {},
 
   overview: null,
   overviewLoading: false,
@@ -170,6 +173,12 @@ export const createTodaySlice: StateCreator<TodaySlice> = (set, get) => ({
     await invokeSubmitFeedback(signalId, feedbackType);
     set((state) => ({
       feedbackMap: { ...state.feedbackMap, [signalId]: feedbackType },
+    }));
+  },
+
+  setScrollPosition: (signalId, scrollY) => {
+    set((state) => ({
+      scrollPositionMap: { ...state.scrollPositionMap, [signalId]: scrollY },
     }));
   },
 

@@ -11,7 +11,7 @@ import {
   ThumbsDown,
   BookmarkPlus,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { RouteConfig } from "@/config";
 import { useBearStore } from "@/stores";
@@ -34,8 +34,11 @@ export function SignalCard({ signal }: SignalCardProps) {
       signalDetails: state.signalDetails,
       toggleSourceExpand: state.toggleSourceExpand,
       fetchSignalDetail: state.fetchSignalDetail,
+      setScrollPosition: state.setScrollPosition,
     })),
   );
+
+  const openedArticlesRef = useRef<Set<number>>(new Set());
 
   const isExpanded = store.expandedSignalId === signal.id;
   const detail = store.signalDetails[signal.id];
@@ -56,24 +59,37 @@ export function SignalCard({ signal }: SignalCardProps) {
     setDetailLoading(false);
   };
 
-  const handleSourceClick = (articleUuid: string, feedUuid: string) => {
+  const handleSourceClick = useCallback((articleUuid: string, feedUuid: string, articleId: number) => {
+    if (openedArticlesRef.current.has(articleId)) return;
+    openedArticlesRef.current.add(articleId);
+
+    const scrollY = window.scrollY;
+    if (store.expandedSignalId) {
+      store.setScrollPosition(store.expandedSignalId, scrollY);
+    }
+
     const path = RouteConfig.LOCAL_ARTICLE.replace(/:uuid/, feedUuid).replace(
       /:id/,
       articleUuid,
     );
     navigate(path);
-  };
+  }, [navigate, store]);
 
   return (
     <div className="group rounded-lg border border-[var(--gray-4)] bg-[var(--color-background)] p-4 transition-all hover:border-[var(--gray-7)] hover:shadow-sm cursor-default">
       <Flex direction="column" gap="2">
-        <Text
-          size="4"
-          weight="medium"
-          className="text-[var(--gray-12)] leading-snug"
+        <button
+          onClick={handleToggleExpand}
+          className="text-left w-full cursor-pointer"
         >
-          {signal.title}
-        </Text>
+          <Text
+            size="4"
+            weight="medium"
+            className="text-[var(--gray-12)] leading-snug"
+          >
+            {signal.title}
+          </Text>
+        </button>
 
         <Text
           size="2"
