@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { SignalList } from "./SignalList";
 import { PipelineIndicator } from "./PipelineIndicator";
 import { TodayEmptyState } from "./TodayEmptyState";
+import { TodayOverview } from "./TodayOverview";
 import { MainPanel } from "@/components/MainPanel";
 import { Settings, Sparkles, Loader2 } from "lucide-react";
 
@@ -27,12 +28,14 @@ export function TodayPage() {
       setPipelineProgress: state.setPipelineProgress,
       triggerPipeline: state.triggerPipeline,
       updateSettingDialogStatus: state.updateSettingDialogStatus,
+      fetchOverview: state.fetchOverview,
     })),
   );
 
   useEffect(() => {
     store.fetchAIConfig();
     store.fetchSignals();
+    store.fetchOverview();
   }, []);
 
   useEffect(() => {
@@ -134,6 +137,7 @@ export function TodayPage() {
           renderEmptyState()
         ) : (
           <div className="flex-1 overflow-auto">
+            <TodayOverview />
             <SignalList signals={store.signals} />
           </div>
         )}
