@@ -106,10 +106,10 @@ export function View(props: ArticleViewProps) {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: -20, opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="overflow-hidden"
+         className="overflow-hidden flex flex-col"
         >
-          <ScrollBox
-            className="h-[calc(100vh_-_var(--app-toolbar-height))]"
+           <ScrollBox
+            className="flex-1"
             ref={scrollBoxRef}
           >
             <div className="font-[var(--reading-font-body)] min-h-full m-auto sm:px-5 sm:max-w-xl lg:px-10 lg:max-w-5xl">

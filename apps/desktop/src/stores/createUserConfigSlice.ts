@@ -26,6 +26,9 @@ export interface UserConfigSlice {
   updateAboutDialogStatus: (status: boolean) => void;
   appMetadata: any;
   updateAppMetadata: (metadata: any) => void;
+
+  sidebarCollapsed: boolean;
+  toggleSidebar: () => void;
 }
 
 export const createUserConfigSlice: StateCreator<UserConfigSlice> = (
@@ -110,5 +113,16 @@ export const createUserConfigSlice: StateCreator<UserConfigSlice> = (
     set(() => ({
       appMetadata: metadata,
     }));
+  },
+
+  sidebarCollapsed:
+    typeof window !== "undefined" &&
+    localStorage.getItem("sidebar_collapsed") === "true",
+  toggleSidebar: () => {
+    set((state) => {
+      const next = !state.sidebarCollapsed;
+      localStorage.setItem("sidebar_collapsed", String(next));
+      return { sidebarCollapsed: next };
+    });
   },
 });

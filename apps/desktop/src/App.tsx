@@ -1,8 +1,9 @@
 import { useEffect, useCallback, useMemo, useRef } from "react";
+import { Outlet } from "react-router-dom";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { emit, listen } from "@tauri-apps/api/event";
 import { useBearStore } from "@/stores";
-import { LocalPage } from "./layout/Local";
+import { AppLayout } from "./components/layout/AppLayout";
 import { Theme } from "@radix-ui/themes";
 import { DialogAboutApp } from "./components/About";
 import { OnboardingDialog } from "./components/Onboarding";
@@ -136,7 +137,9 @@ function App() {
       <Toaster />
       <ErrorBoundary>
         <div className="h-full max-h-full ">
-          <LocalPage />
+          <AppLayout>
+            <Outlet />
+          </AppLayout>
         </div>
         <DialogAboutApp />
         <OnboardingDialog />

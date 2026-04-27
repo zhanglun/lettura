@@ -164,7 +164,7 @@ export const SearchPage = () => {
 
   return (
     <MainPanel>
-      <div className="w-full h-[calc(100vh-theme(margin.4))] flex flex-row">
+      <div className="w-full h-full flex flex-row">
         <div
           className={clsx("flex flex-col", {
             "w-full": !currentArticle,

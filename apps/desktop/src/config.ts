@@ -10,6 +10,7 @@ export enum RouteConfig {
   LOCAL_STARRED = "/local/starred",
   LOCAL_TODAY = "/local/today",
   LOCAL_FEED = "/local/feeds/:uuid",
+  LOCAL_TOPICS = "/local/topics",
   LOCAL_ARTICLE = "/local/feeds/:uuid/articles/:id",
 
   SERVICE_FRESHRSS = "/service/freshrss",

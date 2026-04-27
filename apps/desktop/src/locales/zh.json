@@ -261,5 +261,28 @@
   },
   "article": {
     "duplicate": "重复"
+  },
+
+  "nav": {
+    "today": "今日",
+    "topics": "主题",
+    "feeds": "订阅",
+    "search": "搜索",
+    "starred": "收藏",
+    "settings": "设置",
+    "collapse_sidebar": "收起侧边栏",
+    "expand_sidebar": "展开侧边栏"
+  },
+
+  "topics": {
+    "empty_title": "主题",
+    "empty_description": "主题跟踪功能即将推出"
+  },
+
+  "sidebar": {
+    "today_focus": "今日关注",
+    "today_focus_hint": "查看最新信号",
+    "tracked_topics": "跟踪主题",
+    "no_tracked_topics": "尚无跟踪主题"
   }
 }

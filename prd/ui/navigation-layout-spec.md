@@ -164,10 +164,13 @@ Lettura 是桌面应用，最低宽度支持 1024px。
 
 | 现有 | 新版 |
 |------|------|
-| 顶部 tab 导航 | 左侧 Rail 导航 |
-| 无中间 sidebar | 新增 Sidebar（品牌 + Today Focus + Tracked） |
+| 左侧边栏导航（230px，含 ChannelList） | 左侧 Rail 导航（48px）+ 中间 Sidebar（240px，含 ChannelList） |
+| 无一级导航分离 | Rail 负责一级页面切换，Sidebar 负责上下文信息 |
 | Feeds 为默认入口 | Today 为默认入口 |
-| 文章列表为主内容 | 各页面独立布局 |
+| LocalPage 直接渲染（不在路由树中） | AppLayout 替代 LocalPage |
+| Settings 为 Dialog 弹窗 | 保持不变（Rail 图标触发 Dialog） |
+| ChannelList 在左侧边栏 | ChannelList 迁移至 Sidebar |
+| SpaceSwitcher 切换空间 | 移除（仅一个空间，Rail 品牌图标替代） |
 
 ---
 

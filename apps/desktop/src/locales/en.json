@@ -235,5 +235,28 @@
   },
   "article": {
     "duplicate": "Duplicate"
+  },
+
+  "nav": {
+    "today": "Today",
+    "topics": "Topics",
+    "feeds": "Feeds",
+    "search": "Search",
+    "starred": "Starred",
+    "settings": "Settings",
+    "collapse_sidebar": "Collapse sidebar",
+    "expand_sidebar": "Expand sidebar"
+  },
+
+  "topics": {
+    "empty_title": "Topics",
+    "empty_description": "Topic tracking coming soon"
+  },
+
+  "sidebar": {
+    "today_focus": "Today Focus",
+    "today_focus_hint": "View latest signals",
+    "tracked_topics": "Tracked Topics",
+    "no_tracked_topics": "No tracked topics yet"
   }
 }
