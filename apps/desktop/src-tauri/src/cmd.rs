@@ -471,6 +471,14 @@ pub fn get_feedback_history(limit: Option<i32>, offset: Option<i32>) -> Result<V
     crate::ai::feedback::get_feedback_history(conn, limit, offset)
 }
 
+#[command]
+pub async fn get_today_overview(
+    state: State<'_, crate::AppState>,
+) -> Result<crate::ai::overview::TodayOverview, String> {
+    let cache = &state.overview_cache;
+    crate::ai::overview::get_overview(cache).await
+}
+
 #[cfg(test)]
 mod tests {
   use super::*;

@@ -27,15 +27,16 @@ mod ai;
 
 pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!("./migrations");
 
-// 全局状态
 pub struct AppState {
   server: Mutex<Option<ServerHandle>>,
+  overview_cache: Mutex<crate::ai::overview::OverviewCache>,
 }
 
 impl AppState {
   fn new() -> Self {
     Self {
       server: Mutex::new(None),
+      overview_cache: Mutex::new(crate::ai::overview::OverviewCache::new()),
     }
   }
 }
@@ -134,6 +135,7 @@ pub fn run() {
       cmd::trigger_pipeline,
       cmd::submit_feedback,
       cmd::get_feedback_history,
+      cmd::get_today_overview,
       core::scheduler::start_scheduler,
       core::scheduler::stop_scheduler,
       core::scheduler::is_scheduler_running,
