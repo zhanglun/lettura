@@ -132,6 +132,8 @@ pub fn run() {
       cmd::save_ai_config,
       cmd::validate_ai_config,
       cmd::trigger_pipeline,
+      cmd::submit_feedback,
+      cmd::get_feedback_history,
       core::scheduler::start_scheduler,
       core::scheduler::stop_scheduler,
       core::scheduler::is_scheduler_running,

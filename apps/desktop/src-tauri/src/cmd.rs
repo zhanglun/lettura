@@ -459,6 +459,18 @@ pub async fn trigger_pipeline(
     .map_err(|e| e.to_string())
 }
 
+#[command]
+pub fn submit_feedback(signal_id: i32, feedback_type: String, comment: Option<String>) -> Result<crate::ai::feedback::FeedbackResult, String> {
+    let conn = &mut crate::db::establish_connection();
+    crate::ai::feedback::submit_feedback(conn, signal_id, feedback_type, comment)
+}
+
+#[command]
+pub fn get_feedback_history(limit: Option<i32>, offset: Option<i32>) -> Result<Vec<crate::ai::feedback::FeedbackEntry>, String> {
+    let conn = &mut crate::db::establish_connection();
+    crate::ai::feedback::get_feedback_history(conn, limit, offset)
+}
+
 #[cfg(test)]
 mod tests {
   use super::*;
