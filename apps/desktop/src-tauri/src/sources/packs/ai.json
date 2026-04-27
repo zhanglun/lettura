@@ -1,0 +1,25 @@
+{
+  "id": "ai",
+  "name": "AI & Machine Learning",
+  "description": "AI research, breakthroughs, and industry trends",
+  "icon": "brain",
+  "language": "en",
+  "tags": ["artificial-intelligence", "llm", "tools"],
+  "sources": [
+    { "feed_url": "https://openai.com/news/rss.xml", "title": "OpenAI Blog", "site_url": "https://openai.com", "language": "en" },
+    { "feed_url": "https://deepmind.google/blog/rss.xml", "title": "DeepMind Blog", "site_url": "https://deepmind.google", "language": "en" },
+    { "feed_url": "https://huggingface.co/blog/feed.xml", "title": "Hugging Face Blog", "site_url": "https://huggingface.co", "language": "en" },
+    { "feed_url": "https://www.technologyreview.com/feed/", "title": "MIT Technology Review", "site_url": "https://www.technologyreview.com", "language": "en" },
+    { "feed_url": "https://www.oreilly.com/radar/topics/ai-ml/feed/", "title": "O'Reilly Radar (AI & ML)", "site_url": "https://www.oreilly.com/radar", "language": "en" },
+    { "feed_url": "https://blogs.nvidia.com/feed/", "title": "NVIDIA Blog", "site_url": "https://blogs.nvidia.com", "language": "en" },
+    { "feed_url": "https://machinelearningmastery.com/feed/", "title": "Machine Learning Mastery", "site_url": "https://machinelearningmastery.com", "language": "en" },
+    { "feed_url": "https://towardsdatascience.com/feed", "title": "Towards Data Science", "site_url": "https://towardsdatascience.com", "language": "en" },
+    { "feed_url": "https://artificialintelligence-news.com/feed", "title": "AI News", "site_url": "https://artificialintelligence-news.com", "language": "en" },
+    { "feed_url": "https://blog.google/innovation-and-ai/technology/ai/rss/", "title": "Google Research Blog", "site_url": "https://blog.google", "language": "en" },
+    { "feed_url": "https://rsshub.app/anthropic/news", "title": "Anthropic News", "site_url": "https://www.anthropic.com", "language": "en" },
+    { "feed_url": "https://www.microsoft.com/en-us/research/feed/", "title": "Microsoft Research Blog", "site_url": "https://www.microsoft.com/research", "language": "en" },
+    { "feed_url": "https://rsshub.app/stabilityai/blog", "title": "Stability AI Blog", "site_url": "https://stability.ai", "language": "en" },
+    { "feed_url": "https://rsshub.app/deeplearningai/the-batch", "title": "The Batch (DeepLearning.AI)", "site_url": "https://www.deeplearning.ai", "language": "en" },
+    { "feed_url": "https://rsshub.app/metaai/blog", "title": "Meta AI Blog", "site_url": "https://ai.meta.com", "language": "en" }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "id": "developer",
+  "name": "Developer",
+  "description": "Programming, open source, and software engineering",
+  "icon": "code-2",
+  "language": "en",
+  "tags": ["programming", "engineering", "open-source"],
+  "sources": [
+    { "feed_url": "https://news.ycombinator.com/rss", "title": "Hacker News", "site_url": "https://news.ycombinator.com", "language": "en" },
+    { "feed_url": "https://github.blog/feed/", "title": "GitHub Blog", "site_url": "https://github.blog", "language": "en" },
+    { "feed_url": "https://stackoverflow.blog/feed/", "title": "Stack Overflow Blog", "site_url": "https://stackoverflow.blog", "language": "en" },
+    { "feed_url": "https://www.smashingmagazine.com/feed/", "title": "Smashing Magazine", "site_url": "https://www.smashingmagazine.com", "language": "en" },
+    { "feed_url": "https://dev.to/feed", "title": "Dev.to", "site_url": "https://dev.to", "language": "en" },
+    { "feed_url": "https://martinfowler.com/feed.atom", "title": "Martin Fowler", "site_url": "https://martinfowler.com", "language": "en" },
+    { "feed_url": "https://www.joelonsoftware.com/feed/", "title": "Joel on Software", "site_url": "https://www.joelonsoftware.com", "language": "en" },
+    { "feed_url": "https://medium.com/feed/airbnb-engineering", "title": "Airbnb Engineering", "site_url": "https://medium.com/airbnb-engineering", "language": "en" },
+    { "feed_url": "https://css-tricks.com/feed/", "title": "CSS-Tricks", "site_url": "https://css-tricks.com", "language": "en" },
+    { "feed_url": "https://newsletter.pragmaticengineer.com/feed", "title": "The Pragmatic Engineer", "site_url": "https://pragmaticengineer.com", "language": "en" },
+    { "feed_url": "https://www.uber.com/blog/feed/", "title": "Uber Engineering", "site_url": "https://www.uber.com/blog", "language": "en" },
+    { "feed_url": "https://developers.cloudflare.com/changelog/rss.xml", "title": "Cloudflare Changelog", "site_url": "https://developers.cloudflare.com", "language": "en" },
+    { "feed_url": "https://www.thoughtworks.com/rss/insights.rss", "title": "ThoughtWorks Insights", "site_url": "https://www.thoughtworks.com", "language": "en" },
+    { "feed_url": "https://vercel.com/atom", "title": "Vercel Blog", "site_url": "https://vercel.com", "language": "en" },
+    { "feed_url": "https://stripe.com/blog/feed.rss", "title": "Stripe Blog", "site_url": "https://stripe.com/blog", "language": "en" },
+    { "feed_url": "https://rsshub.app/lesswrong/shortform?user=PaulGraham", "title": "Paul Graham Essays", "site_url": "https://paulgraham.com", "language": "en" }
+  ]
+}

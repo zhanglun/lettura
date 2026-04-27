@@ -55,6 +55,9 @@ pub struct Feed {
 
   #[diesel(sql_type = Text)]
   pub update_date: String,
+
+  #[diesel(sql_type = Nullable<Integer>)]
+  pub source_id: Option<i32>,
 }
 
 #[derive(Debug, Clone, Serialize, Insertable)]
@@ -79,8 +82,8 @@ pub struct FeedMeta {
   pub id: i32,
   #[diesel(sql_type = Text)]
   pub uuid: String,
-  #[diesel(sql_type = Nullable<Text>)]
-  pub folder_uuid: Option<String>,
+  #[diesel(sql_type = Text)]
+  pub folder_uuid: String,
   #[diesel(sql_type = Integer)]
   pub sort: i32,
   #[diesel(sql_type = Text)]

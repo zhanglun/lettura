@@ -12,6 +12,7 @@ import App from "./App";
 import ErrorPage from "./ErrorPage";
 import { RouteConfig } from "./config";
 import { ArticleContainer } from "./layout/Article";
+import { TodayPage } from "./layout/Intelligence/TodayPage";
 import { SearchPage } from "./layout/Search";
 import { FreshRSSPage } from "./layout/FreshRSS";
 
@@ -39,7 +40,7 @@ const router = createBrowserRouter([
       //   children: [
       {
         path: RouteConfig.LOCAL_TODAY,
-        element: <ArticleContainer />,
+        element: <TodayPage />,
       },
       {
         path: RouteConfig.LOCAL_ALL,

@@ -50,6 +50,8 @@ tauri-plugin-single-instance = "2"
 actix-web = "4.4.0"
 actix-cors = "*"
 sys-info = "0.9"
+async-openai = { version = "0.36", features = ["embedding", "chat-completion"] }
+async-trait = "0.1"
 
 [features]
 default = [ "custom-protocol" ]

@@ -101,6 +101,8 @@ pub struct ArticleQueryItem {
   pub read_status: i32,
   #[diesel(sql_type = Integer)]
   pub starred: i32,
+  #[diesel(sql_type = Integer)]
+  pub is_duplicate: i32,
 }
 
 #[derive(Debug, Serialize)]
@@ -136,12 +138,16 @@ impl Article {
       A.pub_date,
       A.create_date,
       A.read_status,
-      A.starred
+      A.starred,
+      COALESCE(AAA.is_duplicate, 0) as is_duplicate
     FROM
       articles as A
     LEFT JOIN
       feeds as C
-    ON C.uuid = A.feed_uuid",
+    ON C.uuid = A.feed_uuid
+    LEFT JOIN
+      article_ai_analysis as AAA
+    ON AAA.article_id = A.id",
     )
     .into_boxed();
     let mut limit = 12;
@@ -507,12 +513,10 @@ impl Article {
 
     if relations.len() > 0 {
       for relation in relations {
-        if let Some(folder_uuid) = relation.folder_uuid {
-          if folder_uuid == uuid {
-            let uuid = String::from(relation.uuid);
+        if relation.folder_uuid == uuid {
+          let uuid = String::from(relation.uuid);
 
-            channel_uuids.push(uuid.clone());
-          }
+          channel_uuids.push(uuid.clone());
         }
       }
     } else {

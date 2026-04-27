@@ -1,0 +1,23 @@
+{
+  "id": "design",
+  "name": "Design",
+  "description": "UI/UX design, typography, and visual creativity",
+  "icon": "palette",
+  "language": "en",
+  "tags": ["design", "ui", "ux", "typography"],
+  "sources": [
+    { "feed_url": "https://dribbble.com/stories.rss", "title": "Dribbble Blog", "site_url": "https://dribbble.com", "language": "en" },
+    { "feed_url": "https://www.smashingmagazine.com/feed/", "title": "Smashing Magazine", "site_url": "https://www.smashingmagazine.com", "language": "en" },
+    { "feed_url": "https://medium.com/feed/ux-collective", "title": "UX Collective", "site_url": "https://medium.com/ux-collective", "language": "en" },
+    { "feed_url": "https://alistapart.com/main/feed/", "title": "A List Apart", "site_url": "https://alistapart.com", "language": "en" },
+    { "feed_url": "https://designsystems.com/feed/", "title": "Design Systems", "site_url": "https://designsystems.com", "language": "en" },
+    { "feed_url": "https://www.invisionapp.com/inside-design/feed/", "title": "InVision Blog", "site_url": "https://www.invisionapp.com", "language": "en" },
+    { "feed_url": "https://design.google/feed/", "title": "Google Design", "site_url": "https://design.google", "language": "en" },
+    { "feed_url": "https://airbnb.design/feed/", "title": "Airbnb Design", "site_url": "https://airbnb.design", "language": "en" },
+    { "feed_url": "https://www.figma.com/blog/feed/", "title": "Figma Blog", "site_url": "https://www.figma.com", "language": "en" },
+    { "feed_url": "https://sidebar.io/feed/", "title": "Sidebar", "site_url": "https://sidebar.io", "language": "en" },
+    { "feed_url": "https://www.creativereview.co.uk/feed/", "title": "Creative Review", "site_url": "https://www.creativereview.co.uk", "language": "en" },
+    { "feed_url": "https://design-milk.com/feed/", "title": "Design Milk", "site_url": "https://design-milk.com", "language": "en" },
+    { "feed_url": "https://www.fastcompany.com/section/design/feed/", "title": "Fast Company Design", "site_url": "https://www.fastcompany.com", "language": "en" }
+  ]
+}

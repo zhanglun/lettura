@@ -1,0 +1,25 @@
+{
+  "id": "startup",
+  "name": "Startup",
+  "description": "Startup ecosystem, venture capital, and entrepreneurship",
+  "icon": "rocket",
+  "language": "en",
+  "tags": ["startup", "vc", "entrepreneurship"],
+  "sources": [
+    { "feed_url": "https://www.theverge.com/rss/index.xml", "title": "The Verge", "site_url": "https://www.theverge.com", "language": "en" },
+    { "feed_url": "https://techcrunch.com/category/startups/feed/", "title": "TechCrunch (Startups)", "site_url": "https://techcrunch.com", "language": "en" },
+    { "feed_url": "https://stratechery.com/feed/", "title": "Stratechery", "site_url": "https://stratechery.com", "language": "en" },
+    { "feed_url": "https://daringfireball.net/feeds/main", "title": "Daring Fireball", "site_url": "https://daringfireball.net", "language": "en" },
+    { "feed_url": "https://www.saastr.com/feed/", "title": "SaaStr", "site_url": "https://www.saastr.com", "language": "en" },
+    { "feed_url": "https://stripe.com/blog/feed.rss", "title": "Stripe Blog", "site_url": "https://stripe.com/blog", "language": "en" },
+    { "feed_url": "https://vercel.com/atom", "title": "Vercel Blog", "site_url": "https://vercel.com", "language": "en" },
+    { "feed_url": "https://blog.ycombinator.com/feed/", "title": "Y Combinator Blog", "site_url": "https://blog.ycombinator.com", "language": "en" },
+    { "feed_url": "https://review.firstround.com/rss", "title": "First Round Review", "site_url": "https://review.firstround.com", "language": "en" },
+    { "feed_url": "https://www.producthunt.com/feed", "title": "Product Hunt Blog", "site_url": "https://www.producthunt.com", "language": "en" },
+    { "feed_url": "https://feed.indiehackers.world/posts.rss", "title": "Indie Hackers", "site_url": "https://www.indiehackers.com", "language": "en" },
+    { "feed_url": "https://a16z.com/feed/", "title": "a16z Blog", "site_url": "https://a16z.com", "language": "en" },
+    { "feed_url": "https://platformer.news/feed", "title": "Platformer", "site_url": "https://platformer.news", "language": "en" },
+    { "feed_url": "https://rsshub.app/theinformation", "title": "The Information", "site_url": "https://theinformation.com", "language": "en" },
+    { "feed_url": "https://m.signalvnoise.com/feed/", "title": "Signal v. Noise Archive", "site_url": "https://m.signalvnoise.com", "language": "en" }
+  ]
+}

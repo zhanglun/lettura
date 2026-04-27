@@ -101,5 +101,124 @@
   "Ops! Something wrong~": "Ops! Something wrong~",
   "Start reloading, Please wait...": "Start reloading, Please wait...",
   "{{title}} is already up to date, no new content found": "{{title}} is already up to date, no new content found",
-  "We have {{num}} new pieces of data from {{title}}": "We have {{num}} new pieces of data from {{title}}"
+  "We have {{num}} new pieces of data from {{title}}": "We have {{num}} new pieces of data from {{title}}",
+
+  "onboarding": {
+    "welcome": {
+      "title": "Welcome to Lettura",
+      "subtitle": "Your personal feed reader. Follow your favorite sources and never miss a story.",
+      "get_started": "Get Started",
+      "import_opml": "Import OPML",
+      "import_opml_desc": "Already have subscriptions? Import from an OPML file.",
+      "importing": "Importing...",
+      "import_success": "OPML imported successfully!",
+      "import_error": "Failed to import OPML file"
+    },
+    "select_pack": {
+      "title": "Choose Your Interests",
+      "subtitle": "Select one or more starter packs to get going. You can always add more later.",
+      "sources_count": "{{count}} sources",
+      "confirm_title": "Confirm Installation",
+      "confirm_description": "You are about to install {{count}} packs with a total of {{sources}} sources.",
+      "confirm_button": "Install",
+      "back": "Back",
+      "install": "Install Selected",
+      "none_selected": "Please select at least one pack"
+    },
+    "installing": {
+      "title": "Setting Up Your Feeds",
+      "subtitle": "Installing your selected packs and fetching articles...",
+      "progress": "Installing pack {{current}} of {{total}}...",
+      "success_title": "All Done!",
+      "success_subtitle": "Successfully installed {{feeds}} feeds from {{sources}} sources.",
+      "partial_title": "Partially Completed",
+      "partial_subtitle": "Some feeds could not be installed.",
+      "error_title": "Installation Failed",
+      "error_subtitle": "Something went wrong during installation.",
+      "retry": "Retry",
+      "skip": "Skip"
+    },
+    "complete": {
+      "title": "You're All Set!",
+      "subtitle": "Your feeds are ready. Start exploring your personalized reading list.",
+      "start_reading": "Start Reading"
+    }
+  },
+
+  "today": {
+    "signals": "Key Signals",
+    "empty": {
+      "no_feeds_title": "No Feeds Yet",
+      "no_feeds_subtitle": "Add some RSS feeds to start reading today's articles.",
+      "add_feeds": "Add Feeds",
+      "no_articles_title": "No New Articles Today",
+      "no_articles_subtitle": "Check back later for new content from your subscriptions.",
+      "explore_all": "Explore All Articles",
+      "error_title": "Failed to Load",
+      "error_subtitle": "Something went wrong while loading today's articles. Please try again.",
+      "retry": "Retry",
+      "no_api_key": "AI features require an API Key. Configure it in Settings to get started.",
+      "go_to_settings": "Go to Settings",
+      "no_signals": "No signals yet. Run analysis to discover key insights.",
+      "start_analysis": "Start Analysis"
+    },
+    "pipeline": {
+      "running": "Analyzing...",
+      "done": "Updated",
+      "error": "Analysis failed",
+      "retry": "Retry",
+      "stage_fetching_articles": "Fetching articles",
+      "stage_generating_embeddings": "Generating embeddings",
+      "stage_clustering": "Clustering",
+      "stage_generating_signal_titles": "Generating signal titles",
+      "stage_generating_summaries": "Generating summaries",
+      "stage_generating_wim": "Generating why it matters",
+      "stage_ranking": "Ranking",
+      "stage_deduplicating": "Deduplicating",
+      "stage_storing_results": "Storing results"
+    },
+    "signal_card": {
+      "articles": "articles",
+      "sources": "sources"
+    },
+    "why_short": "Why",
+    "why_expand": "Show why",
+    "why_collapse": "Hide",
+    "sources": {
+      "title": "Source Articles",
+      "show_all": "Show all {{count}} articles",
+      "expand": "Show sources",
+      "collapse": "Hide sources",
+      "loading": "Loading..."
+    }
+  },
+  "settings": {
+    "ai": {
+      "title": "AI Configuration",
+      "api_key": "API Key",
+      "api_key_placeholder": "sk-...",
+      "model": "Model",
+      "embedding_model": "Embedding Model",
+      "base_url": "API Endpoint",
+      "base_url_placeholder": "https://api.openai.com/v1",
+      "pipeline_interval": "Pipeline Interval (hours)",
+      "validate": "Validate",
+      "validating": "Validating...",
+      "save": "Save",
+      "saving": "Saving...",
+      "trigger_pipeline": "Run Pipeline Now",
+      "validation_success": "API Key is valid",
+      "validation_failed": "Validation failed",
+      "saved": "AI configuration saved",
+      "pipeline_triggered": "Pipeline started",
+      "dedup_stats_title": "Deduplication Statistics",
+      "dedup_total": "Total Analyzed",
+      "dedup_duplicates": "Duplicates Found",
+      "dedup_groups": "Duplicate Groups",
+      "dedup_avg_density": "Avg Info Density"
+    }
+  },
+  "article": {
+    "duplicate": "Duplicate"
+  }
 }

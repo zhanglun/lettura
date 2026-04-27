@@ -1,4 +1,27 @@
-table! {
+// @generated automatically by Diesel CLI.
+
+diesel::table! {
+    article_ai_analysis (id) {
+        id -> Nullable<Integer>,
+        article_id -> Integer,
+        signal_title -> Nullable<Text>,
+        summary -> Nullable<Text>,
+        why_it_matters -> Nullable<Text>,
+        relevance_score -> Nullable<Float>,
+        topic_id -> Nullable<Integer>,
+        embedding_id -> Nullable<Integer>,
+        embedding_json -> Nullable<Text>,
+        ai_processed_at -> Nullable<Timestamp>,
+        model_version -> Nullable<Text>,
+        create_date -> Timestamp,
+        update_date -> Timestamp,
+        is_duplicate -> Bool,
+        duplicate_of -> Nullable<Integer>,
+        information_density -> Nullable<Float>,
+    }
+}
+
+diesel::table! {
     articles (id) {
         id -> Integer,
         uuid -> Text,
@@ -18,18 +41,18 @@ table! {
     }
 }
 
-table! {
+diesel::table! {
     feed_metas (id) {
         id -> Integer,
         uuid -> Text,
-        folder_uuid -> Nullable<Text>,
+        folder_uuid -> Text,
         sort -> Integer,
         create_date -> Timestamp,
         update_date -> Timestamp,
     }
 }
 
-table! {
+diesel::table! {
     feeds (id) {
         id -> Integer,
         uuid -> Text,
@@ -48,10 +71,11 @@ table! {
         last_sync_date -> Timestamp,
         create_date -> Timestamp,
         update_date -> Timestamp,
+        source_id -> Nullable<Integer>,
     }
 }
 
-table! {
+diesel::table! {
     folders (id) {
         id -> Integer,
         uuid -> Text,
@@ -62,4 +86,46 @@ table! {
     }
 }
 
-allow_tables_to_appear_in_same_query!(articles, feed_metas, feeds, folders,);
+diesel::table! {
+    pipeline_runs (id) {
+        id -> Nullable<Integer>,
+        run_type -> Text,
+        status -> Text,
+        articles_processed -> Integer,
+        error_message -> Nullable<Text>,
+        started_at -> Timestamp,
+        finished_at -> Nullable<Timestamp>,
+        create_date -> Timestamp,
+    }
+}
+
+diesel::table! {
+    sources (id) {
+        id -> Nullable<Integer>,
+        uuid -> Text,
+        feed_url -> Text,
+        title -> Nullable<Text>,
+        site_url -> Nullable<Text>,
+        source_type -> Text,
+        pack_id -> Nullable<Text>,
+        language -> Text,
+        quality_score -> Float,
+        weight -> Float,
+        is_active -> Bool,
+        create_date -> Timestamp,
+        update_date -> Timestamp,
+    }
+}
+
+diesel::joinable!(article_ai_analysis -> articles (article_id));
+diesel::joinable!(feeds -> sources (source_id));
+
+diesel::allow_tables_to_appear_in_same_query!(
+    article_ai_analysis,
+    articles,
+    feed_metas,
+    feeds,
+    folders,
+    pipeline_runs,
+    sources,
+);

@@ -8,6 +8,8 @@ use std::{
 };
 use toml;
 
+use crate::ai::config::AiConfig;
+
 #[derive(Debug, Serialize, Deserialize)]
 pub enum ColorScheme {
   #[serde(rename = "light")]
@@ -25,6 +27,12 @@ pub struct Proxy {
   pub username: Option<String>,
   pub password: Option<String>,
   pub enable: bool,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
+pub struct AppConfig {
+  #[serde(default)]
+  pub onboarding_completed: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -77,6 +85,10 @@ pub struct UserConfig {
   pub purge_on_days: u64,
   pub purge_unread_articles: bool,
   pub port: u16,
+  #[serde(default)]
+  pub app: AppConfig,
+  #[serde(default)]
+  pub ai: Option<AiConfig>,
 }
 
 impl Default for UserConfig {
@@ -96,6 +108,8 @@ impl Default for UserConfig {
       purge_on_days: 0,
       purge_unread_articles: true,
       port: 3456,
+      app: AppConfig::default(),
+      ai: None,
     }
   }
 }

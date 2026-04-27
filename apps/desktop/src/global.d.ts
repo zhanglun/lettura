@@ -52,6 +52,10 @@ declare type ThemeAccentColor =
   | "mint"
   | "sky";
 
+declare interface AppConfig {
+  onboarding_completed?: boolean;
+}
+
 declare interface UserConfig {
   port?: number;
   threads?: number;
@@ -61,6 +65,7 @@ declare interface UserConfig {
   last_sync_time?: Date;
   proxy?: LocalProxy;
   customize_style?: CustomizeStyle;
+  app?: AppConfig;
 
   purge_on_days: number;
   purge_unread_articles: boolean;

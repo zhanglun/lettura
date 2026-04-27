@@ -231,3 +231,146 @@ export const importOpml = async (
 ): Promise<OpmlImportResult> => {
   return invoke("import_opml", { opmlContent });
 };
+
+export interface StarterPackSummary {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  language: string;
+  tags: string[];
+  source_count: number;
+}
+
+export interface PackPreview {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  language: string;
+  tags: string[];
+  sources: { feed_url: string; title: string; site_url: string; language: string }[];
+}
+
+export interface PackInstallResult {
+  installed_feeds: number;
+  installed_sources: number;
+  sync_started: boolean;
+}
+
+export const getStarterPacks = async (): Promise<StarterPackSummary[]> => {
+  return invoke("get_starter_packs");
+};
+
+export const previewPack = async (packId: string): Promise<PackPreview> => {
+  return invoke("preview_pack", { packId });
+};
+
+export const installPack = async (
+  packIds: string[],
+): Promise<PackInstallResult> => {
+  return invoke("install_pack", { packIds });
+};
+
+export const importOpmlAsSource = async (
+  opmlContent: string,
+): Promise<OpmlImportResult> => {
+  return invoke("import_opml_as_source", { opmlContent });
+};
+
+export interface SignalSource {
+  article_id: number;
+  article_uuid: string;
+  title: string;
+  link: string;
+  feed_title: string;
+  feed_uuid: string;
+  pub_date: string;
+  excerpt: string | null;
+}
+
+export interface Signal {
+  id: number;
+  title: string;
+  summary: string;
+  why_it_matters: string;
+  relevance_score: number;
+  source_count: number;
+  sources: SignalSource[];
+  topic_id: number | null;
+  topic_title: string | null;
+  created_at: string;
+}
+
+export interface AIConfigPublic {
+  has_api_key: boolean;
+  model: string;
+  embedding_model: string;
+  base_url: string;
+}
+
+export interface ValidateAIConfigResult {
+  valid: boolean;
+  message: string;
+}
+
+export interface PipelineResult {
+  run_id: number;
+  started: boolean;
+}
+
+export const getTodaySignals = async (limit?: number): Promise<Signal[]> => {
+  return invoke("get_today_signals", { limit });
+};
+
+export const getAIConfig = async (): Promise<AIConfigPublic> => {
+  return invoke("get_ai_config");
+};
+
+export const saveAIConfig = async (config: {
+  apiKey: string;
+  model: string;
+  embeddingModel: string;
+  baseUrl: string;
+  pipelineIntervalHours?: number;
+}): Promise<void> => {
+  return invoke("save_ai_config", {
+    apiKey: config.apiKey,
+    model: config.model,
+    embeddingModel: config.embeddingModel,
+    baseUrl: config.baseUrl,
+    pipelineIntervalHours: config.pipelineIntervalHours,
+  });
+};
+
+export const validateAIConfig = async (): Promise<ValidateAIConfigResult> => {
+  return invoke("validate_ai_config");
+};
+
+export const triggerPipeline = async (
+  runType?: string,
+): Promise<PipelineResult> => {
+  return invoke("trigger_pipeline", { runType });
+};
+
+export interface SignalDetail {
+  signal: Signal;
+  all_sources: SignalSource[];
+}
+
+export const getSignalDetail = async (
+  signalId: number,
+): Promise<SignalDetail> => {
+  return invoke("get_signal_detail", { signalId });
+};
+
+export interface DedupStats {
+  total_analyzed: number;
+  duplicates_found: number;
+  duplicate_groups: number;
+  avg_information_density: number;
+}
+
+export const getDedupStats = async (): Promise<DedupStats> => {
+  return invoke("get_dedup_stats");
+};

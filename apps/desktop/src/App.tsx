@@ -5,6 +5,7 @@ import { useBearStore } from "@/stores";
 import { LocalPage } from "./layout/Local";
 import { Theme } from "@radix-ui/themes";
 import { DialogAboutApp } from "./components/About";
+import { OnboardingDialog } from "./components/Onboarding";
 import { useShallow } from "zustand/react/shallow";
 import { Toaster } from "sonner";
 import { ErrorBoundary } from "./components/ErrorBoundary";
@@ -18,6 +19,7 @@ function App() {
       updateSettingDialogStatus: state.updateSettingDialogStatus,
       updateAboutDialogStatus: state.updateAboutDialogStatus,
       updateAppMetadata: state.updateAppMetadata,
+      setOnboardingOpen: state.setOnboardingOpen,
     })),
   );
 
@@ -116,6 +118,11 @@ function App() {
             );
           }
         }
+
+        const appConfig = (cfg as any).app as { onboarding_completed?: boolean } | undefined;
+        if (appConfig && !appConfig.onboarding_completed) {
+          store.setOnboardingOpen(true);
+        }
       });
     }
   }, []);
@@ -132,6 +139,7 @@ function App() {
           <LocalPage />
         </div>
         <DialogAboutApp />
+        <OnboardingDialog />
       </ErrorBoundary>
     </Theme>
   );

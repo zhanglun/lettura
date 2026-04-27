@@ -1,0 +1,24 @@
+{
+  "id": "product",
+  "name": "Product",
+  "description": "Product management, design thinking, and user experience",
+  "icon": "package",
+  "language": "en",
+  "tags": ["product", "pm", "ux"],
+  "sources": [
+    { "feed_url": "https://www.producthunt.com/feed", "title": "Product Hunt", "site_url": "https://www.producthunt.com", "language": "en" },
+    { "feed_url": "https://www.mindtheproduct.com/feed/", "title": "Mind the Product", "site_url": "https://www.mindtheproduct.com", "language": "en" },
+    { "feed_url": "https://hbr.org/topic/subject/technology/feed", "title": "Harvard Business Review (Tech)", "site_url": "https://hbr.org", "language": "en" },
+    { "feed_url": "https://medium.com/feed/ux-collective", "title": "UX Collective", "site_url": "https://medium.com/ux-collective", "language": "en" },
+    { "feed_url": "https://www.intercom.com/blog/feed/", "title": "Intercom Blog", "site_url": "https://www.intercom.com", "language": "en" },
+    { "feed_url": "https://www.reforge.com/blog/rss.xml", "title": "Reforge Blog", "site_url": "https://www.reforge.com", "language": "en" },
+    { "feed_url": "https://lennys.substack.com/feed", "title": "Lenny's Newsletter", "site_url": "https://lennys.substack.com", "language": "en" },
+    { "feed_url": "https://medium.com/feed/product-coalition", "title": "Product Coalition", "site_url": "https://medium.com/product-coalition", "language": "en" },
+    { "feed_url": "https://theproductmanager.com/feed/", "title": "The Product Manager", "site_url": "https://theproductmanager.com", "language": "en" },
+    { "feed_url": "https://svpg.com/feed/", "title": "SVPG", "site_url": "https://svpg.com", "language": "en" },
+    { "feed_url": "https://kennorton.com/atom.xml", "title": "Ken Norton Blog", "site_url": "https://kennorton.com", "language": "en" },
+    { "feed_url": "https://amplitude.com/blog/feed", "title": "Amplitude Blog", "site_url": "https://amplitude.com", "language": "en" },
+    { "feed_url": "https://mixpanel.com/blog/feed/", "title": "Mixpanel Blog", "site_url": "https://mixpanel.com", "language": "en" },
+    { "feed_url": "https://www.notion.so/blog/rss.xml", "title": "Notion Blog", "site_url": "https://www.notion.so", "language": "en" }
+  ]
+}

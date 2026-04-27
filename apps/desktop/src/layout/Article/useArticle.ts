@@ -62,7 +62,7 @@ export function useArticle(props: UseArticleProps) {
     },
     [query],
   );
-  const { data, isLoading, size, mutate, setSize } = useSWRInfinite(
+  const { data, isLoading, size, mutate, setSize, error } = useSWRInfinite(
     getKey,
     (q) =>
       request
@@ -97,5 +97,6 @@ export function useArticle(props: UseArticleProps) {
     isToday: !!isToday,
     isAll: !!isAll,
     isStarred: !!isStarred,
+    error: error ?? null,
   };
 }

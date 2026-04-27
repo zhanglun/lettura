@@ -5,6 +5,7 @@ import {
   Palette,
   Settings,
   Waypoints,
+  Sparkles,
 } from "lucide-react";
 import { Dialog, Heading, IconButton, Kbd, Tooltip } from "@radix-ui/themes";
 import { useHotkeys } from "react-hotkeys-hook";
@@ -13,6 +14,7 @@ import { Appearance } from "./Appearance";
 import { Shortcut } from "./ShortCut";
 import { ProxySetting } from "./Proxy";
 import { ImportAndExport } from "./ImportAndExport";
+import { AIConfigPanel } from "./AIConfig";
 import { useState } from "react";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import { useBearStore } from "@/stores";
@@ -128,6 +130,15 @@ export function SettingPage({ children }: SettingPageProps) {
                 <Waypoints className="w-4 h-4" />
                 {t("Import & Export")}
               </button>
+              <button
+                onClick={() => setActiveTab(SettingTabKey.AI)}
+                className={clsx("setting-tab-item", {
+                  "setting-tab-item--active": activeTab === SettingTabKey.AI,
+                })}
+              >
+                <Sparkles className="w-4 h-4" />
+                AI
+              </button>
             </nav>
           </div>
           <div className="flex-1 p-6 overflow-auto">
@@ -136,6 +147,7 @@ export function SettingPage({ children }: SettingPageProps) {
             {activeTab === SettingTabKey.PROXY && <ProxySetting />}
             {activeTab === SettingTabKey.SHORTCUTS && <Shortcut />}
             {activeTab === SettingTabKey.IMPORTANDEXPORT && <ImportAndExport />}
+            {activeTab === SettingTabKey.AI && <AIConfigPanel />}
           </div>
         </div>
       </Dialog.Content>

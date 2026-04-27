@@ -542,20 +542,17 @@ pub fn get_channels() -> ChannelQueryResult {
   }
 
   for r in relations {
-    match r.folder_uuid {
-      Some(folder_uuid) => {
-        folder_channel_map.insert(
-          r.uuid.clone(),
-          (
-            folder_uuid.clone(),
-            folder_name_map
-              .get(&folder_uuid)
-              .unwrap_or(&"".to_string())
-              .to_string(),
-          ),
-        );
-      }
-      None => {}
+    if !r.folder_uuid.is_empty() {
+      folder_channel_map.insert(
+        r.uuid.clone(),
+        (
+          r.folder_uuid.clone(),
+          folder_name_map
+            .get(&r.folder_uuid)
+            .unwrap_or(&"".to_string())
+            .to_string(),
+        ),
+      );
     }
   }
 

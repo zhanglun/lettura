@@ -1,0 +1,24 @@
+{
+  "id": "business",
+  "name": "Business",
+  "description": "Business strategy, finance, and market analysis",
+  "icon": "briefcase",
+  "language": "en",
+  "tags": ["business", "finance", "strategy"],
+  "sources": [
+    { "feed_url": "https://www.bloomberg.com/feeds/sitemap_news.xml", "title": "Bloomberg Technology", "site_url": "https://www.bloomberg.com", "language": "en" },
+    { "feed_url": "https://www.economist.com/rss", "title": "The Economist", "site_url": "https://www.economist.com", "language": "en" },
+    { "feed_url": "https://www.ft.com/rss/home", "title": "Financial Times", "site_url": "https://www.ft.com", "language": "en" },
+    { "feed_url": "https://hbr.org/feed", "title": "HBR", "site_url": "https://hbr.org", "language": "en" },
+    { "feed_url": "https://feeds.content.dowjones.io/public/rss/mw_topstories", "title": "WSJ Tech", "site_url": "https://www.wsj.com", "language": "en" },
+    { "feed_url": "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=10001147", "title": "CNBC Tech", "site_url": "https://www.cnbc.com", "language": "en" },
+    { "feed_url": "https://www.theverge.com/rss/index.xml", "title": "The Verge", "site_url": "https://www.theverge.com", "language": "en" },
+    { "feed_url": "https://stratechery.com/feed/", "title": "Stratechery", "site_url": "https://stratechery.com", "language": "en" },
+    { "feed_url": "https://daringfireball.net/feeds/main", "title": "Daring Fireball", "site_url": "https://daringfireball.net", "language": "en" },
+    { "feed_url": "https://www.fastcompany.com/rss", "title": "Fast Company", "site_url": "https://www.fastcompany.com", "language": "en" },
+    { "feed_url": "https://www.inc.com/rss.xml", "title": "Inc.com", "site_url": "https://www.inc.com", "language": "en" },
+    { "feed_url": "https://www.forbes.com/innovation/feed/", "title": "Forbes Tech", "site_url": "https://www.forbes.com", "language": "en" },
+    { "feed_url": "https://www.wired.com/feed/category/business/latest/rss", "title": "Wired Business", "site_url": "https://www.wired.com", "language": "en" },
+    { "feed_url": "https://www.businessinsider.com/rss", "title": "Business Insider Tech", "site_url": "https://www.businessinsider.com", "language": "en" }
+  ]
+}

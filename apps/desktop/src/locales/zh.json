@@ -127,5 +127,124 @@
   "Ops! Something wrong~": "哪里有点不对！",
   "Start reloading, Please wait...": "开始加载，请稍候...",
   "{{title}} is already up to date, no new content found": "{{title}} 已经是最新的了，没有发现新内容",
-  "We have {{num}} new pieces of data from {{title}}": "{{title}} 加载完成，增加了{{num}}条新的内容"
+  "We have {{num}} new pieces of data from {{title}}": "{{title}} 加载完成，增加了{{num}}条新的内容",
+
+  "onboarding": {
+    "welcome": {
+      "title": "欢迎使用 Lettura",
+      "subtitle": "您的个人 RSS 阅读器。关注您最喜欢的来源，不要错过任何故事。",
+      "get_started": "开始使用",
+      "import_opml": "导入 OPML",
+      "import_opml_desc": "已有订阅？从 OPML 文件导入。",
+      "importing": "导入中...",
+      "import_success": "OPML 导入成功！",
+      "import_error": "导入 OPML 文件失败"
+    },
+    "select_pack": {
+      "title": "选择您感兴趣的领域",
+      "subtitle": "选择一个或多个入门包开始使用。您可以稍后随时添加更多。",
+      "sources_count": "{{count}} 个源",
+      "confirm_title": "确认安装",
+      "confirm_description": "即将安装 {{count}} 个包，共 {{sources}} 个源。",
+      "confirm_button": "安装",
+      "back": "返回",
+      "install": "安装所选",
+      "none_selected": "请至少选择一个包"
+    },
+    "installing": {
+      "title": "正在设置您的订阅",
+      "subtitle": "正在安装所选包并获取文章...",
+      "progress": "正在安装第 {{current}} / {{total}} 个包...",
+      "success_title": "全部完成！",
+      "success_subtitle": "已成功安装 {{sources}} 个来源的 {{feeds}} 个订阅。",
+      "partial_title": "部分完成",
+      "partial_subtitle": "部分订阅无法安装。",
+      "error_title": "安装失败",
+      "error_subtitle": "安装过程中出现了问题。",
+      "retry": "重试",
+      "skip": "跳过"
+    },
+    "complete": {
+      "title": "一切就绪！",
+      "subtitle": "您的订阅已准备就绪。开始探索您的个性化阅读列表吧。",
+      "start_reading": "开始阅读"
+    }
+  },
+
+  "today": {
+    "signals": "关键信号",
+    "empty": {
+      "no_feeds_title": "还没有订阅源",
+      "no_feeds_subtitle": "添加一些 RSS 订阅源，开始阅读今日文章。",
+      "add_feeds": "添加订阅源",
+      "no_articles_title": "今天没有新文章",
+      "no_articles_subtitle": "稍后再来看看您的订阅是否有新内容。",
+      "explore_all": "浏览全部文章",
+      "error_title": "加载失败",
+      "error_subtitle": "加载今日文章时出现了问题，请稍后重试。",
+      "retry": "重试",
+      "no_api_key": "AI 功能需要配置 API Key。在设置中配置后即可开始使用。",
+      "go_to_settings": "前往设置",
+      "no_signals": "还没有信号。运行分析来发现关键洞察。",
+      "start_analysis": "开始分析"
+    },
+    "pipeline": {
+      "running": "分析中...",
+      "done": "已更新",
+      "error": "分析失败",
+      "retry": "重试",
+      "stage_fetching_articles": "获取文章中",
+      "stage_generating_embeddings": "生成嵌入向量中",
+      "stage_clustering": "聚类分析中",
+      "stage_generating_signal_titles": "生成信号标题中",
+      "stage_generating_summaries": "生成摘要中",
+      "stage_generating_wim": "生成重要性分析中",
+      "stage_ranking": "排序中",
+      "stage_deduplicating": "去重中",
+      "stage_storing_results": "存储结果中"
+    },
+    "signal_card": {
+      "articles": "篇文章",
+      "sources": "个来源"
+    },
+    "why_short": "为什么",
+    "why_expand": "查看原因",
+    "why_collapse": "收起",
+    "sources": {
+      "title": "来源文章",
+      "show_all": "显示全部 {{count}} 篇",
+      "expand": "展开来源",
+      "collapse": "收起来源",
+      "loading": "加载中..."
+    }
+  },
+  "settings": {
+    "ai": {
+      "title": "AI 配置",
+      "api_key": "API Key",
+      "api_key_placeholder": "sk-...",
+      "model": "模型",
+      "embedding_model": "Embedding 模型",
+      "base_url": "API 端点",
+      "base_url_placeholder": "https://api.openai.com/v1",
+      "pipeline_interval": "Pipeline 间隔（小时）",
+      "validate": "验证",
+      "validating": "验证中...",
+      "save": "保存",
+      "saving": "保存中...",
+      "trigger_pipeline": "立即运行 Pipeline",
+      "validation_success": "API Key 有效",
+      "validation_failed": "验证失败",
+      "saved": "AI 配置已保存",
+      "pipeline_triggered": "Pipeline 已启动",
+      "dedup_stats_title": "去重统计",
+      "dedup_total": "已分析文章",
+      "dedup_duplicates": "发现重复",
+      "dedup_groups": "重复分组",
+      "dedup_avg_density": "平均信息密度"
+    }
+  },
+  "article": {
+    "duplicate": "重复"
+  }
 }
