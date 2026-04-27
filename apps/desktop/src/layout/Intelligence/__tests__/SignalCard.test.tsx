@@ -21,6 +21,7 @@ const mockStore = {
   toggleSourceExpand: vi.fn(),
   fetchSignalDetail: vi.fn(),
   submitFeedback: vi.fn(),
+  setScrollPosition: vi.fn(),
 };
 
 vi.mock("@/stores", () => ({

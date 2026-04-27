@@ -19,25 +19,25 @@ vi.mock("../SignalSourceItem", () => ({
     onClick,
   }: {
     source: SignalSource;
-    onClick: (articleUuid: string, feedUuid: string) => void;
+    onClick: (articleUuid: string, feedUuid: string, articleId: number) => void;
   }) => (
     <button
       data-testid={`source-item-${source.article_id}`}
-      onClick={() => onClick(source.article_uuid, source.feed_uuid)}
+      onClick={() => onClick(source.article_uuid, source.feed_uuid, source.article_id)}
     >
       {source.title}
     </button>
   ),
 }));
 
-const makeSource = (id: number): SignalSource => ({
+const makeSource = (id: number, daysAgo = 0): SignalSource => ({
   article_id: id,
   article_uuid: `uuid-${id}`,
   title: `Article ${id}`,
   link: `https://example.com/${id}`,
   feed_title: "Feed",
   feed_uuid: "feed-uuid",
-  pub_date: new Date().toISOString(),
+  pub_date: new Date(Date.now() - daysAgo * 86400000).toISOString(),
   excerpt: null,
 });
 
@@ -119,5 +119,33 @@ describe("SignalSourceList", () => {
 
     expect(screen.getByText("Loading...")).toBeInTheDocument();
     expect(screen.queryByText(/Show all/)).not.toBeInTheDocument();
+  });
+
+  it("T-F09: sources are sorted by pub_date descending (newest first)", () => {
+    const sources = [
+      makeSource(1, 3),
+      makeSource(2, 0),
+      makeSource(3, 1),
+    ];
+
+    render(
+      <SignalSourceList sources={sources} onSourceClick={onSourceClick} />,
+    );
+
+    const items = screen.getAllByTestId(/^source-item-/);
+    expect(items[0]).toHaveAttribute("data-testid", "source-item-2");
+    expect(items[1]).toHaveAttribute("data-testid", "source-item-3");
+    expect(items[2]).toHaveAttribute("data-testid", "source-item-1");
+  });
+
+  it("T-F13: continue reading hint is shown", () => {
+    const sources = [makeSource(1)];
+    render(
+      <SignalSourceList sources={sources} onSourceClick={onSourceClick} />,
+    );
+
+    expect(
+      screen.getByText("today.sources.continue_reading_hint"),
+    ).toBeInTheDocument();
   });
 });
