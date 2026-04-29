@@ -54,6 +54,10 @@ const router = createBrowserRouter([
         path: RouteConfig.LOCAL_FEED,
         element: <ArticleContainer />,
       },
+      {
+        path: RouteConfig.LOCAL_ARTICLE,
+        element: <ArticleContainer />,
+      },
       //   ],
       // },
       {
