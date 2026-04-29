@@ -11,10 +11,11 @@ extern crate dotenv;
 use actix_web::dev::ServerHandle;
 use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 use log::LevelFilter;
+use std::{env, sync::Mutex};
 use tauri::{Emitter, Manager};
 use tauri_plugin_log::{Target, TargetKind};
-use std::{env, sync::Mutex};
 
+mod ai;
 mod cmd;
 mod core;
 mod db;
@@ -23,7 +24,6 @@ mod models;
 mod schema;
 mod server;
 mod sources;
-mod ai;
 
 pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!("./migrations");
 
@@ -58,10 +58,14 @@ pub fn run() {
     .plugin(tauri_plugin_http::init())
     .plugin(tauri_plugin_process::init())
     .plugin(tauri_plugin_updater::Builder::new().build())
-    .plugin(tauri_plugin_log::Builder::new().targets([
-      Target::new(TargetKind::LogDir { file_name: None }),
-      Target::new(TargetKind::Stdout),
-    ]).build())
+    .plugin(
+      tauri_plugin_log::Builder::new()
+        .targets([
+          Target::new(TargetKind::LogDir { file_name: None }),
+          Target::new(TargetKind::Stdout),
+        ])
+        .build(),
+    )
     .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
       let _ = app
         .get_webview_window("main")
@@ -102,8 +106,14 @@ pub fn run() {
     })
     .on_window_event(|window, event| {
       if let tauri::WindowEvent::CloseRequested { api, .. } = event {
-        window.hide().unwrap();
-        api.prevent_close();
+        // 开发模式下直接退出，不隐藏到托盘
+        if cfg!(debug_assertions) {
+          let app = window.app_handle();
+          app.exit(0);
+        } else {
+          window.hide().unwrap();
+          api.prevent_close();
+        }
       }
     })
     .invoke_handler(tauri::generate_handler![
@@ -140,7 +150,9 @@ pub fn run() {
     .expect("error while running tauri Application")
     .run(|_app_handle, event| match event {
       tauri::RunEvent::ExitRequested { api, .. } => {
-        api.prevent_exit();
+        if cfg!(not(debug_assertions)) {
+          api.prevent_exit();
+        }
       }
       _ => {}
     });

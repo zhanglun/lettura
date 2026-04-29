@@ -8,7 +8,7 @@ use crate::core::config;
 use crate::feed::WrappedMediaObject;
 use crate::models;
 use crate::server::stop_server;
-use crate::{feed, server, AppState, sources};
+use crate::{feed, server, sources, AppState};
 
 #[derive(Debug, Serialize)]
 pub struct FeedFetchResponse {
@@ -324,8 +324,8 @@ pub async fn install_pack(
       }
       let _ = app_handle.emit("feed:sync_complete", serde_json::json!({}));
 
-        crate::ai::pipeline::spawn_pipeline_if_configured(Some(app_handle));
-      });
+      crate::ai::pipeline::spawn_pipeline_if_configured(Some(app_handle));
+    });
   }
 
   Ok(sources::models::InstallResult {
@@ -344,14 +344,14 @@ pub fn import_opml_as_source(
 
 #[command]
 pub fn get_signal_detail(signal_id: i32) -> Result<crate::ai::pipeline::SignalDetail, String> {
-    let conn = &mut crate::db::establish_connection();
-    crate::ai::pipeline::get_signal_detail(conn, signal_id)
+  let conn = &mut crate::db::establish_connection();
+  crate::ai::pipeline::get_signal_detail(conn, signal_id)
 }
 
 #[command]
 pub fn get_dedup_stats() -> Result<crate::ai::dedup::DedupStats, String> {
-    let conn = &mut crate::db::establish_connection();
-    crate::ai::dedup::get_dedup_stats(conn).map_err(|e| e.to_string())
+  let conn = &mut crate::db::establish_connection();
+  crate::ai::dedup::get_dedup_stats(conn).map_err(|e| e.to_string())
 }
 
 #[command]
@@ -375,15 +375,28 @@ pub fn save_ai_config(
   embedding_model: String,
   base_url: String,
   pipeline_interval_hours: Option<u64>,
+  enable_embedding: Option<bool>,
 ) -> Result<(), String> {
   let mut user_config = config::get_user_config();
   let hours = pipeline_interval_hours.unwrap_or(1);
+  let emb = enable_embedding.unwrap_or(true);
+  let existing_key = user_config
+    .ai
+    .as_ref()
+    .map(|c| c.api_key.clone())
+    .unwrap_or_default();
+  let final_key = if api_key.trim().is_empty() {
+    existing_key
+  } else {
+    api_key
+  };
   user_config.ai = Some(crate::ai::config::AiConfig {
-    api_key,
+    api_key: final_key,
     model,
     embedding_model,
     base_url,
     pipeline_interval_hours: hours,
+    enable_embedding: emb,
   });
 
   let config_path = config::get_user_config_path();
@@ -411,6 +424,13 @@ pub async fn validate_ai_config() -> Result<ValidateAiConfigResult, String> {
       })
     }
   };
+
+  if !ai_config.enable_embedding {
+    return Ok(ValidateAiConfigResult {
+      valid: true,
+      message: "API key configured (embedding disabled)".to_string(),
+    });
+  }
 
   let embedding = crate::ai::embedding::OpenAIEmbedding::new(
     &ai_config.api_key,
@@ -453,7 +473,7 @@ pub async fn trigger_pipeline(
     ai_config.model.clone(),
   );
 
-  let rt = run_type.unwrap_or_else(|| "manual".to_string());
+  let rt = run_type.unwrap_or_else(|| "full".to_string());
   crate::ai::pipeline::run_pipeline(&ai_config, &embedding, &llm, &rt, Some(&app))
     .await
     .map_err(|e| e.to_string())
