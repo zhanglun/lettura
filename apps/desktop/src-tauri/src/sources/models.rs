@@ -92,4 +92,3 @@ pub struct InstallResult {
   pub installed_sources: usize,
   pub sync_started: bool,
 }
-

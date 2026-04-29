@@ -1,7 +1,7 @@
 use super::models::{PackSource, StarterPack, StarterPackSummary};
 use super::source_service;
 use crate::db;
-use crate::models::{NewFeed, Feed};
+use crate::models::{Feed, NewFeed};
 use crate::schema;
 use diesel::prelude::*;
 use std::collections::HashSet;

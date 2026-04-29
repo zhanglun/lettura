@@ -121,11 +121,11 @@ diesel::joinable!(article_ai_analysis -> articles (article_id));
 diesel::joinable!(feeds -> sources (source_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
-    article_ai_analysis,
-    articles,
-    feed_metas,
-    feeds,
-    folders,
-    pipeline_runs,
-    sources,
+  article_ai_analysis,
+  articles,
+  feed_metas,
+  feeds,
+  folders,
+  pipeline_runs,
+  sources,
 );

@@ -55,8 +55,7 @@ pub fn establish_connection() -> SqliteConnection {
     let _ = std::fs::remove_file(&temp);
     let path = temp.to_str().unwrap().to_string();
 
-    let mut conn = SqliteConnection::establish(&path)
-      .expect("Failed to create test DB");
+    let mut conn = SqliteConnection::establish(&path).expect("Failed to create test DB");
     conn
       .run_pending_migrations(crate::MIGRATIONS)
       .expect("Test DB migration failed");
@@ -71,8 +70,7 @@ pub fn establish_connection() -> SqliteConnection {
     path
   });
 
-  let mut conn =
-    SqliteConnection::establish(db_path).expect("Failed to connect to test DB");
+  let mut conn = SqliteConnection::establish(db_path).expect("Failed to connect to test DB");
   diesel::sql_query("PRAGMA busy_timeout=5000")
     .execute(&mut conn)
     .expect("Failed to set busy_timeout");

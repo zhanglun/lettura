@@ -1,8 +1,8 @@
 use super::models::{NewSource, Source};
 use crate::db;
+use crate::feed;
 use crate::models::Feed;
 use crate::schema;
-use crate::feed;
 use diesel::prelude::*;
 use uuid::Uuid;
 
@@ -93,7 +93,8 @@ pub fn import_opml_as_source(opml_content: &str) -> Result<OpmlImportAsSourceRes
 
   let mut connection = db::establish_connection();
 
-  let feeds: Vec<Feed> = schema::feeds::dsl::feeds.load(&mut connection)
+  let feeds: Vec<Feed> = schema::feeds::dsl::feeds
+    .load(&mut connection)
     .map_err(|e| format!("Database error: {}", e))?;
 
   for feed_record in feeds {
@@ -108,12 +109,10 @@ pub fn import_opml_as_source(opml_content: &str) -> Result<OpmlImportAsSourceRes
 
     match src_result {
       Ok(source) => {
-        diesel::update(
-          schema::feeds::dsl::feeds.filter(schema::feeds::uuid.eq(&feed_record.uuid))
-        )
-        .set(schema::feeds::source_id.eq(source.id))
-        .execute(&mut connection)
-        .ok();
+        diesel::update(schema::feeds::dsl::feeds.filter(schema::feeds::uuid.eq(&feed_record.uuid)))
+          .set(schema::feeds::source_id.eq(source.id))
+          .execute(&mut connection)
+          .ok();
         result.source_count += 1;
         result.new_feed_uuids.push(feed_record.uuid);
       }
@@ -146,8 +145,23 @@ mod tests {
   #[test]
   fn test_create_duplicate_source() {
     let feed_url = "https://test-dup.example.com/feed.xml";
-    create_source(feed_url, Some("Test"), None, "starter_pack", Some("ai"), "en").ok();
-    let result = create_source(feed_url, Some("Test"), None, "starter_pack", Some("ai"), "en");
+    create_source(
+      feed_url,
+      Some("Test"),
+      None,
+      "starter_pack",
+      Some("ai"),
+      "en",
+    )
+    .ok();
+    let result = create_source(
+      feed_url,
+      Some("Test"),
+      None,
+      "starter_pack",
+      Some("ai"),
+      "en",
+    );
     assert!(result.is_err());
     assert!(result.unwrap_err().contains("SRC_ALREADY_EXISTS"));
   }
