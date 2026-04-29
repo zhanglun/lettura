@@ -241,7 +241,9 @@
       "dedup_total": "已分析文章",
       "dedup_duplicates": "发现重复",
       "dedup_groups": "重复分组",
-      "dedup_avg_density": "平均信息密度"
+      "dedup_avg_density": "平均信息密度",
+      "enable_embedding": "启用 Embedding",
+      "enable_embedding_desc": "去重和聚类功能需要 Embedding。如果你的套餐不包含 Embedding API，可以关闭。"
     }
   },
   "article": {

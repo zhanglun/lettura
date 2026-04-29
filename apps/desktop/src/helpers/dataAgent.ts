@@ -333,6 +333,7 @@ export const saveAIConfig = async (config: {
   embeddingModel: string;
   baseUrl: string;
   pipelineIntervalHours?: number;
+  enableEmbedding?: boolean;
 }): Promise<void> => {
   return invoke("save_ai_config", {
     apiKey: config.apiKey,
@@ -340,6 +341,7 @@ export const saveAIConfig = async (config: {
     embeddingModel: config.embeddingModel,
     baseUrl: config.baseUrl,
     pipelineIntervalHours: config.pipelineIntervalHours,
+    enableEmbedding: config.enableEmbedding,
   });
 };
 

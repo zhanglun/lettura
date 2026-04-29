@@ -8,6 +8,7 @@ import {
   Text,
   TextField,
   Select,
+  Switch,
 } from "@radix-ui/themes";
 import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
@@ -32,6 +33,7 @@ export function AIConfigPanel() {
   );
   const [baseUrl, setBaseUrl] = useState("https://api.openai.com/v1");
   const [pipelineInterval, setPipelineInterval] = useState("1");
+  const [enableEmbedding, setEnableEmbedding] = useState(true);
 
   const [validating, setValidating] = useState(false);
   const [validationResult, setValidationResult] = useState<{
@@ -51,10 +53,16 @@ export function AIConfigPanel() {
     getDedupStats()
       .then(setDedupStats)
       .catch(() => {});
-  }, []);
+    if (store.aiConfig) {
+      setModel(store.aiConfig.model || "gpt-4o-mini");
+      setEmbeddingModel(store.aiConfig.embedding_model || "text-embedding-3-small");
+      setBaseUrl(store.aiConfig.base_url || "https://api.openai.com/v1");
+      setEnableEmbedding(store.aiConfig.enable_embedding ?? true);
+    }
+  }, [store.aiConfig]);
 
   const handleValidate = useCallback(async () => {
-    if (!apiKey.trim()) return;
+    if (!apiKey.trim() && !store.aiConfig?.has_api_key) return;
     setValidating(true);
     setValidationResult(null);
     try {
@@ -65,7 +73,7 @@ export function AIConfigPanel() {
     } finally {
       setValidating(false);
     }
-  }, [apiKey]);
+  }, [apiKey, store.aiConfig?.has_api_key]);
 
   const handleSave = useCallback(async () => {
     setSaving(true);
@@ -76,6 +84,7 @@ export function AIConfigPanel() {
         embeddingModel,
         baseUrl,
         pipelineIntervalHours: parseInt(pipelineInterval) || 1,
+        enableEmbedding,
       });
       toast.success(t("settings.ai.saved"));
       store.fetchAIConfig();
@@ -84,7 +93,7 @@ export function AIConfigPanel() {
     } finally {
       setSaving(false);
     }
-  }, [apiKey, model, embeddingModel, baseUrl, pipelineInterval, store, t]);
+  }, [apiKey, model, embeddingModel, baseUrl, pipelineInterval, enableEmbedding, store, t]);
 
   const handleTriggerPipeline = useCallback(async () => {
     setTriggeringPipeline(true);
@@ -111,7 +120,11 @@ export function AIConfigPanel() {
             <Flex gap="2">
               <TextField.Root
                 type="password"
-                placeholder={t("settings.ai.api_key_placeholder")}
+                placeholder={
+                  store.aiConfig?.has_api_key
+                    ? "••••••••••••••••"
+                    : t("settings.ai.api_key_placeholder")
+                }
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
                 className="flex-1"
@@ -120,7 +133,7 @@ export function AIConfigPanel() {
                 size="2"
                 variant="outline"
                 onClick={handleValidate}
-                disabled={!apiKey.trim() || validating}
+                disabled={(!apiKey.trim() && !store.aiConfig?.has_api_key) || validating}
               >
                 {validating ? (
                   <Loader2 size={14} className="animate-spin" />
@@ -161,6 +174,22 @@ export function AIConfigPanel() {
           </Flex>
 
           <Flex direction="column" gap="1">
+            <Flex align="center" gap="2">
+              <Switch
+                checked={enableEmbedding}
+                onCheckedChange={setEnableEmbedding}
+              />
+              <Text size="2" weight="medium" className="text-[var(--gray-12)]">
+                {t("settings.ai.enable_embedding")}
+              </Text>
+            </Flex>
+            <Text size="1" className="text-[var(--gray-11)]">
+              {t("settings.ai.enable_embedding_desc")}
+            </Text>
+          </Flex>
+
+          {enableEmbedding && (
+          <Flex direction="column" gap="1">
             <Text size="2" weight="medium" className="text-[var(--gray-12)]">
               {t("settings.ai.embedding_model")}
             </Text>
@@ -169,6 +198,7 @@ export function AIConfigPanel() {
               onChange={(e) => setEmbeddingModel(e.target.value)}
             />
           </Flex>
+          )}
 
           <Flex direction="column" gap="1">
             <Text size="2" weight="medium" className="text-[var(--gray-12)]">

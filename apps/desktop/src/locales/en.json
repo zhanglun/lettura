@@ -215,7 +215,9 @@
       "dedup_total": "Total Analyzed",
       "dedup_duplicates": "Duplicates Found",
       "dedup_groups": "Duplicate Groups",
-      "dedup_avg_density": "Avg Info Density"
+      "dedup_avg_density": "Avg Info Density",
+      "enable_embedding": "Enable Embedding",
+      "enable_embedding_desc": "Required for dedup and clustering. Disable if your plan doesn't include embedding API."
     }
   },
   "article": {
