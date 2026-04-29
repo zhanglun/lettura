@@ -54,7 +54,7 @@ export const ImageLazyLoad = ({
   }
 
   return (
-    <div ref={ref} style={{ width, height }} className={className}>
+    <div ref={ref} style={{ width, height }} className={clsx("relative", className)}>
       {inView ? (
         <>
           {!isLoaded && (
