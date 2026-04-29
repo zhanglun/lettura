@@ -19,6 +19,7 @@ export function TodayPage() {
       pipelineStatus: state.pipelineStatus,
       pipelineStage: state.pipelineStage,
       pipelineProgress: state.pipelineProgress,
+      pipelineError: state.pipelineError,
       aiConfig: state.aiConfig,
       subscribes: state.subscribes,
       fetchSignals: state.fetchSignals,
@@ -26,6 +27,7 @@ export function TodayPage() {
       setPipelineStatus: state.setPipelineStatus,
       setPipelineProgress: state.setPipelineProgress,
       triggerPipeline: state.triggerPipeline,
+      setPipelineError: state.setPipelineError,
       updateSettingDialogStatus: state.updateSettingDialogStatus,
     })),
   );
@@ -38,34 +40,39 @@ export function TodayPage() {
   useEffect(() => {
     if (!(window as any).__TAURI_INTERNALS__) return;
 
-    const unsubs: Promise<() => void>[] = [];
+    const unsubs: (() => void)[] = [];
+    let cancelled = false;
 
-    const { listen } = require("@tauri-apps/api/event") as typeof import("@tauri-apps/api/event");
+    import("@tauri-apps/api/event").then(async ({ listen }) => {
+      if (cancelled) return;
 
-    unsubs.push(
-      listen("pipeline:started", () => {
-        store.setPipelineStatus("running");
-      }),
-    );
-    unsubs.push(
-      listen("pipeline:progress", (e: any) => {
-        const { stage, current, total } = e.payload;
-        store.setPipelineProgress(stage, current, total);
-      }),
-    );
-    unsubs.push(
-      listen("pipeline:completed", () => {
-        store.setPipelineStatus("done");
-      }),
-    );
-    unsubs.push(
-      listen("pipeline:failed", () => {
-        store.setPipelineStatus("error");
-      }),
-    );
+      unsubs.push(
+        await listen("pipeline:started", () => {
+          store.setPipelineStatus("running");
+        }),
+      );
+      unsubs.push(
+        await listen("pipeline:progress", (e: any) => {
+          const { stage, current, total } = e.payload;
+          store.setPipelineProgress(stage, current, total);
+        }),
+      );
+      unsubs.push(
+        await listen("pipeline:completed", () => {
+          store.setPipelineStatus("done");
+        }),
+      );
+      unsubs.push(
+        await listen("pipeline:failed", (e: any) => {
+          const msg = e.payload?.error_message || "Unknown error";
+          store.setPipelineError(msg);
+        }),
+      );
+    });
 
     return () => {
-      unsubs.forEach((p) => p.then((unsub) => unsub()));
+      cancelled = true;
+      unsubs.forEach((unsub) => unsub());
     };
   }, []);
 
@@ -123,6 +130,7 @@ export function TodayPage() {
           status={store.pipelineStatus}
           stage={store.pipelineStage}
           progress={store.pipelineProgress}
+          error={store.pipelineError}
           onRetry={() => store.triggerPipeline()}
         />
 

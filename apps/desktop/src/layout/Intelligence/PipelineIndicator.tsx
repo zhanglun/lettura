@@ -7,6 +7,7 @@ interface PipelineIndicatorProps {
   status: PipelineStatus;
   stage?: string | null;
   progress?: number;
+  error?: string | null;
   onRetry?: () => void;
 }
 
@@ -14,6 +15,7 @@ export function PipelineIndicator({
   status,
   stage,
   progress,
+  error,
   onRetry,
 }: PipelineIndicatorProps) {
   const { t } = useTranslation();
@@ -53,15 +55,22 @@ export function PipelineIndicator({
 
   if (status === "error") {
     return (
-      <Flex align="center" gap="2" className="px-4 py-2">
-        <AlertTriangle size={16} className="text-[var(--amber-9)]" />
-        <Text size="1" className="text-[var(--amber-9)]">
-          {t("today.pipeline.error")}
-        </Text>
-        {onRetry && (
-          <Button size="1" variant="ghost" onClick={onRetry}>
-            {t("today.pipeline.retry")}
-          </Button>
+      <Flex direction="column" gap="1" className="px-4 py-2">
+        <Flex align="center" gap="2">
+          <AlertTriangle size={16} className="text-[var(--amber-9)]" />
+          <Text size="1" className="text-[var(--amber-9)]">
+            {t("today.pipeline.error")}
+          </Text>
+          {onRetry && (
+            <Button size="1" variant="ghost" onClick={onRetry}>
+              {t("today.pipeline.retry")}
+            </Button>
+          )}
+        </Flex>
+        {error && (
+          <Text size="1" className="text-[var(--gray-9)] pl-6">
+            {error}
+          </Text>
         )}
       </Flex>
     );

@@ -35,6 +35,7 @@ export interface AIConfigPublic {
   model: string;
   embedding_model: string;
   base_url: string;
+  enable_embedding: boolean;
 }
 
 export type PipelineStatus = "idle" | "running" | "done" | "error";
@@ -48,6 +49,7 @@ export interface TodaySlice {
   pipelineStatus: PipelineStatus;
   pipelineStage: string | null;
   pipelineProgress: number;
+  pipelineError: string | null;
 
   aiConfig: AIConfigPublic | null;
 
@@ -58,6 +60,7 @@ export interface TodaySlice {
   fetchAIConfig: () => Promise<void>;
   setPipelineStatus: (status: PipelineStatus) => void;
   setPipelineProgress: (stage: string, current: number, total: number) => void;
+  setPipelineError: (error: string) => void;
   triggerPipeline: (runType?: string) => Promise<void>;
   toggleSourceExpand: (signalId: number) => void;
   fetchSignalDetail: (signalId: number) => Promise<void>;
@@ -72,6 +75,7 @@ export const createTodaySlice: StateCreator<TodaySlice> = (set, get) => ({
   pipelineStatus: "idle",
   pipelineStage: null,
   pipelineProgress: 0,
+  pipelineError: null,
 
   aiConfig: null,
 
@@ -106,7 +110,7 @@ export const createTodaySlice: StateCreator<TodaySlice> = (set, get) => ({
     if (status === "done") {
       const { fetchSignals } = get();
       fetchSignals();
-      setTimeout(() => set({ pipelineStatus: "idle" }), 3000);
+      setTimeout(() => set({ pipelineStatus: "idle", pipelineError: null }), 3000);
     }
   },
 
@@ -117,11 +121,16 @@ export const createTodaySlice: StateCreator<TodaySlice> = (set, get) => ({
     });
   },
 
+  setPipelineError: (error) => {
+    set({ pipelineStatus: "error", pipelineError: error });
+  },
+
   triggerPipeline: async (runType) => {
+    set({ pipelineStatus: "running", pipelineError: null });
     try {
-      await invoke("trigger_pipeline", { runType: runType || "manual" });
+      await invoke("trigger_pipeline", { runType: runType || "full" });
     } catch (e) {
-      set({ pipelineStatus: "error", signalsError: String(e) });
+      set({ pipelineStatus: "error", pipelineError: String(e) });
     }
   },
 
