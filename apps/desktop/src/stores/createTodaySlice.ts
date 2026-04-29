@@ -38,6 +38,14 @@ export interface AIConfigPublic {
   enable_embedding: boolean;
 }
 
+export interface TodayOverview {
+  summary: string;
+  signal_count: number;
+  article_count: number;
+  generated_at: string;
+  is_stale: boolean;
+}
+
 export type PipelineStatus = "idle" | "running" | "done" | "error";
 
 export interface TodaySlice {
@@ -56,6 +64,10 @@ export interface TodaySlice {
   expandedSignalId: number | null;
   signalDetails: Record<number, SignalDetail>;
 
+  overview: TodayOverview | null;
+  overviewLoading: boolean;
+  overviewError: string | null;
+
   fetchSignals: (limit?: number) => Promise<void>;
   fetchAIConfig: () => Promise<void>;
   setPipelineStatus: (status: PipelineStatus) => void;
@@ -64,6 +76,7 @@ export interface TodaySlice {
   triggerPipeline: (runType?: string) => Promise<void>;
   toggleSourceExpand: (signalId: number) => void;
   fetchSignalDetail: (signalId: number) => Promise<void>;
+  fetchOverview: () => Promise<void>;
 }
 
 export const createTodaySlice: StateCreator<TodaySlice> = (set, get) => ({
@@ -81,6 +94,10 @@ export const createTodaySlice: StateCreator<TodaySlice> = (set, get) => ({
 
   expandedSignalId: null,
   signalDetails: {},
+
+  overview: null,
+  overviewLoading: false,
+  overviewError: null,
 
   fetchSignals: async (limit = 5) => {
     set({ signalsLoading: true, signalsError: null });
@@ -154,6 +171,16 @@ export const createTodaySlice: StateCreator<TodaySlice> = (set, get) => ({
       }));
     } catch (e) {
       console.error("Failed to fetch signal detail:", e);
+    }
+  },
+
+  fetchOverview: async () => {
+    set({ overviewLoading: true, overviewError: null });
+    try {
+      const overview: TodayOverview = await invoke("get_today_overview");
+      set({ overview, overviewLoading: false });
+    } catch (e) {
+      set({ overviewError: String(e), overviewLoading: false });
     }
   },
 });

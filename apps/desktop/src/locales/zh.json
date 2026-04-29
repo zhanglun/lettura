@@ -216,7 +216,11 @@
       "expand": "展开来源",
       "collapse": "收起来源",
       "loading": "加载中..."
-    }
+    },
+    "overview_title": "今日概览",
+    "overview_updated_minutes_ago": "{{minutes}} 分钟前更新",
+    "overview_error": "无法生成概览",
+    "overview_no_data": "今天还没有新内容"
   },
   "settings": {
     "ai": {

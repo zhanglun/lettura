@@ -2,6 +2,7 @@ pub mod config;
 pub mod dedup;
 pub mod embedding;
 pub mod llm;
+pub mod overview;
 pub mod pipeline;
 pub mod ranking;
 pub mod signal_title;

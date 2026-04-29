@@ -362,6 +362,23 @@ pub fn get_today_signals(limit: Option<i32>) -> Result<Vec<crate::ai::pipeline::
 }
 
 #[command]
+pub async fn get_today_overview() -> Result<crate::ai::overview::TodayOverview, String> {
+  let user_config = crate::core::config::get_user_config();
+  let ai_config = match user_config.ai {
+    Some(ref c) if c.has_api_key() => c.clone(),
+    None => return Err("AI_NO_API_KEY".to_string()),
+    Some(_) => return Err("API key is empty".to_string()),
+  };
+  let conn = &mut crate::db::establish_connection();
+  let llm = crate::ai::llm::OpenAILLM::new(
+    &ai_config.api_key,
+    &ai_config.base_url,
+    ai_config.model.clone(),
+  );
+  crate::ai::overview::generate_today_overview(conn, &llm).await
+}
+
+#[command]
 pub fn get_ai_config() -> Result<crate::ai::config::AiConfigPublic, String> {
   let user_config = config::get_user_config();
   let ai_config = user_config.ai.unwrap_or_default();

@@ -137,6 +137,7 @@ pub fn run() {
       cmd::import_opml_as_source,
       cmd::get_today_signals,
       cmd::get_signal_detail,
+      cmd::get_today_overview,
       cmd::get_dedup_stats,
       cmd::get_ai_config,
       cmd::save_ai_config,

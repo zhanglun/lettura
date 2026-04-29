@@ -5,6 +5,7 @@ import { useShallow } from "zustand/react/shallow";
 import { useTranslation } from "react-i18next";
 import { SignalList } from "./SignalList";
 import { PipelineIndicator } from "./PipelineIndicator";
+import { TodayOverview } from "./TodayOverview";
 import { TodayEmptyState } from "./TodayEmptyState";
 import { MainPanel } from "@/components/MainPanel";
 import { Settings, Sparkles, Loader2 } from "lucide-react";
@@ -22,8 +23,12 @@ export function TodayPage() {
       pipelineError: state.pipelineError,
       aiConfig: state.aiConfig,
       subscribes: state.subscribes,
+      overview: state.overview,
+      overviewLoading: state.overviewLoading,
+      overviewError: state.overviewError,
       fetchSignals: state.fetchSignals,
       fetchAIConfig: state.fetchAIConfig,
+      fetchOverview: state.fetchOverview,
       setPipelineStatus: state.setPipelineStatus,
       setPipelineProgress: state.setPipelineProgress,
       triggerPipeline: state.triggerPipeline,
@@ -35,6 +40,7 @@ export function TodayPage() {
   useEffect(() => {
     store.fetchAIConfig();
     store.fetchSignals();
+    store.fetchOverview();
   }, []);
 
   useEffect(() => {
@@ -142,6 +148,12 @@ export function TodayPage() {
           renderEmptyState()
         ) : (
           <div className="flex-1 overflow-auto">
+            <TodayOverview
+              overview={store.overview}
+              overviewLoading={store.overviewLoading}
+              overviewError={store.overviewError}
+              hasApiKey={hasApiKey}
+            />
             <SignalList signals={store.signals} />
           </div>
         )}

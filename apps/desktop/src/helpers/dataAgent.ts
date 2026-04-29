@@ -366,6 +366,14 @@ export const getSignalDetail = async (
   return invoke("get_signal_detail", { signalId });
 };
 
+export interface TodayOverview {
+  summary: string;
+  signal_count: number;
+  article_count: number;
+  generated_at: string;
+  is_stale: boolean;
+}
+
 export interface DedupStats {
   total_analyzed: number;
   duplicates_found: number;
@@ -375,4 +383,8 @@ export interface DedupStats {
 
 export const getDedupStats = async (): Promise<DedupStats> => {
   return invoke("get_dedup_stats");
+};
+
+export const getTodayOverview = async (): Promise<TodayOverview> => {
+  return invoke("get_today_overview");
 };
