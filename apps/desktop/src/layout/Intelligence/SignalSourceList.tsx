@@ -8,7 +8,7 @@ const PREVIEW_COUNT = 5;
 
 interface SignalSourceListProps {
   sources: SignalSource[];
-  onSourceClick: (articleUuid: string, feedUuid: string) => void;
+  onSourceClick: (articleUuid: string, feedUuid: string, articleId: number) => void;
   onLoadAll?: () => void;
   loading?: boolean;
 }
@@ -56,6 +56,12 @@ export function SignalSourceList({
               })}
         </button>
       )}
+
+      <div className="mt-3 pt-3 border-t border-[var(--gray-4)]">
+        <Text size="1" className="text-[var(--gray-8)]">
+          {t("today.deep_read.continue_reading_hint")}
+        </Text>
+      </div>
     </div>
   );
 }

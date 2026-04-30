@@ -194,7 +194,20 @@
     "overview_title": "Today's Overview",
     "overview_updated_minutes_ago": "{{minutes}} min ago",
     "overview_error": "Unable to generate overview",
-    "overview_no_data": "No new content today"
+    "overview_no_data": "No new content today",
+    "feedback": {
+      "useful": "Useful",
+      "not_relevant": "Not Relevant",
+      "follow_topic": "Follow Topic",
+      "submitting": "Submitting...",
+      "success": "Thanks for your feedback!"
+    },
+    "deep_read": {
+      "read_original": "Read Original",
+      "continue_reading": "Continue Reading",
+      "continue_reading_hint": "Want to learn more? Click sources above to read the original articles."
+    },
+    "topic_badge": "Topic: {{title}}"
   },
   "settings": {
     "ai": {
@@ -222,6 +235,59 @@
       "dedup_avg_density": "Avg Info Density",
       "enable_embedding": "Enable Embedding",
       "enable_embedding_desc": "Required for dedup and clustering. Disable if your plan doesn't include embedding API."
+    }
+  },
+  "layout": {
+    "topics": {
+      "title": "Topics",
+      "empty": "No topics yet. Topics are automatically generated from your reading signals.",
+      "loading": "Loading topics...",
+      "article_count": "{{count}} articles",
+      "source_count": "{{count}} sources",
+      "last_updated": "Updated {{time}}",
+      "follow": "Follow",
+      "following": "Following",
+      "filter": {
+        "all": "All",
+        "following": "Following"
+      },
+      "sort": {
+        "relevance": "Relevance",
+        "recent": "Recent",
+        "article_count": "Article Count"
+      },
+      "detail": {
+        "articles": "articles",
+        "sources": "sources",
+        "first_seen": "First seen",
+        "last_updated": "Last updated",
+        "related_articles": "Related Articles",
+        "no_articles": "No articles yet",
+        "back": "Back to Topics",
+        "loading_detail": "Loading topic...",
+        "topic_summary": "Topic Summary",
+        "source_groups": "Sources",
+        "articles_from": "articles from",
+        "show_more": "Show more",
+        "show_less": "Show less"
+      }
+    },
+    "rail": {
+      "today": "Today",
+      "topics": "Topics",
+      "feeds": "Feeds",
+      "search": "Search",
+      "starred": "Starred",
+      "settings": "Settings"
+    },
+    "sidebar": {
+      "brand": "Lettura",
+      "today_focus": "Today Focus",
+      "today_focus_desc": "View latest signals",
+      "tracked_topics": "Tracked Topics",
+      "no_tracked_topics": "No tracked topics yet",
+      "collapse": "Collapse sidebar",
+      "expand": "Expand sidebar"
     }
   },
   "article": {

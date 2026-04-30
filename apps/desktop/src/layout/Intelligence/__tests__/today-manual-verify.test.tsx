@@ -28,6 +28,7 @@ const mockStore = {
   subscribes: [] as unknown[],
   fetchSignals: vi.fn(),
   fetchAIConfig: vi.fn(),
+  fetchOverview: vi.fn(),
   setPipelineStatus: vi.fn(),
   setPipelineProgress: vi.fn(),
   triggerPipeline: vi.fn(),

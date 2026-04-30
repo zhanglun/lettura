@@ -496,6 +496,56 @@ pub async fn trigger_pipeline(
     .map_err(|e| e.to_string())
 }
 
+#[command]
+pub fn submit_feedback(
+  signal_id: i32,
+  feedback_type: String,
+  comment: Option<String>,
+) -> Result<serde_json::Value, String> {
+  let conn = &mut crate::db::establish_connection();
+  crate::ai::feedback::submit_user_feedback(conn, signal_id, &feedback_type, comment)
+    .map(|f| serde_json::to_value(f).unwrap_or_default())
+    .map_err(|e| e.to_string())
+}
+
+#[command]
+pub fn get_feedback_history(limit: Option<i64>) -> Result<serde_json::Value, String> {
+  let conn = &mut crate::db::establish_connection();
+  crate::ai::feedback::get_feedback_history(conn, limit)
+    .map(|results| serde_json::to_value(results).unwrap_or_default())
+    .map_err(|e| e.to_string())
+}
+
+#[command]
+pub fn get_topics(
+  status: Option<String>,
+  sort: Option<String>,
+  limit: Option<i64>,
+) -> Result<Vec<crate::ai::topic::TopicItem>, String> {
+  let conn = &mut crate::db::establish_connection();
+  crate::ai::topic::get_topics_list(conn, status, sort, limit)
+}
+
+#[command]
+pub fn get_topic_detail(
+  topic_id: String,
+) -> Result<crate::ai::topic::TopicDetail, String> {
+  let conn = &mut crate::db::establish_connection();
+  crate::ai::topic::get_topic_detail_by_id(conn, &topic_id)
+}
+
+#[command]
+pub fn follow_topic(topic_id: i32) -> Result<(), String> {
+  let conn = &mut crate::db::establish_connection();
+  crate::ai::topic::follow_topic(conn, topic_id)
+}
+
+#[command]
+pub fn unfollow_topic(topic_id: i32) -> Result<(), String> {
+  let conn = &mut crate::db::establish_connection();
+  crate::ai::topic::unfollow_topic(conn, topic_id)
+}
+
 #[cfg(test)]
 mod tests {
   use super::*;

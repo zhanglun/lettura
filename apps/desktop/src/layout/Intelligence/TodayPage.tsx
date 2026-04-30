@@ -34,6 +34,8 @@ export function TodayPage() {
       triggerPipeline: state.triggerPipeline,
       setPipelineError: state.setPipelineError,
       updateSettingDialogStatus: state.updateSettingDialogStatus,
+      expandedSignalId: state.expandedSignalId,
+      scrollPositionMap: state.scrollPositionMap,
     })),
   );
 
@@ -41,6 +43,18 @@ export function TodayPage() {
     store.fetchAIConfig();
     store.fetchSignals();
     store.fetchOverview();
+  }, []);
+
+  useEffect(() => {
+    const signalId = store.expandedSignalId;
+    if (signalId != null && store.scrollPositionMap[signalId] !== undefined) {
+      requestAnimationFrame(() => {
+        const scrollContainer = document.querySelector('[data-today-scroll]') as HTMLElement | null;
+        if (scrollContainer) {
+          scrollContainer.scrollTop = store.scrollPositionMap[signalId];
+        }
+      });
+    }
   }, []);
 
   useEffect(() => {
@@ -147,7 +161,7 @@ export function TodayPage() {
         ) : !hasApiKey || !hasSignals ? (
           renderEmptyState()
         ) : (
-          <div className="flex-1 overflow-auto">
+          <div className="flex-1 overflow-auto" data-today-scroll>
             <TodayOverview
               overview={store.overview}
               overviewLoading={store.overviewLoading}

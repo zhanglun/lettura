@@ -120,6 +120,51 @@ diesel::table! {
 diesel::joinable!(article_ai_analysis -> articles (article_id));
 diesel::joinable!(feeds -> sources (source_id));
 
+diesel::table! {
+    topics (id) {
+        id -> Integer,
+        uuid -> Text,
+        title -> Text,
+        description -> Text,
+        status -> Text,
+        article_count -> Integer,
+        source_count -> Integer,
+        first_seen_at -> Timestamp,
+        last_updated_at -> Timestamp,
+    }
+}
+
+diesel::table! {
+    topic_articles (id) {
+        id -> Integer,
+        topic_id -> Integer,
+        article_id -> Integer,
+        relevance_score -> Float,
+    }
+}
+
+diesel::joinable!(topic_articles -> topics (topic_id));
+
+diesel::table! {
+    topic_follows (id) {
+        id -> Nullable<Integer>,
+        topic_id -> Integer,
+        followed_at -> Timestamp,
+    }
+}
+
+diesel::joinable!(topic_follows -> topics (topic_id));
+
+diesel::table! {
+    user_feedback (id) {
+        id -> Nullable<Integer>,
+        signal_id -> Integer,
+        feedback_type -> Varchar,
+        comment -> Nullable<Text>,
+        create_date -> Timestamp,
+    }
+}
+
 diesel::allow_tables_to_appear_in_same_query!(
   article_ai_analysis,
   articles,
@@ -128,4 +173,8 @@ diesel::allow_tables_to_appear_in_same_query!(
   folders,
   pipeline_runs,
   sources,
+  topic_follows,
+  topics,
+  topic_articles,
+  user_feedback,
 );

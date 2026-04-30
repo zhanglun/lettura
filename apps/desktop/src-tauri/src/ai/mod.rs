@@ -1,10 +1,12 @@
 pub mod config;
 pub mod dedup;
 pub mod embedding;
+pub mod feedback;
 pub mod llm;
 pub mod overview;
 pub mod pipeline;
 pub mod ranking;
 pub mod signal_title;
 pub mod summary;
+pub mod topic;
 pub mod why_it_matters;

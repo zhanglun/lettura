@@ -421,6 +421,7 @@ async fn execute_with_embedding(
   emit_progress(app_handle, "generating_topic_summaries", 0, 0);
   let all_topics: Vec<(i32, i32, i32)> = topics::table
     .filter(topics::status.eq("active"))
+    .filter(topics::description.eq("").or(topics::description.is_null()))
     .select((topics::id, topics::article_count, topics::source_count))
     .load::<(i32, i32, i32)>(conn)
     .unwrap_or_default();

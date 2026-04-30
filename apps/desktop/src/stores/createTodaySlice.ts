@@ -48,6 +48,14 @@ export interface TodayOverview {
 
 export type PipelineStatus = "idle" | "running" | "done" | "error";
 
+export interface FeedbackEntry {
+  id: number;
+  signal_id: number;
+  feedback_type: string;
+  comment: string | null;
+  create_date: string;
+}
+
 export interface TodaySlice {
   signals: Signal[];
   signalsLoading: boolean;
@@ -68,6 +76,12 @@ export interface TodaySlice {
   overviewLoading: boolean;
   overviewError: string | null;
 
+  feedbackHistory: FeedbackEntry[];
+  feedbackMap: Record<number, string | null>;
+
+  scrollPositionMap: Record<number, number>;
+  setScrollPosition: (signalId: number, scrollY: number) => void;
+
   fetchSignals: (limit?: number) => Promise<void>;
   fetchAIConfig: () => Promise<void>;
   setPipelineStatus: (status: PipelineStatus) => void;
@@ -77,6 +91,8 @@ export interface TodaySlice {
   toggleSourceExpand: (signalId: number) => void;
   fetchSignalDetail: (signalId: number) => Promise<void>;
   fetchOverview: () => Promise<void>;
+  submitFeedback: (signalId: number, feedbackType: "useful" | "not_relevant" | "follow_topic", comment?: string) => Promise<void>;
+  fetchFeedbackHistory: (limit?: number) => Promise<void>;
 }
 
 export const createTodaySlice: StateCreator<TodaySlice> = (set, get) => ({
@@ -98,6 +114,11 @@ export const createTodaySlice: StateCreator<TodaySlice> = (set, get) => ({
   overview: null,
   overviewLoading: false,
   overviewError: null,
+
+  feedbackHistory: [],
+  feedbackMap: {},
+
+  scrollPositionMap: {},
 
   fetchSignals: async (limit = 5) => {
     set({ signalsLoading: true, signalsError: null });
@@ -182,5 +203,28 @@ export const createTodaySlice: StateCreator<TodaySlice> = (set, get) => ({
     } catch (e) {
       set({ overviewError: String(e), overviewLoading: false });
     }
+  },
+
+  submitFeedback: async (signalId, feedbackType, comment) => {
+    await invoke("submit_feedback", { signalId, feedbackType, comment });
+    set((state) => ({
+      feedbackMap: { ...state.feedbackMap, [signalId]: feedbackType },
+    }));
+    get().fetchSignals();
+  },
+
+  fetchFeedbackHistory: async (limit) => {
+    try {
+      const history: FeedbackEntry[] = await invoke("get_feedback_history", { limit });
+      set({ feedbackHistory: history });
+    } catch (e) {
+      console.error("Failed to fetch feedback history:", e);
+    }
+  },
+
+  setScrollPosition: (signalId, scrollY) => {
+    set((state) => ({
+      scrollPositionMap: { ...state.scrollPositionMap, [signalId]: scrollY },
+    }));
   },
 });

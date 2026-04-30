@@ -19,6 +19,10 @@ const mockStore = {
   signalDetails: {} as Record<number, unknown>,
   toggleSourceExpand: vi.fn(),
   fetchSignalDetail: vi.fn(),
+  submitFeedback: vi.fn(),
+  feedbackMap: {} as Record<number, string | null>,
+  scrollPositionMap: {} as Record<number, number>,
+  setScrollPosition: vi.fn(),
 };
 
 vi.mock("@/stores", () => ({

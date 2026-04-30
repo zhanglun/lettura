@@ -15,6 +15,8 @@ import { ArticleContainer } from "./layout/Article";
 import { TodayPage } from "./layout/Intelligence/TodayPage";
 import { SearchPage } from "./layout/Search";
 import { FreshRSSPage } from "./layout/FreshRSS";
+import { TopicListPage } from "./layout/Intelligence/Topics/TopicListPage";
+import { TopicDetailPage } from "./layout/Intelligence/Topics/TopicDetailPage";
 
 import "./index.css";
 import "./i18n";
@@ -57,6 +59,14 @@ const router = createBrowserRouter([
       {
         path: RouteConfig.LOCAL_ARTICLE,
         element: <ArticleContainer />,
+      },
+      {
+        path: RouteConfig.LOCAL_TOPICS,
+        element: <TopicListPage />,
+      },
+      {
+        path: RouteConfig.LOCAL_TOPIC_DETAIL,
+        element: <TopicDetailPage />,
       },
       //   ],
       // },

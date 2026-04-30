@@ -22,10 +22,19 @@ pub struct TopicItem {
   pub is_following: bool,
 }
 
-/// Response type for get_topic_detail IPC
+/// Response type for get_topic_detail IPC (flat structure to match frontend)
 #[derive(Debug, Serialize)]
 pub struct TopicDetail {
-  pub topic: TopicItem,
+  pub id: i32,
+  pub uuid: String,
+  pub title: String,
+  pub description: String,
+  pub status: String,
+  pub article_count: i32,
+  pub source_count: i32,
+  pub first_seen_at: String,
+  pub last_updated_at: String,
+  pub is_following: bool,
   pub recent_changes: Option<String>,
   pub articles: Vec<TopicArticleItem>,
   pub topic_summary: Option<String>,
@@ -65,7 +74,6 @@ pub fn assign_or_create_topic(
     return Ok(None);
   }
 
-  // Check if any article in this cluster already has a topic_id
   let existing_topic_id: Option<i32> = article_ai_analysis::table
     .filter(article_ai_analysis::article_id.eq_any(article_ids))
     .filter(article_ai_analysis::topic_id.is_not_null())
@@ -74,61 +82,20 @@ pub fn assign_or_create_topic(
     .ok()
     .flatten();
 
-  let topic_id = if let Some(tid) = existing_topic_id {
-    // Update existing topic
-    let new_count = article_ids.len() as i32;
-    let feed_uuids: Vec<String> = articles::table
-      .filter(articles::id.eq_any(article_ids))
-      .select(articles::feed_uuid)
-      .load::<String>(conn)
-      .map_err(|e| e.to_string())?;
-    let source_count = feed_uuids
-      .iter()
-      .collect::<std::collections::HashSet<_>>()
-      .len() as i32;
+  let source_count = compute_source_count(conn, article_ids)?;
 
+  let topic_id = if let Some(tid) = existing_topic_id {
     diesel::update(topics::table.find(tid))
       .set((
-        topics::article_count.eq(new_count),
+        topics::article_count.eq(article_ids.len() as i32),
         topics::source_count.eq(source_count),
         topics::last_updated_at.eq(chrono::Utc::now().naive_utc()),
       ))
       .execute(conn)
       .map_err(|e| e.to_string())?;
-
-    for &aid in article_ids {
-      diesel::insert_into(topic_articles::table)
-        .values(NewTopicArticle {
-          topic_id: tid,
-          article_id: aid,
-          relevance_score: 0.7,
-        })
-        .execute(conn)
-        .ok();
-    }
-
-    for &aid in article_ids {
-      diesel::update(
-        article_ai_analysis::table.filter(article_ai_analysis::article_id.eq(aid)),
-      )
-      .set(article_ai_analysis::topic_id.eq(tid))
-      .execute(conn)
-      .ok();
-    }
-
     tid
   } else {
     let new_uuid = Uuid::new_v4().hyphenated().to_string();
-    let feed_uuids: Vec<String> = articles::table
-      .filter(articles::id.eq_any(article_ids))
-      .select(articles::feed_uuid)
-      .load::<String>(conn)
-      .map_err(|e| e.to_string())?;
-    let source_count = feed_uuids
-      .iter()
-      .collect::<std::collections::HashSet<_>>()
-      .len() as i32;
-
     diesel::insert_into(topics::table)
       .values(NewTopic {
         uuid: new_uuid.clone(),
@@ -141,36 +108,50 @@ pub fn assign_or_create_topic(
       .execute(conn)
       .map_err(|e| e.to_string())?;
 
-    let tid: i32 = topics::table
+    topics::table
       .filter(topics::uuid.eq(&new_uuid))
       .select(topics::id)
       .first(conn)
-      .map_err(|e| e.to_string())?;
-
-    for &aid in article_ids {
-      diesel::insert_into(topic_articles::table)
-        .values(NewTopicArticle {
-          topic_id: tid,
-          article_id: aid,
-          relevance_score: 0.7,
-        })
-        .execute(conn)
-        .ok();
-    }
-
-    for &aid in article_ids {
-      diesel::update(
-        article_ai_analysis::table.filter(article_ai_analysis::article_id.eq(aid)),
-      )
-      .set(article_ai_analysis::topic_id.eq(tid))
-      .execute(conn)
-      .ok();
-    }
-
-    tid
+      .map_err(|e| e.to_string())?
   };
 
+  link_articles_to_topic(conn, topic_id, article_ids);
+  set_topic_id_on_analysis(conn, topic_id, article_ids);
+
   Ok(Some(topic_id))
+}
+
+fn compute_source_count(conn: &mut SqliteConnection, article_ids: &[i32]) -> Result<i32, String> {
+  let feed_uuids: Vec<String> = articles::table
+    .filter(articles::id.eq_any(article_ids))
+    .select(articles::feed_uuid)
+    .load::<String>(conn)
+    .map_err(|e| e.to_string())?;
+  Ok(feed_uuids.iter().collect::<HashSet<_>>().len() as i32)
+}
+
+fn link_articles_to_topic(conn: &mut SqliteConnection, topic_id: i32, article_ids: &[i32]) {
+  for &aid in article_ids {
+    diesel::insert_into(topic_articles::table)
+      .values(NewTopicArticle {
+        topic_id,
+        article_id: aid,
+        relevance_score: 0.7,
+      })
+      .execute(conn)
+      .ok();
+  }
+}
+
+fn set_topic_id_on_analysis(conn: &mut SqliteConnection, topic_id: i32, article_ids: &[i32]) {
+  for &aid in article_ids {
+    diesel::update(
+      article_ai_analysis::table.filter(article_ai_analysis::article_id.eq(aid)),
+    )
+    .set(article_ai_analysis::topic_id.eq(topic_id))
+    .execute(conn)
+    .ok();
+  }
 }
 
 pub async fn generate_topic_summary(
@@ -194,41 +175,29 @@ pub async fn generate_topic_summary(
     .load::<i32>(conn)
     .map_err(|e| e.to_string())?;
 
-  let mut article_lines: Vec<String> = Vec::new();
-  for &aid in &article_ids {
-    let title: Option<String> = articles::table
-      .find(aid)
-      .select(articles::title)
-      .first(conn)
-      .ok();
+  let article_rows: Vec<(i32, String, String)> = articles::table
+    .filter(articles::id.eq_any(&article_ids))
+    .inner_join(feeds::table.on(feeds::uuid.eq(articles::feed_uuid)))
+    .select((articles::id, articles::title, feeds::title))
+    .load::<(i32, String, String)>(conn)
+    .map_err(|e| e.to_string())?;
 
-    let feed_uuid: Option<String> = articles::table
-      .find(aid)
-      .select(articles::feed_uuid)
-      .first(conn)
-      .ok();
+  let summaries: std::collections::HashMap<i32, String> = article_ai_analysis::table
+    .filter(article_ai_analysis::article_id.eq_any(&article_ids))
+    .select((article_ai_analysis::article_id, article_ai_analysis::summary))
+    .load::<(i32, Option<String>)>(conn)
+    .map_err(|e| e.to_string())?
+    .into_iter()
+    .filter_map(|(id, s)| s.map(|text| (id, text)))
+    .collect();
 
-    let feed_title: String = match &feed_uuid {
-      Some(fu) => feeds::table
-        .filter(feeds::uuid.eq(fu))
-        .select(feeds::title)
-        .first(conn)
-        .unwrap_or_default(),
-      None => String::new(),
-    };
-
-    let summary: Option<String> = article_ai_analysis::table
-      .filter(article_ai_analysis::article_id.eq(aid))
-      .select(article_ai_analysis::summary)
-      .first::<Option<String>>(conn)
-      .ok()
-      .flatten();
-
-    if let Some(t) = title {
-      let summary_text = summary.unwrap_or_else(|| "No summary available".to_string());
-      article_lines.push(format!("- {} ({}): {}", t, feed_title, summary_text));
-    }
-  }
+  let article_lines: Vec<String> = article_rows
+    .iter()
+    .map(|(id, title, feed_title)| {
+      let summary_text = summaries.get(id).map(|s| s.as_str()).unwrap_or("No summary available");
+      format!("- {} ({}): {}", title, feed_title, summary_text)
+    })
+    .collect();
 
   if article_lines.is_empty() {
     return Ok(());
@@ -269,7 +238,7 @@ pub fn follow_topic(conn: &mut SqliteConnection, topic_id: i32) -> Result<(), St
     .find(topic_id)
     .first::<Topic>(conn)
     .map_err(|_| "Topic not found".to_string())?;
-  diesel::insert_into(topic_follows::table)
+  diesel::insert_or_ignore_into(topic_follows::table)
     .values(NewTopicFollow { topic_id })
     .execute(conn)
     .map_err(|e| e.to_string())?;
@@ -472,18 +441,16 @@ pub fn get_topic_detail_by_id(
   let is_following = is_topic_followed(conn, topic.id);
 
   Ok(TopicDetail {
-    topic: TopicItem {
-      id: topic.id,
-      uuid: topic.uuid,
-      title: topic.title,
-      description: topic.description,
-      status: topic.status,
-      article_count: topic.article_count,
-      source_count: topic.source_count,
-      first_seen_at: topic.first_seen_at.to_string(),
-      last_updated_at: topic.last_updated_at.to_string(),
-      is_following,
-    },
+    id: topic.id,
+    uuid: topic.uuid,
+    title: topic.title,
+    description: topic.description,
+    status: topic.status,
+    article_count: topic.article_count,
+    source_count: topic.source_count,
+    first_seen_at: topic.first_seen_at.to_string(),
+    last_updated_at: topic.last_updated_at.to_string(),
+    is_following,
     recent_changes: None,
     articles: arts,
     topic_summary,

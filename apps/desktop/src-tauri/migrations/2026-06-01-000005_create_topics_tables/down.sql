@@ -1,0 +1,2 @@
+DROP TABLE IF EXISTS topic_articles;
+DROP TABLE IF EXISTS topics;

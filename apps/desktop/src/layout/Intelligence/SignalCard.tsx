@@ -1,9 +1,9 @@
 import { Text, Flex } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
 import { Signal } from "@/stores/createTodaySlice";
-import { FileText, Lightbulb, ChevronDown, ChevronUp } from "lucide-react";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { FileText, Lightbulb, ChevronDown, ChevronUp, Layers } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { RouteConfig } from "@/config";
 import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
@@ -18,6 +18,8 @@ export function SignalCard({ signal }: SignalCardProps) {
   const navigate = useNavigate();
   const [wimExpanded, setWimExpanded] = useState(false);
   const [detailLoading, setDetailLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const openedArticlesRef = useRef<Set<number>>(new Set());
 
   const store = useBearStore(
     useShallow((state) => ({
@@ -25,12 +27,17 @@ export function SignalCard({ signal }: SignalCardProps) {
       signalDetails: state.signalDetails,
       toggleSourceExpand: state.toggleSourceExpand,
       fetchSignalDetail: state.fetchSignalDetail,
+      submitFeedback: state.submitFeedback,
+      feedbackMap: state.feedbackMap,
+      scrollPositionMap: state.scrollPositionMap,
+      setScrollPosition: state.setScrollPosition,
     })),
   );
 
   const isExpanded = store.expandedSignalId === signal.id;
   const detail = store.signalDetails[signal.id];
   const sources = detail?.all_sources ?? signal.sources;
+  const currentFeedback = store.feedbackMap[signal.id] ?? null;
 
   const hasWim =
     signal.why_it_matters &&
@@ -47,12 +54,39 @@ export function SignalCard({ signal }: SignalCardProps) {
     setDetailLoading(false);
   };
 
-  const handleSourceClick = (articleUuid: string, feedUuid: string) => {
+  const handleSourceClick = (articleUuid: string, feedUuid: string, articleId: number) => {
+    if (openedArticlesRef.current.has(articleId)) return;
+    openedArticlesRef.current.add(articleId);
+    const scrollContainer = document.querySelector('[data-today-scroll]') as HTMLElement | null;
+    if (scrollContainer) {
+      store.setScrollPosition(signal.id, scrollContainer.scrollTop);
+    }
     const path = RouteConfig.LOCAL_ARTICLE.replace(/:uuid/, feedUuid).replace(
       /:id/,
       articleUuid,
     );
     navigate(path);
+  };
+
+  useEffect(() => {
+    if (isExpanded && store.scrollPositionMap[signal.id] !== undefined) {
+      requestAnimationFrame(() => {
+        const scrollContainer = document.querySelector('[data-today-scroll]') as HTMLElement | null;
+        if (scrollContainer) {
+          scrollContainer.scrollTop = store.scrollPositionMap[signal.id];
+        }
+      });
+    }
+  }, [isExpanded]);
+
+  const handleFeedback = async (feedbackType: "useful" | "not_relevant" | "follow_topic") => {
+    setIsSubmitting(true);
+    try {
+      await store.submitFeedback(signal.id, feedbackType);
+    } catch {
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -61,10 +95,21 @@ export function SignalCard({ signal }: SignalCardProps) {
         <Text
           size="4"
           weight="medium"
-          className="text-[var(--gray-12)] leading-snug"
+          className="text-[var(--gray-12)] leading-snug cursor-pointer hover:text-[var(--accent-9)] transition-colors"
+          onClick={handleToggleExpand}
         >
           {signal.title}
         </Text>
+
+        {signal.topic_id && signal.topic_title && (
+          <Link
+            to={RouteConfig.LOCAL_TOPICS}
+            className="inline-flex items-center gap-1 text-xs text-[var(--accent-9)] hover:text-[var(--accent-10)] bg-[var(--accent-3)] rounded px-1.5 py-0.5 w-fit transition-colors"
+          >
+            <Layers size={12} />
+            {signal.topic_title}
+          </Link>
+        )}
 
         <Text
           size="2"
@@ -141,6 +186,42 @@ export function SignalCard({ signal }: SignalCardProps) {
             loading={detailLoading}
           />
         </div>
+
+        <Flex align="center" gap="3" mt="2" pt="2" className="border-t border-[var(--gray-4)]">
+          <button
+            onClick={() => handleFeedback("useful")}
+            disabled={isSubmitting || !!currentFeedback}
+            className={`flex items-center gap-1 text-xs transition-colors disabled:opacity-50 ${
+              currentFeedback === "useful"
+                ? "text-[var(--accent-9)] font-medium"
+                : "text-[var(--gray-9)] hover:text-[var(--gray-11)]"
+            }`}
+          >
+            👍 {t("today.feedback.useful")}
+          </button>
+          <button
+            onClick={() => handleFeedback("not_relevant")}
+            disabled={isSubmitting || !!currentFeedback}
+            className={`flex items-center gap-1 text-xs transition-colors disabled:opacity-50 ${
+              currentFeedback === "not_relevant"
+                ? "text-[var(--accent-9)] font-medium"
+                : "text-[var(--gray-9)] hover:text-[var(--gray-11)]"
+            }`}
+          >
+            👎 {t("today.feedback.not_relevant")}
+          </button>
+          <button
+            onClick={() => handleFeedback("follow_topic")}
+            disabled={isSubmitting || !!currentFeedback}
+            className={`flex items-center gap-1 text-xs transition-colors disabled:opacity-50 ${
+              currentFeedback === "follow_topic"
+                ? "text-[var(--accent-9)] font-medium"
+                : "text-[var(--gray-9)] hover:text-[var(--gray-11)]"
+            }`}
+          >
+            📌 {t("today.feedback.follow_topic")}
+          </button>
+        </Flex>
       </Flex>
     </div>
   );

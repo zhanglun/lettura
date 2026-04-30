@@ -220,7 +220,20 @@
     "overview_title": "今日概览",
     "overview_updated_minutes_ago": "{{minutes}} 分钟前更新",
     "overview_error": "无法生成概览",
-    "overview_no_data": "今天还没有新内容"
+    "overview_no_data": "今天还没有新内容",
+    "feedback": {
+      "useful": "有用",
+      "not_relevant": "不相关",
+      "follow_topic": "追踪话题",
+      "submitting": "提交中...",
+      "success": "感谢你的反馈！"
+    },
+    "deep_read": {
+      "read_original": "阅读原文",
+      "continue_reading": "继续阅读",
+      "continue_reading_hint": "还想了解更多？点击上方来源阅读原文。"
+    },
+    "topic_badge": "话题：{{title}}"
   },
   "settings": {
     "ai": {
@@ -248,6 +261,59 @@
       "dedup_avg_density": "平均信息密度",
       "enable_embedding": "启用 Embedding",
       "enable_embedding_desc": "去重和聚类功能需要 Embedding。如果你的套餐不包含 Embedding API，可以关闭。"
+    }
+  },
+  "layout": {
+    "topics": {
+      "title": "话题",
+      "empty": "暂无话题。话题会从阅读信号中自动生成。",
+      "loading": "加载中...",
+      "article_count": "{{count}} 篇文章",
+      "source_count": "{{count}} 个来源",
+      "last_updated": "更新于 {{time}}",
+      "follow": "关注",
+      "following": "已关注",
+      "filter": {
+        "all": "全部",
+        "following": "已关注"
+      },
+      "sort": {
+        "relevance": "相关性",
+        "recent": "最近更新",
+        "article_count": "文章数量"
+      },
+      "detail": {
+        "articles": "篇文章",
+        "sources": "个来源",
+        "first_seen": "首次出现",
+        "last_updated": "最近更新",
+        "related_articles": "相关文章",
+        "no_articles": "暂无文章",
+        "back": "返回话题列表",
+        "loading_detail": "加载中...",
+        "topic_summary": "主题概要",
+        "source_groups": "来源",
+        "articles_from": "篇文章来自",
+        "show_more": "展开更多",
+        "show_less": "收起"
+      }
+    },
+    "rail": {
+      "today": "今日",
+      "topics": "话题",
+      "feeds": "订阅",
+      "search": "搜索",
+      "starred": "星标",
+      "settings": "设置"
+    },
+    "sidebar": {
+      "brand": "Lettura",
+      "today_focus": "Today Focus",
+      "today_focus_desc": "查看最新信号",
+      "tracked_topics": "跟踪话题",
+      "no_tracked_topics": "尚无跟踪主题",
+      "collapse": "收起侧边栏",
+      "expand": "展开侧边栏"
     }
   },
   "article": {

@@ -1,4 +1,4 @@
-use super::schema::{articles, feed_metas, feeds, folders};
+use super::schema::{articles, feed_metas, feeds, folders, topic_follows, topics, topic_articles, user_feedback};
 use diesel::sql_types::*;
 use diesel::sqlite::Sqlite;
 use serde::Serialize;
@@ -186,4 +186,94 @@ pub struct NewFolder {
   pub uuid: String,
   pub name: String,
   pub sort: i32,
+}
+
+#[derive(Debug, Queryable, QueryableByName, Serialize)]
+#[diesel(table_name = user_feedback)]
+pub struct UserFeedback {
+  #[diesel(sql_type = Nullable<Integer>)]
+  pub id: Option<i32>,
+  #[diesel(sql_type = Integer)]
+  pub signal_id: i32,
+  #[diesel(sql_type = Varchar)]
+  pub feedback_type: String,
+  #[diesel(sql_type = Nullable<Text>)]
+  pub comment: Option<String>,
+  #[diesel(sql_type = Timestamp)]
+  pub create_date: chrono::NaiveDateTime,
+}
+
+#[derive(Debug, Insertable)]
+#[diesel(table_name = user_feedback)]
+pub struct NewUserFeedback {
+  pub signal_id: i32,
+  pub feedback_type: String,
+  pub comment: Option<String>,
+}
+
+#[derive(Debug, Queryable, QueryableByName, Serialize, Clone)]
+pub struct Topic {
+  #[diesel(sql_type = Integer)]
+  pub id: i32,
+  #[diesel(sql_type = Text)]
+  pub uuid: String,
+  #[diesel(sql_type = Text)]
+  pub title: String,
+  #[diesel(sql_type = Text)]
+  pub description: String,
+  #[diesel(sql_type = Text)]
+  pub status: String,
+  #[diesel(sql_type = Integer)]
+  pub article_count: i32,
+  #[diesel(sql_type = Integer)]
+  pub source_count: i32,
+  #[diesel(sql_type = Timestamp)]
+  pub first_seen_at: chrono::NaiveDateTime,
+  #[diesel(sql_type = Timestamp)]
+  pub last_updated_at: chrono::NaiveDateTime,
+}
+
+#[derive(Debug, Insertable)]
+#[diesel(table_name = topics)]
+pub struct NewTopic {
+  pub uuid: String,
+  pub title: String,
+  pub description: String,
+  pub status: String,
+  pub article_count: i32,
+  pub source_count: i32,
+}
+
+#[derive(Debug, Queryable, QueryableByName, Serialize, Clone)]
+#[diesel(table_name = topic_articles)]
+pub struct TopicArticle {
+  #[diesel(sql_type = Integer)]
+  pub id: i32,
+  #[diesel(sql_type = Integer)]
+  pub topic_id: i32,
+  #[diesel(sql_type = Integer)]
+  pub article_id: i32,
+  #[diesel(sql_type = Float)]
+  pub relevance_score: f32,
+}
+
+#[derive(Debug, Insertable)]
+#[diesel(table_name = topic_articles)]
+pub struct NewTopicArticle {
+  pub topic_id: i32,
+  pub article_id: i32,
+  pub relevance_score: f32,
+}
+
+#[derive(Debug, Queryable, Serialize)]
+pub struct TopicFollow {
+  pub id: Option<i32>,
+  pub topic_id: i32,
+  pub followed_at: chrono::NaiveDateTime,
+}
+
+#[derive(Debug, Insertable)]
+#[diesel(table_name = topic_follows)]
+pub struct NewTopicFollow {
+  pub topic_id: i32,
 }
