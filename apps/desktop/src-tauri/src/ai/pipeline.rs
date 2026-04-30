@@ -7,7 +7,7 @@ use crate::ai::signal_title;
 use crate::ai::summary;
 use crate::ai::why_it_matters;
 use crate::db;
-use crate::schema::{article_ai_analysis, articles, feeds, pipeline_runs};
+use crate::schema::{article_ai_analysis, articles, feeds, pipeline_runs, topics};
 use chrono::Utc;
 use diesel::prelude::*;
 use serde::Serialize;
@@ -372,6 +372,7 @@ async fn execute_with_embedding(
         )
         .set(article_ai_analysis::signal_title.eq(&signal_title))
         .execute(conn)
+        .map_err(|e| { log::warn!("Failed to update signal_title for article {}: {}", unprocessed[rep_idx].id, e); e })
         .ok();
       }
     }
@@ -382,6 +383,54 @@ async fn execute_with_embedding(
       cluster_idx + 1,
       clusters.len(),
     );
+  }
+
+  // v2.11: Create topics from clusters
+  emit_progress(app_handle, "creating_topics", 0, clusters.len());
+  for (cluster_idx, cluster) in clusters.iter().enumerate() {
+    if cluster.len() < 2 {
+      continue;
+    }
+    let cluster_article_ids: Vec<i32> =
+      cluster.iter().map(|&idx| unprocessed[idx].id).collect();
+    let cluster_title: String = cluster
+      .iter()
+      .filter_map(|&idx| {
+        article_ai_analysis::table
+          .filter(article_ai_analysis::article_id.eq(unprocessed[idx].id))
+          .select(article_ai_analysis::signal_title)
+          .first::<Option<String>>(conn)
+          .ok()
+          .flatten()
+      })
+      .next()
+      .unwrap_or_else(|| unprocessed[cluster[0]].title.clone());
+
+    if let Err(e) = crate::ai::topic::assign_or_create_topic(conn, &cluster_article_ids, &cluster_title) {
+      log::warn!("Failed to assign topic for cluster: {}", e);
+    }
+    emit_progress(
+      app_handle,
+      "creating_topics",
+      cluster_idx + 1,
+      clusters.len(),
+    );
+  }
+
+  // v2.13: Generate topic summaries for qualifying topics
+  emit_progress(app_handle, "generating_topic_summaries", 0, 0);
+  let all_topics: Vec<(i32, i32, i32)> = topics::table
+    .filter(topics::status.eq("active"))
+    .select((topics::id, topics::article_count, topics::source_count))
+    .load::<(i32, i32, i32)>(conn)
+    .unwrap_or_default();
+
+  for &(tid, ac, sc) in &all_topics {
+    if ac >= 3 && sc >= 2 {
+      if let Err(e) = crate::ai::topic::generate_topic_summary(conn, tid, llm_provider).await {
+        log::warn!("Failed to generate topic summary for topic {}: {}", tid, e);
+      }
+    }
   }
 
   emit_progress(app_handle, "generating_summaries", 0, unprocessed.len());
@@ -410,9 +459,12 @@ async fn execute_with_embedding(
           )
           .set(article_ai_analysis::summary.eq(&s))
           .execute(conn)
+          .map_err(|e| { log::warn!("Failed to update summary for article {}: {}", article.id, e); e })
           .ok();
         }
-        Err(_) => {}
+        Err(e) => {
+          log::warn!("Failed to generate summary for article '{}': {}", article.title, e);
+        }
       }
       processed_count += 1;
       emit_progress(
@@ -445,6 +497,7 @@ async fn execute_with_embedding(
     )
     .set(article_ai_analysis::relevance_score.eq(score as f32))
     .execute(conn)
+    .map_err(|e| { log::warn!("Failed to update relevance_score for article {}: {}", article.id, e); e })
     .ok();
   }
 
@@ -498,6 +551,7 @@ async fn execute_with_embedding(
     )
     .set(article_ai_analysis::why_it_matters.eq(&wim))
     .execute(conn)
+    .map_err(|e| { log::warn!("Failed to update why_it_matters for article {}: {}", article.id, e); e })
     .ok();
 
     wim_count += 1;
@@ -539,9 +593,12 @@ async fn execute_without_embedding(
         )
         .set(article_ai_analysis::summary.eq(&s))
         .execute(conn)
+        .map_err(|e| { log::warn!("Failed to update summary for article {}: {}", article.id, e); e })
         .ok();
       }
-      Err(_) => {}
+      Err(e) => {
+        log::warn!("Failed to generate summary for article '{}': {}", article.title, e);
+      }
     }
     emit_progress(app_handle, "generating_summaries", i + 1, unprocessed.len());
   }
@@ -557,6 +614,7 @@ async fn execute_without_embedding(
     )
     .set(article_ai_analysis::relevance_score.eq(score))
     .execute(conn)
+    .map_err(|e| { log::warn!("Failed to update relevance_score for article {}: {}", article.id, e); e })
     .ok();
   }
 
@@ -610,6 +668,7 @@ async fn execute_without_embedding(
     )
     .set(article_ai_analysis::why_it_matters.eq(&wim))
     .execute(conn)
+    .map_err(|e| { log::warn!("Failed to update why_it_matters for article {}: {}", article.id, e); e })
     .ok();
 
     wim_count += 1;
@@ -762,6 +821,25 @@ pub fn get_today_signals(conn: &mut SqliteConnection, limit: i32) -> Result<Vec<
 
     let sources = get_sources_for_article(conn, article_id);
 
+    let (topic_id, topic_title) = {
+      let tid: Option<i32> = article_ai_analysis::table
+        .filter(article_ai_analysis::id.eq(analysis_id))
+        .select(article_ai_analysis::topic_id)
+        .first::<Option<i32>>(conn)
+        .ok()
+        .flatten();
+
+      let ttitle = match tid {
+        Some(tid_val) => topics::table
+          .find(tid_val)
+          .select(topics::title)
+          .first::<String>(conn)
+          .ok(),
+        None => None,
+      };
+      (tid, ttitle)
+    };
+
     signals.push(Signal {
       id: analysis_id,
       title,
@@ -770,8 +848,8 @@ pub fn get_today_signals(conn: &mut SqliteConnection, limit: i32) -> Result<Vec<
       relevance_score: score.unwrap_or(0.0) as f64,
       source_count: sources.len() as i32,
       sources,
-      topic_id: None,
-      topic_title: None,
+      topic_id,
+      topic_title,
       created_at: Utc::now().to_rfc3339(),
     });
   }
@@ -822,6 +900,25 @@ pub fn get_signal_detail(
 
   let all_sources = find_related_sources(conn, signal_id, article_id, 0.7)?;
 
+  let (topic_id, topic_title) = {
+    let tid: Option<i32> = article_ai_analysis::table
+      .filter(article_ai_analysis::id.eq(signal_id))
+      .select(article_ai_analysis::topic_id)
+      .first::<Option<i32>>(conn)
+      .ok()
+      .flatten();
+
+    let ttitle = match tid {
+      Some(tid_val) => topics::table
+        .find(tid_val)
+        .select(topics::title)
+        .first::<String>(conn)
+        .ok(),
+      None => None,
+    };
+    (tid, ttitle)
+  };
+
   let signal = Signal {
     id: signal_id,
     title,
@@ -830,8 +927,8 @@ pub fn get_signal_detail(
     relevance_score: score.unwrap_or(0.0) as f64,
     source_count: all_sources.len() as i32,
     sources: all_sources.clone(),
-    topic_id: None,
-    topic_title: None,
+    topic_id,
+    topic_title,
     created_at: Utc::now().to_rfc3339(),
   };
 
