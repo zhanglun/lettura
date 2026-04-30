@@ -61,21 +61,21 @@ fn build_prompt(signals: &[(String, String)]) -> String {
     .join("\n");
 
   format!(
-    r#"You are generating a daily intelligence briefing overview for a technical professional.
+    r#"你正在为技术专业人士生成每日情报简报概览。
 
-Given today's top signals, write ONE sentence that summarizes the overall information landscape.
+根据今日最重要的信号，用一句话总结整体信息格局。
 
-Rules:
-- Maximum 40 words in English, 60 characters in Chinese
-- Mention the 2-3 most prominent themes
-- Use concrete topic names, not "several topics"
-- Do not use "today" or "in today's news" — the context is implied
-- Tone: calm, informative, no urgency
+规则：
+- 中文不超过60字，英文不超过40词
+- 提及2-3个最突出的主题
+- 使用具体的主题名称，不要用"几个主题"之类的说法
+- 不要使用"今天"或"今日新闻中"——上下文已隐含
+- 语气：冷静、信息丰富、不要紧迫感
 
-Top signals:
+今日重要信号：
 {}
 
-Output the overview directly, no prefix, no quotes."#,
+请直接输出概览内容，不要加前缀或引号。"#,
     signal_list
   )
 }
@@ -147,7 +147,7 @@ pub async fn generate_today_overview(
   }
 
   let prompt = build_prompt(&signals);
-  let system = "You are a precise intelligence analyst generating daily briefings.";
+  let system = "你是一位精确的情报分析师，负责生成每日简报。请用中文输出。";
 
   let result = match llm.complete(&prompt, system).await {
     Ok(text) => {

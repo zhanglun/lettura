@@ -21,7 +21,7 @@ pub async fn generate_why_it_matters(
   let prompt = build_wim_prompt(input);
 
   let result = llm
-        .complete(&prompt, "You are an intelligence analyst explaining why information matters to a technical professional.")
+        .complete(&prompt, "你是一位情报分析师，向技术专业人士解释信息的重要性。请用中文输出。")
         .await;
 
   match result {
@@ -31,7 +31,7 @@ pub async fn generate_why_it_matters(
         Ok(trimmed)
       } else {
         let retry = llm
-                    .complete(&prompt, "You are an intelligence analyst explaining why information matters to a technical professional.")
+                    .complete(&prompt, "你是一位情报分析师，向技术专业人士解释信息的重要性。请用中文输出。")
                     .await;
         match retry {
           Ok(t) => {
@@ -48,7 +48,7 @@ pub async fn generate_why_it_matters(
     }
     Err(_) => {
       let retry = llm
-                .complete(&prompt, "You are an intelligence analyst explaining why information matters to a technical professional.")
+                .complete(&prompt, "你是一位情报分析师，向技术专业人士解释信息的重要性。请用中文输出。")
                 .await;
       match retry {
         Ok(t) => {
@@ -86,22 +86,22 @@ fn build_wim_prompt(input: &WimInput) -> String {
   };
 
   format!(
-    r#"You are an intelligence analyst explaining why a piece of information matters to a technical professional.
+    r#"你是一位情报分析师，向技术专业人士解释信息的重要性。
 
-Given this summary and its context, explain WHY this matters in 2-3 sentences.
+根据以下摘要及其上下文，用2-3句话解释为什么这很重要。
 
-Rules:
-- Maximum 80 words in English, 120 characters in Chinese
-- Explain concrete implications, not abstract value
-- If this relates to a broader trend, name the trend
-- If this affects developer workflows or tool choices, say so specifically
-- Do NOT say "this is important because it could..." — be direct
-- Use second person sparingly; prefer third person or passive voice
+规则：
+- 中文不超过120字，英文不超过80词
+- 解释具体的影响，而非抽象的价值
+- 如果与更广泛的趋势相关，请指出趋势名称
+- 如果影响开发者工作流或工具选择，请具体说明
+- 不要说"这很重要，因为它可能..."——直接陈述
+- 少用第二人称，多用第三人称或被动语态
 
-Summary: {}
-Source count: {} articles from {} different sources{}
+摘要：{}
+来源数量：{} 篇文章，来自 {} 个不同来源{}
  
-Output the explanation directly, no prefix, no quotes."#,
+请直接输出解释内容，不要加前缀或引号。"#,
     input.summary, input.source_count, input.feed_count, topic_section
   )
 }

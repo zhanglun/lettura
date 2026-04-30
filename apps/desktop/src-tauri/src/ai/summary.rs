@@ -6,24 +6,24 @@ pub async fn generate_summary(
   content_truncated: &str,
 ) -> Result<String, String> {
   let prompt = format!(
-    r#"You are a precise content analyst. Summarize the following article in ONE sentence.
+    r#"你是一位精确的内容分析师。请用一句话总结以下文章。
 
-Rules:
-- Maximum 50 words in English, 80 characters in Chinese
-- State the main point directly, not "this article discusses..."
-- Use factual language, no superlatives
-- If the article is about a product/tool, include its name
-- If the article contains quantitative findings, include the key number
+规则：
+- 中文不超过80字，英文不超过50词
+- 直接陈述要点，不要用"本文讨论了..."之类的开头
+- 使用客观、事实性的语言，不要使用夸张词
+- 如果文章涉及某个产品/工具，请包含其名称
+- 如果文章包含量化结论，请包含关键数字
 
-Article title: {}
-Article content: {}
+文章标题：{}
+文章内容：{}
 
-Output the summary directly, no prefix, no quotes."#,
+请直接输出总结内容，不要加前缀或引号。"#,
     title, content_truncated
   );
 
   let result = llm
-    .complete(&prompt, "You are a precise content analyst.")
+    .complete(&prompt, "你是一位精确的内容分析师。请用中文输出。")
     .await?;
   let trimmed = result.trim().to_string();
 

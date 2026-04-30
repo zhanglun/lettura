@@ -19,24 +19,23 @@ pub async fn generate_signal_title(
     .join("\n");
 
   let prompt = format!(
-    r#"You are generating a title for a group of related articles about the same topic.
+    r#"你正在为一组关于同一主题的相关文章生成一个标题。
 
-Rules:
-- Maximum 12 words in English, 20 characters in Chinese
-- Title case for English
-- Be specific: include product names, version numbers, or technology names when available
-- Do not use vague words like "update", "news", "development" alone
-- If the articles describe a trend, name the trend direction
+规则：
+- 中文不超过20字，英文不超过12词
+- 要具体：包含产品名称、版本号或技术名称
+- 不要使用"更新"、"新闻"、"发展"等模糊词语
+- 如果文章描述了一个趋势，请指出趋势方向
 
-Article titles in this group:
+本组文章标题：
 {}
 
-Output the title directly, no prefix, no quotes, no period."#,
+请直接输出标题，不要加前缀、引号或句号。"#,
     titles_list
   );
 
   let result = llm
-    .complete(&prompt, "You are a concise headline writer.")
+    .complete(&prompt, "你是一位简洁的标题撰写者。请用中文输出。")
     .await?;
 
   let trimmed = result.trim().to_string();
@@ -46,13 +45,13 @@ Output the title directly, no prefix, no quotes, no period."#,
   } else {
     // Validation failed: retry once with explicit constraints
     let retry_prompt = format!(
-      "{}\n\nIMPORTANT: The title MUST be 15 words or fewer. Output ONLY the title.",
+      "{}\n\n重要提示：标题必须在15个词以内。只输出标题。",
       prompt
     );
     let retry_result = llm
       .complete(
         &retry_prompt,
-        "You are a concise headline writer. Be very brief.",
+        "你是一位简洁的标题撰写者。请尽量简短。请用中文输出。",
       )
       .await;
 
