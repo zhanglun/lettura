@@ -75,6 +75,22 @@
   --accent-surface: var(--default-surface);
   --accent-indicator: var(--default-indicator);
   --accent-track: var(--default-track);
+
+  /* Calm Intelligence - Blue-purple accent for Today signals */
+  --calm-accent: #6366f1;
+  --calm-accent-light: #eef2ff;
+  --calm-accent-muted: #a5b4fc;
+  --calm-bg: #fafafa;
+  --calm-card-bg: #ffffff;
+  --calm-card-border: #f0f0f2;
+  --calm-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  --calm-card-radius: 12px;
+  --calm-tag-bg: #f5f3ff;
+  --calm-tag-text: #7c3aed;
+  --calm-tag-border: #ede9fe;
+  --calm-tag-radius: 6px;
+  --right-panel-collapsed-width: 280px;
+  --right-panel-expanded-width: 480px;
 }
 
 @supports (color: color(display-p3 1 1 1)) {
@@ -228,6 +244,20 @@
   --accent-surface: var(--default-surface);
   --accent-indicator: var(--default-indicator);
   --accent-track: var(--default-track);
+
+  /* Calm Intelligence - Dark mode */
+  --calm-accent: #818cf8;
+  --calm-accent-light: #1e1b4b;
+  --calm-accent-muted: #6366f1;
+  --calm-bg: #111;
+  --calm-card-bg: #191919;
+  --calm-card-border: #2a2a2a;
+  --calm-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  --calm-card-radius: 12px;
+  --calm-tag-bg: #1e1b4b;
+  --calm-tag-text: #a78bfa;
+  --calm-tag-border: #312e81;
+  --calm-tag-radius: 6px;
 }
 
 @supports (color: color(display-p3 1 1 1)) {

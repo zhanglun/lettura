@@ -205,7 +205,12 @@
     },
     "signal_card": {
       "articles": "篇文章",
-      "sources": "个来源"
+      "sources": "个来源",
+      "level": {
+        "high": "高信号",
+        "medium": "中信号",
+        "low": "低信号"
+      }
     },
     "why_short": "为什么",
     "why_expand": "查看原因",
@@ -233,7 +238,29 @@
       "continue_reading": "继续阅读",
       "continue_reading_hint": "还想了解更多？点击上方来源阅读原文。"
     },
-    "topic_badge": "话题：{{title}}"
+    "topic_badge": "话题：{{title}}",
+    "right_panel": {
+      "evidence_title": "来源证据",
+      "daily_status": {
+        "title": "今日状态",
+        "loading": "加载状态中...",
+        "no_data": "暂无数据",
+        "signals": "个信号",
+        "articles": "篇文章"
+      },
+      "next_steps": {
+        "title": "下一步",
+        "explore_topics": "浏览关注的话题",
+        "manage_feeds": "管理订阅源",
+        "configure_ai": "配置 AI 分析"
+      }
+    },
+    "inline_reader": {
+      "back": "返回",
+      "prev": "上一篇",
+      "next": "下一篇",
+      "content_placeholder": "文章内容将在此显示"
+    }
   },
   "settings": {
     "ai": {
@@ -295,7 +322,9 @@
         "source_groups": "来源",
         "articles_from": "篇文章来自",
         "show_more": "展开更多",
-        "show_less": "收起"
+        "show_less": "收起",
+        "source_distribution": "来源分布",
+        "no_source_data": "暂无来源数据"
       }
     },
     "rail": {
@@ -313,7 +342,12 @@
       "tracked_topics": "跟踪话题",
       "no_tracked_topics": "尚无跟踪主题",
       "collapse": "收起侧边栏",
-      "expand": "展开侧边栏"
+      "expand": "展开侧边栏",
+      "context_today": "今日",
+      "context_topics": "话题",
+      "context_feeds": "订阅",
+      "context_default": "Lettura",
+      "topics_list": "话题列表"
     }
   },
   "article": {

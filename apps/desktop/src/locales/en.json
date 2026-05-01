@@ -179,7 +179,12 @@
     },
     "signal_card": {
       "articles": "articles",
-      "sources": "sources"
+      "sources": "sources",
+      "level": {
+        "high": "High Signal",
+        "medium": "Medium Signal",
+        "low": "Low Signal"
+      }
     },
     "why_short": "Why",
     "why_expand": "Show why",
@@ -207,7 +212,29 @@
       "continue_reading": "Continue Reading",
       "continue_reading_hint": "Want to learn more? Click sources above to read the original articles."
     },
-    "topic_badge": "Topic: {{title}}"
+    "topic_badge": "Topic: {{title}}",
+    "right_panel": {
+      "evidence_title": "Source Evidence",
+      "daily_status": {
+        "title": "Today's Status",
+        "loading": "Loading status...",
+        "no_data": "No data yet",
+        "signals": "signals",
+        "articles": "articles"
+      },
+      "next_steps": {
+        "title": "Next Steps",
+        "explore_topics": "Explore tracked topics",
+        "manage_feeds": "Manage your feeds",
+        "configure_ai": "Configure AI analysis"
+      }
+    },
+    "inline_reader": {
+      "back": "Back",
+      "prev": "Previous",
+      "next": "Next",
+      "content_placeholder": "Article content will be displayed here"
+    }
   },
   "settings": {
     "ai": {
@@ -269,7 +296,9 @@
         "source_groups": "Sources",
         "articles_from": "articles from",
         "show_more": "Show more",
-        "show_less": "Show less"
+        "show_less": "Show less",
+        "source_distribution": "Source Distribution",
+        "no_source_data": "No source data available"
       }
     },
     "rail": {
@@ -287,7 +316,12 @@
       "tracked_topics": "Tracked Topics",
       "no_tracked_topics": "No tracked topics yet",
       "collapse": "Collapse sidebar",
-      "expand": "Expand sidebar"
+      "expand": "Expand sidebar",
+      "context_today": "Today",
+      "context_topics": "Topics",
+      "context_feeds": "Feeds",
+      "context_default": "Lettura",
+      "topics_list": "Topics"
     }
   },
   "article": {

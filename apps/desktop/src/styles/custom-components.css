@@ -103,3 +103,7 @@
     @apply after:opacity-100 after:scale-100 after:bg-sidebar-hover;
   }
 }
+
+.right-panel-transition {
+  transition: width 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
