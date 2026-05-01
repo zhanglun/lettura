@@ -36,7 +36,7 @@ describe("EvidencePanel", () => {
   it("should render signal title and source count", () => {
     render(<EvidencePanel signal={baseSignal} />);
     expect(screen.getByText("today.right_panel.evidence_title")).toBeInTheDocument();
-    expect(screen.getByText("3 today.signal_card.sources")).toBeInTheDocument();
+    expect(screen.getByText("3 today.signal_card.articles")).toBeInTheDocument();
   });
 
   it("should render source titles", () => {

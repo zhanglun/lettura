@@ -1,7 +1,13 @@
+import { useState, useRef, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { Text, Flex } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
 import { Signal } from "@/stores/createTodaySlice";
+import { RouteConfig } from "@/config";
+import { useBearStore } from "@/stores";
+import { useShallow } from "zustand/react/shallow";
 import { FileText, Lightbulb, ChevronDown, ChevronUp, Layers } from "lucide-react";
+import { SignalSourceList } from "./SignalSourceList";
 
 function getSignalLevel(score: number): { label: string; color: string; dotColor: string } {
   if (score >= 0.8) {
@@ -12,12 +18,6 @@ function getSignalLevel(score: number): { label: string; color: string; dotColor
   }
   return { label: "Low", color: "text-[var(--gray-9)]", dotColor: "bg-[var(--gray-9)]" };
 }
-import { useState, useRef, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { RouteConfig } from "@/config";
-import { useBearStore } from "@/stores";
-import { useShallow } from "zustand/react/shallow";
-import { SignalSourceList } from "./SignalSourceList";
 
 interface SignalCardProps {
   signal: Signal;

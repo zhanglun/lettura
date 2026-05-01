@@ -19,7 +19,7 @@ describe("RightPanel", () => {
 
     expect(screen.getByTestId("collapsed-content")).toBeInTheDocument();
     const panel = screen.getByTestId("right-panel");
-    expect(panel.style.width).toBe("280px");
+    expect(panel.style.width).toBe("var(--right-panel-collapsed-width)");
   });
 
   it("should render expanded content when expanded", () => {
@@ -31,7 +31,7 @@ describe("RightPanel", () => {
 
     expect(screen.getByTestId("expanded-content")).toBeInTheDocument();
     const panel = screen.getByTestId("right-panel");
-    expect(panel.style.width).toBe("480px");
+    expect(panel.style.width).toBe("var(--right-panel-expanded-width)");
   });
 
   it("should apply transition class for smooth width change", () => {

@@ -25,10 +25,10 @@ export function EvidencePanel({ signal }: EvidencePanelProps) {
 
       <Flex align="center" gap="2" mb="3">
         <Text size="2" className="text-[var(--gray-11)]">
-          {signal.source_count} {t("today.signal_card.sources")}
+          {signal.source_count} {t("today.signal_card.articles")}
         </Text>
         <Text size="1" className="text-[var(--gray-8)]">
-          · {uniqueFeeds} {t("today.signal_card.articles")}
+          · {uniqueFeeds} {t("today.signal_card.sources")}
         </Text>
       </Flex>
 
