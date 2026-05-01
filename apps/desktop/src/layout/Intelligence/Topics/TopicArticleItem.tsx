@@ -4,18 +4,21 @@ import { formatRelativeTime } from "@/helpers/formatRelativeTime";
 
 interface TopicArticleItemProps {
   article: TopicArticle;
+  onClick?: (article: TopicArticle) => void;
 }
 
-export function TopicArticleItem({ article }: TopicArticleItemProps) {
+export function TopicArticleItem({ article, onClick }: TopicArticleItemProps) {
   const handleClick = () => {
-    if (typeof window !== "undefined") {
+    if (onClick) {
+      onClick(article);
+    } else if (typeof window !== "undefined") {
       window.open(article.link, "_blank");
     }
   };
 
   return (
     <div
-      className="py-3 px-4 border-b border-[var(--gray-3)] hover:bg-[var(--gray-2)] cursor-pointer transition-colors"
+      className="py-3 px-4 border-b border-[var(--gray-3)] hover:bg-[var(--gray-2)] cursor-pointer transition-colors last:border-b-0"
       onClick={handleClick}
     >
       <Flex direction="column" gap="1">
