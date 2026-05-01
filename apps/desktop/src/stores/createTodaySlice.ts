@@ -82,6 +82,15 @@ export interface TodaySlice {
   scrollPositionMap: Record<number, number>;
   setScrollPosition: (signalId: number, scrollY: number) => void;
 
+  activeReadingSignalId: number | null;
+  activeReadingSourceIndex: number;
+  isInlineReading: boolean;
+  rightPanelExpanded: boolean;
+
+  startInlineReading: (signalId: number, sourceIndex?: number) => void;
+  closeInlineReading: () => void;
+  navigateReadingSource: (index: number) => void;
+
   fetchSignals: (limit?: number) => Promise<void>;
   fetchAIConfig: () => Promise<void>;
   setPipelineStatus: (status: PipelineStatus) => void;
@@ -119,6 +128,11 @@ export const createTodaySlice: StateCreator<TodaySlice> = (set, get) => ({
   feedbackMap: {},
 
   scrollPositionMap: {},
+
+  activeReadingSignalId: null,
+  activeReadingSourceIndex: 0,
+  isInlineReading: false,
+  rightPanelExpanded: false,
 
   fetchSignals: async (limit = 5) => {
     set({ signalsLoading: true, signalsError: null });
@@ -220,6 +234,33 @@ export const createTodaySlice: StateCreator<TodaySlice> = (set, get) => ({
     } catch (e) {
       console.error("Failed to fetch feedback history:", e);
     }
+  },
+
+  startInlineReading: (signalId, sourceIndex = 0) => {
+    set((state) => {
+      const wasReadingAnother = state.activeReadingSignalId !== null && state.activeReadingSignalId !== signalId;
+      return {
+        activeReadingSignalId: signalId,
+        activeReadingSourceIndex: wasReadingAnother ? 0 : sourceIndex,
+        isInlineReading: true,
+        rightPanelExpanded: true,
+      };
+    });
+  },
+
+  closeInlineReading: () => {
+    set({
+      activeReadingSignalId: null,
+      activeReadingSourceIndex: 0,
+      isInlineReading: false,
+      rightPanelExpanded: false,
+    });
+  },
+
+  navigateReadingSource: (index) => {
+    const { isInlineReading } = get();
+    if (!isInlineReading) return;
+    set({ activeReadingSourceIndex: index });
   },
 
   setScrollPosition: (signalId, scrollY) => {
