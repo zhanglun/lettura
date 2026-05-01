@@ -2,6 +2,16 @@ import { Text, Flex } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
 import { Signal } from "@/stores/createTodaySlice";
 import { FileText, Lightbulb, ChevronDown, ChevronUp, Layers } from "lucide-react";
+
+function getSignalLevel(score: number): { label: string; color: string; dotColor: string } {
+  if (score >= 0.8) {
+    return { label: "High", color: "text-[var(--accent-9)]", dotColor: "bg-[var(--accent-9)]" };
+  }
+  if (score >= 0.5) {
+    return { label: "Medium", color: "text-[var(--amber-9)]", dotColor: "bg-[var(--amber-9)]" };
+  }
+  return { label: "Low", color: "text-[var(--gray-9)]", dotColor: "bg-[var(--gray-9)]" };
+}
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { RouteConfig } from "@/config";
@@ -40,6 +50,8 @@ export function SignalCard({ signal, isActive, onInlineRead }: SignalCardProps) 
   const detail = store.signalDetails[signal.id];
   const sources = detail?.all_sources ?? signal.sources;
   const currentFeedback = store.feedbackMap[signal.id] ?? null;
+
+  const level = getSignalLevel(signal.relevance_score);
 
   const hasWim =
     signal.why_it_matters &&
@@ -118,6 +130,26 @@ export function SignalCard({ signal, isActive, onInlineRead }: SignalCardProps) 
             {signal.topic_title}
           </Link>
         )}
+
+        <Flex align="center" gap="2" mt="1">
+          <Flex align="center" gap="1.5">
+            <span className={`inline-block w-1.5 h-1.5 rounded-full ${level.dotColor}`} />
+            <Text size="1" className={level.color}>
+              {t(`today.signal_card.level.${level.label.toLowerCase()}`)}
+            </Text>
+          </Flex>
+          <div className="flex items-center gap-1.5 flex-1 max-w-[120px]">
+            <div className="flex-1 h-1 rounded-full bg-[var(--gray-3)]">
+              <div
+                className="h-1 rounded-full bg-[var(--accent-9)] transition-all"
+                style={{ width: `${Math.round(signal.relevance_score * 100)}%` }}
+              />
+            </div>
+            <Text size="1" className="text-[var(--gray-8)] tabular-nums">
+              {Math.round(signal.relevance_score * 100)}%
+            </Text>
+          </div>
+        </Flex>
 
         <Text
           size="2"
