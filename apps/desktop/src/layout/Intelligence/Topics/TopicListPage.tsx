@@ -7,6 +7,7 @@ import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
 import { cn } from "@/helpers/cn";
 import { TopicCard } from "./TopicCard";
+import { MainPanel } from "@/components/MainPanel";
 
 export const TopicListPage = React.memo(function () {
   const { t } = useTranslation();
@@ -38,39 +39,46 @@ export const TopicListPage = React.memo(function () {
 
   if (store.loading) {
     return (
-      <div className="flex flex-col items-center justify-center h-full bg-canvas text-[var(--gray-9)]">
+      <MainPanel>
+        <div className="flex flex-col items-center justify-center h-full text-[var(--gray-9)]">
         <Layers size={48} className="mb-4 text-[var(--gray-8)] animate-pulse" />
         <Text size="2" className="text-[var(--gray-9)]">
           {t("layout.topics.loading")}
         </Text>
       </div>
+    </MainPanel>
     );
   }
 
   if (store.error) {
     return (
-      <div className="flex flex-col items-center justify-center h-full bg-canvas">
-        <Text size="2" className="text-[var(--red-9)]">
-          {store.error}
-        </Text>
-      </div>
+      <MainPanel>
+        <div className="flex flex-col items-center justify-center h-full">
+          <Text size="2" className="text-[var(--red-9)]">
+            {store.error}
+          </Text>
+        </div>
+      </MainPanel>
     );
   }
 
   if (store.topics.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-full bg-canvas text-[var(--gray-9)]">
+      <MainPanel>
+        <div className="flex flex-col items-center justify-center h-full text-[var(--gray-9)]">
         <Layers size={48} className="mb-4 text-[var(--gray-8)]" />
         <Text size="2" className="text-[var(--gray-11)]">
           {t("layout.topics.empty")}
         </Text>
       </div>
+    </MainPanel>
     );
   }
 
   if (displayedTopics.length === 0) {
     return (
-      <div className="p-6 max-w-3xl mx-auto">
+      <MainPanel>
+        <div className="p-6 max-w-3xl mx-auto">
         <h1 className="text-xl font-semibold text-[var(--gray-12)] mb-6">
           {t("layout.topics.title")}
         </h1>
@@ -106,11 +114,13 @@ export const TopicListPage = React.memo(function () {
           </Text>
         </div>
       </div>
+    </MainPanel>
     );
   }
 
   return (
-    <div className="p-6 max-w-3xl mx-auto">
+    <MainPanel>
+      <div className="p-6 max-w-3xl mx-auto overflow-auto h-full">
       <h1 className="text-xl font-semibold text-[var(--gray-12)] mb-6">
         {t("layout.topics.title")}
       </h1>
@@ -159,5 +169,6 @@ export const TopicListPage = React.memo(function () {
         ))}
       </div>
     </div>
+    </MainPanel>
   );
 });
