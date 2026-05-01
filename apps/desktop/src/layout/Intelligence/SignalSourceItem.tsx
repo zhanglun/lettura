@@ -8,9 +8,10 @@ interface SignalSourceItemProps {
   source: SignalSource;
   onClick: (articleUuid: string, feedUuid: string, articleId: number) => void;
   onReadOriginal?: (articleUuid: string, feedUuid: string, articleId: number) => void;
+  onInlineRead?: (articleUuid: string, feedUuid: string, articleId: number) => void;
 }
 
-export function SignalSourceItem({ source, onClick, onReadOriginal }: SignalSourceItemProps) {
+export function SignalSourceItem({ source, onClick, onReadOriginal, onInlineRead }: SignalSourceItemProps) {
   const { t } = useTranslation();
   const timeAgo = source.pub_date
     ? formatDistanceToNow(parseISO(source.pub_date), { addSuffix: true })
@@ -25,10 +26,18 @@ export function SignalSourceItem({ source, onClick, onReadOriginal }: SignalSour
     }
   };
 
+  const handleInlineRead = () => {
+    if (onInlineRead) {
+      onInlineRead(source.article_uuid, source.feed_uuid, source.article_id);
+    } else {
+      onClick(source.article_uuid, source.feed_uuid, source.article_id);
+    }
+  };
+
   return (
     <button
       className="w-full text-left p-2.5 rounded-md hover:bg-[var(--gray-3)] transition-colors cursor-pointer group/item"
-      onClick={() => onClick(source.article_uuid, source.feed_uuid, source.article_id)}
+      onClick={handleInlineRead}
     >
       <Flex align="center" justify="between" mb="1">
         <Flex align="center" gap="2">

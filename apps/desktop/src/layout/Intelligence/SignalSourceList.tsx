@@ -11,6 +11,7 @@ interface SignalSourceListProps {
   onSourceClick: (articleUuid: string, feedUuid: string, articleId: number) => void;
   onLoadAll?: () => void;
   loading?: boolean;
+  onInlineRead?: (articleUuid: string, feedUuid: string, articleId: number) => void;
 }
 
 export function SignalSourceList({
@@ -18,6 +19,7 @@ export function SignalSourceList({
   onSourceClick,
   onLoadAll,
   loading,
+  onInlineRead,
 }: SignalSourceListProps) {
   const { t } = useTranslation();
   const hasMore = sources.length > PREVIEW_COUNT;
@@ -38,6 +40,7 @@ export function SignalSourceList({
             key={source.article_id}
             source={source}
             onClick={onSourceClick}
+            onInlineRead={onInlineRead}
           />
         ))}
       </div>

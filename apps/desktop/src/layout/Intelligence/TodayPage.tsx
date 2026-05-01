@@ -7,7 +7,11 @@ import { SignalList } from "./SignalList";
 import { PipelineIndicator } from "./PipelineIndicator";
 import { TodayOverview } from "./TodayOverview";
 import { TodayEmptyState } from "./TodayEmptyState";
-import { MainPanel } from "@/components/MainPanel";
+import { RightPanel } from "./RightPanel";
+import { EvidencePanel } from "./EvidencePanel";
+import { DailyStatus } from "./DailyStatus";
+import { NextSteps } from "./NextSteps";
+import { InlineReader } from "./InlineReader";
 import { Settings, Sparkles, Loader2 } from "lucide-react";
 
 export function TodayPage() {
@@ -36,6 +40,15 @@ export function TodayPage() {
       updateSettingDialogStatus: state.updateSettingDialogStatus,
       expandedSignalId: state.expandedSignalId,
       scrollPositionMap: state.scrollPositionMap,
+      // Inline reading state
+      activeReadingSignalId: state.activeReadingSignalId,
+      activeReadingSourceIndex: state.activeReadingSourceIndex,
+      isInlineReading: state.isInlineReading,
+      rightPanelExpanded: state.rightPanelExpanded,
+      startInlineReading: state.startInlineReading,
+      closeInlineReading: state.closeInlineReading,
+      navigateReadingSource: state.navigateReadingSource,
+      signalDetails: state.signalDetails,
     })),
   );
 
@@ -100,6 +113,42 @@ export function TodayPage() {
   const hasSignals = store.signals.length > 0;
   const hasSubscriptions = store.subscribes.length > 0;
 
+  const activeReadingSignal = store.signals.find(
+    (s) => s.id === store.activeReadingSignalId,
+  );
+  const activeReadingDetail = store.activeReadingSignalId
+    ? store.signalDetails[store.activeReadingSignalId]
+    : undefined;
+  const activeSources = activeReadingDetail?.all_sources ?? activeReadingSignal?.sources ?? [];
+  const currentReadingSource = activeSources[store.activeReadingSourceIndex] ?? null;
+
+  const handleInlineRead = useCallback(
+    (articleUuid: string, feedUuid: string, articleId: number) => {
+      const signal = store.signals.find((s) =>
+        s.sources.some((src) => src.article_id === articleId),
+      );
+      if (!signal) return;
+
+      const detail = store.signalDetails[signal.id];
+      const sources = detail?.all_sources ?? signal.sources;
+      const sourceIndex = sources.findIndex((s) => s.article_id === articleId);
+
+      store.startInlineReading(signal.id, sourceIndex >= 0 ? sourceIndex : 0);
+    },
+    [store.signals, store.signalDetails, store.startInlineReading],
+  );
+
+  const handleReadingBack = useCallback(() => {
+    store.closeInlineReading();
+  }, [store.closeInlineReading]);
+
+  const handleReadingNavigate = useCallback(
+    (index: number) => {
+      store.navigateReadingSource(index);
+    },
+    [store.navigateReadingSource],
+  );
+
   const renderEmptyState = () => {
     if (!hasSubscriptions) {
       return <TodayEmptyState type="no_subscriptions" />;
@@ -143,9 +192,36 @@ export function TodayPage() {
     return <TodayEmptyState type="no_new_articles" />;
   };
 
+  const renderRightPanelContent = () => {
+    if (store.isInlineReading && currentReadingSource && activeSources.length > 0) {
+      return (
+        <InlineReader
+          source={currentReadingSource}
+          sources={activeSources}
+          currentIndex={store.activeReadingSourceIndex}
+          onBack={handleReadingBack}
+          onNavigate={handleReadingNavigate}
+        />
+      );
+    }
+
+    return (
+      <div className="flex flex-col h-full overflow-auto">
+        <EvidencePanel signal={activeReadingSignal ?? store.signals[0] ?? null} />
+        <DailyStatus overview={store.overview} loading={store.overviewLoading} />
+        <NextSteps
+          hasSignals={hasSignals}
+          hasApiKey={hasApiKey}
+          onOpenSettings={() => store.updateSettingDialogStatus(true)}
+        />
+      </div>
+    );
+  };
+
   return (
-    <MainPanel>
-      <div className="h-full flex flex-col">
+    <div className="flex h-full w-full">
+      {/* Main content area */}
+      <div className="flex-1 flex flex-col min-w-0 h-full">
         <PipelineIndicator
           status={store.pipelineStatus}
           stage={store.pipelineStage}
@@ -168,10 +244,21 @@ export function TodayPage() {
               overviewError={store.overviewError}
               hasApiKey={hasApiKey}
             />
-            <SignalList signals={store.signals} />
+            <SignalList
+              signals={store.signals}
+              activeReadingSignalId={store.activeReadingSignalId}
+              onInlineRead={handleInlineRead}
+            />
           </div>
         )}
       </div>
-    </MainPanel>
+
+      {/* Right panel */}
+      {(hasSignals || store.isInlineReading) && (
+        <RightPanel expanded={store.rightPanelExpanded}>
+          {renderRightPanelContent()}
+        </RightPanel>
+      )}
+    </div>
   );
 }

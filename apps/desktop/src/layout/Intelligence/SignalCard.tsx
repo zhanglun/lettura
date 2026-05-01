@@ -11,9 +11,11 @@ import { SignalSourceList } from "./SignalSourceList";
 
 interface SignalCardProps {
   signal: Signal;
+  isActive?: boolean;
+  onInlineRead?: (articleUuid: string, feedUuid: string, articleId: number) => void;
 }
 
-export function SignalCard({ signal }: SignalCardProps) {
+export function SignalCard({ signal, isActive, onInlineRead }: SignalCardProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [wimExpanded, setWimExpanded] = useState(false);
@@ -90,7 +92,13 @@ export function SignalCard({ signal }: SignalCardProps) {
   };
 
   return (
-    <div className="group rounded-lg border border-[var(--gray-4)] bg-[var(--color-background)] p-4 transition-all hover:border-[var(--gray-7)] hover:shadow-sm cursor-default">
+    <div
+      className={`group rounded-lg border bg-[var(--color-background)] p-4 transition-all hover:shadow-sm cursor-default ${
+        isActive
+          ? "border-[var(--accent-8)] shadow-sm ring-1 ring-[var(--accent-3)]"
+          : "border-[var(--gray-4)] hover:border-[var(--gray-7)]"
+      }`}
+    >
       <Flex direction="column" gap="2">
         <Text
           size="4"
@@ -184,6 +192,7 @@ export function SignalCard({ signal }: SignalCardProps) {
             onSourceClick={handleSourceClick}
             onLoadAll={handleLoadAll}
             loading={detailLoading}
+            onInlineRead={onInlineRead}
           />
         </div>
 
