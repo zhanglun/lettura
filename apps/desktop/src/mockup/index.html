@@ -1,0 +1,1918 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lettura Daily Intelligence Reader — Mockup Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Calm Intelligence palette */
+      --bg-app: #f8f9fb;
+      --bg-card: #ffffff;
+      --bg-sidebar: #f1f3f7;
+      --bg-rail: #eeeef2;
+      --bg-hover: rgba(0,0,0,0.03);
+      --border: #e4e7ed;
+      --border-hover: #cdd2dc;
+      --text-primary: #1a1d26;
+      --text-secondary: #5c6270;
+      --text-tertiary: #8e94a2;
+      --accent: #6366f1;
+      --accent-light: #eef2ff;
+      --accent-hover: #4f46e5;
+      --accent-text: #4338ca;
+      --green: #22c55e;
+      --green-bg: #f0fdf4;
+      --amber: #f59e0b;
+      --amber-bg: #fffbeb;
+      --red: #ef4444;
+      --red-bg: #fef2f2;
+      --blue: #3b82f6;
+      --blue-bg: #eff6ff;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+      --radius: 10px;
+      --radius-sm: 6px;
+      --radius-lg: 14px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-app);
+      color: var(--text-primary);
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* App shell */
+    .app-shell {
+      display: flex;
+      height: 100vh;
+    }
+
+    /* Rail (icon nav) */
+    .rail {
+      width: 52px;
+      background: var(--bg-rail);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 12px 0;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+    .rail-item {
+      width: 36px; height: 36px;
+      border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      color: var(--text-tertiary);
+      transition: all 0.15s;
+      border: none; background: none;
+      position: relative;
+    }
+    .rail-item:hover { background: var(--bg-hover); color: var(--text-secondary); }
+    .rail-item.active {
+      background: var(--accent);
+      color: #fff;
+    }
+    .rail-item svg { width: 18px; height: 18px; }
+    .rail-spacer { flex: 1; }
+    .rail-item .tooltip {
+      display: none;
+      position: absolute;
+      left: 48px;
+      background: var(--text-primary);
+      color: #fff;
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+      z-index: 100;
+    }
+    .rail-item:hover .tooltip { display: block; }
+
+    /* Sidebar */
+    .sidebar {
+      width: 220px;
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      flex-shrink: 0;
+      transition: width 0.2s;
+    }
+    .sidebar-header {
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .sidebar-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+    .sidebar-desc {
+      font-size: 11px;
+      color: var(--text-tertiary);
+      line-height: 1.5;
+    }
+    .sidebar-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+    }
+    .sidebar-section-title {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin: 12px 0 8px;
+    }
+    .sidebar-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 8px;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .sidebar-item:hover { background: var(--bg-hover); }
+    .sidebar-item.active { background: var(--accent-light); color: var(--accent-text); font-weight: 500; }
+    .sidebar-item .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .sidebar-item .count {
+      margin-left: auto;
+      font-size: 10px;
+      color: var(--text-tertiary);
+    }
+    .sidebar-footer {
+      padding: 12px 16px;
+      border-top: 1px solid var(--border);
+      font-size: 10px;
+      color: var(--text-tertiary);
+      line-height: 1.5;
+    }
+
+    /* Main content */
+    .main-content {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+    .main-scroll {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    /* Right panel */
+    .right-panel {
+      width: 280px;
+      background: var(--bg-sidebar);
+      border-left: 1px solid var(--border);
+      overflow-y: auto;
+      flex-shrink: 0;
+      padding: 20px 16px;
+    }
+    .right-panel-section {
+      margin-bottom: 20px;
+    }
+    .right-panel-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 10px;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      transition: all 0.15s;
+    }
+    .card:hover {
+      border-color: var(--border-hover);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Tags */
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+    .tag-accent { background: var(--accent-light); color: var(--accent-text); }
+    .tag-green { background: var(--green-bg); color: #16a34a; }
+    .tag-amber { background: var(--amber-bg); color: #d97706; }
+    .tag-blue { background: var(--blue-bg); color: #2563eb; }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+      border: 1px solid transparent;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+    .btn-primary:hover { background: var(--accent-hover); }
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-secondary);
+      border-color: var(--border);
+    }
+    .btn-ghost:hover { background: var(--bg-hover); border-color: var(--border-hover); }
+    .btn-ghost.active { background: var(--accent-light); color: var(--accent-text); border-color: var(--accent); }
+
+    /* Signal level indicator */
+    .signal-level {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+    }
+    .signal-level .bar {
+      width: 3px;
+      border-radius: 1px;
+      background: var(--border);
+    }
+    .signal-level .bar.filled { background: var(--accent); }
+    .signal-level.high .bar:nth-child(1),
+    .signal-level.high .bar:nth-child(2),
+    .signal-level.high .bar:nth-child(3) { background: var(--accent); }
+    .signal-level.medium .bar:nth-child(1),
+    .signal-level.medium .bar:nth-child(2) { background: var(--accent); }
+
+    /* Status dot */
+    .status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .status-dot.green { background: var(--green); }
+    .status-dot.amber { background: var(--amber); }
+    .status-dot.red { background: var(--red); }
+
+    /* Evidence line */
+    .evidence-item {
+      display: flex;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 12px;
+    }
+    .evidence-item:last-child { border-bottom: none; }
+    .evidence-source {
+      font-weight: 500;
+      color: var(--text-primary);
+      min-width: 80px;
+    }
+    .evidence-text {
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* Progress bar */
+    .progress-bar {
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .progress-bar .fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 2px;
+      transition: width 0.3s;
+    }
+
+    /* Article list item */
+    .article-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .article-item:hover { background: var(--bg-hover); }
+    .article-item.unread::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      margin-top: 7px;
+      flex-shrink: 0;
+    }
+    .article-meta {
+      font-size: 11px;
+      color: var(--text-tertiary);
+      margin-top: 4px;
+    }
+
+    /* Feed item in Feeds page */
+    .feed-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .feed-item:hover { background: var(--bg-hover); }
+    .feed-icon {
+      width: 28px; height: 28px;
+      border-radius: var(--radius-sm);
+      background: var(--accent-light);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .feed-icon svg { width: 14px; height: 14px; color: var(--accent); }
+
+    /* Reading page */
+    .reading-content {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 40px 32px;
+    }
+    .reading-content h1 {
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1.3;
+      margin-bottom: 16px;
+    }
+    .reading-content .meta {
+      font-size: 13px;
+      color: var(--text-tertiary);
+      margin-bottom: 32px;
+    }
+    .reading-content p {
+      font-size: 15px;
+      line-height: 1.8;
+      color: var(--text-secondary);
+      margin-bottom: 20px;
+    }
+    .reading-content blockquote {
+      border-left: 3px solid var(--accent);
+      padding: 12px 20px;
+      margin: 20px 0;
+      background: var(--accent-light);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-style: italic;
+      color: var(--text-secondary);
+    }
+
+    /* Topic card */
+    .topic-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .topic-card:hover {
+      border-color: var(--border-hover);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Page header */
+    .page-header {
+      padding: 24px 28px 16px;
+    }
+    .page-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    .page-subtitle {
+      font-size: 13px;
+      color: var(--text-tertiary);
+      margin-top: 4px;
+    }
+
+    /* Divider */
+    .divider { border-top: 1px solid var(--border); margin: 16px 0; }
+
+    /* Inline icon */
+    .icon { width: 16px; height: 16px; flex-shrink: 0; }
+    .icon-sm { width: 14px; height: 14px; flex-shrink: 0; }
+    .icon-xs { width: 12px; height: 12px; flex-shrink: 0; }
+
+    /* Feedback buttons */
+    .feedback-row {
+      display: flex;
+      gap: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      margin-top: 12px;
+    }
+    .feedback-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      border-radius: var(--radius-sm);
+      font-size: 11px;
+      color: var(--text-tertiary);
+      cursor: pointer;
+      transition: all 0.15s;
+      background: none;
+      border: none;
+    }
+    .feedback-btn:hover { color: var(--text-secondary); background: var(--bg-hover); }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--border-hover); }
+
+    /* Page switcher (top bar for demo) */
+    .page-switcher {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 40px;
+      background: var(--text-primary);
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 8px;
+      z-index: 1000;
+    }
+    .page-switcher .label {
+      font-size: 11px;
+      color: rgba(255,255,255,0.5);
+      margin-right: 8px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+    .page-switcher button {
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: transparent;
+      color: rgba(255,255,255,0.7);
+      transition: all 0.15s;
+    }
+    .page-switcher button:hover { background: rgba(255,255,255,0.1); color: #fff; }
+    .page-switcher button.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+    .app-shell { padding-top: 40px; height: 100vh; }
+
+    /* Empty state */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      padding: 48px;
+      text-align: center;
+    }
+    .empty-state svg { color: var(--text-tertiary); margin-bottom: 16px; }
+    .empty-state .title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+    .empty-state .desc {
+      font-size: 13px;
+      color: var(--text-tertiary);
+      max-width: 320px;
+      line-height: 1.5;
+    }
+
+    /* Collapsible WIM */
+    .wim-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      color: var(--text-tertiary);
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 4px 0;
+      transition: color 0.15s;
+    }
+    .wim-toggle:hover { color: var(--text-secondary); }
+    .wim-content {
+      overflow: hidden;
+      transition: max-height 0.2s ease-out, opacity 0.2s ease-out;
+    }
+
+    /* Source list in signal card */
+    .source-list {
+      margin-top: 12px;
+      border-top: 1px solid var(--border);
+      padding-top: 12px;
+    }
+    .source-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 8px 0;
+      font-size: 12px;
+    }
+    .source-item .source-feed {
+      font-size: 10px;
+      color: var(--text-tertiary);
+      background: var(--bg-sidebar);
+      padding: 1px 6px;
+      border-radius: 3px;
+      white-space: nowrap;
+    }
+    .source-item .source-title {
+      color: var(--text-primary);
+      font-weight: 500;
+      cursor: pointer;
+      transition: color 0.15s;
+    }
+    .source-item .source-title:hover { color: var(--accent); }
+
+    /* Confidence meter */
+    .confidence {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .confidence-bar {
+      width: 32px;
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .confidence-bar .fill {
+      height: 100%;
+      border-radius: 2px;
+    }
+
+    /* Search and saved views */
+    .search-input-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 44px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0 14px;
+      box-shadow: var(--shadow-sm);
+    }
+    .search-input-wrap:focus-within {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+    }
+    .search-input {
+      flex: 1;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-size: 14px;
+      color: var(--text-primary);
+      min-width: 0;
+    }
+    .search-input::placeholder { color: var(--text-tertiary); }
+    .filter-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .filter-chip:hover { border-color: var(--border-hover); background: var(--bg-hover); }
+    .filter-chip.active {
+      background: var(--accent-light);
+      border-color: var(--accent);
+      color: var(--accent-text);
+    }
+    .result-snippet {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-top: 6px;
+    }
+    .result-snippet mark {
+      background: var(--amber-bg);
+      color: #b45309;
+      border-radius: 3px;
+      padding: 0 2px;
+    }
+    .saved-group {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--bg-card);
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+    .saved-group-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: var(--bg-sidebar);
+      border-bottom: 1px solid var(--border);
+    }
+    .saved-note {
+      margin-top: 8px;
+      padding: 8px 10px;
+      border-left: 3px solid var(--accent);
+      background: var(--accent-light);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Page Switcher -->
+<div class="page-switcher">
+  <span class="label">LETTURA MOCKUP</span>
+  <button class="active" onclick="showPage('today')">Today</button>
+  <button onclick="showPage('today-reading')">Today+阅读</button>
+  <button onclick="showPage('topics')">Topics</button>
+  <button onclick="showPage('topic-detail')">Topic Detail</button>
+  <button onclick="showPage('feeds')">Feeds</button>
+  <button onclick="showPage('search')">Search</button>
+  <button onclick="showPage('starred')">Starred</button>
+  <button onclick="showPage('article')">Article (Feeds)</button>
+</div>
+
+<!-- ==================== PAGE: TODAY ==================== -->
+<div id="page-today" class="app-shell">
+  <!-- Rail -->
+  <div class="rail">
+    <button class="rail-item active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.912 5.813h6.107l-4.964 3.587 1.912 5.813L12 14.626l-4.967 3.587 1.912-5.813L3.981 8.813h6.107z"/></svg>
+      <span class="tooltip">Today</span>
+    </button>
+    <button class="rail-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      <span class="tooltip">Topics</span>
+    </button>
+    <button class="rail-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
+      <span class="tooltip">Feeds</span>
+    </button>
+    <button class="rail-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <span class="tooltip">Search</span>
+    </button>
+    <button class="rail-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      <span class="tooltip">Starred</span>
+    </button>
+    <div class="rail-spacer"></div>
+    <button class="rail-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+      <span class="tooltip">Settings</span>
+    </button>
+  </div>
+
+  <!-- Sidebar: Today context -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-title">Lettura</div>
+      <div class="sidebar-desc">Daily Intelligence Reader — 每日判断入口</div>
+    </div>
+    <div class="sidebar-content">
+      <div class="sidebar-section-title">今日焦点</div>
+      <div class="sidebar-item active">
+        <span class="dot" style="background:var(--accent)"></span>
+        AI Agent 竞争格局
+        <span class="count">3</span>
+      </div>
+      <div class="sidebar-item">
+        <span class="dot" style="background:var(--green)"></span>
+        Rust 生态更新
+        <span class="count">2</span>
+      </div>
+      <div class="sidebar-item">
+        <span class="dot" style="background:var(--amber)"></span>
+        Apple WWDC 预热
+        <span class="count">1</span>
+      </div>
+
+      <div class="sidebar-section-title">追踪中的 Topics</div>
+      <div class="sidebar-item">
+        <span class="dot" style="background:var(--accent)"></span>
+        LLM 推理优化
+      </div>
+      <div class="sidebar-item">
+        <span class="dot" style="background:var(--blue)"></span>
+        WebAssembly 进展
+      </div>
+      <div class="sidebar-item">
+        <span class="dot" style="background:var(--green)"></span>
+        开源商业模式
+      </div>
+    </div>
+    <div class="sidebar-footer">
+      Lettura 为你筛选高信号内容。<br/>
+      今天分析了 47 篇文章，来自 12 个来源。
+    </div>
+  </div>
+
+  <!-- Main: Signal cards -->
+  <div class="main-content">
+    <div class="main-scroll" style="padding: 20px 24px;">
+      <!-- Today Summary -->
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:20px; padding:8px 12px; background:var(--accent-light); border-radius:var(--radius-sm);">
+        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+        <span style="font-size:12px; color:var(--accent-text);">
+          <strong>今日概览：</strong>AI Agent 领域出现新的开源竞争者；Rust 1.85 发布带来重要 async 改进；Apple 可能在大模型本地部署上有新动作。
+        </span>
+      </div>
+
+      <!-- Signal Card 1 -->
+      <div class="card" style="margin-bottom:12px;">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+          <div class="signal-level high">
+            <div class="bar filled" style="height:8px;"></div>
+            <div class="bar filled" style="height:12px;"></div>
+            <div class="bar filled" style="height:16px;"></div>
+          </div>
+          <span class="tag tag-accent">AI Agent</span>
+          <span style="font-size:11px; color:var(--text-tertiary); margin-left:auto;">2 小时前 · 3 个来源</span>
+        </div>
+        <div style="font-size:15px; font-weight:600; color:var(--text-primary); margin-bottom:6px; cursor:pointer;">
+          OpenAI 开源 Agent 框架，直接挑战 LangChain 和 CrewAI 生态
+        </div>
+        <div style="font-size:13px; color:var(--text-secondary); line-height:1.6; margin-bottom:8px;">
+          OpenAI 发布了新的开源 Agent SDK，提供链式推理、工具调用和多 Agent 协作能力。这直接与 LangChain、CrewAI 等现有框架竞争。
+        </div>
+        <button class="wim-toggle" onclick="this.nextElementSibling.style.maxHeight = this.nextElementSibling.style.maxHeight === '200px' ? '0px' : '200px'; this.nextElementSibling.style.opacity = this.nextElementSibling.style.opacity === '1' ? '0' : '1';">
+          <svg class="icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+          为什么重要
+        </button>
+        <div class="wim-content" style="max-height:0; opacity:0;">
+          <p style="font-size:12px; color:var(--text-secondary); line-height:1.6; margin-top:8px;">
+            OpenAI 入局 Agent 框架意味着该领域将从碎片化走向标准化。现有框架需要在差异化上有更清晰的定位，否则可能被官方方案替代。
+          </p>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px; margin-top:12px;">
+          <div class="confidence">
+            <span style="font-size:10px; color:var(--text-tertiary);">置信度</span>
+            <div class="confidence-bar"><div class="fill" style="width:85%; background:var(--accent);"></div></div>
+            <span style="font-size:10px; color:var(--accent-text); font-weight:600;">85%</span>
+          </div>
+        </div>
+        <div class="feedback-row">
+          <button class="feedback-btn">👍 有用</button>
+          <button class="feedback-btn">👎 不相关</button>
+          <button class="feedback-btn">📌 追踪主题</button>
+        </div>
+      </div>
+
+      <!-- Signal Card 2 -->
+      <div class="card" style="margin-bottom:12px;">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+          <div class="signal-level high">
+            <div class="bar filled" style="height:8px;"></div>
+            <div class="bar filled" style="height:12px;"></div>
+            <div class="bar filled" style="height:16px;"></div>
+          </div>
+          <span class="tag tag-green">Rust</span>
+          <span style="font-size:11px; color:var(--text-tertiary); margin-left:auto;">4 小时前 · 2 个来源</span>
+        </div>
+        <div style="font-size:15px; font-weight:600; color:var(--text-primary); margin-bottom:6px; cursor:pointer;">
+          Rust 1.85 发布：async fn in traits 稳定，生命周期语法改进
+        </div>
+        <div style="font-size:13px; color:var(--text-secondary); line-height:1.6; margin-bottom:8px;">
+          Rust 1.85 正式稳定了 async fn in traits，这是异步 Rust 生态期待已久的里程碑。同时引入了更简洁的生命周期语法。
+        </div>
+        <button class="wim-toggle" onclick="this.nextElementSibling.style.maxHeight = this.nextElementSibling.style.maxHeight === '200px' ? '0px' : '200px'; this.nextElementSibling.style.opacity = this.nextElementSibling.style.opacity === '1' ? '0' : '1';">
+          <svg class="icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+          为什么重要
+        </button>
+        <div class="wim-content" style="max-height:0; opacity:0;">
+          <p style="font-size:12px; color:var(--text-secondary); line-height:1.6; margin-top:8px;">
+            async fn in traits 稳定意味着 Tokio、Tower 等生态库可以大幅简化 trait 定义，推动 Rust 异步生态进入下一个阶段。
+          </p>
+        </div>
+        <div class="feedback-row">
+          <button class="feedback-btn">👍 有用</button>
+          <button class="feedback-btn">👎 不相关</button>
+          <button class="feedback-btn">📌 追踪主题</button>
+        </div>
+      </div>
+
+      <!-- Signal Card 3 -->
+      <div class="card" style="margin-bottom:12px;">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+          <div class="signal-level medium">
+            <div class="bar filled" style="height:8px;"></div>
+            <div class="bar filled" style="height:12px;"></div>
+            <div class="bar" style="height:16px;"></div>
+          </div>
+          <span class="tag tag-blue">Apple</span>
+          <span style="font-size:11px; color:var(--text-tertiary); margin-left:auto;">6 小时前 · 1 个来源</span>
+        </div>
+        <div style="font-size:15px; font-weight:600; color:var(--text-primary); margin-bottom:6px; cursor:pointer;">
+          Apple 据传正在开发本地大模型部署方案，可能在 WWDC 公布
+        </div>
+        <div style="font-size:13px; color:var(--text-secondary); line-height:1.6; margin-bottom:8px;">
+          多家媒体报道 Apple 正在开发一种让大语言模型在设备端高效运行的技术方案，可能结合 Neural Engine 和统一内存架构。
+        </div>
+        <div style="display:flex; align-items:center; gap:12px; margin-top:8px;">
+          <div class="confidence">
+            <span style="font-size:10px; color:var(--text-tertiary);">置信度</span>
+            <div class="confidence-bar"><div class="fill" style="width:55%; background:var(--amber);"></div></div>
+            <span style="font-size:10px; color:#d97706; font-weight:600;">55%</span>
+          </div>
+          <span class="tag tag-amber" style="font-size:10px;">待验证</span>
+        </div>
+        <div class="feedback-row">
+          <button class="feedback-btn">👍 有用</button>
+          <button class="feedback-btn">👎 不相关</button>
+          <button class="feedback-btn">📌 追踪主题</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="right-panel">
+    <div class="right-panel-section">
+      <div class="right-panel-title">来源证据</div>
+      <div class="evidence-item">
+        <span class="evidence-source">TechCrunch</span>
+        <span class="evidence-text">OpenAI releases open-source Agent SDK</span>
+      </div>
+      <div class="evidence-item">
+        <span class="evidence-source">Hacker News</span>
+        <span class="evidence-text">社区热议 Agent 框架对比</span>
+      </div>
+      <div class="evidence-item">
+        <span class="evidence-source">The Verge</span>
+        <span class="evidence-text">OpenAI 战略转向开放生态</span>
+      </div>
+    </div>
+
+    <div class="right-panel-section">
+      <div class="right-panel-title">今日状态</div>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <div style="display:flex; justify-content:space-between; font-size:12px;">
+          <span style="color:var(--text-tertiary);">已同步</span>
+          <span style="color:var(--text-primary); font-weight:500;">47 篇</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:12px;">
+          <span style="color:var(--text-tertiary);">已分析</span>
+          <span style="color:var(--text-primary); font-weight:500;">47 篇</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:12px;">
+          <span style="color:var(--text-tertiary);">高信号</span>
+          <span style="color:var(--accent); font-weight:600;">3 条</span>
+        </div>
+        <div class="progress-bar" style="margin-top:4px;">
+          <div class="fill" style="width:100%;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="right-panel-section">
+      <div class="right-panel-title">下一步</div>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <button class="btn btn-ghost" style="width:100%; justify-content:flex-start;">
+          <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          查看所有 Topics
+        </button>
+        <button class="btn btn-ghost" style="width:100%; justify-content:flex-start;">
+          <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
+          管理 Feeds 来源
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PAGE: TODAY + READING ==================== -->
+<div id="page-today-reading" class="app-shell" style="display:none;">
+  <div class="rail">
+    <button class="rail-item active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.912 5.813h6.107l-4.964 3.587 1.912 5.813L12 14.626l-4.967 3.587 1.912-5.813L3.981 8.813h6.107z"/></svg>
+      <span class="tooltip">Today</span>
+    </button>
+    <button class="rail-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      <span class="tooltip">Topics</span>
+    </button>
+    <button class="rail-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
+      <span class="tooltip">Feeds</span>
+    </button>
+    <button class="rail-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <span class="tooltip">Search</span>
+    </button>
+    <button class="rail-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      <span class="tooltip">Starred</span>
+    </button>
+    <div class="rail-spacer"></div>
+    <button class="rail-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+      <span class="tooltip">Settings</span>
+    </button>
+  </div>
+
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-title">Lettura</div>
+      <div class="sidebar-desc">Daily Intelligence Reader — 每日判断入口</div>
+    </div>
+    <div class="sidebar-content">
+      <div class="sidebar-section-title">今日焦点</div>
+      <div class="sidebar-item active">
+        <span class="dot" style="background:var(--accent)"></span>
+        AI Agent 竞争格局
+        <span class="count">3</span>
+      </div>
+      <div class="sidebar-item">
+        <span class="dot" style="background:var(--green)"></span>
+        Rust 生态更新
+        <span class="count">2</span>
+      </div>
+      <div class="sidebar-item">
+        <span class="dot" style="background:var(--amber)"></span>
+        Apple WWDC 预热
+        <span class="count">1</span>
+      </div>
+      <div class="sidebar-section-title">追踪中的 Topics</div>
+      <div class="sidebar-item">
+        <span class="dot" style="background:var(--accent)"></span>
+        LLM 推理优化
+      </div>
+      <div class="sidebar-item">
+        <span class="dot" style="background:var(--blue)"></span>
+        WebAssembly 进展
+      </div>
+      <div class="sidebar-item">
+        <span class="dot" style="background:var(--green)"></span>
+        开源商业模式
+      </div>
+    </div>
+    <div class="sidebar-footer">
+      Lettura 为你筛选高信号内容。<br/>
+      今天分析了 47 篇文章，来自 12 个来源。
+    </div>
+  </div>
+
+  <!-- Signal list (slightly narrower to accommodate expanded reading panel) -->
+  <div class="main-content" style="min-width:0;">
+    <div class="main-scroll" style="padding:20px 24px;">
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:20px; padding:8px 12px; background:var(--accent-light); border-radius:var(--radius-sm);">
+        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+        <span style="font-size:12px; color:var(--accent-text);">
+          <strong>今日概览：</strong>AI Agent 领域出现新的开源竞争者；Rust 1.85 发布带来重要 async 改进。
+        </span>
+      </div>
+
+      <!-- Signal Card 1 - expanded/highlighted to show active reading context -->
+      <div class="card" style="margin-bottom:12px; border-color:var(--accent); border-width:2px;">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+          <div class="signal-level high">
+            <div class="bar filled" style="height:8px;"></div>
+            <div class="bar filled" style="height:12px;"></div>
+            <div class="bar filled" style="height:16px;"></div>
+          </div>
+          <span class="tag tag-accent">AI Agent</span>
+          <span style="font-size:11px; color:var(--text-tertiary); margin-left:auto;">2 小时前 · 3 个来源</span>
+        </div>
+        <div style="font-size:15px; font-weight:600; color:var(--text-primary); margin-bottom:6px;">
+          OpenAI 开源 Agent 框架，直接挑战 LangChain 和 CrewAI 生态
+        </div>
+        <div style="font-size:13px; color:var(--text-secondary); line-height:1.6; margin-bottom:8px;">
+          OpenAI 发布了新的开源 Agent SDK，提供链式推理、工具调用和多 Agent 协作能力。
+        </div>
+        <!-- Source items shown as clickable, first one is "active" (being read) -->
+        <div class="source-list" style="display:block;">
+          <div class="source-item" style="background:var(--accent-light); border-radius:var(--radius-sm); padding:8px; margin-bottom:4px;">
+            <span class="source-feed">TechCrunch</span>
+            <span class="source-title" style="color:var(--accent-text);">OpenAI releases open-source Agent SDK</span>
+            <span style="font-size:10px; color:var(--accent); margin-left:auto; white-space:nowrap;">正在阅读 ↓</span>
+          </div>
+          <div class="source-item" style="padding:8px;">
+            <span class="source-feed">Hacker News</span>
+            <span class="source-title">社区热议 Agent 框架对比</span>
+          </div>
+          <div class="source-item" style="padding:8px;">
+            <span class="source-feed">The Verge</span>
+            <span class="source-title">OpenAI 战略转向开放生态</span>
+          </div>
+        </div>
+        <div class="feedback-row">
+          <button class="feedback-btn">👍 有用</button>
+          <button class="feedback-btn">👎 不相关</button>
+          <button class="feedback-btn">📌 追踪主题</button>
+        </div>
+      </div>
+
+      <!-- Signal Card 2 (dimmed - not active) -->
+      <div class="card" style="margin-bottom:12px; opacity:0.6;">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+          <div class="signal-level high">
+            <div class="bar filled" style="height:8px;"></div>
+            <div class="bar filled" style="height:12px;"></div>
+            <div class="bar filled" style="height:16px;"></div>
+          </div>
+          <span class="tag tag-green">Rust</span>
+          <span style="font-size:11px; color:var(--text-tertiary); margin-left:auto;">4 小时前 · 2 个来源</span>
+        </div>
+        <div style="font-size:15px; font-weight:600; color:var(--text-primary); margin-bottom:6px;">
+          Rust 1.85 发布：async fn in traits 稳定
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right panel: expanded reading view -->
+  <div style="width:480px; background:var(--bg-card); border-left:1px solid var(--border); display:flex; flex-direction:column; flex-shrink:0;">
+    <!-- Reading header -->
+    <div style="padding:12px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:8px;">
+      <button class="btn btn-ghost" style="font-size:11px; padding:4px 8px;">
+        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+        返回信号
+      </button>
+      <div style="flex:1;"></div>
+      <span style="font-size:10px; color:var(--text-tertiary);">来源 1/3</span>
+      <button class="btn btn-ghost" style="font-size:11px; padding:4px 8px;">
+        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </button>
+      <button class="btn btn-ghost" style="font-size:11px; padding:4px 8px;">
+        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg>
+      </button>
+    </div>
+    <!-- Reading content -->
+    <div style="flex:1; overflow-y:auto; padding:24px 28px;">
+      <div style="font-size:10px; color:var(--accent); font-weight:600; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px;">TechCrunch</div>
+      <h1 style="font-size:20px; font-weight:700; line-height:1.3; color:var(--text-primary); margin-bottom:12px;">OpenAI Releases Open-Source Agent SDK for Building Multi-Agent Systems</h1>
+      <div style="font-size:12px; color:var(--text-tertiary); margin-bottom:24px;">
+        Sarah Chen · May 1, 2026 · 6 min read
+      </div>
+      <p style="font-size:14px; color:var(--text-secondary); line-height:1.8; margin-bottom:16px;">
+        OpenAI 今天发布了一个全新的开源 Agent SDK，旨在让开发者更轻松地构建多 Agent 系统。该 SDK 提供了链式推理、工具调用、记忆管理和多 Agent 协作等核心能力。
+      </p>
+      <p style="font-size:14px; color:var(--text-secondary); line-height:1.8; margin-bottom:16px;">
+        这一举动的意义在于，它直接与 LangChain、CrewAI、AutoGen 等现有框架竞争。与这些框架不同的是，OpenAI 的 SDK 从底层就深度整合了 GPT 系列模型的推理能力。
+      </p>
+      <blockquote style="border-left:3px solid var(--accent); padding:12px 16px; margin:16px 0; background:var(--accent-light); border-radius:0 var(--radius-sm) var(--radius-sm) 0; font-style:italic; color:var(--text-secondary); font-size:13px; line-height:1.6;">
+        "我们希望 Agent 开发能像 Web 开发一样简单。今天的 Agent 框架太碎片化了。" — OpenAI 开发者关系负责人
+      </blockquote>
+      <p style="font-size:14px; color:var(--text-secondary); line-height:1.8; margin-bottom:16px;">
+        SDK 的核心特性包括：声明式的 Agent 定义语法、内置的重试和错误恢复机制、支持流式输出的工具调用接口，以及一个可视化调试工具。
+      </p>
+      <p style="font-size:14px; color:var(--text-secondary); line-height:1.8; margin-bottom:16px;">
+        目前 SDK 已在 GitHub 上以 MIT 协议开源，首日获得超过 5,000 个 star。
+      </p>
+    </div>
+    <!-- Source navigation -->
+    <div style="padding:12px 20px; border-top:1px solid var(--border); display:flex; align-items:center; gap:8px;">
+      <button class="btn btn-ghost" style="font-size:11px; opacity:0.4; cursor:default;">
+        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+        上一篇
+      </button>
+      <div style="flex:1;"></div>
+      <span style="font-size:10px; color:var(--text-tertiary);">TechCrunch</span>
+      <div style="flex:1;"></div>
+      <button class="btn btn-ghost" style="font-size:11px;">
+        下一篇
+        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PAGE: TOPICS LIST ==================== -->
+<div id="page-topics" class="app-shell" style="display:none;">
+  <div class="rail">
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.912 5.813h6.107l-4.964 3.587 1.912 5.813L12 14.626l-4.967 3.587 1.912-5.813L3.981 8.813h6.107z"/></svg><span class="tooltip">Today</span></button>
+    <button class="rail-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg><span class="tooltip">Topics</span></button>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg><span class="tooltip">Feeds</span></button>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span class="tooltip">Search</span></button>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span class="tooltip">Starred</span></button>
+    <div class="rail-spacer"></div>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span class="tooltip">Settings</span></button>
+  </div>
+  <div class="main-content">
+    <div class="page-header">
+      <div class="page-title">Topics</div>
+      <div class="page-subtitle">长期关注的信息主题和趋势</div>
+    </div>
+    <div style="display:flex; align-items:center; gap:8px; padding:0 28px 16px;">
+      <div style="display:flex; gap:2px; background:var(--bg-sidebar); border-radius:var(--radius-sm); padding:2px;">
+        <button class="btn btn-ghost active" style="padding:4px 12px; font-size:11px; border:none;">全部</button>
+        <button class="btn btn-ghost" style="padding:4px 12px; font-size:11px; border:none;">追踪中</button>
+      </div>
+      <select style="margin-left:auto; font-size:11px; color:var(--text-tertiary); background:var(--bg-sidebar); border:1px solid var(--border); border-radius:var(--radius-sm); padding:4px 8px;">
+        <option>按最近更新</option>
+        <option>按相关度</option>
+        <option>按文章数</option>
+      </select>
+    </div>
+    <div class="main-scroll" style="padding:0 28px 24px;">
+      <!-- Topic Cards -->
+      <div class="topic-card" style="margin-bottom:10px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="tag tag-accent">追踪中</span>
+            <span style="font-size:15px; font-weight:600; color:var(--text-primary);">LLM 推理优化</span>
+          </div>
+          <span style="font-size:11px; color:var(--text-tertiary);">2 小时前更新</span>
+        </div>
+        <div style="font-size:12px; color:var(--text-secondary); line-height:1.6; margin-bottom:10px;">
+          探索大语言模型推理加速、量化、蒸馏和部署优化的最新进展。
+        </div>
+        <div style="display:flex; align-items:center; gap:16px; font-size:11px; color:var(--text-tertiary);">
+          <span>12 篇文章</span>
+          <span>5 个来源</span>
+          <span>置信度 82%</span>
+        </div>
+      </div>
+
+      <div class="topic-card" style="margin-bottom:10px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="tag tag-green">追踪中</span>
+            <span style="font-size:15px; font-weight:600; color:var(--text-primary);">开源商业模式</span>
+          </div>
+          <span style="font-size:11px; color:var(--text-tertiary);">1 天前更新</span>
+        </div>
+        <div style="font-size:12px; color:var(--text-secondary); line-height:1.6; margin-bottom:10px;">
+          开源项目的商业化路径：从赞助到企业版的策略分析。
+        </div>
+        <div style="display:flex; align-items:center; gap:16px; font-size:11px; color:var(--text-tertiary);">
+          <span>8 篇文章</span>
+          <span>4 个来源</span>
+        </div>
+      </div>
+
+      <div class="topic-card" style="margin-bottom:10px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:15px; font-weight:600; color:var(--text-primary);">WebAssembly 进展</span>
+          </div>
+          <span style="font-size:11px; color:var(--text-tertiary);">3 天前更新</span>
+        </div>
+        <div style="font-size:12px; color:var(--text-secondary); line-height:1.6; margin-bottom:10px;">
+          WASM 在服务端、浏览器和边缘计算中的最新进展。
+        </div>
+        <div style="display:flex; align-items:center; gap:16px; font-size:11px; color:var(--text-tertiary);">
+          <span>5 篇文章</span>
+          <span>3 个来源</span>
+        </div>
+      </div>
+
+      <div class="topic-card" style="margin-bottom:10px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:15px; font-weight:600; color:var(--text-primary);">Apple 生态开发</span>
+          </div>
+          <span style="font-size:11px; color:var(--text-tertiary);">5 天前更新</span>
+        </div>
+        <div style="font-size:12px; color:var(--text-secondary); line-height:1.6; margin-bottom:10px;">
+          SwiftUI、visionOS 和 Apple 平台开发工具链更新。
+        </div>
+        <div style="display:flex; align-items:center; gap:16px; font-size:11px; color:var(--text-tertiary);">
+          <span>3 篇文章</span>
+          <span>2 个来源</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PAGE: TOPIC DETAIL ==================== -->
+<div id="page-topic-detail" class="app-shell" style="display:none;">
+  <div class="rail">
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.912 5.813h6.107l-4.964 3.587 1.912 5.813L12 14.626l-4.967 3.587 1.912-5.813L3.981 8.813h6.107z"/></svg><span class="tooltip">Today</span></button>
+    <button class="rail-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg><span class="tooltip">Topics</span></button>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg><span class="tooltip">Feeds</span></button>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span class="tooltip">Search</span></button>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span class="tooltip">Starred</span></button>
+    <div class="rail-spacer"></div>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span class="tooltip">Settings</span></button>
+  </div>
+  <div class="main-content">
+    <div class="main-scroll" style="padding:24px 28px;">
+      <!-- Back button -->
+      <button style="display:flex; align-items:center; gap:4px; font-size:12px; color:var(--text-tertiary); background:none; border:none; cursor:pointer; margin-bottom:16px;">
+        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+        返回 Topics
+      </button>
+
+      <!-- Title + Follow -->
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+        <h1 style="font-size:24px; font-weight:700; color:var(--text-primary);">LLM 推理优化</h1>
+        <button class="btn btn-ghost active">
+          <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 17v5M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/></svg>
+          追踪中
+        </button>
+      </div>
+
+      <div style="font-size:13px; color:var(--text-secondary); line-height:1.6; margin-bottom:16px;">
+        探索大语言模型推理加速、量化、蒸馏和部署优化的最新进展。涵盖 vLLM、TensorRT-LLM、llama.cpp 等主要框架。
+      </div>
+
+      <!-- AI Summary -->
+      <div class="card" style="margin-bottom:20px; background:var(--bg-sidebar);">
+        <div style="display:flex; align-items:center; gap:6px; margin-bottom:8px;">
+          <svg class="icon-sm" style="color:var(--accent);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><path d="M14 2v6h6"/></svg>
+          <span style="font-size:12px; font-weight:600; color:var(--text-primary);">主题摘要</span>
+        </div>
+        <p style="font-size:12px; color:var(--text-secondary); line-height:1.6;">
+          本周 LLM 推理领域最显著的进展来自 vLLM 0.6 版本的发布，引入了前缀缓存和分块预填充优化，吞吐量提升 2-3x。同时，llama.cpp 的 Vulkan 后端日趋成熟，使得在消费级 GPU 上运行 70B 模型成为可能。模型量化方面，GGUF 格式与 AWQ 量化的对比测试显示 AWQ 在保持精度的同时具有更好的推理速度。
+        </p>
+      </div>
+
+      <!-- Stats -->
+      <div style="display:flex; gap:16px; font-size:12px; color:var(--text-tertiary); margin-bottom:16px;">
+        <span style="display:flex; align-items:center; gap:4px;">
+          <svg class="icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/></svg>
+          12 篇文章
+        </span>
+        <span style="display:flex; align-items:center; gap:4px;">
+          <svg class="icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
+          5 个来源
+        </span>
+        <span style="display:flex; align-items:center; gap:4px;">
+          <svg class="icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+          首次发现 2024/03
+        </span>
+        <span style="display:flex; align-items:center; gap:4px;">
+          <svg class="icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+          最后更新 2 小时前
+        </span>
+      </div>
+
+      <div class="divider"></div>
+
+      <h3 style="font-size:14px; font-weight:600; color:var(--text-primary); margin-bottom:12px;">相关文章</h3>
+
+      <!-- Source group -->
+      <div style="margin-bottom:16px;">
+        <div style="font-size:11px; font-weight:600; color:var(--text-tertiary); margin-bottom:8px;">来自 Hacker News</div>
+        <div style="border:1px solid var(--border); border-radius:var(--radius); overflow:hidden;">
+          <div class="article-item unread">
+            <div style="flex:1;">
+              <div style="font-size:13px; font-weight:500; color:var(--text-primary); margin-bottom:4px;">vLLM 0.6: Prefix Caching and Chunked Prefill</div>
+              <div class="article-meta">Hacker News · 2 小时前 · 128 comments</div>
+            </div>
+          </div>
+          <div class="article-item">
+            <div style="flex:1;">
+              <div style="font-size:13px; font-weight:500; color:var(--text-primary); margin-bottom:4px;">Show HN: I built a local LLM inference benchmark comparing llama.cpp, vLLM and TGI</div>
+              <div class="article-meta">Hacker News · 1 天前 · 89 comments</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:16px;">
+        <div style="font-size:11px; font-weight:600; color:var(--text-tertiary); margin-bottom:8px;">来自 Simon Willison's Blog</div>
+        <div style="border:1px solid var(--border); border-radius:var(--radius); overflow:hidden;">
+          <div class="article-item">
+            <div style="flex:1;">
+              <div style="font-size:13px; font-weight:500; color:var(--text-primary); margin-bottom:4px;">Notes on GPT-4o mini and inference cost trends</div>
+              <div class="article-meta">Simon Willison · 3 天前</div>
+            </div>
+          </div>
+          <div class="article-item">
+            <div style="flex:1;">
+              <div style="font-size:13px; font-weight:500; color:var(--text-primary); margin-bottom:4px;">Quantization showdown: GGUF vs AWQ vs GPTQ</div>
+              <div class="article-meta">Simon Willison · 5 天前</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PAGE: FEEDS ==================== -->
+<div id="page-feeds" class="app-shell" style="display:none;">
+  <div class="rail">
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.912 5.813h6.107l-4.964 3.587 1.912 5.813L12 14.626l-4.967 3.587 1.912-5.813L3.981 8.813h6.107z"/></svg><span class="tooltip">Today</span></button>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg><span class="tooltip">Topics</span></button>
+    <button class="rail-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg><span class="tooltip">Feeds</span></button>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span class="tooltip">Search</span></button>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span class="tooltip">Starred</span></button>
+    <div class="rail-spacer"></div>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span class="tooltip">Settings</span></button>
+  </div>
+
+  <!-- Feeds sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-title">Feeds</div>
+      <div class="sidebar-desc">管理你的订阅源</div>
+    </div>
+    <div class="sidebar-content">
+      <div class="sidebar-section-title">技术</div>
+      <div class="sidebar-item active">
+        <div class="feed-icon" style="width:18px; height:18px; border-radius:3px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
+        </div>
+        Hacker News
+        <span class="count">24</span>
+      </div>
+      <div class="sidebar-item">
+        <div class="feed-icon" style="width:18px; height:18px; border-radius:3px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
+        </div>
+        TechCrunch
+        <span class="count">8</span>
+      </div>
+      <div class="sidebar-item">
+        <div class="feed-icon" style="width:18px; height:18px; border-radius:3px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
+        </div>
+        The Verge
+        <span class="count">6</span>
+      </div>
+
+      <div class="sidebar-section-title">博客</div>
+      <div class="sidebar-item">
+        <div class="feed-icon" style="width:18px; height:18px; border-radius:3px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
+        </div>
+        Simon Willison
+        <span class="count">5</span>
+      </div>
+      <div class="sidebar-item">
+        <div class="feed-icon" style="width:18px; height:18px; border-radius:3px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
+        </div>
+      Julia Evans
+        <span class="count">3</span>
+      </div>
+
+      <div class="sidebar-section-title">Rust</div>
+      <div class="sidebar-item">
+        <div class="feed-icon" style="width:18px; height:18px; border-radius:3px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
+        </div>
+        This Week in Rust
+        <span class="count">1</span>
+      </div>
+    </div>
+    <div class="sidebar-footer">
+      共 7 个活跃源 · 上次同步 10 分钟前
+    </div>
+  </div>
+
+  <!-- Main: Article list -->
+  <div class="main-content">
+    <div style="padding:16px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between;">
+      <span style="font-size:14px; font-weight:600;">Hacker News</span>
+      <span style="font-size:11px; color:var(--text-tertiary);">24 篇未读</span>
+    </div>
+    <div class="main-scroll">
+      <div class="article-item unread">
+        <div style="flex:1;">
+          <div style="font-size:13px; font-weight:500; color:var(--text-primary); margin-bottom:4px;">OpenAI releases open-source Agent SDK for building multi-agent systems</div>
+          <div class="article-meta">techcrunch.com · 2 小时前 · 128 comments</div>
+        </div>
+      </div>
+      <div class="article-item unread">
+        <div style="flex:1;">
+          <div style="font-size:13px; font-weight:500; color:var(--text-primary); margin-bottom:4px;">Show HN: I built a local LLM inference benchmark comparing llama.cpp, vLLM and TGI</div>
+          <div class="article-meta">self · 4 小时前 · 89 comments</div>
+        </div>
+      </div>
+      <div class="article-item unread">
+        <div style="flex:1;">
+          <div style="font-size:13px; font-weight:500; color:var(--text-primary); margin-bottom:4px;">Rust 1.85: async fn in traits is now stable</div>
+          <div class="article-meta">blog.rust-lang.org · 6 小时前 · 67 comments</div>
+        </div>
+      </div>
+      <div class="article-item">
+        <div style="flex:1;">
+          <div style="font-size:13px; font-weight:500; color:var(--text-primary); margin-bottom:4px;">The state of WebAssembly in 2025</div>
+          <div class="article-meta">bytecodealliance.org · 1 天前 · 45 comments</div>
+        </div>
+      </div>
+      <div class="article-item">
+        <div style="flex:1;">
+          <div style="font-size:13px; font-weight:500; color:var(--text-primary); margin-bottom:4px;">Why we moved from microservices back to a monolith</div>
+          <div class="article-meta">example.com · 1 天前 · 234 comments</div>
+        </div>
+      </div>
+      <div class="article-item">
+        <div style="flex:1;">
+          <div style="font-size:13px; font-weight:500; color:var(--text-primary); margin-bottom:4px;">Apple reportedly working on on-device LLM deployment</div>
+          <div class="article-meta">bloomberg.com · 2 天前 · 156 comments</div>
+        </div>
+      </div>
+      <div class="article-item">
+        <div style="flex:1;">
+          <div style="font-size:13px; font-weight:500; color:var(--text-primary); margin-bottom:4px;">Understanding structured outputs in LLM APIs</div>
+          <div class="article-meta">simonwillison.net · 3 天前 · 32 comments</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PAGE: SEARCH ==================== -->
+<div id="page-search" class="app-shell" style="display:none;">
+  <div class="rail">
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.912 5.813h6.107l-4.964 3.587 1.912 5.813L12 14.626l-4.967 3.587 1.912-5.813L3.981 8.813h6.107z"/></svg><span class="tooltip">Today</span></button>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg><span class="tooltip">Topics</span></button>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg><span class="tooltip">Feeds</span></button>
+    <button class="rail-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span class="tooltip">Search</span></button>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span class="tooltip">Starred</span></button>
+    <div class="rail-spacer"></div>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span class="tooltip">Settings</span></button>
+  </div>
+
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-title">Search</div>
+      <div class="sidebar-desc">跨文章、来源和主题快速定位信息</div>
+    </div>
+    <div class="sidebar-content">
+      <div class="sidebar-section-title">保存的搜索</div>
+      <div class="sidebar-item active">
+        <span class="dot" style="background:var(--accent)"></span>
+        agent sdk
+        <span class="count">18</span>
+      </div>
+      <div class="sidebar-item">
+        <span class="dot" style="background:var(--green)"></span>
+        async rust
+        <span class="count">9</span>
+      </div>
+      <div class="sidebar-item">
+        <span class="dot" style="background:var(--blue)"></span>
+        on-device llm
+        <span class="count">6</span>
+      </div>
+
+      <div class="sidebar-section-title">最近搜索</div>
+      <div class="sidebar-item">
+        <svg class="icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+        vector database
+      </div>
+      <div class="sidebar-item">
+        <svg class="icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+        wasm component model
+      </div>
+    </div>
+    <div class="sidebar-footer">
+      支持标题、正文摘要、来源名和 Topic 名称。
+    </div>
+  </div>
+
+  <div class="main-content">
+    <div class="page-header">
+      <div class="page-title">Search</div>
+      <div class="page-subtitle">从每日信号回到原始文章，或把常用查询保存为动态视图</div>
+    </div>
+    <div style="padding:0 28px 16px;">
+      <div class="search-input-wrap">
+        <svg class="icon" style="color:var(--text-tertiary);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input class="search-input" value="agent sdk" aria-label="Search articles" />
+        <button class="btn btn-primary" style="padding:6px 12px;">搜索</button>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:12px;">
+        <button class="filter-chip active">全部</button>
+        <button class="filter-chip">未读</button>
+        <button class="filter-chip">已收藏</button>
+        <button class="filter-chip">高信号</button>
+        <button class="filter-chip">
+          <svg class="icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4h18M6 12h12M10 20h4"/></svg>
+          最近 30 天
+        </button>
+        <button class="filter-chip">
+          <svg class="icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
+          所有来源
+        </button>
+      </div>
+    </div>
+    <div class="main-scroll" style="padding:0 28px 24px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+        <div style="font-size:12px; color:var(--text-tertiary);">18 个结果 · 按相关度排序</div>
+        <button class="btn btn-ghost" style="font-size:11px;">
+          <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></svg>
+          保存搜索
+        </button>
+      </div>
+
+      <div class="card" style="margin-bottom:10px; border-color:var(--accent);">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+          <span class="tag tag-accent">高信号</span>
+          <span class="tag tag-blue">AI Agent</span>
+          <span style="font-size:11px; color:var(--text-tertiary); margin-left:auto;">TechCrunch · 2 小时前</span>
+        </div>
+        <div style="font-size:14px; font-weight:600; color:var(--text-primary);">OpenAI releases open-source Agent SDK for building multi-agent systems</div>
+        <div class="result-snippet">
+          OpenAI 发布新的开源 <mark>Agent SDK</mark>，提供链式推理、工具调用和多 Agent 协作能力，直接影响 LangChain 与 CrewAI 生态。
+        </div>
+        <div style="display:flex; align-items:center; gap:8px; margin-top:10px;">
+          <button class="btn btn-ghost" style="font-size:11px;">打开文章</button>
+          <button class="btn btn-ghost" style="font-size:11px;">
+            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            收藏
+          </button>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:10px;">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+          <span class="tag tag-accent">讨论</span>
+          <span style="font-size:11px; color:var(--text-tertiary); margin-left:auto;">Hacker News · 3 小时前</span>
+        </div>
+        <div style="font-size:14px; font-weight:600; color:var(--text-primary);">社区热议 Agent 框架对比：官方 SDK 是否会重塑工具链</div>
+        <div class="result-snippet">
+          HN 用户集中讨论 <mark>Agent SDK</mark> 的模型绑定、可移植性和调试体验，评论区出现了与 AutoGen 的详细比较。
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:10px;">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+          <span class="tag tag-green">开源生态</span>
+          <span style="font-size:11px; color:var(--text-tertiary); margin-left:auto;">Simon Willison · 昨天</span>
+        </div>
+        <div style="font-size:14px; font-weight:600; color:var(--text-primary);">Notes on agent frameworks, tool calls, and debugging traces</div>
+        <div class="result-snippet">
+          文章把 <mark>agent</mark> 框架拆成工具协议、状态管理和追踪界面三层，并指出官方 SDK 的优势可能在调试链路。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="right-panel">
+    <div class="right-panel-section">
+      <div class="right-panel-title">搜索洞察</div>
+      <div class="card" style="padding:12px;">
+        <div style="font-size:13px; font-weight:600; margin-bottom:6px;">这次搜索集中在工具链变化</div>
+        <div style="font-size:12px; color:var(--text-secondary); line-height:1.6;">
+          18 个结果里有 11 篇提到调试追踪，7 篇提到框架迁移成本。最相关的 Topic 是 AI Agent 竞争格局。
+        </div>
+      </div>
+    </div>
+    <div class="right-panel-section">
+      <div class="right-panel-title">快速过滤</div>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <button class="btn btn-ghost active" style="justify-content:space-between;">标题匹配 <span>6</span></button>
+        <button class="btn btn-ghost" style="justify-content:space-between;">正文摘要 <span>12</span></button>
+        <button class="btn btn-ghost" style="justify-content:space-between;">Topic 匹配 <span>3</span></button>
+      </div>
+    </div>
+    <div class="right-panel-section">
+      <div class="right-panel-title">相关 Topic</div>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <div class="sidebar-item active"><span class="dot" style="background:var(--accent)"></span>AI Agent 竞争格局<span class="count">14</span></div>
+        <div class="sidebar-item"><span class="dot" style="background:var(--green)"></span>开源商业模式<span class="count">4</span></div>
+        <div class="sidebar-item"><span class="dot" style="background:var(--blue)"></span>LLM 推理优化<span class="count">2</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PAGE: STARRED ==================== -->
+<div id="page-starred" class="app-shell" style="display:none;">
+  <div class="rail">
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.912 5.813h6.107l-4.964 3.587 1.912 5.813L12 14.626l-4.967 3.587 1.912-5.813L3.981 8.813h6.107z"/></svg><span class="tooltip">Today</span></button>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg><span class="tooltip">Topics</span></button>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg><span class="tooltip">Feeds</span></button>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span class="tooltip">Search</span></button>
+    <button class="rail-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span class="tooltip">Starred</span></button>
+    <div class="rail-spacer"></div>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span class="tooltip">Settings</span></button>
+  </div>
+
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-title">Starred</div>
+      <div class="sidebar-desc">收藏、稍后读和长期参考资料</div>
+    </div>
+    <div class="sidebar-content">
+      <div class="sidebar-section-title">收藏夹</div>
+      <div class="sidebar-item active">
+        <span class="dot" style="background:var(--amber)"></span>
+        全部收藏
+        <span class="count">32</span>
+      </div>
+      <div class="sidebar-item">
+        <span class="dot" style="background:var(--accent)"></span>
+        研究素材
+        <span class="count">12</span>
+      </div>
+      <div class="sidebar-item">
+        <span class="dot" style="background:var(--green)"></span>
+        工程实践
+        <span class="count">9</span>
+      </div>
+      <div class="sidebar-item">
+        <span class="dot" style="background:var(--blue)"></span>
+        产品观察
+        <span class="count">6</span>
+      </div>
+      <div class="sidebar-section-title">标签</div>
+      <div class="sidebar-item"># agent-frameworks <span class="count">8</span></div>
+      <div class="sidebar-item"># rust <span class="count">5</span></div>
+      <div class="sidebar-item"># pricing <span class="count">4</span></div>
+    </div>
+    <div class="sidebar-footer">
+      本周新增 7 条收藏，其中 3 条来自今日信号。
+    </div>
+  </div>
+
+  <div class="main-content">
+    <div class="page-header">
+      <div class="page-title">Starred</div>
+      <div class="page-subtitle">把有长期价值的文章沉淀成可回看的资料库</div>
+    </div>
+    <div style="display:flex; align-items:center; gap:8px; padding:0 28px 16px; flex-wrap:wrap;">
+      <div style="display:flex; gap:2px; background:var(--bg-sidebar); border-radius:var(--radius-sm); padding:2px;">
+        <button class="btn btn-ghost active" style="padding:4px 12px; font-size:11px; border:none;">全部</button>
+        <button class="btn btn-ghost" style="padding:4px 12px; font-size:11px; border:none;">稍后读</button>
+        <button class="btn btn-ghost" style="padding:4px 12px; font-size:11px; border:none;">已归档</button>
+      </div>
+      <button class="filter-chip active">按收藏时间</button>
+      <button class="filter-chip">只看笔记</button>
+      <button class="filter-chip">高信号</button>
+      <button class="btn btn-ghost" style="font-size:11px; margin-left:auto;">
+        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg>
+        导出
+      </button>
+    </div>
+    <div class="main-scroll" style="padding:0 28px 24px;">
+      <div class="saved-group">
+        <div class="saved-group-header">
+          <div style="font-size:12px; font-weight:600;">今天收藏</div>
+          <div style="font-size:11px; color:var(--text-tertiary);">3 篇</div>
+        </div>
+        <div class="article-item">
+          <div style="flex:1;">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+              <div style="font-size:13px; font-weight:600; color:var(--text-primary);">OpenAI releases open-source Agent SDK for building multi-agent systems</div>
+              <span class="tag tag-accent">AI Agent</span>
+            </div>
+            <div class="article-meta">TechCrunch · 2 小时前 · 收藏于 10:42</div>
+            <div class="saved-note">笔记：这篇适合作为 Agent 框架生态变化的起点，后续可以对比 LangChain 和 AutoGen 的应对。</div>
+          </div>
+          <button class="btn btn-ghost" style="font-size:11px; padding:5px 8px;">
+            <svg class="icon-sm" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </button>
+        </div>
+        <div class="article-item">
+          <div style="flex:1;">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+              <div style="font-size:13px; font-weight:600; color:var(--text-primary);">Rust 1.85: async fn in traits is now stable</div>
+              <span class="tag tag-green">Rust</span>
+            </div>
+            <div class="article-meta">Rust Blog · 6 小时前 · 收藏于 09:18</div>
+          </div>
+          <button class="btn btn-ghost" style="font-size:11px; padding:5px 8px;">
+            <svg class="icon-sm" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="saved-group">
+        <div class="saved-group-header">
+          <div style="font-size:12px; font-weight:600;">本周回看</div>
+          <div style="font-size:11px; color:var(--text-tertiary);">按 Topic 聚合</div>
+        </div>
+        <div class="article-item">
+          <div style="flex:1;">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+              <div style="font-size:13px; font-weight:600; color:var(--text-primary);">Show HN: Local LLM inference benchmark comparing llama.cpp, vLLM and TGI</div>
+              <span class="tag tag-blue">LLM 推理</span>
+            </div>
+            <div class="article-meta">Hacker News · 2 天前 · 89 comments</div>
+            <div style="display:flex; gap:6px; margin-top:8px;">
+              <span class="filter-chip active" style="cursor:default;"># benchmark</span>
+              <span class="filter-chip" style="cursor:default;"># local-llm</span>
+            </div>
+          </div>
+        </div>
+        <div class="article-item">
+          <div style="flex:1;">
+            <div style="font-size:13px; font-weight:600; color:var(--text-primary); margin-bottom:4px;">Quantization showdown: GGUF vs AWQ vs GPTQ</div>
+            <div class="article-meta">Simon Willison · 5 天前 · 已读 62%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="right-panel">
+    <div class="right-panel-section">
+      <div class="right-panel-title">收藏状态</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+        <div class="card" style="padding:12px;">
+          <div style="font-size:20px; font-weight:700; color:var(--text-primary);">32</div>
+          <div style="font-size:11px; color:var(--text-tertiary);">全部收藏</div>
+        </div>
+        <div class="card" style="padding:12px;">
+          <div style="font-size:20px; font-weight:700; color:var(--accent);">7</div>
+          <div style="font-size:11px; color:var(--text-tertiary);">本周新增</div>
+        </div>
+      </div>
+    </div>
+    <div class="right-panel-section">
+      <div class="right-panel-title">建议整理</div>
+      <div class="card" style="padding:12px;">
+        <div style="font-size:13px; font-weight:600; margin-bottom:6px;">创建「Agent 框架」收藏夹</div>
+        <div style="font-size:12px; color:var(--text-secondary); line-height:1.6; margin-bottom:10px;">
+          已有 8 篇收藏都和 Agent SDK、工具调用、调试追踪有关。
+        </div>
+        <button class="btn btn-primary" style="font-size:11px;">创建收藏夹</button>
+      </div>
+    </div>
+    <div class="right-panel-section">
+      <div class="right-panel-title">阅读队列</div>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <div style="font-size:12px; color:var(--text-secondary); line-height:1.5;">Quantization showdown · 已读 62%</div>
+        <div class="progress-bar"><div class="fill" style="width:62%;"></div></div>
+        <div style="font-size:12px; color:var(--text-secondary); line-height:1.5;">State of WebAssembly · 已读 18%</div>
+        <div class="progress-bar"><div class="fill" style="width:18%;"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PAGE: ARTICLE ==================== -->
+<div id="page-article" class="app-shell" style="display:none;">
+  <div class="rail">
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.912 5.813h6.107l-4.964 3.587 1.912 5.813L12 14.626l-4.967 3.587 1.912-5.813L3.981 8.813h6.107z"/></svg><span class="tooltip">Today</span></button>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg><span class="tooltip">Topics</span></button>
+    <button class="rail-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg><span class="tooltip">Feeds</span></button>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span class="tooltip">Search</span></button>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span class="tooltip">Starred</span></button>
+    <div class="rail-spacer"></div>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span class="tooltip">Settings</span></button>
+  </div>
+
+  <!-- Article sidebar: list -->
+  <div class="sidebar" style="width:280px;">
+    <div style="padding:12px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between;">
+      <span style="font-size:12px; font-weight:600;">Hacker News</span>
+      <span style="font-size:10px; color:var(--text-tertiary);">24 篇</span>
+    </div>
+    <div style="flex:1; overflow-y:auto;">
+      <div class="article-item" style="background:var(--accent-light); border-left:2px solid var(--accent);">
+        <div style="flex:1;">
+          <div style="font-size:12px; font-weight:600; color:var(--accent-text); margin-bottom:2px;">OpenAI releases open-source Agent SDK</div>
+          <div class="article-meta">2 小时前</div>
+        </div>
+      </div>
+      <div class="article-item">
+        <div style="flex:1;">
+          <div style="font-size:12px; font-weight:500; color:var(--text-primary); margin-bottom:2px;">Local LLM inference benchmark</div>
+          <div class="article-meta">4 小时前</div>
+        </div>
+      </div>
+      <div class="article-item">
+        <div style="flex:1;">
+          <div style="font-size:12px; font-weight:500; color:var(--text-primary); margin-bottom:2px;">Rust 1.85: async fn in traits stable</div>
+          <div class="article-meta">6 小时前</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Article reading area -->
+  <div class="main-content">
+    <div class="main-scroll">
+      <div class="reading-content">
+        <!-- Toolbar -->
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:24px; padding-bottom:16px; border-bottom:1px solid var(--border);">
+          <button class="btn btn-ghost" style="font-size:11px;">
+            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+            返回
+          </button>
+          <div style="flex:1;"></div>
+          <button class="btn btn-ghost" style="font-size:11px;">
+            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </button>
+          <button class="btn btn-ghost" style="font-size:11px;">
+            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+          <button class="btn btn-ghost" style="font-size:11px;">
+            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+          </button>
+        </div>
+
+        <h1>OpenAI Releases Open-Source Agent SDK for Building Multi-Agent Systems</h1>
+        <div class="meta">
+          <span style="color:var(--accent);">TechCrunch</span> · Sarah Chen · May 1, 2026 · 6 min read
+        </div>
+
+        <p>
+          OpenAI 今天发布了一个全新的开源 Agent SDK，旨在让开发者更轻松地构建多 Agent 系统。该 SDK 提供了链式推理、工具调用、记忆管理和多 Agent 协作等核心能力。
+        </p>
+
+        <p>
+          这一举动的意义在于，它直接与 LangChain、CrewAI、AutoGen 等现有框架竞争。与这些框架不同的是，OpenAI 的 SDK 从底层就深度整合了 GPT 系列模型的推理能力，并在工具调用和错误恢复方面做了专门优化。
+        </p>
+
+        <blockquote>
+          "我们希望 Agent 开发能像 Web 开发一样简单。今天的 Agent 框架太碎片化了，开发者需要花大量时间在胶水代码上。" — OpenAI 开发者关系负责人
+        </blockquote>
+
+        <p>
+          SDK 的核心特性包括：声明式的 Agent 定义语法、内置的重试和错误恢复机制、支持流式输出的工具调用接口，以及一个可视化调试工具用于追踪 Agent 的推理链路。
+        </p>
+
+        <p>
+          社区反应褒贬不一。支持者认为官方方案能带来更好的模型适配和长期维护；批评者则担心这会加剧生态锁定，削弱 Agent 框架层的模型无关性。
+        </p>
+
+        <p>
+          目前 SDK 已在 GitHub 上以 MIT 协议开源，首日获得超过 5,000 个 star。OpenAI 表示将在未来几周内发布更多示例和教程。
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function showPage(name, trigger) {
+  document.querySelectorAll('.app-shell').forEach(el => el.style.display = 'none');
+  const page = document.getElementById('page-' + name);
+  if (!page) return;
+  page.style.display = 'flex';
+  document.querySelectorAll('.page-switcher button').forEach(btn => btn.classList.remove('active'));
+  const activeButton = trigger || (typeof event !== 'undefined' ? event.target : null);
+  if (activeButton?.classList?.contains('page-switcher')) return;
+  if (activeButton?.closest('.page-switcher')) {
+    activeButton.closest('button').classList.add('active');
+    return;
+  }
+  const switcherButton = [...document.querySelectorAll('.page-switcher button')]
+    .find(btn => btn.getAttribute('onclick')?.includes(`'${name}'`));
+  switcherButton?.classList.add('active');
+}
+
+document.querySelectorAll('.rail-item').forEach(item => {
+  item.addEventListener('click', () => {
+    const label = item.querySelector('.tooltip')?.textContent?.trim();
+    const pageMap = {
+      Today: 'today',
+      Topics: 'topics',
+      Feeds: 'feeds',
+      Search: 'search',
+      Starred: 'starred'
+    };
+    if (pageMap[label]) showPage(pageMap[label]);
+  });
+});
+</script>
+
+</body>
+</html>

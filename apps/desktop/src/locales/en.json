@@ -18,6 +18,7 @@
   "All Items": "All Items",
   "Starred": "Starred",
   "Feeds": "Feeds",
+  "Articles": "articles",
   "Mark all as read": "Mark all as read",
   "Open home page": "Open home page",
   "Copy feed URL": "Copy feed URL",
@@ -27,6 +28,10 @@
   "View detail": "View detail",
   "Unsubscribe": "Unsubscribe",
   "Follow your favorite sources and never miss a story": "Follow your favorite sources and never miss a story",
+  "All articles": "All articles",
+  "Unread": "Unread",
+  "Read": "Read",
+  "Yay, no matching items.": "Yay, no matching items.",
 
   "Cancel": "Cancel",
   "Subscribe": "Subscribe",
@@ -194,7 +199,8 @@
       "show_all": "Show all {{count}} articles",
       "expand": "Show sources",
       "collapse": "Hide sources",
-      "loading": "Loading..."
+      "loading": "Loading...",
+      "currently_reading": "Reading ↓"
     },
     "overview_title": "Today's Overview",
     "overview_updated_minutes_ago": "{{minutes}} min ago",
@@ -219,6 +225,11 @@
         "title": "Today's Status",
         "loading": "Loading status...",
         "no_data": "No data yet",
+        "synced": "Synced",
+        "analyzed": "Analyzed",
+        "high_signal": "High signal",
+        "articles_unit": "articles",
+        "signals_unit": "signals",
         "signals": "signals",
         "articles": "articles"
       },
@@ -230,10 +241,11 @@
       }
     },
     "inline_reader": {
-      "back": "Back",
+      "back": "Back to signals",
       "prev": "Previous",
       "next": "Next",
-      "content_placeholder": "Article content will be displayed here"
+      "content_placeholder": "Article content will be displayed here",
+      "source_of": "Source {{current}}/{{total}}"
     }
   },
   "settings": {
@@ -267,11 +279,13 @@
   "layout": {
     "topics": {
       "title": "Topics",
+      "subtitle": "Information topics and trends you follow long-term",
       "empty": "No topics yet. Topics are automatically generated from your reading signals.",
       "loading": "Loading topics...",
       "article_count": "{{count}} articles",
       "source_count": "{{count}} sources",
       "last_updated": "Updated {{time}}",
+      "confidence": "Confidence {{confidence}}%",
       "follow": "Follow",
       "following": "Following",
       "filter": {
@@ -314,7 +328,12 @@
       "today_focus": "Today Focus",
       "today_focus_desc": "View latest signals",
       "tracked_topics": "Tracked Topics",
+      "topic_suggestions": "suggested",
       "no_tracked_topics": "No tracked topics yet",
+      "footer_text": "Today analyzed {{article_count}} articles, found {{signal_count}} high-signal items.",
+      "feed_footer_text": "{{count}} active feeds · {{sync}}",
+      "feed_synced": "last synced {{time}}",
+      "feed_waiting_sync": "waiting to sync",
       "collapse": "Collapse sidebar",
       "expand": "Expand sidebar",
       "context_today": "Today",
@@ -325,6 +344,8 @@
     }
   },
   "article": {
-    "duplicate": "Duplicate"
+    "duplicate": "Duplicate",
+    "list_count": "{{count}} articles",
+    "list_unread_count": "{{count}} unread"
   }
 }

@@ -14,6 +14,7 @@ import { RouteConfig } from "./config";
 import { ArticleContainer } from "./layout/Article";
 import { TodayPage } from "./layout/Intelligence/TodayPage";
 import { SearchPage } from "./layout/Search";
+import { StarredPage } from "./layout/Starred";
 import { FreshRSSPage } from "./layout/FreshRSS";
 import { TopicListPage } from "./layout/Intelligence/Topics/TopicListPage";
 import { TopicDetailPage } from "./layout/Intelligence/Topics/TopicDetailPage";
@@ -50,7 +51,7 @@ const router = createBrowserRouter([
       },
       {
         path: RouteConfig.LOCAL_STARRED,
-        element: <ArticleContainer />,
+        element: <StarredPage />,
       },
       {
         path: RouteConfig.LOCAL_FEED,
