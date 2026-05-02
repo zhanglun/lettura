@@ -79,6 +79,10 @@ export interface ArticleResItem {
   starred: number;
   media_object: string;
   is_duplicate?: number;
+  starred_at?: string;
+  is_archived?: number;
+  is_read_later?: number;
+  notes?: string;
 }
 
 export interface FolderResItem {

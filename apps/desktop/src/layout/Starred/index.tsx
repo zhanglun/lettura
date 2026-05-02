@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { formatDistanceToNow, isToday, parseISO } from "date-fns";
 import {
   Archive,
@@ -15,6 +16,17 @@ import { MainPanel } from "@/components/MainPanel";
 import { View } from "../Article/View";
 import { useArticle } from "../Article/useArticle";
 import { getFeedLogo } from "@/helpers/parseXML";
+import {
+  getCollections,
+  getTags,
+  createCollection,
+  type CollectionItem,
+  type TagItem,
+} from "@/helpers/starredApi";
+import { StarredOrganizeBar } from "./StarredOrganizeBar";
+import { showErrorToast } from "@/helpers/errorHandler";
+
+type FilterType = "all" | "read_later" | "archived" | "notes";
 
 function stripHtml(value = "") {
   return value.replace(/(<([^>]+)>)/gi, "").replace(/\s+/g, " ").trim();
@@ -42,6 +54,7 @@ function SavedArticleCard(props: {
   active: boolean;
   onOpen: (article: ArticleResItem) => void;
 }) {
+  const { t } = useTranslation();
   const { article, active, onOpen } = props;
   const summary = stripHtml(article.description || article.content || "");
 
@@ -74,7 +87,7 @@ function SavedArticleCard(props: {
             />
           </div>
           <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-[var(--gray-10)]">
-            <span>{article.feed_title || "Unknown feed"}</span>
+            <span>{article.feed_title || t("starred.unknown_feed")}</span>
             <span>·</span>
             <span>{formatTime(article.create_date)}</span>
           </div>
@@ -121,18 +134,69 @@ function SavedGroup(props: {
 }
 
 export const StarredPage = () => {
-  const { articles, isLoading, isEmpty, isReachingEnd, size, setSize } =
-    useArticle({});
+  const { t } = useTranslation();
   const [selectedArticle, setSelectedArticle] =
     useState<ArticleResItem | null>(null);
 
+  const [collections, setCollections] = useState<CollectionItem[]>([]);
+  const [tags, setTags] = useState<TagItem[]>([]);
+  const [activeCollection, setActiveCollection] = useState<string | null>(null);
+  const [activeTag, setActiveTag] = useState<string | null>(null);
+  const [activeFilter, setActiveFilter] = useState<FilterType>("all");
+
+  const [showCollectionInput, setShowCollectionInput] = useState(false);
+  const [newCollectionName, setNewCollectionName] = useState("");
+  const [isCreatingCollection, setIsCreatingCollection] = useState(false);
+
+  const { articles, isLoading, isEmpty, isReachingEnd, size, setSize } =
+    useArticle({
+      collectionUuid: activeCollection,
+      tagUuid: activeTag,
+      isStarred: activeFilter === "read_later" ? null : 1,
+      isArchived: activeFilter === "archived" ? true : undefined,
+      isReadLater: activeFilter === "read_later" ? true : undefined,
+      hasNotes: activeFilter === "notes" ? true : undefined,
+    });
+
+  useEffect(() => {
+    setSelectedArticle(null);
+  }, [activeCollection, activeTag, activeFilter]);
+
+  useEffect(() => {
+    getCollections()
+      .then(setCollections)
+      .catch((err) => showErrorToast(err, "Failed to load collections"));
+    getTags()
+      .then(setTags)
+      .catch((err) => showErrorToast(err, "Failed to load tags"));
+  }, []);
+
+  const refreshCollections = useCallback(() => {
+    getCollections()
+      .then(setCollections)
+      .catch((err) => showErrorToast(err, "Failed to refresh collections"));
+  }, []);
+
+  const refreshData = useCallback(() => {
+    getCollections()
+      .then(setCollections)
+      .catch((err) => showErrorToast(err, "Failed to refresh collections"));
+    getTags()
+      .then(setTags)
+      .catch((err) => showErrorToast(err, "Failed to refresh tags"));
+  }, []);
+
+  const filteredArticles = useMemo(() => {
+    return articles;
+  }, [articles]);
+
   const todayArticles = useMemo(
-    () => articles.filter((article) => isFromToday(article)),
-    [articles],
+    () => filteredArticles.filter((article) => isFromToday(article)),
+    [filteredArticles],
   );
   const earlierArticles = useMemo(
-    () => articles.filter((article) => !isFromToday(article)),
-    [articles],
+    () => filteredArticles.filter((article) => !isFromToday(article)),
+    [filteredArticles],
   );
   const feedCount = useMemo(
     () => new Set(articles.map((article) => article.feed_uuid)).size,
@@ -146,6 +210,42 @@ export const StarredPage = () => {
     [articles],
   );
 
+  const handleExport = () => {
+    const data = JSON.stringify(articles, null, 2);
+    const blob = new Blob([data], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `starred-articles-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleCreateCollection = async () => {
+    const name = newCollectionName.trim();
+    if (!name) return;
+    setIsCreatingCollection(true);
+    try {
+      await createCollection(name);
+      setNewCollectionName("");
+      setShowCollectionInput(false);
+      refreshCollections();
+    } catch (err) {
+      showErrorToast(err, "Failed to create collection");
+    } finally {
+      setIsCreatingCollection(false);
+    }
+  };
+
+  const filterChips: { key: FilterType; label: string }[] = [
+    { key: "all", label: t("starred.filter.all") },
+    { key: "read_later", label: t("starred.filter.read_later") },
+    { key: "archived", label: t("starred.filter.archived") },
+    { key: "notes", label: t("starred.filter.notes") },
+  ];
+
   return (
     <MainPanel>
       <div className="flex h-full w-full overflow-hidden bg-[var(--gray-1)]">
@@ -155,45 +255,78 @@ export const StarredPage = () => {
               Starred
             </div>
             <div className="mt-1 text-xs leading-5 text-[var(--gray-10)]">
-              收藏、稍后读和长期参考资料。
+              {t("starred.subtitle")}
             </div>
           </div>
           <div className="flex-1 overflow-auto p-3">
             <div className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-[var(--gray-10)]">
-              收藏夹
+              {t("starred.sidebar.collections")}
             </div>
-            {[
-              ["全部收藏", articles.length, "var(--amber-9)"],
-              ["研究素材", Math.min(12, articles.length), "var(--accent-9)"],
-              ["工程实践", Math.min(9, articles.length), "var(--green-9)"],
-              ["产品观察", Math.min(6, articles.length), "var(--blue-9)"],
-            ].map(([label, count, color]) => (
+            <button
+              type="button"
+              onClick={() => {
+                setActiveCollection(null);
+                setActiveTag(null);
+                setActiveFilter("all");
+              }}
+              className={
+                activeCollection === null && activeTag === null
+                  ? "flex w-full items-center gap-2 rounded-md bg-[var(--gray-a3)] px-2 py-1.5 text-left text-xs font-medium text-[var(--gray-12)]"
+                  : "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-xs text-[var(--gray-11)] hover:bg-[var(--gray-a3)]"
+              }
+            >
+              <span
+                className="h-1.5 w-1.5 rounded-full"
+                style={{ background: "var(--amber-9)" }}
+              />
+              <span>{t("starred.sidebar.all")}</span>
+              <span className="ml-auto text-[10px] text-[var(--gray-9)]">
+                {articles.length}
+              </span>
+            </button>
+            {collections.map((collection) => (
               <button
                 type="button"
-                key={label}
-                className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-xs text-[var(--gray-11)] hover:bg-[var(--gray-a3)]"
+                key={collection.uuid}
+                onClick={() => {
+                  setActiveCollection(collection.uuid);
+                  setActiveTag(null);
+                  setActiveFilter("all");
+                }}
+                className={
+                  activeCollection === collection.uuid
+                    ? "flex w-full items-center gap-2 rounded-md bg-[var(--gray-a3)] px-2 py-1.5 text-left text-xs font-medium text-[var(--gray-12)]"
+                    : "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-xs text-[var(--gray-11)] hover:bg-[var(--gray-a3)]"
+                }
               >
                 <span
                   className="h-1.5 w-1.5 rounded-full"
-                  style={{ background: color as string }}
+                  style={{ background: "var(--accent-9)" }}
                 />
-                <span>{label}</span>
-                <span className="ml-auto text-[10px] text-[var(--gray-9)]">
-                  {count as number}
-                </span>
+                <span>{collection.name}</span>
               </button>
             ))}
+
             <div className="mb-2 mt-5 text-[10px] font-semibold uppercase tracking-wide text-[var(--gray-10)]">
-              标签
+              {t("starred.sidebar.tags")}
             </div>
-            {["# agent-frameworks", "# rust", "# pricing"].map((tag) => (
+            {tags.map((tag) => (
               <button
                 type="button"
-                key={tag}
-                className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-xs text-[var(--gray-11)] hover:bg-[var(--gray-a3)]"
+                key={tag.uuid}
+                onClick={() => {
+                  setActiveTag(tag.uuid);
+                  setActiveCollection(null);
+                  setActiveFilter("all");
+                }}
+                className={
+                  activeTag === tag.uuid
+                    ? "flex w-full items-center gap-2 rounded-md bg-[var(--gray-a3)] px-2 py-1.5 text-left text-xs font-medium text-[var(--gray-12)]"
+                    : "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-xs text-[var(--gray-11)] hover:bg-[var(--gray-a3)]"
+                }
               >
                 <Tags size={12} />
-                {tag}
+                #{tag.name}
               </button>
             ))}
           </div>
@@ -213,27 +346,29 @@ export const StarredPage = () => {
                   Starred
                 </h1>
                 <p className="mt-1 text-sm text-[var(--gray-10)]">
-                  把有长期价值的文章沉淀成可回看的资料库。
+                  {t("starred.header.subtitle")}
                 </p>
               </div>
-              <Button variant="surface" color="gray">
+              <Button variant="surface" color="gray" onClick={handleExport}>
                 <Download size={14} />
-                导出
+                {t("starred.export")}
               </Button>
             </div>
             <div className="mt-4 flex flex-wrap items-center gap-2">
-              <span className="rounded-full border border-[var(--accent-8)] bg-[var(--accent-a3)] px-3 py-1.5 text-xs font-medium text-[var(--accent-11)]">
-                全部
-              </span>
-              <span className="rounded-full border border-[var(--gray-5)] px-3 py-1.5 text-xs font-medium text-[var(--gray-11)]">
-                稍后读
-              </span>
-              <span className="rounded-full border border-[var(--gray-5)] px-3 py-1.5 text-xs font-medium text-[var(--gray-11)]">
-                已归档
-              </span>
-              <span className="rounded-full border border-[var(--gray-5)] px-3 py-1.5 text-xs font-medium text-[var(--gray-11)]">
-                只看笔记
-              </span>
+              {filterChips.map((chip) => (
+                <button
+                  type="button"
+                  key={chip.key}
+                  onClick={() => setActiveFilter(chip.key)}
+                  className={
+                    activeFilter === chip.key
+                      ? "rounded-full border border-[var(--accent-8)] bg-[var(--accent-a3)] px-3 py-1.5 text-xs font-medium text-[var(--accent-11)]"
+                      : "rounded-full border border-[var(--gray-5)] px-3 py-1.5 text-xs font-medium text-[var(--gray-11)] hover:bg-[var(--gray-a3)]"
+                  }
+                >
+                  {chip.label}
+                </button>
+              ))}
             </div>
           </div>
 
@@ -259,24 +394,26 @@ export const StarredPage = () => {
                   className="text-[var(--gray-9)]"
                 />
                 <h2 className="mt-4 text-base font-semibold text-[var(--gray-12)]">
-                  暂无收藏
+                  {t("starred.empty.title")}
                 </h2>
                 <p className="mt-2 max-w-[360px] text-sm leading-6 text-[var(--gray-10)]">
-                  在阅读文章时点亮星标，内容会出现在这里，并按时间、来源和标签整理。
+                  {t("starred.empty.subtitle")}
                 </p>
               </div>
             ) : (
               <>
                 <SavedGroup
-                  title="今天收藏"
-                  subtitle={`${todayArticles.length} 篇`}
+                  title={t("starred.group.today")}
+                  subtitle={t("starred.group.today_count", {
+                    count: todayArticles.length,
+                  })}
                   articles={todayArticles}
                   selected={selectedArticle}
                   onOpen={setSelectedArticle}
                 />
                 <SavedGroup
-                  title="本周回看"
-                  subtitle="按收藏时间排序"
+                  title={t("starred.group.earlier")}
+                  subtitle={t("starred.group.earlier_sort")}
                   articles={earlierArticles}
                   selected={selectedArticle}
                   onOpen={setSelectedArticle}
@@ -288,7 +425,7 @@ export const StarredPage = () => {
                     loading={isLoading}
                     onClick={() => setSize(size + 1)}
                   >
-                    加载更多
+                    {t("starred.load_more")}
                   </Button>
                 )}
               </>
@@ -297,54 +434,96 @@ export const StarredPage = () => {
         </section>
 
         {selectedArticle ? (
-          <View
-            article={selectedArticle}
-            closable
-            onClose={() => setSelectedArticle(null)}
-          />
+          <div className="flex min-w-0 flex-1 flex-col">
+            <StarredOrganizeBar article={selectedArticle} onRefresh={refreshData} />
+            <View
+              article={selectedArticle}
+              closable
+              onClose={() => setSelectedArticle(null)}
+            />
+          </div>
         ) : (
           <aside className="hidden w-[280px] shrink-0 overflow-auto border-l border-[var(--gray-5)] bg-[var(--gray-2)] p-4 lg:block">
             <div className="mb-5">
               <div className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-[var(--gray-10)]">
-                收藏状态
+                {t("starred.stats.title")}
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="rounded-lg border border-[var(--gray-5)] bg-[var(--color-panel-solid)] p-3">
                   <div className="text-2xl font-bold text-[var(--gray-12)]">
                     {articles.length}
                   </div>
-                  <div className="text-xs text-[var(--gray-10)]">全部收藏</div>
+                  <div className="text-xs text-[var(--gray-10)]">
+                    {t("starred.stats.all")}
+                  </div>
                 </div>
                 <div className="rounded-lg border border-[var(--gray-5)] bg-[var(--color-panel-solid)] p-3">
                   <div className="text-2xl font-bold text-[var(--accent-11)]">
                     {feedCount}
                   </div>
-                  <div className="text-xs text-[var(--gray-10)]">来源</div>
+                  <div className="text-xs text-[var(--gray-10)]">
+                    {t("starred.stats.sources")}
+                  </div>
                 </div>
               </div>
             </div>
 
             <div className="mb-5">
               <div className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-[var(--gray-10)]">
-                建议整理
+                {t("starred.suggest.title")}
               </div>
               <div className="rounded-lg border border-[var(--gray-5)] bg-[var(--color-panel-solid)] p-3">
                 <div className="flex items-center gap-2 text-sm font-semibold text-[var(--gray-12)]">
                   <FolderPlus size={14} />
-                  创建收藏夹
+                  {t("starred.suggest.create")}
                 </div>
                 <p className="mt-2 text-xs leading-5 text-[var(--gray-11)]">
-                  有 {withNotesCount} 篇收藏带摘要，可优先整理为研究素材。
+                  {t("starred.suggest.has_notes", {
+                    count: withNotesCount,
+                  })}
                 </p>
-                <Button className="mt-3" size="1">
-                  创建收藏夹
-                </Button>
+                {showCollectionInput ? (
+                  <div className="mt-3 flex gap-2">
+                    <input
+                      type="text"
+                      value={newCollectionName}
+                      onChange={(e) => setNewCollectionName(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handleCreateCollection();
+                      }}
+                      placeholder={t(
+                        "starred.collection_input_placeholder",
+                      )}
+                      className="min-w-0 flex-1 rounded-md border border-[var(--gray-7)] bg-[var(--gray-2)] px-2 py-1 text-xs text-[var(--gray-12)] outline-none focus:border-[var(--accent-8)]"
+                      disabled={isCreatingCollection}
+                    />
+                    <Button
+                      size="1"
+                      onClick={handleCreateCollection}
+                      disabled={
+                        !newCollectionName.trim() || isCreatingCollection
+                      }
+                    >
+                      {isCreatingCollection
+                        ? t("Saving")
+                        : t("starred.suggest.create_button")}
+                    </Button>
+                  </div>
+                ) : (
+                  <Button
+                    className="mt-3"
+                    size="1"
+                    onClick={() => setShowCollectionInput(true)}
+                  >
+                    {t("starred.suggest.create_button")}
+                  </Button>
+                )}
               </div>
             </div>
 
             <div>
               <div className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-[var(--gray-10)]">
-                阅读队列
+                {t("starred.queue.title")}
               </div>
               {articles.slice(0, 3).map((article) => (
                 <button
@@ -360,7 +539,7 @@ export const StarredPage = () => {
               {articles.length === 0 && (
                 <div className="rounded-md bg-[var(--gray-a2)] px-3 py-3 text-xs leading-5 text-[var(--gray-10)]">
                   <Archive size={14} className="mb-2" />
-                  星标文章后会自动形成阅读队列。
+                  {t("starred.queue.empty")}
                 </div>
               )}
             </div>

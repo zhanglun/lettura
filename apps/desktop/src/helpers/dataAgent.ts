@@ -138,6 +138,15 @@ export const updateArticleStarStatus = async (
   });
 };
 
+export const updateArticleReadLaterStatus = async (
+  article_uuid: string,
+  is_read_later: number,
+) => {
+  return request.post(`/articles/${article_uuid}/read-later`, {
+    is_read_later,
+  });
+};
+
 export const markAllRead = async (body: {
   uuid?: string;
   isToday?: boolean;

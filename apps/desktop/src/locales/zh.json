@@ -48,6 +48,8 @@
 
   "Star it": "添加星标",
   "Unstar it": "取消星标",
+  "Read later": "稍后读",
+  "Remove from read later": "移出稍后读",
   "Mark as read": "标记为已读",
   "Mark as unread": "标记为未读",
   "Previous article": "上一篇",
@@ -267,7 +269,10 @@
       "prev": "上一篇",
       "next": "下一篇",
       "content_placeholder": "文章内容将在此显示",
-      "source_of": "来源 {{current}}/{{total}}"
+      "source_of": "来源 {{current}}/{{total}}",
+      "guide_context": "这篇来源被纳入今日信号，是因为它补充了该主题下的关键事实、上下文或社区反馈。你可以继续切换同一信号下的其他来源，比较不同报道之间的侧重点。",
+      "guide_back": "阅读完成后，可以回到信号列表继续判断这个主题是否值得追踪，或打开原文查看完整细节。",
+      "cross_validation": "这个来源正在与同一信号下的其他文章交叉验证。重点关注它新增了什么，而不是只看标题是否重复。"
     }
   },
   "settings": {
@@ -335,6 +340,23 @@
         "show_less": "收起",
         "source_distribution": "来源分布",
         "no_source_data": "暂无来源数据"
+      },
+      "empty": {
+        "sample_1_name": "AI Agent 竞争格局",
+        "sample_1_desc": "聚合相同主题下的多篇文章，展示关键变化、来源数量和最近更新时间。",
+        "sample_2_name": "Rust 生态更新",
+        "sample_2_desc": "把发布说明、社区讨论和实践文章合并成一个可追踪的主题流。",
+        "subtitle": "Topic 会把同一方向的文章、来源和每日信号组织在一起。开始分析后，这里会出现可追踪的主题、关键摘要和相关证据。",
+        "sample_badge": "示例",
+        "trending_up": "趋势上升",
+        "detail_title": "Topic Detail 里会展示什么",
+        "detail_1": "主题摘要和为什么重要",
+        "detail_2": "相关信号、文章和证据来源",
+        "detail_3": "关注状态、趋势和更新节奏",
+        "next_steps": "下一步",
+        "step_1": "同步订阅源后，Today 的高信号内容会自动归入 Topic。",
+        "step_2": "在信号卡片中点击「追踪主题」，可以把主题固定到侧边栏。",
+        "step_3": "进入 Topic 后，可以从来源证据回到原文阅读。"
       }
     },
     "rail": {
@@ -362,12 +384,129 @@
       "context_topics": "话题",
       "context_feeds": "订阅",
       "context_default": "Lettura",
-      "topics_list": "话题列表"
+      "topics_list": "话题列表",
+      "today_desc": "Daily Intelligence Reader — 每日判断入口",
+      "topics_desc": "追踪主题、信号和相关来源",
+      "feeds_desc": "管理你的订阅源"
     }
+  },
+  "starred": {
+    "title": "Starred",
+    "subtitle": "收藏、稍后读和长期参考资料。",
+    "export": "导出",
+    "unknown_feed": "未知来源",
+    "sidebar": {
+      "collections": "收藏夹",
+      "all": "全部收藏",
+      "research": "研究素材",
+      "engineering": "工程实践",
+      "product": "产品观察",
+      "tags": "标签"
+    },
+    "header": {
+      "subtitle": "把有长期价值的文章沉淀成可回看的资料库。"
+    },
+    "filter": {
+      "all": "全部",
+      "read_later": "稍后读",
+      "archived": "已归档",
+      "notes": "只看笔记"
+    },
+    "empty": {
+      "title": "暂无收藏",
+      "subtitle": "在阅读文章时点亮星标，内容会出现在这里，并按时间、来源和标签整理。"
+    },
+    "group": {
+      "today": "今天收藏",
+      "today_count": "{{count}} 篇",
+      "earlier": "本周回看",
+      "earlier_sort": "按收藏时间排序"
+    },
+    "load_more": "加载更多",
+    "stats": {
+      "title": "收藏状态",
+      "all": "全部收藏",
+      "sources": "来源"
+    },
+    "suggest": {
+      "title": "建议整理",
+      "create": "创建收藏夹",
+      "has_notes": "有 {{count}} 篇收藏带摘要，可优先整理为研究素材。",
+      "create_button": "创建收藏夹"
+    },
+    "queue": {
+      "title": "阅读队列",
+      "empty": "星标文章后会自动形成阅读队列。"
+    },
+    "collection_input_placeholder": "收藏夹名称...",
+    "collection_created": "收藏夹已创建",
+    "export_success": "导出成功",
+    "organize": {
+      "title": "整理",
+      "collections": "收藏夹",
+      "tags": "标签",
+      "create_collection": "创建收藏夹",
+      "add_tag": "添加标签",
+      "no_collections": "暂无收藏夹",
+      "no_tags": "暂无标签"
+    }
+  },
+  "search": {
+    "unknown_feed": "未知来源",
+    "no_summary": "暂无摘要。",
+    "sidebar": {
+      "subtitle": "跨文章、来源和主题快速定位信息。",
+      "saved": "保存的搜索",
+      "recent": "最近搜索",
+      "no_saved": "暂无保存的搜索",
+      "no_recent": "暂无最近搜索"
+    },
+    "header": {
+      "subtitle": "从每日信号回到原始文章，或把常用查询保存为动态视图。"
+    },
+    "button": "搜索",
+    "placeholder": "Search content in your Lettura",
+    "filter": {
+      "all": "全部",
+      "starred": "已收藏",
+      "high_signal": "高信号",
+      "advanced": "筛选",
+      "all_sources": "所有来源"
+    },
+    "result_count": "{{count}} 个结果 · 按相关度排序",
+    "hint_enter": "按 Enter 或点击搜索开始检索",
+    "hint_type": "输入关键词开始搜索",
+    "source_label": "来源：{{title}}",
+    "empty": {
+      "title": "搜索你的阅读库",
+      "subtitle": "可以按标题、摘要、来源和时间范围查找文章。常用查询会作为左侧的保存搜索呈现。"
+    },
+    "load_more": "加载更多",
+    "insight": {
+      "title": "搜索洞察",
+      "title_text": "先定位，再阅读",
+      "description": "搜索结果会保留来源、时间、收藏状态和摘要命中，方便你快速判断是否值得打开。"
+    },
+    "quick_filter": {
+      "title": "快速过滤",
+      "last_30_days": "最近 30 天",
+      "all_sources": "所有来源",
+      "starred_only": "只看收藏"
+    },
+    "related_topics": "相关 Topic",
+    "related_topics_empty": "暂无相关话题",
+    "save_search": "保存搜索"
   },
   "article": {
     "duplicate": "重复",
     "list_count": "{{count}} 篇",
-    "list_unread_count": "{{count}} 篇未读"
+    "list_unread_count": "{{count}} 篇未读",
+    "actions": {
+      "read_later": "稍后读",
+      "remove_read_later": "移出稍后读"
+    },
+    "view": {
+      "back": "返回"
+    }
   }
 }

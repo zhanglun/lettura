@@ -1,6 +1,10 @@
 import { IconButton, Tooltip } from "@radix-ui/themes";
-import { Eye, EyeOff, Star } from "lucide-react";
-import { ArticleReadStatus, ArticleStarStatus } from "@/typing";
+import { Bookmark, Eye, EyeOff, Star } from "lucide-react";
+import {
+  ArticleReadLaterStatus,
+  ArticleReadStatus,
+  ArticleStarStatus,
+} from "@/typing";
 import React, { useEffect, useState } from "react";
 import { ArticleResItem } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
@@ -15,6 +19,7 @@ export function StarAndRead(props: StarAndReadProps) {
   const { t } = useTranslation();
   const [readStatus, setReadStatus] = useState<number>();
   const [starred, setStarred] = useState<number>();
+  const [readLater, setReadLater] = useState<number>();
 
   function toggleReadStatus() {
     let newStatus: number = 1;
@@ -46,6 +51,18 @@ export function StarAndRead(props: StarAndReadProps) {
     });
   }
 
+  function toggleReadLaterStatus() {
+    const nextStatus =
+      readLater === ArticleReadLaterStatus.SAVED
+        ? ArticleReadLaterStatus.UNSAVED
+        : ArticleReadLaterStatus.SAVED;
+
+    dataAgent.updateArticleReadLaterStatus(article.uuid, nextStatus).then(() => {
+      article.is_read_later = nextStatus;
+      setReadLater(nextStatus);
+    });
+  }
+
   useEffect(() => {
     setReadStatus(article.read_status);
   }, [article.read_status]);
@@ -53,6 +70,10 @@ export function StarAndRead(props: StarAndReadProps) {
   useEffect(() => {
     setStarred(article.starred);
   }, [article.starred]);
+
+  useEffect(() => {
+    setReadLater(article.is_read_later ?? ArticleReadLaterStatus.UNSAVED);
+  }, [article.is_read_later]);
 
   return (
     <div className="flex items-center gap-1">
@@ -88,6 +109,37 @@ export function StarAndRead(props: StarAndReadProps) {
           </IconButton>
         </Tooltip>
       )}
+      <Tooltip
+        content={
+          readLater === ArticleReadLaterStatus.SAVED
+            ? t("article.actions.remove_read_later")
+            : t("article.actions.read_later")
+        }
+      >
+        <IconButton
+          variant="ghost"
+          size="2"
+          color="gray"
+          className={
+            readLater === ArticleReadLaterStatus.SAVED
+              ? "!text-[var(--accent-9)]"
+              : "text-[var(--gray-12)]"
+          }
+          onClick={(e: React.MouseEvent<HTMLElement>) => {
+            e.stopPropagation();
+            toggleReadLaterStatus();
+          }}
+        >
+          <Bookmark
+            size={16}
+            fill={
+              readLater === ArticleReadLaterStatus.SAVED
+                ? "currentColor"
+                : "none"
+            }
+          />
+        </IconButton>
+      </Tooltip>
       {article.read_status === ArticleReadStatus.UNREAD && (
         <Tooltip content={t("Mark as read")}>
           <IconButton

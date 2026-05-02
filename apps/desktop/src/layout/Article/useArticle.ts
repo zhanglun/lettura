@@ -13,10 +13,25 @@ const PAGE_SIZE = 20;
 export interface UseArticleProps {
   feedUuid?: string;
   type?: string;
+  collectionUuid?: string | null;
+  tagUuid?: string | null;
+  isStarred?: number | boolean | null;
+  isArchived?: number | boolean;
+  isReadLater?: number | boolean;
+  hasNotes?: boolean;
 }
 
 export function useArticle(props: UseArticleProps) {
-  const { feedUuid, type } = props;
+  const {
+    feedUuid,
+    type,
+    collectionUuid,
+    tagUuid,
+    isStarred: isStarredOverride,
+    isArchived,
+    isReadLater,
+    hasNotes,
+  } = props;
   const isToday = useMatch(RouteConfig.LOCAL_TODAY);
   const isAll = useMatch(RouteConfig.LOCAL_ALL);
   const isStarred = useMatch(RouteConfig.LOCAL_STARRED);
@@ -31,7 +46,16 @@ export function useArticle(props: UseArticleProps) {
   const query = useMemo(() => {
     const isTodayVal = isToday ? 1 : undefined;
     const isAllVal = isAll ? 1 : undefined;
-    const isStarredVal = isStarred ? 1 : undefined;
+    const isStarredVal =
+      isStarredOverride !== undefined
+        ? isStarredOverride === null
+          ? undefined
+          : isStarredOverride
+            ? 1
+            : 0
+        : isStarred
+          ? 1
+          : undefined;
     return omitBy({
       read_status: isStarred ? undefined : store.currentFilter.id,
       limit: PAGE_SIZE,
@@ -40,6 +64,11 @@ export function useArticle(props: UseArticleProps) {
       is_today: isTodayVal,
       is_all: isAllVal,
       is_starred: isStarredVal,
+      collection_uuid: collectionUuid || undefined,
+      tag_uuid: tagUuid || undefined,
+      is_archived: isArchived !== undefined ? (isArchived ? 1 : 0) : undefined,
+      is_read_later: isReadLater !== undefined ? (isReadLater ? 1 : 0) : undefined,
+      has_notes: hasNotes ? 1 : undefined,
     }, isUndefined);
   }, [
     feedUuid,
@@ -48,6 +77,12 @@ export function useArticle(props: UseArticleProps) {
     isAll,
     isStarred,
     store.currentFilter.id,
+    collectionUuid,
+    tagUuid,
+    isStarredOverride,
+    isArchived,
+    isReadLater,
+    hasNotes,
   ]);
 
   const getKey = useCallback(

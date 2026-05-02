@@ -46,6 +46,8 @@
 
   "Star it": "Star it",
   "Unstar it": "Unstar it",
+  "Read later": "Read later",
+  "Remove from read later": "Remove from read later",
   "Mark as read": "Mark as read",
   "Mark as unread": "Mark as unread",
   "Previous article": "Previous article",
@@ -245,7 +247,10 @@
       "prev": "Previous",
       "next": "Next",
       "content_placeholder": "Article content will be displayed here",
-      "source_of": "Source {{current}}/{{total}}"
+      "source_of": "Source {{current}}/{{total}}",
+      "guide_context": "This source was included in today's signals because it adds key facts, context, or community feedback to this topic. You can switch between sources under the same signal to compare different perspectives.",
+      "guide_back": "After reading, return to the signal list to decide whether this topic is worth tracking, or open the original article for full details.",
+      "cross_validation": "This source is being cross-validated with other articles under the same signal. Focus on what new information it adds, not just whether the headline is a duplicate."
     }
   },
   "settings": {
@@ -313,6 +318,23 @@
         "show_less": "Show less",
         "source_distribution": "Source Distribution",
         "no_source_data": "No source data available"
+      },
+      "empty": {
+        "sample_1_name": "AI Agent Competition",
+        "sample_1_desc": "Aggregate articles under the same topic, showing key changes, source count, and latest updates.",
+        "sample_2_name": "Rust Ecosystem Updates",
+        "sample_2_desc": "Merge release notes, community discussions, and practical articles into a trackable topic stream.",
+        "subtitle": "Topics organize articles, sources, and daily signals in the same direction. After analysis starts, trackable topics, key summaries, and related evidence will appear here.",
+        "sample_badge": "Sample",
+        "trending_up": "Trending up",
+        "detail_title": "What you'll see in Topic Detail",
+        "detail_1": "Topic summary and why it matters",
+        "detail_2": "Related signals, articles, and evidence sources",
+        "detail_3": "Follow status, trends, and update cadence",
+        "next_steps": "Next Steps",
+        "step_1": "After syncing feeds, high-signal content from Today will be automatically categorized into Topics.",
+        "step_2": "Click \"Follow Topic\" on a signal card to pin the topic to the sidebar.",
+        "step_3": "Inside a Topic, you can return to the original article from source evidence."
       }
     },
     "rail": {
@@ -340,12 +362,129 @@
       "context_topics": "Topics",
       "context_feeds": "Feeds",
       "context_default": "Lettura",
-      "topics_list": "Topics"
+      "topics_list": "Topics",
+      "today_desc": "Daily Intelligence Reader — your daily decision entry point",
+      "topics_desc": "Track topics, signals, and related sources",
+      "feeds_desc": "Manage your subscriptions"
     }
+  },
+  "starred": {
+    "title": "Starred",
+    "subtitle": "Bookmark, read later, and long-term reference material.",
+    "export": "Export",
+    "unknown_feed": "Unknown feed",
+    "sidebar": {
+      "collections": "Collections",
+      "all": "All Starred",
+      "research": "Research",
+      "engineering": "Engineering",
+      "product": "Product",
+      "tags": "Tags"
+    },
+    "header": {
+      "subtitle": "Build a reviewable library of articles with lasting value."
+    },
+    "filter": {
+      "all": "All",
+      "read_later": "Read Later",
+      "archived": "Archived",
+      "notes": "With Notes"
+    },
+    "empty": {
+      "title": "No Starred Articles",
+      "subtitle": "Star articles while reading and they'll appear here, organized by time, source, and tags."
+    },
+    "group": {
+      "today": "Starred Today",
+      "today_count": "{{count}} articles",
+      "earlier": "Earlier",
+      "earlier_sort": "Sorted by star date"
+    },
+    "load_more": "Load More",
+    "stats": {
+      "title": "Star Status",
+      "all": "All Starred",
+      "sources": "Sources"
+    },
+    "suggest": {
+      "title": "Suggested Organization",
+      "create": "Create Collection",
+      "has_notes": "{{count}} starred articles have summaries. Consider organizing them as research material.",
+      "create_button": "Create Collection"
+    },
+    "queue": {
+      "title": "Reading Queue",
+      "empty": "Star articles to automatically build a reading queue."
+    },
+    "collection_input_placeholder": "Collection name...",
+    "collection_created": "Collection created",
+    "export_success": "Exported successfully",
+    "organize": {
+      "title": "Organize",
+      "collections": "Collections",
+      "tags": "Tags",
+      "create_collection": "Create collection",
+      "add_tag": "Add tag",
+      "no_collections": "No collections",
+      "no_tags": "No tags"
+    }
+  },
+  "search": {
+    "unknown_feed": "Unknown feed",
+    "no_summary": "No summary available.",
+    "sidebar": {
+      "subtitle": "Quickly find information across articles, sources, and topics.",
+      "saved": "Saved Searches",
+      "recent": "Recent Searches",
+      "no_saved": "No saved searches yet",
+      "no_recent": "No recent searches yet"
+    },
+    "header": {
+      "subtitle": "Trace back from daily signals to original articles, or save frequent queries as dynamic views."
+    },
+    "button": "Search",
+    "placeholder": "Search content in your Lettura",
+    "filter": {
+      "all": "All",
+      "starred": "Starred",
+      "high_signal": "High Signal",
+      "advanced": "Filters",
+      "all_sources": "All Sources"
+    },
+    "result_count": "{{count}} results · Sorted by relevance",
+    "hint_enter": "Press Enter or click Search to start",
+    "hint_type": "Type a keyword to start searching",
+    "source_label": "Source: {{title}}",
+    "empty": {
+      "title": "Search Your Library",
+      "subtitle": "Search by title, summary, source, and time range. Frequent queries appear as saved searches on the left."
+    },
+    "load_more": "Load More",
+    "insight": {
+      "title": "Search Insights",
+      "title_text": "Find First, Read Later",
+      "description": "Search results preserve source, time, star status, and summary hits so you can quickly judge if an article is worth opening."
+    },
+    "quick_filter": {
+      "title": "Quick Filters",
+      "last_30_days": "Last 30 Days",
+      "all_sources": "All Sources",
+      "starred_only": "Starred Only"
+    },
+    "related_topics": "Related Topics",
+    "related_topics_empty": "No topics found",
+    "save_search": "Save search"
   },
   "article": {
     "duplicate": "Duplicate",
     "list_count": "{{count}} articles",
-    "list_unread_count": "{{count}} unread"
+    "list_unread_count": "{{count}} unread",
+    "actions": {
+      "read_later": "Read later",
+      "remove_read_later": "Remove from read later"
+    },
+    "view": {
+      "back": "Back"
+    }
   }
 }
