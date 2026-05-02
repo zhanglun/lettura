@@ -232,7 +232,7 @@ export const List = () => {
           level={level}
           feed={{ ...feed }}
           isActive={isActive}
-          isExpanded={feed.is_expanded}
+          isExpanded={feed.item_type === "folder" ? true : feed.is_expanded}
           toggleFolder={toggleFolder}
           onDrop={onSubscribeItemDrop}
         >

@@ -32,7 +32,6 @@ import { loadFeed } from "@/hooks/useLoadFeed";
 import clsx from "clsx";
 import { useScrollTop } from "@/hooks/useScrollTop";
 import { useShallow } from "zustand/react/shallow";
-import { CollectionMeta } from "./CollectionMeta";
 import { useTranslation } from "react-i18next";
 
 const ChannelList = (): JSX.Element => {
@@ -198,17 +197,13 @@ const ChannelList = (): JSX.Element => {
       <div
         {...scrollTopProps}
         className={clsx(
-          "flex-1 overflow-y-auto pb-2 pl-1 pr-1 scrollbar-gutter",
+          "flex-1 overflow-y-auto px-3 py-3 scrollbar-gutter",
           {
             "border-t": scrollTop > 0,
           },
         )}
         ref={listRef}
       >
-        <CollectionMeta />
-        <h2 className="mb-2 mt-6 px-2 font-semibold tracking-tight">
-          {t("Feeds")}
-        </h2>
         <ContextMenu.Root onOpenChange={handleContextMenuChange}>
           <ContextMenu.Trigger>
             <div>

@@ -90,17 +90,38 @@
 
 @layer components {
   .sidebar-item {
-    @apply relative z-[1] flex items-center gap-2 rounded-md text-sm px-2 h-8 my-[1px] w-full cursor-pointer border-transparent;
-    @apply after:block after:content-[''] after:-z-10 after:absolute after:top-[0] after:left-[0] after:w-full after:h-full after:rounded-md after:opacity-0 after:scale-90 after:transition-all after:duration-300 after:ease-in-out;
-    @apply hover:after:opacity-100 hover:after:scale-100 after:bg-sidebar-hover;
+    position: relative;
+    display: flex;
+    min-height: 2rem;
+    width: 100%;
+    cursor: pointer;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 0.375rem;
+    border: 1px solid transparent;
+    padding: 0.375rem 0.5rem;
+    color: var(--gray-11);
+    transition:
+      background-color 140ms ease,
+      color 140ms ease,
+      border-color 140ms ease;
+  }
+
+  .sidebar-item:hover {
+    background-color: var(--gray-a3);
+    color: var(--gray-12);
   }
 
   .sidebar-item--active {
-    @apply text-accent-foreground after:opacity-100 after:scale-100 after:bg-sidebar-active after:shadow-[0px_0px_0px_1px_rgba(60,64,67,0.00),0px_1.5px_4px_rgba(60,64,67,0.03),0px_3px_10px_rgba(60,64,67,0.1)] border;
+    background-color: var(--accent-a3);
+    border-color: var(--accent-a4);
+    color: var(--accent-11);
+    font-weight: 500;
   }
 
   .sidebar-item--hover:not(.sidebar-item--active) {
-    @apply after:opacity-100 after:scale-100 after:bg-sidebar-hover;
+    background-color: var(--gray-a3);
+    color: var(--gray-12);
   }
 }
 

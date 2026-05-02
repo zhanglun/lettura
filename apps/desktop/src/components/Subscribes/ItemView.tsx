@@ -5,9 +5,9 @@ import { RouteConfig } from "@/config";
 import { FeedResItem } from "@/db";
 import { useBearStore } from "@/stores";
 import { getFeedLogo } from "@/helpers/parseXML";
-import { NiceFolderIcon } from "../NiceFolderIcon";
 import { Avatar } from "@radix-ui/themes";
 import { useShallow } from "zustand/react/shallow";
+import { Rss } from "lucide-react";
 
 export interface CardProps {
   uuid: any;
@@ -44,27 +44,23 @@ export const ItemView: FC<CardProps> = ({
     })),
   );
 
-  const handleToggle = () => {
-    if (feed.item_type === "folder") {
-      toggleFolder(uuid);
-    }
-  };
-
   const { unread = 0, link, logo } = feed;
   const ico = logo || getFeedLogo(link);
 
-  function renderNiceFolder(isActive: Boolean, isExpanded: Boolean) {
-    let folderStatus: string;
-
-    if (isExpanded) {
-      folderStatus = "open";
-    } else if (isActive) {
-      folderStatus = "active";
-    } else {
-      folderStatus = "close";
-    }
-
-    return <NiceFolderIcon status={folderStatus} onClick={handleToggle} />;
+  if (feed.item_type === "folder") {
+    return (
+      <>
+        <div
+          className="mt-3 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.5px] text-[var(--gray-9)]"
+          onContextMenu={() => {
+            store.setFeedContextMenuTarget(feed);
+          }}
+        >
+          <span className="block min-w-0 truncate">{feed.title}</span>
+        </div>
+        {props.children}
+      </>
+    );
   }
 
   return (
@@ -76,7 +72,7 @@ export const ItemView: FC<CardProps> = ({
             store.feedContextMenuStatus &&
             store.feedContextMenuTarget &&
             store.feedContextMenuTarget.uuid === feed.uuid,
-          "pl-5": level === 2,
+          "ml-2 w-[calc(100%-0.5rem)]": level === 2,
         })}
         onContextMenu={() => {
           console.log("content menu");
@@ -93,21 +89,19 @@ export const ItemView: FC<CardProps> = ({
           );
         }}
       >
-        {feed.item_type === "folder" && (
-          <div>{renderNiceFolder(isActive, isExpanded)}</div>
-        )}
         {feed.link && (
           <Avatar
             size="1"
             src={ico}
             alt={feed.title}
             fallback={feed.title.slice(0, 1)}
-            className="w-[18px] h-[18px]"
+            className="w-[18px] h-[18px] rounded-[3px]"
           />
         )}
+        {!feed.link && <Rss size={14} className="shrink-0 text-[var(--accent-9)]" />}
         <span
           className={clsx(
-            "shrink grow basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-sm",
+            "shrink grow basis-[0%] overflow-hidden text-ellipsis whitespace-nowrap text-xs",
           )}
         >
           {feed.title}
@@ -115,7 +109,7 @@ export const ItemView: FC<CardProps> = ({
         {unread > 0 && (
           <span
             className={clsx(
-              "h-4 min-w-[1rem] text-center text-[10px] leading-4",
+              "ml-auto h-4 min-w-[1rem] text-center text-[10px] leading-4 text-[var(--gray-9)] tabular-nums",
             )}
           >
             {unread}

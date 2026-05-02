@@ -9,7 +9,6 @@ import {
   Star,
   Settings,
 } from "lucide-react";
-import { IconButton, Tooltip } from "@radix-ui/themes";
 import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
 import { RouteConfig } from "@/config";
@@ -97,40 +96,36 @@ export const Rail = React.memo(function () {
     }
   };
 
+  const renderItem = (item: RailItem) => {
+    const active = isActive(item);
+
+    return (
+      <button
+        key={item.labelKey}
+        type="button"
+        aria-label={item.labelKey}
+        aria-current={active ? "page" : undefined}
+        className={clsx(
+          "group relative flex h-9 w-9 cursor-pointer items-center justify-center rounded-md border-0 p-0 transition-all duration-150",
+          active
+            ? "bg-[#6366f1] text-white shadow-sm hover:bg-[#6366f1] hover:text-white"
+            : "bg-transparent text-[var(--gray-9)] hover:bg-[var(--gray-a3)] hover:text-[var(--gray-11)]",
+        )}
+        onClick={() => handleClick(item)}
+      >
+        {item.icon}
+        <span className="pointer-events-none absolute left-12 z-[100] hidden whitespace-nowrap rounded bg-[var(--gray-12)] px-2 py-1 text-xs font-normal leading-4 text-white shadow-sm group-hover:block">
+          {item.labelKey}
+        </span>
+      </button>
+    );
+  };
+
   return (
-    <div className="flex flex-col items-center w-[48px] h-full py-2 bg-[var(--gray-1)] border-r border-[var(--gray-4)] select-none shrink-0">
-      <div className="flex flex-col items-center gap-1 flex-1">
-        {items.map((item) => {
-          const active = isActive(item);
-          return (
-            <Tooltip key={item.labelKey} content={item.labelKey} side="right">
-              <IconButton
-                variant="ghost"
-                size="2"
-                className={clsx(
-                  "w-9 h-9 rounded-lg transition-colors",
-                  active
-                    ? "bg-[var(--accent-9)] text-white hover:bg-[var(--accent-10)] hover:text-white"
-                    : "text-[var(--gray-9)] hover:bg-[var(--gray-3)] hover:text-[var(--gray-12)]",
-                )}
-                onClick={() => handleClick(item)}
-              >
-                {item.icon}
-              </IconButton>
-            </Tooltip>
-          );
-        })}
-      </div>
-      <Tooltip content={settingsItem.labelKey} side="right">
-        <IconButton
-          variant="ghost"
-          size="2"
-          className="w-9 h-9 rounded-lg text-[var(--gray-9)] hover:bg-[var(--gray-3)] hover:text-[var(--gray-12)] transition-colors"
-          onClick={() => handleClick(settingsItem)}
-        >
-          {settingsItem.icon}
-        </IconButton>
-      </Tooltip>
+    <div className="flex h-full w-[52px] shrink-0 select-none flex-col items-center gap-1 border-r border-[var(--gray-5)] bg-[var(--gray-3)] py-3">
+      {items.map(renderItem)}
+      <div className="flex-1" />
+      {renderItem(settingsItem)}
     </div>
   );
 });
