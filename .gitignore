@@ -57,3 +57,4 @@ lettura.toml
 dev-dist
 target
 .astro/
+.playwright-mcp/
