@@ -1,0 +1,1 @@
+ALTER TABLE articles ADD COLUMN is_read_later INTEGER NOT NULL DEFAULT 0;

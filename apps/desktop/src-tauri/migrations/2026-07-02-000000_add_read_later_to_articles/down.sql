@@ -1,0 +1,2 @@
+-- SQLite versions used by the app may not support DROP COLUMN reliably.
+-- Leave the additive is_read_later column in place on rollback.

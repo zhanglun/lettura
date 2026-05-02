@@ -1,4 +1,4 @@
-use super::schema::{articles, feed_metas, feeds, folders, topic_follows, topics, topic_articles, user_feedback};
+use super::schema::{article_collections, article_tags, articles, collections, feed_metas, feeds, folders, tags, topic_follows, topics, topic_articles, user_feedback};
 use diesel::sql_types::*;
 use diesel::sqlite::Sqlite;
 use serde::Serialize;
@@ -147,6 +147,18 @@ pub struct Article {
 
   #[diesel(sql_type = Integer)]
   pub starred: i32,
+
+  #[diesel(sql_type = Text)]
+  pub starred_at: String,
+
+  #[diesel(sql_type = Integer)]
+  pub is_archived: i32,
+
+  #[diesel(sql_type = Integer)]
+  pub is_read_later: i32,
+
+  #[diesel(sql_type = Text)]
+  pub notes: String,
 }
 
 #[derive(Debug, Insertable, Clone)]
@@ -276,4 +288,91 @@ pub struct TopicFollow {
 #[diesel(table_name = topic_follows)]
 pub struct NewTopicFollow {
   pub topic_id: i32,
+}
+
+#[derive(Debug, Clone, Queryable, Serialize, QueryableByName)]
+pub struct Collection {
+  #[diesel(sql_type = Integer)]
+  pub id: i32,
+  #[diesel(sql_type = Text)]
+  pub uuid: String,
+  #[diesel(sql_type = Text)]
+  pub name: String,
+  #[diesel(sql_type = Text)]
+  pub description: String,
+  #[diesel(sql_type = Text)]
+  pub icon: String,
+  #[diesel(sql_type = Integer)]
+  pub sort_order: i32,
+  #[diesel(sql_type = Text)]
+  pub create_date: String,
+  #[diesel(sql_type = Text)]
+  pub update_date: String,
+}
+
+#[derive(Debug, Insertable, Clone)]
+#[diesel(table_name = collections)]
+pub struct NewCollection {
+  pub uuid: String,
+  pub name: String,
+  pub description: String,
+  pub icon: String,
+  pub sort_order: i32,
+}
+
+#[derive(Debug, Clone, Queryable, Serialize, QueryableByName)]
+pub struct ArticleCollection {
+  #[diesel(sql_type = Integer)]
+  pub id: i32,
+  #[diesel(sql_type = Integer)]
+  pub article_id: i32,
+  #[diesel(sql_type = Integer)]
+  pub collection_id: i32,
+  #[diesel(sql_type = Text)]
+  pub create_date: String,
+}
+
+#[derive(Debug, Insertable, Clone)]
+#[diesel(table_name = article_collections)]
+pub struct NewArticleCollection {
+  pub article_id: i32,
+  pub collection_id: i32,
+}
+
+#[derive(Debug, Clone, Queryable, Serialize, QueryableByName)]
+pub struct Tag {
+  #[diesel(sql_type = Integer)]
+  pub id: i32,
+  #[diesel(sql_type = Text)]
+  pub uuid: String,
+  #[diesel(sql_type = Text)]
+  pub name: String,
+  #[diesel(sql_type = Text)]
+  pub create_date: String,
+}
+
+#[derive(Debug, Insertable, Clone)]
+#[diesel(table_name = tags)]
+pub struct NewTag {
+  pub uuid: String,
+  pub name: String,
+}
+
+#[derive(Debug, Clone, Queryable, Serialize, QueryableByName)]
+pub struct ArticleTag {
+  #[diesel(sql_type = Integer)]
+  pub id: i32,
+  #[diesel(sql_type = Integer)]
+  pub article_id: i32,
+  #[diesel(sql_type = Integer)]
+  pub tag_id: i32,
+  #[diesel(sql_type = Text)]
+  pub create_date: String,
+}
+
+#[derive(Debug, Insertable, Clone)]
+#[diesel(table_name = article_tags)]
+pub struct NewArticleTag {
+  pub article_id: i32,
+  pub tag_id: i32,
 }

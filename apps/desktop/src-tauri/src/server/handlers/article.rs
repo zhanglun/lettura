@@ -21,6 +21,11 @@ pub struct StarParam {
   starred: i32,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ReadLaterParam {
+  is_read_later: i32,
+}
+
 #[post("/api/articles/{uuid}/read")]
 pub async fn handle_update_article_read_status(
   uuid: web::Path<String>,
@@ -39,6 +44,18 @@ pub async fn handle_update_article_star_status(
 ) -> Result<impl Responder> {
   let body = body.into_inner();
   let res = feed::article::Article::update_article_star_status(uuid.to_string(), body.starred);
+
+  Ok(web::Json(res))
+}
+
+#[post("/api/articles/{uuid}/read-later")]
+pub async fn handle_update_article_read_later_status(
+  uuid: web::Path<String>,
+  body: web::Json<ReadLaterParam>,
+) -> Result<impl Responder> {
+  let body = body.into_inner();
+  let res =
+    feed::article::Article::update_article_read_later_status(uuid.to_string(), body.is_read_later);
 
   Ok(web::Json(res))
 }
@@ -114,6 +131,11 @@ pub async fn handle_articles(
     is_today: query.is_today.clone(),
     is_starred: query.is_starred.clone(),
     read_status: query.read_status.clone(),
+    collection_uuid: query.collection_uuid.clone(),
+    tag_uuid: query.tag_uuid.clone(),
+    is_archived: query.is_archived.clone(),
+    is_read_later: query.is_read_later.clone(),
+    has_notes: query.has_notes.clone(),
     cursor: query.cursor.clone(),
     limit: query.limit.clone(),
   };
@@ -133,5 +155,6 @@ pub fn config(cfg: &mut web::ServiceConfig) {
     .service(handle_mark_as_read)
     .service(handle_update_article_read_status)
     .service(handle_update_article_star_status)
+    .service(handle_update_article_read_later_status)
     .service(handle_articles);
 }

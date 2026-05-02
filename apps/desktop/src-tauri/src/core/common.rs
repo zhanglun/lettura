@@ -48,6 +48,9 @@ pub struct ArticleQueryItem {
 
   #[diesel(sql_type = Integer)]
   pub starred: i32,
+
+  #[diesel(sql_type = Text)]
+  pub starred_at: String,
 }
 pub struct Common {}
 pub struct GlobalSearchQuery {
@@ -57,6 +60,8 @@ pub struct GlobalSearchQuery {
   pub start_date: Option<String>,
   pub end_date: Option<String>,
   pub feed_uuid: Option<String>,
+  pub is_starred: Option<i32>,
+  pub min_relevance: Option<f32>,
 }
 
 pub struct StaredQueryItem {}
@@ -94,6 +99,16 @@ impl Common {
       params.push(end.clone());
     }
 
+    if let Some(is_starred) = &search.is_starred {
+      where_conditions.push("A.starred = ?".to_string());
+      params.push(is_starred.to_string());
+    }
+
+    if let Some(min_relevance) = &search.min_relevance {
+      where_conditions.push("EXISTS (SELECT 1 FROM article_ai_analysis AAA WHERE AAA.article_id = A.id AND AAA.relevance_score >= ?)".to_string());
+      params.push(min_relevance.to_string());
+    }
+
     let where_clause = where_conditions.join(" AND ");
 
     query_boxed = query_boxed.sql(format!(
@@ -113,7 +128,8 @@ impl Common {
           A.create_date,
           A.update_date,
           A.read_status,
-          A.starred
+          A.starred,
+          A.starred_at
         FROM
           articles AS A
         LEFT JOIN feeds as F

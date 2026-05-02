@@ -111,6 +111,8 @@ pub struct SearchRequest {
   pub start_date: Option<String>,
   pub end_date: Option<String>,
   pub feed_uuid: Option<String>,
+  pub is_starred: Option<i32>,
+  pub min_relevance: Option<f32>,
 }
 
 #[get("/api/search")]
@@ -122,6 +124,8 @@ pub async fn handle_search(search: web::Query<SearchRequest>) -> Result<impl Res
     start_date: search.start_date.clone(),
     end_date: search.end_date.clone(),
     feed_uuid: search.feed_uuid.clone(),
+    is_starred: search.is_starred.clone(),
+    min_relevance: search.min_relevance.clone(),
   });
 
   Ok(web::Json(result))

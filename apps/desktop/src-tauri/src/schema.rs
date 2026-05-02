@@ -38,6 +38,10 @@ diesel::table! {
         read_status -> Integer,
         media_object -> Nullable<Text>,
         starred -> Integer,
+        starred_at -> Text,
+        is_archived -> Integer,
+        is_read_later -> Integer,
+        notes -> Text,
     }
 }
 
@@ -165,14 +169,63 @@ diesel::table! {
     }
 }
 
+diesel::table! {
+    collections (id) {
+        id -> Integer,
+        uuid -> Text,
+        name -> Text,
+        description -> Text,
+        icon -> Text,
+        sort_order -> Integer,
+        create_date -> Timestamp,
+        update_date -> Timestamp,
+    }
+}
+
+diesel::table! {
+    article_collections (id) {
+        id -> Integer,
+        article_id -> Integer,
+        collection_id -> Integer,
+        create_date -> Timestamp,
+    }
+}
+
+diesel::table! {
+    tags (id) {
+        id -> Integer,
+        uuid -> Text,
+        name -> Text,
+        create_date -> Timestamp,
+    }
+}
+
+diesel::table! {
+    article_tags (id) {
+        id -> Integer,
+        article_id -> Integer,
+        tag_id -> Integer,
+        create_date -> Timestamp,
+    }
+}
+
+diesel::joinable!(article_collections -> articles (article_id));
+diesel::joinable!(article_collections -> collections (collection_id));
+diesel::joinable!(article_tags -> articles (article_id));
+diesel::joinable!(article_tags -> tags (tag_id));
+
 diesel::allow_tables_to_appear_in_same_query!(
   article_ai_analysis,
+  article_collections,
+  article_tags,
   articles,
+  collections,
   feed_metas,
   feeds,
   folders,
   pipeline_runs,
   sources,
+  tags,
   topic_follows,
   topics,
   topic_articles,
