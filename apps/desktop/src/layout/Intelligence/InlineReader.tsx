@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import { ChevronLeft, ChevronRight, ExternalLink, Star } from "lucide-react";
@@ -11,7 +12,7 @@ interface InlineReaderProps {
   onNavigate: (index: number) => void;
 }
 
-function getReadingParagraphs(source: SignalSource) {
+function getReadingParagraphs(source: SignalSource, t: (key: string) => string) {
   const excerpt = source.excerpt?.trim();
   if (!excerpt) {
     return [];
@@ -28,8 +29,8 @@ function getReadingParagraphs(source: SignalSource) {
 
   return [
     excerpt,
-    "这篇来源被纳入今日信号，是因为它补充了该主题下的关键事实、上下文或社区反馈。你可以继续切换同一信号下的其他来源，比较不同报道之间的侧重点。",
-    "阅读完成后，可以回到信号列表继续判断这个主题是否值得追踪，或打开原文查看完整细节。",
+    t("today.inline_reader.guide_context"),
+    t("today.inline_reader.guide_back"),
   ];
 }
 
@@ -52,10 +53,11 @@ export function InlineReader({
   onNavigate,
 }: InlineReaderProps) {
   const { t } = useTranslation();
+  const [localStarred, setLocalStarred] = useState(false);
 
   const canGoPrev = currentIndex > 0;
   const canGoNext = currentIndex < sources.length - 1;
-  const paragraphs = getReadingParagraphs(source);
+  const paragraphs = getReadingParagraphs(source, t);
   const sourceDate = formatSourceDate(source.pub_date);
 
   return (
@@ -86,8 +88,20 @@ export function InlineReader({
           <ExternalLink size={14} />
         </a>
 
-        <button className="p-1 rounded text-[var(--gray-9)] hover:text-[var(--gray-12)] hover:bg-[var(--gray-3)] transition-colors">
-          <Star size={14} />
+        <button
+          onClick={() => {
+            if (source.article_uuid) {
+              const newStatus = !localStarred ? 1 : 0;
+              setLocalStarred(!localStarred);
+              import("@/helpers/dataAgent").then(({ updateArticleStarStatus }) => {
+                updateArticleStarStatus(source.article_uuid, newStatus);
+              });
+            }
+          }}
+          className="p-1 rounded transition-colors"
+          style={{ color: localStarred ? "var(--accent-9)" : "var(--gray-9)" }}
+        >
+          <Star size={14} fill={localStarred ? "currentColor" : "none"} />
         </button>
       </div>
 
@@ -114,7 +128,7 @@ export function InlineReader({
               <p key={`${source.article_uuid}-${index}`}>{paragraph}</p>
             ))}
             <blockquote className="border-l-[3px] border-[var(--accent-8)] bg-[var(--accent-a2)] py-3 pl-4 pr-3 text-[13px] italic leading-7 text-[var(--gray-11)]">
-              这个来源正在与同一信号下的其他文章交叉验证。重点关注它新增了什么，而不是只看标题是否重复。
+              {t("today.inline_reader.cross_validation")}
             </blockquote>
           </div>
         )}

@@ -108,7 +108,7 @@ export const Rail = React.memo(function () {
         className={clsx(
           "group relative flex h-9 w-9 cursor-pointer items-center justify-center rounded-md border-0 p-0 transition-all duration-150",
           active
-            ? "bg-[#6366f1] text-white shadow-sm hover:bg-[#6366f1] hover:text-white"
+            ? "bg-[var(--accent-9)] text-white shadow-sm hover:bg-[var(--accent-10)] hover:text-white"
             : "bg-transparent text-[var(--gray-9)] hover:bg-[var(--gray-a3)] hover:text-[var(--gray-11)]",
         )}
         onClick={() => handleClick(item)}

@@ -105,10 +105,6 @@ export const ArticleCol = React.memo(
           const scrollTop =
             (listRef?.current?.innerRef.current?.scrollTop || 0) + offset;
 
-          console.log(
-            "🚀 ~ file: index.tsx:324 ~ ArticleContainer ~ scrollTop:",
-            scrollTop,
-          );
           listRef?.current?.innerRef.current?.scrollTo(0, scrollTop);
         }
       }
@@ -154,7 +150,7 @@ export const ArticleCol = React.memo(
         }
 
         for (let i = 0; i < articles.length; i++) {
-          if (articles[i].uuid === uuid && i === articles.length) {
+          if (articles[i].uuid === uuid && i === articles.length - 1) {
             return [true];
           }
 
@@ -183,18 +179,11 @@ export const ArticleCol = React.memo(
       const goNextRef = useRef<(() => void) | null>(null);
 
       goPrevRef.current = throttle(() => {
-        console.warn("goPrev");
         goPreviousArticle();
       }, 300);
 
       goNextRef.current = throttle(() => {
-        console.warn("goNext");
-        const [shouldLoad] = goNextArticle();
-        console.log("%c Line:111 🍏 shouldLoad", "color:#42b983", shouldLoad);
-
-        if (shouldLoad) {
-          // getList({ cursor: store.cursor + 1 });
-        }
+        goNextArticle();
       }, 300);
 
       useEffect(() => {

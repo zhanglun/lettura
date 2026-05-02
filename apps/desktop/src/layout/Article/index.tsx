@@ -139,7 +139,6 @@ export const ArticleContainer = () => {
         afterConfirm={() => {}}
         afterCancel={() => {
           store.setArticle(null);
-          console.log("store.article", store.article);
         }}
       />
     </div>

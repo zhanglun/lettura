@@ -38,7 +38,7 @@ export function DailyStatus({ overview, loading, progress }: DailyStatusProps) {
           </div>
           <div className="flex min-w-0 justify-between gap-3 text-xs">
             <span className="min-w-0 break-words text-[var(--gray-9)]">{t("today.right_panel.daily_status.analyzed")}</span>
-            <span className="shrink-0 whitespace-nowrap text-[var(--gray-12)] font-medium">{overview.article_count} {t("today.right_panel.daily_status.articles_unit")}</span>
+            <span className="shrink-0 whitespace-nowrap text-[var(--gray-12)] font-medium">{overview.signal_count} {t("today.right_panel.daily_status.signals_unit")}</span>
           </div>
           <div className="flex min-w-0 justify-between gap-3 text-xs">
             <span className="min-w-0 break-words text-[var(--gray-9)]">{t("today.right_panel.daily_status.high_signal")}</span>

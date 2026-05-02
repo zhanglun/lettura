@@ -80,15 +80,15 @@ export const Sidebar = React.memo(function ({
   const headerCopy = {
     today: {
       title: t("layout.sidebar.brand"),
-      desc: "Daily Intelligence Reader — 每日判断入口",
+      desc: t("layout.sidebar.today_desc"),
     },
     topics: {
       title: t(`layout.sidebar.context_${context}`),
-      desc: "追踪主题、信号和相关来源",
+      desc: t("layout.sidebar.topics_desc"),
     },
     feeds: {
       title: t(`layout.sidebar.context_${context}`),
-      desc: "管理你的订阅源",
+      desc: t("layout.sidebar.feeds_desc"),
     },
     default: {
       title: t(`layout.sidebar.context_${context}`),

@@ -9,7 +9,7 @@ import { StarAndRead } from "@/layout/Article/StarAndRead";
 import { IconButton } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
 import { ArticleResItem } from "@/db";
-import { ChevronLeft, MoreHorizontal, X } from "lucide-react";
+import { ChevronLeft, X } from "lucide-react";
 import { useBearStore } from "@/stores";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -92,18 +92,10 @@ export function View(props: ArticleViewProps) {
                   className="inline-flex h-8 items-center gap-1 rounded-md px-2 text-[11px] text-[var(--gray-10)] transition hover:bg-[var(--gray-a3)] hover:text-[var(--gray-12)]"
                 >
                   <ChevronLeft size={14} />
-                  返回
+                  {t("article.view.back")}
                 </button>
                 <div className="flex-1" />
                 {props.article && <StarAndRead article={props.article} />}
-                <IconButton
-                  size="2"
-                  variant="ghost"
-                  color="gray"
-                  className="text-[var(--gray-11)]"
-                >
-                  <MoreHorizontal size={16} />
-                </IconButton>
                 {props.closable && (
                   <IconButton
                     size="2"

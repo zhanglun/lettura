@@ -59,6 +59,10 @@ export function SignalCard({ signal, isActive, isDimmed, onInlineRead, activeRea
   const [isSubmitting, setIsSubmitting] = useState(false);
   const openedArticlesRef = useRef<Set<number>>(new Set());
 
+  useEffect(() => {
+    openedArticlesRef.current.clear();
+  }, [signal.id]);
+
   const store = useBearStore(
     useShallow((state) => ({
       expandedSignalId: state.expandedSignalId,
