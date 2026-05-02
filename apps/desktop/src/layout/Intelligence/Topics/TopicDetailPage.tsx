@@ -43,15 +43,17 @@ export function TopicDetailPage() {
   useEffect(() => {
     if (topicId != null) {
       store.fetchTopicDetail(topicId);
+    } else if (uuid) {
+      store.fetchTopicDetail(uuid);
     }
     return () => {
       store.clearSelectedTopic();
     };
-  }, [topicId]);
+  }, [topicId, uuid]);
 
   const topic = store.selectedTopic;
 
-  if (!topicId) {
+  if (!uuid) {
     return (
       <div className="flex flex-col items-center justify-center h-full bg-canvas text-[var(--gray-9)]">
         <Layers size={48} className="mb-4 text-[var(--gray-8)]" />
@@ -139,7 +141,7 @@ export function TopicDetailPage() {
               <div className="flex items-center gap-1.5 mb-2">
                 <Sparkles size={14} className="text-[var(--accent-9)]" />
                 <span className="text-xs font-semibold text-[var(--gray-12)]">
-                  {t("topic_summary")}
+                  {t("layout.topics.detail.topic_summary")}
                 </span>
               </div>
               <p className="text-xs text-[var(--gray-11)] leading-relaxed">

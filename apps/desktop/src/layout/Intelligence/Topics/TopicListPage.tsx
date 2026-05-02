@@ -9,17 +9,18 @@ import { cn } from "@/helpers/cn";
 import { TopicCard } from "./TopicCard";
 
 function TopicEmptyPreview({ title }: { title: string }) {
+  const { t } = useTranslation();
   const sampleTopics = [
     {
-      name: "AI Agent 竞争格局",
-      desc: "聚合相同主题下的多篇文章，展示关键变化、来源数量和最近更新时间。",
+      name: t("layout.topics.empty.sample_1_name"),
+      desc: t("layout.topics.empty.sample_1_desc"),
       color: "var(--accent-9)",
       articles: 14,
       sources: 6,
     },
     {
-      name: "Rust 生态更新",
-      desc: "把发布说明、社区讨论和实践文章合并成一个可追踪的主题流。",
+      name: t("layout.topics.empty.sample_2_name"),
+      desc: t("layout.topics.empty.sample_2_desc"),
       color: "var(--green-9)",
       articles: 8,
       sources: 4,
@@ -34,7 +35,7 @@ function TopicEmptyPreview({ title }: { title: string }) {
             {title}
           </h1>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--gray-10)]">
-            Topic 会把同一方向的文章、来源和每日信号组织在一起。开始分析后，这里会出现可追踪的主题、关键摘要和相关证据。
+            {t("layout.topics.empty.subtitle")}
           </p>
         </div>
 
@@ -56,7 +57,7 @@ function TopicEmptyPreview({ title }: { title: string }) {
                     </div>
                   </div>
                   <span className="rounded-full bg-[var(--accent-a3)] px-2 py-0.5 text-[10px] font-medium text-[var(--accent-11)]">
-                    示例
+                    {t("layout.topics.empty.sample_badge")}
                   </span>
                 </div>
                 <p className="mb-3 text-xs leading-5 text-[var(--gray-11)]">
@@ -73,7 +74,7 @@ function TopicEmptyPreview({ title }: { title: string }) {
                   </span>
                   <span className="inline-flex items-center gap-1">
                     <TrendingUp size={13} />
-                    趋势上升
+                    {t("layout.topics.empty.trending_up")}
                   </span>
                 </div>
               </div>
@@ -82,17 +83,17 @@ function TopicEmptyPreview({ title }: { title: string }) {
             <div className="rounded-lg border border-[var(--gray-5)] bg-[var(--gray-a2)] p-4">
               <div className="mb-2 flex items-center gap-2 text-xs font-medium text-[var(--accent-11)]">
                 <Sparkles size={14} />
-                Topic Detail 里会展示什么
+                {t("layout.topics.empty.detail_title")}
               </div>
               <div className="grid gap-2 text-xs leading-5 text-[var(--gray-11)] sm:grid-cols-3">
                 <div className="rounded-md bg-[var(--color-background)] p-3">
-                  主题摘要和为什么重要
+                  {t("layout.topics.empty.detail_1")}
                 </div>
                 <div className="rounded-md bg-[var(--color-background)] p-3">
-                  相关信号、文章和证据来源
+                  {t("layout.topics.empty.detail_2")}
                 </div>
                 <div className="rounded-md bg-[var(--color-background)] p-3">
-                  关注状态、趋势和更新节奏
+                  {t("layout.topics.empty.detail_3")}
                 </div>
               </div>
             </div>
@@ -100,7 +101,18 @@ function TopicEmptyPreview({ title }: { title: string }) {
 
           <aside className="rounded-lg border border-[var(--gray-5)] bg-[var(--gray-2)] p-4">
             <div className="mb-3 text-[10px] font-semibold uppercase tracking-wide text-[var(--gray-10)]">
-              下一步
+              {t("layout.topics.empty.next_steps")}
+            </div>
+            <div className="space-y-3 text-xs leading-5 text-[var(--gray-11)]">
+              <div className="rounded-md bg-[var(--color-background)] p-3">
+                {t("layout.topics.empty.step_1")}
+              </div>
+              <div className="rounded-md bg-[var(--color-background)] p-3">
+                {t("layout.topics.empty.step_2")}
+              </div>
+              <div className="rounded-md bg-[var(--color-background)] p-3">
+                {t("layout.topics.empty.step_3")}
+              </div>
             </div>
             <div className="space-y-3 text-xs leading-5 text-[var(--gray-11)]">
               <div className="rounded-md bg-[var(--color-background)] p-3">
@@ -145,8 +157,8 @@ export const TopicListPage = React.memo(function () {
   }, [store.topics, store.filterMode]);
 
   useEffect(() => {
-    store.fetchTopics("active", "last_updated");
-  }, []);
+    store.fetchTopics("active", store.sortMode || "last_updated");
+  }, [store.sortMode]);
 
   if (store.loading) {
     return (

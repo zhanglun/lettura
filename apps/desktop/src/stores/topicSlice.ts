@@ -59,7 +59,7 @@ export interface TopicSlice {
   followingTopicIds: Set<number>;
 
   fetchTopics: (status?: string, sort?: string) => Promise<void>;
-  fetchTopicDetail: (topicId: number) => Promise<void>;
+  fetchTopicDetail: (topicId: number | string) => Promise<void>;
   clearSelectedTopic: () => void;
   setSortMode: (mode: "relevance" | "recent" | "article_count") => void;
   setFilterMode: (mode: "all" | "following") => void;
