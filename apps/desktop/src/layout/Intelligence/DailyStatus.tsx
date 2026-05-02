@@ -6,16 +6,17 @@ import type { TodayOverview } from "@/stores/createTodaySlice";
 interface DailyStatusProps {
   overview: TodayOverview | null;
   loading: boolean;
+  progress?: number;
 }
 
-export function DailyStatus({ overview, loading }: DailyStatusProps) {
+export function DailyStatus({ overview, loading, progress }: DailyStatusProps) {
   const { t } = useTranslation();
 
   return (
-    <div className="p-4 border-t border-[var(--gray-4)]">
+    <div className="min-w-0 p-4 border-t border-[var(--gray-4)]">
       <Flex align="center" gap="2" mb="3">
         <Activity size={16} className="text-[var(--gray-9)]" />
-        <Text size="2" weight="medium" className="text-[var(--gray-12)]">
+        <Text size="2" weight="medium" className="min-w-0 break-words text-[var(--gray-12)]">
           {t("today.right_panel.daily_status.title")}
         </Text>
       </Flex>
@@ -23,35 +24,34 @@ export function DailyStatus({ overview, loading }: DailyStatusProps) {
       {loading && (
         <Flex align="center" gap="2">
           <Loader2 size={14} className="animate-spin text-[var(--gray-9)]" />
-          <Text size="1" className="text-[var(--gray-9)]">
+          <Text size="1" className="min-w-0 break-words text-[var(--gray-9)]">
             {t("today.right_panel.daily_status.loading")}
           </Text>
         </Flex>
       )}
 
       {!loading && overview && (
-        <div className="flex gap-3">
-          <div className="flex flex-col items-center flex-1 rounded-md bg-[var(--gray-2)] px-2 py-2">
-            <Text size="4" weight="bold" className="text-[var(--accent-9)]">
-              {overview.signal_count}
-            </Text>
-            <Text size="1" className="text-[var(--gray-9)]">
-              {t("today.right_panel.daily_status.signals")}
-            </Text>
+        <div className="flex min-w-0 flex-col gap-2">
+          <div className="flex min-w-0 justify-between gap-3 text-xs">
+            <span className="min-w-0 break-words text-[var(--gray-9)]">{t("today.right_panel.daily_status.synced")}</span>
+            <span className="shrink-0 whitespace-nowrap text-[var(--gray-12)] font-medium">{overview.article_count} {t("today.right_panel.daily_status.articles_unit")}</span>
           </div>
-          <div className="flex flex-col items-center flex-1 rounded-md bg-[var(--gray-2)] px-2 py-2">
-            <Text size="4" weight="bold" className="text-[var(--accent-9)]">
-              {overview.article_count}
-            </Text>
-            <Text size="1" className="text-[var(--gray-9)]">
-              {t("today.right_panel.daily_status.articles")}
-            </Text>
+          <div className="flex min-w-0 justify-between gap-3 text-xs">
+            <span className="min-w-0 break-words text-[var(--gray-9)]">{t("today.right_panel.daily_status.analyzed")}</span>
+            <span className="shrink-0 whitespace-nowrap text-[var(--gray-12)] font-medium">{overview.article_count} {t("today.right_panel.daily_status.articles_unit")}</span>
+          </div>
+          <div className="flex min-w-0 justify-between gap-3 text-xs">
+            <span className="min-w-0 break-words text-[var(--gray-9)]">{t("today.right_panel.daily_status.high_signal")}</span>
+            <span className="shrink-0 whitespace-nowrap text-[var(--accent-9)] font-semibold">{overview.signal_count} {t("today.right_panel.daily_status.signals_unit")}</span>
+          </div>
+          <div className="h-1 bg-[var(--gray-3)] rounded-full overflow-hidden mt-1">
+            <div className="h-full bg-[var(--accent-9)] rounded-full transition-all" style={{ width: `${Math.round((progress ?? 1) * 100)}%` }} />
           </div>
         </div>
       )}
 
       {!loading && !overview && (
-        <Text size="1" className="text-[var(--gray-9)]">
+        <Text size="1" className="min-w-0 break-words text-[var(--gray-9)]">
           {t("today.right_panel.daily_status.no_data")}
         </Text>
       )}

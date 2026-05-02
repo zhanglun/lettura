@@ -2,30 +2,56 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Text, Flex } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
+import { formatDistanceToNow, parseISO } from "date-fns";
 import { Signal } from "@/stores/createTodaySlice";
 import { RouteConfig } from "@/config";
 import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
-import { FileText, Lightbulb, ChevronDown, ChevronUp, Layers } from "lucide-react";
+import { ChevronDown, ChevronUp, Layers } from "lucide-react";
 import { SignalSourceList } from "./SignalSourceList";
 
-function getSignalLevel(score: number): { label: string; color: string; dotColor: string } {
-  if (score >= 0.8) {
-    return { label: "High", color: "text-[var(--accent-9)]", dotColor: "bg-[var(--accent-9)]" };
+type SignalLevel = "high" | "medium" | "low";
+
+function getSignalLevel(score: number): SignalLevel {
+  if (score >= 0.8) return "high";
+  if (score >= 0.5) return "medium";
+  return "low";
+}
+
+const BAR_CONFIGS = [
+  { height: 8 },
+  { height: 12 },
+  { height: 16 },
+];
+
+const TOPIC_COLORS = [
+  { bg: "bg-[var(--accent-3)]", text: "text-[var(--accent-9)]" },
+  { bg: "bg-[#f0fdf4]", text: "text-[#16a34a]" },
+  { bg: "bg-[#fffbeb]", text: "text-[#d97706]" },
+  { bg: "bg-[#eff6ff]", text: "text-[#2563eb]" },
+];
+
+function hashString(str: string): number {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = ((hash << 5) - hash + str.charCodeAt(i)) | 0;
   }
-  if (score >= 0.5) {
-    return { label: "Medium", color: "text-[var(--amber-9)]", dotColor: "bg-[var(--amber-9)]" };
-  }
-  return { label: "Low", color: "text-[var(--gray-9)]", dotColor: "bg-[var(--gray-9)]" };
+  return Math.abs(hash);
+}
+
+function getTopicColor(topicTitle: string) {
+  return TOPIC_COLORS[hashString(topicTitle) % TOPIC_COLORS.length];
 }
 
 interface SignalCardProps {
   signal: Signal;
   isActive?: boolean;
+  isDimmed?: boolean;
   onInlineRead?: (articleUuid: string, feedUuid: string, articleId: number) => void;
+  activeReadingSourceIndex?: number;
 }
 
-export function SignalCard({ signal, isActive, onInlineRead }: SignalCardProps) {
+export function SignalCard({ signal, isActive, isDimmed, onInlineRead, activeReadingSourceIndex }: SignalCardProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [wimExpanded, setWimExpanded] = useState(false);
@@ -46,17 +72,26 @@ export function SignalCard({ signal, isActive, onInlineRead }: SignalCardProps) 
     })),
   );
 
-  const isExpanded = store.expandedSignalId === signal.id;
+  const isExpanded = isActive || store.expandedSignalId === signal.id;
   const detail = store.signalDetails[signal.id];
   const sources = detail?.all_sources ?? signal.sources;
   const currentFeedback = store.feedbackMap[signal.id] ?? null;
 
   const level = getSignalLevel(signal.relevance_score);
+  const filledBars = level === "high" ? 3 : level === "medium" ? 2 : 1;
+  const isHighConfidence = level === "high";
+  const percent = Math.round(signal.relevance_score * 100);
 
   const hasWim =
     signal.why_it_matters &&
     signal.why_it_matters !== signal.summary &&
     signal.why_it_matters.trim().length > 0;
+
+  const uniqueFeedCount = new Set(signal.sources.map((s) => s.feed_uuid)).size;
+
+  const timeAgo = formatDistanceToNow(parseISO(signal.created_at), { addSuffix: true });
+
+  const topicColor = signal.topic_title ? getTopicColor(signal.topic_title) : null;
 
   const handleToggleExpand = () => {
     store.toggleSourceExpand(signal.id);
@@ -107,70 +142,71 @@ export function SignalCard({ signal, isActive, onInlineRead }: SignalCardProps) 
     <div
       className={`group rounded-lg border bg-[var(--color-background)] p-4 transition-all hover:shadow-sm cursor-default ${
         isActive
-          ? "border-[var(--accent-8)] shadow-sm ring-1 ring-[var(--accent-3)]"
+          ? "border-2 border-[var(--accent-9)] shadow-sm"
           : "border-[var(--gray-4)] hover:border-[var(--gray-7)]"
       }`}
     >
       <Flex direction="column" gap="2">
+        <Flex align="center" gap="2">
+          <span className="inline-flex items-end gap-[2px]">
+            {BAR_CONFIGS.map((bar, i) => (
+              <span
+                key={i}
+                className={`inline-block rounded-[1px] ${
+                  i < filledBars ? "bg-[var(--accent-9)]" : "bg-[var(--gray-4)]"
+                }`}
+                style={{ width: 3, height: bar.height }}
+              />
+            ))}
+          </span>
+
+          {signal.topic_id && signal.topic_title && (
+            <Link
+              to={RouteConfig.LOCAL_TOPICS}
+              className={`inline-flex items-center gap-1 text-[11px] font-medium rounded-full px-2 py-0.5 w-fit transition-colors ${topicColor?.bg} ${topicColor?.text}`}
+            >
+              <Layers size={10} />
+              {signal.topic_title}
+            </Link>
+          )}
+
+          <span className="ml-auto text-[11px] text-[var(--gray-8)]">
+            {timeAgo} · {signal.source_count} {t("today.signal_card.articles")} · {uniqueFeedCount} {t("today.signal_card.sources")}
+          </span>
+        </Flex>
+
         <Text
           size="4"
           weight="medium"
           className="text-[var(--gray-12)] leading-snug cursor-pointer hover:text-[var(--accent-9)] transition-colors"
+          style={{ fontSize: 15, fontWeight: 600 }}
           onClick={handleToggleExpand}
         >
           {signal.title}
         </Text>
 
-        {signal.topic_id && signal.topic_title && (
-          <Link
-            to={RouteConfig.LOCAL_TOPICS}
-            className="inline-flex items-center gap-1 text-xs text-[var(--accent-9)] hover:text-[var(--accent-10)] bg-[var(--accent-3)] rounded px-1.5 py-0.5 w-fit transition-colors"
+        {!isDimmed && (
+          <Text
+            size="2"
+            className="text-[var(--gray-11)] leading-[1.6]"
+            style={{ fontSize: 13 }}
           >
-            <Layers size={12} />
-            {signal.topic_title}
-          </Link>
+            {signal.summary}
+          </Text>
         )}
 
-        <Flex align="center" gap="2" mt="1">
-          <Flex align="center" gap="1.5">
-            <span className={`inline-block w-1.5 h-1.5 rounded-full ${level.dotColor}`} />
-            <Text size="1" className={level.color}>
-              {t(`today.signal_card.level.${level.label.toLowerCase()}`)}
-            </Text>
-          </Flex>
-          <div className="flex items-center gap-1.5 flex-1 max-w-[120px]">
-            <div className="flex-1 h-1 rounded-full bg-[var(--gray-3)]">
-              <div
-                className="h-1 rounded-full bg-[var(--accent-9)] transition-all"
-                style={{ width: `${Math.round(signal.relevance_score * 100)}%` }}
-              />
-            </div>
-            <Text size="1" className="text-[var(--gray-8)] tabular-nums">
-              {Math.round(signal.relevance_score * 100)}%
-            </Text>
-          </div>
-        </Flex>
-
-        <Text
-          size="2"
-          className="text-[var(--gray-11)] leading-relaxed line-clamp-2"
-        >
-          {signal.summary}
-        </Text>
-
-        {hasWim && (
+        {!isDimmed && !isActive && hasWim && (
           <div className="mt-1">
             <button
               onClick={() => setWimExpanded(!wimExpanded)}
-              className="flex items-center gap-1 text-[var(--gray-9)] hover:text-[var(--gray-11)] transition-colors text-sm"
+              className="flex items-center gap-1 text-[var(--gray-9)] hover:text-[var(--gray-11)] transition-colors text-xs"
             >
-              <Lightbulb size={14} />
-              <span>{t("today.why_short")}</span>
               {wimExpanded ? (
-                <ChevronUp size={14} />
+                <ChevronDown size={12} />
               ) : (
-                <ChevronDown size={14} />
+                <ChevronUp size={12} />
               )}
+              <span>{t("today.why_short")}</span>
             </button>
             <div
               className="overflow-hidden transition-all duration-200 ease-in-out"
@@ -190,30 +226,53 @@ export function SignalCard({ signal, isActive, onInlineRead }: SignalCardProps) 
           </div>
         )}
 
-        <Flex align="center" justify="between" mt="1">
-          <Flex align="center" gap="2">
-            <FileText size={14} className="text-[var(--gray-9)]" />
-            <Text size="1" className="text-[var(--gray-9)]">
-              {signal.source_count} {t("today.signal_card.articles")} ·{" "}
-              {new Set(signal.sources.map((s) => s.feed_uuid)).size}{" "}
-              {t("today.signal_card.sources")}
-            </Text>
-          </Flex>
-          <button
-            onClick={handleToggleExpand}
-            className="flex items-center gap-1 text-[var(--gray-9)] hover:text-[var(--gray-11)] transition-colors text-sm"
+        {!isDimmed && !isActive && (
+          <Flex align="center" gap="2" mt="1">
+          <span className="text-[10px] text-[var(--gray-9)]">{t("today.signal_card.confidence")}</span>
+          <div
+            className="rounded-full overflow-hidden"
+            style={{ width: 32, height: 4, background: "var(--gray-4)" }}
           >
-            <span>{isExpanded ? t("today.sources.collapse") : t("today.sources.expand")}</span>
-            {isExpanded ? (
-              <ChevronUp size={14} />
-            ) : (
-              <ChevronDown size={14} />
-            )}
-          </button>
+            <div
+              className="h-full rounded-full transition-all"
+              style={{
+                width: `${percent}%`,
+                background: isHighConfidence ? "var(--accent-9)" : "#d97706",
+              }}
+            />
+          </div>
+          <span
+            className="text-[10px] font-semibold tabular-nums"
+            style={{ color: isHighConfidence ? "var(--accent-9)" : "#d97706" }}
+          >
+            {percent}%
+          </span>
+          {!isHighConfidence && (
+            <span className="text-[10px] font-medium rounded-full px-1.5 py-0.5 bg-[#fffbeb] text-[#d97706]">
+              {t("today.signal_card.unverified")}
+            </span>
+          )}
         </Flex>
+        )}
 
-        <div
-          className="overflow-hidden transition-all duration-300 ease-in-out"
+        {!isDimmed && !isActive && (
+          <Flex align="center" justify="between" mt="1">
+            <button
+              onClick={handleToggleExpand}
+              className="flex items-center gap-1 text-[var(--gray-9)] hover:text-[var(--gray-11)] transition-colors text-xs"
+            >
+              <span>{isExpanded ? t("today.sources.collapse") : t("today.sources.expand")}</span>
+              {isExpanded ? (
+                <ChevronUp size={14} />
+              ) : (
+                <ChevronDown size={14} />
+              )}
+            </button>
+          </Flex>
+        )}
+
+        {!isDimmed && (
+        <div className="overflow-hidden transition-all duration-300 ease-in-out"
           style={{
             maxHeight: isExpanded ? "2000px" : "0px",
             opacity: isExpanded ? 1 : 0,
@@ -225,9 +284,13 @@ export function SignalCard({ signal, isActive, onInlineRead }: SignalCardProps) 
             onLoadAll={handleLoadAll}
             loading={detailLoading}
             onInlineRead={onInlineRead}
+            activeReadingSourceIndex={isActive ? activeReadingSourceIndex : undefined}
+            isActive={isActive}
           />
         </div>
+        )}
 
+        {!isDimmed && (
         <Flex align="center" gap="3" mt="2" pt="2" className="border-t border-[var(--gray-4)]">
           <button
             onClick={() => handleFeedback("useful")}
@@ -263,6 +326,7 @@ export function SignalCard({ signal, isActive, onInlineRead }: SignalCardProps) 
             📌 {t("today.feedback.follow_topic")}
           </button>
         </Flex>
+        )}
       </Flex>
     </div>
   );

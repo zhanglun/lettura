@@ -4,12 +4,13 @@ import { SignalCard } from "./SignalCard";
 interface SignalListProps {
   signals: Signal[];
   activeReadingSignalId?: number | null;
+  activeReadingSourceIndex?: number;
   onInlineRead?: (articleUuid: string, feedUuid: string, articleId: number) => void;
 }
 
-export function SignalList({ signals, activeReadingSignalId, onInlineRead }: SignalListProps) {
+export function SignalList({ signals, activeReadingSignalId, activeReadingSourceIndex, onInlineRead }: SignalListProps) {
   return (
-    <div className="flex flex-col gap-3 p-4">
+    <div className="flex flex-col gap-3">
       {signals.map((signal, index) => {
         const isActive = activeReadingSignalId != null && activeReadingSignalId === signal.id;
         const isDimmed = activeReadingSignalId != null && !isActive;
@@ -17,7 +18,7 @@ export function SignalList({ signals, activeReadingSignalId, onInlineRead }: Sig
         return (
           <div
             key={signal.id}
-            className="animate-in fade-in slide-in-from-bottom-2 transition-opacity duration-300"
+            className={`animate-in fade-in slide-in-from-bottom-2 transition-opacity duration-300 ${isDimmed ? "pointer-events-none" : ""}`}
             style={{
               animationDelay: `${index * 50}ms`,
               animationFillMode: "both",
@@ -27,7 +28,9 @@ export function SignalList({ signals, activeReadingSignalId, onInlineRead }: Sig
             <SignalCard
               signal={signal}
               isActive={isActive}
+              isDimmed={isDimmed}
               onInlineRead={onInlineRead}
+              activeReadingSourceIndex={isActive ? activeReadingSourceIndex : undefined}
             />
           </div>
         );

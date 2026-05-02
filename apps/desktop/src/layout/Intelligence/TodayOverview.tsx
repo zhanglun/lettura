@@ -1,7 +1,7 @@
 import { Flex, Text } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
 import { TodayOverview as TodayOverviewType } from "@/stores/createTodaySlice";
-import { Radio } from "lucide-react";
+import { Clock } from "lucide-react";
 
 interface TodayOverviewProps {
   overview: TodayOverviewType | null;
@@ -30,29 +30,29 @@ export function TodayOverview({
 
   if (overviewLoading) {
     return (
-      <Flex align="center" gap="2" className="px-4 py-2">
+      <div className="flex items-center gap-2 px-3 py-2 bg-[var(--accent-a3)] rounded-md mb-5">
         <div className="h-3 w-[80%] animate-pulse rounded bg-[var(--gray-4)]" />
-      </Flex>
+      </div>
     );
   }
 
   if (overviewError) {
     return (
-      <Flex align="center" gap="2" className="px-4 py-2">
+      <div className="flex items-center gap-2 px-3 py-2 bg-[var(--accent-a3)] rounded-md mb-5">
         <Text size="2" className="text-[var(--gray-9)]">
           {t("today.overview_error")}
         </Text>
-      </Flex>
+      </div>
     );
   }
 
   if (!overview) {
     return (
-      <Flex align="center" gap="2" className="px-4 py-2">
+      <div className="flex items-center gap-2 px-3 py-2 bg-[var(--accent-a3)] rounded-md mb-5">
         <Text size="2" className="text-[var(--gray-9)]">
           {t("today.overview_no_data")}
         </Text>
-      </Flex>
+      </div>
     );
   }
 
@@ -61,19 +61,16 @@ export function TodayOverview({
     : null;
 
   return (
-    <Flex align="center" gap="2" className="px-4 py-2">
-      <Radio size={14} className="shrink-0 text-[var(--gray-9)]" />
-      <Text size="1" weight="medium" className="shrink-0 text-[var(--gray-9)]">
-        {t("today.overview_title")}
-      </Text>
+    <div className="flex items-center gap-2 px-3 py-2 bg-[var(--accent-a3)] rounded-md mb-5">
+      <Clock size={14} className="shrink-0 text-[var(--accent-9)]" />
       <Text size="2" className="text-[var(--gray-11)]">
-        {overview.summary}
+        <strong>{t("today.overview_title")}</strong> {overview.summary}
       </Text>
       {minutesAgo !== null && (
         <Text size="1" className="shrink-0 text-[var(--gray-8)]">
           {t("today.overview_updated_minutes_ago", { minutes: minutesAgo })}
         </Text>
       )}
-    </Flex>
+    </div>
   );
 }

@@ -26,8 +26,12 @@ describe("DailyStatus", () => {
     };
 
     render(<DailyStatus overview={overview} loading={false} />);
-    expect(screen.getByText("3")).toBeInTheDocument();
-    expect(screen.getByText("12")).toBeInTheDocument();
+    const articlesUnits = screen.getAllByText(/12.*today.right_panel.daily_status.articles_unit/);
+    expect(articlesUnits.length).toBe(2);
+    expect(screen.getByText(/3.*today.right_panel.daily_status.signals_unit/)).toBeInTheDocument();
+    expect(screen.getByText("today.right_panel.daily_status.synced")).toBeInTheDocument();
+    expect(screen.getByText("today.right_panel.daily_status.analyzed")).toBeInTheDocument();
+    expect(screen.getByText("today.right_panel.daily_status.high_signal")).toBeInTheDocument();
   });
 
   it("should render empty state when no overview and not loading", () => {

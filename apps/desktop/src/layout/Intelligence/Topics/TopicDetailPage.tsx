@@ -2,15 +2,14 @@ import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Text, Flex } from "@radix-ui/themes";
-import { ArrowLeft, Layers, FileText, Rss, Clock, Pin, PinOff } from "lucide-react";
+import { ArrowLeft, Layers, FileText, Rss, Clock, Pin, PinOff, Sparkles } from "lucide-react";
 import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
 import { RouteConfig } from "@/config";
 import { cn } from "@/helpers/cn";
 import { TopicArticleItem } from "./TopicArticleItem";
 import { SourceGroup } from "./SourceGroup";
-import { TopicRightPanel } from "./TopicRightPanel";
-import { RightPanel } from "../RightPanel";
+
 
 function formatDate(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString(undefined, {
@@ -135,6 +134,20 @@ export function TopicDetailPage() {
             </Text>
           )}
 
+          {topic.topic_summary && (
+            <div className="rounded-[10px] border border-[var(--gray-4)] shadow-sm p-4 mb-5 bg-[var(--gray-2)]">
+              <div className="flex items-center gap-1.5 mb-2">
+                <Sparkles size={14} className="text-[var(--accent-9)]" />
+                <span className="text-xs font-semibold text-[var(--gray-12)]">
+                  {t("topic_summary")}
+                </span>
+              </div>
+              <p className="text-xs text-[var(--gray-11)] leading-relaxed">
+                {topic.topic_summary}
+              </p>
+            </div>
+          )}
+
           <Flex align="center" gap="4" mb="4">
             <Flex align="center" gap="1">
               <FileText size={14} className="text-[var(--gray-9)]" />
@@ -184,12 +197,6 @@ export function TopicDetailPage() {
           )}
         </div>
       </div>
-
-      {hasSourceGroups && (
-        <RightPanel expanded={false}>
-          <TopicRightPanel topic={topic} />
-        </RightPanel>
-      )}
     </div>
   );
 }

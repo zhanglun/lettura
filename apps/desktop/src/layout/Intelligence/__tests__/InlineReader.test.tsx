@@ -5,7 +5,12 @@ import type { SignalSource } from "@/stores/createTodaySlice";
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
-    t: (key: string) => key,
+    t: (key: string, params?: Record<string, unknown>) => {
+      if (key === "today.inline_reader.source_of" && params) {
+        return `${params.current}/${params.total}`;
+      }
+      return key;
+    },
     i18n: { changeLanguage: vi.fn() },
   }),
 }));
@@ -76,7 +81,7 @@ describe("InlineReader", () => {
     );
 
     expect(screen.getByText("Test Article Title")).toBeInTheDocument();
-    expect(screen.getByText("Test Feed")).toBeInTheDocument();
+    expect(screen.getAllByText("Test Feed").length).toBeGreaterThanOrEqual(1);
   });
 
   it("should call onBack when back button is clicked", () => {
@@ -168,6 +173,6 @@ describe("InlineReader", () => {
       />,
     );
 
-    expect(screen.getByText("2 / 3")).toBeInTheDocument();
+    expect(screen.getByText("2/3")).toBeInTheDocument();
   });
 });

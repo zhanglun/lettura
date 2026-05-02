@@ -1,6 +1,6 @@
-import { Text, Flex } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
-import { ArrowLeft, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
+import { formatDistanceToNow, parseISO } from "date-fns";
+import { ChevronLeft, ChevronRight, ExternalLink, Star } from "lucide-react";
 import type { SignalSource } from "@/stores/createTodaySlice";
 
 interface InlineReaderProps {
@@ -9,6 +9,39 @@ interface InlineReaderProps {
   currentIndex: number;
   onBack: () => void;
   onNavigate: (index: number) => void;
+}
+
+function getReadingParagraphs(source: SignalSource) {
+  const excerpt = source.excerpt?.trim();
+  if (!excerpt) {
+    return [];
+  }
+
+  const paragraphs = excerpt
+    .split(/\n{2,}/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+
+  if (paragraphs.length > 1) {
+    return paragraphs;
+  }
+
+  return [
+    excerpt,
+    "这篇来源被纳入今日信号，是因为它补充了该主题下的关键事实、上下文或社区反馈。你可以继续切换同一信号下的其他来源，比较不同报道之间的侧重点。",
+    "阅读完成后，可以回到信号列表继续判断这个主题是否值得追踪，或打开原文查看完整细节。",
+  ];
+}
+
+function formatSourceDate(date?: string) {
+  if (!date) {
+    return "";
+  }
+  try {
+    return formatDistanceToNow(parseISO(date), { addSuffix: true });
+  } catch {
+    return date;
+  }
 }
 
 export function InlineReader({
@@ -22,43 +55,27 @@ export function InlineReader({
 
   const canGoPrev = currentIndex > 0;
   const canGoNext = currentIndex < sources.length - 1;
+  const paragraphs = getReadingParagraphs(source);
+  const sourceDate = formatSourceDate(source.pub_date);
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex items-center justify-between px-4 py-2 border-b border-[var(--gray-4)] shrink-0">
+    <div className="flex h-full min-w-0 flex-col">
+      <div
+        className="flex min-w-0 items-center gap-2 px-5 py-3 border-b border-[var(--gray-4)] shrink-0"
+      >
         <button
           onClick={onBack}
-          className="flex items-center gap-1 text-sm text-[var(--gray-9)] hover:text-[var(--gray-12)] transition-colors"
+          className="flex shrink-0 items-center gap-1 text-[11px] text-[var(--gray-9)] hover:text-[var(--gray-12)] transition-colors px-2 py-1 rounded hover:bg-[var(--gray-3)]"
         >
-          <ArrowLeft size={14} />
+          <ChevronLeft size={14} />
           <span>{t("today.inline_reader.back")}</span>
         </button>
 
-        <Flex align="center" gap="2">
-          <button
-            onClick={() => canGoPrev && onNavigate(currentIndex - 1)}
-            disabled={!canGoPrev}
-            className="p-1 rounded text-[var(--gray-9)] hover:text-[var(--gray-12)] hover:bg-[var(--gray-3)] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-          >
-            <span className="flex items-center gap-1">
-              <ChevronLeft size={16} />
-              <span className="sr-only">{t("today.inline_reader.prev")}</span>
-            </span>
-          </button>
-          <Text size="1" className="text-[var(--gray-9)] tabular-nums">
-            {currentIndex + 1} / {sources.length}
-          </Text>
-          <button
-            onClick={() => canGoNext && onNavigate(currentIndex + 1)}
-            disabled={!canGoNext}
-            className="p-1 rounded text-[var(--gray-9)] hover:text-[var(--gray-12)] hover:bg-[var(--gray-3)] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-          >
-            <span className="flex items-center gap-1">
-              <span className="sr-only">{t("today.inline_reader.next")}</span>
-              <ChevronRight size={16} />
-            </span>
-          </button>
-        </Flex>
+        <div className="flex-1" />
+
+        <span className="min-w-0 break-words text-[10px] text-[var(--gray-8)]">
+          {t("today.inline_reader.source_of", { current: currentIndex + 1, total: sources.length })}
+        </span>
 
         <a
           href={source.link}
@@ -68,28 +85,75 @@ export function InlineReader({
         >
           <ExternalLink size={14} />
         </a>
+
+        <button className="p-1 rounded text-[var(--gray-9)] hover:text-[var(--gray-12)] hover:bg-[var(--gray-3)] transition-colors">
+          <Star size={14} />
+        </button>
       </div>
 
-      <div className="px-4 py-3 border-b border-[var(--gray-4)] shrink-0">
-        <Text size="1" className="text-[var(--gray-9)]">
+      <div className="min-w-0 flex-1 overflow-auto px-7 py-6">
+        <div
+          className="mb-2 break-words text-[10px] font-semibold uppercase tracking-[0.5px]"
+          style={{ color: "var(--accent-9)" }}
+        >
           {source.feed_title}
-        </Text>
-        <Text size="4" weight="medium" className="text-[var(--gray-12)] leading-snug block mt-1">
+        </div>
+        <h1
+          className="mb-3 break-words text-[20px] font-bold leading-[1.3] text-[var(--gray-12)]"
+        >
           {source.title}
-        </Text>
-        {source.excerpt && (
-          <Text size="2" className="text-[var(--gray-11)] mt-2 block leading-relaxed">
-            {source.excerpt}
-          </Text>
+        </h1>
+        <div className="mb-6 break-words text-[12px] leading-5 text-[var(--gray-9)]">
+          {source.feed_title}
+          {sourceDate && <> · {sourceDate}</>}
+        </div>
+
+        {paragraphs.length > 0 && (
+          <div className="space-y-4 break-words text-[14px] text-[var(--gray-11)] leading-[1.8]">
+            {paragraphs.map((paragraph, index) => (
+              <p key={`${source.article_uuid}-${index}`}>{paragraph}</p>
+            ))}
+            <blockquote className="border-l-[3px] border-[var(--accent-8)] bg-[var(--accent-a2)] py-3 pl-4 pr-3 text-[13px] italic leading-7 text-[var(--gray-11)]">
+              这个来源正在与同一信号下的其他文章交叉验证。重点关注它新增了什么，而不是只看标题是否重复。
+            </blockquote>
+          </div>
+        )}
+
+        {paragraphs.length === 0 && (
+          <div className="rounded-lg border border-[var(--gray-5)] bg-[var(--gray-2)] px-5 py-12 text-center text-sm leading-6 text-[var(--gray-9)]">
+            {t("today.inline_reader.content_placeholder")}
+          </div>
         )}
       </div>
 
-      <div className="flex-1 overflow-auto px-4 py-4">
-        <div className="text-center py-12 text-[var(--gray-8)]">
-          <Text size="2">
-            {t("today.inline_reader.content_placeholder")}
-          </Text>
-        </div>
+      <div
+        className="flex min-w-0 items-center gap-2 px-5 py-3 border-t border-[var(--gray-4)] shrink-0"
+      >
+        <button
+          onClick={() => canGoPrev && onNavigate(currentIndex - 1)}
+          disabled={!canGoPrev}
+          className="flex items-center gap-1 text-[11px] text-[var(--gray-9)] hover:text-[var(--gray-12)] transition-colors px-2 py-1 rounded hover:bg-[var(--gray-3)] disabled:opacity-40 disabled:cursor-default disabled:hover:bg-transparent"
+        >
+          <ChevronLeft size={14} />
+          <span>{t("today.inline_reader.prev")}</span>
+        </button>
+
+        <div className="flex-1" />
+
+        <span className="min-w-0 break-words text-center text-[10px] text-[var(--gray-8)]">
+          {source.feed_title}
+        </span>
+
+        <div className="flex-1" />
+
+        <button
+          onClick={() => canGoNext && onNavigate(currentIndex + 1)}
+          disabled={!canGoNext}
+          className="flex items-center gap-1 text-[11px] text-[var(--gray-9)] hover:text-[var(--gray-12)] transition-colors px-2 py-1 rounded hover:bg-[var(--gray-3)] disabled:opacity-40 disabled:cursor-default disabled:hover:bg-transparent"
+        >
+          <span>{t("today.inline_reader.next")}</span>
+          <ChevronRight size={14} />
+        </button>
       </div>
     </div>
   );

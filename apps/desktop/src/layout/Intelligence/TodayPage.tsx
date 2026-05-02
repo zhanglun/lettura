@@ -208,7 +208,7 @@ export function TodayPage() {
     return (
       <div className="flex flex-col h-full overflow-auto">
         <EvidencePanel signal={activeReadingSignal ?? store.signals[0] ?? null} />
-        <DailyStatus overview={store.overview} loading={store.overviewLoading} />
+        <DailyStatus overview={store.overview} loading={store.overviewLoading} progress={store.pipelineStatus === "running" ? store.pipelineProgress : undefined} />
         <NextSteps
           hasSignals={hasSignals}
           hasApiKey={hasApiKey}
@@ -237,7 +237,7 @@ export function TodayPage() {
         ) : !hasApiKey || !hasSignals ? (
           renderEmptyState()
         ) : (
-          <div className="flex-1 overflow-auto" data-today-scroll>
+          <div className="flex-1 overflow-auto px-6 py-5" data-today-scroll>
             <TodayOverview
               overview={store.overview}
               overviewLoading={store.overviewLoading}
@@ -247,6 +247,7 @@ export function TodayPage() {
             <SignalList
               signals={store.signals}
               activeReadingSignalId={store.activeReadingSignalId}
+              activeReadingSourceIndex={store.activeReadingSourceIndex}
               onInlineRead={handleInlineRead}
             />
           </div>

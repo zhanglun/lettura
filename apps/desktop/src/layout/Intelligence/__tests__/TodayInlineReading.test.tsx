@@ -5,7 +5,12 @@ import type { SignalSource } from "@/stores/createTodaySlice";
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
-    t: (key: string) => key,
+    t: (key: string, params?: Record<string, unknown>) => {
+      if (key === "today.inline_reader.source_of" && params) {
+        return `${params.current}/${params.total}`;
+      }
+      return key;
+    },
     i18n: { changeLanguage: vi.fn() },
   }),
 }));
@@ -50,8 +55,8 @@ describe("Today inline reading flow", () => {
     );
 
     expect(screen.getByText("Article One")).toBeInTheDocument();
-    expect(screen.getByText("Feed A")).toBeInTheDocument();
-    expect(screen.getByText("1 / 2")).toBeInTheDocument();
+    expect(screen.getAllByText("Feed A").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText("1/2")).toBeInTheDocument();
   });
 
   it("should navigate to next source", () => {

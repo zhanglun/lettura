@@ -12,6 +12,8 @@ interface SignalSourceListProps {
   onLoadAll?: () => void;
   loading?: boolean;
   onInlineRead?: (articleUuid: string, feedUuid: string, articleId: number) => void;
+  activeReadingSourceIndex?: number;
+  isActive?: boolean;
 }
 
 export function SignalSourceList({
@@ -20,10 +22,18 @@ export function SignalSourceList({
   onLoadAll,
   loading,
   onInlineRead,
+  activeReadingSourceIndex,
+  isActive,
 }: SignalSourceListProps) {
   const { t } = useTranslation();
-  const hasMore = sources.length > PREVIEW_COUNT;
-  const displaySources = hasMore ? sources.slice(0, PREVIEW_COUNT) : sources;
+  const hasMore = !isActive && sources.length > PREVIEW_COUNT;
+  let displaySources = hasMore ? sources.slice(0, PREVIEW_COUNT) : sources;
+
+  if (activeReadingSourceIndex != null && activeReadingSourceIndex >= displaySources.length && activeReadingSourceIndex < sources.length) {
+    const start = PREVIEW_COUNT;
+    const end = activeReadingSourceIndex + 1;
+    displaySources = [...displaySources, ...sources.slice(start, end)];
+  }
 
   return (
     <div className="mt-2 pt-2 border-t border-[var(--gray-4)]">
@@ -35,12 +45,13 @@ export function SignalSourceList({
       </Flex>
 
       <div className="flex flex-col gap-0.5">
-        {displaySources.map((source) => (
+        {displaySources.map((source, index) => (
           <SignalSourceItem
             key={source.article_id}
             source={source}
             onClick={onSourceClick}
             onInlineRead={onInlineRead}
+            isCurrentlyReading={activeReadingSourceIndex != null && activeReadingSourceIndex === index}
           />
         ))}
       </div>
