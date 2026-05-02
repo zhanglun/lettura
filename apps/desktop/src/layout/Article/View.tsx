@@ -5,14 +5,13 @@ import {
   ScrollBoxRefObject,
 } from "@/components/ArticleView/ScrollBox";
 import { useRef } from "react";
-import { ReadingOptions } from "./ReadingOptions";
-import { ToolbarItemNavigator } from "./ToolBar";
 import { StarAndRead } from "@/layout/Article/StarAndRead";
-import { PlayerSwitcher } from "@/components/PodcastPlayer/PlayerSwitch";
-import { IconButton, Separator } from "@radix-ui/themes";
+import { IconButton } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
 import { ArticleResItem } from "@/db";
-import { X } from "lucide-react";
+import { ChevronLeft, MoreHorizontal, X } from "lucide-react";
+import { useBearStore } from "@/stores";
+import { useNavigate, useParams } from "react-router-dom";
 
 export interface ArticleViewProps {
   article: ArticleResItem | null;
@@ -24,6 +23,9 @@ export interface ArticleViewProps {
 
 export function View(props: ArticleViewProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const params = useParams<{ uuid?: string }>();
+  const setArticle = useBearStore((state) => state.setArticle);
 
   const renderPlaceholder = () => {
     return (
@@ -54,70 +56,72 @@ export function View(props: ArticleViewProps) {
     );
   };
 
-   const scrollBoxRef = useRef<ScrollBoxRefObject>(null);
+  const scrollBoxRef = useRef<ScrollBoxRefObject>(null);
 
-   return (
-    <div className="flex-1 min-w-0">
-      <div
-        className={
-          "h-[var(--app-toolbar-height)] flex items-center justify-end px-3 gap-2 border-b relative z-10 shrink-0"
-        }
-      >
-        {props.article && (
-          <>
-            <StarAndRead article={props.article} />
-            <Separator orientation={"vertical"} className="mx-1" />
-          </>
-        )}
-        {props.goNext && props.goPrev && (
-          <>
-            <ToolbarItemNavigator goNext={props.goNext} goPrev={props.goPrev} />
-            <Separator orientation="vertical" className="mx-1" />
-          </>
-        )}
-        {props.article && (
-          <>
-            <ReadingOptions article={props.article} />
-            <Separator orientation="vertical" className="mx-1" />
-          </>
-        )}
+  const handleBack = () => {
+    if (props.closable) {
+      props.onClose?.();
+      return;
+    }
+    setArticle(null);
+    if (params.uuid) {
+      navigate(`/local/feeds/${params.uuid}`);
+    }
+  };
 
-        <PlayerSwitcher />
-
-        {props.closable && (
-          <>
-            <Separator orientation="vertical" className="mx-1" />
-            <IconButton
-              size="2"
-              variant="ghost"
-              color="gray"
-              className="text-[var(--gray-12)]"
-              onClick={props.onClose}
-            >
-              <X size={16} />
-            </IconButton>
-          </>
-        )}
-      </div>
+  return (
+    <div className="flex h-full min-h-0 flex-1 min-w-0 bg-[var(--color-panel-solid)]">
       <AnimatePresence>
         <motion.article
           key={props.article?.uuid || "view"}
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: -20, opacity: 0 }}
-          transition={{ duration: 0.2 }}
-          className="overflow-hidden"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.16 }}
+          className="flex h-full min-h-0 w-full overflow-hidden"
         >
           <ScrollBox
-            className="h-[calc(100vh_-_var(--app-toolbar-height))]"
+            className="h-full min-h-0 w-full"
             ref={scrollBoxRef}
           >
-            <div className="font-[var(--reading-font-body)] min-h-full m-auto sm:px-5 sm:max-w-xl lg:px-10 lg:max-w-5xl">
-              {" "}
+            <div className="mx-auto flex min-h-full w-full max-w-[680px] flex-col px-8 py-10 font-[var(--reading-font-body)]">
+              <div className="mb-6 flex items-center gap-2 border-b border-[var(--gray-5)] pb-4">
+                <button
+                  type="button"
+                  onClick={handleBack}
+                  className="inline-flex h-8 items-center gap-1 rounded-md px-2 text-[11px] text-[var(--gray-10)] transition hover:bg-[var(--gray-a3)] hover:text-[var(--gray-12)]"
+                >
+                  <ChevronLeft size={14} />
+                  返回
+                </button>
+                <div className="flex-1" />
+                {props.article && <StarAndRead article={props.article} />}
+                <IconButton
+                  size="2"
+                  variant="ghost"
+                  color="gray"
+                  className="text-[var(--gray-11)]"
+                >
+                  <MoreHorizontal size={16} />
+                </IconButton>
+                {props.closable && (
+                  <IconButton
+                    size="2"
+                    variant="ghost"
+                    color="gray"
+                    className="text-[var(--gray-11)]"
+                    onClick={props.onClose}
+                  >
+                    <X size={16} />
+                  </IconButton>
+                )}
+              </div>
               {props.article ? (
                 <ArticleDetail article={props.article} />
               ) : (
-                renderPlaceholder()
+                <div className="flex flex-1 items-center justify-center">
+                  {renderPlaceholder()}
+                </div>
               )}
             </div>
           </ScrollBox>

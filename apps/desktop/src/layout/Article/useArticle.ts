@@ -3,7 +3,7 @@ import { useBearStore } from "@/stores";
 import { request } from "@/helpers/request";
 import { useMatch } from "react-router-dom";
 import { RouteConfig } from "@/config";
-import { omit } from "lodash";
+import { omitBy, isUndefined } from "lodash";
 import { ArticleResItem } from "@/db";
 import { useMemo, useCallback } from "react";
 import { useShallow } from "zustand/react/shallow";
@@ -32,7 +32,7 @@ export function useArticle(props: UseArticleProps) {
     const isTodayVal = isToday ? 1 : undefined;
     const isAllVal = isAll ? 1 : undefined;
     const isStarredVal = isStarred ? 1 : undefined;
-    return omit({
+    return omitBy({
       read_status: isStarred ? undefined : store.currentFilter.id,
       limit: PAGE_SIZE,
       feed_uuid: feedUuid,
@@ -40,7 +40,7 @@ export function useArticle(props: UseArticleProps) {
       is_today: isTodayVal,
       is_all: isAllVal,
       is_starred: isStarredVal,
-    });
+    }, isUndefined);
   }, [
     feedUuid,
     type,

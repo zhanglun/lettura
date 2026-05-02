@@ -1,5 +1,5 @@
 import { IconButton, Tooltip } from "@radix-ui/themes";
-import { CheckCircle2, Circle, Star } from "lucide-react";
+import { Eye, EyeOff, Star } from "lucide-react";
 import { ArticleReadStatus, ArticleStarStatus } from "@/typing";
 import React, { useEffect, useState } from "react";
 import { ArticleResItem } from "@/db";
@@ -55,7 +55,7 @@ export function StarAndRead(props: StarAndReadProps) {
   }, [article.starred]);
 
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex items-center gap-1">
       {article.starred === ArticleStarStatus.UNSTAR && (
         <Tooltip content={t("Star it")}>
           <IconButton
@@ -100,7 +100,7 @@ export function StarAndRead(props: StarAndReadProps) {
               toggleReadStatus();
             }}
           >
-            <Circle size={16} />
+            <Eye size={16} />
           </IconButton>
         </Tooltip>
       )}
@@ -114,7 +114,7 @@ export function StarAndRead(props: StarAndReadProps) {
               toggleReadStatus();
             }}
           >
-            <CheckCircle2 size={16} />
+            <EyeOff size={16} />
           </IconButton>
         </Tooltip>
       )}

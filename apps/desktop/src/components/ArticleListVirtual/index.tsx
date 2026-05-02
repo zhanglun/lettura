@@ -5,7 +5,7 @@ import React, {
   useCallback,
   useState,
 } from "react";
-import { ArticleItem } from "../ArticleItem";
+import { ArticleItem, ArticleItemDensity } from "../ArticleItem";
 import { Skeleton } from "@radix-ui/themes";
 import type { ArticleResItem } from "@/db";
 import { Snail } from "lucide-react";
@@ -21,6 +21,8 @@ export type ArticleListVirtualProps = {
   isReachingEnd?: boolean;
   isEmpty: boolean;
   isLoading: boolean;
+  itemDensity?: ArticleItemDensity;
+  onArticleRead?: (article: ArticleResItem) => void;
 };
 
 export interface ArticleListVirtualRefType {
@@ -33,8 +35,16 @@ export interface ArticleListVirtualRefType {
 export const ArticleListVirtual = React.memo(
   React.forwardRef<ArticleListVirtualRefType, ArticleListVirtualProps>(
     (props: ArticleListVirtualProps, ref) => {
-      const { articles, isEmpty, isLoading, isReachingEnd, size, setSize } =
-        props;
+      const {
+        articles,
+        isEmpty,
+        isLoading,
+        isReachingEnd,
+        size,
+        setSize,
+        itemDensity = "regular",
+        onArticleRead,
+      } = props;
       const { t } = useTranslation();
       const internalParentRef = useRef<HTMLDivElement>(null);
       const [isScrolled, setIsScrolled] = useState(false);
@@ -100,10 +110,14 @@ export const ArticleListVirtual = React.memo(
               <p>{t("Yay, no matching items.")}</p>
             </div>
           ) : (
-            <ul className="py-2 px-1 list-none m-0">
+            <ul className="list-none m-0 p-0">
               {articles.map((article, index) => (
                 <li key={`${article.uuid}-${index}`}>
-                  <ArticleItem article={article} />
+                  <ArticleItem
+                    article={article}
+                    density={itemDensity}
+                    onRead={onArticleRead}
+                  />
                 </li>
               ))}
             </ul>

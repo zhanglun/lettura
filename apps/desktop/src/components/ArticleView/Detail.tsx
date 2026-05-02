@@ -1,5 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { getFeedLogo } from "@/helpers/parseXML";
+import React, { useEffect, useState } from "react";
 import * as dataAgent from "@/helpers/dataAgent";
 import { open } from "@tauri-apps/plugin-shell";
 import DOMPurify from "dompurify";
@@ -36,9 +35,6 @@ export interface ArticleDetailProps {
 
 export const ArticleDetail = (props: ArticleDetailProps) => {
   const { article } = props;
-  const logo = useMemo(() => {
-    return article.feed_logo || getFeedLogo(article.feed_url);
-  }, [article]);
   const [pageContent, setPageContent] = useState("");
   const [medias, setMedias] = useState([]);
 
@@ -105,7 +101,6 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
         <CommonAdapter
           article={article}
           content={pageContent}
-          feedLogo={logo}
           delegateContentClick={delegateContentClick}
         />
       );

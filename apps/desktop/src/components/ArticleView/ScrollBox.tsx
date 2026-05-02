@@ -44,7 +44,7 @@ export const ScrollBox = React.forwardRef((props: ScrollBoxProps, ref: any) => {
   useHotkeys("k", scrollUp);
 
   return (
-    <div className={clsx("overflow-y-auto", className)} ref={scrollRef}>
+    <div className={clsx("min-h-0 overflow-y-auto", className)} ref={scrollRef}>
       {children}
     </div>
   );

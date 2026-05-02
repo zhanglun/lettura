@@ -1,44 +1,62 @@
 import React, { ForwardedRef, useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { formatDistanceToNow, parseISO } from "date-fns";
+import { formatDistanceToNow } from "date-fns";
 import { useBearStore } from "@/stores";
-import { getFeedLogo } from "@/helpers/parseXML";
 import { ArticleResItem } from "@/db";
 import { ArticleReadStatus } from "@/typing";
 import clsx from "clsx";
-import { Avatar, Badge } from "@radix-ui/themes";
 import { useShallow } from "zustand/react/shallow";
 
+export type ArticleItemDensity = "regular" | "compact";
+
 export const ArticleItem = React.forwardRef(
-  (props: { article: ArticleResItem }, ref: ForwardedRef<HTMLLIElement>) => {
-    const { t } = useTranslation();
+  (
+    props: {
+      article: ArticleResItem;
+      density?: ArticleItemDensity;
+      onRead?: (article: ArticleResItem) => void;
+    },
+    ref: ForwardedRef<HTMLLIElement>,
+  ) => {
     const store = useBearStore(
       useShallow((state) => ({
         updateArticleStatus: state.updateArticleStatus,
         article: state.article,
         setArticle: state.setArticle,
-        feed: state.feed,
       })),
     );
-    const { article } = props;
+    const { article, density = "regular", onRead } = props;
     const [highlight, setHighlight] = useState<boolean>();
     const [readStatus, setReadStatus] = useState(article.read_status);
-    const isDuplicate = article.is_duplicate === 1;
 
     const updateCurrentArticle = (article: any) => {
+      const nextArticle = {
+        ...article,
+        read_status: ArticleReadStatus.READ,
+      };
+
       if (article.read_status === ArticleReadStatus.UNREAD) {
         setReadStatus(ArticleReadStatus.READ);
+        onRead?.(nextArticle);
       }
 
       store.updateArticleStatus({ ...article }, ArticleReadStatus.READ);
-      store.setArticle(article);
+      store.setArticle(nextArticle);
     };
 
-    const handleClick = async (e: React.MouseEvent) => {
+    const handleClick = () => {
       updateCurrentArticle(article);
     };
 
-    const ico = getFeedLogo(article.feed_url);
+    const timeLabel = formatDistanceToNow(
+      new Date(article.pub_date || article.create_date),
+      {
+        includeSeconds: true,
+        addSuffix: true,
+      },
+    );
+    const sourceLabel = density === "compact"
+      ? timeLabel
+      : `${article.feed_title || article.author || "self"} · ${timeLabel}`;
 
     useEffect(() => {
       setReadStatus(article.read_status);
@@ -51,54 +69,43 @@ export const ArticleItem = React.forwardRef(
     return (
       <li
         className={clsx(
-          "list-none rounded-md p-2 py-2 pl-5 flex flex-col gap-1 relative select-none",
-          "group hover:bg-[var(--accent-a3)] hover:cursor-pointer",
+          "list-none border-b border-[var(--gray-4)] relative flex items-start gap-3 select-none transition-colors",
+          "group hover:bg-[var(--gray-a3)] hover:cursor-pointer",
+          density === "compact" ? "px-3 py-3" : "px-4 py-3",
           {
             "text-[var(--gray-10)]": readStatus === ArticleReadStatus.READ,
-            "bg-[var(--accent-4)] text-[var(--accent-11)] hover:bg-[var(--accent-4)]":
+            "bg-[var(--accent-a3)] hover:bg-[var(--accent-a3)] border-l-2 border-l-[var(--accent-9)]":
               highlight,
-            "opacity-60": isDuplicate,
           },
         )}
         onClick={handleClick}
         ref={ref}
         id={article.uuid}
       >
-        {readStatus === ArticleReadStatus.UNREAD && (
-          <div className="absolute left-2 top-[16px] w-2 h-2 rounded-full bg-[var(--accent-9)]" />
+        {readStatus === ArticleReadStatus.UNREAD && density !== "compact" && (
+          <div className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent-9)]" />
         )}
-        <div className="font-semibold text-sm break-all flex items-center gap-1.5">
-          <span className="break-all">{article.title}</span>
-          {isDuplicate && (
-            <Badge color="gray" variant="soft" size="1" className="shrink-0">
-              {t("article.duplicate")}
-            </Badge>
-          )}
-        </div>
-        <div className="text-xs line-clamp-2 break-all">
-          {(article.description || "").replace(/<[^<>]+>/g, "")}
-        </div>
-        <div className="flex justify-between items-center text-xs mt-2">
-          <div className="flex-1 overflow-hidden flex items-center gap-1.5">
-            <Avatar
-              size="1"
-              src={store.feed?.logo || getFeedLogo(article.feed_url)}
-              fallback={article.feed_title?.slice(0, 1) || "L"}
-              alt={article.feed_title}
-              className="rounded w-4 h-4"
-            />
-            <div className="overflow-hidden text-ellipsis mr-1 whitespace-nowrap">
-              {article.author || article.feed_title}
-            </div>
-          </div>
-          <div className="whitespace-nowrap flex-[0_0_auto] overflow-hidden">
-            {formatDistanceToNow(
-              new Date(article.pub_date || article.create_date),
-              {
-                includeSeconds: true,
-                addSuffix: true,
-              },
+        <div className="min-w-0 flex-1">
+          <div
+            className={clsx(
+              "line-clamp-2 text-[var(--gray-12)]",
+              density === "compact"
+                ? "text-xs font-semibold leading-5"
+                : "text-[13px] font-medium leading-5",
+              highlight && "text-[var(--accent-11)]",
             )}
+          >
+            {article.title}
+          </div>
+          <div
+            className={clsx(
+              "mt-1 flex items-center gap-3 text-[11px] text-[var(--gray-9)]",
+              density !== "compact" && "justify-between",
+            )}
+          >
+            <span className="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">
+              {sourceLabel}
+            </span>
           </div>
         </div>
       </li>
