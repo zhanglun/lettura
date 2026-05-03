@@ -19,6 +19,19 @@ import { ArticleResItem } from "@/db";
 import { useShallow } from "zustand/react/shallow";
 import { useTranslation } from "react-i18next";
 
+export function retainArticleAfterRead(
+  pages: { list: ArticleResItem[] }[] | undefined,
+  nextArticle: ArticleResItem,
+): { list: ArticleResItem[] }[] | undefined {
+  if (!pages) return pages;
+  return pages.map((page) => ({
+    ...page,
+    list: (page?.list || []).map((item: ArticleResItem) =>
+      item.uuid === nextArticle.uuid ? nextArticle : item,
+    ),
+  }));
+}
+
 export interface ArticleColRefObject {
   goNext: () => void;
   goPrev: () => void;
@@ -203,30 +216,13 @@ export const ArticleCol = React.memo(
 
       const handleArticleRead = useCallback(
         (nextArticle: ArticleResItem) => {
-          mutate((pages: any[] | undefined) => {
-            if (!pages) {
-              return pages;
-            }
-
-            return pages.map((page) => {
-              const list = page?.list || [];
-              const nextList =
-                store.currentFilter.id === ArticleReadStatus.UNREAD
-                  ? list.filter(
-                      (item: ArticleResItem) => item.uuid !== nextArticle.uuid,
-                    )
-                  : list.map((item: ArticleResItem) =>
-                      item.uuid === nextArticle.uuid ? nextArticle : item,
-                    );
-
-              return {
-                ...page,
-                list: nextList,
-              };
-            });
-          }, false);
+          mutate(
+            (pages: any[] | undefined) =>
+              retainArticleAfterRead(pages, nextArticle) as any[] | undefined,
+            false,
+          );
         },
-        [mutate, store.currentFilter.id],
+        [mutate],
       );
 
       function renderLabel() {
