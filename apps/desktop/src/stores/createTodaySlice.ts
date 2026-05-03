@@ -1,5 +1,7 @@
 import { StateCreator } from "zustand";
 import { invoke } from "@tauri-apps/api/core";
+import * as dataAgent from "@/helpers/dataAgent";
+import type { ArticleResItem } from "@/db";
 
 export interface SignalSource {
   article_id: number;
@@ -22,6 +24,7 @@ export interface Signal {
   sources: SignalSource[];
   topic_id: number | null;
   topic_title: string | null;
+  topic_uuid: string | null;
   created_at: string;
 }
 
@@ -87,9 +90,18 @@ export interface TodaySlice {
   isInlineReading: boolean;
   rightPanelExpanded: boolean;
 
+  // Source article detail
+  activeSourceArticleUuid: string | null;
+  sourceArticleDetail: ArticleResItem | null;
+  sourceArticleLoading: boolean;
+  sourceArticleError: string | null;
+
   startInlineReading: (signalId: number, sourceIndex?: number) => void;
   closeInlineReading: () => void;
   navigateReadingSource: (index: number) => void;
+  openSourceArticle: (source: SignalSource) => void;
+  closeSourceArticle: () => void;
+  retrySourceArticle: () => void;
 
   fetchSignals: (limit?: number) => Promise<void>;
   fetchAIConfig: () => Promise<void>;
@@ -133,6 +145,11 @@ export const createTodaySlice: StateCreator<TodaySlice> = (set, get) => ({
   activeReadingSourceIndex: 0,
   isInlineReading: false,
   rightPanelExpanded: false,
+
+  activeSourceArticleUuid: null,
+  sourceArticleDetail: null,
+  sourceArticleLoading: false,
+  sourceArticleError: null,
 
   fetchSignals: async (limit = 5) => {
     set({ signalsLoading: true, signalsError: null });
@@ -237,15 +254,12 @@ export const createTodaySlice: StateCreator<TodaySlice> = (set, get) => ({
   },
 
   startInlineReading: (signalId, sourceIndex = 0) => {
-    set((state) => {
-      const wasReadingAnother = state.activeReadingSignalId !== null && state.activeReadingSignalId !== signalId;
-      return {
-        activeReadingSignalId: signalId,
-        activeReadingSourceIndex: wasReadingAnother ? 0 : sourceIndex,
-        isInlineReading: true,
-        rightPanelExpanded: true,
-      };
-    });
+    set(() => ({
+      activeReadingSignalId: signalId,
+      activeReadingSourceIndex: sourceIndex,
+      isInlineReading: true,
+      rightPanelExpanded: true,
+    }));
   },
 
   closeInlineReading: () => {
@@ -261,6 +275,62 @@ export const createTodaySlice: StateCreator<TodaySlice> = (set, get) => ({
     const { isInlineReading } = get();
     if (!isInlineReading) return;
     set({ activeReadingSourceIndex: index });
+  },
+
+  openSourceArticle: async (source) => {
+    const { activeSourceArticleUuid } = get();
+    if (activeSourceArticleUuid === source.article_uuid) return;
+
+    set({
+      activeSourceArticleUuid: source.article_uuid,
+      sourceArticleDetail: null,
+      sourceArticleLoading: true,
+      sourceArticleError: null,
+    });
+
+    try {
+      const res = await dataAgent.getArticleDetail(source.article_uuid, {});
+      const data = res.data;
+      set({ sourceArticleDetail: data, sourceArticleLoading: false });
+    } catch (e) {
+      set({ sourceArticleError: String(e), sourceArticleLoading: false });
+    }
+  },
+
+  closeSourceArticle: () => {
+    set({
+      activeSourceArticleUuid: null,
+      sourceArticleDetail: null,
+      sourceArticleLoading: false,
+      sourceArticleError: null,
+    });
+  },
+
+  retrySourceArticle: () => {
+    const { activeSourceArticleUuid } = get();
+    if (!activeSourceArticleUuid) return;
+    const signal = get().signals.find((s) =>
+      s.sources.some((src) => src.article_uuid === activeSourceArticleUuid),
+    );
+    const detail = signal ? get().signalDetails[signal.id] : undefined;
+    const sources = detail?.all_sources ?? signal?.sources ?? [];
+    const source = sources.find((s) => s.article_uuid === activeSourceArticleUuid);
+    if (!source) return;
+
+    set({
+      sourceArticleDetail: null,
+      sourceArticleLoading: true,
+      sourceArticleError: null,
+    });
+
+    dataAgent
+      .getArticleDetail(source.article_uuid, {})
+      .then((res) => {
+        set({ sourceArticleDetail: res.data, sourceArticleLoading: false });
+      })
+      .catch((e) => {
+        set({ sourceArticleError: String(e), sourceArticleLoading: false });
+      });
   },
 
   setScrollPosition: (signalId, scrollY) => {

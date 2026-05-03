@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { formatDistanceToNow, parseISO } from "date-fns";
-import { ChevronLeft, ChevronRight, ExternalLink, Star } from "lucide-react";
+import { ChevronLeft, ChevronRight, ExternalLink, Star, Loader2, AlertCircle, RotateCw } from "lucide-react";
+import DOMPurify from "dompurify";
 import type { SignalSource } from "@/stores/createTodaySlice";
+import type { ArticleResItem } from "@/db";
 
 interface InlineReaderProps {
   source: SignalSource;
@@ -10,28 +12,37 @@ interface InlineReaderProps {
   currentIndex: number;
   onBack: () => void;
   onNavigate: (index: number) => void;
+  articleDetail: ArticleResItem | null;
+  articleLoading: boolean;
+  articleError: string | null;
+  onRetry: () => void;
 }
 
-function getReadingParagraphs(source: SignalSource, t: (key: string) => string) {
-  const excerpt = source.excerpt?.trim();
-  if (!excerpt) {
-    return [];
+function getArticleContent(detail: ArticleResItem | null, excerpt: string | null): string {
+  if (detail) {
+    const { content, description } = detail;
+    if (content && description) {
+      return content.length > description.length ? content : description;
+    }
+    if (content || description) {
+      return content || description || "";
+    }
   }
+  return excerpt?.trim() || "";
+}
 
-  const paragraphs = excerpt
-    .split(/\n{2,}/)
-    .map((item) => item.trim())
-    .filter(Boolean);
-
-  if (paragraphs.length > 1) {
-    return paragraphs;
-  }
-
-  return [
-    excerpt,
-    t("today.inline_reader.guide_context"),
-    t("today.inline_reader.guide_back"),
-  ];
+function sanitizeContent(html: string): string {
+  let result = html;
+  result = result.replace(/<a[^>]+>/gi, (a: string) => {
+    if (!/\starget\s*=/gi.test(a)) {
+      return a.replace(/^<a\s/, '<a target="_blank"');
+    }
+    return a;
+  });
+  result = result.replace(/<img\s+(?:[^>]*?\s+)?src="([^"]*)"[^>]*>/g, (match, src) => {
+    return `<img src="${src}" style="max-width:100%;height:auto;" />`;
+  });
+  return DOMPurify.sanitize(result);
 }
 
 function formatSourceDate(date?: string) {
@@ -51,14 +62,20 @@ export function InlineReader({
   currentIndex,
   onBack,
   onNavigate,
+  articleDetail,
+  articleLoading,
+  articleError,
+  onRetry,
 }: InlineReaderProps) {
   const { t } = useTranslation();
   const [localStarred, setLocalStarred] = useState(false);
 
   const canGoPrev = currentIndex > 0;
   const canGoNext = currentIndex < sources.length - 1;
-  const paragraphs = getReadingParagraphs(source, t);
   const sourceDate = formatSourceDate(source.pub_date);
+
+  const htmlContent = sanitizeContent(getArticleContent(articleDetail, source.excerpt));
+  const hasContent = htmlContent.length > 0;
 
   return (
     <div className="flex h-full min-w-0 flex-col">
@@ -122,18 +139,35 @@ export function InlineReader({
           {sourceDate && <> · {sourceDate}</>}
         </div>
 
-        {paragraphs.length > 0 && (
-          <div className="space-y-4 break-words text-[14px] text-[var(--gray-11)] leading-[1.8]">
-            {paragraphs.map((paragraph, index) => (
-              <p key={`${source.article_uuid}-${index}`}>{paragraph}</p>
-            ))}
-            <blockquote className="border-l-[3px] border-[var(--accent-8)] bg-[var(--accent-a2)] py-3 pl-4 pr-3 text-[13px] italic leading-7 text-[var(--gray-11)]">
-              {t("today.inline_reader.cross_validation")}
-            </blockquote>
+        {articleLoading && (
+          <div className="flex flex-col items-center justify-center py-20 text-sm text-[var(--gray-9)]">
+            <Loader2 className="animate-spin mb-3" size={24} />
+            {t("today.inline_reader.loading")}
           </div>
         )}
 
-        {paragraphs.length === 0 && (
+        {articleError && !articleLoading && (
+          <div className="flex flex-col items-center justify-center py-20 text-center">
+            <AlertCircle size={32} className="text-[var(--red-9)] mb-3" />
+            <p className="text-sm text-[var(--gray-11)] mb-3">{articleError}</p>
+            <button
+              onClick={onRetry}
+              className="inline-flex items-center gap-1.5 text-sm text-[var(--accent-9)] hover:text-[var(--accent-10)] transition-colors"
+            >
+              <RotateCw size={14} />
+              {t("today.inline_reader.retry")}
+            </button>
+          </div>
+        )}
+
+        {!articleLoading && !articleError && hasContent && (
+          <div
+            className="prose prose-sm max-w-none break-words text-[14px] text-[var(--gray-11)] leading-[1.8]"
+            dangerouslySetInnerHTML={{ __html: htmlContent }}
+          />
+        )}
+
+        {!articleLoading && !articleError && !hasContent && (
           <div className="rounded-lg border border-[var(--gray-5)] bg-[var(--gray-2)] px-5 py-12 text-center text-sm leading-6 text-[var(--gray-9)]">
             {t("today.inline_reader.content_placeholder")}
           </div>

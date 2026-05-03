@@ -51,6 +51,10 @@ describe("Today inline reading flow", () => {
         currentIndex={0}
         onBack={vi.fn()}
         onNavigate={vi.fn()}
+        articleDetail={null}
+        articleLoading={false}
+        articleError={null}
+        onRetry={vi.fn()}
       />,
     );
 
@@ -68,6 +72,10 @@ describe("Today inline reading flow", () => {
         currentIndex={0}
         onBack={vi.fn()}
         onNavigate={onNavigate}
+        articleDetail={null}
+        articleLoading={false}
+        articleError={null}
+        onRetry={vi.fn()}
       />,
     );
 
@@ -84,6 +92,10 @@ describe("Today inline reading flow", () => {
         currentIndex={1}
         onBack={vi.fn()}
         onNavigate={onNavigate}
+        articleDetail={null}
+        articleLoading={false}
+        articleError={null}
+        onRetry={vi.fn()}
       />,
     );
 
@@ -100,6 +112,10 @@ describe("Today inline reading flow", () => {
         currentIndex={0}
         onBack={onBack}
         onNavigate={vi.fn()}
+        articleDetail={null}
+        articleLoading={false}
+        articleError={null}
+        onRetry={vi.fn()}
       />,
     );
 

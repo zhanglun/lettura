@@ -76,7 +76,7 @@ export function SignalCard({ signal, isActive, isDimmed, onInlineRead, activeRea
     })),
   );
 
-  const isExpanded = isActive || store.expandedSignalId === signal.id;
+  const isExpanded = isActive || store.expandedSignalId !== signal.id;
   const detail = store.signalDetails[signal.id];
   const sources = detail?.all_sources ?? signal.sources;
   const currentFeedback = store.feedbackMap[signal.id] ?? null;
@@ -164,14 +164,22 @@ export function SignalCard({ signal, isActive, isDimmed, onInlineRead, activeRea
             ))}
           </span>
 
-          {signal.topic_id && signal.topic_title && (
+          {signal.topic_id && signal.topic_title && signal.topic_uuid && (
             <Link
-              to={RouteConfig.LOCAL_TOPICS}
+              to={`${RouteConfig.LOCAL_TOPICS}/${signal.topic_uuid}`}
               className={`inline-flex items-center gap-1 text-[11px] font-medium rounded-full px-2 py-0.5 w-fit transition-colors ${topicColor?.bg} ${topicColor?.text}`}
             >
               <Layers size={10} />
               {signal.topic_title}
             </Link>
+          )}
+          {signal.topic_id && signal.topic_title && !signal.topic_uuid && (
+            <span
+              className={`inline-flex items-center gap-1 text-[11px] font-medium rounded-full px-2 py-0.5 w-fit ${topicColor?.bg} ${topicColor?.text}`}
+            >
+              <Layers size={10} />
+              {signal.topic_title}
+            </span>
           )}
 
           <span className="ml-auto text-[11px] text-[var(--gray-8)]">
@@ -245,12 +253,6 @@ export function SignalCard({ signal, isActive, isDimmed, onInlineRead, activeRea
               }}
             />
           </div>
-          <span
-            className="text-[10px] font-semibold tabular-nums"
-            style={{ color: isHighConfidence ? "var(--accent-9)" : "#d97706" }}
-          >
-            {percent}%
-          </span>
           {!isHighConfidence && (
             <span className="text-[10px] font-medium rounded-full px-1.5 py-0.5 bg-[#fffbeb] text-[#d97706]">
               {t("today.signal_card.unverified")}
@@ -275,7 +277,6 @@ export function SignalCard({ signal, isActive, isDimmed, onInlineRead, activeRea
           </Flex>
         )}
 
-        {!isDimmed && (
         <div className="overflow-hidden transition-all duration-300 ease-in-out"
           style={{
             maxHeight: isExpanded ? "2000px" : "0px",
@@ -292,43 +293,42 @@ export function SignalCard({ signal, isActive, isDimmed, onInlineRead, activeRea
             isActive={isActive}
           />
         </div>
-        )}
 
         {!isDimmed && (
         <Flex align="center" gap="3" mt="2" pt="2" className="border-t border-[var(--gray-4)]">
-          <button
-            onClick={() => handleFeedback("useful")}
-            disabled={isSubmitting || !!currentFeedback}
-            className={`flex items-center gap-1 text-xs transition-colors disabled:opacity-50 ${
-              currentFeedback === "useful"
-                ? "text-[var(--accent-9)] font-medium"
-                : "text-[var(--gray-9)] hover:text-[var(--gray-11)]"
-            }`}
-          >
-            👍 {t("today.feedback.useful")}
-          </button>
-          <button
-            onClick={() => handleFeedback("not_relevant")}
-            disabled={isSubmitting || !!currentFeedback}
-            className={`flex items-center gap-1 text-xs transition-colors disabled:opacity-50 ${
-              currentFeedback === "not_relevant"
-                ? "text-[var(--accent-9)] font-medium"
-                : "text-[var(--gray-9)] hover:text-[var(--gray-11)]"
-            }`}
-          >
-            👎 {t("today.feedback.not_relevant")}
-          </button>
-          <button
-            onClick={() => handleFeedback("follow_topic")}
-            disabled={isSubmitting || !!currentFeedback}
-            className={`flex items-center gap-1 text-xs transition-colors disabled:opacity-50 ${
-              currentFeedback === "follow_topic"
-                ? "text-[var(--accent-9)] font-medium"
-                : "text-[var(--gray-9)] hover:text-[var(--gray-11)]"
-            }`}
-          >
-            📌 {t("today.feedback.follow_topic")}
-          </button>
+            <button
+              onClick={() => handleFeedback("useful")}
+              disabled={isSubmitting || !!currentFeedback}
+              className={`flex items-center gap-1 text-xs transition-colors disabled:opacity-50 ${
+                currentFeedback === "useful"
+                  ? "text-[var(--accent-9)] font-medium"
+                  : "text-[var(--gray-9)] hover:text-[var(--gray-11)]"
+              }`}
+            >
+              {t("today.feedback.useful")}
+            </button>
+            <button
+              onClick={() => handleFeedback("not_relevant")}
+              disabled={isSubmitting || !!currentFeedback}
+              className={`flex items-center gap-1 text-xs transition-colors disabled:opacity-50 ${
+                currentFeedback === "not_relevant"
+                  ? "text-[var(--accent-9)] font-medium"
+                  : "text-[var(--gray-9)] hover:text-[var(--gray-11)]"
+              }`}
+            >
+              {t("today.feedback.not_relevant")}
+            </button>
+            <button
+              onClick={() => handleFeedback("follow_topic")}
+              disabled={isSubmitting || !!currentFeedback}
+              className={`flex items-center gap-1 text-xs transition-colors disabled:opacity-50 ${
+                currentFeedback === "follow_topic"
+                  ? "text-[var(--accent-9)] font-medium"
+                  : "text-[var(--gray-9)] hover:text-[var(--gray-11)]"
+              }`}
+            >
+              {t("today.feedback.follow_topic")}
+            </button>
         </Flex>
         )}
       </Flex>

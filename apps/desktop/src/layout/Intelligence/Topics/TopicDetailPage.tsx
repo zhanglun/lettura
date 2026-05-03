@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Text, Flex } from "@radix-ui/themes";
-import { ArrowLeft, Layers, FileText, Rss, Clock, Pin, PinOff, Sparkles } from "lucide-react";
+import { ArrowLeft, Layers, FileText, Rss, Clock, Pin, PinOff, Sparkles, Activity, BookmarkPlus, ExternalLink } from "lucide-react";
 import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
 import { RouteConfig } from "@/config";
@@ -147,6 +147,76 @@ export function TopicDetailPage() {
               <p className="text-xs text-[var(--gray-11)] leading-relaxed">
                 {topic.topic_summary}
               </p>
+            </div>
+          )}
+
+          {topic.recent_changes && topic.recent_changes.length > 0 && (
+            <div className="rounded-[10px] border border-[var(--gray-4)] shadow-sm p-4 mb-5 bg-[var(--color-background)]">
+              <div className="flex items-center gap-1.5 mb-3">
+                <Activity size={14} className="text-[var(--accent-9)]" />
+                <span className="text-xs font-semibold text-[var(--gray-12)]">
+                  {t("layout.topics.detail.recent_changes")}
+                </span>
+              </div>
+              <div className="flex flex-col gap-2.5">
+                {topic.recent_changes.map((change, idx) => (
+                  <div key={idx} className="flex items-start gap-3 text-xs">
+                    <div className="flex flex-col items-center pt-0.5">
+                      <div className="h-2 w-2 rounded-full bg-[var(--accent-9)] shrink-0" />
+                      {idx < topic.recent_changes.length - 1 && (
+                        <div className="w-px flex-1 bg-[var(--gray-4)] mt-1 min-h-[16px]" />
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[var(--gray-8)] tabular-nums">{formatDate(change.date)}</span>
+                        <span className="text-[var(--gray-12)] font-medium truncate">{change.title}</span>
+                      </div>
+                      <span className="text-[var(--gray-9)]">
+                        {t("layout.topics.detail.recent_changes_articles", { count: change.article_count, sources: change.source_count })}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {topic.articles.length > 0 && (
+            <div className="rounded-[10px] border border-[var(--gray-4)] shadow-sm p-4 mb-5 bg-[var(--color-background)]">
+              <div className="flex items-center gap-1.5 mb-3">
+                <BookmarkPlus size={14} className="text-[var(--accent-9)]" />
+                <span className="text-xs font-semibold text-[var(--gray-12)]">
+                  {t("layout.topics.detail.start_here")}
+                </span>
+                <span className="text-[10px] text-[var(--gray-8)] ml-1">
+                  {t("layout.topics.detail.start_here_desc")}
+                </span>
+              </div>
+              <div className="flex flex-col gap-2">
+                {[...topic.articles]
+                  .sort((a, b) => b.relevance_score - a.relevance_score)
+                  .slice(0, 3)
+                  .map((article) => (
+                    <div key={article.article_id} className="flex items-center justify-between gap-3 rounded-md px-3 py-2 bg-[var(--gray-2)] hover:bg-[var(--gray-3)] transition-colors">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className="shrink-0 text-[10px] font-semibold text-[var(--accent-9)] bg-[var(--accent-a3)] rounded-full px-1.5 py-0.5">
+                          {t("layout.topics.detail.recommended")}
+                        </span>
+                        <span className="text-xs text-[var(--gray-12)] truncate">{article.title}</span>
+                      </div>
+                      <a
+                        href={article.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1 text-xs text-[var(--gray-9)] hover:text-[var(--accent-9)] transition-colors shrink-0"
+                      >
+                        <ExternalLink size={12} />
+                        {t("layout.topics.detail.read_original")}
+                      </a>
+                    </div>
+                  ))}
+              </div>
             </div>
           )}
 

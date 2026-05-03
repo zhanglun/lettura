@@ -43,6 +43,7 @@ describe("createTodaySlice — source expand/detail", () => {
         sources: [],
         topic_id: null,
         topic_title: null,
+        topic_uuid: null,
         created_at: new Date().toISOString(),
       },
       all_sources: [

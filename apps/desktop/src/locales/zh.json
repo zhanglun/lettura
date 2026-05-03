@@ -27,6 +27,8 @@
   "Reload feeds": "重新加载源",
   "View detail": "查看详情",
   "Unsubscribe": "取消订阅",
+  "Sync All": "同步全部",
+  "Syncing...": "同步中...",
   "Follow your favorite sources and never miss a story": "关注您最喜欢的来源，不要错过任何故事",
 
   "Cancel": "取消",
@@ -131,6 +133,10 @@
   "Start reloading, Please wait...": "开始加载，请稍候...",
   "{{title}} is already up to date, no new content found": "{{title}} 已经是最新的了，没有发现新内容",
   "We have {{num}} new pieces of data from {{title}}": "{{title}} 加载完成，增加了{{num}}条新的内容",
+
+  "feeds": {
+    "select_article": "选择一篇文章开始阅读"
+  },
 
   "onboarding": {
     "welcome": {
@@ -272,7 +278,9 @@
       "source_of": "来源 {{current}}/{{total}}",
       "guide_context": "这篇来源被纳入今日信号，是因为它补充了该主题下的关键事实、上下文或社区反馈。你可以继续切换同一信号下的其他来源，比较不同报道之间的侧重点。",
       "guide_back": "阅读完成后，可以回到信号列表继续判断这个主题是否值得追踪，或打开原文查看完整细节。",
-      "cross_validation": "这个来源正在与同一信号下的其他文章交叉验证。重点关注它新增了什么，而不是只看标题是否重复。"
+      "cross_validation": "这个来源正在与同一信号下的其他文章交叉验证。重点关注它新增了什么，而不是只看标题是否重复。",
+      "loading": "加载文章中...",
+      "retry": "重试"
     }
   },
   "settings": {
@@ -317,7 +325,9 @@
       "following": "已关注",
       "filter": {
         "all": "全部",
-        "following": "已关注"
+        "following": "已关注",
+        "tracked": "已追踪",
+        "discovered": "已发现"
       },
       "sort": {
         "relevance": "相关性",
@@ -339,7 +349,13 @@
         "show_more": "展开更多",
         "show_less": "收起",
         "source_distribution": "来源分布",
-        "no_source_data": "暂无来源数据"
+        "no_source_data": "暂无来源数据",
+        "recent_changes": "最近变化",
+        "recent_changes_articles": "{{count}} 篇文章 · {{sources}} 个来源",
+        "start_here": "推荐阅读",
+        "start_here_desc": "系统推荐最值得先读的 1-3 篇原文",
+        "read_original": "阅读原文",
+        "recommended": "推荐"
       },
       "empty": {
         "sample_1_name": "AI Agent 竞争格局",

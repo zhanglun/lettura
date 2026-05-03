@@ -35,7 +35,7 @@ pub struct TopicDetail {
   pub first_seen_at: String,
   pub last_updated_at: String,
   pub is_following: bool,
-  pub recent_changes: Option<String>,
+  pub recent_changes: Vec<RecentChange>,
   pub articles: Vec<TopicArticleItem>,
   pub topic_summary: Option<String>,
   pub source_groups: Vec<SourceGroup>,
@@ -61,6 +61,16 @@ pub struct SourceGroup {
   pub feed_uuid: String,
   pub article_count: i32,
   pub articles: Vec<TopicArticleItem>,
+}
+
+/// A recent change event within a topic's timeline
+#[derive(Debug, Serialize, Clone)]
+pub struct RecentChange {
+  pub date: String,
+  pub title: String,
+  pub summary: String,
+  pub article_count: i32,
+  pub source_count: i32,
 }
 
 /// Create or update a topic from a cluster of articles.
@@ -131,12 +141,18 @@ fn compute_source_count(conn: &mut SqliteConnection, article_ids: &[i32]) -> Res
 }
 
 fn link_articles_to_topic(conn: &mut SqliteConnection, topic_id: i32, article_ids: &[i32]) {
+  // Base relevance from cluster density: more articles → higher confidence
+  let base_relevance = match article_ids.len() {
+    n if n >= 6 => 0.85,
+    n if n >= 3 => 0.70,
+    _ => 0.55,
+  };
   for &aid in article_ids {
     diesel::insert_into(topic_articles::table)
       .values(NewTopicArticle {
         topic_id,
         article_id: aid,
-        relevance_score: 0.7,
+        relevance_score: base_relevance,
       })
       .execute(conn)
       .ok();
@@ -440,6 +456,35 @@ pub fn get_topic_detail_by_id(
 
   let is_following = is_topic_followed(conn, topic.id);
 
+  let mut date_groups: HashMap<String, Vec<&TopicArticleItem>> = HashMap::new();
+  for art in &arts {
+    let date_key = art.pub_date.split('T').next().unwrap_or(&art.pub_date).to_string();
+    date_groups.entry(date_key).or_default().push(art);
+  }
+
+  let mut recent_changes: Vec<RecentChange> = date_groups
+    .into_iter()
+    .map(|(date, articles)| {
+      let article_count = articles.len() as i32;
+      let source_set: HashSet<&str> = articles.iter().map(|a| a.feed_uuid.as_str()).collect();
+      let source_count = source_set.len() as i32;
+      let title = articles
+        .iter()
+        .max_by(|a, b| a.relevance_score.partial_cmp(&b.relevance_score).unwrap_or(std::cmp::Ordering::Equal))
+        .map(|a| a.title.clone())
+        .unwrap_or_default();
+      RecentChange {
+        date,
+        title,
+        summary: String::new(),
+        article_count,
+        source_count,
+      }
+    })
+    .collect();
+  recent_changes.sort_by(|a, b| b.date.cmp(&a.date));
+  recent_changes.truncate(5);
+
   Ok(TopicDetail {
     id: topic.id,
     uuid: topic.uuid,
@@ -451,7 +496,7 @@ pub fn get_topic_detail_by_id(
     first_seen_at: topic.first_seen_at.to_string(),
     last_updated_at: topic.last_updated_at.to_string(),
     is_following,
-    recent_changes: None,
+    recent_changes,
     articles: arts,
     topic_summary,
     source_groups,

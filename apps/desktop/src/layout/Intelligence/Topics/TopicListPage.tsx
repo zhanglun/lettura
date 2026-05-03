@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Text } from "@radix-ui/themes";
 import { FileText, Layers, Rss, Sparkles, TrendingUp } from "lucide-react";
+import { listen } from "@tauri-apps/api/event";
 import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
 import { cn } from "@/helpers/cn";
@@ -66,11 +67,11 @@ function TopicEmptyPreview({ title }: { title: string }) {
                 <div className="flex items-center gap-4 text-xs text-[var(--gray-9)]">
                   <span className="inline-flex items-center gap-1">
                     <FileText size={13} />
-                    {topic.articles} articles
+                    {topic.articles} {t("layout.topics.detail.articles")}
                   </span>
                   <span className="inline-flex items-center gap-1">
                     <Rss size={13} />
-                    {topic.sources} sources
+                    {topic.sources} {t("layout.topics.detail.sources")}
                   </span>
                   <span className="inline-flex items-center gap-1">
                     <TrendingUp size={13} />
@@ -114,17 +115,6 @@ function TopicEmptyPreview({ title }: { title: string }) {
                 {t("layout.topics.empty.step_3")}
               </div>
             </div>
-            <div className="space-y-3 text-xs leading-5 text-[var(--gray-11)]">
-              <div className="rounded-md bg-[var(--color-background)] p-3">
-                同步订阅源后，Today 的高信号内容会自动归入 Topic。
-              </div>
-              <div className="rounded-md bg-[var(--color-background)] p-3">
-                在信号卡片中点击“追踪主题”，可以把主题固定到侧边栏。
-              </div>
-              <div className="rounded-md bg-[var(--color-background)] p-3">
-                进入 Topic 后，可以从来源证据回到原文阅读。
-              </div>
-            </div>
           </aside>
         </div>
       </div>
@@ -149,16 +139,41 @@ export const TopicListPage = React.memo(function () {
     })),
   );
 
-  const displayedTopics = useMemo(() => {
-    if (store.filterMode === "following") {
-      return store.topics.filter((t) => t.is_following);
-    }
-    return store.topics;
-  }, [store.topics, store.filterMode]);
+  const trackedTopics = useMemo(
+    () => store.topics.filter((t) => t.is_following),
+    [store.topics],
+  );
+
+  const discoveredTopics = useMemo(
+    () => store.topics.filter((t) => !t.is_following),
+    [store.topics],
+  );
 
   useEffect(() => {
     store.fetchTopics("active", store.sortMode || "last_updated");
   }, [store.sortMode]);
+
+  useEffect(() => {
+    let cancelled = false;
+    const unsubs: (() => void)[] = [];
+
+    listen("pipeline:completed", () => {
+      if (!cancelled) {
+        store.fetchTopics();
+      }
+    }).then((unlisten) => {
+      if (!cancelled) {
+        unsubs.push(unlisten);
+      } else {
+        unlisten();
+      }
+    });
+
+    return () => {
+      cancelled = true;
+      unsubs.forEach((unsub) => unsub());
+    };
+  }, []);
 
   if (store.loading) {
     return (
@@ -185,10 +200,6 @@ export const TopicListPage = React.memo(function () {
     return <TopicEmptyPreview title={t("layout.topics.title")} />;
   }
 
-  if (displayedTopics.length === 0) {
-    return <TopicEmptyPreview title={t("layout.topics.title")} />;
-  }
-
   return (
     <div className="h-full overflow-auto bg-[var(--color-background)]">
       <div className="px-7 pb-4 pt-6">
@@ -199,31 +210,7 @@ export const TopicListPage = React.memo(function () {
           {t("layout.topics.subtitle")}
         </p>
       </div>
-      <div className="flex items-center justify-between px-7 pb-4">
-        <div className="flex items-center gap-1 bg-[var(--gray-2)] rounded-md p-0.5">
-          <button
-            className={cn(
-              "px-3 py-1 rounded text-xs transition-colors",
-              store.filterMode === "all"
-                ? "bg-[var(--color-background)] text-[var(--gray-12)] shadow-sm"
-                : "text-[var(--gray-9)] hover:text-[var(--gray-11)]",
-            )}
-            onClick={() => store.setFilterMode("all")}
-          >
-            {t("layout.topics.filter.all")}
-          </button>
-          <button
-            className={cn(
-              "px-3 py-1 rounded text-xs transition-colors",
-              store.filterMode === "following"
-                ? "bg-[var(--color-background)] text-[var(--gray-12)] shadow-sm"
-                : "text-[var(--gray-9)] hover:text-[var(--gray-11)]",
-            )}
-            onClick={() => store.setFilterMode("following")}
-          >
-            {t("layout.topics.filter.following")}
-          </button>
-        </div>
+      <div className="flex items-center justify-end px-7 pb-4">
         <select
           value={store.sortMode}
           onChange={(e) => store.setSortMode(e.target.value as "relevance" | "recent" | "article_count")}
@@ -234,15 +221,40 @@ export const TopicListPage = React.memo(function () {
           <option value="article_count">{t("layout.topics.sort.article_count")}</option>
         </select>
       </div>
-      <div className="flex flex-col gap-2.5 px-7 pb-6">
-        {displayedTopics.map((topic) => (
-          <TopicCard
-            key={topic.id}
-            topic={topic}
-            onClick={(uuid) => navigate(`/local/topics/${uuid}`)}
-          />
-        ))}
-      </div>
+
+      {trackedTopics.length > 0 && (
+        <div className="px-7 pb-5">
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-[var(--gray-10)] mb-3">
+            {t("layout.topics.filter.tracked")}
+          </h2>
+          <div className="flex flex-col gap-2.5">
+            {trackedTopics.map((topic) => (
+              <TopicCard
+                key={topic.id}
+                topic={topic}
+                onClick={(uuid) => navigate(`/local/topics/${uuid}`)}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {discoveredTopics.length > 0 && (
+        <div className="px-7 pb-6">
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-[var(--gray-10)] mb-3">
+            {t("layout.topics.filter.discovered")}
+          </h2>
+          <div className="flex flex-col gap-2.5">
+            {discoveredTopics.map((topic) => (
+              <TopicCard
+                key={topic.id}
+                topic={topic}
+                onClick={(uuid) => navigate(`/local/topics/${uuid}`)}
+              />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 });

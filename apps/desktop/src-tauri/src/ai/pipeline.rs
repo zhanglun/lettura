@@ -33,6 +33,7 @@ pub struct Signal {
   pub sources: Vec<SignalSource>,
   pub topic_id: Option<i32>,
   pub topic_title: Option<String>,
+  pub topic_uuid: Option<String>,
   pub created_at: String,
 }
 
@@ -822,7 +823,7 @@ pub fn get_today_signals(conn: &mut SqliteConnection, limit: i32) -> Result<Vec<
 
     let sources = get_sources_for_article(conn, article_id);
 
-    let (topic_id, topic_title) = {
+    let (topic_id, topic_title, topic_uuid) = {
       let tid: Option<i32> = article_ai_analysis::table
         .filter(article_ai_analysis::id.eq(analysis_id))
         .select(article_ai_analysis::topic_id)
@@ -830,15 +831,17 @@ pub fn get_today_signals(conn: &mut SqliteConnection, limit: i32) -> Result<Vec<
         .ok()
         .flatten();
 
-      let ttitle = match tid {
+      let (ttitle, tuuid) = match tid {
         Some(tid_val) => topics::table
           .find(tid_val)
-          .select(topics::title)
-          .first::<String>(conn)
-          .ok(),
-        None => None,
+          .select((topics::title, topics::uuid))
+          .first::<(String, String)>(conn)
+          .ok()
+          .map(|(t, u)| (Some(t), Some(u)))
+          .unwrap_or((None, None)),
+        None => (None, None),
       };
-      (tid, ttitle)
+      (tid, ttitle, tuuid)
     };
 
     signals.push(Signal {
@@ -851,6 +854,7 @@ pub fn get_today_signals(conn: &mut SqliteConnection, limit: i32) -> Result<Vec<
       sources,
       topic_id,
       topic_title,
+      topic_uuid,
       created_at: Utc::now().to_rfc3339(),
     });
   }
@@ -901,7 +905,7 @@ pub fn get_signal_detail(
 
   let all_sources = find_related_sources(conn, signal_id, article_id, 0.7)?;
 
-  let (topic_id, topic_title) = {
+  let (topic_id, topic_title, topic_uuid) = {
     let tid: Option<i32> = article_ai_analysis::table
       .filter(article_ai_analysis::id.eq(signal_id))
       .select(article_ai_analysis::topic_id)
@@ -909,15 +913,17 @@ pub fn get_signal_detail(
       .ok()
       .flatten();
 
-    let ttitle = match tid {
+    let (ttitle, tuuid) = match tid {
       Some(tid_val) => topics::table
         .find(tid_val)
-        .select(topics::title)
-        .first::<String>(conn)
-        .ok(),
-      None => None,
+        .select((topics::title, topics::uuid))
+        .first::<(String, String)>(conn)
+        .ok()
+        .map(|(t, u)| (Some(t), Some(u)))
+        .unwrap_or((None, None)),
+      None => (None, None),
     };
-    (tid, ttitle)
+    (tid, ttitle, tuuid)
   };
 
   let signal = Signal {
@@ -930,6 +936,7 @@ pub fn get_signal_detail(
     sources: all_sources.clone(),
     topic_id,
     topic_title,
+    topic_uuid,
     created_at: Utc::now().to_rfc3339(),
   };
 
@@ -1008,7 +1015,7 @@ pub fn find_related_sources(
 }
 
 fn build_signal_source(conn: &mut SqliteConnection, article_id: i32) -> Option<SignalSource> {
-  let article: (i32, String, String, String, String, String) = articles::table
+  let article: (i32, String, String, String, String, String, String) = articles::table
     .find(article_id)
     .select((
       articles::id,
@@ -1017,17 +1024,24 @@ fn build_signal_source(conn: &mut SqliteConnection, article_id: i32) -> Option<S
       articles::link,
       articles::feed_uuid,
       articles::pub_date,
+      articles::description,
     ))
     .first(conn)
     .ok()?;
 
-  let (id, uuid, title, link, feed_uuid, pub_date) = article;
+  let (id, uuid, title, link, feed_uuid, pub_date, description) = article;
 
   let feed_title: Option<String> = feeds::table
     .filter(feeds::uuid.eq(&feed_uuid))
     .select(feeds::title)
     .first(conn)
     .ok();
+
+  let excerpt = if description.trim().is_empty() {
+    None
+  } else {
+    Some(description)
+  };
 
   Some(SignalSource {
     article_id: id,
@@ -1037,7 +1051,7 @@ fn build_signal_source(conn: &mut SqliteConnection, article_id: i32) -> Option<S
     feed_title: feed_title.unwrap_or_default(),
     feed_uuid,
     pub_date,
-    excerpt: None,
+    excerpt,
   })
 }
 

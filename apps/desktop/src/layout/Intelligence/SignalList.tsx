@@ -18,7 +18,7 @@ export function SignalList({ signals, activeReadingSignalId, activeReadingSource
         return (
           <div
             key={signal.id}
-            className={`animate-in fade-in slide-in-from-bottom-2 transition-opacity duration-300 ${isDimmed ? "pointer-events-none" : ""}`}
+            className="animate-in fade-in slide-in-from-bottom-2 transition-opacity duration-300"
             style={{
               animationDelay: `${index * 50}ms`,
               animationFillMode: "both",

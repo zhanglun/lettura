@@ -5,6 +5,9 @@ import type { Signal } from "@/stores/createTodaySlice";
 
 vi.mock("react-router-dom", () => ({
   useNavigate: () => vi.fn(),
+  Link: ({ to, children, ...props }: { to: string; children: React.ReactNode }) => (
+    <a href={to} {...props}>{children}</a>
+  ),
 }));
 
 vi.mock("react-i18next", () => ({
@@ -71,6 +74,7 @@ const makeSignal = (overrides: Partial<Signal> = {}): Signal => ({
   ],
   topic_id: null,
   topic_title: null,
+  topic_uuid: null,
   created_at: new Date().toISOString(),
   ...overrides,
 });
@@ -144,36 +148,63 @@ describe("SignalCard", () => {
   });
 
   describe("Source expand/collapse", () => {
-    it("T-SRC-01: sources not expanded by default", () => {
+    it("T-SRC-01: sources expanded by default", () => {
       const signal = makeSignal();
       render(<SignalCard signal={signal} />);
 
       const sourceListContainer = screen.getByTestId("source-list").parentElement;
-      expect(sourceListContainer).toHaveStyle({ maxHeight: "0px", opacity: "0" });
+      expect(sourceListContainer).toHaveStyle({ maxHeight: "2000px", opacity: "1" });
     });
 
-    it("T-SRC-02: clicking expand shows SignalSourceList with expanded styles", () => {
+    it("T-SRC-02: clicking collapse hides SignalSourceList with collapsed styles", () => {
       const signal = makeSignal();
       mockStore.expandedSignalId = signal.id;
       const { rerender } = render(<SignalCard signal={signal} />);
 
       const sourceListContainer = screen.getByTestId("source-list").parentElement;
-      expect(sourceListContainer).toHaveStyle({ maxHeight: "2000px", opacity: "1" });
-      expect(screen.getByText("Sources: 2")).toBeInTheDocument();
+      expect(sourceListContainer).toHaveStyle({ maxHeight: "0px", opacity: "0" });
 
       mockStore.expandedSignalId = null;
       rerender(<SignalCard signal={signal} />);
-      expect(screen.getByTestId("source-list").parentElement).toHaveStyle({ maxHeight: "0px", opacity: "0" });
+      expect(screen.getByTestId("source-list").parentElement).toHaveStyle({ maxHeight: "2000px", opacity: "1" });
     });
 
-    it("T-SRC-03: clicking expand button calls toggleSourceExpand", () => {
+    it("T-SRC-03: clicking collapse button calls toggleSourceExpand", () => {
       const signal = makeSignal();
       render(<SignalCard signal={signal} />);
 
-      const expandButton = screen.getByText("today.sources.expand");
-      fireEvent.click(expandButton);
+      const collapseButton = screen.getByText("today.sources.collapse");
+      fireEvent.click(collapseButton);
 
       expect(mockStore.toggleSourceExpand).toHaveBeenCalledWith(signal.id);
+    });
+  });
+
+  describe("Topic tag link safety", () => {
+    it("should not link to /local/topics/null when topic_uuid is null", () => {
+      const signal = makeSignal({
+        topic_id: 1,
+        topic_title: "Test Topic",
+        topic_uuid: null,
+      });
+      render(<SignalCard signal={signal} />);
+
+      const links = screen.queryAllByRole("link");
+      const topicLinks = links.filter((l) => l.getAttribute("href")?.includes("/local/topics/"));
+      expect(topicLinks).toHaveLength(0);
+      expect(screen.getByText("Test Topic")).toBeInTheDocument();
+    });
+
+    it("should link to topic detail when topic_uuid exists", () => {
+      const signal = makeSignal({
+        topic_id: 1,
+        topic_title: "Test Topic",
+        topic_uuid: "abc-123",
+      });
+      render(<SignalCard signal={signal} />);
+
+      const link = screen.getByRole("link", { name: /Test Topic/ });
+      expect(link).toHaveAttribute("href", "/local/topics/abc-123");
     });
   });
 });

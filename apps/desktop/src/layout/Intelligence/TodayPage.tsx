@@ -49,6 +49,13 @@ export function TodayPage() {
       closeInlineReading: state.closeInlineReading,
       navigateReadingSource: state.navigateReadingSource,
       signalDetails: state.signalDetails,
+      sourceArticleDetail: state.sourceArticleDetail,
+      sourceArticleLoading: state.sourceArticleLoading,
+      sourceArticleError: state.sourceArticleError,
+      activeSourceArticleUuid: state.activeSourceArticleUuid,
+      openSourceArticle: state.openSourceArticle,
+      closeSourceArticle: state.closeSourceArticle,
+      retrySourceArticle: state.retrySourceArticle,
     })),
   );
 
@@ -134,19 +141,30 @@ export function TodayPage() {
       const sourceIndex = sources.findIndex((s) => s.article_id === articleId);
 
       store.startInlineReading(signal.id, sourceIndex >= 0 ? sourceIndex : 0);
+
+      const source = sources[sourceIndex];
+      if (source) {
+        store.openSourceArticle(source);
+      }
     },
-    [store.signals, store.signalDetails, store.startInlineReading],
+    [store.signals, store.signalDetails, store.startInlineReading, store.openSourceArticle],
   );
 
   const handleReadingBack = useCallback(() => {
     store.closeInlineReading();
-  }, [store.closeInlineReading]);
+    store.closeSourceArticle();
+  }, [store.closeInlineReading, store.closeSourceArticle]);
 
   const handleReadingNavigate = useCallback(
     (index: number) => {
       store.navigateReadingSource(index);
+      const sources = activeReadingDetail?.all_sources ?? activeReadingSignal?.sources ?? [];
+      const newSource = sources[index];
+      if (newSource) {
+        store.openSourceArticle(newSource);
+      }
     },
-    [store.navigateReadingSource],
+    [store.navigateReadingSource, store.openSourceArticle, activeReadingDetail, activeReadingSignal],
   );
 
   const renderEmptyState = () => {
@@ -201,6 +219,10 @@ export function TodayPage() {
           currentIndex={store.activeReadingSourceIndex}
           onBack={handleReadingBack}
           onNavigate={handleReadingNavigate}
+          articleDetail={store.sourceArticleDetail}
+          articleLoading={store.sourceArticleLoading}
+          articleError={store.sourceArticleError}
+          onRetry={store.retrySourceArticle}
         />
       );
     }

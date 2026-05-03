@@ -31,6 +31,14 @@ export interface SourceGroup {
   articles: TopicArticle[];
 }
 
+export interface RecentChange {
+  date: string;
+  title: string;
+  summary: string;
+  article_count: number;
+  source_count: number;
+}
+
 export interface TopicDetail {
   id: number;
   uuid: string;
@@ -42,7 +50,7 @@ export interface TopicDetail {
   first_seen_at: string;
   last_updated_at: string;
   is_following: boolean;
-  recent_changes: string | null;
+  recent_changes: RecentChange[];
   articles: TopicArticle[];
   topic_summary?: string;
   source_groups?: SourceGroup[];

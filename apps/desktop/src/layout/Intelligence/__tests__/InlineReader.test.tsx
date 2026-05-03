@@ -63,6 +63,10 @@ describe("InlineReader", () => {
         currentIndex={0}
         onBack={vi.fn()}
         onNavigate={vi.fn()}
+        articleDetail={null}
+        articleLoading={false}
+        articleError={null}
+        onRetry={vi.fn()}
       />,
     );
 
@@ -77,6 +81,10 @@ describe("InlineReader", () => {
         currentIndex={0}
         onBack={vi.fn()}
         onNavigate={vi.fn()}
+        articleDetail={null}
+        articleLoading={false}
+        articleError={null}
+        onRetry={vi.fn()}
       />,
     );
 
@@ -93,6 +101,10 @@ describe("InlineReader", () => {
         currentIndex={0}
         onBack={onBack}
         onNavigate={vi.fn()}
+        articleDetail={null}
+        articleLoading={false}
+        articleError={null}
+        onRetry={vi.fn()}
       />,
     );
 
@@ -109,6 +121,10 @@ describe("InlineReader", () => {
         currentIndex={0}
         onBack={vi.fn()}
         onNavigate={onNavigate}
+        articleDetail={null}
+        articleLoading={false}
+        articleError={null}
+        onRetry={vi.fn()}
       />,
     );
 
@@ -125,6 +141,10 @@ describe("InlineReader", () => {
         currentIndex={1}
         onBack={vi.fn()}
         onNavigate={onNavigate}
+        articleDetail={null}
+        articleLoading={false}
+        articleError={null}
+        onRetry={vi.fn()}
       />,
     );
 
@@ -140,6 +160,10 @@ describe("InlineReader", () => {
         currentIndex={0}
         onBack={vi.fn()}
         onNavigate={vi.fn()}
+        articleDetail={null}
+        articleLoading={false}
+        articleError={null}
+        onRetry={vi.fn()}
       />,
     );
 
@@ -155,6 +179,10 @@ describe("InlineReader", () => {
         currentIndex={2}
         onBack={vi.fn()}
         onNavigate={vi.fn()}
+        articleDetail={null}
+        articleLoading={false}
+        articleError={null}
+        onRetry={vi.fn()}
       />,
     );
 
@@ -170,9 +198,32 @@ describe("InlineReader", () => {
         currentIndex={1}
         onBack={vi.fn()}
         onNavigate={vi.fn()}
+        articleDetail={null}
+        articleLoading={false}
+        articleError={null}
+        onRetry={vi.fn()}
       />,
     );
 
     expect(screen.getByText("2/3")).toBeInTheDocument();
+  });
+
+  it("should render source.excerpt when articleDetail has no content/description", () => {
+    render(
+      <InlineReader
+        source={mockSource}
+        sources={mockSources}
+        currentIndex={0}
+        onBack={vi.fn()}
+        onNavigate={vi.fn()}
+        articleDetail={{ content: "", description: "" } as any}
+        articleLoading={false}
+        articleError={null}
+        onRetry={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText("Short excerpt of the article")).toBeInTheDocument();
+    expect(screen.queryByText("today.inline_reader.content_placeholder")).not.toBeInTheDocument();
   });
 });

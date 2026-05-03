@@ -135,7 +135,7 @@ pub async fn generate_today_overview(
 
   if signals.is_empty() {
     let overview = TodayOverview {
-      summary: format!("{} 篇新文章，{} 条 Signal", article_count, signal_count),
+      summary: format!("Daily briefing unavailable: {} articles, {} signals.", article_count, signal_count),
       signal_count,
       article_count,
       generated_at: Utc::now().to_rfc3339(),
@@ -155,11 +155,17 @@ pub async fn generate_today_overview(
       if validate_overview(&trimmed) {
         trimmed
       } else {
-        trimmed
+        format!(
+          "Daily briefing unavailable: {} articles, {} signals.",
+          article_count, signal_count
+        )
       }
     }
     Err(_) => {
-      format!("{} 篇新文章，{} 条 Signal", article_count, signal_count)
+      format!(
+        "Daily briefing unavailable: {} articles, {} signals.",
+        article_count, signal_count
+      )
     }
   };
 

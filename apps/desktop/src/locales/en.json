@@ -27,6 +27,8 @@
   "Reload feeds": "Reload feeds",
   "View detail": "View detail",
   "Unsubscribe": "Unsubscribe",
+  "Sync All": "Sync All",
+  "Syncing...": "Syncing...",
   "Follow your favorite sources and never miss a story": "Follow your favorite sources and never miss a story",
   "All articles": "All articles",
   "Unread": "Unread",
@@ -109,6 +111,10 @@
   "Start reloading, Please wait...": "Start reloading, Please wait...",
   "{{title}} is already up to date, no new content found": "{{title}} is already up to date, no new content found",
   "We have {{num}} new pieces of data from {{title}}": "We have {{num}} new pieces of data from {{title}}",
+
+  "feeds": {
+    "select_article": "Select an article to read"
+  },
 
   "onboarding": {
     "welcome": {
@@ -250,7 +256,9 @@
       "source_of": "Source {{current}}/{{total}}",
       "guide_context": "This source was included in today's signals because it adds key facts, context, or community feedback to this topic. You can switch between sources under the same signal to compare different perspectives.",
       "guide_back": "After reading, return to the signal list to decide whether this topic is worth tracking, or open the original article for full details.",
-      "cross_validation": "This source is being cross-validated with other articles under the same signal. Focus on what new information it adds, not just whether the headline is a duplicate."
+      "cross_validation": "This source is being cross-validated with other articles under the same signal. Focus on what new information it adds, not just whether the headline is a duplicate.",
+      "loading": "Loading article...",
+      "retry": "Retry"
     }
   },
   "settings": {
@@ -295,7 +303,9 @@
       "following": "Following",
       "filter": {
         "all": "All",
-        "following": "Following"
+        "following": "Following",
+        "tracked": "Tracked",
+        "discovered": "Discovered"
       },
       "sort": {
         "relevance": "Relevance",
@@ -317,7 +327,13 @@
         "show_more": "Show more",
         "show_less": "Show less",
         "source_distribution": "Source Distribution",
-        "no_source_data": "No source data available"
+        "no_source_data": "No source data available",
+        "recent_changes": "Recent Changes",
+        "recent_changes_articles": "{{count}} articles · {{sources}} sources",
+        "start_here": "Start Here",
+        "start_here_desc": "System recommends the best 1-3 articles to read first",
+        "read_original": "Read Original",
+        "recommended": "Recommended"
       },
       "empty": {
         "sample_1_name": "AI Agent Competition",

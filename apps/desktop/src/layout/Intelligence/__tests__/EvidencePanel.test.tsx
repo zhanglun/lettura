@@ -24,6 +24,7 @@ const baseSignal: Signal = {
   ],
   topic_id: null,
   topic_title: null,
+  topic_uuid: null,
   created_at: "2026-04-30T09:00:00Z",
 };
 
