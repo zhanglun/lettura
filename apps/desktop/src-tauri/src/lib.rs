@@ -102,6 +102,10 @@ pub fn run() {
 
       ai::pipeline::start_pipeline_timer(app.handle().clone());
 
+      tauri::async_runtime::spawn(async {
+        crate::core::scheduler::start_scheduler().await;
+      });
+
       Ok(())
     })
     .on_window_event(|window, event| {

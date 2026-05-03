@@ -11,6 +11,7 @@ import {
   FileText,
   Link,
   Link2,
+  RefreshCw,
 } from "lucide-react";
 import { listen } from "@tauri-apps/api/event";
 import { RouteConfig } from "@/config";
@@ -62,6 +63,7 @@ const ChannelList = (): JSX.Element => {
       getSubscribes: state.getSubscribes,
 
       globalSyncStatus: state.globalSyncStatus,
+      syncAllArticles: state.syncAllArticles,
     })),
   );
 
@@ -204,6 +206,17 @@ const ChannelList = (): JSX.Element => {
         )}
         ref={listRef}
       >
+        <div className="mb-2 flex items-center justify-end">
+          <button
+            onClick={() => store.syncAllArticles()}
+            disabled={store.globalSyncStatus}
+            className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-[var(--gray-11)] transition hover:bg-[var(--gray-a3)] hover:text-[var(--gray-12)] disabled:opacity-50"
+            title={t("Sync All")}
+          >
+            <RefreshCw size={14} className={store.globalSyncStatus ? "animate-spin" : ""} />
+            <span>{store.globalSyncStatus ? t("Syncing...") : t("Sync All")}</span>
+          </button>
+        </div>
         <ContextMenu.Root onOpenChange={handleContextMenuChange}>
           <ContextMenu.Trigger>
             <div>

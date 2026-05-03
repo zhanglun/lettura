@@ -52,6 +52,7 @@ export interface FeedSlice {
    */
   globalSyncStatus: boolean;
   setGlobalSyncStatus: (status: boolean) => void;
+  syncAllArticles: () => Promise<void>;
 }
 
 export const createFeedSlice: StateCreator<FeedSlice> = (
@@ -331,5 +332,30 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
     set(() => ({
       globalSyncStatus: status,
     }));
+  },
+
+  syncAllArticles: async () => {
+    const { globalSyncStatus, subscribes, syncArticles, getUserConfig, getSubscribes, setGlobalSyncStatus } = get() as any;
+    if (globalSyncStatus) return;
+
+    setGlobalSyncStatus(true);
+    try {
+      const config = await getUserConfig?.();
+      const threads = config?.threads || 5;
+      const limit = pLimit(threads);
+
+      await Promise.all(
+        subscribes.map((feed: FeedResItem) =>
+          limit(() =>
+            syncArticles(feed).catch(() => {
+              // single feed failure should not block others
+            })
+          )
+        )
+      );
+    } finally {
+      setGlobalSyncStatus(false);
+      getSubscribes();
+    }
   },
 });

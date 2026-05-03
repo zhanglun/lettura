@@ -97,7 +97,7 @@ impl Default for UserConfig {
       threads: 1,
       theme: String::from("default"),
       color_scheme: ColorScheme::System,
-      update_interval: 0,
+      update_interval: 1800,
       last_sync_time: Utc
         .timestamp_millis_opt(0)
         .unwrap()
