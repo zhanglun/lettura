@@ -21,7 +21,7 @@ function getSidebarContext(pathname: string): SidebarContext {
   if (pathname.startsWith("/local/starred")) return "hidden";
   if (pathname.startsWith("/search")) return "hidden";
   if (/^\/local\/feeds\/[^/]+\/articles\/[^/]+/.test(pathname)) {
-    return "hidden";
+    return "feeds";
   }
   if (
     pathname.startsWith("/local/all") ||

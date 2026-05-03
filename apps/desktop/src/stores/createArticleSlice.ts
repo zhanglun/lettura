@@ -32,6 +32,9 @@ export interface ArticleSlice {
 
   currentFilter: { id: number; title: string };
   setFilter: any;
+
+  rightPanelExpanded: boolean;
+  setRightPanelExpanded: (expanded: boolean) => void;
 }
 
 export const createArticleSlice: StateCreator<
@@ -41,10 +44,15 @@ export const createArticleSlice: StateCreator<
   ArticleSlice
 > = (set, get, ...args) => ({
   article: null,
+  rightPanelExpanded: false,
   setArticle: (ArticleResItem: ArticleResItem | null) => {
     set(() => ({
       article: ArticleResItem,
+      rightPanelExpanded: ArticleResItem !== null,
     }));
+  },
+  setRightPanelExpanded: (expanded: boolean) => {
+    set(() => ({ rightPanelExpanded: expanded }));
   },
 
   articleList: [],

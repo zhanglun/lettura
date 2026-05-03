@@ -1,7 +1,6 @@
 import { useRef, useCallback, useEffect } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
-import { useParams, useMatch, useNavigate, useLocation } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
+import { useParams, useMatch, useNavigate } from "react-router-dom";
 import { ArticleCol, ArticleColRefObject } from "@/layout/Article/ArticleCol";
 import { ArticleDialogView } from "@/components/ArticleView/DialogView";
 import { open } from "@tauri-apps/plugin-shell";
@@ -12,13 +11,16 @@ import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
 import { RouteConfig } from "@/config";
 import { request } from "@/helpers/request";
+import { Text } from "@radix-ui/themes";
+import { BookOpen } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export const ArticleContainer = () => {
+  const { t } = useTranslation();
   const [, type, queryFeedUuid] = useQuery();
   const params = useParams<{ uuid?: string; id?: string }>();
   const isArticleRoute = useMatch(RouteConfig.LOCAL_ARTICLE);
   const navigate = useNavigate();
-  const location = useLocation();
   const feedUuid = params.uuid || queryFeedUuid;
 
   const store = useBearStore(
@@ -30,33 +32,18 @@ export const ArticleContainer = () => {
       podcastPanelStatus: state.podcastPanelStatus,
       tracks: state.tracks,
       podcastPlayingStatus: state.podcastPlayingStatus,
+      rightPanelExpanded: state.rightPanelExpanded,
     })),
   );
 
-  const { article, setArticle } = store;
-  const isListOnlyRoute = !isArticleRoute && !article;
+  const { article, setArticle, rightPanelExpanded } = store;
 
-  useEffect(() => {
-    if (!isArticleRoute) {
-      setArticle(null);
-    }
-  }, [feedUuid, isArticleRoute, setArticle, type]);
-
-  useEffect(() => {
-    if (!article?.uuid || !feedUuid) return;
-
-    const target = `/local/feeds/${feedUuid}/articles/${article.uuid}`;
-    if (location.pathname !== target) {
-      navigate(target, { replace: Boolean(isArticleRoute) });
-    }
-  }, [article?.uuid, feedUuid, isArticleRoute, location.pathname, navigate]);
-
+  // Deep-link: load article from URL params when store is empty
   useEffect(() => {
     if (!isArticleRoute || !params.id) return;
     if (article) return;
 
     let cancelled = false;
-
     request
       .get(`/articles/${params.id}`)
       .then((res) => {
@@ -75,9 +62,14 @@ export const ArticleContainer = () => {
     };
   }, [isArticleRoute, params.id, article, setArticle]);
 
+  useEffect(() => {
+    if (!isArticleRoute) {
+      setArticle(null);
+    }
+  }, [feedUuid, isArticleRoute, setArticle, type]);
+
   const articleColRef = useRef<ArticleColRefObject>(null);
-  const { goNext, goPrev } = (articleColRef.current ||
-    {}) as ArticleColRefObject;
+  const { goNext, goPrev } = (articleColRef.current || {}) as ArticleColRefObject;
 
   const openInBrowser = useCallback(() => {
     store.article && open(store.article.link);
@@ -91,46 +83,51 @@ export const ArticleContainer = () => {
     goPrev?.();
   }, [goPrev]);
 
+  const handleClose = useCallback(() => {
+    setArticle(null);
+    if (feedUuid) {
+      navigate(`/local/feeds/${feedUuid}`, { replace: true });
+    }
+  }, [setArticle, feedUuid, navigate]);
+
   useHotkeys("o", openInBrowser);
 
-  // 根据条件决定是否显示 LPodcast
-  const shouldShowPodcast =
-    store.tracks?.length > 0 || store.podcastPlayingStatus;
+  const shouldShowPodcast = store.tracks?.length > 0 || store.podcastPlayingStatus;
 
   return (
     <div className="flex flex-row w-full h-full overflow-hidden">
-      <motion.div
-        className="h-full min-w-0 shrink-0 overflow-hidden"
-        animate={{
-          width: isListOnlyRoute ? "100%" : "var(--app-article-width)",
-        }}
-        transition={{ type: "spring", stiffness: 360, damping: 38 }}
-      >
+      <div className="h-full shrink-0 overflow-hidden" style={{ width: "var(--app-article-width)" }}>
         <ArticleCol
           feedUuid={feedUuid}
           type={type}
           ref={articleColRef}
-          wide={isListOnlyRoute}
+          wide={false}
         />
-      </motion.div>
-      <AnimatePresence initial={false}>
-        {!isListOnlyRoute && (
-          <motion.div
-            key="article-reading-drawer"
-            className="h-full min-h-0 min-w-0 flex-1 overflow-hidden"
-            initial={{ x: 56, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            exit={{ x: 56, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 360, damping: 38 }}
-          >
-            <View
-              article={store.article}
-              goNext={handleGoNext}
-              goPrev={handleGoPrev}
-            />
-          </motion.div>
+      </div>
+
+      <div
+        className={`h-full min-w-0 flex-1 border-l border-[var(--gray-4)] overflow-hidden flex flex-col ${
+          rightPanelExpanded ? "bg-[var(--color-background)]" : "bg-[var(--gray-1)]"
+        }`}
+      >
+        {rightPanelExpanded && article ? (
+          <View
+            article={article}
+            goNext={handleGoNext}
+            goPrev={handleGoPrev}
+            closable={true}
+            onClose={handleClose}
+          />
+        ) : (
+          <div className="flex flex-col items-center justify-center h-full text-center px-4">
+            <BookOpen size={32} className="text-[var(--gray-7)] mb-3" />
+            <Text size="2" className="text-[var(--gray-9)]">
+              {t("feeds.select_article")}
+            </Text>
+          </div>
         )}
-      </AnimatePresence>
+      </div>
+
       <LPodcast visible={shouldShowPodcast} />
       <ArticleDialogView
         article={store.article}
