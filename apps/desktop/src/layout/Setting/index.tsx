@@ -1,156 +1,130 @@
 import {
   Cog,
-  Database,
-  Keyboard,
   Palette,
-  Settings,
-  Waypoints,
   Sparkles,
+  Rss,
+  ShieldCheck,
+  Zap,
 } from "lucide-react";
-import { Dialog, Heading, IconButton, Kbd, Tooltip } from "@radix-ui/themes";
-import { useHotkeys } from "react-hotkeys-hook";
-import { General } from "./General";
 import { Appearance } from "./Appearance";
-import { Shortcut } from "./ShortCut";
-import { ProxySetting } from "./Proxy";
-import { ImportAndExport } from "./ImportAndExport";
 import { AIConfigPanel } from "./AIConfig";
+import { Sources } from "./Sources";
+import { Behavior } from "./Behavior";
 import { useState } from "react";
-import { Cross2Icon } from "@radix-ui/react-icons";
-import { useBearStore } from "@/stores";
 import { SettingTabKey } from "@/typing";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
+import { useLocation } from "react-router-dom";
 
 import "./index.css";
 
-interface SettingPageProps {
-  children: React.ReactNode;
-}
+const TAB_META: { key: SettingTabKey; Icon: typeof Sparkles; titleKey: string; descKey: string }[] = [
+  {
+    key: SettingTabKey.AI,
+    Icon: Sparkles,
+    titleKey: "settings.tab.ai_title",
+    descKey: "settings.tab.ai_desc",
+  },
+  {
+    key: SettingTabKey.SOURCES,
+    Icon: Rss,
+    titleKey: "settings.tab.sources_title",
+    descKey: "settings.tab.sources_desc",
+  },
+  {
+    key: SettingTabKey.APPEARANCE,
+    Icon: Palette,
+    titleKey: "settings.tab.appearance_title",
+    descKey: "settings.tab.appearance_desc",
+  },
+  {
+    key: SettingTabKey.BEHAVIOR,
+    Icon: Cog,
+    titleKey: "settings.tab.behavior_title",
+    descKey: "settings.tab.behavior_desc",
+  },
+];
 
-export function SettingPage({ children }: SettingPageProps) {
+export function SettingPage() {
   const { t } = useTranslation();
-  const store = useBearStore((state) => ({
-    settingDialogStatus: state.settingDialogStatus,
-    updateSettingDialogStatus: state.updateSettingDialogStatus,
-  }));
+  const [activeTab, setActiveTab] = useState<SettingTabKey>(SettingTabKey.AI);
 
-  const [activeTab, setActiveTab] = useState<SettingTabKey>(
-    SettingTabKey.GENERAL,
-  );
-
-  useHotkeys("s", () => {
-    store.updateSettingDialogStatus(true);
-  });
-
-  const handleStatusChange = (status: boolean) => {
-    store.updateSettingDialogStatus(status);
-
-    if (!status) {
-      setActiveTab(SettingTabKey.GENERAL);
-    }
-  };
+  const search = useLocation().search;
+  const tabParam = new URLSearchParams(search).get("tab");
+  const effectiveTab = tabParam === "sources" ? SettingTabKey.SOURCES
+    : tabParam === "appearance" ? SettingTabKey.APPEARANCE
+    : tabParam === "behavior" ? SettingTabKey.BEHAVIOR
+    : activeTab;
 
   return (
-    <Dialog.Root
-      open={store.settingDialogStatus}
-      onOpenChange={handleStatusChange}
-    >
-      <Tooltip
-        content={
-          <>
-            {t("Go to settings")} <Kbd className="ml-3">s</Kbd>
-          </>
-        }
-        side="right"
-        className="w-full"
-      >
-        <Dialog.Trigger>{children}</Dialog.Trigger>
-      </Tooltip>
-
-      <Dialog.Content className="max-w-[900px] p-0">
-        <Dialog.Close>
-          <IconButton className="absolute right-5 top-5" variant="ghost">
-            <Cross2Icon />
-          </IconButton>
-        </Dialog.Close>
-        <div className="flex flex-row h-[600px]">
-          <div className="w-[220px] border-r bg-canvas">
-            <div className="flex items-center gap-2 px-5 py-4">
-              <Settings className="w-5 h-5" />
-              <Heading size="5">{t("Settings")}</Heading>
-            </div>
-            <nav className="py-3 px-2 space-y-2">
-              <button
-                onClick={() => setActiveTab(SettingTabKey.GENERAL)}
-                className={clsx("setting-tab-item", {
-                  "setting-tab-item--active":
-                    activeTab === SettingTabKey.GENERAL,
-                })}
-              >
-                <Cog className="w-4 h-4" />
-                {t("General")}
-              </button>
-              <button
-                onClick={() => setActiveTab(SettingTabKey.APPEARANCE)}
-                className={clsx("setting-tab-item", {
-                  "setting-tab-item--active":
-                    activeTab === SettingTabKey.APPEARANCE,
-                })}
-              >
-                <Palette className="w-4 h-4" />
-                {t("Appearance")}
-              </button>
-              <button
-                onClick={() => setActiveTab(SettingTabKey.PROXY)}
-                className={clsx("setting-tab-item", {
-                  "setting-tab-item--active": activeTab === SettingTabKey.PROXY,
-                })}
-              >
-                <Database className="w-4 h-4" />
-                {t("Proxy")}
-              </button>
-              <button
-                onClick={() => setActiveTab(SettingTabKey.SHORTCUTS)}
-                className={clsx("setting-tab-item", {
-                  "setting-tab-item--active":
-                    activeTab === SettingTabKey.SHORTCUTS,
-                })}
-              >
-                <Keyboard className="w-4 h-4" />
-                {t("Shortcuts")}
-              </button>
-              <button
-                onClick={() => setActiveTab(SettingTabKey.IMPORTANDEXPORT)}
-                className={clsx("setting-tab-item", {
-                  "setting-tab-item--active":
-                    activeTab === SettingTabKey.IMPORTANDEXPORT,
-                })}
-              >
-                <Waypoints className="w-4 h-4" />
-                {t("Import & Export")}
-              </button>
-              <button
-                onClick={() => setActiveTab(SettingTabKey.AI)}
-                className={clsx("setting-tab-item", {
-                  "setting-tab-item--active": activeTab === SettingTabKey.AI,
-                })}
-              >
-                <Sparkles className="w-4 h-4" />
-                AI
-              </button>
-            </nav>
+    <div className="flex-1 h-full overflow-auto">
+      <div className="max-w-[1180px] mx-auto px-7 pt-6 pb-8">
+        <div className="flex items-start justify-between gap-4 mb-0">
+          <div>
+            <h1 className="text-xl font-bold text-[var(--gray-12)]">
+              {t("Settings")}
+            </h1>
+            <p className="text-[13px] text-[var(--gray-9)] mt-1">
+              {t("settings.subtitle")}
+            </p>
           </div>
-          <div className="flex-1 p-6 overflow-auto">
-            {activeTab === SettingTabKey.GENERAL && <General />}
-            {activeTab === SettingTabKey.APPEARANCE && <Appearance />}
-            {activeTab === SettingTabKey.PROXY && <ProxySetting />}
-            {activeTab === SettingTabKey.SHORTCUTS && <Shortcut />}
-            {activeTab === SettingTabKey.IMPORTANDEXPORT && <ImportAndExport />}
-            {activeTab === SettingTabKey.AI && <AIConfigPanel />}
+          <div className="flex gap-2 flex-wrap justify-end">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-[var(--green-3)] text-[var(--green-11)]">
+              <ShieldCheck size={12} />
+              {t("settings.status_secure")}
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-[var(--accent-3)] text-[var(--accent-11)]">
+              <Rss size={12} />
+              {t("settings.status_sources")}
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-[var(--blue-3)] text-[var(--blue-11)]">
+              <Zap size={12} />
+              {t("settings.status_analysis")}
+            </span>
           </div>
         </div>
-      </Dialog.Content>
-    </Dialog.Root>
+
+        <div className="grid grid-cols-4 gap-2 my-5">
+          {TAB_META.map(({ key, Icon, titleKey, descKey }) => (
+            <button
+              key={key}
+              onClick={() => setActiveTab(key)}
+              className={clsx(
+                "flex items-center gap-2.5 min-h-[58px] p-3 border rounded-[10px] text-left transition-all",
+                effectiveTab === key
+                  ? "border-[var(--accent-8)] bg-[var(--accent-2)] shadow-sm"
+                  : "border-[var(--gray-6)] bg-[var(--gray-1)] hover:border-[var(--gray-7)] hover:bg-[var(--gray-a3)]",
+              )}
+            >
+              <span
+                className={clsx(
+                  "w-[30px] h-[30px] rounded-[6px] flex items-center justify-center shrink-0",
+                  effectiveTab === key
+                    ? "bg-[var(--accent-9)] text-white"
+                    : "bg-[var(--gray-3)] text-[var(--gray-9)]",
+                )}
+              >
+                <Icon size={14} />
+              </span>
+              <span>
+                <span className="block text-[13px] font-semibold text-[var(--gray-12)]">
+                  {t(titleKey)}
+                </span>
+                <span className="block text-[11px] text-[var(--gray-9)] mt-0.5 leading-snug">
+                  {t(descKey)}
+                </span>
+              </span>
+            </button>
+          ))}
+        </div>
+
+        <div>
+          {effectiveTab === SettingTabKey.AI && <AIConfigPanel />}
+          {effectiveTab === SettingTabKey.SOURCES && <Sources />}
+          {effectiveTab === SettingTabKey.APPEARANCE && <Appearance />}
+          {effectiveTab === SettingTabKey.BEHAVIOR && <Behavior />}
+        </div>
+      </div>
+    </div>
   );
 }

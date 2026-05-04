@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { AlertDialog, Button, Flex } from "@radix-ui/themes";
+import { AlertDialog, Button, Flex, RadioGroup, Text } from "@radix-ui/themes";
 import { FeedResItem } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
 import { busChannel } from "@/helpers/busChannel";
 import { toast } from "sonner";
-import { useTranslation, Trans } from "react-i18next";
+import { useTranslation } from "react-i18next";
 
 export interface DialogProps {
   feed: FeedResItem | null;
@@ -26,12 +26,19 @@ export const DialogUnsubscribeFeed = React.memo((props: DialogProps) => {
     trigger,
   } = props;
   const [loading, setLoading] = useState(false);
+  const [deleteMode, setDeleteMode] = useState<"keep" | "delete">("keep");
+
+  React.useEffect(() => {
+    if (dialogStatus) {
+      setDeleteMode("keep");
+    }
+  }, [dialogStatus]);
 
   const confirmUnsubscribe = () => {
     if (feed?.uuid) {
       setLoading(true);
       dataAgent
-        .deleteChannel(feed.uuid)
+        .deleteChannel(feed.uuid, deleteMode === "delete")
         .then(() => {
           busChannel.emit("getChannels");
           afterConfirm();
@@ -59,16 +66,34 @@ export const DialogUnsubscribeFeed = React.memo((props: DialogProps) => {
       <AlertDialog.Content>
         <AlertDialog.Title>{t("Are you absolutely sure?")}</AlertDialog.Title>
         <AlertDialog.Description>
-          <Trans
-            i18nKey={
-              "This action cannot be undone. This will permanently delete the data relates with"
-            }
-            components={{ bold: <strong /> }}
-            values={{
-              title: feed?.title,
-            }}
-            shouldUnescape={true}
-          />
+          <Text size="2" className="text-[var(--gray-11)]">
+            {t("This action cannot be undone. This will permanently delete the data relates with", { title: feed?.title })}
+          </Text>
+          <div className="mt-4">
+            <RadioGroup.Root value={deleteMode} onValueChange={(v) => setDeleteMode(v as "keep" | "delete")}>
+              <Flex direction="column" gap="2">
+                <Text as="label" size="2">
+                  <Flex gap="2" align="center">
+                    <RadioGroup.Item value="keep" />
+                    <Text>{t("layout.feeds.delete.keep_articles")}</Text>
+                  </Flex>
+                </Text>
+                <Text as="label" size="2">
+                  <Flex gap="2" align="center">
+                    <RadioGroup.Item value="delete" />
+                    <Text>{t("layout.feeds.delete.delete_articles")}</Text>
+                  </Flex>
+                </Text>
+              </Flex>
+            </RadioGroup.Root>
+          </div>
+          {deleteMode === "delete" && (
+            <div className="mt-3 rounded-md border border-[var(--amber-5)] bg-[var(--amber-a2)] px-3 py-2">
+              <Text size="1" className="text-[var(--amber-11)]">
+                {t("layout.feeds.delete.warning")}
+              </Text>
+            </div>
+          )}
         </AlertDialog.Description>
         <Flex gap="3" mt="4" justify="end">
           <AlertDialog.Cancel onClick={() => handleCancel()}>

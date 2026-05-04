@@ -1,19 +1,13 @@
 import { useState, useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  Box,
-  Button,
-  Flex,
-  Heading,
-  Text,
-  TextField,
   Select,
   Switch,
 } from "@radix-ui/themes";
 import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
 import { saveAIConfig, validateAIConfig, triggerPipeline, getDedupStats } from "@/helpers/dataAgent";
-import { CheckCircle, XCircle, Loader2, Play, Copy } from "lucide-react";
+import { CheckCircle, Loader2, Play } from "lucide-react";
 import { toast } from "sonner";
 
 export function AIConfigPanel() {
@@ -32,8 +26,9 @@ export function AIConfigPanel() {
     "text-embedding-3-small",
   );
   const [baseUrl, setBaseUrl] = useState("https://api.openai.com/v1");
-  const [pipelineInterval, setPipelineInterval] = useState("1");
+  const [pipelineInterval, setPipelineInterval] = useState("6");
   const [enableEmbedding, setEnableEmbedding] = useState(true);
+  const [backgroundSync, setBackgroundSync] = useState(true);
 
   const [validating, setValidating] = useState(false);
   const [validationResult, setValidationResult] = useState<{
@@ -58,6 +53,8 @@ export function AIConfigPanel() {
       setEmbeddingModel(store.aiConfig.embedding_model || "text-embedding-3-small");
       setBaseUrl(store.aiConfig.base_url || "https://api.openai.com/v1");
       setEnableEmbedding(store.aiConfig.enable_embedding ?? true);
+      setPipelineInterval(String(store.aiConfig.pipeline_interval_hours || 6));
+      setBackgroundSync(store.aiConfig.enable_auto_pipeline ?? true);
     }
   }, [store.aiConfig]);
 
@@ -85,6 +82,7 @@ export function AIConfigPanel() {
         baseUrl,
         pipelineIntervalHours: parseInt(pipelineInterval) || 1,
         enableEmbedding,
+        enableAutoPipeline: backgroundSync,
       });
       toast.success(t("settings.ai.saved"));
       store.fetchAIConfig();
@@ -108,127 +106,159 @@ export function AIConfigPanel() {
   }, [t]);
 
   return (
-    <Flex direction="column" gap="5">
-      <Heading size="4">{t("settings.ai.title")}</Heading>
+    <div className="settings-grid-wide">
+      <div className="settings-panel">
+        <div className="settings-panel-header">
+          <div>
+            <div className="settings-panel-title">{t("settings.ai.panel_title")}</div>
+            <div className="settings-panel-desc">{t("settings.ai.panel_desc")}</div>
+          </div>
+          <button
+            className="btn-primary"
+            onClick={handleValidate}
+            disabled={(!apiKey.trim() && !store.aiConfig?.has_api_key) || validating}
+          >
+            {validating ? (
+              <Loader2 size={14} className="animate-spin" />
+            ) : validationResult?.valid ? (
+              <CheckCircle size={14} />
+            ) : null}
+            {validating ? t("settings.ai.validating") : t("settings.ai.validate")}
+          </button>
+        </div>
 
-      <Box>
-        <Flex direction="column" gap="4" maxWidth="400px">
-          <Flex direction="column" gap="1">
-            <Text size="2" weight="medium" className="text-[var(--gray-12)]">
-              {t("settings.ai.api_key")}
-            </Text>
-            <Flex gap="2">
-              <TextField.Root
-                type="password"
-                placeholder={
-                  store.aiConfig?.has_api_key
-                    ? "••••••••••••••••"
-                    : t("settings.ai.api_key_placeholder")
-                }
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                className="flex-1"
-              />
-              <Button
-                size="2"
-                variant="outline"
-                onClick={handleValidate}
-                disabled={(!apiKey.trim() && !store.aiConfig?.has_api_key) || validating}
-              >
-                {validating ? (
-                  <Loader2 size={14} className="animate-spin" />
-                ) : (
-                  t("settings.ai.validate")
-                )}
-              </Button>
-            </Flex>
-            {validationResult && (
-              <Flex align="center" gap="1" mt="1">
-                {validationResult.valid ? (
-                  <>
-                    <CheckCircle size={14} className="text-[var(--green-9)]" />
-                    <Text size="1" className="text-[var(--green-9)]">
-                      {t("settings.ai.validation_success")}
-                    </Text>
-                  </>
-                ) : (
-                  <>
-                    <XCircle size={14} className="text-[var(--red-9)]" />
-                    <Text size="1" className="text-[var(--red-9)]">
-                      {validationResult.message}
-                    </Text>
-                  </>
-                )}
-              </Flex>
-            )}
-          </Flex>
-
-          <Flex direction="column" gap="1">
-            <Text size="2" weight="medium" className="text-[var(--gray-12)]">
-              {t("settings.ai.model")}
-            </Text>
-            <TextField.Root
-              value={model}
-              onChange={(e) => setModel(e.target.value)}
+        <div className="settings-section">
+          <div className="settings-row">
+            <div>
+              <div className="settings-label">{t("settings.ai.api_key")}</div>
+              <div className="settings-help">{t("settings.ai.api_key_help")}</div>
+            </div>
+            <input
+              type="password"
+              className="settings-input"
+              placeholder={
+                store.aiConfig?.has_api_key
+                  ? "••••••••••••••••"
+                  : t("settings.ai.api_key_placeholder")
+              }
+              value={apiKey}
+              onChange={(e) => setApiKey(e.target.value)}
             />
-          </Flex>
+            <button className="btn-ghost" onClick={() => setApiKey("")}>
+              {t("settings.ai.change")}
+            </button>
+          </div>
 
-          <Flex direction="column" gap="1">
-            <Flex align="center" gap="2">
-              <Switch
-                checked={enableEmbedding}
-                onCheckedChange={setEnableEmbedding}
-              />
-              <Text size="2" weight="medium" className="text-[var(--gray-12)]">
-                {t("settings.ai.enable_embedding")}
-              </Text>
-            </Flex>
-            <Text size="1" className="text-[var(--gray-11)]">
-              {t("settings.ai.enable_embedding_desc")}
-            </Text>
-          </Flex>
-
-          {enableEmbedding && (
-          <Flex direction="column" gap="1">
-            <Text size="2" weight="medium" className="text-[var(--gray-12)]">
-              {t("settings.ai.embedding_model")}
-            </Text>
-            <TextField.Root
-              value={embeddingModel}
-              onChange={(e) => setEmbeddingModel(e.target.value)}
-            />
-          </Flex>
-          )}
-
-          <Flex direction="column" gap="1">
-            <Text size="2" weight="medium" className="text-[var(--gray-12)]">
-              {t("settings.ai.base_url")}
-            </Text>
-            <TextField.Root
+          <div className="settings-row">
+            <div>
+              <div className="settings-label">{t("settings.ai.base_url")}</div>
+              <div className="settings-help">{t("settings.ai.base_url_help")}</div>
+            </div>
+            <input
+              className="settings-input"
               placeholder={t("settings.ai.base_url_placeholder")}
               value={baseUrl}
               onChange={(e) => setBaseUrl(e.target.value)}
             />
-          </Flex>
+            <button className="btn-ghost" onClick={() => setBaseUrl("https://api.openai.com/v1")}>
+              {t("settings.ai.reset")}
+            </button>
+          </div>
 
-          <Flex direction="column" gap="1">
-            <Text size="2" weight="medium" className="text-[var(--gray-12)]">
-              {t("settings.ai.pipeline_interval")}
-            </Text>
-            <TextField.Root
-              type="number"
-              min="1"
-              value={pipelineInterval}
-              onChange={(e) => setPipelineInterval(e.target.value)}
-            />
-          </Flex>
+          <div className="settings-row">
+            <div>
+              <div className="settings-label">{t("settings.ai.model")}</div>
+              <div className="settings-help">{t("settings.ai.model_help")}</div>
+            </div>
+            <Select.Root value={model} onValueChange={setModel}>
+              <Select.Trigger className="settings-select" />
+              <Select.Content>
+                <Select.Item value="gpt-4o-mini">gpt-4o-mini</Select.Item>
+                <Select.Item value="gpt-4.1-mini">gpt-4.1-mini</Select.Item>
+              </Select.Content>
+            </Select.Root>
+            {validationResult?.valid && (
+              <span className="settings-tag settings-tag--green">{t("settings.ai.connected")}</span>
+            )}
+            {!validationResult?.valid && validationResult && (
+              <span className="settings-tag settings-tag--amber">{t("settings.ai.validation_failed")}</span>
+            )}
+          </div>
 
-          <Flex gap="3" mt="2">
-            <Button onClick={handleSave} disabled={saving}>
+          <div className="settings-row">
+            <div>
+              <div className="settings-label">{t("settings.ai.save_label")}</div>
+              <div className="settings-help">{t("settings.ai.save_help")}</div>
+            </div>
+            <div />
+            <button
+              className="btn-primary"
+              onClick={handleSave}
+              disabled={saving}
+            >
+              {saving ? <Loader2 size={14} className="animate-spin" /> : null}
               {saving ? t("settings.ai.saving") : t("settings.ai.save")}
-            </Button>
-            <Button
-              variant="outline"
+            </button>
+          </div>
+        </div>
+
+        <div className="settings-section">
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+            <div className="settings-label">{t("settings.ai.analysis_status")}</div>
+            <span className="settings-tag settings-tag--accent">{t("settings.ai.last_analysis")}</span>
+          </div>
+          <div className="settings-kpi">
+            <div className="card">
+              <div className="settings-kpi-value">{dedupStats?.total_analyzed ?? 0}</div>
+              <div className="settings-kpi-label">{t("settings.ai.kpi_sources")}</div>
+            </div>
+            <div className="card">
+              <div className="settings-kpi-value">{dedupStats?.duplicates_found ?? 0}</div>
+              <div className="settings-kpi-label">{t("settings.ai.kpi_articles")}</div>
+            </div>
+            <div className="card">
+              <div className="settings-kpi-value">{dedupStats?.duplicate_groups ?? 0}</div>
+              <div className="settings-kpi-label">{t("settings.ai.kpi_signals")}</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="settings-section">
+          <div className="settings-row">
+            <div>
+              <div className="settings-label">{t("settings.ai.enable_embedding")}</div>
+              <div className="settings-help">{t("settings.ai.enable_embedding_desc")}</div>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <div
+                className="settings-slider"
+                style={{ width: 80, cursor: "pointer" }}
+                onClick={() => setEnableEmbedding(!enableEmbedding)}
+              >
+                <div className="fill" style={{ width: enableEmbedding ? "100%" : "0%" }} />
+              </div>
+            </div>
+            <Switch
+              checked={enableEmbedding}
+              onCheckedChange={setEnableEmbedding}
+            />
+          </div>
+
+          <div className="settings-row">
+            <div>
+              <div className="settings-label">{t("settings.ai.pipeline_interval")}</div>
+              <div className="settings-help">{t("settings.ai.pipeline_help")}</div>
+            </div>
+            <Select.Root value={pipelineInterval} onValueChange={setPipelineInterval}>
+              <Select.Trigger className="settings-select" />
+              <Select.Content>
+                <Select.Item value="6">{t("settings.ai.interval_6h")}</Select.Item>
+                <Select.Item value="12">{t("settings.ai.interval_12h")}</Select.Item>
+                <Select.Item value="24">{t("settings.ai.interval_24h")}</Select.Item>
+              </Select.Content>
+            </Select.Root>
+            <button
+              className="btn-ghost"
               onClick={handleTriggerPipeline}
               disabled={triggeringPipeline || store.pipelineStatus === "running"}
             >
@@ -238,34 +268,81 @@ export function AIConfigPanel() {
                 <Play size={14} />
               )}
               {t("settings.ai.trigger_pipeline")}
-            </Button>
-          </Flex>
-        </Flex>
-      </Box>
+            </button>
+          </div>
+        </div>
+      </div>
 
-      {dedupStats && dedupStats.total_analyzed > 0 && (
-        <Box mt="4">
-          <Heading size="3" mb="3">{t("settings.ai.dedup_stats_title")}</Heading>
-          <Flex gap="4" wrap="wrap">
-            <Flex direction="column" gap="1">
-              <Text size="1" color="gray">{t("settings.ai.dedup_total")}</Text>
-              <Text size="4" weight="bold">{dedupStats.total_analyzed}</Text>
-            </Flex>
-            <Flex direction="column" gap="1">
-              <Text size="1" color="gray">{t("settings.ai.dedup_duplicates")}</Text>
-              <Text size="4" weight="bold">{dedupStats.duplicates_found}</Text>
-            </Flex>
-            <Flex direction="column" gap="1">
-              <Text size="1" color="gray">{t("settings.ai.dedup_groups")}</Text>
-              <Text size="4" weight="bold">{dedupStats.duplicate_groups}</Text>
-            </Flex>
-            <Flex direction="column" gap="1">
-              <Text size="1" color="gray">{t("settings.ai.dedup_avg_density")}</Text>
-              <Text size="4" weight="bold">{dedupStats.avg_information_density.toFixed(2)}</Text>
-            </Flex>
-          </Flex>
-        </Box>
-      )}
-    </Flex>
+      <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+        <div className="settings-panel">
+          <div style={{ padding: "14px 18px" }}>
+            <div className="settings-panel-title">{t("settings.ai.trust_title")}</div>
+            <div className="settings-panel-desc">{t("settings.ai.trust_desc")}</div>
+          </div>
+          <div style={{ padding: "4px 18px 14px" }}>
+            <div className="settings-trust-list">
+              <div className="settings-trust-item">
+                <span className="w-2 h-2 rounded-full bg-[var(--green-9)] shrink-0 mt-[5px]"></span>
+                <span>{t("settings.ai.trust_1")}</span>
+              </div>
+              <div className="settings-trust-item">
+                <span className="w-2 h-2 rounded-full bg-[var(--green-9)] shrink-0 mt-[5px]"></span>
+                <span>{t("settings.ai.trust_2")}</span>
+              </div>
+              <div className="settings-trust-item">
+                <span className="w-2 h-2 rounded-full bg-[var(--amber-9)] shrink-0 mt-[5px]"></span>
+                <span>{t("settings.ai.trust_3")}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="settings-panel">
+          <div style={{ padding: "14px 18px" }}>
+            <div className="settings-panel-title">{t("settings.ai.packs_title")}</div>
+            <div className="settings-panel-desc">{t("settings.ai.packs_desc")}</div>
+          </div>
+          <div style={{ padding: "4px 18px 14px" }}>
+            <div className="settings-pack-row">
+              <div style={{ fontSize: 12, fontWeight: 600, color: "var(--gray-12)" }}>{t("settings.ai.pack_ai_starter")}</div>
+              <div style={{ display: "flex", gap: 6 }}>
+                <span className="settings-tag settings-tag--green">{t("settings.ai.pack_tag_active")}</span>
+              </div>
+            </div>
+            <div className="settings-pack-row">
+              <div style={{ fontSize: 12, fontWeight: 600, color: "var(--gray-12)" }}>{t("settings.ai.pack_developer")}</div>
+              <div style={{ display: "flex", gap: 6 }}>
+                <span className="settings-tag settings-tag--blue">{t("settings.ai.pack_tag_beta")}</span>
+              </div>
+            </div>
+            <div className="settings-pack-row">
+              <div style={{ fontSize: 12, fontWeight: 600, color: "var(--gray-12)" }}>{t("settings.ai.pack_design")}</div>
+              <div style={{ display: "flex", gap: 6 }}>
+                <span className="settings-tag settings-tag--amber">{t("settings.ai.pack_tag_coming")}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="settings-panel">
+          <div style={{ padding: "14px 18px" }}>
+            <div className="settings-panel-title">{t("settings.ai.sync_title")}</div>
+            <div className="settings-panel-desc">{t("settings.ai.sync_desc")}</div>
+          </div>
+          <div style={{ padding: "4px 18px 14px" }}>
+            <div className="settings-pack-row">
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: "var(--gray-12)" }}>{t("settings.ai.sync_background")}</div>
+                <div className="settings-help">{t("settings.ai.sync_background_desc")}</div>
+              </div>
+              <Switch
+                checked={backgroundSync}
+                onCheckedChange={setBackgroundSync}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
