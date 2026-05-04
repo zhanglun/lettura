@@ -154,6 +154,7 @@ diesel::table! {
         id -> Nullable<Integer>,
         topic_id -> Integer,
         followed_at -> Timestamp,
+        status -> Text,
     }
 }
 

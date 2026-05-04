@@ -14,6 +14,7 @@ use log::LevelFilter;
 use std::{env, sync::Mutex};
 use tauri::{Emitter, Manager};
 use tauri_plugin_log::{Target, TargetKind};
+use tauri_plugin_autostart::MacosLauncher;
 
 mod ai;
 mod cmd;
@@ -72,6 +73,11 @@ pub fn run() {
         .expect("no main window")
         .set_focus();
     }))
+    .plugin(tauri_plugin_autostart::init(
+      MacosLauncher::LaunchAgent,
+      Some(vec![]),
+    ))
+    .plugin(tauri_plugin_notification::init())
     .manage(shared_state)
     .setup(move |app| {
       let app_handle = app.handle().clone();
@@ -153,6 +159,10 @@ pub fn run() {
       cmd::get_topic_detail,
       cmd::follow_topic,
       cmd::unfollow_topic,
+      cmd::mute_topic,
+      cmd::unmute_topic,
+      cmd::search_signals,
+      cmd::search_topics,
       core::scheduler::start_scheduler,
       core::scheduler::stop_scheduler,
       core::scheduler::is_scheduler_running,

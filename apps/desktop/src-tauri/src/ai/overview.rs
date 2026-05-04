@@ -90,6 +90,11 @@ pub async fn generate_today_overview(
       if let Some(ref overview) = cache.overview {
         return Ok(overview.clone());
       }
+    } else if let Some(ref overview) = cache.overview {
+      return Ok(TodayOverview {
+        is_stale: true,
+        ..overview.clone()
+      });
     }
   }
 

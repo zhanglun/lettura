@@ -2,6 +2,7 @@ use crate::ai::llm::LLMProvider;
 use crate::models::{NewTopic, NewTopicArticle, NewTopicFollow, Topic};
 use crate::schema::{article_ai_analysis, articles, feeds, topic_articles, topic_follows, topics};
 use diesel::prelude::*;
+use diesel::sql_types::{Integer, Text};
 use serde::Serialize;
 use std::collections::HashMap;
 use std::collections::HashSet;
@@ -20,6 +21,7 @@ pub struct TopicItem {
   pub first_seen_at: String,
   pub last_updated_at: String,
   pub is_following: bool,
+  pub is_muted: bool,
 }
 
 /// Response type for get_topic_detail IPC (flat structure to match frontend)
@@ -35,6 +37,7 @@ pub struct TopicDetail {
   pub first_seen_at: String,
   pub last_updated_at: String,
   pub is_following: bool,
+  pub is_muted: bool,
   pub recent_changes: Vec<RecentChange>,
   pub articles: Vec<TopicArticleItem>,
   pub topic_summary: Option<String>,
@@ -255,7 +258,7 @@ pub fn follow_topic(conn: &mut SqliteConnection, topic_id: i32) -> Result<(), St
     .first::<Topic>(conn)
     .map_err(|_| "Topic not found".to_string())?;
   diesel::insert_or_ignore_into(topic_follows::table)
-    .values(NewTopicFollow { topic_id })
+    .values(NewTopicFollow { topic_id, status: Some("followed".to_string()) })
     .execute(conn)
     .map_err(|e| e.to_string())?;
   Ok(())
@@ -269,18 +272,59 @@ pub fn unfollow_topic(conn: &mut SqliteConnection, topic_id: i32) -> Result<(), 
   Ok(())
 }
 
+/// Mute a followed topic (keeps follow record but marks as muted).
+pub fn mute_topic(conn: &mut SqliteConnection, topic_id: i32) -> Result<(), String> {
+  diesel::update(topic_follows::table.filter(topic_follows::topic_id.eq(topic_id)))
+    .set(topic_follows::status.eq("muted"))
+    .execute(conn)
+    .map_err(|e| e.to_string())?;
+  Ok(())
+}
+
+/// Unmute a muted topic (restore to followed status).
+pub fn unmute_topic(conn: &mut SqliteConnection, topic_id: i32) -> Result<(), String> {
+  diesel::update(topic_follows::table.filter(topic_follows::topic_id.eq(topic_id)))
+    .set(topic_follows::status.eq("followed"))
+    .execute(conn)
+    .map_err(|e| e.to_string())?;
+  Ok(())
+}
+
 /// Check if a topic is followed by the user.
 fn is_topic_followed(conn: &mut SqliteConnection, topic_id: i32) -> bool {
   topic_follows::table
     .filter(topic_follows::topic_id.eq(topic_id))
+    .filter(topic_follows::status.eq("followed"))
     .select(topic_follows::id)
     .first::<Option<i32>>(conn)
     .is_ok()
 }
 
-/// Get all followed topic IDs.
+/// Check if a topic is muted by the user.
+fn is_topic_muted(conn: &mut SqliteConnection, topic_id: i32) -> bool {
+  topic_follows::table
+    .filter(topic_follows::topic_id.eq(topic_id))
+    .filter(topic_follows::status.eq("muted"))
+    .select(topic_follows::id)
+    .first::<Option<i32>>(conn)
+    .is_ok()
+}
+
+/// Get all followed topic IDs (status = 'followed' only).
 fn get_followed_topic_ids(conn: &mut SqliteConnection) -> HashSet<i32> {
   topic_follows::table
+    .filter(topic_follows::status.eq("followed"))
+    .select(topic_follows::topic_id)
+    .load::<i32>(conn)
+    .unwrap_or_default()
+    .into_iter()
+    .collect()
+}
+
+/// Get all muted topic IDs.
+fn get_muted_topic_ids(conn: &mut SqliteConnection) -> HashSet<i32> {
+  topic_follows::table
+    .filter(topic_follows::status.eq("muted"))
     .select(topic_follows::topic_id)
     .load::<i32>(conn)
     .unwrap_or_default()
@@ -299,6 +343,7 @@ pub fn get_topics_list(
   let sort_field = sort.unwrap_or_else(|| "last_updated_at".to_string());
 
   let followed_ids = get_followed_topic_ids(conn);
+  let muted_ids = get_muted_topic_ids(conn);
 
   let mut query = topics::table.into_boxed();
 
@@ -330,6 +375,7 @@ pub fn get_topics_list(
     .into_iter()
     .map(|t| {
       let is_following = followed_ids.contains(&t.id);
+      let is_muted = muted_ids.contains(&t.id);
       TopicItem {
         id: t.id,
         uuid: t.uuid,
@@ -341,6 +387,7 @@ pub fn get_topics_list(
         first_seen_at: t.first_seen_at.to_string(),
         last_updated_at: t.last_updated_at.to_string(),
         is_following,
+        is_muted,
       }
     })
     .collect();
@@ -393,25 +440,36 @@ pub fn get_topic_detail_by_id(
     .load::<(i32, i32, f32)>(conn)
     .map_err(|e| e.to_string())?;
 
-  let mut arts = Vec::new();
+    let mut arts = Vec::new();
   for (_, article_id, rel_score) in &ta_rows {
-    let article: Option<(String, String, String, String)> = articles::table
+    let article: Option<(String, String, String, String, Option<String>)> = articles::table
       .find(article_id)
       .select((
         articles::title,
         articles::link,
         articles::feed_uuid,
         articles::pub_date,
+        articles::description.nullable(),
       ))
       .first(conn)
       .ok();
 
-    if let Some((title, link, feed_uuid, pub_date)) = article {
+    if let Some((title, link, feed_uuid, pub_date, description)) = article {
       let feed_title: String = feeds::table
         .filter(feeds::uuid.eq(&feed_uuid))
         .select(feeds::title)
         .first(conn)
         .unwrap_or_default();
+
+      let excerpt = description.and_then(|desc| {
+        let trimmed = desc.trim();
+        if trimmed.is_empty() {
+          None
+        } else {
+          let end = trimmed.char_indices().take(150).last().map(|(i, c)| i + c.len_utf8()).unwrap_or(0);
+          Some(format!("{}…", &trimmed[..end]))
+        }
+      });
 
       arts.push(TopicArticleItem {
         article_id: *article_id,
@@ -421,7 +479,7 @@ pub fn get_topic_detail_by_id(
         feed_uuid,
         pub_date,
         relevance_score: *rel_score as f64,
-        excerpt: None,
+        excerpt,
       });
     }
   }
@@ -455,6 +513,7 @@ pub fn get_topic_detail_by_id(
   source_groups.sort_by(|a, b| b.article_count.cmp(&a.article_count));
 
   let is_following = is_topic_followed(conn, topic.id);
+  let is_muted = is_topic_muted(conn, topic.id);
 
   let mut date_groups: HashMap<String, Vec<&TopicArticleItem>> = HashMap::new();
   for art in &arts {
@@ -476,7 +535,7 @@ pub fn get_topic_detail_by_id(
       RecentChange {
         date,
         title,
-        summary: String::new(),
+        summary: format!("{} articles from {} sources", article_count, source_count),
         article_count,
         source_count,
       }
@@ -496,9 +555,57 @@ pub fn get_topic_detail_by_id(
     first_seen_at: topic.first_seen_at.to_string(),
     last_updated_at: topic.last_updated_at.to_string(),
     is_following,
+    is_muted,
     recent_changes,
     articles: arts,
     topic_summary,
     source_groups,
   })
+}
+
+#[derive(Debug, Serialize, QueryableByName)]
+pub struct TopicSearchResult {
+  #[diesel(sql_type = Text)]
+  pub uuid: String,
+  #[diesel(sql_type = Text)]
+  pub title: String,
+  #[diesel(sql_type = Text)]
+  pub description: String,
+  #[diesel(sql_type = Integer)]
+  pub article_count: i32,
+  #[diesel(sql_type = Integer)]
+  pub source_count: i32,
+  #[diesel(sql_type = Integer)]
+  pub is_following: i32,
+}
+
+pub fn search_topics(
+  conn: &mut SqliteConnection,
+  query: &str,
+) -> Result<Vec<TopicSearchResult>, String> {
+  let pattern = format!("%{}%", query.replace('%', "\\%").replace('_', "\\_"));
+
+  let results: Vec<TopicSearchResult> = diesel::sql_query(
+    "SELECT
+       T.uuid,
+       T.title,
+       COALESCE(T.description, '') as description,
+       T.article_count,
+       T.source_count,
+       CASE WHEN EXISTS (
+         SELECT 1 FROM topic_follows TF
+         WHERE TF.topic_id = T.id AND TF.status = 'followed'
+       ) THEN 1 ELSE 0 END as is_following
+     FROM topics T
+     WHERE (T.title LIKE ? OR T.description LIKE ?)
+       AND T.status = 'active'
+     ORDER BY T.last_updated_at DESC
+     LIMIT 10",
+  )
+  .bind::<Text, _>(&pattern)
+  .bind::<Text, _>(&pattern)
+  .load::<TopicSearchResult>(conn)
+  .map_err(|e| e.to_string())?;
+
+  Ok(results)
 }

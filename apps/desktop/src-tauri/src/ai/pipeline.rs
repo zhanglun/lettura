@@ -10,6 +10,7 @@ use crate::db;
 use crate::schema::{article_ai_analysis, articles, feeds, pipeline_runs, topics};
 use chrono::Utc;
 use diesel::prelude::*;
+use diesel::sql_types::{Float, Integer, Nullable, Text};
 use serde::Serialize;
 use std::sync::atomic::{AtomicBool, Ordering};
 use tauri::Emitter;
@@ -131,6 +132,13 @@ pub fn start_pipeline_timer(app_handle: tauri::AppHandle) {
   tauri::async_runtime::spawn(async move {
     loop {
       let user_config = config::get_user_config();
+
+      let should_auto_run = user_config
+        .ai
+        .as_ref()
+        .map(|c| c.enable_auto_pipeline)
+        .unwrap_or(true);
+
       let interval_hours = user_config
         .ai
         .as_ref()
@@ -139,6 +147,11 @@ pub fn start_pipeline_timer(app_handle: tauri::AppHandle) {
         .max(1);
 
       tokio::time::sleep(std::time::Duration::from_secs(interval_hours * 3600)).await;
+
+      if !should_auto_run {
+        log::debug!("Auto pipeline disabled, skipping scheduled run");
+        continue;
+      }
 
       let ai_config = match user_config.ai {
         Some(ref c) if c.has_api_key() => c.clone(),
@@ -229,6 +242,12 @@ async fn run_pipeline_inner(
     serde_json::json!({"run_id": run_id, "run_type": run_type}),
   );
 
+  let topics_before: i64 = topics::table
+    .filter(topics::status.eq("active"))
+    .count()
+    .first(conn)
+    .unwrap_or(0);
+
   let result = execute_pipeline_steps(
     conn,
     ai_config,
@@ -240,10 +259,20 @@ async fn run_pipeline_inner(
 
   let (status, error_message) = match &result {
     Ok(count) => {
+      let topics_after: i64 = topics::table
+        .filter(topics::status.eq("active"))
+        .count()
+        .first(conn)
+        .unwrap_or(0);
+      let topics_created = (topics_after - topics_before).max(0);
       emit_event(
         app_handle,
         "pipeline:completed",
-        serde_json::json!({"run_id": run_id, "signals_generated": count}),
+        serde_json::json!({
+          "run_id": run_id,
+          "signals_generated": count,
+          "topics_created": topics_created,
+        }),
       );
       ("completed", None)
     }
@@ -778,8 +807,23 @@ fn emit_progress(app_handle: Option<&tauri::AppHandle>, stage: &str, current: us
   );
 }
 
+/// 获取最近一次成功 pipeline run 的完成时间
+fn get_last_pipeline_finished_at(conn: &mut SqliteConnection) -> String {
+  pipeline_runs::table
+    .filter(pipeline_runs::status.eq("completed"))
+    .filter(pipeline_runs::finished_at.is_not_null())
+    .order(pipeline_runs::finished_at.desc())
+    .select(pipeline_runs::finished_at)
+    .first::<Option<chrono::NaiveDateTime>>(conn)
+    .ok()
+    .flatten()
+    .map(|dt| chrono::DateTime::<chrono::Utc>::from_naive_utc_and_offset(dt, chrono::Utc).to_rfc3339())
+    .unwrap_or_else(|| Utc::now().to_rfc3339())
+}
+
 pub fn get_today_signals(conn: &mut SqliteConnection, limit: i32) -> Result<Vec<Signal>, String> {
   let limit = limit.clamp(1, 10);
+  let pipeline_finished_at = get_last_pipeline_finished_at(conn);
 
   let analyses: Vec<(
     Option<i32>,
@@ -855,7 +899,7 @@ pub fn get_today_signals(conn: &mut SqliteConnection, limit: i32) -> Result<Vec<
       topic_id,
       topic_title,
       topic_uuid,
-      created_at: Utc::now().to_rfc3339(),
+      created_at: pipeline_finished_at.clone(),
     });
   }
 
@@ -926,6 +970,7 @@ pub fn get_signal_detail(
     (tid, ttitle, tuuid)
   };
 
+  let pipeline_finished_at = get_last_pipeline_finished_at(conn);
   let signal = Signal {
     id: signal_id,
     title,
@@ -937,7 +982,7 @@ pub fn get_signal_detail(
     topic_id,
     topic_title,
     topic_uuid,
-    created_at: Utc::now().to_rfc3339(),
+    created_at: pipeline_finished_at,
   };
 
   Ok(SignalDetail {
@@ -1057,6 +1102,57 @@ fn build_signal_source(conn: &mut SqliteConnection, article_id: i32) -> Option<S
 
 fn get_sources_for_article(conn: &mut SqliteConnection, article_id: i32) -> Vec<SignalSource> {
   build_signal_source(conn, article_id).into_iter().collect()
+}
+
+#[derive(Debug, Serialize, QueryableByName)]
+pub struct SignalSearchResult {
+  #[diesel(sql_type = Text)]
+  pub signal_title: String,
+  #[diesel(sql_type = Text)]
+  pub summary: String,
+  #[diesel(sql_type = Float)]
+  pub confidence: f32,
+  #[diesel(sql_type = Integer)]
+  pub source_count: i32,
+  #[diesel(sql_type = Integer)]
+  pub article_count: i32,
+  #[diesel(sql_type = Nullable<Text>)]
+  pub topic_title: Option<String>,
+  #[diesel(sql_type = Nullable<Text>)]
+  pub topic_uuid: Option<String>,
+}
+
+pub fn search_signals(
+  conn: &mut SqliteConnection,
+  query: &str,
+) -> Result<Vec<SignalSearchResult>, String> {
+  let pattern = format!("%{}%", query.replace('%', "\\%").replace('_', "\\_"));
+
+  let results: Vec<SignalSearchResult> = diesel::sql_query(
+    "SELECT
+       AAA.signal_title,
+       COALESCE(AAA.summary, '') as summary,
+       AVG(CAST(AAA.relevance_score AS FLOAT)) as confidence,
+       COUNT(DISTINCT A.feed_uuid) as source_count,
+       COUNT(*) as article_count,
+       T.title as topic_title,
+       T.uuid as topic_uuid
+     FROM article_ai_analysis AAA
+     LEFT JOIN articles A ON A.id = AAA.article_id
+     LEFT JOIN topics T ON T.id = AAA.topic_id
+     WHERE (AAA.signal_title LIKE ? OR AAA.summary LIKE ?)
+       AND AAA.signal_title IS NOT NULL
+       AND AAA.signal_title != ''
+     GROUP BY COALESCE(AAA.topic_id, AAA.id)
+     ORDER BY confidence DESC
+     LIMIT 10",
+  )
+  .bind::<Text, _>(&pattern)
+  .bind::<Text, _>(&pattern)
+  .load::<SignalSearchResult>(conn)
+  .map_err(|e| e.to_string())?;
+
+  Ok(results)
 }
 
 #[cfg(test)]

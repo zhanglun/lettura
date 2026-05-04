@@ -282,12 +282,14 @@ pub struct TopicFollow {
   pub id: Option<i32>,
   pub topic_id: i32,
   pub followed_at: chrono::NaiveDateTime,
+  pub status: String,
 }
 
 #[derive(Debug, Insertable)]
 #[diesel(table_name = topic_follows)]
 pub struct NewTopicFollow {
   pub topic_id: i32,
+  pub status: Option<String>,
 }
 
 #[derive(Debug, Clone, Queryable, Serialize, QueryableByName)]

@@ -35,7 +35,7 @@ pub fn get_feed_by_uuid(channel_uuid: &str) -> Option<models::Feed> {
 ///
 /// assert_eq!(1, result);
 /// ```
-pub fn delete_feed(uuid: String) -> usize {
+pub fn delete_feed(uuid: String, delete_articles: bool) -> usize {
   let mut connection = db::establish_connection();
   let channel = schema::feeds::dsl::feeds
     .filter(schema::feeds::uuid.eq(&uuid))
@@ -45,17 +45,19 @@ pub fn delete_feed(uuid: String) -> usize {
   println!("channel {:?}", channel);
 
   return if channel.len() == 1 {
-    diesel::delete(schema::articles::dsl::articles.filter(schema::articles::feed_uuid.eq(&uuid)))
-      .execute(&mut connection)
-      .expect("Expect delete channel");
+    if delete_articles {
+      diesel::delete(schema::articles::dsl::articles.filter(schema::articles::feed_uuid.eq(&uuid)))
+        .execute(&mut connection)
+        .expect("Expect delete articles");
+    }
 
     diesel::delete(schema::feed_metas::dsl::feed_metas.filter(schema::feed_metas::uuid.eq(&uuid)))
       .execute(&mut connection)
-      .expect("Expect delete channel");
+      .expect("Expect delete feed meta");
 
     let result = diesel::delete(schema::feeds::dsl::feeds.filter(schema::feeds::uuid.eq(&uuid)))
       .execute(&mut connection)
-      .expect("Expect delete channel");
+      .expect("Expect delete feed");
 
     result
   } else {

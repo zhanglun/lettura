@@ -393,10 +393,12 @@ pub fn save_ai_config(
   base_url: String,
   pipeline_interval_hours: Option<u64>,
   enable_embedding: Option<bool>,
+  enable_auto_pipeline: Option<bool>,
 ) -> Result<(), String> {
   let mut user_config = config::get_user_config();
   let hours = pipeline_interval_hours.unwrap_or(1);
   let emb = enable_embedding.unwrap_or(true);
+  let auto = enable_auto_pipeline.unwrap_or(true);
   let existing_key = user_config
     .ai
     .as_ref()
@@ -414,6 +416,7 @@ pub fn save_ai_config(
     base_url,
     pipeline_interval_hours: hours,
     enable_embedding: emb,
+    enable_auto_pipeline: auto,
   });
 
   let config_path = config::get_user_config_path();
@@ -544,6 +547,30 @@ pub fn follow_topic(topic_id: i32) -> Result<(), String> {
 pub fn unfollow_topic(topic_id: i32) -> Result<(), String> {
   let conn = &mut crate::db::establish_connection();
   crate::ai::topic::unfollow_topic(conn, topic_id)
+}
+
+#[command]
+pub fn mute_topic(topic_id: i32) -> Result<(), String> {
+  let conn = &mut crate::db::establish_connection();
+  crate::ai::topic::mute_topic(conn, topic_id)
+}
+
+#[command]
+pub fn unmute_topic(topic_id: i32) -> Result<(), String> {
+  let conn = &mut crate::db::establish_connection();
+  crate::ai::topic::unmute_topic(conn, topic_id)
+}
+
+#[command]
+pub fn search_signals(query: String) -> Result<Vec<crate::ai::pipeline::SignalSearchResult>, String> {
+  let conn = &mut crate::db::establish_connection();
+  crate::ai::pipeline::search_signals(conn, &query)
+}
+
+#[command]
+pub fn search_topics(query: String) -> Result<Vec<crate::ai::topic::TopicSearchResult>, String> {
+  let conn = &mut crate::db::establish_connection();
+  crate::ai::topic::search_topics(conn, &query)
 }
 
 #[cfg(test)]

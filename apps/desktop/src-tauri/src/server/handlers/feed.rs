@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use actix_web::{delete, get, post, web, Responder, Result};
 use log::info;
 
@@ -19,10 +21,17 @@ pub async fn handle_get_feeds() -> Result<impl Responder> {
 }
 
 #[delete("/api/feeds/{uuid}")]
-pub async fn handle_delete_feed(uuid: web::Path<String>) -> Result<impl Responder> {
-  let results = feed::channel::delete_feed(uuid.to_string());
+pub async fn handle_delete_feed(
+    uuid: web::Path<String>,
+    query: web::Query<HashMap<String, String>>,
+) -> Result<impl Responder> {
+    let delete_articles = query
+        .get("delete_articles")
+        .map(|v| v == "true")
+        .unwrap_or(false);
+    let results = feed::channel::delete_feed(uuid.to_string(), delete_articles);
 
-  Ok(web::Json(results))
+    Ok(web::Json(results))
 }
 
 /// for ui render
