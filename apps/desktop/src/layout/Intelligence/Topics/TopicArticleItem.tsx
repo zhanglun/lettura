@@ -1,16 +1,23 @@
 import { Text, Flex } from "@radix-ui/themes";
+import { useNavigate } from "react-router-dom";
 import type { TopicArticle } from "@/stores/topicSlice";
 import { formatRelativeTime } from "@/helpers/formatRelativeTime";
+import { RouteConfig } from "@/config";
 
 interface TopicArticleItemProps {
   article: TopicArticle;
+  feedUuid?: string;
   onClick?: (article: TopicArticle) => void;
 }
 
-export function TopicArticleItem({ article, onClick }: TopicArticleItemProps) {
+export function TopicArticleItem({ article, feedUuid, onClick }: TopicArticleItemProps) {
+  const navigate = useNavigate();
+
   const handleClick = () => {
     if (onClick) {
       onClick(article);
+    } else if (feedUuid) {
+      navigate(RouteConfig.LOCAL_ARTICLE.replace(":uuid", feedUuid).replace(":id", String(article.article_id)));
     } else if (typeof window !== "undefined") {
       window.open(article.link, "_blank");
     }

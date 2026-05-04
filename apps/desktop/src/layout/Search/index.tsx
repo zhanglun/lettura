@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { formatDistanceToNow, parseISO } from "date-fns";
+import { useNavigate } from "react-router-dom";
 import {
   Bookmark,
   Calendar,
@@ -13,6 +14,7 @@ import {
   Star,
   X,
 } from "lucide-react";
+import { invoke } from "@tauri-apps/api/core";
 import { Avatar, Button, IconButton, TextField } from "@radix-ui/themes";
 import { AxiosResponse } from "axios";
 import { ArticleResItem, FeedResItem } from "@/db";
@@ -21,9 +23,29 @@ import type { TopicItem } from "@/stores/topicSlice";
 import { useShallow } from "zustand/react/shallow";
 import { MainPanel } from "@/components/MainPanel";
 import { View } from "../Article/View";
+import { RouteConfig } from "@/config";
 import { request } from "@/helpers/request";
 import { getFeedLogo } from "@/helpers/parseXML";
 import { showErrorToast } from "@/helpers/errorHandler";
+
+interface SignalSearchResult {
+  signal_title: string;
+  summary: string;
+  confidence: number;
+  source_count: number;
+  article_count: number;
+  topic_title: string | null;
+  topic_uuid: string | null;
+}
+
+interface TopicSearchResult {
+  uuid: string;
+  title: string;
+  description: string;
+  article_count: number;
+  source_count: number;
+  is_following: number;
+}
 
 const PAGE_SIZE = 20;
 
@@ -181,6 +203,8 @@ export const SearchPage = () => {
   const [recentSearches, setRecentSearches] = useState<string[]>(() =>
     loadFromStorage<string[]>(STORAGE_KEY_RECENT, []),
   );
+  const [signalResults, setSignalResults] = useState<SignalSearchResult[]>([]);
+  const [topicResults, setTopicResults] = useState<TopicSearchResult[]>([]);
 
   const { topics, fetchTopics } = useBearStore(
     useShallow((state) => ({
@@ -212,6 +236,81 @@ export const SearchPage = () => {
       .map((item) => item.topic);
     return scored.length > 0 ? scored.slice(0, 5) : topics.slice(0, 5);
   }, [topics, query]);
+
+  const searchInsight = useMemo(() => {
+    const totalResults = resultList.length + signalResults.length + topicResults.length;
+    if (!query.trim() || totalResults === 0) {
+      return null;
+    }
+
+    const parts: string[] = [];
+    const topicNames = topicResults.map((t) => t.title).filter(Boolean);
+    const signalTopics = signalResults
+      .map((s) => s.topic_title)
+      .filter(Boolean) as string[];
+    const uniqueTopics = [...new Set([...topicNames, ...signalTopics])];
+    if (uniqueTopics.length > 0) {
+      parts.push(
+        t("search.insight.topics_found", {
+          count: uniqueTopics.length,
+          topics: uniqueTopics.slice(0, 2).join("、"),
+        }),
+      );
+    }
+
+    if (signalResults.length > 0) {
+      const totalSources = signalResults.reduce(
+        (sum, s) => sum + s.source_count,
+        0,
+      );
+      parts.push(
+        t("search.insight.signals_found", {
+          count: signalResults.length,
+          sources: totalSources,
+        }),
+      );
+    }
+
+    const feedNames = [
+      ...new Set(resultList.map((a) => a.feed_title).filter(Boolean)),
+    ];
+    if (feedNames.length > 0 && feedNames.length <= 3) {
+      parts.push(
+        t("search.insight.sources_found", {
+          sources: feedNames.join("、"),
+        }),
+      );
+    }
+
+    return {
+      summary: t("search.insight.summary", {
+        total: totalResults,
+        query: query.trim(),
+      }),
+      details: parts,
+    };
+  }, [query, resultList, signalResults, topicResults, t]);
+
+  const navigate = useNavigate();
+
+  const searchSignalsAndTopics = useCallback(async (q: string) => {
+    if (!q || q.length < 2) {
+      setSignalResults([]);
+      setTopicResults([]);
+      return;
+    }
+    try {
+      const [signals, topics] = await Promise.all([
+        invoke<SignalSearchResult[]>("search_signals", { query: q }),
+        invoke<TopicSearchResult[]>("search_topics", { query: q }),
+      ]);
+      setSignalResults(signals);
+      setTopicResults(topics);
+    } catch {
+      setSignalResults([]);
+      setTopicResults([]);
+    }
+  }, []);
 
   const getList = useCallback(
     (nextCursor = 1, replace = false) => {
@@ -287,6 +386,7 @@ export const SearchPage = () => {
       setCurrentArticle(null);
       const trimmed = text.trim();
       if (!trimmed) return;
+      searchSignalsAndTopics(trimmed);
       setIsFetching(true);
       request
         .get("/search", {
@@ -315,7 +415,7 @@ export const SearchPage = () => {
           setIsFetching(false);
         });
     },
-    [endDate, feedUuid, isStarred, highSignal, startDate, trackRecentSearch],
+    [endDate, feedUuid, isStarred, highSignal, startDate, trackRecentSearch, searchSignalsAndTopics],
   );
 
   const runSearch = useCallback(() => {
@@ -323,9 +423,11 @@ export const SearchPage = () => {
     setCursor(1);
     setHasMore(false);
     setResultList([]);
+    const trimmed = query.trim();
+    if (trimmed) searchSignalsAndTopics(trimmed);
     getList(1, true);
-    trackRecentSearch(query.trim());
-  }, [getList, query, trackRecentSearch]);
+    trackRecentSearch(trimmed);
+  }, [getList, query, trackRecentSearch, searchSignalsAndTopics]);
 
   useEffect(() => {
     const loadFeeds = async () => {
@@ -557,6 +659,61 @@ export const SearchPage = () => {
               {selectedFeed && <span>{t("search.source_label", { title: selectedFeed.title })}</span>}
             </div>
 
+            {signalResults.length > 0 && (
+              <div className="mb-4">
+                <div className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-[var(--gray-10)]">
+                  {t("search.section.signals")}
+                </div>
+                <div className="grid gap-2">
+                  {signalResults.map((signal, i) => (
+                    <div
+                      key={i}
+                      className="rounded-lg border border-[var(--gray-5)] bg-[var(--color-panel-solid)] p-3 cursor-pointer transition-colors hover:border-[var(--gray-7)] hover:bg-[var(--gray-a2)]"
+                      onClick={() => navigate(RouteConfig.LOCAL_TODAY)}
+                    >
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-sm font-medium text-[var(--gray-12)]">{signal.signal_title}</span>
+                        <span className="text-xs text-[var(--gray-9)]">{signal.article_count} articles · {signal.source_count} sources</span>
+                      </div>
+                      {signal.summary && (
+                        <p className="text-xs text-[var(--gray-10)] line-clamp-2">{signal.summary}</p>
+                      )}
+                      {signal.topic_title && (
+                        <span className="mt-1 inline-block text-[10px] px-1.5 py-0.5 rounded bg-[var(--accent-a3)] text-[var(--accent-11)]">
+                          {signal.topic_title}
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {topicResults.length > 0 && (
+              <div className="mb-4">
+                <div className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-[var(--gray-10)]">
+                  {t("search.section.topics")}
+                </div>
+                <div className="grid gap-2">
+                  {topicResults.map((topic) => (
+                    <div
+                      key={topic.uuid}
+                      className="rounded-lg border border-[var(--gray-5)] bg-[var(--color-panel-solid)] p-3 cursor-pointer transition-colors hover:border-[var(--gray-7)] hover:bg-[var(--gray-a2)]"
+                      onClick={() => navigate(`/local/topics/${topic.uuid}`)}
+                    >
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-sm font-medium text-[var(--gray-12)]">{topic.title}</span>
+                        <span className="text-xs text-[var(--gray-9)]">{topic.article_count} articles · {topic.source_count} sources</span>
+                      </div>
+                      {topic.description && (
+                        <p className="text-xs text-[var(--gray-10)] line-clamp-2">{topic.description}</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {resultList.length === 0 && isFetching ? (
               <div className="grid gap-3">
                 {[0, 1, 2].map((item) => (
@@ -622,12 +779,27 @@ export const SearchPage = () => {
                 {t("search.insight.title")}
               </div>
               <div className="rounded-lg border border-[var(--gray-5)] bg-[var(--color-panel-solid)] p-3">
-                <div className="text-sm font-semibold text-[var(--gray-12)]">
-                  {t("search.insight.title_text")}
-                </div>
-                <p className="mt-2 text-xs leading-5 text-[var(--gray-11)]">
-                  {t("search.insight.description")}
-                </p>
+                {searchInsight ? (
+                  <>
+                    <div className="text-sm font-semibold text-[var(--gray-12)]">
+                      {searchInsight.summary}
+                    </div>
+                    {searchInsight.details.length > 0 && (
+                      <p className="mt-2 text-xs leading-5 text-[var(--gray-11)]">
+                        {searchInsight.details.join("；")}
+                      </p>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <div className="text-sm font-semibold text-[var(--gray-12)]">
+                      {t("search.insight.title_text")}
+                    </div>
+                    <p className="mt-2 text-xs leading-5 text-[var(--gray-11)]">
+                      {t("search.insight.description")}
+                    </p>
+                  </>
+                )}
               </div>
             </div>
             <div className="mb-5">

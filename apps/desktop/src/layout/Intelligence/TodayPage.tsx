@@ -5,6 +5,7 @@ import { useShallow } from "zustand/react/shallow";
 import { useTranslation } from "react-i18next";
 import { SignalList } from "./SignalList";
 import { PipelineIndicator } from "./PipelineIndicator";
+import { TodayHeader } from "./TodayHeader";
 import { TodayOverview } from "./TodayOverview";
 import { TodayEmptyState } from "./TodayEmptyState";
 import { RightPanel } from "./RightPanel";
@@ -36,6 +37,7 @@ export function TodayPage() {
       setPipelineStatus: state.setPipelineStatus,
       setPipelineProgress: state.setPipelineProgress,
       triggerPipeline: state.triggerPipeline,
+      lastUpdated: state.lastUpdated,
       setPipelineError: state.setPipelineError,
       updateSettingDialogStatus: state.updateSettingDialogStatus,
       expandedSignalId: state.expandedSignalId,
@@ -244,12 +246,22 @@ export function TodayPage() {
     <div className="flex h-full w-full">
       {/* Main content area */}
       <div className="flex-1 flex flex-col min-w-0 h-full">
+        <TodayHeader
+          pipelineStatus={store.pipelineStatus}
+          lastUpdated={store.lastUpdated}
+          sourceCount={store.overview?.article_count ?? 0}
+          onRefresh={() => store.triggerPipeline()}
+          onRetry={() => store.triggerPipeline()}
+          pipelineError={store.pipelineError}
+        />
         <PipelineIndicator
           status={store.pipelineStatus}
           stage={store.pipelineStage}
           progress={store.pipelineProgress}
           error={store.pipelineError}
           onRetry={() => store.triggerPipeline()}
+          onTrigger={() => store.triggerPipeline()}
+          lastUpdated={store.lastUpdated}
         />
 
         {store.signalsLoading && !hasSignals ? (

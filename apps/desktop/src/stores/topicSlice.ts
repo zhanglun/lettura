@@ -1,5 +1,7 @@
 import { StateCreator } from "zustand";
 import { invoke } from "@tauri-apps/api/core";
+import { toast } from "sonner";
+import { t } from "i18next";
 
 export interface TopicArticle {
   article_id: number;
@@ -22,6 +24,7 @@ export interface TopicItem {
   first_seen_at: string;
   last_updated_at: string;
   is_following: boolean;
+  is_muted: boolean;
 }
 
 export interface SourceGroup {
@@ -50,6 +53,7 @@ export interface TopicDetail {
   first_seen_at: string;
   last_updated_at: string;
   is_following: boolean;
+  is_muted: boolean;
   recent_changes: RecentChange[];
   articles: TopicArticle[];
   topic_summary?: string;
@@ -63,16 +67,19 @@ export interface TopicSlice {
   detailLoading: boolean;
   error: string | null;
   sortMode: "relevance" | "recent" | "article_count";
-  filterMode: "all" | "following";
+  filterMode: "all" | "following" | "muted";
   followingTopicIds: Set<number>;
+  mutedTopicIds: Set<number>;
 
   fetchTopics: (status?: string, sort?: string) => Promise<void>;
   fetchTopicDetail: (topicId: number | string) => Promise<void>;
   clearSelectedTopic: () => void;
   setSortMode: (mode: "relevance" | "recent" | "article_count") => void;
-  setFilterMode: (mode: "all" | "following") => void;
+  setFilterMode: (mode: "all" | "following" | "muted") => void;
   followTopic: (topicId: number) => Promise<void>;
   unfollowTopic: (topicId: number) => Promise<void>;
+  muteTopic: (topicId: number) => Promise<void>;
+  unmuteTopic: (topicId: number) => Promise<void>;
 }
 
 export const createTopicSlice: StateCreator<TopicSlice> = (set, get) => ({
@@ -84,6 +91,7 @@ export const createTopicSlice: StateCreator<TopicSlice> = (set, get) => ({
   sortMode: "relevance",
   filterMode: "all",
   followingTopicIds: new Set(),
+  mutedTopicIds: new Set(),
 
   fetchTopics: async (status, sort) => {
     set({ loading: true, error: null });
@@ -97,16 +105,17 @@ export const createTopicSlice: StateCreator<TopicSlice> = (set, get) => ({
         topics,
         loading: false,
         followingTopicIds: new Set(topics.filter((t) => t.is_following).map((t) => t.id)),
+        mutedTopicIds: new Set(topics.filter((t) => t.is_muted).map((t) => t.id)),
       });
     } catch (e) {
       set({ error: String(e), loading: false });
     }
   },
 
-  fetchTopicDetail: async (topicId) => {
+  fetchTopicDetail: async (topicUuid) => {
     set({ detailLoading: true, error: null });
     try {
-      const detail: TopicDetail = await invoke("get_topic_detail", { topicId: String(topicId) });
+      const detail: TopicDetail = await invoke("get_topic_detail", { topicId: String(topicUuid) });
       set({ selectedTopic: detail, detailLoading: false });
     } catch (e) {
       set({ error: String(e), detailLoading: false });
@@ -128,40 +137,143 @@ export const createTopicSlice: StateCreator<TopicSlice> = (set, get) => ({
   },
 
   followTopic: async (topicId) => {
+    const { topics, followingTopicIds, selectedTopic } = get();
+    const prevFollowing = new Set(followingTopicIds);
+    const prevTopics = topics;
+    const prevSelected = selectedTopic;
+
+    // Optimistic update
+    const newFollowing = new Set(followingTopicIds);
+    newFollowing.add(topicId);
+    set({
+      followingTopicIds: newFollowing,
+      topics: topics.map((t) => (t.id === topicId ? { ...t, is_following: true } : t)),
+      selectedTopic:
+        selectedTopic && selectedTopic.id === topicId
+          ? { ...selectedTopic, is_following: true }
+          : selectedTopic,
+    });
+
     try {
       await invoke("follow_topic", { topicId });
-      const { topics, followingTopicIds, selectedTopic } = get();
-      const newFollowing = new Set(followingTopicIds);
-      newFollowing.add(topicId);
-      set({
-        followingTopicIds: newFollowing,
-        topics: topics.map((t) => (t.id === topicId ? { ...t, is_following: true } : t)),
-        selectedTopic:
-          selectedTopic && selectedTopic.id === topicId
-            ? { ...selectedTopic, is_following: true }
-            : selectedTopic,
-      });
+      toast.success(t("layout.topics.follow_toast"));
     } catch (e) {
-      set({ error: String(e) });
+      // Rollback
+      set({
+        followingTopicIds: prevFollowing,
+        topics: prevTopics,
+        selectedTopic: prevSelected,
+        error: String(e),
+      });
     }
   },
 
   unfollowTopic: async (topicId) => {
+    const { topics, followingTopicIds, mutedTopicIds, selectedTopic } = get();
+    const prevFollowing = new Set(followingTopicIds);
+    const prevMuted = new Set(mutedTopicIds);
+    const prevTopics = topics;
+    const prevSelected = selectedTopic;
+
+    // Optimistic update
+    const newFollowing = new Set(followingTopicIds);
+    const newMuted = new Set(mutedTopicIds);
+    newFollowing.delete(topicId);
+    newMuted.delete(topicId);
+    set({
+      followingTopicIds: newFollowing,
+      mutedTopicIds: newMuted,
+      topics: topics.map((t) => (t.id === topicId ? { ...t, is_following: false, is_muted: false } : t)),
+      selectedTopic:
+        selectedTopic && selectedTopic.id === topicId
+          ? { ...selectedTopic, is_following: false, is_muted: false }
+          : selectedTopic,
+    });
+
     try {
       await invoke("unfollow_topic", { topicId });
-      const { topics, followingTopicIds, selectedTopic } = get();
-      const newFollowing = new Set(followingTopicIds);
-      newFollowing.delete(topicId);
-      set({
-        followingTopicIds: newFollowing,
-        topics: topics.map((t) => (t.id === topicId ? { ...t, is_following: false } : t)),
-        selectedTopic:
-          selectedTopic && selectedTopic.id === topicId
-            ? { ...selectedTopic, is_following: false }
-            : selectedTopic,
-      });
+      toast.success(t("layout.topics.unfollow_toast"));
     } catch (e) {
-      set({ error: String(e) });
+      // Rollback
+      set({
+        followingTopicIds: prevFollowing,
+        mutedTopicIds: prevMuted,
+        topics: prevTopics,
+        selectedTopic: prevSelected,
+        error: String(e),
+      });
+    }
+  },
+
+  muteTopic: async (topicId) => {
+    const { topics, mutedTopicIds, followingTopicIds, selectedTopic } = get();
+    const prevMuted = new Set(mutedTopicIds);
+    const prevFollowing = new Set(followingTopicIds);
+    const prevTopics = topics;
+    const prevSelected = selectedTopic;
+
+    // Optimistic update
+    const newMuted = new Set(mutedTopicIds);
+    const newFollowing = new Set(followingTopicIds);
+    newMuted.add(topicId);
+    newFollowing.delete(topicId);
+    set({
+      mutedTopicIds: newMuted,
+      followingTopicIds: newFollowing,
+      topics: topics.map((t) => (t.id === topicId ? { ...t, is_following: false, is_muted: true } : t)),
+      selectedTopic:
+        selectedTopic && selectedTopic.id === topicId
+          ? { ...selectedTopic, is_following: false, is_muted: true }
+          : selectedTopic,
+    });
+
+    try {
+      await invoke("mute_topic", { topicId });
+    } catch (e) {
+      // Rollback
+      set({
+        mutedTopicIds: prevMuted,
+        followingTopicIds: prevFollowing,
+        topics: prevTopics,
+        selectedTopic: prevSelected,
+        error: String(e),
+      });
+    }
+  },
+
+  unmuteTopic: async (topicId) => {
+    const { topics, mutedTopicIds, followingTopicIds, selectedTopic } = get();
+    const prevMuted = new Set(mutedTopicIds);
+    const prevFollowing = new Set(followingTopicIds);
+    const prevTopics = topics;
+    const prevSelected = selectedTopic;
+
+    // Optimistic update
+    const newMuted = new Set(mutedTopicIds);
+    const newFollowing = new Set(followingTopicIds);
+    newMuted.delete(topicId);
+    newFollowing.add(topicId);
+    set({
+      mutedTopicIds: newMuted,
+      followingTopicIds: newFollowing,
+      topics: topics.map((t) => (t.id === topicId ? { ...t, is_following: true, is_muted: false } : t)),
+      selectedTopic:
+        selectedTopic && selectedTopic.id === topicId
+          ? { ...selectedTopic, is_following: true, is_muted: false }
+          : selectedTopic,
+    });
+
+    try {
+      await invoke("unmute_topic", { topicId });
+    } catch (e) {
+      // Rollback
+      set({
+        mutedTopicIds: prevMuted,
+        followingTopicIds: prevFollowing,
+        topics: prevTopics,
+        selectedTopic: prevSelected,
+        error: String(e),
+      });
     }
   },
 });

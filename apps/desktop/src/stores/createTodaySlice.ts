@@ -2,6 +2,8 @@ import { StateCreator } from "zustand";
 import { invoke } from "@tauri-apps/api/core";
 import * as dataAgent from "@/helpers/dataAgent";
 import type { ArticleResItem } from "@/db";
+import { toast } from "sonner";
+import i18next from "i18next";
 
 export interface SignalSource {
   article_id: number;
@@ -38,7 +40,9 @@ export interface AIConfigPublic {
   model: string;
   embedding_model: string;
   base_url: string;
+  pipeline_interval_hours: number;
   enable_embedding: boolean;
+  enable_auto_pipeline: boolean;
 }
 
 export interface TodayOverview {
@@ -177,8 +181,9 @@ export const createTodaySlice: StateCreator<TodaySlice> = (set, get) => ({
   setPipelineStatus: (status) => {
     set({ pipelineStatus: status });
     if (status === "done") {
-      const { fetchSignals } = get();
+      const { fetchSignals, fetchOverview } = get();
       fetchSignals();
+      fetchOverview();
       setTimeout(() => set({ pipelineStatus: "idle", pipelineError: null }), 3000);
     }
   },
@@ -241,6 +246,7 @@ export const createTodaySlice: StateCreator<TodaySlice> = (set, get) => ({
     set((state) => ({
       feedbackMap: { ...state.feedbackMap, [signalId]: feedbackType },
     }));
+    toast.success(i18next.t("today.feedback.success"));
     get().fetchSignals();
   },
 

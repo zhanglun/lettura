@@ -70,7 +70,9 @@ describe("dataAgent", () => {
 
         const result = await dataAgent.deleteChannel("channel-uuid-123");
 
-        expect(request.delete).toHaveBeenCalledWith("feeds/channel-uuid-123");
+        expect(request.delete).toHaveBeenCalledWith("feeds/channel-uuid-123", {
+          params: { delete_articles: false },
+        });
         expect(result).toEqual(mockResponse);
       });
     });

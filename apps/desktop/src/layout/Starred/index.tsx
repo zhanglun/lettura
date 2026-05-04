@@ -210,6 +210,38 @@ export const StarredPage = () => {
     [articles],
   );
 
+  const suggestion = useMemo(() => {
+    if (articles.length < 3) return null;
+
+    const feedMap = new Map<string, { name: string; count: number }>();
+    for (const article of articles) {
+      const key = article.feed_uuid;
+      if (!key) continue;
+      const existing = feedMap.get(key);
+      if (existing) {
+        existing.count++;
+      } else {
+        feedMap.set(key, {
+          name: article.feed_title || article.feed_url || "Unknown",
+          count: 1,
+        });
+      }
+    }
+
+    const topFeed = [...feedMap.values()].sort((a, b) => b.count - a.count)[0];
+    if (!topFeed || topFeed.count < 2) return null;
+
+    const suggestionName = topFeed.name;
+    const existingNames = new Set(collections.map((c) => c.name.toLowerCase()));
+
+    if (existingNames.has(suggestionName.toLowerCase())) return null;
+
+    return {
+      collectionName: suggestionName,
+      articleCount: topFeed.count,
+    };
+  }, [articles, collections]);
+
   const handleExport = () => {
     const data = JSON.stringify(articles, null, 2);
     const blob = new Blob([data], { type: "application/json" });
@@ -473,50 +505,108 @@ export const StarredPage = () => {
                 {t("starred.suggest.title")}
               </div>
               <div className="rounded-lg border border-[var(--gray-5)] bg-[var(--color-panel-solid)] p-3">
-                <div className="flex items-center gap-2 text-sm font-semibold text-[var(--gray-12)]">
-                  <FolderPlus size={14} />
-                  {t("starred.suggest.create")}
-                </div>
-                <p className="mt-2 text-xs leading-5 text-[var(--gray-11)]">
-                  {t("starred.suggest.has_notes", {
-                    count: withNotesCount,
-                  })}
-                </p>
-                {showCollectionInput ? (
-                  <div className="mt-3 flex gap-2">
-                    <input
-                      type="text"
-                      value={newCollectionName}
-                      onChange={(e) => setNewCollectionName(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") handleCreateCollection();
-                      }}
-                      placeholder={t(
-                        "starred.collection_input_placeholder",
-                      )}
-                      className="min-w-0 flex-1 rounded-md border border-[var(--gray-7)] bg-[var(--gray-2)] px-2 py-1 text-xs text-[var(--gray-12)] outline-none focus:border-[var(--accent-8)]"
-                      disabled={isCreatingCollection}
-                    />
-                    <Button
-                      size="1"
-                      onClick={handleCreateCollection}
-                      disabled={
-                        !newCollectionName.trim() || isCreatingCollection
-                      }
-                    >
-                      {isCreatingCollection
-                        ? t("Saving")
-                        : t("starred.suggest.create_button")}
-                    </Button>
-                  </div>
+                {suggestion ? (
+                  <>
+                    <div className="flex items-center gap-2 text-sm font-semibold text-[var(--gray-12)]">
+                      <FolderPlus size={14} />
+                      {t("starred.suggest.suggested_name", {
+                        name: suggestion.collectionName,
+                      })}
+                    </div>
+                    <p className="mt-2 text-xs leading-5 text-[var(--gray-11)]">
+                      {t("starred.suggest.suggested_reason", {
+                        count: suggestion.articleCount,
+                        name: suggestion.collectionName,
+                      })}
+                    </p>
+                    {showCollectionInput ? (
+                      <div className="mt-3 flex gap-2">
+                        <input
+                          type="text"
+                          value={newCollectionName}
+                          onChange={(e) => setNewCollectionName(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") handleCreateCollection();
+                          }}
+                          placeholder={t(
+                            "starred.collection_input_placeholder",
+                          )}
+                          className="min-w-0 flex-1 rounded-md border border-[var(--gray-7)] bg-[var(--gray-2)] px-2 py-1 text-xs text-[var(--gray-12)] outline-none focus:border-[var(--accent-8)]"
+                          disabled={isCreatingCollection}
+                        />
+                        <Button
+                          size="1"
+                          onClick={handleCreateCollection}
+                          disabled={
+                            !newCollectionName.trim() || isCreatingCollection
+                          }
+                        >
+                          {isCreatingCollection
+                            ? t("Saving")
+                            : t("starred.suggest.create_button")}
+                        </Button>
+                      </div>
+                    ) : (
+                      <Button
+                        className="mt-3"
+                        size="1"
+                        onClick={() => {
+                          setNewCollectionName(suggestion.collectionName);
+                          setShowCollectionInput(true);
+                        }}
+                      >
+                        {t("starred.suggest.create_button")}
+                      </Button>
+                    )}
+                  </>
                 ) : (
-                  <Button
-                    className="mt-3"
-                    size="1"
-                    onClick={() => setShowCollectionInput(true)}
-                  >
-                    {t("starred.suggest.create_button")}
-                  </Button>
+                  <>
+                    <div className="flex items-center gap-2 text-sm font-semibold text-[var(--gray-12)]">
+                      <FolderPlus size={14} />
+                      {t("starred.suggest.create")}
+                    </div>
+                    <p className="mt-2 text-xs leading-5 text-[var(--gray-11)]">
+                      {t("starred.suggest.has_notes", {
+                        count: withNotesCount,
+                      })}
+                    </p>
+                    {showCollectionInput ? (
+                      <div className="mt-3 flex gap-2">
+                        <input
+                          type="text"
+                          value={newCollectionName}
+                          onChange={(e) => setNewCollectionName(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") handleCreateCollection();
+                          }}
+                          placeholder={t(
+                            "starred.collection_input_placeholder",
+                          )}
+                          className="min-w-0 flex-1 rounded-md border border-[var(--gray-7)] bg-[var(--gray-2)] px-2 py-1 text-xs text-[var(--gray-12)] outline-none focus:border-[var(--accent-8)]"
+                          disabled={isCreatingCollection}
+                        />
+                        <Button
+                          size="1"
+                          onClick={handleCreateCollection}
+                          disabled={
+                            !newCollectionName.trim() || isCreatingCollection
+                          }
+                        >
+                          {isCreatingCollection
+                            ? t("Saving")
+                            : t("starred.suggest.create_button")}
+                        </Button>
+                      </div>
+                    ) : (
+                      <Button
+                        className="mt-3"
+                        size="1"
+                        onClick={() => setShowCollectionInput(true)}
+                      >
+                        {t("starred.suggest.create_button")}
+                      </Button>
+                    )}
+                  </>
                 )}
               </div>
             </div>

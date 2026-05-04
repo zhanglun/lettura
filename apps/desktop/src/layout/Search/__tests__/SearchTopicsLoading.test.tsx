@@ -12,6 +12,21 @@ vi.mock("@/stores/index", () => ({
   })),
 }));
 
+vi.mock("react-router-dom", () => ({
+  useNavigate: () => vi.fn(),
+}));
+
+vi.mock("@tauri-apps/api/core", () => ({
+  invoke: vi.fn().mockResolvedValue([]),
+}));
+
+vi.mock("@/config", () => ({
+  RouteConfig: {
+    LOCAL_TODAY: "/local/today",
+    LOCAL_FEED: "/local/feed/:uuid",
+  },
+}));
+
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string) => key,

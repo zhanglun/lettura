@@ -67,8 +67,10 @@ export const moveChannelIntoFolder = async (
  * 删除频道
  * @param {String} uuid  channel 的 uuid
  */
-export const deleteChannel = async (uuid: string) => {
-  return request.delete(`feeds/${uuid}`);
+export const deleteChannel = async (uuid: string, deleteArticles: boolean = false) => {
+  return request.delete(`feeds/${uuid}`, {
+    params: { delete_articles: deleteArticles },
+  });
 };
 
 export const deleteFolder = async (uuid: string) => {
@@ -316,6 +318,9 @@ export interface AIConfigPublic {
   model: string;
   embedding_model: string;
   base_url: string;
+  pipeline_interval_hours: number;
+  enable_embedding: boolean;
+  enable_auto_pipeline: boolean;
 }
 
 export interface ValidateAIConfigResult {
@@ -343,6 +348,7 @@ export const saveAIConfig = async (config: {
   baseUrl: string;
   pipelineIntervalHours?: number;
   enableEmbedding?: boolean;
+  enableAutoPipeline?: boolean;
 }): Promise<void> => {
   return invoke("save_ai_config", {
     apiKey: config.apiKey,
@@ -351,6 +357,7 @@ export const saveAIConfig = async (config: {
     baseUrl: config.baseUrl,
     pipelineIntervalHours: config.pipelineIntervalHours,
     enableEmbedding: config.enableEmbedding,
+    enableAutoPipeline: config.enableAutoPipeline,
   });
 };
 

@@ -26,11 +26,6 @@ export const Rail = React.memo(function () {
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
-  const store = useBearStore(
-    useShallow((state) => ({
-      updateSettingDialogStatus: state.updateSettingDialogStatus,
-    })),
-  );
 
   const items: RailItem[] = [
     {
@@ -72,8 +67,8 @@ export const Rail = React.memo(function () {
   const settingsItem: RailItem = {
     icon: <Settings size={18} />,
     labelKey: t("layout.rail.settings"),
-    action: () => store.updateSettingDialogStatus(true),
-    matchPaths: [],
+    route: RouteConfig.SETTINGS,
+    matchPaths: [RouteConfig.SETTINGS],
   };
 
   const isActive = (item: RailItem) => {

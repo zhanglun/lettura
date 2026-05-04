@@ -18,6 +18,7 @@ import { StarredPage } from "./layout/Starred";
 import { FreshRSSPage } from "./layout/FreshRSS";
 import { TopicListPage } from "./layout/Intelligence/Topics/TopicListPage";
 import { TopicDetailPage } from "./layout/Intelligence/Topics/TopicDetailPage";
+import { SettingPage } from "./layout/Setting";
 
 import "./index.css";
 import "./i18n";
@@ -78,6 +79,10 @@ const router = createBrowserRouter([
       {
         path: RouteConfig.SEARCH,
         element: <SearchPage />,
+      },
+      {
+        path: RouteConfig.SETTINGS,
+        element: <SettingPage />,
       },
     ],
   },

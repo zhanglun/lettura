@@ -10,13 +10,15 @@ import { useShallow } from "zustand/react/shallow";
 import { Toaster } from "sonner";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { showErrorToast } from "@/helpers/errorHandler";
+import { useNavigate } from "react-router-dom";
+import { RouteConfig } from "./config";
 
 function App() {
+  const navigate = useNavigate();
   const store = useBearStore(
     useShallow((state) => ({
       userConfig: state.userConfig,
       getUserConfig: state.getUserConfig,
-      updateSettingDialogStatus: state.updateSettingDialogStatus,
       updateAboutDialogStatus: state.updateAboutDialogStatus,
       updateAppMetadata: state.updateAppMetadata,
       setOnboardingOpen: state.setOnboardingOpen,
@@ -46,7 +48,7 @@ function App() {
       });
 
       const settingsUnsubscribe = listen("go_to_settings", () => {
-        store.updateSettingDialogStatus(true);
+        navigate(RouteConfig.SETTINGS);
       });
 
       const updateUnsubscribe = listen("check_for_updates", async () => {
@@ -62,7 +64,7 @@ function App() {
   }, [
     store.updateAboutDialogStatus,
     store.updateAppMetadata,
-    store.updateSettingDialogStatus,
+    navigate,
   ]);
 
   useEffect(() => {

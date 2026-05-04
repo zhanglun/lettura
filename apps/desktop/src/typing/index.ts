@@ -13,10 +13,8 @@ export enum ArticleReadLaterStatus {
   SAVED = 1,
 }
 export enum SettingTabKey {
-  GENERAL = "general",
-  APPEARANCE = "appearance",
-  PROXY = "proxy",
-  SHORTCUTS = "shortcuts",
-  IMPORTANDEXPORT = "import_and_export",
   AI = "ai",
+  SOURCES = "sources",
+  APPEARANCE = "appearance",
+  BEHAVIOR = "behavior",
 }

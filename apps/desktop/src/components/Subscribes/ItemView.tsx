@@ -5,9 +5,10 @@ import { RouteConfig } from "@/config";
 import { FeedResItem } from "@/db";
 import { useBearStore } from "@/stores";
 import { getFeedLogo } from "@/helpers/parseXML";
-import { Avatar } from "@radix-ui/themes";
+import { Avatar, HoverCard, Text } from "@radix-ui/themes";
 import { useShallow } from "zustand/react/shallow";
 import { Rss } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export interface CardProps {
   uuid: any;
@@ -34,6 +35,7 @@ export const ItemView: FC<CardProps> = ({
 }) => {
   const { isActive, level } = props;
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const store = useBearStore(
     useShallow((state) => ({
       setFeed: state.setFeed,
@@ -106,6 +108,21 @@ export const ItemView: FC<CardProps> = ({
         >
           {feed.title}
         </span>
+        {feed.last_sync_date && feed.health_status === 1 && (
+          <HoverCard.Root>
+            <HoverCard.Trigger>
+              <span className="ml-1 h-[7px] w-[7px] shrink-0 rounded-full bg-[var(--red-9)]" />
+            </HoverCard.Trigger>
+            <HoverCard.Content size="1" maxWidth="240px">
+              <Text size="1" className="text-[var(--red-11)]">
+                {feed.failure_reason || t("Feed sync failed")}
+              </Text>
+            </HoverCard.Content>
+          </HoverCard.Root>
+        )}
+        {feed.last_sync_date && feed.health_status === 0 && (
+          <span className="ml-1 h-[7px] w-[7px] shrink-0 rounded-full bg-[var(--green-9)]" />
+        )}
         {unread > 0 && (
           <span
             className={clsx(
