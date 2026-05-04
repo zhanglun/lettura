@@ -69,4 +69,13 @@ declare interface UserConfig {
 
   purge_on_days: number;
   purge_unread_articles: boolean;
+
+  launch_at_login?: boolean;
+  background_sync?: boolean;
+  notification_enabled?: boolean;
+  notification_level?: string;
+  cache_retention_days?: number;
+  data_retention_days?: number;
+  reader_preset?: string;
+  card_density?: string;
 }

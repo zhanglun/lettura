@@ -26,6 +26,10 @@
     "process:allow-restart",
     "process:allow-exit",
     "updater:default",
-    "log:default"
+    "log:default",
+    "autostart:allow-enable",
+    "autostart:allow-disable",
+    "autostart:allow-is-enabled",
+    "notification:default"
   ]
 }

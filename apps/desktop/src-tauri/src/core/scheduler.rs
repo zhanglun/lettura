@@ -74,9 +74,14 @@ impl Scheduler {
         }
 
         interval.tick().await;
-        info!("Scheduler tick - starting sync");
 
         let user_config = config::get_user_config();
+
+        if !user_config.background_sync {
+          debug!("Background sync disabled, skipping tick");
+          continue;
+        }
+
         let threads = user_config.threads.max(1) as usize;
 
         match Self::get_all_feeds() {

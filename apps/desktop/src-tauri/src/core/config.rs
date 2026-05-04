@@ -89,6 +89,47 @@ pub struct UserConfig {
   pub app: AppConfig,
   #[serde(default)]
   pub ai: Option<AiConfig>,
+
+  #[serde(default)]
+  pub launch_at_login: bool,
+  #[serde(default = "default_true")]
+  pub background_sync: bool,
+  #[serde(default)]
+  pub notification_enabled: bool,
+  #[serde(default = "default_notification_level")]
+  pub notification_level: String,
+  #[serde(default = "default_cache_retention_days")]
+  pub cache_retention_days: u64,
+  #[serde(default = "default_data_retention_days")]
+  pub data_retention_days: u64,
+  #[serde(default = "default_reader_preset")]
+  pub reader_preset: String,
+  #[serde(default = "default_card_density")]
+  pub card_density: String,
+}
+
+fn default_true() -> bool {
+  true
+}
+
+fn default_notification_level() -> String {
+  "off".to_string()
+}
+
+fn default_cache_retention_days() -> u64 {
+  30
+}
+
+fn default_data_retention_days() -> u64 {
+  90
+}
+
+fn default_reader_preset() -> String {
+  "comfortable".to_string()
+}
+
+fn default_card_density() -> String {
+  "comfortable".to_string()
 }
 
 impl Default for UserConfig {
@@ -110,6 +151,14 @@ impl Default for UserConfig {
       port: 3456,
       app: AppConfig::default(),
       ai: None,
+      launch_at_login: false,
+      background_sync: true,
+      notification_enabled: false,
+      notification_level: default_notification_level(),
+      cache_retention_days: default_cache_retention_days(),
+      data_retention_days: default_data_retention_days(),
+      reader_preset: default_reader_preset(),
+      card_density: default_card_density(),
     }
   }
 }

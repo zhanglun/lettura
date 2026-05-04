@@ -14,6 +14,12 @@ pub struct AiConfig {
   pub pipeline_interval_hours: u64,
   #[serde(default = "default_enable_embedding")]
   pub enable_embedding: bool,
+  #[serde(default = "default_true")]
+  pub enable_auto_pipeline: bool,
+}
+
+fn default_true() -> bool {
+  true
 }
 
 fn default_model() -> String {
@@ -45,6 +51,7 @@ impl Default for AiConfig {
       base_url: default_base_url(),
       pipeline_interval_hours: default_pipeline_interval_hours(),
       enable_embedding: default_enable_embedding(),
+      enable_auto_pipeline: default_true(),
     }
   }
 }
@@ -61,7 +68,9 @@ pub struct AiConfigPublic {
   pub model: String,
   pub embedding_model: String,
   pub base_url: String,
+  pub pipeline_interval_hours: u64,
   pub enable_embedding: bool,
+  pub enable_auto_pipeline: bool,
 }
 
 impl From<&AiConfig> for AiConfigPublic {
@@ -71,7 +80,9 @@ impl From<&AiConfig> for AiConfigPublic {
       model: config.model.clone(),
       embedding_model: config.embedding_model.clone(),
       base_url: config.base_url.clone(),
+      pipeline_interval_hours: config.pipeline_interval_hours,
       enable_embedding: config.enable_embedding,
+      enable_auto_pipeline: config.enable_auto_pipeline,
     }
   }
 }

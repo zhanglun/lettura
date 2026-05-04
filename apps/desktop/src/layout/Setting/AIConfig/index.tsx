@@ -28,7 +28,9 @@ export function AIConfigPanel() {
   const [baseUrl, setBaseUrl] = useState("https://api.openai.com/v1");
   const [pipelineInterval, setPipelineInterval] = useState("6");
   const [enableEmbedding, setEnableEmbedding] = useState(true);
-  const [backgroundSync, setBackgroundSync] = useState(true);
+  const [backgroundSync, setBackgroundSync] = useState(
+    () => store.aiConfig?.enable_auto_pipeline ?? true,
+  );
 
   const [validating, setValidating] = useState(false);
   const [validationResult, setValidationResult] = useState<{
