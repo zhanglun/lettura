@@ -43,11 +43,11 @@ export const Appearance = () => {
   }));
 
   const [readerPreset, setReaderPreset] = useState<ReaderPreset>(
-    () => (store.userConfig.reader_preset as ReaderPreset) || "comfortable",
+    () => (store.userConfig.reader_preset as ReaderPreset) ?? "comfortable",
   );
   const [cardDensity, setCardDensity] = useState<"comfortable" | "compact">(
     () =>
-      (store.userConfig.card_density as "comfortable" | "compact") ||
+      (store.userConfig.card_density as "comfortable" | "compact") ??
       "comfortable",
   );
 

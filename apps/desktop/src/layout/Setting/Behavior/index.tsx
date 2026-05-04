@@ -19,17 +19,17 @@ export const Behavior = () => {
   const cfg = store.userConfig;
 
   const [lang, setLang] = useState(i18n.language || navigator.language);
-  const [launchAtLogin, setLaunchAtLogin] = useState(cfg.launch_at_login);
-  const [backgroundSync, setBackgroundSync] = useState(cfg.background_sync);
-  const [notifications, setNotifications] = useState(cfg.notification_level);
+  const [launchAtLogin, setLaunchAtLogin] = useState(cfg.launch_at_login ?? false);
+  const [backgroundSync, setBackgroundSync] = useState(cfg.background_sync ?? true);
+  const [notifications, setNotifications] = useState(cfg.notification_level ?? "off");
   const [notificationsEnabled, setNotificationsEnabled] = useState(
-    cfg.notification_enabled,
+    cfg.notification_enabled ?? false,
   );
   const [cacheRetention, setCacheRetention] = useState(
-    String(cfg.cache_retention_days),
+    String(cfg.cache_retention_days ?? 30),
   );
   const [dataRetention, setDataRetention] = useState(
-    cfg.data_retention_days === 0 ? "forever" : String(cfg.data_retention_days),
+    (cfg.data_retention_days ?? 90) === 0 ? "forever" : String(cfg.data_retention_days ?? 90),
   );
 
   const langs: { [key: string]: { nativeName: string } } = useMemo(() => {
