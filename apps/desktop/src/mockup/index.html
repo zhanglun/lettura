@@ -71,7 +71,7 @@
       display: flex; align-items: center; justify-content: center;
       cursor: pointer;
       color: var(--text-tertiary);
-      transition: all 0.15s;
+      transition: background-color 0.15s, color 0.15s, box-shadow 0.15s;
       border: none; background: none;
       position: relative;
     }
@@ -79,6 +79,12 @@
     .rail-item.active {
       background: var(--accent);
       color: #fff;
+    }
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
     }
     .rail-item svg { width: 18px; height: 18px; }
     .rail-spacer { flex: 1; }
@@ -144,7 +150,7 @@
       font-size: 12px;
       color: var(--text-secondary);
       cursor: pointer;
-      transition: all 0.15s;
+      transition: background-color 0.15s, color 0.15s;
     }
     .sidebar-item:hover { background: var(--bg-hover); }
     .sidebar-item.active { background: var(--accent-light); color: var(--accent-text); font-weight: 500; }
@@ -205,7 +211,7 @@
       border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 16px;
-      transition: all 0.15s;
+      transition: border-color 0.15s, box-shadow 0.15s, background-color 0.15s;
     }
     .card:hover {
       border-color: var(--border-hover);
@@ -237,7 +243,7 @@
       font-size: 12px;
       font-weight: 500;
       cursor: pointer;
-      transition: all 0.15s;
+      transition: background-color 0.15s, border-color 0.15s, color 0.15s;
       border: 1px solid transparent;
     }
     .btn-primary {
@@ -392,18 +398,257 @@
       color: var(--text-secondary);
     }
 
-    /* Topic card */
+    /* Topics */
+    .topics-workspace {
+      flex: 1;
+      min-width: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 390px;
+      overflow: hidden;
+      background: var(--bg-app);
+    }
+    .topics-workspace.drawer-collapsed {
+      grid-template-columns: 1fr;
+    }
+    .topics-workspace.drawer-collapsed .topic-drawer {
+      display: none;
+    }
+    .topics-shell {
+      min-width: 0;
+      overflow-y: auto;
+      background: var(--bg-app);
+      padding: 24px 32px 34px;
+    }
+    .topics-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+    .topics-title {
+      font-size: 24px;
+      font-weight: 750;
+      color: var(--text-primary);
+    }
+    .topics-subtitle {
+      margin-top: 6px;
+      max-width: 620px;
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--text-secondary);
+    }
+    .topics-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+    .topics-section {
+      margin-bottom: 22px;
+    }
+    .topics-section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
     .topic-card {
       background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 16px;
       cursor: pointer;
-      transition: all 0.15s;
+      transition: background-color 0.15s, border-color 0.15s, color 0.15s;
     }
     .topic-card:hover {
       border-color: var(--border-hover);
       box-shadow: var(--shadow-sm);
+    }
+    .topic-card.is-selected {
+      border-color: var(--accent);
+      background: var(--accent-light);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+    .topic-card.muted {
+      opacity: 0.72;
+      background: #fbfcfe;
+    }
+    .topics-shell .topic-card {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 14px;
+      align-items: start;
+    }
+    .topic-name-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 7px;
+    }
+    .topic-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    .topic-definition {
+      font-size: 13px;
+      line-height: 1.65;
+      color: var(--text-secondary);
+      margin-bottom: 10px;
+    }
+    .topic-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 11px;
+      color: var(--text-tertiary);
+    }
+    .topic-confidence {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .topic-confidence-bar {
+      width: 56px;
+      height: 5px;
+      border-radius: 999px;
+      background: var(--border);
+      overflow: hidden;
+    }
+    .topic-confidence-bar .fill {
+      height: 100%;
+      border-radius: inherit;
+      background: var(--accent);
+    }
+    .topic-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: flex-end;
+    }
+    .topic-drawer {
+      min-width: 0;
+      overflow-y: auto;
+      border-left: 1px solid var(--border);
+      background: var(--bg-sidebar);
+      padding: 20px 16px;
+    }
+    .topic-drawer-empty {
+      min-height: 220px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+      background: var(--bg-card);
+      padding: 20px;
+      color: var(--text-secondary);
+    }
+    .topic-hero {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--bg-card);
+      padding: 16px;
+      margin-bottom: 14px;
+      box-shadow: var(--shadow-sm);
+    }
+    .topic-hero-title {
+      font-size: 20px;
+      font-weight: 750;
+      color: var(--text-primary);
+      margin: 10px 0 8px;
+    }
+    .topic-hero-definition {
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--text-secondary);
+    }
+    .topic-hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+      font-size: 11px;
+      color: var(--text-tertiary);
+    }
+    .topic-detail-section {
+      margin-bottom: 20px;
+    }
+    .topic-detail-section-title {
+      margin-bottom: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .change-card,
+    .start-card,
+    .source-group-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--bg-card);
+      padding: 14px;
+      margin-bottom: 10px;
+      box-shadow: var(--shadow-sm);
+    }
+    .change-date {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent-text);
+      margin-bottom: 6px;
+    }
+    .change-title,
+    .start-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+    }
+    .change-summary,
+    .start-reason {
+      font-size: 12px;
+      line-height: 1.65;
+      color: var(--text-secondary);
+    }
+    .change-card {
+      display: grid;
+      grid-template-columns: 92px minmax(0, 1fr);
+      gap: 12px;
+    }
+    .start-card {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 14px;
+      align-items: center;
+    }
+    .source-group-card {
+      display: grid;
+      gap: 10px;
+    }
+    .source-group-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+    .source-group-row strong {
+      color: var(--text-primary);
+    }
+    .topic-side-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--bg-card);
+      padding: 14px;
+      margin-bottom: 12px;
     }
 
     /* Page header */
@@ -446,7 +691,7 @@
       font-size: 11px;
       color: var(--text-tertiary);
       cursor: pointer;
-      transition: all 0.15s;
+      transition: background-color 0.15s, border-color 0.15s, box-shadow 0.15s;
       background: none;
       border: none;
     }
@@ -488,7 +733,7 @@
       border: 1px solid rgba(255,255,255,0.15);
       background: transparent;
       color: rgba(255,255,255,0.7);
-      transition: all 0.15s;
+      transition: background-color 0.15s, border-color 0.15s, box-shadow 0.15s;
     }
     .page-switcher button:hover { background: rgba(255,255,255,0.1); color: #fff; }
     .page-switcher button.active {
@@ -588,6 +833,267 @@
       border-radius: 2px;
     }
 
+    /* Today intelligence workspace */
+    .today-shell {
+      flex: 1;
+      min-width: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 300px;
+      overflow: hidden;
+      background: var(--bg-app);
+    }
+    .today-main {
+      min-width: 0;
+      overflow-y: auto;
+      padding: 24px 28px 32px;
+    }
+    .today-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+    .today-title {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: 0;
+      color: var(--text-primary);
+    }
+    .today-subtitle {
+      margin-top: 6px;
+      max-width: 620px;
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--text-secondary);
+    }
+    .today-pills {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+      align-content: flex-start;
+    }
+    .today-summary-card {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--bg-card);
+      padding: 18px 20px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 18px;
+    }
+    .today-summary-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent-text);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 10px;
+    }
+    .today-summary-text {
+      max-width: 760px;
+      font-size: 19px;
+      line-height: 1.55;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .today-summary-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+      font-size: 12px;
+      color: var(--text-tertiary);
+    }
+    .today-section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 18px 0 10px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .signal-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 14px;
+      box-shadow: var(--shadow-sm);
+    }
+    .signal-card.active {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+    .signal-card.dimmed {
+      opacity: 0.58;
+    }
+    .signal-topline {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .signal-title {
+      font-size: 17px;
+      line-height: 1.45;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+    .signal-summary {
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--text-secondary);
+      margin-bottom: 10px;
+    }
+    .signal-why {
+      margin-top: 10px;
+      padding: 12px 14px;
+      border-left: 3px solid var(--accent);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      background: var(--accent-light);
+      font-size: 12px;
+      line-height: 1.7;
+      color: var(--text-secondary);
+    }
+    .signal-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--text-tertiary);
+    }
+    .evidence-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .evidence-card {
+      display: grid;
+      grid-template-columns: 92px minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: #fbfcfe;
+      font-size: 12px;
+    }
+    .evidence-card.active {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+    .evidence-feed {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--accent-text);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+    .evidence-headline {
+      min-width: 0;
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+    .today-right-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--bg-card);
+      padding: 14px;
+      margin-bottom: 14px;
+      box-shadow: var(--shadow-sm);
+    }
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .metric-cell {
+      padding: 10px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-sidebar);
+    }
+    .metric-value {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    .metric-label {
+      margin-top: 3px;
+      font-size: 10px;
+      color: var(--text-tertiary);
+    }
+    .today-reading-grid {
+      flex: 1;
+      min-width: 0;
+      display: grid;
+      grid-template-columns: minmax(360px, 44%) minmax(480px, 1fr);
+      overflow: hidden;
+      background: var(--bg-app);
+    }
+    .reading-signal-list {
+      min-width: 0;
+      overflow-y: auto;
+      border-right: 1px solid var(--border);
+      padding: 20px;
+    }
+    .reader-pane {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-card);
+    }
+    .reader-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--border);
+    }
+    .reader-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 28px 42px;
+    }
+    .reader-kicker {
+      font-size: 10px;
+      color: var(--accent);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+    .reader-title {
+      max-width: 720px;
+      font-size: 25px;
+      font-weight: 750;
+      line-height: 1.3;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+    }
+    .reader-prose {
+      max-width: 720px;
+      font-size: 15px;
+      line-height: 1.85;
+      color: var(--text-secondary);
+    }
+    .reader-prose p {
+      margin-bottom: 16px;
+    }
+
     /* Search and saved views */
     .search-input-wrap {
       display: flex;
@@ -614,6 +1120,35 @@
       min-width: 0;
     }
     .search-input::placeholder { color: var(--text-tertiary); }
+    .search-status {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-size: 12px;
+      color: var(--text-tertiary);
+    }
+    .search-state {
+      display: none;
+      margin-bottom: 10px;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--bg-card);
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+    .search-state.show { display: block; }
+    .search-skeleton {
+      display: grid;
+      gap: 8px;
+    }
+    .search-skeleton span {
+      display: block;
+      height: 10px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--bg-sidebar), var(--border), var(--bg-sidebar));
+    }
     .filter-chip {
       display: inline-flex;
       align-items: center;
@@ -626,7 +1161,7 @@
       font-size: 11px;
       font-weight: 500;
       cursor: pointer;
-      transition: all 0.15s;
+      transition: background-color 0.15s, border-color 0.15s, color 0.15s;
     }
     .filter-chip:hover { border-color: var(--border-hover); background: var(--bg-hover); }
     .filter-chip.active {
@@ -671,6 +1206,460 @@
       color: var(--text-secondary);
       line-height: 1.5;
     }
+
+    /* Settings */
+    .settings-layout {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 24px 28px 32px;
+    }
+    .settings-shell {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .settings-tabs {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin: 20px 0 18px;
+    }
+    .settings-tab {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 58px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: background-color 0.15s, border-color 0.15s, color 0.15s, box-shadow 0.15s;
+      text-align: left;
+    }
+    .settings-tab:hover { border-color: var(--border-hover); background: var(--bg-hover); }
+    .settings-tab.active {
+      border-color: var(--accent);
+      background: var(--accent-light);
+      color: var(--accent-text);
+      box-shadow: var(--shadow-sm);
+    }
+    .settings-tab-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-sidebar);
+      flex-shrink: 0;
+    }
+    .settings-tab.active .settings-tab-icon {
+      background: var(--accent);
+      color: #fff;
+    }
+    .settings-tab-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .settings-tab-desc {
+      font-size: 11px;
+      color: var(--text-tertiary);
+      margin-top: 2px;
+      line-height: 1.35;
+    }
+    .settings-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) 320px;
+      gap: 16px;
+      align-items: start;
+    }
+    .settings-grid-wide {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
+      gap: 16px;
+      align-items: start;
+    }
+    .settings-tab-content { display: none; }
+    .settings-tab-content.active { display: block; }
+    .settings-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .settings-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--border);
+      background: #fbfcfe;
+    }
+    .settings-panel-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    .settings-panel-desc {
+      font-size: 12px;
+      color: var(--text-tertiary);
+      margin-top: 4px;
+      line-height: 1.5;
+    }
+    .settings-section {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--border);
+    }
+    .settings-section:last-child { border-bottom: none; }
+    .settings-row {
+      display: grid;
+      grid-template-columns: 160px minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      padding: 10px 0;
+    }
+    .settings-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .settings-help {
+      font-size: 11px;
+      color: var(--text-tertiary);
+      line-height: 1.5;
+      margin-top: 3px;
+    }
+    .settings-input {
+      width: 100%;
+      min-height: 34px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: #fff;
+      padding: 0 10px;
+      font-size: 12px;
+      color: var(--text-primary);
+    }
+    .settings-input[aria-invalid="true"] {
+      border-color: var(--red);
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+    }
+    .settings-select {
+      min-height: 34px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: #fff;
+      padding: 0 10px;
+      font-size: 12px;
+      color: var(--text-primary);
+    }
+    .settings-save-state {
+      font-size: 11px;
+      color: var(--text-tertiary);
+      white-space: nowrap;
+    }
+    .settings-field-error {
+      display: none;
+      grid-column: 2 / 4;
+      margin-top: -4px;
+      font-size: 11px;
+      color: var(--red);
+    }
+    .settings-field-error.show { display: block; }
+    .settings-toggle {
+      width: 36px;
+      height: 20px;
+      border-radius: 999px;
+      background: var(--border);
+      position: relative;
+      border: none;
+      cursor: pointer;
+    }
+    .settings-toggle::after {
+      content: '';
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      top: 2px;
+      left: 2px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: var(--shadow-sm);
+    }
+    .settings-toggle.on { background: var(--accent); }
+    .settings-toggle.on::after { left: 18px; }
+    .settings-range {
+      width: 100%;
+      accent-color: var(--accent);
+    }
+    .settings-kpi {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .settings-kpi .card { padding: 12px; }
+    .settings-kpi-value {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    .settings-kpi-label {
+      font-size: 11px;
+      color: var(--text-tertiary);
+      margin-top: 3px;
+    }
+    .settings-trust-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .settings-trust-item {
+      display: flex;
+      gap: 9px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+    .settings-pack-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .settings-pack-row:last-child { border-bottom: none; }
+    .settings-health-row {
+      display: grid;
+      grid-template-columns: minmax(160px, 1fr) 96px 120px auto;
+      gap: 12px;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 12px;
+    }
+    .settings-health-row:last-child { border-bottom: none; }
+    .settings-choice-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .settings-choice {
+      min-height: 74px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--bg-card);
+      padding: 11px 12px;
+      cursor: pointer;
+      transition: background-color 0.15s, border-color 0.15s;
+    }
+    .settings-choice.active {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+    .settings-preview {
+      padding: 18px;
+      background: #fbfcfe;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+    .settings-preview-article {
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 18px;
+      border-radius: var(--radius);
+      background: #fff;
+      border: 1px solid var(--border);
+    }
+    .settings-slider {
+      height: 4px;
+      border-radius: 2px;
+      background: var(--border);
+      overflow: hidden;
+    }
+    .settings-slider .fill {
+      height: 100%;
+      border-radius: 2px;
+      background: var(--accent);
+    }
+
+    /* Mock interactions */
+    .is-selected {
+      border-color: var(--accent) !important;
+      background: var(--accent-light) !important;
+      box-shadow: var(--shadow-sm);
+    }
+    .is-muted {
+      opacity: 0.48;
+    }
+    .mock-toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 1200;
+      min-width: 220px;
+      max-width: 320px;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--text-primary);
+      color: #fff;
+      font-size: 12px;
+      line-height: 1.5;
+      box-shadow: var(--shadow-md);
+      opacity: 0;
+      transform: translateY(8px);
+      pointer-events: none;
+      transition: opacity 0.16s ease-out, transform 0.16s ease-out;
+    }
+    .mock-toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .mock-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 1100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(26, 29, 38, 0.28);
+      padding: 24px;
+    }
+    .mock-modal-backdrop.show { display: flex; }
+    .mock-modal {
+      width: min(420px, 100%);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+    }
+    .mock-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .mock-modal-body {
+      padding: 16px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+    .mock-modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      padding: 12px 16px;
+      border-top: 1px solid var(--border);
+      background: #fbfcfe;
+    }
+    @media (max-width: 1024px) {
+      .sidebar,
+      .right-panel {
+        display: none;
+      }
+      .today-shell,
+      .today-reading-grid,
+      .topics-workspace {
+        grid-template-columns: 1fr;
+      }
+      .topic-drawer {
+        display: none;
+      }
+      .reader-pane {
+        border-top: 1px solid var(--border);
+      }
+      .settings-layout {
+        max-width: none;
+        padding: 20px;
+      }
+      .settings-grid,
+      .settings-grid-wide {
+        grid-template-columns: 1fr;
+      }
+    }
+    @media (max-width: 768px) {
+      .page-switcher {
+        max-width: calc(100vw - 16px);
+        overflow-x: auto;
+      }
+      .rail {
+        width: 44px;
+      }
+      .rail-item {
+        width: 32px;
+        height: 32px;
+      }
+      .page-header {
+        padding: 18px 18px 14px;
+      }
+      .today-main,
+      .reading-signal-list,
+      .reader-body,
+      .topics-shell {
+        padding: 18px;
+      }
+      .today-header,
+      .topics-header {
+        flex-direction: column;
+      }
+      .today-pills {
+        justify-content: flex-start;
+      }
+      .today-summary-text,
+      .reader-title {
+        font-size: 18px;
+      }
+      .evidence-card {
+        grid-template-columns: 1fr;
+      }
+      .topics-shell .topic-card,
+      .change-card,
+      .start-card {
+        grid-template-columns: 1fr;
+      }
+      .topic-actions {
+        justify-content: flex-start;
+        flex-wrap: wrap;
+      }
+      .main-scroll,
+      .settings-layout {
+        padding-left: 18px !important;
+        padding-right: 18px !important;
+      }
+      .settings-tabs,
+      .settings-choice-grid,
+      .settings-kpi {
+        grid-template-columns: 1fr;
+      }
+      .settings-row,
+      .settings-health-row {
+        grid-template-columns: 1fr;
+      }
+      .settings-field-error {
+        grid-column: auto;
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -681,455 +1670,271 @@
   <button class="active" onclick="showPage('today')">Today</button>
   <button onclick="showPage('today-reading')">Today+阅读</button>
   <button onclick="showPage('topics')">Topics</button>
-  <button onclick="showPage('topic-detail')">Topic Detail</button>
   <button onclick="showPage('feeds')">Feeds</button>
   <button onclick="showPage('search')">Search</button>
   <button onclick="showPage('starred')">Starred</button>
+  <button onclick="showPage('settings')">Settings</button>
   <button onclick="showPage('article')">Article (Feeds)</button>
 </div>
 
 <!-- ==================== PAGE: TODAY ==================== -->
 <div id="page-today" class="app-shell">
-  <!-- Rail -->
   <div class="rail">
-    <button class="rail-item active">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.912 5.813h6.107l-4.964 3.587 1.912 5.813L12 14.626l-4.967 3.587 1.912-5.813L3.981 8.813h6.107z"/></svg>
-      <span class="tooltip">Today</span>
-    </button>
-    <button class="rail-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-      <span class="tooltip">Topics</span>
-    </button>
-    <button class="rail-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
-      <span class="tooltip">Feeds</span>
-    </button>
-    <button class="rail-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-      <span class="tooltip">Search</span>
-    </button>
-    <button class="rail-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-      <span class="tooltip">Starred</span>
-    </button>
+    <button class="rail-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.912 5.813h6.107l-4.964 3.587 1.912 5.813L12 14.626l-4.967 3.587 1.912-5.813L3.981 8.813h6.107z"/></svg><span class="tooltip">Today</span></button>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 2 7l10 5 10-5-10-5ZM2 17l10 5 10-5M2 12l10 5 10-5"/></svg><span class="tooltip">Topics</span></button>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg><span class="tooltip">Feeds</span></button>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span class="tooltip">Search</span></button>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span class="tooltip">Starred</span></button>
     <div class="rail-spacer"></div>
-    <button class="rail-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
-      <span class="tooltip">Settings</span>
-    </button>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span class="tooltip">Settings</span></button>
   </div>
 
-  <!-- Sidebar: Today context -->
   <div class="sidebar">
     <div class="sidebar-header">
       <div class="sidebar-title">Lettura</div>
-      <div class="sidebar-desc">Daily Intelligence Reader — 每日判断入口</div>
+      <div class="sidebar-desc">先看判断，再决定读什么。</div>
     </div>
     <div class="sidebar-content">
-      <div class="sidebar-section-title">今日焦点</div>
-      <div class="sidebar-item active">
-        <span class="dot" style="background:var(--accent)"></span>
-        AI Agent 竞争格局
-        <span class="count">3</span>
-      </div>
-      <div class="sidebar-item">
-        <span class="dot" style="background:var(--green)"></span>
-        Rust 生态更新
-        <span class="count">2</span>
-      </div>
-      <div class="sidebar-item">
-        <span class="dot" style="background:var(--amber)"></span>
-        Apple WWDC 预热
-        <span class="count">1</span>
-      </div>
-
-      <div class="sidebar-section-title">追踪中的 Topics</div>
-      <div class="sidebar-item">
-        <span class="dot" style="background:var(--accent)"></span>
-        LLM 推理优化
-      </div>
-      <div class="sidebar-item">
-        <span class="dot" style="background:var(--blue)"></span>
-        WebAssembly 进展
-      </div>
-      <div class="sidebar-item">
-        <span class="dot" style="background:var(--green)"></span>
-        开源商业模式
-      </div>
+      <div class="sidebar-section-title">Today Focus</div>
+      <div class="sidebar-item active"><span class="dot" style="background:var(--accent)"></span>Agent 工作流转向<span class="count">4</span></div>
+      <div class="sidebar-item"><span class="dot" style="background:var(--green)"></span>本地模型成本下降<span class="count">3</span></div>
+      <div class="sidebar-item"><span class="dot" style="background:var(--amber)"></span>开源框架整合<span class="count">2</span></div>
+      <div class="sidebar-section-title">Tracked Topics</div>
+      <div class="sidebar-item"><span class="dot" style="background:var(--accent)"></span>AI Agent 工具链</div>
+      <div class="sidebar-item"><span class="dot" style="background:var(--blue)"></span>LLM 推理优化</div>
+      <div class="sidebar-item"><span class="dot" style="background:var(--green)"></span>开发者工作流</div>
     </div>
     <div class="sidebar-footer">
-      Lettura 为你筛选高信号内容。<br/>
-      今天分析了 47 篇文章，来自 12 个来源。
+      42 sources active<br/>最后分析：08:40 · 缓存可离线查看
     </div>
   </div>
 
-  <!-- Main: Signal cards -->
-  <div class="main-content">
-    <div class="main-scroll" style="padding: 20px 24px;">
-      <!-- Today Summary -->
-      <div style="display:flex; align-items:center; gap:8px; margin-bottom:20px; padding:8px 12px; background:var(--accent-light); border-radius:var(--radius-sm);">
-        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-        <span style="font-size:12px; color:var(--accent-text);">
-          <strong>今日概览：</strong>AI Agent 领域出现新的开源竞争者；Rust 1.85 发布带来重要 async 改进；Apple 可能在大模型本地部署上有新动作。
-        </span>
+  <div class="today-shell">
+    <main class="today-main">
+      <div class="today-header">
+        <div>
+          <div class="today-title">Today</div>
+          <div class="today-subtitle">今天最值得注意的变化，不是文章流。每张卡片都是一个可验证的判断。</div>
+        </div>
+        <div class="today-pills">
+          <span class="tag tag-green">Ready</span>
+          <span class="tag tag-accent">Updated 08:40</span>
+          <span class="tag tag-blue">42 sources</span>
+        </div>
       </div>
 
-      <!-- Signal Card 1 -->
-      <div class="card" style="margin-bottom:12px;">
-        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-          <div class="signal-level high">
-            <div class="bar filled" style="height:8px;"></div>
-            <div class="bar filled" style="height:12px;"></div>
-            <div class="bar filled" style="height:16px;"></div>
-          </div>
+      <section class="today-summary-card">
+        <div class="today-summary-label">
+          <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 14a8 8 0 1 1 16 0"/><path d="M12 14l4-4"/><path d="M8 21h8"/></svg>
+          Today Summary
+        </div>
+        <div class="today-summary-text">
+          AI coding tools 正在从“辅助补全”转向“可交付任务的 Agent 工作流”，真正的变化不在模型发布，而在工具链责任边界开始重新分配。
+        </div>
+        <div class="today-summary-meta">
+          <span>已处理 128 篇文章</span>
+          <span>生成 5 条 Signal</span>
+          <span>高置信 3 条</span>
+          <span>低置信内容已标注</span>
+        </div>
+      </section>
+
+      <div class="today-section-title">
+        <span>Top Signals</span>
+        <button class="btn btn-ghost" style="font-size:11px;">重新分析</button>
+      </div>
+
+      <article class="signal-card active">
+        <div class="signal-topline">
+          <div class="signal-level high"><div class="bar filled" style="height:8px;"></div><div class="bar filled" style="height:12px;"></div><div class="bar filled" style="height:16px;"></div></div>
           <span class="tag tag-accent">AI Agent</span>
-          <span style="font-size:11px; color:var(--text-tertiary); margin-left:auto;">2 小时前 · 3 个来源</span>
+          <span class="tag tag-green">高置信</span>
+          <span style="margin-left:auto; font-size:11px; color:var(--text-tertiary);">4 articles · 3 sources · 2h ago</span>
         </div>
-        <div style="font-size:15px; font-weight:600; color:var(--text-primary); margin-bottom:6px; cursor:pointer;">
-          OpenAI 开源 Agent 框架，直接挑战 LangChain 和 CrewAI 生态
-        </div>
-        <div style="font-size:13px; color:var(--text-secondary); line-height:1.6; margin-bottom:8px;">
-          OpenAI 发布了新的开源 Agent SDK，提供链式推理、工具调用和多 Agent 协作能力。这直接与 LangChain、CrewAI 等现有框架竞争。
-        </div>
-        <button class="wim-toggle" onclick="this.nextElementSibling.style.maxHeight = this.nextElementSibling.style.maxHeight === '200px' ? '0px' : '200px'; this.nextElementSibling.style.opacity = this.nextElementSibling.style.opacity === '1' ? '0' : '1';">
+        <div class="signal-title">官方 Agent SDK 把竞争从框架能力推向“谁拥有默认工作流”。</div>
+        <div class="signal-summary">OpenAI、LangChain 和 CrewAI 的差异正在从“能不能调工具”转向“谁能定义调试、记忆和任务交接的默认体验”。</div>
+        <button class="wim-toggle">
           <svg class="icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-          为什么重要
+          Why It Matters
         </button>
         <div class="wim-content" style="max-height:0; opacity:0;">
-          <p style="font-size:12px; color:var(--text-secondary); line-height:1.6; margin-top:8px;">
-            OpenAI 入局 Agent 框架意味着该领域将从碎片化走向标准化。现有框架需要在差异化上有更清晰的定位，否则可能被官方方案替代。
-          </p>
+          <div class="signal-why">这不是又一个 SDK 发布。官方框架进入后，第三方工具需要证明自己在跨模型、调试可视化或团队协作上有明确优势，否则开发者会自然回到默认入口。</div>
         </div>
-        <div style="display:flex; align-items:center; gap:12px; margin-top:12px;">
-          <div class="confidence">
-            <span style="font-size:10px; color:var(--text-tertiary);">置信度</span>
-            <div class="confidence-bar"><div class="fill" style="width:85%; background:var(--accent);"></div></div>
-            <span style="font-size:10px; color:var(--accent-text); font-weight:600;">85%</span>
+        <div class="signal-meta-row">
+          <span>Topic: AI Agent 工具链</span>
+          <div class="confidence"><span>Confidence</span><div class="confidence-bar"><div class="fill" style="width:88%; background:var(--accent);"></div></div><strong style="color:var(--accent-text);">88%</strong></div>
+          <button class="btn btn-ghost" style="margin-left:auto; font-size:11px;">展开来源</button>
+        </div>
+        <div class="evidence-list">
+          <div class="evidence-card active">
+            <span class="evidence-feed">OpenAI Blog</span>
+            <span class="evidence-headline">Introducing the Agent SDK and tracing tools</span>
+            <button class="btn btn-ghost" style="font-size:11px;">阅读</button>
+          </div>
+          <div class="evidence-card">
+            <span class="evidence-feed">Hacker News</span>
+            <span class="evidence-headline">Developers compare the SDK with LangChain and AutoGen</span>
+            <button class="btn btn-ghost" style="font-size:11px;">阅读</button>
           </div>
         </div>
         <div class="feedback-row">
-          <button class="feedback-btn">👍 有用</button>
-          <button class="feedback-btn">👎 不相关</button>
-          <button class="feedback-btn">📌 追踪主题</button>
+          <button class="feedback-btn">有用</button>
+          <button class="feedback-btn">不相关</button>
+          <button class="feedback-btn">继续关注</button>
         </div>
-      </div>
+      </article>
 
-      <!-- Signal Card 2 -->
-      <div class="card" style="margin-bottom:12px;">
-        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-          <div class="signal-level high">
-            <div class="bar filled" style="height:8px;"></div>
-            <div class="bar filled" style="height:12px;"></div>
-            <div class="bar filled" style="height:16px;"></div>
-          </div>
-          <span class="tag tag-green">Rust</span>
-          <span style="font-size:11px; color:var(--text-tertiary); margin-left:auto;">4 小时前 · 2 个来源</span>
+      <article class="signal-card">
+        <div class="signal-topline">
+          <div class="signal-level high"><div class="bar filled" style="height:8px;"></div><div class="bar filled" style="height:12px;"></div><div class="bar filled" style="height:16px;"></div></div>
+          <span class="tag tag-blue">Local AI</span>
+          <span style="margin-left:auto; font-size:11px; color:var(--text-tertiary);">6 articles · 4 sources · 4h ago</span>
         </div>
-        <div style="font-size:15px; font-weight:600; color:var(--text-primary); margin-bottom:6px; cursor:pointer;">
-          Rust 1.85 发布：async fn in traits 稳定，生命周期语法改进
+        <div class="signal-title">本地推理成本下降正在让“离线优先”的阅读分析重新可行。</div>
+        <div class="signal-summary">小模型质量提升和量化工具成熟，让摘要、去重、主题归并可以从云端 API 逐步迁回桌面端。</div>
+        <button class="wim-toggle"><svg class="icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>Why It Matters</button>
+        <div class="wim-content" style="max-height:0; opacity:0;"><div class="signal-why">对 Lettura 这类桌面阅读器来说，这会直接影响隐私、成本和离线体验。用户不必为每一次轻量判断都依赖远端模型。</div></div>
+        <div class="signal-meta-row">
+          <span>Topic: LLM 推理优化</span>
+          <div class="confidence"><span>Confidence</span><div class="confidence-bar"><div class="fill" style="width:81%; background:var(--blue);"></div></div><strong style="color:#2563eb;">81%</strong></div>
+          <button class="btn btn-ghost" style="margin-left:auto; font-size:11px;">展开来源</button>
         </div>
-        <div style="font-size:13px; color:var(--text-secondary); line-height:1.6; margin-bottom:8px;">
-          Rust 1.85 正式稳定了 async fn in traits，这是异步 Rust 生态期待已久的里程碑。同时引入了更简洁的生命周期语法。
-        </div>
-        <button class="wim-toggle" onclick="this.nextElementSibling.style.maxHeight = this.nextElementSibling.style.maxHeight === '200px' ? '0px' : '200px'; this.nextElementSibling.style.opacity = this.nextElementSibling.style.opacity === '1' ? '0' : '1';">
-          <svg class="icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-          为什么重要
-        </button>
-        <div class="wim-content" style="max-height:0; opacity:0;">
-          <p style="font-size:12px; color:var(--text-secondary); line-height:1.6; margin-top:8px;">
-            async fn in traits 稳定意味着 Tokio、Tower 等生态库可以大幅简化 trait 定义，推动 Rust 异步生态进入下一个阶段。
-          </p>
-        </div>
-        <div class="feedback-row">
-          <button class="feedback-btn">👍 有用</button>
-          <button class="feedback-btn">👎 不相关</button>
-          <button class="feedback-btn">📌 追踪主题</button>
-        </div>
-      </div>
+        <div class="feedback-row"><button class="feedback-btn">有用</button><button class="feedback-btn">不相关</button><button class="feedback-btn">继续关注</button></div>
+      </article>
 
-      <!-- Signal Card 3 -->
-      <div class="card" style="margin-bottom:12px;">
-        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-          <div class="signal-level medium">
-            <div class="bar filled" style="height:8px;"></div>
-            <div class="bar filled" style="height:12px;"></div>
-            <div class="bar" style="height:16px;"></div>
-          </div>
-          <span class="tag tag-blue">Apple</span>
-          <span style="font-size:11px; color:var(--text-tertiary); margin-left:auto;">6 小时前 · 1 个来源</span>
+      <article class="signal-card">
+        <div class="signal-topline">
+          <div class="signal-level medium"><div class="bar filled" style="height:8px;"></div><div class="bar filled" style="height:12px;"></div><div class="bar" style="height:16px;"></div></div>
+          <span class="tag tag-amber">待验证</span>
+          <span style="margin-left:auto; font-size:11px; color:var(--text-tertiary);">3 articles · 2 sources · 7h ago</span>
         </div>
-        <div style="font-size:15px; font-weight:600; color:var(--text-primary); margin-bottom:6px; cursor:pointer;">
-          Apple 据传正在开发本地大模型部署方案，可能在 WWDC 公布
+        <div class="signal-title">浏览器厂商正在把 AI 操作权限做成新的平台层。</div>
+        <div class="signal-summary">多篇报道指向同一趋势：AI 不再只回答问题，而是开始被浏览器、系统和开发工具授予可控执行能力。</div>
+        <div class="signal-meta-row">
+          <span>Topic: AI Runtime</span>
+          <div class="confidence"><span>Confidence</span><div class="confidence-bar"><div class="fill" style="width:62%; background:var(--amber);"></div></div><strong style="color:#d97706;">62%</strong></div>
+          <button class="btn btn-ghost" style="margin-left:auto; font-size:11px;">展开来源</button>
         </div>
-        <div style="font-size:13px; color:var(--text-secondary); line-height:1.6; margin-bottom:8px;">
-          多家媒体报道 Apple 正在开发一种让大语言模型在设备端高效运行的技术方案，可能结合 Neural Engine 和统一内存架构。
-        </div>
-        <div style="display:flex; align-items:center; gap:12px; margin-top:8px;">
-          <div class="confidence">
-            <span style="font-size:10px; color:var(--text-tertiary);">置信度</span>
-            <div class="confidence-bar"><div class="fill" style="width:55%; background:var(--amber);"></div></div>
-            <span style="font-size:10px; color:#d97706; font-weight:600;">55%</span>
-          </div>
-          <span class="tag tag-amber" style="font-size:10px;">待验证</span>
-        </div>
-        <div class="feedback-row">
-          <button class="feedback-btn">👍 有用</button>
-          <button class="feedback-btn">👎 不相关</button>
-          <button class="feedback-btn">📌 追踪主题</button>
-        </div>
-      </div>
-    </div>
-  </div>
+        <div class="feedback-row"><button class="feedback-btn">有用</button><button class="feedback-btn">不相关</button><button class="feedback-btn">继续关注</button></div>
+      </article>
+    </main>
 
-  <!-- Right Panel -->
-  <div class="right-panel">
-    <div class="right-panel-section">
-      <div class="right-panel-title">来源证据</div>
-      <div class="evidence-item">
-        <span class="evidence-source">TechCrunch</span>
-        <span class="evidence-text">OpenAI releases open-source Agent SDK</span>
-      </div>
-      <div class="evidence-item">
-        <span class="evidence-source">Hacker News</span>
-        <span class="evidence-text">社区热议 Agent 框架对比</span>
-      </div>
-      <div class="evidence-item">
-        <span class="evidence-source">The Verge</span>
-        <span class="evidence-text">OpenAI 战略转向开放生态</span>
-      </div>
-    </div>
-
-    <div class="right-panel-section">
-      <div class="right-panel-title">今日状态</div>
-      <div style="display:flex; flex-direction:column; gap:8px;">
-        <div style="display:flex; justify-content:space-between; font-size:12px;">
-          <span style="color:var(--text-tertiary);">已同步</span>
-          <span style="color:var(--text-primary); font-weight:500;">47 篇</span>
-        </div>
-        <div style="display:flex; justify-content:space-between; font-size:12px;">
-          <span style="color:var(--text-tertiary);">已分析</span>
-          <span style="color:var(--text-primary); font-weight:500;">47 篇</span>
-        </div>
-        <div style="display:flex; justify-content:space-between; font-size:12px;">
-          <span style="color:var(--text-tertiary);">高信号</span>
-          <span style="color:var(--accent); font-weight:600;">3 条</span>
-        </div>
-        <div class="progress-bar" style="margin-top:4px;">
-          <div class="fill" style="width:100%;"></div>
+    <aside class="right-panel">
+      <div class="today-right-card">
+        <div class="right-panel-title">Pipeline</div>
+        <div class="metric-grid">
+          <div class="metric-cell"><div class="metric-value">128</div><div class="metric-label">processed</div></div>
+          <div class="metric-cell"><div class="metric-value">5</div><div class="metric-label">signals</div></div>
+          <div class="metric-cell"><div class="metric-value">42</div><div class="metric-label">sources</div></div>
+          <div class="metric-cell"><div class="metric-value">3</div><div class="metric-label">high confidence</div></div>
         </div>
       </div>
-    </div>
-
-    <div class="right-panel-section">
-      <div class="right-panel-title">下一步</div>
-      <div style="display:flex; flex-direction:column; gap:8px;">
-        <button class="btn btn-ghost" style="width:100%; justify-content:flex-start;">
-          <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-          查看所有 Topics
-        </button>
-        <button class="btn btn-ghost" style="width:100%; justify-content:flex-start;">
-          <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
-          管理 Feeds 来源
-        </button>
+      <div class="today-right-card">
+        <div class="right-panel-title">Source Quality</div>
+        <div class="evidence-item"><span class="evidence-source">OpenAI Blog</span><span class="evidence-text">官方来源，权重最高</span></div>
+        <div class="evidence-item"><span class="evidence-source">HN</span><span class="evidence-text">社区验证，噪声较高</span></div>
+        <div class="evidence-item"><span class="evidence-source">The Verge</span><span class="evidence-text">二级报道，需交叉检查</span></div>
       </div>
-    </div>
+      <div class="today-right-card">
+        <div class="right-panel-title">States To Implement</div>
+        <div style="display:grid; gap:8px;">
+          <span class="tag tag-blue">AI 未配置</span>
+          <span class="tag tag-amber">同步中 12/42</span>
+          <span class="tag tag-green">Quiet day</span>
+          <span class="tag tag-accent">Offline cache</span>
+        </div>
+      </div>
+      <div class="today-right-card">
+        <div class="right-panel-title">Next</div>
+        <button class="btn btn-ghost" style="width:100%; justify-content:flex-start; margin-bottom:8px;">查看相关 Topic</button>
+        <button class="btn btn-ghost" style="width:100%; justify-content:flex-start;">管理 Sources</button>
+      </div>
+    </aside>
   </div>
 </div>
 
 <!-- ==================== PAGE: TODAY + READING ==================== -->
 <div id="page-today-reading" class="app-shell" style="display:none;">
   <div class="rail">
-    <button class="rail-item active">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.912 5.813h6.107l-4.964 3.587 1.912 5.813L12 14.626l-4.967 3.587 1.912-5.813L3.981 8.813h6.107z"/></svg>
-      <span class="tooltip">Today</span>
-    </button>
-    <button class="rail-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-      <span class="tooltip">Topics</span>
-    </button>
-    <button class="rail-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
-      <span class="tooltip">Feeds</span>
-    </button>
-    <button class="rail-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-      <span class="tooltip">Search</span>
-    </button>
-    <button class="rail-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-      <span class="tooltip">Starred</span>
-    </button>
+    <button class="rail-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.912 5.813h6.107l-4.964 3.587 1.912 5.813L12 14.626l-4.967 3.587 1.912-5.813L3.981 8.813h6.107z"/></svg><span class="tooltip">Today</span></button>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 2 7l10 5 10-5-10-5ZM2 17l10 5 10-5M2 12l10 5 10-5"/></svg><span class="tooltip">Topics</span></button>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg><span class="tooltip">Feeds</span></button>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span class="tooltip">Search</span></button>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span class="tooltip">Starred</span></button>
     <div class="rail-spacer"></div>
-    <button class="rail-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
-      <span class="tooltip">Settings</span>
-    </button>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span class="tooltip">Settings</span></button>
   </div>
 
   <div class="sidebar">
     <div class="sidebar-header">
-      <div class="sidebar-title">Lettura</div>
-      <div class="sidebar-desc">Daily Intelligence Reader — 每日判断入口</div>
+      <div class="sidebar-title">Today Reading</div>
+      <div class="sidebar-desc">从判断进入证据，不丢失上下文。</div>
     </div>
     <div class="sidebar-content">
-      <div class="sidebar-section-title">今日焦点</div>
-      <div class="sidebar-item active">
-        <span class="dot" style="background:var(--accent)"></span>
-        AI Agent 竞争格局
-        <span class="count">3</span>
-      </div>
-      <div class="sidebar-item">
-        <span class="dot" style="background:var(--green)"></span>
-        Rust 生态更新
-        <span class="count">2</span>
-      </div>
-      <div class="sidebar-item">
-        <span class="dot" style="background:var(--amber)"></span>
-        Apple WWDC 预热
-        <span class="count">1</span>
-      </div>
-      <div class="sidebar-section-title">追踪中的 Topics</div>
-      <div class="sidebar-item">
-        <span class="dot" style="background:var(--accent)"></span>
-        LLM 推理优化
-      </div>
-      <div class="sidebar-item">
-        <span class="dot" style="background:var(--blue)"></span>
-        WebAssembly 进展
-      </div>
-      <div class="sidebar-item">
-        <span class="dot" style="background:var(--green)"></span>
-        开源商业模式
-      </div>
+      <div class="sidebar-section-title">当前 Signal</div>
+      <div class="sidebar-item active"><span class="dot" style="background:var(--accent)"></span>Agent 默认工作流<span class="count">3</span></div>
+      <div class="sidebar-section-title">来源顺序</div>
+      <div class="sidebar-item active"><span class="dot" style="background:var(--accent)"></span>OpenAI Blog</div>
+      <div class="sidebar-item"><span class="dot" style="background:var(--blue)"></span>Hacker News</div>
+      <div class="sidebar-item"><span class="dot" style="background:var(--green)"></span>The Verge</div>
     </div>
-    <div class="sidebar-footer">
-      Lettura 为你筛选高信号内容。<br/>
-      今天分析了 47 篇文章，来自 12 个来源。
-    </div>
+    <div class="sidebar-footer">ReaderContext.source = today<br/>返回时保留 Signal 展开状态。</div>
   </div>
 
-  <!-- Signal list (slightly narrower to accommodate expanded reading panel) -->
-  <div class="main-content" style="min-width:0;">
-    <div class="main-scroll" style="padding:20px 24px;">
-      <div style="display:flex; align-items:center; gap:8px; margin-bottom:20px; padding:8px 12px; background:var(--accent-light); border-radius:var(--radius-sm);">
-        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-        <span style="font-size:12px; color:var(--accent-text);">
-          <strong>今日概览：</strong>AI Agent 领域出现新的开源竞争者；Rust 1.85 发布带来重要 async 改进。
-        </span>
-      </div>
-
-      <!-- Signal Card 1 - expanded/highlighted to show active reading context -->
-      <div class="card" style="margin-bottom:12px; border-color:var(--accent); border-width:2px;">
-        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-          <div class="signal-level high">
-            <div class="bar filled" style="height:8px;"></div>
-            <div class="bar filled" style="height:12px;"></div>
-            <div class="bar filled" style="height:16px;"></div>
-          </div>
+  <div class="today-reading-grid">
+    <section class="reading-signal-list">
+      <div class="today-section-title"><span>Signal Context</span><button class="btn btn-ghost" style="font-size:11px;">返回信号</button></div>
+      <article class="signal-card active">
+        <div class="signal-topline">
           <span class="tag tag-accent">AI Agent</span>
-          <span style="font-size:11px; color:var(--text-tertiary); margin-left:auto;">2 小时前 · 3 个来源</span>
+          <span class="tag tag-green">高置信</span>
+          <span style="margin-left:auto; font-size:11px; color:var(--text-tertiary);">Source 1/3</span>
         </div>
-        <div style="font-size:15px; font-weight:600; color:var(--text-primary); margin-bottom:6px;">
-          OpenAI 开源 Agent 框架，直接挑战 LangChain 和 CrewAI 生态
+        <div class="signal-title">官方 Agent SDK 把竞争从框架能力推向“谁拥有默认工作流”。</div>
+        <div class="signal-summary">阅读不是脱离 Today 的新页面，而是当前判断的证据层被展开。</div>
+        <div class="signal-why">正在阅读的来源用于验证“默认工作流”这个判断，而不是为了刷完全部文章。</div>
+        <div class="evidence-list">
+          <div class="evidence-card active"><span class="evidence-feed">OpenAI Blog</span><span class="evidence-headline">Introducing the Agent SDK and tracing tools</span><span class="tag tag-accent">Reading</span></div>
+          <div class="evidence-card"><span class="evidence-feed">HN</span><span class="evidence-headline">Developers compare SDK tradeoffs</span><button class="btn btn-ghost" style="font-size:11px;">切换</button></div>
+          <div class="evidence-card"><span class="evidence-feed">The Verge</span><span class="evidence-headline">OpenAI shifts toward developer workflow</span><button class="btn btn-ghost" style="font-size:11px;">切换</button></div>
         </div>
-        <div style="font-size:13px; color:var(--text-secondary); line-height:1.6; margin-bottom:8px;">
-          OpenAI 发布了新的开源 Agent SDK，提供链式推理、工具调用和多 Agent 协作能力。
-        </div>
-        <!-- Source items shown as clickable, first one is "active" (being read) -->
-        <div class="source-list" style="display:block;">
-          <div class="source-item" style="background:var(--accent-light); border-radius:var(--radius-sm); padding:8px; margin-bottom:4px;">
-            <span class="source-feed">TechCrunch</span>
-            <span class="source-title" style="color:var(--accent-text);">OpenAI releases open-source Agent SDK</span>
-            <span style="font-size:10px; color:var(--accent); margin-left:auto; white-space:nowrap;">正在阅读 ↓</span>
-          </div>
-          <div class="source-item" style="padding:8px;">
-            <span class="source-feed">Hacker News</span>
-            <span class="source-title">社区热议 Agent 框架对比</span>
-          </div>
-          <div class="source-item" style="padding:8px;">
-            <span class="source-feed">The Verge</span>
-            <span class="source-title">OpenAI 战略转向开放生态</span>
-          </div>
-        </div>
-        <div class="feedback-row">
-          <button class="feedback-btn">👍 有用</button>
-          <button class="feedback-btn">👎 不相关</button>
-          <button class="feedback-btn">📌 追踪主题</button>
-        </div>
-      </div>
+      </article>
+      <article class="signal-card dimmed">
+        <div class="signal-topline"><span class="tag tag-blue">Local AI</span><span style="margin-left:auto; font-size:11px; color:var(--text-tertiary);">4h ago</span></div>
+        <div class="signal-title">本地推理成本下降正在让离线分析重新可行。</div>
+      </article>
+    </section>
 
-      <!-- Signal Card 2 (dimmed - not active) -->
-      <div class="card" style="margin-bottom:12px; opacity:0.6;">
-        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
-          <div class="signal-level high">
-            <div class="bar filled" style="height:8px;"></div>
-            <div class="bar filled" style="height:12px;"></div>
-            <div class="bar filled" style="height:16px;"></div>
-          </div>
-          <span class="tag tag-green">Rust</span>
-          <span style="font-size:11px; color:var(--text-tertiary); margin-left:auto;">4 小时前 · 2 个来源</span>
+    <section class="reader-pane">
+      <div class="reader-toolbar">
+        <button class="btn btn-ghost" style="font-size:11px;">返回信号</button>
+        <span class="tag tag-accent">OpenAI Blog</span>
+        <span style="font-size:11px; color:var(--text-tertiary);">验证当前判断 · 来源 1/3</span>
+        <div style="flex:1;"></div>
+        <button class="btn btn-ghost" style="font-size:11px;">收藏</button>
+        <button class="btn btn-ghost" style="font-size:11px;">原文</button>
+      </div>
+      <div class="reader-body">
+        <div class="reader-kicker">Evidence for Today Signal</div>
+        <h1 class="reader-title">Introducing the Agent SDK and tracing tools for reliable multi-step workflows</h1>
+        <div style="font-size:12px; color:var(--text-tertiary); margin-bottom:22px;">OpenAI Blog · May 4, 2026 · 7 min read</div>
+        <div class="signal-why" style="max-width:720px; margin-bottom:22px;">
+          Lettura 关联判断：这篇文章直接支持“默认工作流竞争”这个 Signal，证据点是 tracing、handoff、tool calling 被打包为官方推荐路径。
         </div>
-        <div style="font-size:15px; font-weight:600; color:var(--text-primary); margin-bottom:6px;">
-          Rust 1.85 发布：async fn in traits 稳定
+        <div class="reader-prose">
+          <p>OpenAI introduced a new Agent SDK designed around repeatable multi-step workflows. The release focuses less on isolated model calls and more on how developers compose tools, handoffs, memory, and traces into a dependable application structure.</p>
+          <p>The notable shift is the tracing layer. Instead of treating debugging as an external concern, the SDK makes execution history visible by default, giving teams a common surface for reviewing tool calls and intermediate decisions.</p>
+          <p>For existing frameworks, this changes the comparison. Developers will not only ask which framework supports more integrations, but which one provides the clearest default path from prototype to production.</p>
+          <blockquote style="border-left:3px solid var(--accent); padding:12px 16px; margin:18px 0; background:var(--accent-light); border-radius:0 var(--radius-sm) var(--radius-sm) 0; color:var(--text-secondary);">The goal is to make agent workflows observable, composable, and easier to hand off between tools.</blockquote>
+          <p>That is why this source is ranked first for the Today signal: it contains the primary announcement and the clearest description of the new default workflow assumptions.</p>
         </div>
       </div>
-    </div>
-  </div>
-
-  <!-- Right panel: expanded reading view -->
-  <div style="width:480px; background:var(--bg-card); border-left:1px solid var(--border); display:flex; flex-direction:column; flex-shrink:0;">
-    <!-- Reading header -->
-    <div style="padding:12px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:8px;">
-      <button class="btn btn-ghost" style="font-size:11px; padding:4px 8px;">
-        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
-        返回信号
-      </button>
-      <div style="flex:1;"></div>
-      <span style="font-size:10px; color:var(--text-tertiary);">来源 1/3</span>
-      <button class="btn btn-ghost" style="font-size:11px; padding:4px 8px;">
-        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-      </button>
-      <button class="btn btn-ghost" style="font-size:11px; padding:4px 8px;">
-        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg>
-      </button>
-    </div>
-    <!-- Reading content -->
-    <div style="flex:1; overflow-y:auto; padding:24px 28px;">
-      <div style="font-size:10px; color:var(--accent); font-weight:600; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px;">TechCrunch</div>
-      <h1 style="font-size:20px; font-weight:700; line-height:1.3; color:var(--text-primary); margin-bottom:12px;">OpenAI Releases Open-Source Agent SDK for Building Multi-Agent Systems</h1>
-      <div style="font-size:12px; color:var(--text-tertiary); margin-bottom:24px;">
-        Sarah Chen · May 1, 2026 · 6 min read
+      <div class="reader-toolbar" style="border-top:1px solid var(--border); border-bottom:none;">
+        <button class="btn btn-ghost" style="font-size:11px; opacity:0.45;">上一篇</button>
+        <div style="flex:1; text-align:center; font-size:11px; color:var(--text-tertiary);">OpenAI Blog · strongest evidence</div>
+        <button class="btn btn-ghost" style="font-size:11px;">下一篇</button>
       </div>
-      <p style="font-size:14px; color:var(--text-secondary); line-height:1.8; margin-bottom:16px;">
-        OpenAI 今天发布了一个全新的开源 Agent SDK，旨在让开发者更轻松地构建多 Agent 系统。该 SDK 提供了链式推理、工具调用、记忆管理和多 Agent 协作等核心能力。
-      </p>
-      <p style="font-size:14px; color:var(--text-secondary); line-height:1.8; margin-bottom:16px;">
-        这一举动的意义在于，它直接与 LangChain、CrewAI、AutoGen 等现有框架竞争。与这些框架不同的是，OpenAI 的 SDK 从底层就深度整合了 GPT 系列模型的推理能力。
-      </p>
-      <blockquote style="border-left:3px solid var(--accent); padding:12px 16px; margin:16px 0; background:var(--accent-light); border-radius:0 var(--radius-sm) var(--radius-sm) 0; font-style:italic; color:var(--text-secondary); font-size:13px; line-height:1.6;">
-        "我们希望 Agent 开发能像 Web 开发一样简单。今天的 Agent 框架太碎片化了。" — OpenAI 开发者关系负责人
-      </blockquote>
-      <p style="font-size:14px; color:var(--text-secondary); line-height:1.8; margin-bottom:16px;">
-        SDK 的核心特性包括：声明式的 Agent 定义语法、内置的重试和错误恢复机制、支持流式输出的工具调用接口，以及一个可视化调试工具。
-      </p>
-      <p style="font-size:14px; color:var(--text-secondary); line-height:1.8; margin-bottom:16px;">
-        目前 SDK 已在 GitHub 上以 MIT 协议开源，首日获得超过 5,000 个 star。
-      </p>
-    </div>
-    <!-- Source navigation -->
-    <div style="padding:12px 20px; border-top:1px solid var(--border); display:flex; align-items:center; gap:8px;">
-      <button class="btn btn-ghost" style="font-size:11px; opacity:0.4; cursor:default;">
-        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
-        上一篇
-      </button>
-      <div style="flex:1;"></div>
-      <span style="font-size:10px; color:var(--text-tertiary);">TechCrunch</span>
-      <div style="flex:1;"></div>
-      <button class="btn btn-ghost" style="font-size:11px;">
-        下一篇
-        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
-      </button>
-    </div>
+    </section>
   </div>
 </div>
 
@@ -1144,199 +1949,180 @@
     <div class="rail-spacer"></div>
     <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span class="tooltip">Settings</span></button>
   </div>
-  <div class="main-content">
-    <div class="page-header">
-      <div class="page-title">Topics</div>
-      <div class="page-subtitle">长期关注的信息主题和趋势</div>
-    </div>
-    <div style="display:flex; align-items:center; gap:8px; padding:0 28px 16px;">
-      <div style="display:flex; gap:2px; background:var(--bg-sidebar); border-radius:var(--radius-sm); padding:2px;">
-        <button class="btn btn-ghost active" style="padding:4px 12px; font-size:11px; border:none;">全部</button>
-        <button class="btn btn-ghost" style="padding:4px 12px; font-size:11px; border:none;">追踪中</button>
+  <div class="topics-workspace">
+  <main class="topics-shell">
+    <header class="topics-header">
+      <div>
+        <div class="topics-title">Topics</div>
+        <div class="topics-subtitle">把信息流里的文章归并成可持续追踪的变化脉络。这里不是分类目录，而是 Lettura 对你长期关心问题的理解层。</div>
       </div>
-      <select style="margin-left:auto; font-size:11px; color:var(--text-tertiary); background:var(--bg-sidebar); border:1px solid var(--border); border-radius:var(--radius-sm); padding:4px 8px;">
-        <option>按最近更新</option>
+      <div class="today-pills">
+        <span class="today-pill">12 tracked</span>
+        <span class="today-pill">8 discovered</span>
+        <span class="today-pill">3 muted</span>
+      </div>
+    </header>
+
+    <div class="topics-toolbar">
+      <button class="btn btn-ghost active">全部</button>
+      <button class="btn btn-ghost">Tracked</button>
+      <button class="btn btn-ghost">Discovered</button>
+      <button class="btn btn-ghost">Muted</button>
+      <select class="settings-select" aria-label="Topic 排序" style="margin-left:auto; width:auto;">
         <option>按相关度</option>
+        <option>按最近更新</option>
         <option>按文章数</option>
       </select>
     </div>
-    <div class="main-scroll" style="padding:0 28px 24px;">
-      <!-- Topic Cards -->
-      <div class="topic-card" style="margin-bottom:10px;">
-        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
-          <div style="display:flex; align-items:center; gap:8px;">
-            <span class="tag tag-accent">追踪中</span>
-            <span style="font-size:15px; font-weight:600; color:var(--text-primary);">LLM 推理优化</span>
-          </div>
-          <span style="font-size:11px; color:var(--text-tertiary);">2 小时前更新</span>
-        </div>
-        <div style="font-size:12px; color:var(--text-secondary); line-height:1.6; margin-bottom:10px;">
-          探索大语言模型推理加速、量化、蒸馏和部署优化的最新进展。
-        </div>
-        <div style="display:flex; align-items:center; gap:16px; font-size:11px; color:var(--text-tertiary);">
-          <span>12 篇文章</span>
-          <span>5 个来源</span>
-          <span>置信度 82%</span>
-        </div>
-      </div>
 
-      <div class="topic-card" style="margin-bottom:10px;">
-        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
-          <div style="display:flex; align-items:center; gap:8px;">
-            <span class="tag tag-green">追踪中</span>
-            <span style="font-size:15px; font-weight:600; color:var(--text-primary);">开源商业模式</span>
+    <section class="topics-section">
+      <div class="topics-section-header"><span>Tracked Topics</span><span>会进入 Today 关联与持续更新</span></div>
+      <article class="topic-card is-selected">
+        <div>
+          <div class="topic-name-row"><span class="tag tag-accent">Tracked</span><span class="topic-name">AI Agent 工具链</span><span class="tag tag-green">+4 new</span></div>
+          <div class="topic-definition">关注 Agent SDK、调试追踪、工具调用、记忆和多 Agent 编排如何变成开发者默认工作流。</div>
+          <div class="topic-meta">
+            <span>28 articles</span><span>9 sources</span><span>updated 2h ago</span>
+            <span class="topic-confidence">Confidence <span class="topic-confidence-bar"><span class="fill" style="width:88%;"></span></span>88%</span>
           </div>
-          <span style="font-size:11px; color:var(--text-tertiary);">1 天前更新</span>
         </div>
-        <div style="font-size:12px; color:var(--text-secondary); line-height:1.6; margin-bottom:10px;">
-          开源项目的商业化路径：从赞助到企业版的策略分析。
+        <div class="topic-actions">
+          <button class="btn btn-ghost active" data-topic-action="unfollow">Unfollow</button>
+          <button class="btn btn-ghost" data-topic-action="mute">Mute</button>
         </div>
-        <div style="display:flex; align-items:center; gap:16px; font-size:11px; color:var(--text-tertiary);">
-          <span>8 篇文章</span>
-          <span>4 个来源</span>
+      </article>
+      <article class="topic-card">
+        <div>
+          <div class="topic-name-row"><span class="tag tag-blue">Tracked</span><span class="topic-name">本地 AI 与离线推理</span><span class="tag tag-green">+2 new</span></div>
+          <div class="topic-definition">跟踪小模型、量化、桌面端推理和隐私优先 AI 功能的产品化趋势。</div>
+          <div class="topic-meta">
+            <span>19 articles</span><span>7 sources</span><span>updated 4h ago</span>
+            <span class="topic-confidence">Confidence <span class="topic-confidence-bar"><span class="fill" style="width:81%; background:var(--blue);"></span></span>81%</span>
+          </div>
         </div>
-      </div>
+        <div class="topic-actions">
+          <button class="btn btn-ghost active" data-topic-action="unfollow">Unfollow</button>
+          <button class="btn btn-ghost" data-topic-action="mute">Mute</button>
+        </div>
+      </article>
+    </section>
 
-      <div class="topic-card" style="margin-bottom:10px;">
-        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
-          <div style="display:flex; align-items:center; gap:8px;">
-            <span style="font-size:15px; font-weight:600; color:var(--text-primary);">WebAssembly 进展</span>
+    <section class="topics-section">
+      <div class="topics-section-header"><span>Discovered Topics</span><span>系统发现但尚未固定追踪</span></div>
+      <article class="topic-card">
+        <div>
+          <div class="topic-name-row"><span class="tag tag-amber">Discovered</span><span class="topic-name">浏览器 AI Runtime</span><span class="tag tag-amber">待验证</span></div>
+          <div class="topic-definition">多篇报道显示浏览器正在提供模型调用、页面操作权限和本地上下文接口，可能成为新的 AI 平台层。</div>
+          <div class="topic-meta">
+            <span>6 articles</span><span>4 sources</span><span>first seen today</span>
+            <span class="topic-confidence">Confidence <span class="topic-confidence-bar"><span class="fill" style="width:62%; background:var(--amber);"></span></span>62%</span>
           </div>
-          <span style="font-size:11px; color:var(--text-tertiary);">3 天前更新</span>
         </div>
-        <div style="font-size:12px; color:var(--text-secondary); line-height:1.6; margin-bottom:10px;">
-          WASM 在服务端、浏览器和边缘计算中的最新进展。
+        <div class="topic-actions">
+          <button class="btn btn-ghost active" data-topic-action="follow">Follow</button>
+          <button class="btn btn-ghost" data-topic-action="mute">Mute</button>
         </div>
-        <div style="display:flex; align-items:center; gap:16px; font-size:11px; color:var(--text-tertiary);">
-          <span>5 篇文章</span>
-          <span>3 个来源</span>
+      </article>
+      <article class="topic-card">
+        <div>
+          <div class="topic-name-row"><span class="tag tag-amber">Discovered</span><span class="topic-name">开源商业化许可证</span></div>
+          <div class="topic-definition">围绕 source-available、云服务限制和企业版功能边界的讨论再次升温。</div>
+          <div class="topic-meta"><span>5 articles</span><span>3 sources</span><span>updated yesterday</span></div>
         </div>
-      </div>
+        <div class="topic-actions">
+          <button class="btn btn-ghost active" data-topic-action="follow">Follow</button>
+          <button class="btn btn-ghost" data-topic-action="mute">Mute</button>
+        </div>
+      </article>
+    </section>
 
-      <div class="topic-card" style="margin-bottom:10px;">
-        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
-          <div style="display:flex; align-items:center; gap:8px;">
-            <span style="font-size:15px; font-weight:600; color:var(--text-primary);">Apple 生态开发</span>
-          </div>
-          <span style="font-size:11px; color:var(--text-tertiary);">5 天前更新</span>
+    <section class="topics-section">
+      <div class="topics-section-header"><span>Muted Topics</span><span>默认不出现在 Today，可随时恢复</span></div>
+      <article class="topic-card muted">
+        <div>
+          <div class="topic-name-row"><span class="tag">Muted</span><span class="topic-name">加密货币价格快讯</span></div>
+          <div class="topic-definition">价格波动类内容被静音，避免影响技术趋势判断。</div>
+          <div class="topic-meta"><span>14 hidden articles</span><span>muted 6 days ago</span><span>still searchable</span></div>
         </div>
-        <div style="font-size:12px; color:var(--text-secondary); line-height:1.6; margin-bottom:10px;">
-          SwiftUI、visionOS 和 Apple 平台开发工具链更新。
+        <div class="topic-actions">
+          <button class="btn btn-ghost active" data-topic-action="restore">恢复</button>
+          <button class="btn btn-ghost" data-topic-action="delete">删除</button>
         </div>
-        <div style="display:flex; align-items:center; gap:16px; font-size:11px; color:var(--text-tertiary);">
-          <span>3 篇文章</span>
-          <span>2 个来源</span>
+      </article>
+    </section>
+  </main>
+
+  <aside class="topic-drawer" id="topic-drawer" aria-label="Topic 详情抽屉">
+    <section class="topic-hero">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+          <span class="tag tag-accent">Tracked</span>
+          <span class="tag tag-green">4 new</span>
         </div>
+        <button class="btn btn-ghost" data-topic-drawer-close style="padding:4px 8px;">收起</button>
       </div>
-    </div>
-  </div>
+      <h1 class="topic-hero-title" data-topic-drawer-title>AI Agent 工具链</h1>
+      <p class="topic-hero-definition" data-topic-drawer-definition>关注 Agent SDK、调试追踪、工具调用、记忆、浏览器/系统权限和多 Agent 编排如何变成开发者默认工作流。右侧抽屉保留列表上下文，交互与 Today 的 Signal 详情保持接近。</p>
+      <div class="topic-hero-meta">
+        <span>首次发现 2026/03/18</span><span>最后更新 2 小时前</span><span>28 articles</span><span>Confidence 88%</span>
+      </div>
+      <div style="display:flex; gap:8px; margin-top:14px; flex-wrap:wrap;">
+        <button class="btn btn-ghost active" data-topic-action="unfollow">已追踪</button>
+        <button class="btn btn-ghost" data-topic-action="mute">静音</button>
+        <button class="btn btn-ghost">重新分析</button>
+      </div>
+    </section>
+
+    <section class="topic-detail-section">
+      <div class="topic-detail-section-title">Recent Changes</div>
+      <article class="change-card">
+        <div class="change-date">Today</div>
+        <div><div class="change-title">官方 SDK 将 tracing、handoff 和 tool calling 打包为默认路径。</div><div class="change-summary">竞争点从“框架是否支持工具”转向“谁能定义从原型到生产的默认工作流”。</div></div>
+      </article>
+      <article class="change-card">
+        <div class="change-date">Yesterday</div>
+        <div><div class="change-title">社区开始比较 LangChain、AutoGen、CrewAI 与官方 SDK 的职责边界。</div><div class="change-summary">讨论集中在调试、可观测性和长期维护成本，而不是单次 demo 能力。</div></div>
+      </article>
+    </section>
+
+    <section class="topic-detail-section">
+      <div class="topic-detail-section-title">Sources</div>
+      <div class="source-group-card">
+        <div class="source-group-row"><strong>Primary</strong><span>OpenAI Blog, Anthropic News</span><span class="tag tag-green">high trust</span></div>
+        <div class="source-group-row"><strong>Community</strong><span>Hacker News, GitHub Discussions</span><span class="tag tag-amber">noisy</span></div>
+        <div class="source-group-row"><strong>Analysis</strong><span>Simon Willison, Latent Space</span><span class="tag tag-blue">context</span></div>
+      </div>
+    </section>
+
+    <section class="topic-detail-section">
+      <div class="topic-detail-section-title">Start Here</div>
+      <article class="start-card">
+        <div>
+          <div class="start-title">Introducing the Agent SDK and tracing tools</div>
+          <div class="start-reason">先读官方原文，建立 Topic 最新变化的事实锚点。</div>
+          <div class="article-meta" style="margin-top:6px;">OpenAI Blog · 7 min read</div>
+        </div>
+        <button class="btn btn-ghost active">打开文章</button>
+      </article>
+      <article class="start-card">
+        <div>
+          <div class="start-title">Developers compare SDK tradeoffs with existing agent frameworks</div>
+          <div class="start-reason">再读社区讨论，验证真实开发者场景里的阻力。</div>
+          <div class="article-meta" style="margin-top:6px;">Hacker News · 128 comments</div>
+        </div>
+        <button class="btn btn-ghost">打开文章</button>
+      </article>
+    </section>
+
+    <section class="topic-detail-section">
+      <div class="topic-detail-section-title">All Articles</div>
+      <div style="border:1px solid var(--border); border-radius:var(--radius); overflow:hidden;">
+        <div class="article-item unread"><div style="flex:1;"><div style="font-size:13px; font-weight:600; color:var(--text-primary); margin-bottom:4px;">OpenAI ships tracing-first Agent SDK</div><div class="article-meta">OpenAI Blog · 2 小时前 · Primary</div></div></div>
+        <div class="article-item"><div style="flex:1;"><div style="font-size:13px; font-weight:600; color:var(--text-primary); margin-bottom:4px;">What agent frameworks still need after official SDKs</div><div class="article-meta">Latent Space · 1 天前 · Analysis</div></div></div>
+      </div>
+    </section>
+  </aside>
 </div>
-
-<!-- ==================== PAGE: TOPIC DETAIL ==================== -->
-<div id="page-topic-detail" class="app-shell" style="display:none;">
-  <div class="rail">
-    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.912 5.813h6.107l-4.964 3.587 1.912 5.813L12 14.626l-4.967 3.587 1.912-5.813L3.981 8.813h6.107z"/></svg><span class="tooltip">Today</span></button>
-    <button class="rail-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg><span class="tooltip">Topics</span></button>
-    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg><span class="tooltip">Feeds</span></button>
-    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span class="tooltip">Search</span></button>
-    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span class="tooltip">Starred</span></button>
-    <div class="rail-spacer"></div>
-    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span class="tooltip">Settings</span></button>
-  </div>
-  <div class="main-content">
-    <div class="main-scroll" style="padding:24px 28px;">
-      <!-- Back button -->
-      <button style="display:flex; align-items:center; gap:4px; font-size:12px; color:var(--text-tertiary); background:none; border:none; cursor:pointer; margin-bottom:16px;">
-        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
-        返回 Topics
-      </button>
-
-      <!-- Title + Follow -->
-      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
-        <h1 style="font-size:24px; font-weight:700; color:var(--text-primary);">LLM 推理优化</h1>
-        <button class="btn btn-ghost active">
-          <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 17v5M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/></svg>
-          追踪中
-        </button>
-      </div>
-
-      <div style="font-size:13px; color:var(--text-secondary); line-height:1.6; margin-bottom:16px;">
-        探索大语言模型推理加速、量化、蒸馏和部署优化的最新进展。涵盖 vLLM、TensorRT-LLM、llama.cpp 等主要框架。
-      </div>
-
-      <!-- AI Summary -->
-      <div class="card" style="margin-bottom:20px; background:var(--bg-sidebar);">
-        <div style="display:flex; align-items:center; gap:6px; margin-bottom:8px;">
-          <svg class="icon-sm" style="color:var(--accent);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><path d="M14 2v6h6"/></svg>
-          <span style="font-size:12px; font-weight:600; color:var(--text-primary);">主题摘要</span>
-        </div>
-        <p style="font-size:12px; color:var(--text-secondary); line-height:1.6;">
-          本周 LLM 推理领域最显著的进展来自 vLLM 0.6 版本的发布，引入了前缀缓存和分块预填充优化，吞吐量提升 2-3x。同时，llama.cpp 的 Vulkan 后端日趋成熟，使得在消费级 GPU 上运行 70B 模型成为可能。模型量化方面，GGUF 格式与 AWQ 量化的对比测试显示 AWQ 在保持精度的同时具有更好的推理速度。
-        </p>
-      </div>
-
-      <!-- Stats -->
-      <div style="display:flex; gap:16px; font-size:12px; color:var(--text-tertiary); margin-bottom:16px;">
-        <span style="display:flex; align-items:center; gap:4px;">
-          <svg class="icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/></svg>
-          12 篇文章
-        </span>
-        <span style="display:flex; align-items:center; gap:4px;">
-          <svg class="icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
-          5 个来源
-        </span>
-        <span style="display:flex; align-items:center; gap:4px;">
-          <svg class="icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-          首次发现 2024/03
-        </span>
-        <span style="display:flex; align-items:center; gap:4px;">
-          <svg class="icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-          最后更新 2 小时前
-        </span>
-      </div>
-
-      <div class="divider"></div>
-
-      <h3 style="font-size:14px; font-weight:600; color:var(--text-primary); margin-bottom:12px;">相关文章</h3>
-
-      <!-- Source group -->
-      <div style="margin-bottom:16px;">
-        <div style="font-size:11px; font-weight:600; color:var(--text-tertiary); margin-bottom:8px;">来自 Hacker News</div>
-        <div style="border:1px solid var(--border); border-radius:var(--radius); overflow:hidden;">
-          <div class="article-item unread">
-            <div style="flex:1;">
-              <div style="font-size:13px; font-weight:500; color:var(--text-primary); margin-bottom:4px;">vLLM 0.6: Prefix Caching and Chunked Prefill</div>
-              <div class="article-meta">Hacker News · 2 小时前 · 128 comments</div>
-            </div>
-          </div>
-          <div class="article-item">
-            <div style="flex:1;">
-              <div style="font-size:13px; font-weight:500; color:var(--text-primary); margin-bottom:4px;">Show HN: I built a local LLM inference benchmark comparing llama.cpp, vLLM and TGI</div>
-              <div class="article-meta">Hacker News · 1 天前 · 89 comments</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div style="margin-bottom:16px;">
-        <div style="font-size:11px; font-weight:600; color:var(--text-tertiary); margin-bottom:8px;">来自 Simon Willison's Blog</div>
-        <div style="border:1px solid var(--border); border-radius:var(--radius); overflow:hidden;">
-          <div class="article-item">
-            <div style="flex:1;">
-              <div style="font-size:13px; font-weight:500; color:var(--text-primary); margin-bottom:4px;">Notes on GPT-4o mini and inference cost trends</div>
-              <div class="article-meta">Simon Willison · 3 天前</div>
-            </div>
-          </div>
-          <div class="article-item">
-            <div style="flex:1;">
-              <div style="font-size:13px; font-weight:500; color:var(--text-primary); margin-bottom:4px;">Quantization showdown: GGUF vs AWQ vs GPTQ</div>
-              <div class="article-meta">Simon Willison · 5 天前</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 </div>
 
 <!-- ==================== PAGE: FEEDS ==================== -->
@@ -1541,13 +2327,22 @@
       </div>
     </div>
     <div class="main-scroll" style="padding:0 28px 24px;">
-      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
-        <div style="font-size:12px; color:var(--text-tertiary);">18 个结果 · 按相关度排序</div>
+      <div class="search-status">
+        <div data-search-status>18 个结果 · 按相关度排序</div>
         <button class="btn btn-ghost" style="font-size:11px;">
           <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></svg>
           保存搜索
         </button>
       </div>
+      <div class="search-state" data-search-state="loading">
+        <div class="search-skeleton">
+          <span style="width:38%;"></span>
+          <span style="width:72%;"></span>
+          <span style="width:54%;"></span>
+        </div>
+      </div>
+      <div class="search-state" data-search-state="empty">没有找到匹配结果。可以清除筛选，或换一个更具体的关键词。</div>
+      <div class="search-state" data-search-state="error">搜索暂时失败。这里展示重试入口和错误说明。</div>
 
       <div class="card" style="margin-bottom:10px; border-color:var(--accent);">
         <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
@@ -1786,6 +2581,523 @@
   </div>
 </div>
 
+<!-- ==================== PAGE: SETTINGS ==================== -->
+<div id="page-settings" class="app-shell" style="display:none;">
+  <div class="rail">
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.912 5.813h6.107l-4.964 3.587 1.912 5.813L12 14.626l-4.967 3.587 1.912-5.813L3.981 8.813h6.107z"/></svg><span class="tooltip">Today</span></button>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg><span class="tooltip">Topics</span></button>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg><span class="tooltip">Feeds</span></button>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span class="tooltip">Search</span></button>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span class="tooltip">Starred</span></button>
+    <div class="rail-spacer"></div>
+    <button class="rail-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span class="tooltip">Settings</span></button>
+  </div>
+
+  <div class="settings-shell">
+    <div class="main-scroll">
+      <div class="settings-layout">
+        <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:16px;">
+          <div>
+            <div class="page-title">Settings</div>
+            <div class="page-subtitle">配置 Lettura 如何读取、分析和呈现你的信息源。这里不给杂项堆叠，只解释系统边界和关键控制。</div>
+          </div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;">
+            <span class="tag tag-green">本地配置安全</span>
+            <span class="tag tag-accent">42 sources active</span>
+            <span class="tag tag-blue">最近分析 2 小时前</span>
+          </div>
+        </div>
+
+        <div class="settings-tabs" role="tablist" aria-label="Settings categories">
+          <button class="settings-tab active" id="settings-tab-ai" role="tab" aria-selected="true" aria-controls="settings-panel-ai" data-settings-tab="ai">
+            <span class="settings-tab-icon"><svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15A2.5 2.5 0 0 1 9.5 22 2.5 2.5 0 0 1 7 19.5v-15A2.5 2.5 0 0 1 9.5 2Z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 2.5 2.5 2.5 2.5 0 0 0 2.5-2.5v-15A2.5 2.5 0 0 0 14.5 2Z"/></svg></span>
+            <span>
+              <span class="settings-tab-title">AI 配置</span>
+              <span class="settings-tab-desc">模型、密钥、连接状态</span>
+            </span>
+          </button>
+          <button class="settings-tab" id="settings-tab-sources" role="tab" aria-selected="false" aria-controls="settings-panel-sources" data-settings-tab="sources">
+            <span class="settings-tab-icon"><svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg></span>
+            <span>
+              <span class="settings-tab-title">Sources 管理</span>
+              <span class="settings-tab-desc">源健康、Pack、同步策略</span>
+            </span>
+          </button>
+          <button class="settings-tab" id="settings-tab-appearance" role="tab" aria-selected="false" aria-controls="settings-panel-appearance" data-settings-tab="appearance">
+            <span class="settings-tab-icon"><svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.2 2 11.5 2 16.6 6.1 21 11.2 21h1.6a2.2 2.2 0 0 0 1.4-3.9 1.1 1.1 0 0 1 .7-1.9H17a5 5 0 0 0 5-5C22 5.7 17.5 2 12 2Z"/></svg></span>
+            <span>
+              <span class="settings-tab-title">外观阅读</span>
+              <span class="settings-tab-desc">主题、字号、卡片密度</span>
+            </span>
+          </button>
+          <button class="settings-tab" id="settings-tab-behavior" role="tab" aria-selected="false" aria-controls="settings-panel-behavior" data-settings-tab="behavior">
+            <span class="settings-tab-icon"><svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></span>
+            <span>
+              <span class="settings-tab-title">应用行为</span>
+              <span class="settings-tab-desc">启动、通知、缓存保留</span>
+            </span>
+          </button>
+        </div>
+
+        <div class="settings-tab-content active" id="settings-panel-ai" role="tabpanel" aria-labelledby="settings-tab-ai" data-settings-content="ai">
+        <div class="settings-grid-wide">
+          <div class="settings-panel">
+            <div class="settings-panel-header">
+              <div>
+                <div class="settings-panel-title">AI 配置</div>
+                <div class="settings-panel-desc">用于生成 Today Signals、Why It Matters 与 Topic 聚合。配置只影响本地分析流程。</div>
+              </div>
+              <button class="btn btn-primary" data-form-action="validate-ai">
+                <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+                验证连接
+              </button>
+            </div>
+
+            <div class="settings-section">
+              <div class="settings-row">
+                <div>
+                  <label class="settings-label" for="settings-ai-key">API Key</label>
+                  <div class="settings-help" id="settings-ai-key-help">保存在本机配置文件中，保存后仅显示掩码</div>
+                </div>
+                <input class="settings-input" id="settings-ai-key" name="apiKey" type="password" autocomplete="off" aria-describedby="settings-ai-key-help settings-ai-key-error" value="sk-••••••••••••••••••••••••••••7F2a" />
+                <button class="btn btn-ghost">更换</button>
+                <div class="settings-field-error" id="settings-ai-key-error">API Key 至少需要 20 个字符。</div>
+              </div>
+              <div class="settings-row">
+                <div>
+                  <label class="settings-label" for="settings-base-url">Base URL</label>
+                  <div class="settings-help" id="settings-base-url-help">兼容 OpenAI API 的服务端点</div>
+                </div>
+                <input class="settings-input" id="settings-base-url" name="baseUrl" type="url" inputmode="url" autocomplete="url" aria-describedby="settings-base-url-help settings-base-url-error" value="https://api.openai.com/v1" />
+                <button class="btn btn-ghost">重置</button>
+                <div class="settings-field-error" id="settings-base-url-error">请输入 http 或 https 开头的 URL。</div>
+              </div>
+              <div class="settings-row">
+                <div>
+                  <label class="settings-label" for="settings-model">Model</label>
+                  <div class="settings-help">用于总结、解释和主题归并</div>
+                </div>
+                <select class="settings-select" id="settings-model" name="model">
+                  <option value="gpt-4o-mini">gpt-4o-mini</option>
+                  <option value="gpt-4.1-mini">gpt-4.1-mini</option>
+                </select>
+                <span class="tag tag-green">已连接</span>
+              </div>
+              <div class="settings-row">
+                <div>
+                  <div class="settings-label">保存状态</div>
+                  <div class="settings-help">修改字段后显示 dirty/saving/saved</div>
+                </div>
+                <span class="settings-save-state" data-settings-save-state>已保存 · 2 分钟前</span>
+                <button class="btn btn-primary" data-form-action="save-ai">保存 AI 配置</button>
+              </div>
+            </div>
+
+            <div class="settings-section">
+              <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px;">
+                <div>
+                  <div class="settings-label">分析状态</div>
+                  <div class="settings-help">让用户知道系统现在正在做什么</div>
+                </div>
+                <span class="tag tag-accent">最近分析 2 小时前</span>
+              </div>
+              <div class="settings-kpi">
+                <div class="card">
+                  <div class="settings-kpi-value">42</div>
+                  <div class="settings-kpi-label">参与分析的来源</div>
+                </div>
+                <div class="card">
+                  <div class="settings-kpi-value">128</div>
+                  <div class="settings-kpi-label">最近处理文章</div>
+                </div>
+                <div class="card">
+                  <div class="settings-kpi-value" style="color:var(--accent);">5</div>
+                  <div class="settings-kpi-label">生成 Signals</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="settings-section">
+              <div class="settings-row">
+                <div>
+                  <div class="settings-label">Embedding</div>
+                  <div class="settings-help">用于去重和 Topic 聚合</div>
+                </div>
+                <input class="settings-range" type="range" name="embeddingConfidence" min="0" max="100" value="72" aria-label="Embedding 强度" />
+                <button class="settings-toggle on" type="button" role="switch" aria-checked="true" aria-label="开启 Embedding"></button>
+              </div>
+              <div class="settings-row">
+                <div>
+                  <label class="settings-label" for="settings-pipeline-interval">Pipeline</label>
+                  <div class="settings-help">后台自动分析间隔</div>
+                </div>
+                <select class="settings-select" id="settings-pipeline-interval" name="pipelineInterval">
+                  <option value="6">每 6 小时</option>
+                  <option value="12">每 12 小时</option>
+                  <option value="24">每天</option>
+                </select>
+                <button class="settings-toggle on" type="button" role="switch" aria-checked="true" aria-label="开启 Pipeline"></button>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:14px;">
+            <div class="settings-panel">
+              <div class="settings-panel-header">
+                <div>
+                  <div class="settings-panel-title">为什么可信</div>
+                  <div class="settings-panel-desc">Settings 不只是填表，而是解释边界</div>
+                </div>
+              </div>
+              <div class="settings-section">
+                <div class="settings-trust-list">
+                  <div class="settings-trust-item"><span class="status-dot green" style="margin-top:5px;"></span><span>API Key 存储在本地，不进入 Lettura 服务器。</span></div>
+                  <div class="settings-trust-item"><span class="status-dot green" style="margin-top:5px;"></span><span>AI 只分析你订阅的来源和本地文章数据。</span></div>
+                  <div class="settings-trust-item"><span class="status-dot amber" style="margin-top:5px;"></span><span>低置信度 Signal 会标注待验证，不混入高置信判断。</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="settings-panel">
+              <div class="settings-panel-header">
+                <div>
+                  <div class="settings-panel-title">Sources 快照</div>
+                  <div class="settings-panel-desc">控制输入质量，而不是堆更多源</div>
+                </div>
+              </div>
+              <div class="settings-section">
+                <div class="settings-pack-row">
+                  <div>
+                    <div class="settings-label">AI Starter Pack</div>
+                    <div class="settings-help">18 个来源 · 成功率 96%</div>
+                  </div>
+                  <span class="tag tag-green">健康</span>
+                </div>
+                <div class="settings-pack-row">
+                  <div>
+                    <div class="settings-label">Developer Pack</div>
+                    <div class="settings-help">15 个来源 · 2 个需检查</div>
+                  </div>
+                  <span class="tag tag-amber">注意</span>
+                </div>
+                <div class="settings-pack-row">
+                  <div>
+                    <div class="settings-label">Design Pack</div>
+                    <div class="settings-help">12 个来源 · 最近同步 18 分钟前</div>
+                  </div>
+                  <span class="tag tag-green">健康</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="settings-panel">
+              <div class="settings-section">
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+                  <div>
+                    <div class="settings-label">后台同步</div>
+                    <div class="settings-help">30 分钟间隔 · 通知关闭 · 缓存保留 30 天</div>
+                  </div>
+                  <button class="settings-toggle on" type="button" role="switch" aria-checked="true" aria-label="开启后台同步"></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+
+        <div class="settings-tab-content" id="settings-panel-sources" role="tabpanel" aria-labelledby="settings-tab-sources" data-settings-content="sources">
+          <div class="settings-grid-wide">
+            <div class="settings-panel">
+              <div class="settings-panel-header">
+                <div>
+                  <div class="settings-panel-title">Sources 管理</div>
+                  <div class="settings-panel-desc">配置源的行为和质量，不在这里做日常阅读操作。</div>
+                </div>
+                <button class="btn btn-primary">
+                  <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
+                  同步全部
+                </button>
+              </div>
+              <div class="settings-section">
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px;">
+                  <div>
+                    <div class="settings-label">Starter Packs</div>
+                    <div class="settings-help">安装高质量输入源，给 Today 和 Topics 提供可靠材料。</div>
+                  </div>
+                  <button class="btn btn-ghost">浏览 Packs</button>
+                </div>
+                <div class="settings-choice-grid">
+                  <div class="settings-choice active">
+                    <div class="settings-label">AI Starter Pack</div>
+                    <div class="settings-help">18 sources · 96% 成功率</div>
+                    <span class="tag tag-green" style="margin-top:8px;">已安装</span>
+                  </div>
+                  <div class="settings-choice">
+                    <div class="settings-label">Developer Pack</div>
+                    <div class="settings-help">15 sources · 2 个需检查</div>
+                    <span class="tag tag-amber" style="margin-top:8px;">需维护</span>
+                  </div>
+                  <div class="settings-choice">
+                    <div class="settings-label">Product Pack</div>
+                    <div class="settings-help">14 sources · 推荐安装</div>
+                    <span class="tag tag-blue" style="margin-top:8px;">可安装</span>
+                  </div>
+                </div>
+              </div>
+              <div class="settings-section">
+                <div class="settings-health-row" style="font-size:11px; color:var(--text-tertiary); font-weight:600; text-transform:uppercase;">
+                  <span>Source</span><span>Health</span><span>Last sync</span><span>Action</span>
+                </div>
+                <div class="settings-health-row">
+                  <span><strong>OpenAI Blog</strong><div class="settings-help">官方发布和研究更新</div></span>
+                  <span class="tag tag-green">健康</span>
+                  <span style="color:var(--text-tertiary);">12 分钟前</span>
+                  <button class="btn btn-ghost">设置</button>
+                </div>
+                <div class="settings-health-row">
+                  <span><strong>Hacker News</strong><div class="settings-help">社区讨论和早期信号</div></span>
+                  <span class="tag tag-green">健康</span>
+                  <span style="color:var(--text-tertiary);">18 分钟前</span>
+                  <button class="btn btn-ghost">设置</button>
+                </div>
+                <div class="settings-health-row">
+                  <span><strong>Design Systems Weekly</strong><div class="settings-help">连续 3 次超时</div></span>
+                  <span class="tag tag-amber">注意</span>
+                  <span style="color:var(--text-tertiary);">2 天前</span>
+                  <button class="btn btn-ghost">修复</button>
+                </div>
+              </div>
+              <div class="settings-section">
+                <div class="settings-row">
+                  <div>
+                    <div class="settings-label">同步频率</div>
+                    <div class="settings-help">控制后台抓取节奏</div>
+                  </div>
+                  <select class="settings-select" aria-label="同步频率"><option>每 30 分钟</option></select>
+                  <button class="settings-toggle on" type="button" role="switch" aria-checked="true" aria-label="开启自动同步"></button>
+                </div>
+                <div class="settings-row">
+                  <div>
+                    <div class="settings-label">并发请求</div>
+                    <div class="settings-help">过高可能触发部分源限流</div>
+                  </div>
+                  <input class="settings-range" type="range" min="1" max="5" value="3" aria-label="并发请求数" />
+                  <span class="tag tag-blue">3 / 5</span>
+                </div>
+                <div class="settings-row">
+                  <div>
+                    <div class="settings-label">请求超时</div>
+                    <div class="settings-help">慢源超过该时间会被标记</div>
+                  </div>
+                  <select class="settings-select"><option>15 秒</option></select>
+                  <button class="btn btn-ghost">重置</button>
+                </div>
+              </div>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:14px;">
+              <div class="settings-panel">
+                <div class="settings-panel-header">
+                  <div>
+                    <div class="settings-panel-title">输入质量</div>
+                    <div class="settings-panel-desc">系统判断先看来源是否可靠</div>
+                  </div>
+                </div>
+                <div class="settings-section">
+                  <div class="settings-kpi">
+                    <div class="card"><div class="settings-kpi-value">42</div><div class="settings-kpi-label">活跃来源</div></div>
+                    <div class="card"><div class="settings-kpi-value" style="color:var(--green);">94%</div><div class="settings-kpi-label">同步成功率</div></div>
+                    <div class="card"><div class="settings-kpi-value" style="color:var(--amber);">3</div><div class="settings-kpi-label">需检查</div></div>
+                  </div>
+                </div>
+              </div>
+              <div class="settings-panel">
+                <div class="settings-section">
+                  <div class="settings-label">失效源处理建议</div>
+                  <div class="settings-help" style="margin-top:8px;">优先修复官方源和专家博客；低质量聚合源可以直接停用，避免污染 Today Signals。</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-tab-content" id="settings-panel-appearance" role="tabpanel" aria-labelledby="settings-tab-appearance" data-settings-content="appearance">
+          <div class="settings-grid-wide">
+            <div class="settings-panel">
+              <div class="settings-panel-header">
+                <div>
+                  <div class="settings-panel-title">外观阅读</div>
+                  <div class="settings-panel-desc">让长时间阅读保持安静、清楚、低阻力。</div>
+                </div>
+              </div>
+              <div class="settings-section">
+                <div class="settings-row">
+                  <div>
+                    <div class="settings-label">主题</div>
+                    <div class="settings-help">当前阶段以亮色为主</div>
+                  </div>
+                  <select class="settings-select"><option>跟随系统</option><option>亮色</option></select>
+                  <span class="tag tag-blue">Light</span>
+                </div>
+                <div class="settings-row">
+                  <div>
+                    <div class="settings-label">字号</div>
+                    <div class="settings-help">影响文章正文和阅读器</div>
+                  </div>
+                  <input class="settings-range" type="range" min="14" max="22" value="16" aria-label="字号" />
+                  <span class="tag tag-accent">16px</span>
+                </div>
+                <div class="settings-row">
+                  <div>
+                    <div class="settings-label">行高</div>
+                    <div class="settings-help">适合长文阅读</div>
+                  </div>
+                  <input class="settings-range" type="range" min="1.2" max="2" step="0.05" value="1.65" aria-label="行高" />
+                  <span class="tag tag-accent">1.65</span>
+                </div>
+              </div>
+              <div class="settings-section">
+                <div class="settings-label" style="margin-bottom:10px;">阅读器偏好</div>
+                <div class="settings-choice-grid">
+                  <div class="settings-choice">
+                    <div class="settings-label">紧凑</div>
+                    <div class="settings-help">列表密度更高，适合快速扫读。</div>
+                  </div>
+                  <div class="settings-choice active">
+                    <div class="settings-label">舒适</div>
+                    <div class="settings-help">默认间距，兼顾扫读和深读。</div>
+                  </div>
+                  <div class="settings-choice">
+                    <div class="settings-label">沉浸</div>
+                    <div class="settings-help">更宽松的阅读排版。</div>
+                  </div>
+                </div>
+              </div>
+              <div class="settings-section">
+                <div class="settings-row">
+                  <div>
+                    <div class="settings-label">卡片密度</div>
+                    <div class="settings-help">影响 Today / Topics 的信息密度</div>
+                  </div>
+                  <select class="settings-select"><option>舒适</option><option>紧凑</option></select>
+                  <button class="btn btn-ghost">预览</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="settings-panel">
+              <div class="settings-panel-header">
+                <div>
+                  <div class="settings-panel-title">阅读预览</div>
+                  <div class="settings-panel-desc">即时感知字体、行高和密度</div>
+                </div>
+              </div>
+              <div class="settings-section">
+                <div class="settings-preview">
+                  <div class="settings-preview-article">
+                    <div style="font-size:18px; font-weight:700; line-height:1.35; margin-bottom:8px;">OpenAI 开源 Agent 框架，生态竞争进入新阶段</div>
+                    <div style="font-size:12px; color:var(--text-tertiary); margin-bottom:18px;">TechCrunch · 6 min read · AI Agent</div>
+                    <p style="font-size:16px; line-height:1.65; color:var(--text-secondary); margin-bottom:12px;">这类变化的重点不只是新工具发布，而是官方框架可能重新定义开发者如何组织工具调用、记忆和多 Agent 协作。</p>
+                    <p style="font-size:16px; line-height:1.65; color:var(--text-secondary);">Lettura 会把相似报道合并成一个判断，并保留来源证据，方便你决定是否深读。</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-tab-content" id="settings-panel-behavior" role="tabpanel" aria-labelledby="settings-tab-behavior" data-settings-content="behavior">
+          <div class="settings-grid-wide">
+            <div class="settings-panel">
+              <div class="settings-panel-header">
+                <div>
+                  <div class="settings-panel-title">应用行为</div>
+                  <div class="settings-panel-desc">控制 Lettura 在后台、通知和本地数据上的行为。</div>
+                </div>
+              </div>
+              <div class="settings-section">
+                <div class="settings-row">
+                  <div>
+                    <div class="settings-label">开机启动</div>
+                    <div class="settings-help">随系统启动，但不自动弹出窗口</div>
+                  </div>
+                  <span style="font-size:12px; color:var(--text-tertiary);">当前关闭</span>
+                  <button class="settings-toggle" type="button" role="switch" aria-checked="false" aria-label="开启开机启动"></button>
+                </div>
+                <div class="settings-row">
+                  <div>
+                    <div class="settings-label">后台同步</div>
+                    <div class="settings-help">关闭窗口后继续通过托盘同步</div>
+                  </div>
+                  <span style="font-size:12px; color:var(--text-tertiary);">每 30 分钟</span>
+                  <button class="settings-toggle on" type="button" role="switch" aria-checked="true" aria-label="开启后台同步"></button>
+                </div>
+                <div class="settings-row">
+                  <div>
+                    <div class="settings-label">通知</div>
+                    <div class="settings-help">仅在高信号变化出现时提醒</div>
+                  </div>
+                  <select class="settings-select"><option>关闭</option><option>高信号时通知</option></select>
+                  <button class="settings-toggle" type="button" role="switch" aria-checked="false" aria-label="开启通知"></button>
+                </div>
+              </div>
+              <div class="settings-section">
+                <div class="settings-row">
+                  <div>
+                    <div class="settings-label">缓存保留</div>
+                    <div class="settings-help">图片、解析结果和临时内容</div>
+                  </div>
+                  <select class="settings-select"><option>30 天</option><option>7 天</option><option>90 天</option></select>
+                  <button class="btn btn-ghost">清理</button>
+                </div>
+                <div class="settings-row">
+                  <div>
+                    <div class="settings-label">数据保留</div>
+                    <div class="settings-help">已读文章和分析元数据</div>
+                  </div>
+                  <select class="settings-select"><option>90 天</option><option>永久保留</option></select>
+                  <button class="btn btn-ghost">导出</button>
+                </div>
+              </div>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:14px;">
+              <div class="settings-panel">
+                <div class="settings-panel-header">
+                  <div>
+                    <div class="settings-panel-title">本地存储</div>
+                    <div class="settings-panel-desc">让用户知道数据在哪里</div>
+                  </div>
+                </div>
+                <div class="settings-section">
+                  <div class="settings-pack-row">
+                    <div><div class="settings-label">SQLite 数据库</div><div class="settings-help">~/.lettura/lettura.db</div></div>
+                    <span class="tag tag-green">正常</span>
+                  </div>
+                  <div class="settings-pack-row">
+                    <div><div class="settings-label">用户配置</div><div class="settings-help">~/.lettura/lettura.toml</div></div>
+                    <span class="tag tag-green">正常</span>
+                  </div>
+                  <div class="settings-pack-row">
+                    <div><div class="settings-label">Podcast 缓存</div><div class="settings-help">IndexedDB / Browser storage</div></div>
+                    <span class="tag tag-blue">独立</span>
+                  </div>
+                </div>
+              </div>
+              <div class="settings-panel">
+                <div class="settings-section">
+                  <div class="settings-label">退出行为</div>
+                  <div class="settings-help" style="margin-top:8px;">关闭主窗口会隐藏到系统托盘；真正退出通过托盘菜单完成，避免后台同步被意外中断。</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ==================== PAGE: ARTICLE ==================== -->
 <div id="page-article" class="app-shell" style="display:none;">
   <div class="rail">
@@ -1881,37 +3193,420 @@
   </div>
 </div>
 
+<div class="mock-toast" id="mock-toast" role="status" aria-live="polite"></div>
+<div class="mock-modal-backdrop" id="mock-modal" aria-hidden="true">
+  <div class="mock-modal" role="dialog" aria-modal="true" aria-labelledby="mock-modal-title" aria-describedby="mock-modal-body" tabindex="-1">
+    <div class="mock-modal-header">
+      <span id="mock-modal-title">操作确认</span>
+      <button class="btn btn-ghost" data-modal-close style="padding:4px 8px;">关闭</button>
+    </div>
+    <div class="mock-modal-body" id="mock-modal-body"></div>
+    <div class="mock-modal-actions">
+      <button class="btn btn-ghost" data-modal-close>取消</button>
+      <button class="btn btn-primary" data-modal-close>确认</button>
+    </div>
+  </div>
+</div>
+
 <script>
+const pageAliases = {
+  Today: 'today',
+  Topics: 'topics',
+  Feeds: 'feeds',
+  Search: 'search',
+  Starred: 'starred',
+  Settings: 'settings'
+};
+
+let toastTimer;
+let searchTimer;
+let lastFocusedElement;
+
+function toast(message) {
+  const el = document.getElementById('mock-toast');
+  if (!el) return;
+  el.textContent = message;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 1600);
+}
+
+function openMockModal(title, body) {
+  lastFocusedElement = document.activeElement;
+  document.getElementById('mock-modal-title').textContent = title;
+  document.getElementById('mock-modal-body').textContent = body;
+  const modal = document.getElementById('mock-modal');
+  modal.classList.add('show');
+  modal.setAttribute('aria-hidden', 'false');
+  modal.querySelector('.mock-modal')?.focus();
+}
+
+function closeMockModal() {
+  document.getElementById('mock-modal').classList.remove('show');
+  document.getElementById('mock-modal').setAttribute('aria-hidden', 'true');
+  lastFocusedElement?.focus?.();
+}
+
+function visiblePage() {
+  return [...document.querySelectorAll('.app-shell')]
+    .find(page => page.style.display !== 'none');
+}
+
 function showPage(name, trigger) {
   document.querySelectorAll('.app-shell').forEach(el => el.style.display = 'none');
   const page = document.getElementById('page-' + name);
   if (!page) return;
   page.style.display = 'flex';
+
   document.querySelectorAll('.page-switcher button').forEach(btn => btn.classList.remove('active'));
-  const activeButton = trigger || (typeof event !== 'undefined' ? event.target : null);
-  if (activeButton?.classList?.contains('page-switcher')) return;
-  if (activeButton?.closest('.page-switcher')) {
-    activeButton.closest('button').classList.add('active');
-    return;
-  }
   const switcherButton = [...document.querySelectorAll('.page-switcher button')]
     .find(btn => btn.getAttribute('onclick')?.includes(`'${name}'`));
   switcherButton?.classList.add('active');
+
+  const activeLabel = name === 'today-reading' ? 'Today'
+    : name === 'article' ? 'Feeds'
+    : Object.entries(pageAliases).find(([, pageName]) => pageName === name)?.[0];
+
+  page.querySelectorAll('.rail-item').forEach(item => {
+    const label = item.querySelector('.tooltip')?.textContent?.trim();
+    item.classList.toggle('active', label === activeLabel);
+  });
+
+  page.querySelector('.main-scroll')?.scrollTo({ top: 0, behavior: 'instant' });
 }
 
-document.querySelectorAll('.rail-item').forEach(item => {
-  item.addEventListener('click', () => {
-    const label = item.querySelector('.tooltip')?.textContent?.trim();
-    const pageMap = {
-      Today: 'today',
-      Topics: 'topics',
-      Feeds: 'feeds',
-      Search: 'search',
-      Starred: 'starred'
-    };
-    if (pageMap[label]) showPage(pageMap[label]);
+function setActiveWithinGroup(target, selector) {
+  const group = target.parentElement;
+  if (!group) return;
+  group.querySelectorAll(selector).forEach(item => item.classList.remove('active', 'is-selected'));
+  target.classList.add(target.classList.contains('settings-choice') || target.classList.contains('filter-chip') ? 'active' : 'is-selected');
+}
+
+function enhanceWhyItMatters() {
+  document.querySelectorAll('.wim-toggle').forEach(button => {
+    button.removeAttribute('onclick');
+    button.addEventListener('click', () => {
+      const content = button.nextElementSibling;
+      const expanded = content?.style.maxHeight === '200px';
+      if (!content) return;
+      content.style.maxHeight = expanded ? '0px' : '200px';
+      content.style.opacity = expanded ? '0' : '1';
+      button.classList.toggle('active', !expanded);
+      toast(expanded ? '已收起解释' : '已展开 Why It Matters');
+    });
   });
+}
+
+function updateReadingSource(sourceItem) {
+  const sourceList = sourceItem.closest('.source-list');
+  sourceList?.querySelectorAll('.source-item').forEach(item => {
+    item.classList.remove('is-selected');
+    item.querySelector('[data-reading-label]')?.remove();
+  });
+  sourceItem.classList.add('is-selected');
+  const marker = document.createElement('span');
+  marker.dataset.readingLabel = 'true';
+  marker.textContent = '正在阅读 ↓';
+  marker.style.cssText = 'font-size:10px; color:var(--accent); margin-left:auto; white-space:nowrap;';
+  sourceItem.appendChild(marker);
+  const title = sourceItem.querySelector('.source-title')?.textContent?.trim();
+  toast(`切换到来源：${title}`);
+}
+
+document.addEventListener('click', event => {
+  const target = event.target;
+  const railItem = target.closest?.('.rail-item');
+  if (railItem) {
+    const label = railItem.querySelector('.tooltip')?.textContent?.trim();
+    if (pageAliases[label]) showPage(pageAliases[label]);
+    return;
+  }
+
+  if (target.closest?.('[data-modal-close]')) {
+    closeMockModal();
+    return;
+  }
+
+  if (target.id === 'mock-modal') {
+    closeMockModal();
+    return;
+  }
+
+  const settingsTab = target.closest?.('[data-settings-tab]');
+  if (settingsTab) {
+    const targetName = settingsTab.getAttribute('data-settings-tab');
+    document.querySelectorAll('[data-settings-tab]').forEach(item => {
+      item.classList.toggle('active', item === settingsTab);
+      item.setAttribute('aria-selected', item === settingsTab ? 'true' : 'false');
+    });
+    document.querySelectorAll('[data-settings-content]').forEach(panel => {
+      panel.classList.toggle(
+        'active',
+        panel.getAttribute('data-settings-content') === targetName
+      );
+    });
+    toast(`已切换到 ${settingsTab.querySelector('.settings-tab-title')?.textContent?.trim()}`);
+    return;
+  }
+
+  const settingsChoice = target.closest?.('.settings-choice');
+  if (settingsChoice) {
+    setActiveWithinGroup(settingsChoice, '.settings-choice');
+    toast(`已选择：${settingsChoice.querySelector('.settings-label')?.textContent?.trim()}`);
+    return;
+  }
+
+  const settingsToggle = target.closest?.('.settings-toggle');
+  if (settingsToggle) {
+    settingsToggle.classList.toggle('on');
+    settingsToggle.setAttribute('aria-checked', settingsToggle.classList.contains('on') ? 'true' : 'false');
+    toast(settingsToggle.classList.contains('on') ? '已开启' : '已关闭');
+    return;
+  }
+
+  const settingsSlider = target.closest?.('.settings-slider');
+  if (settingsSlider) {
+    const rect = settingsSlider.getBoundingClientRect();
+    const percent = Math.max(8, Math.min(100, Math.round(((event.clientX - rect.left) / rect.width) * 100)));
+    const fill = settingsSlider.querySelector('.fill');
+    if (fill) fill.style.width = `${percent}%`;
+    toast(`滑杆已调整到 ${percent}%`);
+    return;
+  }
+
+  const topicAction = target.closest?.('[data-topic-action]');
+  if (topicAction) {
+    const actionName = topicAction.textContent.trim().replace(/\s+/g, ' ');
+    toast(`Topic 操作：${actionName}`);
+    return;
+  }
+
+  if (target.closest?.('[data-topic-drawer-close]')) {
+    document.querySelector('#page-topics .topics-workspace')?.classList.add('drawer-collapsed');
+    document.querySelectorAll('#page-topics .topic-card').forEach(item => item.classList.remove('is-selected'));
+    toast('已收起 Topic 详情');
+    return;
+  }
+
+  const topicCard = target.closest?.('.topic-card');
+  if (topicCard) {
+    const topicName = topicCard.querySelector('.topic-name')?.textContent?.trim() || '详情';
+    const topicDefinition = topicCard.querySelector('.topic-definition')?.textContent?.trim();
+    document.querySelectorAll('#page-topics .topic-card').forEach(item => item.classList.remove('is-selected'));
+    topicCard.classList.add('is-selected');
+    document.querySelector('#page-topics .topics-workspace')?.classList.remove('drawer-collapsed');
+    const drawerTitle = document.querySelector('[data-topic-drawer-title]');
+    const drawerDefinition = document.querySelector('[data-topic-drawer-definition]');
+    if (drawerTitle) drawerTitle.textContent = topicName;
+    if (drawerDefinition && topicDefinition) drawerDefinition.textContent = `${topicDefinition} 右侧抽屉保留列表上下文，交互与 Today 的 Signal 详情保持接近。`;
+    toast(`展开 Topic 详情：${topicName}`);
+    return;
+  }
+
+  const sourceItem = target.closest?.('.source-item');
+  if (sourceItem) {
+    updateReadingSource(sourceItem);
+    return;
+  }
+
+  const evidenceCard = target.closest?.('.evidence-card');
+  if (evidenceCard) {
+    evidenceCard.closest('.evidence-list')?.querySelectorAll('.evidence-card')
+      .forEach(item => item.classList.remove('active'));
+    evidenceCard.classList.add('active');
+    if (evidenceCard.closest('#page-today')) {
+      showPage('today-reading');
+      toast('从证据进入 Today 阅读');
+    } else {
+      toast(`切换来源：${evidenceCard.querySelector('.evidence-feed')?.textContent?.trim()}`);
+    }
+    return;
+  }
+
+  const articleItem = target.closest?.('.article-item');
+  if (articleItem) {
+    const articleScope = articleItem.closest('.main-scroll')
+      || articleItem.closest('.sidebar')
+      || articleItem.parentElement;
+    articleScope?.querySelectorAll('.article-item')
+      .forEach(item => item.classList.remove('is-selected'));
+    articleItem.classList.add('is-selected');
+    if (articleItem.closest('#page-feeds, #page-topics, #page-starred')) {
+      showPage('article');
+    } else {
+      toast(`选中文章：${articleItem.querySelector('div[style*="font-size:13px"], div[style*="font-size:12px"]')?.textContent?.trim() || '文章'}`);
+    }
+    return;
+  }
+
+  const sidebarItem = target.closest?.('.sidebar-item');
+  if (sidebarItem) {
+    const sidebar = sidebarItem.closest('.sidebar-content');
+    sidebar?.querySelectorAll('.sidebar-item').forEach(item => item.classList.remove('active'));
+    sidebarItem.classList.add('active');
+    toast(`已选择：${sidebarItem.textContent.trim().replace(/\s+/g, ' ')}`);
+    return;
+  }
+
+  const filterChip = target.closest?.('.filter-chip');
+  if (filterChip) {
+    filterChip.classList.toggle('active');
+    toast(filterChip.classList.contains('active') ? `已启用筛选：${filterChip.textContent.trim()}` : `已取消筛选：${filterChip.textContent.trim()}`);
+    return;
+  }
+
+  const ghostButton = target.closest?.('.btn-ghost');
+  if (ghostButton && ghostButton.parentElement?.querySelectorAll('.btn-ghost').length > 1) {
+    ghostButton.parentElement.querySelectorAll('.btn-ghost').forEach(item => item.classList.remove('active'));
+    ghostButton.classList.add('active');
+  }
+
+  const button = target.closest?.('button');
+  if (button) {
+    const text = button.textContent.trim().replace(/\s+/g, ' ');
+    if (!text) return;
+    if (text.includes('阅读') && button.closest('#page-today')) {
+      showPage('today-reading');
+      toast('从证据进入 Today 阅读');
+    } else if ((text.includes('下一篇') || text.includes('上一篇')) && button.closest('#page-today-reading')) {
+      toast('已在当前 Signal 的来源间切换');
+    } else if (text.includes('切换') && button.closest('#page-today-reading')) {
+      toast('已切换阅读来源');
+    } else if (text.includes('打开文章') || text.includes('下一篇')) {
+      showPage('article');
+      toast('已打开阅读视图');
+    } else if (text.includes('返回 Topics')) {
+      showPage('topics');
+    } else if (text.includes('返回信号')) {
+      showPage('today');
+    } else if (text === '搜索') {
+      const input = button.closest('.main-content')?.querySelector('.search-input');
+      if (input) simulateSearch(input);
+      toast('已触发搜索');
+    } else if (text.includes('验证连接')) {
+      validateSettingsForm();
+    } else if (text.includes('保存 AI 配置')) {
+      const saveState = document.querySelector('[data-settings-save-state]');
+      if (saveState) {
+        saveState.textContent = '保存中...';
+        setTimeout(() => saveState.textContent = '已保存 · 刚刚', 450);
+      }
+      toast('AI 配置已保存');
+    } else if (text.includes('清理')) {
+      openMockModal('清理缓存', '将清理图片、解析结果和临时内容。这里是 mockup，不会删除真实数据。');
+    } else if (text.includes('导出')) {
+      toast('已模拟导出');
+    } else if (text.includes('同步')) {
+      toast('已触发模拟同步');
+    } else if (!button.closest('.page-switcher')) {
+      toast(`操作：${text}`);
+    }
+  }
 });
+
+function setSearchState(state, query) {
+  const status = document.querySelector('[data-search-status]');
+  const states = document.querySelectorAll('[data-search-state]');
+  states.forEach(item => item.classList.toggle('show', item.getAttribute('data-search-state') === state));
+  if (!status) return;
+  if (state === 'loading') {
+    status.textContent = `正在搜索 "${query}" · debounce 300ms`;
+  } else if (state === 'empty') {
+    status.textContent = `0 个结果 · ${query || '空查询'}`;
+  } else if (state === 'error') {
+    status.textContent = '搜索失败 · 可重试';
+  } else {
+    status.textContent = `18 个结果 · Signals / Topics / Articles 已按 "${query}" 重排`;
+  }
+}
+
+function simulateSearch(input) {
+  const query = input.value.trim();
+  const title = document.querySelector('#page-search .page-subtitle');
+  if (title) title.textContent = query
+    ? `正在搜索 "${query}"，优先展示 Signals、Topics 和 Articles`
+    : '输入关键词后展示最近搜索和推荐搜索';
+  clearTimeout(searchTimer);
+  if (!query) {
+    setSearchState('empty', query);
+    return;
+  }
+  setSearchState('loading', query);
+  searchTimer = setTimeout(() => {
+    if (query.toLowerCase().includes('error')) {
+      setSearchState('error', query);
+    } else if (query.toLowerCase().includes('empty') || query.includes('无结果')) {
+      setSearchState('empty', query);
+    } else {
+      setSearchState('results', query);
+    }
+  }, 300);
+}
+
+document.addEventListener('input', event => {
+  const input = event.target.closest?.('.search-input');
+  if (input) {
+    simulateSearch(input);
+    return;
+  }
+  if (event.target.matches?.('.settings-input, .settings-select, .settings-range')) {
+    const saveState = document.querySelector('[data-settings-save-state]');
+    if (saveState) saveState.textContent = '有未保存更改';
+  }
+});
+
+function validateSettingsForm() {
+  const apiKey = document.getElementById('settings-ai-key');
+  const baseUrl = document.getElementById('settings-base-url');
+  const keyInvalid = apiKey && !apiKey.value.includes('•') && apiKey.value.trim().length < 20;
+  const urlInvalid = baseUrl && !/^https?:\/\//.test(baseUrl.value.trim());
+  apiKey?.setAttribute('aria-invalid', keyInvalid ? 'true' : 'false');
+  baseUrl?.setAttribute('aria-invalid', urlInvalid ? 'true' : 'false');
+  document.getElementById('settings-ai-key-error')?.classList.toggle('show', Boolean(keyInvalid));
+  document.getElementById('settings-base-url-error')?.classList.toggle('show', Boolean(urlInvalid));
+  const saveState = document.querySelector('[data-settings-save-state]');
+  if (keyInvalid || urlInvalid) {
+    if (saveState) saveState.textContent = '校验失败，未保存';
+    toast('连接验证失败：请检查字段');
+  } else {
+    if (saveState) saveState.textContent = '验证成功 · 可保存';
+    toast('连接验证成功');
+  }
+}
+
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape') closeMockModal();
+  if (event.key === 'Tab' && document.getElementById('mock-modal')?.classList.contains('show')) {
+    const modal = document.getElementById('mock-modal');
+    const focusables = [...modal.querySelectorAll('button, [tabindex]:not([tabindex="-1"])')];
+    if (!focusables.length) return;
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+  if (event.key === 'Enter' && event.target.closest?.('.search-input')) {
+    event.preventDefault();
+    showPage('article');
+    toast('Enter 打开第一条搜索结果');
+  }
+  if (event.key === '/') {
+    const page = visiblePage();
+    const searchInput = page?.querySelector('.search-input');
+    if (searchInput) {
+      event.preventDefault();
+      searchInput.focus();
+      toast('已聚焦搜索框');
+    }
+  }
+});
+
+enhanceWhyItMatters();
 </script>
 
 </body>
