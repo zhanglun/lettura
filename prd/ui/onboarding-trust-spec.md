@@ -154,6 +154,7 @@ Today Summary → Signal → Why → 来源 → 原文
 - 技术实现（触发条件、TOML 标记、Pack 安装流程）沿用现有文档
 - 文案和交互顺序按本规范重写
 - 两者有冲突时，以本规范为准（后定义优先）
+- 具体状态、接口、失败处理和验收清单见 `prd/ui/onboarding-interaction-spec.md`
 
 **已知具体冲突点：**
 

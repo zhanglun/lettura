@@ -8,6 +8,22 @@
 
 ### 1.1 三段式收敛布局
 
+这是全局默认布局，但不是所有页面都强制使用中间 Sidebar。以当前 mockup 为准：
+
+| 页面 | 布局 |
+|------|------|
+| Today | Rail + Sidebar + Main + Right Panel |
+| Today + Reading | Rail + Sidebar + Signal List + Reader |
+| Topics | Rail + Main |
+| Topic Detail | Rail + Main |
+| Feeds | Rail + Sidebar + Main |
+| Search | Rail + Sidebar + Main + Right Panel |
+| Starred | Rail + Sidebar + Main + Right Panel |
+| Settings | Rail + Main |
+| Article (Feeds) | Rail + Article List + Reader |
+
+因此，Sidebar 是页面上下文容器，不是每个页面都必须出现的固定栏。
+
 ```
 ┌──────┬───────────────┬────────────────────────────────────┐
 │      │               │                                    │
@@ -71,6 +87,8 @@
 
 ## 3. 中间 Sidebar 规范
 
+Sidebar 仅用于需要持续上下文的页面。当前 mockup 中，Topics、Topic Detail、Settings 不使用 Sidebar。
+
 ### 3.1 顶部品牌区
 
 - Lettura Logo（小尺寸）
@@ -105,6 +123,18 @@ Tracked
 - Sidebar 可以收起/展开
 - 收起后只保留 Rail
 - 状态记忆（用户偏好）
+
+### 3.5 页面适用性
+
+| 页面 | Sidebar |
+|------|---------|
+| Today | Today Focus + Tracked Topics |
+| Feeds | Feed / Folder tree |
+| Search | 最近搜索、筛选、相关 Topic |
+| Starred | 收藏夹、标签、阅读队列 |
+| Topics | 不使用 |
+| Topic Detail | 不使用 |
+| Settings | 不使用 |
 
 ---
 
@@ -165,7 +195,7 @@ Lettura 是桌面应用，最低宽度支持 1024px。
 | 现有 | 新版 |
 |------|------|
 | 顶部 tab 导航 | 左侧 Rail 导航 |
-| 无中间 sidebar | 新增 Sidebar（品牌 + Today Focus + Tracked） |
+| 无中间 sidebar | 按页面需要使用 Sidebar |
 | Feeds 为默认入口 | Today 为默认入口 |
 | 文章列表为主内容 | 各页面独立布局 |
 
@@ -176,4 +206,4 @@ Lettura 是桌面应用，最低宽度支持 1024px。
 | 版本 | 范围 | 说明 |
 |------|------|------|
 | v2.2 | 导航优先级调整 | Today 提升为侧栏第一项（见 `prd/versions/v2.2-today-entry-refactor.md`） |
-| v2.10 | 三段式布局重构 | Rail + Sidebar + Main 完整三段式布局（见 `prd/versions/v2.10-layout-migration.md`） |
+| v2.10 | 布局重构 | Rail + 按页面需要的 Sidebar/Main 组合（见 `prd/versions/v2.10-layout-migration.md`） |
