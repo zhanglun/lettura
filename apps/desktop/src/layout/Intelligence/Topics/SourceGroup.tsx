@@ -22,7 +22,7 @@ export function SourceGroup({ group }: SourceGroupProps) {
   const hiddenCount = group.articles.length - COLLAPSE_THRESHOLD;
 
   return (
-    <div className="rounded-lg border border-[var(--gray-4)] overflow-hidden">
+    <div className="rounded-lg border border-[var(--gray-4)] shadow-level-1 overflow-hidden">
       <div className="flex items-center gap-2 px-4 py-2 bg-[var(--gray-2)] border-b border-[var(--gray-4)]">
         <Rss size={14} className="text-[var(--accent-9)]" />
         <Text size="2" weight="medium" className="text-[var(--gray-12)]">

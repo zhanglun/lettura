@@ -19,7 +19,7 @@ export function TopicCard({ topic, onClick, onMute, onUnmute, selected }: TopicC
   return (
     <div
       className={cn(
-        "group rounded-lg border bg-[var(--color-panel-solid)] px-4 py-3 transition-colors hover:border-[var(--gray-7)] hover:bg-[var(--gray-a2)] cursor-pointer",
+        "group rounded-lg border bg-[var(--color-panel-solid)] px-4 py-3 shadow-level-1 transition-colors hover:border-[var(--gray-7)] hover:bg-[var(--gray-a2)] cursor-pointer",
         selected
           ? "border-[var(--accent-8)] bg-[var(--accent-a2)]"
           : "border-[var(--gray-5)]",

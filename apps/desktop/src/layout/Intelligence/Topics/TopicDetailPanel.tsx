@@ -140,7 +140,7 @@ export function TopicDetailPanel({
 
         {(topic.topic_summary ||
           (topic.description && topic.topic_summary !== undefined)) && (
-          <div className="rounded-lg border border-[var(--gray-4)] p-3 mb-4 bg-[var(--gray-2)]">
+          <div className="rounded-lg border border-[var(--gray-4)] shadow-level-1 p-3 mb-4 bg-[var(--gray-2)]">
             <div className="flex items-center gap-1.5 mb-1.5">
               <Sparkles size={12} className="text-[var(--accent-9)]" />
               <span className="text-[11px] font-semibold text-[var(--gray-12)]">
@@ -155,7 +155,7 @@ export function TopicDetailPanel({
 
 
         {topic.recent_changes && topic.recent_changes.length > 0 && (
-          <div className="rounded-lg border border-[var(--gray-4)] p-3 mb-4 bg-[var(--color-background)]">
+          <div className="rounded-lg border border-[var(--gray-4)] shadow-level-1 p-3 mb-4 bg-[var(--color-background)]">
             <div className="flex items-center gap-1.5 mb-2.5">
               <Activity size={12} className="text-[var(--accent-9)]" />
               <span className="text-[11px] font-semibold text-[var(--gray-12)]">
@@ -275,7 +275,7 @@ export function TopicDetailPanel({
 
 
         {topic.articles.length > 0 && (
-          <div className="rounded-lg border border-[var(--gray-4)] p-3 mt-4 bg-[var(--color-background)]">
+          <div className="rounded-lg border border-[var(--gray-4)] shadow-level-1 p-3 mt-4 bg-[var(--color-background)]">
             <div className="flex items-center gap-1.5 mb-2.5">
               <BookmarkPlus size={12} className="text-[var(--accent-9)]" />
               <span className="text-[11px] font-semibold text-[var(--gray-12)]">

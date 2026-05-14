@@ -131,6 +131,12 @@ module.exports = {
         "accordion-up": "accordion-up 0.2s ease-out",
         "spin-slow": "spin 2s linear infinite",
       },
+      boxShadow: {
+        "level-0": "var(--shadow-0)",
+        "level-1": "var(--shadow-1)",
+        "level-2": "var(--shadow-2)",
+        "level-2-left": "var(--shadow-2-left)",
+      },
     },
   },
   plugins: [require("@tailwindcss/line-clamp"), require("@tailwindcss/typography"), require("tailwindcss-animate")],

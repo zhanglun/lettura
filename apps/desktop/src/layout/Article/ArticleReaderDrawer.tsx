@@ -22,7 +22,7 @@ export function ArticleReaderDrawer(props: ArticleReaderDrawerProps) {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: 48 }}
           transition={{ duration: 0.18, ease: "easeOut" }}
-          className="h-full min-w-0 shrink-0 overflow-hidden border-l border-[var(--gray-4)] bg-[var(--color-panel-solid)] shadow-[-8px_0_24px_rgba(0,0,0,0.06)]"
+          className="h-full min-w-0 shrink-0 overflow-hidden border-l border-[var(--gray-4)] bg-[var(--color-panel-solid)] shadow-level-2-left"
           style={{ width: "min(960px, 70vw)" }}
         >
           <View
