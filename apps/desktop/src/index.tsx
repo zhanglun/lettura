@@ -18,6 +18,7 @@ import { StarredPage } from "./layout/Starred";
 import { FreshRSSPage } from "./layout/FreshRSS";
 import { TopicWorkspace } from "./layout/Intelligence/Topics/TopicWorkspace";
 import { SettingPage } from "./layout/Setting";
+import { FeedsPage } from "./layout/Feeds";
 
 import "./index.css";
 import "./i18n";
@@ -54,8 +55,12 @@ const router = createBrowserRouter([
         element: <StarredPage />,
       },
       {
+        path: RouteConfig.LOCAL_FEEDS,
+        element: <FeedsPage />,
+      },
+      {
         path: RouteConfig.LOCAL_FEED,
-        element: <ArticleContainer />,
+        element: <FeedsPage />,
       },
       {
         path: RouteConfig.LOCAL_ARTICLE,

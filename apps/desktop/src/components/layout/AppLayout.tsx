@@ -24,11 +24,11 @@ function getSidebarContext(pathname: string): SidebarContext {
   if (/^\/local\/feeds\/[^/]+\/articles\/[^/]+/.test(pathname)) {
     return "feeds";
   }
-  if (
-    pathname.startsWith("/local/all") ||
-    pathname.startsWith("/local/feeds")
-  )
+  if (/^\/local\/feeds\/[^/]+/.test(pathname)) {
     return "feeds";
+  }
+  if (pathname === "/local/feeds") return "feeds-manage";
+  if (pathname.startsWith("/local/all")) return "feeds";
   return "default";
 }
 
@@ -54,7 +54,7 @@ export const AppLayout = React.memo(function () {
   }, []);
 
   const effectiveSidebarCollapsed =
-    sidebarContext === "today" || sidebarContext === "feeds"
+    sidebarContext === "today" || sidebarContext === "feeds" || sidebarContext === "feeds-manage"
       ? false
       : sidebarCollapsed;
   const showSidebar = !effectiveSidebarCollapsed && sidebarContext !== "hidden";

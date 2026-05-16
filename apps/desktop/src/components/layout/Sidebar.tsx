@@ -7,10 +7,11 @@ import { useBearStore } from "@/stores";
 import { SidebarToday } from "./SidebarToday";
 import { SidebarTopics } from "./SidebarTopics";
 import { SidebarFeeds } from "./SidebarFeeds";
+import { FeedsSidebar } from "@/layout/Feeds/FeedsSidebar";
 import { FeedResItem } from "@/db";
 import { RouteConfig } from "@/config";
 
-export type SidebarContext = "today" | "topics" | "feeds" | "default" | "hidden";
+export type SidebarContext = "today" | "topics" | "feeds" | "feeds-manage" | "default" | "hidden";
 
 interface SidebarProps {
   collapsed: boolean;
@@ -86,6 +87,8 @@ export const Sidebar = React.memo(function ({
         return <SidebarTopics />;
       case "feeds":
         return <SidebarFeeds />;
+      case "feeds-manage":
+        return <FeedsSidebar />;
       default:
         return <SidebarToday />;
     }
@@ -103,6 +106,10 @@ export const Sidebar = React.memo(function ({
     feeds: {
       title: t(`layout.sidebar.context_${context}`),
       desc: t("layout.sidebar.feeds_desc"),
+    },
+    "feeds-manage": {
+      title: t("feeds.manage_title"),
+      desc: "",
     },
     default: {
       title: t(`layout.sidebar.context_${context}`),
@@ -177,7 +184,7 @@ export const Sidebar = React.memo(function ({
         </div>
       )}
 
-      {context === "feeds" && (
+      {(context === "feeds" || context === "feeds-manage") && (
         <div className="border-t border-[var(--gray-5)] bg-[var(--gray-2)] px-4 py-3 text-[10px] leading-4 text-[var(--gray-9)]">
           {t("layout.sidebar.feed_footer_text", {
             count: feedStats.count,

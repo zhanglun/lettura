@@ -53,6 +53,18 @@ export interface FeedSlice {
   globalSyncStatus: boolean;
   setGlobalSyncStatus: (status: boolean) => void;
   syncAllArticles: () => Promise<void>;
+
+  feedsView: "manage" | "articles";
+  setFeedsView: (view: "manage" | "articles") => void;
+  feedsSearchQuery: string;
+  setFeedsSearchQuery: (query: string) => void;
+  folderFilter: string | null;
+  setFolderFilter: (uuid: string | null) => void;
+  contextMenuPosition: { x: number; y: number } | null;
+  setContextMenuPosition: (pos: { x: number; y: number } | null) => void;
+
+  addFeedModalOpen: boolean;
+  setAddFeedModalOpen: (open: boolean) => void;
 }
 
 export const createFeedSlice: StateCreator<FeedSlice> = (
@@ -357,5 +369,30 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
       setGlobalSyncStatus(false);
       getSubscribes();
     }
+  },
+
+  feedsView: "manage",
+  setFeedsView: (view) => {
+    set(() => ({ feedsView: view }));
+  },
+
+  feedsSearchQuery: "",
+  setFeedsSearchQuery: (query) => {
+    set(() => ({ feedsSearchQuery: query }));
+  },
+
+  folderFilter: null,
+  setFolderFilter: (uuid) => {
+    set(() => ({ folderFilter: uuid }));
+  },
+
+  contextMenuPosition: null,
+  setContextMenuPosition: (pos) => {
+    set(() => ({ contextMenuPosition: pos }));
+  },
+
+  addFeedModalOpen: false,
+  setAddFeedModalOpen: (open) => {
+    set(() => ({ addFeedModalOpen: open }));
   },
 });

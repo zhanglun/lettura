@@ -148,7 +148,29 @@
   "We have {{num}} new pieces of data from {{title}}": "{{title}} 加载完成，增加了{{num}}条新的内容",
 
   "feeds": {
-    "select_article": "选择一篇文章开始阅读"
+    "select_article": "选择一篇文章开始阅读",
+    "manage_title": "管理你的信息源",
+    "folders": "文件夹",
+    "all_sources": "全部源",
+    "ungrouped": "未分组",
+    "health_overview": "健康概览",
+    "search_placeholder": "搜索订阅源...",
+    "add_feed": "添加订阅",
+    "add_folder": "新建文件夹",
+    "back": "返回",
+    "sources_count": "{{count}} 个源",
+    "sidebar": {
+      "folders": "文件夹"
+    },
+    "ctx": {
+      "view_articles": "查看文章",
+      "sync": "同步",
+      "mark_all_read": "全部标为已读",
+      "edit": "编辑",
+      "move_to_folder": "移至文件夹",
+      "disable": "停用",
+      "delete": "删除"
+    }
   },
 
   "onboarding": {

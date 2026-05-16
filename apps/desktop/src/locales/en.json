@@ -126,7 +126,29 @@
   "We have {{num}} new pieces of data from {{title}}": "We have {{num}} new pieces of data from {{title}}",
 
   "feeds": {
-    "select_article": "Select an article to read"
+    "select_article": "Select an article to read",
+    "manage_title": "Manage Your Sources",
+    "folders": "folders",
+    "all_sources": "All Sources",
+    "ungrouped": "Ungrouped",
+    "health_overview": "Health Overview",
+    "search_placeholder": "Search feeds...",
+    "add_feed": "Add Feed",
+    "add_folder": "New Folder",
+    "back": "Back",
+    "sources_count": "{{count}} sources",
+    "sidebar": {
+      "folders": "Folders"
+    },
+    "ctx": {
+      "view_articles": "View Articles",
+      "sync": "Sync",
+      "mark_all_read": "Mark All as Read",
+      "edit": "Edit",
+      "move_to_folder": "Move to Folder",
+      "disable": "Disable",
+      "delete": "Delete"
+    }
   },
 
   "onboarding": {

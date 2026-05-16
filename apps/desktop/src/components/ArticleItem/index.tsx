@@ -16,6 +16,7 @@ export const ArticleItem = React.forwardRef(
       article: ArticleResItem;
       density?: ArticleItemDensity;
       onRead?: (article: ArticleResItem) => void;
+      onExpand?: (article: ArticleResItem) => void;
     },
     ref: ForwardedRef<HTMLLIElement>,
   ) => {
@@ -24,26 +25,25 @@ export const ArticleItem = React.forwardRef(
         updateArticleStatus: state.updateArticleStatus,
         article: state.article,
         setArticle: state.setArticle,
+        expandedArticleUuid: state.expandedArticleUuid,
       })),
     );
-    const { article, density = "regular", onRead } = props;
+    const { article, density = "regular", onRead, onExpand } = props;
     const navigate = useNavigate();
     const [highlight, setHighlight] = useState<boolean>();
     const [readStatus, setReadStatus] = useState(article.read_status);
 
-    const updateCurrentArticle = (article: ArticleResItem) => {
-      const nextArticle = {
-        ...article,
-        read_status: ArticleReadStatus.READ,
-      };
-
+    const markAsRead = (article: ArticleResItem) => {
       if (article.read_status === ArticleReadStatus.UNREAD) {
         setReadStatus(ArticleReadStatus.READ);
-        onRead?.(nextArticle);
+        onRead?.({ ...article, read_status: ArticleReadStatus.READ });
       }
-
       store.updateArticleStatus({ ...article }, ArticleReadStatus.READ);
-      store.setArticle(nextArticle);
+    };
+
+    const updateCurrentArticle = (article: ArticleResItem) => {
+      markAsRead(article);
+      store.setArticle({ ...article, read_status: ArticleReadStatus.READ });
 
       if (article.feed_uuid && article.id) {
         navigate(
@@ -56,12 +56,17 @@ export const ArticleItem = React.forwardRef(
     };
 
     const handleClick = () => {
-      updateCurrentArticle(article);
+      if (onExpand) {
+        markAsRead(article);
+        onExpand(article);
+      } else {
+        updateCurrentArticle(article);
+      }
     };
     const handleKeyDown = (e: React.KeyboardEvent<HTMLLIElement>) => {
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
-        updateCurrentArticle(article);
+        handleClick();
       }
     };
 
@@ -81,8 +86,10 @@ export const ArticleItem = React.forwardRef(
     }, [article.read_status]);
 
     useEffect(() => {
-      setHighlight(store.article?.id === article.id);
-    }, [store.article?.id, article.id]);
+      const isArticleMatch = store.article?.id === article.id;
+      const isExpandedMatch = store.expandedArticleUuid === article.uuid;
+      setHighlight(isArticleMatch || isExpandedMatch);
+    }, [store.article?.id, store.expandedArticleUuid, article.id, article.uuid]);
 
     return (
       <li

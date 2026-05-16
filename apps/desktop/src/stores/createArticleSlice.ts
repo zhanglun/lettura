@@ -35,6 +35,9 @@ export interface ArticleSlice {
 
   rightPanelExpanded: boolean;
   setRightPanelExpanded: (expanded: boolean) => void;
+
+  expandedArticleUuid: string | null;
+  setExpandedArticleUuid: (uuid: string | null) => void;
 }
 
 export const createArticleSlice: StateCreator<
@@ -53,6 +56,11 @@ export const createArticleSlice: StateCreator<
   },
   setRightPanelExpanded: (expanded: boolean) => {
     set(() => ({ rightPanelExpanded: expanded }));
+  },
+
+  expandedArticleUuid: null,
+  setExpandedArticleUuid: (uuid: string | null) => {
+    set(() => ({ expandedArticleUuid: uuid }));
   },
 
   articleList: [],

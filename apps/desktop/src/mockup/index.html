@@ -927,6 +927,237 @@
       color: var(--text-secondary);
       line-height: 1.5;
     }
+
+    /* ===== Feeds Management ===== */
+    .feed-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 9px 14px; border-bottom: 1px solid var(--border);
+      cursor: pointer; transition: background 0.12s;
+    }
+    .feed-row:last-child { border-bottom: none; }
+    .feed-row:hover { background: var(--bg-hover); }
+    .health-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .health-dot.healthy { background: var(--green); }
+    .health-dot.warning { background: var(--amber); }
+    .health-dot.error { background: var(--red); }
+    .feed-row .favicon-wrap {
+      width: 22px; height: 22px; border-radius: 4px; flex-shrink: 0;
+      background: var(--bg-sidebar); overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .feed-row .favicon-wrap img { width: 22px; height: 22px; border-radius: 4px; }
+    .feed-info { flex: 1; min-width: 0; }
+    .feed-info .feed-name {
+      font-size: 13px; font-weight: 500; color: var(--text-primary);
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .feed-info .feed-url { font-size: 10px; color: var(--text-tertiary); margin-top: 1px; }
+    .feed-meta { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .feed-unread { font-size: 11px; color: var(--text-secondary); font-weight: 500; font-variant-numeric: tabular-nums; min-width: 36px; text-align: right; }
+    .feed-sync { font-size: 10px; color: var(--text-tertiary); min-width: 72px; text-align: right; }
+    .feed-row-actions { display: flex; gap: 2px; opacity: 0; transition: opacity 0.15s; }
+    .feed-row:hover .feed-row-actions { opacity: 1; }
+    .drag-handle { width: 16px; height: 16px; opacity: 0; transition: opacity 0.15s; cursor: grab; flex-shrink: 0; color: var(--text-tertiary); }
+    .feed-row:hover .drag-handle { opacity: 0.5; }
+    .drag-handle:active { cursor: grabbing; }
+    .intel-badge { font-size: 9px; padding: 1px 5px; border-radius: 3px; font-weight: 500; flex-shrink: 0; line-height: 1.4; }
+    .intel-badge.high { background: rgba(99,102,241,0.1); color: var(--accent); }
+    .intel-badge.medium { background: rgba(34,197,94,0.1); color: var(--green); }
+    .intel-badge.low { background: rgba(142,148,162,0.1); color: var(--text-tertiary); }
+    .row-act {
+      width: 26px; height: 26px; border-radius: 6px; display: flex;
+      align-items: center; justify-content: center; border: none;
+      background: transparent; color: var(--text-tertiary); cursor: pointer; transition: all 0.12s;
+    }
+    .row-act:hover { background: var(--bg-sidebar); color: var(--text-primary); }
+    .row-act.danger:hover { background: var(--red-bg); color: var(--red); }
+    .row-act svg { width: 13px; height: 13px; }
+
+    /* Folder Groups */
+    .folder-group { margin-bottom: 2px; }
+    .folder-header {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 14px; background: var(--bg-sidebar);
+      cursor: pointer; user-select: none; font-size: 12px; font-weight: 600;
+      color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.02em;
+      border-bottom: 1px solid var(--border);
+    }
+    .folder-header .chevron {
+      width: 14px; height: 14px; transition: transform 0.2s;
+    }
+    .folder-header.collapsed .chevron { transform: rotate(-90deg); }
+    .folder-body { overflow: hidden; transition: max-height 0.25s ease; }
+    .folder-body.collapsed { max-height: 0 !important; }
+    .folder-count { font-size: 10px; font-weight: 400; color: var(--text-tertiary); }
+
+    /* Context Menu */
+    .context-menu {
+      position: absolute; z-index: 100; background: var(--bg-card);
+      border: 1px solid var(--border); border-radius: var(--radius);
+      box-shadow: var(--shadow-md); padding: 4px; min-width: 180px;
+      display: none;
+    }
+    .context-menu.show { display: block; }
+    .ctx-item {
+      display: flex; align-items: center; gap: 8px;
+      padding: 7px 12px; border-radius: var(--radius-sm);
+      font-size: 12px; color: var(--text-secondary); cursor: pointer;
+      border: none; background: none; width: 100%; text-align: left;
+    }
+    .ctx-item:hover { background: var(--accent-light); color: var(--accent-text); }
+    .ctx-item.danger { color: var(--red); }
+    .ctx-item.danger:hover { background: var(--red-bg); }
+    .ctx-item svg { width: 14px; height: 14px; }
+    .ctx-divider { height: 1px; background: var(--border); margin: 4px 0; }
+
+    /* Dialog Overlay */
+    .dialog-overlay {
+      position: absolute; inset: 0; background: rgba(0,0,0,0.25);
+      display: none; align-items: center; justify-content: center; z-index: 200;
+    }
+    .dialog-overlay.show { display: flex; }
+    .dialog {
+      background: var(--bg-card); border-radius: var(--radius-lg); padding: 24px;
+      width: 420px; box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    }
+    .dialog h3 { font-size: 16px; font-weight: 600; margin-bottom: 4px; color: var(--text-primary); }
+    .dialog p { font-size: 12px; color: var(--text-tertiary); margin-bottom: 16px; }
+    .dialog label { font-size: 12px; font-weight: 500; color: var(--text-secondary); display: block; margin-bottom: 5px; }
+    .dialog input, .dialog select {
+      width: 100%; padding: 8px 12px; border-radius: 8px;
+      border: 1px solid var(--border); font-size: 13px; outline: none; margin-bottom: 12px;
+      background: var(--bg-card); color: var(--text-primary);
+    }
+    .dialog input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-light); }
+    .dialog-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
+    .btn-dialog-cancel {
+      padding: 7px 16px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--bg-card); font-size: 12px; cursor: pointer; color: var(--text-secondary);
+    }
+    .btn-dialog-primary {
+      padding: 7px 16px; border-radius: 8px; border: none;
+      background: var(--accent); color: white; font-size: 12px; font-weight: 500; cursor: pointer;
+    }
+    .btn-dialog-primary:hover { background: var(--accent-hover); }
+
+    /* Inline Reader */
+    .inline-reader {
+      border-top: 2px solid var(--accent);
+      background: var(--bg-card);
+      animation: slideDown 0.25s ease-out;
+    }
+    @keyframes slideDown {
+      from { opacity: 0; max-height: 0; transform: translateY(-8px); }
+      to { opacity: 1; max-height: 600px; transform: translateY(0); }
+    }
+    .reader-toolbar {
+      display: flex; align-items: center; gap: 6px;
+      padding: 8px 20px; border-bottom: 1px solid var(--border);
+      background: var(--bg-sidebar); position: sticky; top: 0; z-index: 5;
+    }
+    .reader-toolbar-btn {
+      display: flex; align-items: center; gap: 4px;
+      padding: 4px 8px; border-radius: 6px; border: none;
+      background: transparent; font-size: 11px; color: var(--text-secondary);
+      cursor: pointer; transition: all 0.12s;
+    }
+    .reader-toolbar-btn:hover { background: var(--bg-card); color: var(--text-primary); }
+    .reader-toolbar-btn.active { color: var(--accent); background: var(--accent-light); }
+    .reader-toolbar-btn.close-btn { margin-left: auto; }
+    .reader-toolbar-btn.close-btn:hover { background: var(--red-bg); color: var(--red); }
+    .reader-toolbar-btn svg { width: 14px; height: 14px; }
+    .reader-toolbar-divider { width: 1px; height: 16px; background: var(--border); margin: 0 2px; }
+    .reader-body { padding: 20px; }
+    .reader-body h2 { font-size: 20px; font-weight: 600; margin-bottom: 8px; color: var(--text-primary); }
+    .reader-body .meta { font-size: 12px; color: var(--text-tertiary); margin-bottom: 16px; }
+    .reader-body p { font-size: 14px; line-height: 1.7; color: var(--text-secondary); margin-bottom: 12px; }
+    .reader-footer {
+      padding: 10px 20px; border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 11px; color: var(--text-tertiary);
+    }
+
+    /* Floating Nav */
+    .floating-nav {
+      position: absolute; bottom: 24px; right: 24px;
+      display: flex; flex-direction: column; gap: 8px; z-index: 50;
+      animation: fadeInUp 0.3s ease-out;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fab {
+      width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border);
+      background: var(--bg-card); display: flex; align-items: center; justify-content: center;
+      cursor: pointer; box-shadow: var(--shadow-md); transition: all 0.15s;
+      color: var(--text-secondary);
+    }
+    .fab:hover { box-shadow: var(--shadow-md); transform: scale(1.05); }
+    .fab.accent { background: var(--accent); color: white; border-color: var(--accent); }
+    .fab.accent:hover { background: var(--accent-hover); }
+    .fab svg { width: 16px; height: 16px; }
+
+    /* Feeds Toolbar */
+    .feeds-toolbar {
+      display: flex; align-items: center; gap: 6px;
+      padding: 8px 14px; border-bottom: 1px solid var(--border); background: var(--bg-card);
+      flex-shrink: 0;
+    }
+    .feeds-toolbar .search-input {
+      flex: 1; padding: 6px 10px; border-radius: var(--radius-sm);
+      border: 1px solid var(--border); font-size: 12px; outline: none;
+      background: var(--bg-app); color: var(--text-primary);
+    }
+    .feeds-toolbar .search-input:focus { border-color: var(--accent); }
+    .tool-btn {
+      display: flex; align-items: center; gap: 4px;
+      padding: 5px 10px; border-radius: var(--radius-sm); border: 1px solid var(--border);
+      background: var(--bg-card); font-size: 11px; color: var(--text-secondary);
+      cursor: pointer; transition: all 0.12s; white-space: nowrap;
+    }
+    .tool-btn:hover { background: var(--bg-sidebar); color: var(--text-primary); }
+    .tool-btn svg { width: 13px; height: 13px; }
+
+    /* Article Page Header (feeds detail) */
+    .article-page { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .article-page-header {
+      padding: 12px 20px; border-bottom: 1px solid var(--border); background: var(--bg-card);
+      flex-shrink: 0;
+    }
+    .article-page-header h2 { font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+    .article-page-meta { font-size: 11px; color: var(--text-tertiary); margin-top: 4px; }
+    .article-toolbar {
+      display: flex; align-items: center; gap: 6px;
+      padding: 8px 20px; border-bottom: 1px solid var(--border); background: var(--bg-card);
+      flex-shrink: 0;
+    }
+    .article-count { margin-left: auto; font-size: 11px; color: var(--text-tertiary); }
+    .article-list-item {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 10px 20px; border-bottom: 1px solid var(--border);
+      cursor: pointer; transition: background 0.12s;
+    }
+    .article-list-item:hover { background: var(--bg-hover); }
+    .article-list-item.expanded { background: var(--accent-light); border-left: 2px solid var(--accent); }
+    .article-list-item .unread-dot {
+      width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+      flex-shrink: 0; margin-top: 6px;
+    }
+    .article-list-item .title { font-size: 13px; font-weight: 500; color: var(--text-primary); }
+    .article-list-item .snippet { font-size: 11px; color: var(--text-tertiary); margin-top: 2px; }
+    .article-list-item .meta { font-size: 10px; color: var(--text-tertiary); margin-top: 3px; }
+    .back-btn {
+      width: 28px; height: 28px; border-radius: 6px; display: flex;
+      align-items: center; justify-content: center; border: none;
+      background: transparent; cursor: pointer; color: var(--text-tertiary); transition: all 0.15s;
+    }
+    .back-btn:hover { background: var(--bg-hover); color: var(--text-primary); }
+    .back-btn svg { width: 16px; height: 16px; }
+
+    /* Plan-B State Management */
+    .plan-b-state { display: none; }
+    .plan-b-state.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
   </style>
 </head>
 <body>
@@ -937,10 +1168,10 @@
   <button class="active" onclick="showPage('today')">Today</button>
   <button onclick="showPage('today-reading')">Today+阅读</button>
   <button onclick="showPage('topics')">Topics</button>
-  <button onclick="showPage('feeds')">Feeds</button>
+  <button onclick="showPage('feeds'); showState('manage')">Feeds管理</button>
+  <button onclick="showPage('feeds'); showState('articles')">Feeds文章</button>
   <button onclick="showPage('search')">Search</button>
   <button onclick="showPage('starred')">Starred</button>
-  <button onclick="showPage('article')">Article (Feeds)</button>
 </div>
 
 <!-- ==================== PAGE: TODAY ==================== -->
@@ -1645,164 +1876,435 @@
 </div>
 
 <!-- ==================== PAGE: FEEDS ==================== -->
-<div id="page-feeds" class="app-shell" style="display:none;">
+<div id="page-feeds" class="app-shell" style="display:none; position:relative;">
   <div class="rail">
-    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.912 5.813h6.107l-4.964 3.587 1.912 5.813L12 14.626l-4.967 3.587 1.912-5.813L3.981 8.813h6.107z"/></svg><span class="tooltip">Today</span></button>
-    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg><span class="tooltip">Topics</span></button>
+    <button class="rail-item" onclick="showPage('today')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.912 5.813h6.107l-4.964 3.587 1.912 5.813L12 14.626l-4.967 3.587 1.912-5.813L3.981 8.813h6.107z"/></svg><span class="tooltip">Today</span></button>
+    <button class="rail-item" onclick="showPage('topics')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg><span class="tooltip">Topics</span></button>
     <button class="rail-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg><span class="tooltip">Feeds</span></button>
-    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span class="tooltip">Search</span></button>
-    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span class="tooltip">Starred</span></button>
+    <button class="rail-item" onclick="showPage('search')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span class="tooltip">Search</span></button>
+    <button class="rail-item" onclick="showPage('starred')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span class="tooltip">Starred</span></button>
     <div class="rail-spacer"></div>
     <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span class="tooltip">Settings</span></button>
   </div>
 
-  <!-- Feeds sidebar -->
+  <!-- Feeds Management Sidebar -->
   <div class="sidebar">
     <div class="sidebar-header">
       <div class="sidebar-title">Feeds</div>
-      <div class="sidebar-desc">管理你的订阅源</div>
+      <div class="sidebar-desc">管理你的信息源 · 24 源 · 3 文件夹</div>
     </div>
     <div class="sidebar-content">
-      <div class="sidebar-section-title">技术</div>
-      <div class="sidebar-item active">
-        <div class="feed-icon" style="width:18px; height:18px; border-radius:3px;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
-        </div>
-        Hacker News
+      <div class="sidebar-section-title" style="display:flex; align-items:center; justify-content:space-between;">
+        文件夹
+        <button class="btn btn-ghost" style="font-size:10px; padding:2px 6px;" onclick="document.getElementById('add-feed-dialog').style.display='flex'">
+          <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          添加
+        </button>
+      </div>
+      <div class="sidebar-item active" style="font-size:12px;">
+        <span class="status-dot" style="background:var(--green)"></span>
+        全部源
         <span class="count">24</span>
       </div>
-      <div class="sidebar-item">
-        <div class="feed-icon" style="width:18px; height:18px; border-radius:3px;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
-        </div>
-        TechCrunch
+      <div class="sidebar-item" style="font-size:12px;">
+        <span style="color:var(--text-tertiary)">📁</span>
+        Tech
         <span class="count">8</span>
       </div>
-      <div class="sidebar-item">
-        <div class="feed-icon" style="width:18px; height:18px; border-radius:3px;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
-        </div>
-        The Verge
+      <div class="sidebar-item" style="font-size:12px;">
+        <span style="color:var(--text-tertiary)">📁</span>
+        AI Research
         <span class="count">6</span>
       </div>
-
-      <div class="sidebar-section-title">博客</div>
-      <div class="sidebar-item">
-        <div class="feed-icon" style="width:18px; height:18px; border-radius:3px;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
-        </div>
-        Simon Willison
+      <div class="sidebar-item" style="font-size:12px;">
+        <span style="color:var(--text-tertiary)">📁</span>
+        Design
         <span class="count">5</span>
       </div>
-      <div class="sidebar-item">
-        <div class="feed-icon" style="width:18px; height:18px; border-radius:3px;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
-        </div>
-      Julia Evans
-        <span class="count">3</span>
+      <div class="sidebar-item" style="font-size:12px;">
+        <span style="color:var(--text-tertiary)">📂</span>
+        未分组
+        <span class="count">5</span>
       </div>
-
-      <div class="sidebar-section-title">Rust</div>
-      <div class="sidebar-item">
-        <div class="feed-icon" style="width:18px; height:18px; border-radius:3px;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
+      <div style="padding:8px 14px; border-top:1px solid var(--border); margin-top:8px;">
+        <div style="font-size:10px; color:var(--text-tertiary);">健康概览</div>
+        <div style="display:flex; gap:12px; margin-top:4px; font-size:11px;">
+          <span style="color:var(--green)">● 18 正常</span>
+          <span style="color:var(--amber)">● 4 警告</span>
+          <span style="color:var(--red)">● 2 异常</span>
         </div>
-        This Week in Rust
-        <span class="count">1</span>
       </div>
-    </div>
-    <div class="sidebar-footer">
-      共 7 个活跃源 · 上次同步 10 分钟前
     </div>
   </div>
 
-  <!-- Main: fixed operations + scrollable article list -->
-  <div class="main-content">
-    <div class="feed-workspace-header">
-      <div class="feed-workspace-row">
-        <div class="feed-workspace-title">
+  <!-- Main Area — Three States -->
+  <div class="main-content" id="main-area">
+
+    <!-- ===== State 1: Feeds Management (default) ===== -->
+    <div class="plan-b-state active" id="state-manage">
+      <div class="feeds-toolbar">
+        <input type="text" class="search-input" placeholder="搜索订阅源...">
+        <button class="tool-btn" onclick="document.getElementById('add-feed-dialog').style.display='flex'">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+          添加订阅
+        </button>
+        <button class="tool-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+          新建文件夹
+        </button>
+        <div style="width:1px; height:18px; background:var(--border); margin:0 4px;"></div>
+        <button class="tool-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>
+          同步全部
+        </button>
+        <button class="tool-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+          全部已读
+        </button>
+      </div>
+
+    <div class="main-scroll" style="padding:0;">
+      <!-- Folder: Tech -->
+      <div class="folder-group">
+        <div class="folder-header" onclick="this.classList.toggle('collapsed'); this.nextElementSibling.classList.toggle('collapsed');">
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+          Tech <span class="folder-count">· 8 源</span>
+        </div>
+        <div class="folder-body">
+          <div class="feed-row" onclick="showState('articles')" oncontextmenu="event.preventDefault(); showContextMenu(event, this);">
+            <svg class="drag-handle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+            <div class="health-dot healthy"></div>
+            <div class="favicon-wrap"><img src="https://www.google.com/s2/favicons?domain=news.ycombinator.com&sz=32" alt=""></div>
+            <div class="feed-info">
+              <div style="display:flex; align-items:center; gap:5px;">
+                <div class="feed-name">Hacker News</div>
+                <span class="intel-badge high">🔥 高频信号</span>
+              </div>
+              <div class="feed-url">news.ycombinator.com</div>
+            </div>
+            <div class="feed-meta">
+              <span class="feed-unread">156</span>
+              <span class="feed-sync">2 分钟前</span>
+            </div>
+            <div class="feed-row-actions">
+              <button class="row-act" title="刷新"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg></button>
+              <button class="row-act danger" title="删除"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>
+            </div>
+          </div>
+          <div class="feed-row" onclick="showState('articles')" oncontextmenu="event.preventDefault(); showContextMenu(event, this);">
+            <svg class="drag-handle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+            <div class="health-dot healthy"></div>
+            <div class="favicon-wrap"><img src="https://www.google.com/s2/favicons?domain=techcrunch.com&sz=32" alt=""></div>
+            <div class="feed-info">
+              <div style="display:flex; align-items:center; gap:5px;">
+                <div class="feed-name">TechCrunch</div>
+                <span class="intel-badge medium">📊 证据源</span>
+              </div>
+              <div class="feed-url">techcrunch.com</div>
+            </div>
+            <div class="feed-meta">
+              <span class="feed-unread">42</span>
+              <span class="feed-sync">15 分钟前</span>
+            </div>
+            <div class="feed-row-actions">
+              <button class="row-act" title="刷新"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg></button>
+              <button class="row-act danger" title="删除"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>
+            </div>
+          </div>
+          <div class="feed-row" onclick="showState('articles')" oncontextmenu="event.preventDefault(); showContextMenu(event, this);">
+            <svg class="drag-handle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+            <div class="health-dot warning"></div>
+            <div class="favicon-wrap"><img src="https://www.google.com/s2/favicons?domain=theverge.com&sz=32" alt=""></div>
+            <div class="feed-info">
+              <div style="display:flex; align-items:center; gap:5px;">
+                <div class="feed-name">The Verge</div>
+              </div>
+              <div class="feed-url">theverge.com</div>
+            </div>
+            <div class="feed-meta">
+              <span class="feed-unread">8</span>
+              <span class="feed-sync" style="color:var(--amber)">3 小时前</span>
+            </div>
+            <div class="feed-row-actions">
+              <button class="row-act" title="刷新"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg></button>
+              <button class="row-act danger" title="删除"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Folder: AI Research -->
+      <div class="folder-group">
+        <div class="folder-header" onclick="this.classList.toggle('collapsed'); this.nextElementSibling.classList.toggle('collapsed');">
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+          AI Research <span class="folder-count">· 6 源</span>
+        </div>
+        <div class="folder-body">
+          <div class="feed-row" onclick="showState('articles')" oncontextmenu="event.preventDefault(); showContextMenu(event, this);">
+            <svg class="drag-handle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+            <div class="health-dot healthy"></div>
+            <div class="favicon-wrap"><img src="https://www.google.com/s2/favicons?domain=openai.com&sz=32" alt=""></div>
+            <div class="feed-info">
+              <div class="feed-name">OpenAI Blog</div>
+              <div class="feed-url">openai.com/blog</div>
+            </div>
+            <div class="feed-meta">
+              <span class="feed-unread">5</span>
+              <span class="feed-sync">1 小时前</span>
+            </div>
+            <div class="feed-row-actions">
+              <button class="row-act" title="刷新"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg></button>
+              <button class="row-act danger" title="删除"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>
+            </div>
+          </div>
+          <div class="feed-row" onclick="showState('articles')" oncontextmenu="event.preventDefault(); showContextMenu(event, this);">
+            <svg class="drag-handle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+            <div class="health-dot error"></div>
+            <div class="favicon-wrap"><img src="https://www.google.com/s2/favicons?domain=deepmind.com&sz=32" alt=""></div>
+            <div class="feed-info">
+              <div class="feed-name">DeepMind Blog</div>
+              <div class="feed-url" style="color:var(--red)">deepmind.com · 同步失败</div>
+            </div>
+            <div class="feed-meta">
+              <span class="feed-unread">—</span>
+              <span class="feed-sync" style="color:var(--red)">失败</span>
+            </div>
+            <div class="feed-row-actions">
+              <button class="row-act" title="刷新"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg></button>
+              <button class="row-act danger" title="删除"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Folder: Design -->
+      <div class="folder-group">
+        <div class="folder-header" onclick="this.classList.toggle('collapsed'); this.nextElementSibling.classList.toggle('collapsed');">
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+          Design <span class="folder-count">· 5 源</span>
+        </div>
+        <div class="folder-body">
+          <div class="feed-row" onclick="showState('articles')" oncontextmenu="event.preventDefault(); showContextMenu(event, this);">
+            <svg class="drag-handle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+            <div class="health-dot healthy"></div>
+            <div class="favicon-wrap"><img src="https://www.google.com/s2/favicons?domain=sidebar.io&sz=32" alt=""></div>
+            <div class="feed-info">
+              <div class="feed-name">Sidebar</div>
+              <div class="feed-url">sidebar.io</div>
+            </div>
+            <div class="feed-meta">
+              <span class="feed-unread">3</span>
+              <span class="feed-sync">30 分钟前</span>
+            </div>
+            <div class="feed-row-actions">
+              <button class="row-act" title="刷新"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg></button>
+              <button class="row-act danger" title="删除"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ungrouped -->
+      <div class="folder-group">
+        <div class="folder-header" onclick="this.classList.toggle('collapsed'); this.nextElementSibling.classList.toggle('collapsed');">
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+          未分组 <span class="folder-count">· 5 源</span>
+        </div>
+        <div class="folder-body">
+          <div class="feed-row" onclick="showState('articles')" oncontextmenu="event.preventDefault(); showContextMenu(event, this);">
+            <svg class="drag-handle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+            <div class="health-dot healthy"></div>
+            <div class="favicon-wrap"><img src="https://www.google.com/s2/favicons?domain=blog.rust-lang.org&sz=32" alt=""></div>
+            <div class="feed-info">
+              <div class="feed-name">Rust Blog</div>
+              <div class="feed-url">blog.rust-lang.org</div>
+            </div>
+            <div class="feed-meta">
+              <span class="feed-unread">12</span>
+              <span class="feed-sync">10 分钟前</span>
+            </div>
+            <div class="feed-row-actions">
+              <button class="row-act" title="刷新"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg></button>
+              <button class="row-act danger" title="删除"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>
+            </div>
+          </div>
+        </div>
+       </div>
+    </div>
+    </div>
+
+    <!-- ===== State 2: Articles List ===== -->
+    <div class="plan-b-state" id="state-articles">
+      <div class="article-page-header">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button class="back-btn" onclick="showState('manage')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <div class="favicon-wrap" style="width:22px;height:22px;border-radius:4px;background:var(--bg-sidebar);overflow:hidden;display:flex;align-items:center;justify-content:center;">
+            <img src="https://www.google.com/s2/favicons?domain=news.ycombinator.com&sz=32" style="width:22px;height:22px;border-radius:4px;">
+          </div>
           <h2>Hacker News</h2>
-          <p>24 篇未读 · 最近同步 10 分钟前</p>
+          <div class="health-dot healthy" style="margin-left:2px"></div>
         </div>
-        <div class="feed-workspace-actions">
-          <button class="btn btn-primary">
-            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-            新增订阅
-          </button>
-          <button class="btn btn-ghost" title="添加文件夹">
-            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 10v6M9 13h6"/><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 4A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
-          </button>
-          <button class="btn btn-ghost" title="导入 OPML">
-            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"/><path d="m7 8 5-5 5 5"/><path d="M5 21h14"/></svg>
-          </button>
-          <button class="btn btn-ghost" title="导出 OPML">
-            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21V9"/><path d="m7 16 5 5 5-5"/><path d="M5 3h14"/></svg>
-          </button>
-          <button class="btn btn-ghost">
-            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M16 8h5V3"/></svg>
-            同步全部
-          </button>
-          <button class="btn btn-ghost">
-            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 12 2 2 4-4"/><path d="m13 12 2 2 4-4"/><path d="M3 19h18"/></svg>
-            全部已读
-          </button>
-        </div>
+        <div class="article-page-meta">156 篇未读 · 已同步</div>
       </div>
-      <div class="feed-filter-bar">
-        <div style="display:flex; gap:4px; padding:2px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg-sidebar);">
-          <button class="btn btn-ghost active" style="border:0; padding:4px 10px;">全部</button>
-          <button class="btn btn-ghost" style="border:0; padding:4px 10px;">未读</button>
-          <button class="btn btn-ghost" style="border:0; padding:4px 10px;">已读</button>
-        </div>
+      <div class="article-toolbar">
+        <input type="text" class="search-input" style="flex:1; padding:6px 10px; border-radius:var(--radius-sm); border:1px solid var(--border); font-size:12px; outline:none; background:var(--bg-app); color:var(--text-primary);" placeholder="搜索文章...">
+        <button class="tool-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+          全部已读
+        </button>
+        <span class="article-count">共 156 篇</span>
       </div>
-    </div>
-    <div class="main-scroll">
-      <div class="article-item unread" onclick="showPage('article')" title="点击查看 Article (Feeds)">
-        <div style="flex:1;">
-          <div style="font-size:13px; font-weight:500; color:var(--text-primary); margin-bottom:4px;">OpenAI releases open-source Agent SDK for building multi-agent systems</div>
-          <div class="article-meta">techcrunch.com · 2 小时前 · 128 comments</div>
-        </div>
+      <div style="padding:6px 20px; border-bottom:1px solid var(--border); display:flex; gap:4px;">
+        <button class="filter-chip active">全部</button>
+        <button class="filter-chip">未读</button>
+        <button class="filter-chip">已读</button>
       </div>
-      <div class="article-item unread">
-        <div style="flex:1;">
-          <div style="font-size:13px; font-weight:500; color:var(--text-primary); margin-bottom:4px;">Show HN: I built a local LLM inference benchmark comparing llama.cpp, vLLM and TGI</div>
-          <div class="article-meta">self · 4 小时前 · 89 comments</div>
+      <div class="main-scroll" style="padding:0;">
+        <div class="article-list-item expanded" onclick="toggleInlineReader(this)">
+          <div class="unread-dot"></div>
+          <div style="flex:1">
+            <div class="title">Show HN: I built a self-hosted RSS reader with AI-powered signal detection</div>
+            <div class="snippet">After years of using various feed readers, I wanted one that could tell me what actually matters...</div>
+            <div class="meta"><span>user123</span> · <span>2h ago</span> · <span>42 comments</span></div>
+          </div>
         </div>
-      </div>
-      <div class="article-item unread">
-        <div style="flex:1;">
-          <div style="font-size:13px; font-weight:500; color:var(--text-primary); margin-bottom:4px;">Rust 1.85: async fn in traits is now stable</div>
-          <div class="article-meta">blog.rust-lang.org · 6 小时前 · 67 comments</div>
-        </div>
-      </div>
-      <div class="article-item">
-        <div style="flex:1;">
-          <div style="font-size:13px; font-weight:500; color:var(--text-primary); margin-bottom:4px;">The state of WebAssembly in 2025</div>
-          <div class="article-meta">bytecodealliance.org · 1 天前 · 45 comments</div>
-        </div>
-      </div>
-      <div class="article-item">
-        <div style="flex:1;">
-          <div style="font-size:13px; font-weight:500; color:var(--text-primary); margin-bottom:4px;">Why we moved from microservices back to a monolith</div>
-          <div class="article-meta">example.com · 1 天前 · 234 comments</div>
-        </div>
-      </div>
-      <div class="article-item">
-        <div style="flex:1;">
-          <div style="font-size:13px; font-weight:500; color:var(--text-primary); margin-bottom:4px;">Apple reportedly working on on-device LLM deployment</div>
-          <div class="article-meta">bloomberg.com · 2 天前 · 156 comments</div>
-        </div>
-      </div>
-      <div class="article-item">
-        <div style="flex:1;">
-          <div style="font-size:13px; font-weight:500; color:var(--text-primary); margin-bottom:4px;">Understanding structured outputs in LLM APIs</div>
-          <div class="article-meta">simonwillison.net · 3 天前 · 32 comments</div>
-        </div>
-      </div>
-    </div>
-  </div>
 
-</div>
+        <!-- Inline Reader -->
+        <div class="inline-reader">
+          <div class="reader-toolbar">
+            <button class="reader-toolbar-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              星标
+            </button>
+            <button class="reader-toolbar-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+              稍后读
+            </button>
+            <div class="reader-toolbar-divider"></div>
+            <button class="reader-toolbar-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+              已读
+            </button>
+            <button class="reader-toolbar-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg>
+              原文
+            </button>
+            <button class="reader-toolbar-btn close-btn" onclick="closeInlineReader()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+              关闭
+            </button>
+          </div>
+          <div class="reader-body">
+            <h2>Show HN: I built a self-hosted RSS reader with AI-powered signal detection</h2>
+            <div class="meta"><span style="color:var(--accent)">Hacker News</span> · user123 · 2 hours ago</div>
+            <p>After years of using various feed readers — from Google Reader to Feedly to Inoreader — I kept running into the same problem: information overload without intelligent filtering. I had hundreds of subscriptions but no way to know what actually mattered today.</p>
+            <p>So I built a desktop RSS reader that uses local LLM inference to detect "signals" — meaningful changes, trends, and developments across your feeds. Instead of showing you 200 articles, it surfaces 5-8 signals that represent what's actually worth your attention.</p>
+            <blockquote style="border-left:3px solid var(--accent); padding:8px 16px; background:var(--accent-light); border-radius:0 var(--radius-sm) var(--radius-sm) 0; margin:12px 0; font-size:13px; color:var(--text-secondary);">The key insight: most news is noise. A signal is something that changes your mental model of a topic.</blockquote>
+            <p>Tech stack: Tauri v2 (Rust backend) + React frontend. The AI pipeline runs entirely locally — no data leaves your machine. It uses embedding-based deduplication and a lightweight ranking model to prioritize what matters.</p>
+          </div>
+          <div class="reader-footer">
+            <span>1 / 5 · Hacker News</span>
+            <span style="color:var(--accent);">阅读原文 →</span>
+          </div>
+        </div>
+
+        <div class="article-list-item" style="opacity:0.5;">
+          <div class="unread-dot"></div>
+          <div style="flex:1">
+            <div class="title">Why we moved from microservices back to a monolith</div>
+            <div class="snippet">Three years ago we decomposed our startup into 47 microservices...</div>
+            <div class="meta"><span>devonian</span> · <span>4h ago</span> · <span>128 comments</span></div>
+          </div>
+        </div>
+        <div class="article-list-item" style="opacity:0.5;">
+          <div class="unread-dot"></div>
+          <div style="flex:1">
+            <div class="title">SQLite on the edge: unexpected performance characteristics</div>
+            <div class="snippet">We benchmarked SQLite across 15 edge locations...</div>
+            <div class="meta"><span>philhawk</span> · <span>5h ago</span></div>
+          </div>
+        </div>
+        <div class="article-list-item" style="opacity:0.5;">
+          <div style="flex:1">
+            <div class="title">The case against dark mode for everything</div>
+            <div class="snippet">Research suggests dark mode isn't always better...</div>
+            <div class="meta"><span>uxresearch</span> · <span>6h ago</span></div>
+          </div>
+        </div>
+        <div class="article-list-item" style="opacity:0.5;">
+          <div style="flex:1">
+            <div class="title">Rust 1.85: async fn in traits is now stable</div>
+            <div class="snippet">After years of work, async functions in trait definitions are now available in stable Rust...</div>
+            <div class="meta"><span>blog.rust-lang.org</span> · <span>1 天前</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+    <!-- Context Menu Overlay (absolutely positioned) -->
+    <div class="context-menu" id="feeds-ctx-menu" style="position:absolute; left:50%; top:40%; transform:translate(-50%,-50%); display:none;">
+        <button class="ctx-item" onclick="showState('articles')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          查看文章
+        </button>
+        <button class="ctx-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>
+          刷新
+        </button>
+        <button class="ctx-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+          全部标为已读
+        </button>
+        <div class="ctx-divider"></div>
+        <button class="ctx-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          编辑
+        </button>
+        <button class="ctx-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+          移动到文件夹…
+        </button>
+        <button class="ctx-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M4.93 4.93l14.14 14.14"/></svg>
+          停用
+        </button>
+        <div class="ctx-divider"></div>
+        <button class="ctx-item danger">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+          删除订阅
+        </button>
+      </div>
+
+    <!-- Add Feed Dialog Overlay -->
+    <div class="dialog-overlay" id="add-feed-dialog" style="display:none;">
+        <div class="dialog">
+          <h3>添加订阅</h3>
+          <p>输入 RSS/Atom 订阅源 URL 或网站地址</p>
+          <label>订阅地址</label>
+          <input type="url" placeholder="https://example.com/feed.xml">
+          <label>放入文件夹（可选）</label>
+          <select>
+            <option>不选择文件夹</option>
+            <option>Tech</option>
+            <option>AI Research</option>
+            <option>Design</option>
+          </select>
+          <div class="dialog-actions">
+            <button class="btn-dialog-cancel" onclick="this.closest('.dialog-overlay').style.display='none'">取消</button>
+            <button class="btn-dialog-primary" onclick="this.closest('.dialog-overlay').style.display='none'">添加</button>
+          </div>
+        </div>
+      </div>
+
+  </div><!-- /main-area -->
+</div><!-- /page-feeds -->
+
+
+
 
 <!-- ==================== PAGE: SEARCH ==================== -->
 <div id="page-search" class="app-shell" style="display:none;">
@@ -2126,176 +2628,6 @@
   </div>
 </div>
 
-<!-- ==================== PAGE: ARTICLE ==================== -->
-<div id="page-article" class="app-shell" style="display:none;">
-  <div class="rail">
-    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.912 5.813h6.107l-4.964 3.587 1.912 5.813L12 14.626l-4.967 3.587 1.912-5.813L3.981 8.813h6.107z"/></svg><span class="tooltip">Today</span></button>
-    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg><span class="tooltip">Topics</span></button>
-    <button class="rail-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg><span class="tooltip">Feeds</span></button>
-    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span class="tooltip">Search</span></button>
-    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span class="tooltip">Starred</span></button>
-    <div class="rail-spacer"></div>
-    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span class="tooltip">Settings</span></button>
-  </div>
-
-  <!-- Feeds sidebar stays visible while reading -->
-  <div class="sidebar">
-    <div class="sidebar-header">
-      <div class="sidebar-title">Feeds</div>
-      <div class="sidebar-desc">管理你的订阅源</div>
-    </div>
-    <div class="sidebar-content">
-      <div class="sidebar-section-title">技术</div>
-      <div class="sidebar-item active">
-        <div class="feed-icon" style="width:18px; height:18px; border-radius:3px;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
-        </div>
-        Hacker News
-        <span class="count">23</span>
-      </div>
-      <div class="sidebar-item">
-        <div class="feed-icon" style="width:18px; height:18px; border-radius:3px;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
-        </div>
-        TechCrunch
-        <span class="count">8</span>
-      </div>
-      <div class="sidebar-item">
-        <div class="feed-icon" style="width:18px; height:18px; border-radius:3px;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
-        </div>
-        The Verge
-        <span class="count">6</span>
-      </div>
-      <div class="sidebar-section-title">博客</div>
-      <div class="sidebar-item">
-        <div class="feed-icon" style="width:18px; height:18px; border-radius:3px;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
-        </div>
-        Simon Willison
-        <span class="count">5</span>
-      </div>
-    </div>
-    <div class="sidebar-footer">
-      共 7 个活跃源 · 上次同步 10 分钟前
-    </div>
-  </div>
-
-  <!-- Main keeps the feed article list context -->
-  <div class="main-content">
-    <div class="feed-workspace-header">
-      <div class="feed-workspace-row">
-        <div class="feed-workspace-title">
-          <h2>Hacker News</h2>
-          <p>23 篇未读 · 正在阅读 1 篇</p>
-        </div>
-        <div class="feed-workspace-actions">
-          <button class="btn btn-primary">
-            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-            新增订阅
-          </button>
-          <button class="btn btn-ghost" title="添加文件夹">
-            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 10v6M9 13h6"/><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 4A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
-          </button>
-          <button class="btn btn-ghost" title="导入 OPML">
-            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"/><path d="m7 8 5-5 5 5"/><path d="M5 21h14"/></svg>
-          </button>
-          <button class="btn btn-ghost">
-            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M16 8h5V3"/></svg>
-            同步全部
-          </button>
-        </div>
-      </div>
-      <div class="feed-filter-bar">
-        <div style="display:flex; gap:4px; padding:2px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg-sidebar);">
-          <button class="btn btn-ghost active" style="border:0; padding:4px 10px;">全部</button>
-          <button class="btn btn-ghost" style="border:0; padding:4px 10px;">未读</button>
-          <button class="btn btn-ghost" style="border:0; padding:4px 10px;">已读</button>
-        </div>
-      </div>
-    </div>
-    <div class="main-scroll">
-      <div class="article-item" style="background:var(--accent-light); border-left:2px solid var(--accent);">
-        <div style="flex:1;">
-          <div style="font-size:13px; font-weight:600; color:var(--accent-text); margin-bottom:4px;">OpenAI releases open-source Agent SDK for building multi-agent systems</div>
-          <div class="article-meta">techcrunch.com · 2 小时前 · 128 comments</div>
-        </div>
-      </div>
-      <div class="article-item unread">
-        <div style="flex:1;">
-          <div style="font-size:13px; font-weight:500; color:var(--text-primary); margin-bottom:4px;">Show HN: I built a local LLM inference benchmark comparing llama.cpp, vLLM and TGI</div>
-          <div class="article-meta">self · 4 小时前 · 89 comments</div>
-        </div>
-      </div>
-      <div class="article-item unread">
-        <div style="flex:1;">
-          <div style="font-size:13px; font-weight:500; color:var(--text-primary); margin-bottom:4px;">Rust 1.85: async fn in traits is now stable</div>
-          <div class="article-meta">blog.rust-lang.org · 6 小时前 · 67 comments</div>
-        </div>
-      </div>
-      <div class="article-item">
-        <div style="flex:1;">
-          <div style="font-size:13px; font-weight:500; color:var(--text-primary); margin-bottom:4px;">The state of WebAssembly in 2025</div>
-          <div class="article-meta">bytecodealliance.org · 1 天前 · 45 comments</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Article (Feeds): right reader drawer appears after clicking an article -->
-  <aside class="reader-drawer">
-    <div class="main-scroll">
-      <div class="reading-content">
-        <div style="display:flex; align-items:center; gap:8px; margin-bottom:24px; padding-bottom:16px; border-bottom:1px solid var(--border);">
-          <button class="btn btn-ghost" style="font-size:11px;" onclick="showPage('feeds')">
-            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
-            关闭
-          </button>
-          <div style="flex:1;"></div>
-          <button class="btn btn-ghost" style="font-size:11px;">
-            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-          </button>
-          <button class="btn btn-ghost" style="font-size:11px;">
-            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-          </button>
-          <button class="btn btn-ghost" style="font-size:11px;">
-            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
-          </button>
-        </div>
-
-        <h1>OpenAI Releases Open-Source Agent SDK for Building Multi-Agent Systems</h1>
-        <div class="meta">
-          <span style="color:var(--accent);">TechCrunch</span> · Sarah Chen · May 1, 2026 · 6 min read
-        </div>
-
-        <p>
-          OpenAI 今天发布了一个全新的开源 Agent SDK，旨在让开发者更轻松地构建多 Agent 系统。该 SDK 提供了链式推理、工具调用、记忆管理和多 Agent 协作等核心能力。
-        </p>
-
-        <p>
-          这一举动的意义在于，它直接与 LangChain、CrewAI、AutoGen 等现有框架竞争。与这些框架不同的是，OpenAI 的 SDK 从底层就深度整合了 GPT 系列模型的推理能力，并在工具调用和错误恢复方面做了专门优化。
-        </p>
-
-        <blockquote>
-          "我们希望 Agent 开发能像 Web 开发一样简单。今天的 Agent 框架太碎片化了，开发者需要花大量时间在胶水代码上。" — OpenAI 开发者关系负责人
-        </blockquote>
-
-        <p>
-          SDK 的核心特性包括：声明式的 Agent 定义语法、内置的重试和错误恢复机制、支持流式输出的工具调用接口，以及一个可视化调试工具用于追踪 Agent 的推理链路。
-        </p>
-
-        <p>
-          社区反应褒贬不一。支持者认为官方方案能带来更好的模型适配和长期维护；批评者则担心这会加剧生态锁定，削弱 Agent 框架层的模型无关性。
-        </p>
-
-        <p>
-          目前 SDK 已在 GitHub 上以 MIT 协议开源，首日获得超过 5,000 个 star。OpenAI 表示将在未来几周内发布更多示例和教程。
-        </p>
-      </div>
-    </div>
-  </aside>
-</div>
-
 <script>
 function showPage(name, trigger) {
   document.querySelectorAll('.app-shell').forEach(el => el.style.display = 'none');
@@ -2371,7 +2703,7 @@ document.querySelectorAll('[data-topic-action]').forEach(action => {
 });
 
 document.querySelectorAll('[data-start-article]').forEach(item => {
-  item.addEventListener('click', () => showPage('article'));
+  item.addEventListener('click', () => showPage('feeds-reading'));
 });
 
 document.querySelectorAll('.rail-item').forEach(item => {
@@ -2387,6 +2719,81 @@ document.querySelectorAll('.rail-item').forEach(item => {
     if (pageMap[label]) showPage(pageMap[label]);
   });
 });
+
+function showContextMenu(e, row) {
+  const menu = document.getElementById('feeds-ctx-menu');
+  if (!menu) return;
+  const main = document.getElementById('main-area');
+  const rect = main.getBoundingClientRect();
+  menu.style.left = (e.clientX - rect.left) + 'px';
+  menu.style.top = (e.clientY - rect.top) + 'px';
+  menu.style.display = 'block';
+}
+
+function toggleInlineReader(item) {
+  const reader = item.nextElementSibling;
+  if (!reader || !reader.classList.contains('inline-reader')) return;
+  const isVisible = reader.style.display !== 'none';
+  reader.style.display = isVisible ? 'none' : 'block';
+  item.classList.toggle('expanded', !isVisible);
+  if (!isVisible) {
+    item.closest('.main-scroll').querySelectorAll('.article-list-item').forEach(el => {
+      if (el !== item) el.style.opacity = '0.5';
+    });
+    setTimeout(() => item.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+  } else {
+    item.closest('.main-scroll').querySelectorAll('.article-list-item').forEach(el => {
+      el.style.opacity = '';
+    });
+  }
+}
+
+function closeInlineReader() {
+  const reader = document.querySelector('#state-articles .inline-reader');
+  if (reader) {
+    reader.style.display = 'none';
+    const prevItem = reader.previousElementSibling;
+    if (prevItem) {
+      prevItem.classList.remove('expanded');
+      prevItem.closest('.main-scroll').querySelectorAll('.article-list-item').forEach(el => {
+        el.style.opacity = '';
+      });
+    }
+  }
+}
+
+document.addEventListener('click', (e) => {
+  const ctx = document.getElementById('feeds-ctx-menu');
+  if (ctx && ctx.style.display !== 'none' && !ctx.contains(e.target)) {
+    ctx.style.display = 'none';
+  }
+});
+
+function showState(state) {
+  document.querySelectorAll('#main-area .plan-b-state').forEach(el => el.classList.remove('active'));
+  const target = document.getElementById('state-' + state);
+  if (target) target.classList.add('active');
+
+  // 更新 page-switcher 按钮高亮
+  document.querySelectorAll('.page-switcher button').forEach(btn => btn.classList.remove('active'));
+  const switcherButton = [...document.querySelectorAll('.page-switcher button')]
+    .find(btn => btn.getAttribute('onclick')?.includes(`'${state}'`));
+  if (switcherButton) switcherButton.classList.add('active');
+
+  // 更新 sidebar 高亮
+  document.querySelectorAll('#page-feeds .sidebar-item').forEach(el => el.classList.remove('active'));
+  if (state === 'articles') {
+    document.getElementById('sidebar-tech')?.classList.add('active');
+  } else {
+    document.getElementById('sidebar-all')?.classList.add('active');
+  }
+
+  // 关闭 overlay
+  const ctx = document.getElementById('feeds-ctx-menu');
+  if (ctx) ctx.style.display = 'none';
+  const dialog = document.getElementById('add-feed-dialog');
+  if (dialog) dialog.style.display = 'none';
+}
 </script>
 
 </body>

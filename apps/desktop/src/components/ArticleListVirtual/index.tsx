@@ -1,11 +1,14 @@
 import React, {
+  Fragment,
   useEffect,
   useRef,
   useImperativeHandle,
   useCallback,
   useState,
 } from "react";
+import { AnimatePresence } from "framer-motion";
 import { ArticleItem, ArticleItemDensity } from "../ArticleItem";
+import { ArticleInlineReader } from "@/layout/Article/ArticleInlineReader";
 import { Skeleton } from "@radix-ui/themes";
 import type { ArticleResItem } from "@/db";
 import { Snail } from "lucide-react";
@@ -23,6 +26,9 @@ export type ArticleListVirtualProps = {
   isLoading: boolean;
   itemDensity?: ArticleItemDensity;
   onArticleRead?: (article: ArticleResItem) => void;
+  expandedArticleUuid?: string | null;
+  onExpandArticle?: (article: ArticleResItem) => void;
+  onCloseInlineReader?: () => void;
 };
 
 export interface ArticleListVirtualRefType {
@@ -44,10 +50,23 @@ export const ArticleListVirtual = React.memo(
         setSize,
         itemDensity = "regular",
         onArticleRead,
+        expandedArticleUuid,
+        onExpandArticle,
+        onCloseInlineReader,
       } = props;
       const { t } = useTranslation();
       const internalParentRef = useRef<HTMLDivElement>(null);
       const [isScrolled, setIsScrolled] = useState(false);
+
+      useEffect(() => {
+        if (!expandedArticleUuid || !internalParentRef.current) return;
+        const target = internalParentRef.current.querySelector(
+          `[data-expand-uuid="${expandedArticleUuid}"]`,
+        );
+        if (target) {
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }, [expandedArticleUuid]);
 
       useImperativeHandle(
         ref,
@@ -111,15 +130,42 @@ export const ArticleListVirtual = React.memo(
             </div>
           ) : (
             <ul className="list-none m-0 p-0">
-              {articles.map((article, index) => (
-                <li key={`${article.uuid}-${index}`}>
-                  <ArticleItem
-                    article={article}
-                    density={itemDensity}
-                    onRead={onArticleRead}
-                  />
-                </li>
-              ))}
+              {articles.map((article, index) => {
+                const isExpanded = expandedArticleUuid != null && article.uuid === expandedArticleUuid;
+                const isDimmed = expandedArticleUuid != null && !isExpanded;
+
+                return (
+                  <Fragment key={`${article.uuid}-${index}`}>
+                    <li
+                      data-expand-uuid={article.uuid}
+                      className={isDimmed ? "opacity-50 transition-opacity duration-200" : ""}
+                    >
+                      <ArticleItem
+                        article={article}
+                        density={itemDensity}
+                        onRead={onArticleRead}
+                        onExpand={onExpandArticle}
+                      />
+                    </li>
+                    <AnimatePresence initial={false}>
+                      {isExpanded && (
+                        <li key={`reader-${article.uuid}`}>
+                          <ArticleInlineReader
+                            article={article}
+                            onClose={onCloseInlineReader!}
+                            goPrev={index > 0 ? () => onExpandArticle?.(articles[index - 1]) : undefined}
+                            goNext={index < articles.length - 1 ? () => onExpandArticle?.(articles[index + 1]) : undefined}
+                            canPrev={index > 0}
+                            canNext={index < articles.length - 1}
+                            index={index}
+                            total={articles.length}
+                          />
+                        </li>
+                      )}
+                    </AnimatePresence>
+                  </Fragment>
+                );
+              })}
             </ul>
           )}
           {isLoading && (

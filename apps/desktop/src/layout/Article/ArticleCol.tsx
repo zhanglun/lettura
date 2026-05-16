@@ -36,6 +36,7 @@ import {
   Upload,
 } from "lucide-react";
 import { RouteConfig } from "@/config";
+import { ArticleFloatingNav } from "@/layout/Article/ArticleFloatingNav";
 
 export function retainArticleAfterRead(
   pages: { list: ArticleResItem[] }[] | undefined,
@@ -53,6 +54,10 @@ export function retainArticleAfterRead(
 export interface ArticleColRefObject {
   goNext: () => void;
   goPrev: () => void;
+  expandNextArticle: () => void;
+  expandPrevArticle: () => void;
+  canExpandPrev: boolean;
+  canExpandNext: boolean;
 }
 
 interface ArticleColProps {
@@ -97,6 +102,8 @@ export const ArticleCol = React.memo(
           syncAllArticles: state.syncAllArticles,
           markArticleListAsRead: state.markArticleListAsRead,
           getSubscribes: state.getSubscribes,
+          expandedArticleUuid: state.expandedArticleUuid,
+          setExpandedArticleUuid: state.setExpandedArticleUuid,
         })),
       );
 
@@ -359,10 +366,45 @@ export const ArticleCol = React.memo(
         );
       }
 
+      const handleExpandArticle = useCallback(
+        (article: ArticleResItem) => {
+          if (store.expandedArticleUuid === article.uuid) {
+            store.setExpandedArticleUuid(null);
+          } else {
+            store.setExpandedArticleUuid(article.uuid);
+          }
+        },
+        [store.expandedArticleUuid, store.setExpandedArticleUuid],
+      );
+
+      const handleCloseInlineReader = useCallback(() => {
+        store.setExpandedArticleUuid(null);
+      }, [store.setExpandedArticleUuid]);
+
+      const expandedIdx = store.expandedArticleUuid
+        ? articles.findIndex((a) => a.uuid === store.expandedArticleUuid)
+        : -1;
+
+      const expandNextArticle = useCallback(() => {
+        if (expandedIdx >= 0 && expandedIdx < articles.length - 1) {
+          handleExpandArticle(articles[expandedIdx + 1]);
+        }
+      }, [expandedIdx, articles, handleExpandArticle]);
+
+      const expandPrevArticle = useCallback(() => {
+        if (expandedIdx > 0) {
+          handleExpandArticle(articles[expandedIdx - 1]);
+        }
+      }, [expandedIdx, articles, handleExpandArticle]);
+
       useImperativeHandle(listForwarded, () => {
         return {
           goNext,
           goPrev,
+          expandNextArticle,
+          expandPrevArticle,
+          canExpandPrev: expandedIdx > 0,
+          canExpandNext: expandedIdx >= 0 && expandedIdx < articles.length - 1,
         };
       });
 
@@ -489,6 +531,9 @@ export const ArticleCol = React.memo(
             size={size}
             setSize={setSize}
             onArticleRead={handleArticleRead}
+            expandedArticleUuid={store.expandedArticleUuid}
+            onExpandArticle={handleExpandArticle}
+            onCloseInlineReader={handleCloseInlineReader}
           />
           {showManagementActions && (
             <AddFolder
@@ -498,6 +543,13 @@ export const ArticleCol = React.memo(
               afterConfirm={store.getSubscribes}
             />
           )}
+          <ArticleFloatingNav
+            visible={store.expandedArticleUuid != null}
+            canPrev={expandedIdx > 0}
+            canNext={expandedIdx >= 0 && expandedIdx < articles.length - 1}
+            onPrev={expandPrevArticle}
+            onNext={expandNextArticle}
+          />
         </div>
       );
     },

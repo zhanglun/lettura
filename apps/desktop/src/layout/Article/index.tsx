@@ -4,7 +4,6 @@ import { useParams, useMatch, useNavigate } from "react-router-dom";
 import { ArticleCol, ArticleColRefObject } from "@/layout/Article/ArticleCol";
 import { ArticleDialogView } from "@/components/ArticleView/DialogView";
 import { open } from "@tauri-apps/plugin-shell";
-import { ArticleReaderDrawer } from "./ArticleReaderDrawer";
 import { useQuery } from "@/helpers/parseXML";
 import { LPodcast } from "@/components/LPodcast";
 import { useBearStore } from "@/stores";
@@ -28,13 +27,11 @@ export const ArticleContainer = () => {
       podcastPanelStatus: state.podcastPanelStatus,
       tracks: state.tracks,
       podcastPlayingStatus: state.podcastPlayingStatus,
-      rightPanelExpanded: state.rightPanelExpanded,
     })),
   );
 
-  const { article, setArticle, rightPanelExpanded } = store;
+  const { article, setArticle } = store;
 
-  // Deep-link: load article from URL params when store is empty
   useEffect(() => {
     if (!(isArticleRoute && params.id)) return;
     if (article) return;
@@ -65,50 +62,36 @@ export const ArticleContainer = () => {
   }, [feedUuid, isArticleRoute, setArticle, type]);
 
   const articleColRef = useRef<ArticleColRefObject>(null);
-  const { goNext, goPrev } = (articleColRef.current || {}) as ArticleColRefObject;
 
   const openInBrowser = useCallback(() => {
     store.article && open(store.article.link);
   }, [store]);
 
   const handleGoNext = useCallback(() => {
-    goNext?.();
-  }, [goNext]);
+    articleColRef.current?.goNext();
+  }, []);
 
   const handleGoPrev = useCallback(() => {
-    goPrev?.();
-  }, [goPrev]);
+    articleColRef.current?.goPrev();
+  }, []);
 
   const handleClose = useCallback(() => {
     setArticle(null);
-    if (feedUuid) {
-      navigate(`/local/feeds/${feedUuid}`, { replace: true });
-    }
-  }, [setArticle, feedUuid, navigate]);
+  }, [setArticle]);
 
   useHotkeys("o", openInBrowser);
 
   const shouldShowPodcast = store.tracks?.length > 0 || store.podcastPlayingStatus;
 
   return (
-    <div className="flex h-full w-full flex-row overflow-hidden bg-[var(--color-background)]">
-      <div className="h-full min-w-0 flex-1 overflow-hidden">
-        <ArticleCol
-          feedUuid={feedUuid}
-          type={type}
-          ref={articleColRef}
-          wide={true}
-          showFilters={true}
-          showManagementActions={true}
-        />
-      </div>
-
-      <ArticleReaderDrawer
-        article={article}
-        open={rightPanelExpanded}
-        goNext={handleGoNext}
-        goPrev={handleGoPrev}
-        onClose={handleClose}
+    <div className="flex h-full w-full flex-col overflow-hidden bg-[var(--color-background)]">
+      <ArticleCol
+        feedUuid={feedUuid}
+        type={type}
+        ref={articleColRef}
+        wide={true}
+        showFilters={true}
+        showManagementActions={true}
       />
 
       <LPodcast visible={shouldShowPodcast} />
