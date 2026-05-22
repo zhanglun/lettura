@@ -1158,6 +1158,241 @@
     /* Plan-B State Management */
     .plan-b-state { display: none; }
     .plan-b-state.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+
+    /* Settings Tabs */
+    .settings-tab {
+      padding: 8px 18px;
+      border: none;
+      background: transparent;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-tertiary);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .settings-tab:hover { color: var(--text-primary); }
+    .settings-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .settings-section { margin-bottom: 28px; }
+    .settings-section-title {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 10px;
+    }
+    .settings-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+    }
+    .settings-row + .settings-row { border-top: 1px solid var(--border); }
+    .settings-row-label { font-size: 13px; font-weight: 500; color: var(--text-primary); }
+    .settings-row-desc { font-size: 11px; color: var(--text-tertiary); margin-top: 2px; }
+    .settings-panel-content { display: none; }
+    .settings-panel-content.active { display: block; }
+    .settings-select {
+      padding: 6px 10px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      font-size: 12px;
+      background: var(--bg-card);
+      color: var(--text-primary);
+      outline: none;
+      cursor: pointer;
+    }
+    .settings-select:focus { border-color: var(--accent); }
+    .toggle {
+      width: 36px; height: 20px;
+      background: var(--border);
+      border-radius: 999px;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.2s;
+      border: none;
+      flex-shrink: 0;
+    }
+    .toggle.on { background: var(--accent); }
+    .toggle::after {
+      content: '';
+      width: 16px; height: 16px;
+      background: white;
+      border-radius: 50%;
+      position: absolute;
+      top: 2px; left: 2px;
+      transition: left 0.2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    .toggle.on::after { left: 18px; }
+
+    /* Onboarding */
+    .onboarding-progress { display: flex; gap: 6px; margin-bottom: 28px; }
+    .onboarding-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border); transition: background 0.2s; }
+    .onboarding-dot.active { background: var(--accent); width: 18px; border-radius: 3px; }
+    .onboarding-dot.done { background: var(--green); }
+    .onboarding-step { display: none; width: 100%; max-width: 560px; }
+    .onboarding-step.active { display: block; }
+    .onboarding-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 36px 40px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+    }
+    .interest-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin: 16px 0 20px;
+    }
+    .interest-chip {
+      padding: 12px 10px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      cursor: pointer;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      transition: all 0.15s;
+      background: var(--bg-card);
+      line-height: 1.4;
+    }
+    .interest-chip:hover { border-color: var(--border-hover); }
+    .interest-chip.selected { border-color: var(--accent); background: var(--accent-light); color: var(--accent-text); }
+    .starter-pack-card {
+      display: flex; gap: 12px;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all 0.15s;
+      background: var(--bg-card);
+    }
+    .starter-pack-card:hover { border-color: var(--border-hover); }
+    .starter-pack-card.selected { border-color: var(--accent); background: var(--accent-light); }
+    .pack-icon {
+      width: 40px; height: 40px;
+      border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      background: var(--bg-sidebar);
+      flex-shrink: 0;
+    }
+    .pack-name { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+    .pack-desc { font-size: 11px; color: var(--text-secondary); margin-top: 2px; line-height: 1.5; }
+    .pack-meta { font-size: 10px; color: var(--text-tertiary); margin-top: 4px; }
+    .pack-checkmark {
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; align-self: center;
+      transition: all 0.15s;
+    }
+    .starter-pack-card.selected .pack-checkmark { background: var(--accent); border-color: var(--accent); }
+    .install-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .install-item:last-child { border-bottom: none; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    /* ===== Feeds articles redesign ===== */
+    .art-list-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 9px 14px; border-bottom: 1px solid var(--border);
+      background: var(--bg-card); flex-shrink: 0; gap: 10px; flex-wrap: wrap;
+    }
+    .art-filter {
+      padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 500;
+      border: none; background: transparent; color: var(--text-tertiary); cursor: pointer;
+      transition: all 0.12s;
+    }
+    .art-filter.active { background: var(--bg-card); color: var(--accent); box-shadow: var(--shadow-sm); }
+    .art-section-label {
+      padding: 4px 18px 4px; font-size: 10px; font-weight: 700; color: var(--text-tertiary);
+      text-transform: uppercase; letter-spacing: 0.5px;
+      background: var(--bg-sidebar); border-bottom: 1px solid var(--border);
+    }
+    .art-row {
+      display: flex; align-items: center; gap: 9px;
+      padding: 10px 18px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 0.12s, opacity 0.18s;
+      border-left: 2px solid transparent;
+    }
+    .art-row:hover { background: var(--bg-hover); }
+    .art-row.active { background: var(--accent-light); border-left-color: var(--accent); }
+    .art-row.dimmed { opacity: 0.28; pointer-events: none; }
+    .art-unread-dot {
+      width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+      flex-shrink: 0;
+    }
+    .art-row.read .art-unread-dot { background: transparent; }
+    .art-row-favicon { width: 14px; height: 14px; border-radius: 2px; object-fit: cover; flex-shrink: 0; }
+    .art-row-body { flex: 1; min-width: 0; }
+    .art-row-title {
+      font-size: 13px; font-weight: 500; color: var(--text-primary);
+      line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .art-row.read .art-row-title { color: var(--text-tertiary); font-weight: 400; }
+    .art-row-meta { font-size: 11px; color: var(--text-tertiary); margin-top: 2px; display: flex; gap: 4px; }
+    .art-row-side { flex-shrink: 0; display: flex; align-items: center; gap: 4px; }
+    .art-row-time { font-size: 10px; color: var(--text-tertiary); white-space: nowrap; min-width: 24px; text-align: right; }
+    .art-row-acts { display: flex; gap: 1px; opacity: 0; transition: opacity 0.12s; }
+    .art-row:hover .art-row-acts { opacity: 1; }
+
+    /* Inline reader — expands below the active row */
+    .art-inline-reader {
+      background: var(--bg-card);
+      border-top: 2px solid var(--accent);
+      border-bottom: 2px solid var(--border);
+      overflow: hidden;
+      display: none;
+    }
+    .art-inline-reader.open {
+      display: block;
+      animation: artSlideDown 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes artSlideDown {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .art-reader-toolbar {
+      display: flex; align-items: center; gap: 2px;
+      padding: 7px 16px; border-bottom: 1px solid var(--border);
+      background: var(--bg-sidebar); position: sticky; top: 0; z-index: 2;
+    }
+    .art-reader-body {
+      padding: 22px 26px 16px; max-height: 400px; overflow-y: auto;
+    }
+    .art-reader-body h2 {
+      font-size: 17px; font-weight: 700; line-height: 1.4;
+      color: var(--text-primary); margin-bottom: 10px;
+    }
+    .art-reader-meta {
+      font-size: 11px; color: var(--text-tertiary);
+      display: flex; gap: 6px; align-items: center; margin-bottom: 18px; flex-wrap: wrap;
+    }
+    .art-reader-body p {
+      font-size: 14px; line-height: 1.75; color: var(--text-secondary); margin-bottom: 14px;
+    }
+    .art-reader-body blockquote {
+      border-left: 3px solid var(--accent); padding: 10px 16px; margin: 14px 0;
+      background: var(--accent-light); border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-style: italic; font-size: 13px; color: var(--text-secondary); line-height: 1.6;
+    }
+    .art-reader-footer {
+      padding: 8px 16px; border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 11px; color: var(--text-tertiary);
+    }
   </style>
 </head>
 <body>
@@ -1172,6 +1407,8 @@
   <button onclick="showPage('feeds'); showState('articles')">Feeds文章</button>
   <button onclick="showPage('search')">Search</button>
   <button onclick="showPage('starred')">Starred</button>
+  <button onclick="showPage('settings')">Settings</button>
+  <button onclick="showPage('onboarding'); showOnboardingStep(1)">Onboarding</button>
 </div>
 
 <!-- ==================== PAGE: TODAY ==================== -->
@@ -1884,21 +2121,21 @@
     <button class="rail-item" onclick="showPage('search')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span class="tooltip">Search</span></button>
     <button class="rail-item" onclick="showPage('starred')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span class="tooltip">Starred</span></button>
     <div class="rail-spacer"></div>
-    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span class="tooltip">Settings</span></button>
+    <button class="rail-item" onclick="showPage('settings'); showSettingsTab('sources', null)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span class="tooltip">Settings</span></button>
   </div>
 
-  <!-- Feeds Management Sidebar -->
+  <!-- Feeds Sidebar -->
   <div class="sidebar">
     <div class="sidebar-header">
       <div class="sidebar-title">Feeds</div>
-      <div class="sidebar-desc">管理你的信息源 · 24 源 · 3 文件夹</div>
+      <div class="sidebar-desc">24 源 · 3 文件夹</div>
     </div>
     <div class="sidebar-content">
       <div class="sidebar-section-title" style="display:flex; align-items:center; justify-content:space-between;">
         文件夹
-        <button class="btn btn-ghost" style="font-size:10px; padding:2px 6px;" onclick="document.getElementById('add-feed-dialog').style.display='flex'">
-          <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-          添加
+        <button class="btn btn-ghost" style="font-size:10px; padding:2px 6px;" onclick="showPage('settings'); showSettingsTab('sources', null)" title="管理来源">
+          <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+          管理
         </button>
       </div>
       <div class="sidebar-item active" style="font-size:12px;">
@@ -1940,8 +2177,8 @@
   <!-- Main Area — Three States -->
   <div class="main-content" id="main-area">
 
-    <!-- ===== State 1: Feeds Management (default) ===== -->
-    <div class="plan-b-state active" id="state-manage">
+    <!-- ===== State 1: Feeds Management (now in Settings) ===== -->
+    <div class="plan-b-state" id="state-manage">
       <div class="feeds-toolbar">
         <input type="text" class="search-input" placeholder="搜索订阅源...">
         <button class="tool-btn" onclick="document.getElementById('add-feed-dialog').style.display='flex'">
@@ -2134,110 +2371,198 @@
     </div>
 
     <!-- ===== State 2: Articles List ===== -->
-    <div class="plan-b-state" id="state-articles">
-      <div class="article-page-header">
+    <div class="plan-b-state active" id="state-articles">
+      <!-- Header -->
+      <div class="art-list-header">
         <div style="display:flex; align-items:center; gap:8px;">
-          <button class="back-btn" onclick="showState('manage')">
+          <button class="back-btn" onclick="showPage('settings'); showSettingsTab('sources', null)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
           </button>
-          <div class="favicon-wrap" style="width:22px;height:22px;border-radius:4px;background:var(--bg-sidebar);overflow:hidden;display:flex;align-items:center;justify-content:center;">
-            <img src="https://www.google.com/s2/favicons?domain=news.ycombinator.com&sz=32" style="width:22px;height:22px;border-radius:4px;">
-          </div>
-          <h2>Hacker News</h2>
-          <div class="health-dot healthy" style="margin-left:2px"></div>
+          <img src="https://www.google.com/s2/favicons?domain=news.ycombinator.com&sz=32" style="width:16px;height:16px;border-radius:3px;">
+          <span style="font-size:13px; font-weight:600; color:var(--text-primary);">Hacker News</span>
+          <div class="health-dot healthy"></div>
+          <span style="font-size:11px; color:var(--text-tertiary);">156 未读</span>
         </div>
-        <div class="article-page-meta">156 篇未读 · 已同步</div>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <div style="position:relative;">
+            <svg style="position:absolute;left:8px;top:50%;transform:translateY(-50%);width:12px;height:12px;color:var(--text-tertiary);pointer-events:none;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <input placeholder="搜索文章..." style="padding:5px 10px 5px 26px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:12px; outline:none; background:var(--bg-app); color:var(--text-primary); width:160px;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">
+          </div>
+          <div style="display:flex; gap:1px; background:var(--bg-sidebar); border-radius:var(--radius-sm); padding:2px;">
+            <button class="art-filter active" onclick="document.querySelectorAll('#state-articles .art-filter').forEach(b=>b.classList.remove('active')); this.classList.add('active')">全部</button>
+            <button class="art-filter" onclick="document.querySelectorAll('#state-articles .art-filter').forEach(b=>b.classList.remove('active')); this.classList.add('active')">未读</button>
+            <button class="art-filter" onclick="document.querySelectorAll('#state-articles .art-filter').forEach(b=>b.classList.remove('active')); this.classList.add('active')">已读</button>
+          </div>
+          <button class="tool-btn" style="font-size:11px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+            全部已读
+          </button>
+        </div>
       </div>
-      <div class="article-toolbar">
-        <input type="text" class="search-input" style="flex:1; padding:6px 10px; border-radius:var(--radius-sm); border:1px solid var(--border); font-size:12px; outline:none; background:var(--bg-app); color:var(--text-primary);" placeholder="搜索文章...">
-        <button class="tool-btn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
-          全部已读
-        </button>
-        <span class="article-count">共 156 篇</span>
-      </div>
-      <div style="padding:6px 20px; border-bottom:1px solid var(--border); display:flex; gap:4px;">
-        <button class="filter-chip active">全部</button>
-        <button class="filter-chip">未读</button>
-        <button class="filter-chip">已读</button>
-      </div>
-      <div class="main-scroll" style="padding:0;">
-        <div class="article-list-item expanded" onclick="toggleInlineReader(this)">
-          <div class="unread-dot"></div>
-          <div style="flex:1">
-            <div class="title">Show HN: I built a self-hosted RSS reader with AI-powered signal detection</div>
-            <div class="snippet">After years of using various feed readers, I wanted one that could tell me what actually matters...</div>
-            <div class="meta"><span>user123</span> · <span>2h ago</span> · <span>42 comments</span></div>
+
+      <!-- Flat article list -->
+      <div class="main-scroll" id="art-scroll" style="padding:0;">
+        <div class="art-section-label">未读 · 156 篇</div>
+
+        <!-- Row 1 — currently active, reader open below it -->
+        <div class="art-row active" onclick="openArticleReader(this)">
+          <div class="art-unread-dot"></div>
+          <img class="art-row-favicon" src="https://www.google.com/s2/favicons?domain=news.ycombinator.com&sz=32">
+          <div class="art-row-body">
+            <div class="art-row-title">Show HN: I built a self-hosted RSS reader with AI-powered signal detection</div>
+            <div class="art-row-meta"><span>user123</span><span>·</span><span>42 comments</span></div>
+          </div>
+          <div class="art-row-side">
+            <span class="art-row-time">2h</span>
+            <div class="art-row-acts">
+              <button class="row-act" onclick="event.stopPropagation()" title="星标"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></button>
+              <button class="row-act" onclick="event.stopPropagation()" title="标为已读"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg></button>
+            </div>
           </div>
         </div>
 
-        <!-- Inline Reader -->
-        <div class="inline-reader">
-          <div class="reader-toolbar">
-            <button class="reader-toolbar-btn">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <!-- Inline reader panel — inserted after active row -->
+        <div class="art-inline-reader open" id="art-inline-reader">
+          <div class="art-reader-toolbar">
+            <button class="reader-toolbar-btn active">
+              <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" style="width:13px;height:13px;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
               星标
             </button>
             <button class="reader-toolbar-btn">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-              稍后读
-            </button>
-            <div class="reader-toolbar-divider"></div>
-            <button class="reader-toolbar-btn">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
-              已读
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+              标为已读
             </button>
             <button class="reader-toolbar-btn">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg>
               原文
             </button>
-            <button class="reader-toolbar-btn close-btn" onclick="closeInlineReader()">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            <div class="reader-toolbar-divider"></div>
+            <span style="font-size:11px; color:var(--text-tertiary); flex:1; padding:0 4px;">1 / 156</span>
+            <button class="reader-toolbar-btn" onclick="prevArticle()" style="opacity:0.3; pointer-events:none;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;"><path d="m15 18-6-6 6-6"/></svg>上一篇
+            </button>
+            <button class="reader-toolbar-btn" onclick="nextArticle()">
+              下一篇<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;"><path d="m9 18 6-6-6-6"/></svg>
+            </button>
+            <div class="reader-toolbar-divider"></div>
+            <button class="reader-toolbar-btn close-btn" onclick="closeArticleReader()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
               关闭
             </button>
           </div>
-          <div class="reader-body">
+          <div class="art-reader-body">
             <h2>Show HN: I built a self-hosted RSS reader with AI-powered signal detection</h2>
-            <div class="meta"><span style="color:var(--accent)">Hacker News</span> · user123 · 2 hours ago</div>
+            <div class="art-reader-meta">
+              <span style="color:var(--accent); font-weight:500;">Hacker News</span>
+              <span>·</span><span>user123</span><span>·</span><span>2 小时前</span><span>·</span><span>42 comments</span>
+            </div>
             <p>After years of using various feed readers — from Google Reader to Feedly to Inoreader — I kept running into the same problem: information overload without intelligent filtering. I had hundreds of subscriptions but no way to know what actually mattered today.</p>
-            <p>So I built a desktop RSS reader that uses local LLM inference to detect "signals" — meaningful changes, trends, and developments across your feeds. Instead of showing you 200 articles, it surfaces 5-8 signals that represent what's actually worth your attention.</p>
-            <blockquote style="border-left:3px solid var(--accent); padding:8px 16px; background:var(--accent-light); border-radius:0 var(--radius-sm) var(--radius-sm) 0; margin:12px 0; font-size:13px; color:var(--text-secondary);">The key insight: most news is noise. A signal is something that changes your mental model of a topic.</blockquote>
-            <p>Tech stack: Tauri v2 (Rust backend) + React frontend. The AI pipeline runs entirely locally — no data leaves your machine. It uses embedding-based deduplication and a lightweight ranking model to prioritize what matters.</p>
+            <p>So I built a desktop RSS reader that uses local LLM inference to detect "signals" — meaningful changes, trends, and developments across your feeds. Instead of showing you 200 articles, it surfaces 5–8 signals that represent what's actually worth your attention.</p>
+            <blockquote>The key insight: most news is noise. A signal is something that changes your mental model of a topic.</blockquote>
+            <p>Tech stack: Tauri v2 (Rust backend) + React frontend. The AI pipeline runs entirely locally — no data leaves your machine. Embedding-based deduplication + a lightweight ranking model to prioritize what matters.</p>
           </div>
-          <div class="reader-footer">
-            <span>1 / 5 · Hacker News</span>
-            <span style="color:var(--accent);">阅读原文 →</span>
+          <div class="art-reader-footer">
+            <div style="display:flex; gap:6px;">
+              <button class="reader-toolbar-btn" style="opacity:0.3; pointer-events:none;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;"><path d="m15 18-6-6 6-6"/></svg>上一篇
+              </button>
+              <button class="reader-toolbar-btn" onclick="nextArticle()">
+                下一篇<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;"><path d="m9 18 6-6-6-6"/></svg>
+              </button>
+            </div>
+            <span style="color:var(--accent); cursor:pointer;">在浏览器中打开 →</span>
           </div>
         </div>
 
-        <div class="article-list-item" style="opacity:0.5;">
-          <div class="unread-dot"></div>
-          <div style="flex:1">
-            <div class="title">Why we moved from microservices back to a monolith</div>
-            <div class="snippet">Three years ago we decomposed our startup into 47 microservices...</div>
-            <div class="meta"><span>devonian</span> · <span>4h ago</span> · <span>128 comments</span></div>
+        <!-- Other rows — dimmed while reader is open -->
+        <div class="art-row dimmed" onclick="openArticleReader(this)">
+          <div class="art-unread-dot"></div>
+          <img class="art-row-favicon" src="https://www.google.com/s2/favicons?domain=news.ycombinator.com&sz=32">
+          <div class="art-row-body">
+            <div class="art-row-title">Why we moved from microservices back to a monolith</div>
+            <div class="art-row-meta"><span>devonian</span><span>·</span><span>128 comments</span></div>
+          </div>
+          <div class="art-row-side">
+            <span class="art-row-time">4h</span>
+            <div class="art-row-acts">
+              <button class="row-act" onclick="event.stopPropagation()" title="星标"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></button>
+              <button class="row-act" onclick="event.stopPropagation()" title="标为已读"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg></button>
+            </div>
           </div>
         </div>
-        <div class="article-list-item" style="opacity:0.5;">
-          <div class="unread-dot"></div>
-          <div style="flex:1">
-            <div class="title">SQLite on the edge: unexpected performance characteristics</div>
-            <div class="snippet">We benchmarked SQLite across 15 edge locations...</div>
-            <div class="meta"><span>philhawk</span> · <span>5h ago</span></div>
+        <div class="art-row dimmed" onclick="openArticleReader(this)">
+          <div class="art-unread-dot"></div>
+          <img class="art-row-favicon" src="https://www.google.com/s2/favicons?domain=news.ycombinator.com&sz=32">
+          <div class="art-row-body">
+            <div class="art-row-title">SQLite on the edge: unexpected performance characteristics at scale</div>
+            <div class="art-row-meta"><span>philhawk</span><span>·</span><span>67 comments</span></div>
+          </div>
+          <div class="art-row-side">
+            <span class="art-row-time">5h</span>
+            <div class="art-row-acts">
+              <button class="row-act" onclick="event.stopPropagation()" title="星标"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></button>
+              <button class="row-act" onclick="event.stopPropagation()" title="标为已读"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg></button>
+            </div>
           </div>
         </div>
-        <div class="article-list-item" style="opacity:0.5;">
-          <div style="flex:1">
-            <div class="title">The case against dark mode for everything</div>
-            <div class="snippet">Research suggests dark mode isn't always better...</div>
-            <div class="meta"><span>uxresearch</span> · <span>6h ago</span></div>
+        <div class="art-row dimmed read" onclick="openArticleReader(this)">
+          <div class="art-unread-dot"></div>
+          <img class="art-row-favicon" src="https://www.google.com/s2/favicons?domain=news.ycombinator.com&sz=32">
+          <div class="art-row-body">
+            <div class="art-row-title">The case against dark mode for everything</div>
+            <div class="art-row-meta"><span>uxresearch</span><span>·</span><span>34 comments</span></div>
+          </div>
+          <div class="art-row-side">
+            <span class="art-row-time">6h</span>
+            <div class="art-row-acts">
+              <button class="row-act" onclick="event.stopPropagation()" title="星标"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></button>
+              <button class="row-act" onclick="event.stopPropagation()" title="标为已读"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg></button>
+            </div>
           </div>
         </div>
-        <div class="article-list-item" style="opacity:0.5;">
-          <div style="flex:1">
-            <div class="title">Rust 1.85: async fn in traits is now stable</div>
-            <div class="snippet">After years of work, async functions in trait definitions are now available in stable Rust...</div>
-            <div class="meta"><span>blog.rust-lang.org</span> · <span>1 天前</span></div>
+        <div class="art-row dimmed" onclick="openArticleReader(this)">
+          <div class="art-unread-dot"></div>
+          <img class="art-row-favicon" src="https://www.google.com/s2/favicons?domain=blog.rust-lang.org&sz=32">
+          <div class="art-row-body">
+            <div class="art-row-title">Rust 1.85: async fn in traits is now stable</div>
+            <div class="art-row-meta"><span>blog.rust-lang.org</span><span>·</span><span>1 天前</span></div>
+          </div>
+          <div class="art-row-side">
+            <span class="art-row-time">1d</span>
+            <div class="art-row-acts">
+              <button class="row-act" onclick="event.stopPropagation()" title="星标"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></button>
+              <button class="row-act" onclick="event.stopPropagation()" title="标为已读"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg></button>
+            </div>
+          </div>
+        </div>
+        <div class="art-row dimmed" onclick="openArticleReader(this)">
+          <div class="art-unread-dot"></div>
+          <img class="art-row-favicon" src="https://www.google.com/s2/favicons?domain=news.ycombinator.com&sz=32">
+          <div class="art-row-body">
+            <div class="art-row-title">Ask HN: What's your current "good enough" tech stack in 2026?</div>
+            <div class="art-row-meta"><span>startup_dev</span><span>·</span><span>218 comments</span></div>
+          </div>
+          <div class="art-row-side">
+            <span class="art-row-time">1d</span>
+            <div class="art-row-acts">
+              <button class="row-act" onclick="event.stopPropagation()" title="星标"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></button>
+              <button class="row-act" onclick="event.stopPropagation()" title="标为已读"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg></button>
+            </div>
+          </div>
+        </div>
+        <div class="art-row dimmed read" onclick="openArticleReader(this)">
+          <div class="art-unread-dot"></div>
+          <img class="art-row-favicon" src="https://www.google.com/s2/favicons?domain=news.ycombinator.com&sz=32">
+          <div class="art-row-body">
+            <div class="art-row-title">The performance cost of React Server Components: a deep analysis</div>
+            <div class="art-row-meta"><span>webperf_blog</span><span>·</span><span>89 comments</span></div>
+          </div>
+          <div class="art-row-side">
+            <span class="art-row-time">2d</span>
+            <div class="art-row-acts">
+              <button class="row-act" onclick="event.stopPropagation()" title="星标"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></button>
+              <button class="row-act" onclick="event.stopPropagation()" title="标为已读"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg></button>
+            </div>
           </div>
         </div>
       </div>
@@ -2304,6 +2629,741 @@
 </div><!-- /page-feeds -->
 
 
+
+
+<!-- ==================== PAGE: SETTINGS ==================== -->
+<div id="page-settings" class="app-shell" style="display:none;">
+  <div class="rail">
+    <button class="rail-item" onclick="showPage('today')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.912 5.813h6.107l-4.964 3.587 1.912 5.813L12 14.626l-4.967 3.587 1.912-5.813L3.981 8.813h6.107z"/></svg><span class="tooltip">Today</span></button>
+    <button class="rail-item" onclick="showPage('topics')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg><span class="tooltip">Topics</span></button>
+    <button class="rail-item" onclick="showPage('feeds')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg><span class="tooltip">Feeds</span></button>
+    <button class="rail-item" onclick="showPage('search')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span class="tooltip">Search</span></button>
+    <button class="rail-item" onclick="showPage('starred')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span class="tooltip">Starred</span></button>
+    <div class="rail-spacer"></div>
+    <button class="rail-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span class="tooltip">Settings</span></button>
+  </div>
+
+  <!-- Settings main (no sidebar per spec) -->
+  <div class="main-content" style="overflow:hidden; flex-direction:column;">
+    <!-- Header + Tabs -->
+    <div style="padding:24px 32px 0; border-bottom:1px solid var(--border); background:var(--bg-card); flex-shrink:0;">
+      <div class="page-title">Settings</div>
+      <div class="page-subtitle" style="margin-bottom:0;">配置 AI 分析、信息源、外观与应用行为</div>
+      <div style="display:flex; margin-top:14px;">
+        <button class="settings-tab active" onclick="showSettingsTab('ai', this)">AI 配置</button>
+        <button class="settings-tab" onclick="showSettingsTab('sources', this)">来源管理</button>
+        <button class="settings-tab" onclick="showSettingsTab('appearance', this)">外观与阅读</button>
+        <button class="settings-tab" onclick="showSettingsTab('behavior', this)">应用行为</button>
+      </div>
+    </div>
+
+    <div class="main-scroll" style="padding:28px 32px 40px;">
+      <div style="max-width:680px;">
+
+        <!-- AI Config Panel -->
+        <div id="settings-panel-ai" class="settings-panel-content active">
+          <div class="settings-section">
+            <div class="settings-section-title">AI 引擎状态</div>
+            <div class="card" style="padding:16px;">
+              <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+                <div class="status-dot green"></div>
+                <span style="font-size:13px; font-weight:600; color:var(--text-primary);">本地推理引擎已就绪</span>
+                <span class="tag tag-green" style="margin-left:auto;">运行中</span>
+              </div>
+              <div style="font-size:12px; color:var(--text-secondary); line-height:1.6; margin-bottom:12px;">
+                Lettura 使用本地模型分析你的订阅流，所有处理在设备上完成，不上传任何文章内容。
+              </div>
+              <div style="display:flex; gap:20px; font-size:11px; color:var(--text-tertiary); border-top:1px solid var(--border); padding-top:10px;">
+                <span>上次分析：<strong style="color:var(--text-primary);">09:45</strong></span>
+                <span>分析耗时：<strong style="color:var(--text-primary);">3.2s</strong></span>
+                <span>已分析：<strong style="color:var(--text-primary);">1,247 篇</strong></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-section">
+            <div class="settings-section-title">本地模型</div>
+            <div class="card" style="padding:0; overflow:hidden;">
+              <div class="settings-row">
+                <div>
+                  <div class="settings-row-label">推理模型</div>
+                  <div class="settings-row-desc">用于信号识别和摘要生成</div>
+                </div>
+                <select class="settings-select">
+                  <option selected>Llama 3.2 3B（默认）</option>
+                  <option>Llama 3.1 8B</option>
+                  <option>Phi-3.5 Mini</option>
+                  <option>Gemma 2 2B</option>
+                </select>
+              </div>
+              <div class="settings-row">
+                <div>
+                  <div class="settings-row-label">嵌入模型</div>
+                  <div class="settings-row-desc">用于语义去重和相关性计算</div>
+                </div>
+                <select class="settings-select">
+                  <option selected>nomic-embed-text（默认）</option>
+                  <option>mxbai-embed-large</option>
+                </select>
+              </div>
+              <div class="settings-row">
+                <div>
+                  <div class="settings-row-label">每日分析时间</div>
+                  <div class="settings-row-desc">在指定时间自动运行分析</div>
+                </div>
+                <select class="settings-select">
+                  <option>06:00</option>
+                  <option>07:00</option>
+                  <option selected>08:00</option>
+                  <option>09:00</option>
+                  <option>手动触发</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-section">
+            <div class="settings-section-title">云端 API（可选增强）</div>
+            <div class="card" style="padding:0; overflow:hidden;">
+              <div class="settings-row">
+                <div>
+                  <div class="settings-row-label">OpenAI API 密钥</div>
+                  <div class="settings-row-desc">用于生成更高质量的 Why It Matters</div>
+                </div>
+                <div style="display:flex; gap:6px; align-items:center;">
+                  <input type="password" value="sk-proj-••••••••••••" style="width:180px; padding:5px 10px; border-radius:var(--radius-sm); border:1px solid var(--border); font-size:12px; outline:none; background:var(--bg-card);">
+                  <button class="btn btn-ghost" style="font-size:11px; padding:5px 10px;">验证</button>
+                </div>
+              </div>
+              <div class="settings-row">
+                <div>
+                  <div class="settings-row-label">调用云端 API 的场景</div>
+                  <div class="settings-row-desc">选择哪些任务可以使用云端模型</div>
+                </div>
+                <select class="settings-select">
+                  <option selected>仅高价值信号增强</option>
+                  <option>全部分析</option>
+                  <option>从不</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sources Panel -->
+        <div id="settings-panel-sources" class="settings-panel-content">
+          <!-- Toolbar -->
+          <div class="feeds-toolbar" style="padding:0; margin-bottom:14px;">
+            <input type="text" class="search-input" placeholder="搜索订阅源..." style="flex:1; min-width:120px;">
+            <button class="tool-btn" onclick="document.getElementById('add-feed-dialog').style.display='flex'">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+              添加订阅
+            </button>
+            <button class="tool-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+              新建文件夹
+            </button>
+            <div style="width:1px; height:18px; background:var(--border); margin:0 2px;"></div>
+            <button class="tool-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>
+              同步全部
+            </button>
+          </div>
+
+          <!-- Health overview -->
+          <div class="card" style="padding:12px 16px; margin-bottom:16px; display:flex; align-items:center; gap:16px;">
+            <span style="font-size:12px; color:var(--green);">● <strong>18</strong> 正常</span>
+            <span style="font-size:12px; color:var(--amber);">● <strong>4</strong> 警告</span>
+            <span style="font-size:12px; color:var(--red);">● <strong>2</strong> 失败</span>
+            <span style="font-size:11px; color:var(--text-tertiary); margin-left:auto;">共 24 个来源</span>
+          </div>
+
+          <!-- Feed list -->
+          <div class="card" style="padding:0; overflow:hidden; margin-bottom:16px;">
+            <div class="folder-group" style="border-bottom:1px solid var(--border);">
+              <div class="folder-header" onclick="this.classList.toggle('collapsed'); this.nextElementSibling.classList.toggle('collapsed');">
+                <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+                Tech <span class="folder-count">· 8 源</span>
+              </div>
+              <div class="folder-body">
+                <div class="feed-row" onclick="showPage('feeds'); showState('articles')" oncontextmenu="event.preventDefault(); showContextMenu(event, this);">
+                  <svg class="drag-handle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+                  <div class="health-dot healthy"></div>
+                  <div class="favicon-wrap"><img src="https://www.google.com/s2/favicons?domain=news.ycombinator.com&sz=32" alt=""></div>
+                  <div class="feed-info">
+                    <div style="display:flex; align-items:center; gap:5px;">
+                      <div class="feed-name">Hacker News</div>
+                      <span class="intel-badge high">🔥 高频信号</span>
+                    </div>
+                    <div class="feed-url">news.ycombinator.com</div>
+                  </div>
+                  <div class="feed-meta"><span class="feed-unread">156</span><span class="feed-sync">2 分钟前</span></div>
+                  <div class="feed-row-actions">
+                    <button class="row-act" title="刷新"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg></button>
+                    <button class="row-act danger" title="删除"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>
+                  </div>
+                </div>
+                <div class="feed-row" onclick="showPage('feeds'); showState('articles')" oncontextmenu="event.preventDefault(); showContextMenu(event, this);">
+                  <svg class="drag-handle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+                  <div class="health-dot healthy"></div>
+                  <div class="favicon-wrap"><img src="https://www.google.com/s2/favicons?domain=techcrunch.com&sz=32" alt=""></div>
+                  <div class="feed-info">
+                    <div style="display:flex; align-items:center; gap:5px;">
+                      <div class="feed-name">TechCrunch</div>
+                      <span class="intel-badge medium">📊 证据源</span>
+                    </div>
+                    <div class="feed-url">techcrunch.com</div>
+                  </div>
+                  <div class="feed-meta"><span class="feed-unread">42</span><span class="feed-sync">15 分钟前</span></div>
+                  <div class="feed-row-actions">
+                    <button class="row-act" title="刷新"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg></button>
+                    <button class="row-act danger" title="删除"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>
+                  </div>
+                </div>
+                <div class="feed-row" onclick="showPage('feeds'); showState('articles')" oncontextmenu="event.preventDefault(); showContextMenu(event, this);">
+                  <svg class="drag-handle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+                  <div class="health-dot warning"></div>
+                  <div class="favicon-wrap"><img src="https://www.google.com/s2/favicons?domain=theverge.com&sz=32" alt=""></div>
+                  <div class="feed-info">
+                    <div class="feed-name">The Verge</div>
+                    <div class="feed-url">theverge.com</div>
+                  </div>
+                  <div class="feed-meta"><span class="feed-unread">8</span><span class="feed-sync" style="color:var(--amber)">3 小时前</span></div>
+                  <div class="feed-row-actions">
+                    <button class="row-act" title="刷新"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg></button>
+                    <button class="row-act danger" title="删除"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="folder-group" style="border-bottom:1px solid var(--border);">
+              <div class="folder-header" onclick="this.classList.toggle('collapsed'); this.nextElementSibling.classList.toggle('collapsed');">
+                <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+                AI Research <span class="folder-count">· 6 源</span>
+              </div>
+              <div class="folder-body">
+                <div class="feed-row" onclick="showPage('feeds'); showState('articles')" oncontextmenu="event.preventDefault(); showContextMenu(event, this);">
+                  <svg class="drag-handle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+                  <div class="health-dot healthy"></div>
+                  <div class="favicon-wrap"><img src="https://www.google.com/s2/favicons?domain=openai.com&sz=32" alt=""></div>
+                  <div class="feed-info">
+                    <div class="feed-name">OpenAI Blog</div>
+                    <div class="feed-url">openai.com/blog</div>
+                  </div>
+                  <div class="feed-meta"><span class="feed-unread">5</span><span class="feed-sync">1 小时前</span></div>
+                  <div class="feed-row-actions">
+                    <button class="row-act" title="刷新"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg></button>
+                    <button class="row-act danger" title="删除"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>
+                  </div>
+                </div>
+                <div class="feed-row" onclick="showPage('feeds'); showState('articles')" oncontextmenu="event.preventDefault(); showContextMenu(event, this);">
+                  <svg class="drag-handle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+                  <div class="health-dot error"></div>
+                  <div class="favicon-wrap"><img src="https://www.google.com/s2/favicons?domain=deepmind.com&sz=32" alt=""></div>
+                  <div class="feed-info">
+                    <div class="feed-name">DeepMind Blog</div>
+                    <div class="feed-url" style="color:var(--red)">deepmind.com · 同步失败</div>
+                  </div>
+                  <div class="feed-meta"><span class="feed-unread">—</span><span class="feed-sync" style="color:var(--red)">失败</span></div>
+                  <div class="feed-row-actions">
+                    <button class="row-act" title="刷新"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg></button>
+                    <button class="row-act danger" title="删除"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="folder-group" style="border-bottom:1px solid var(--border);">
+              <div class="folder-header" onclick="this.classList.toggle('collapsed'); this.nextElementSibling.classList.toggle('collapsed');">
+                <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+                Design <span class="folder-count">· 5 源</span>
+              </div>
+              <div class="folder-body">
+                <div class="feed-row" onclick="showPage('feeds'); showState('articles')" oncontextmenu="event.preventDefault(); showContextMenu(event, this);">
+                  <svg class="drag-handle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+                  <div class="health-dot healthy"></div>
+                  <div class="favicon-wrap"><img src="https://www.google.com/s2/favicons?domain=sidebar.io&sz=32" alt=""></div>
+                  <div class="feed-info">
+                    <div class="feed-name">Sidebar</div>
+                    <div class="feed-url">sidebar.io</div>
+                  </div>
+                  <div class="feed-meta"><span class="feed-unread">3</span><span class="feed-sync">30 分钟前</span></div>
+                  <div class="feed-row-actions">
+                    <button class="row-act" title="刷新"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg></button>
+                    <button class="row-act danger" title="删除"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="folder-group">
+              <div class="folder-header" onclick="this.classList.toggle('collapsed'); this.nextElementSibling.classList.toggle('collapsed');">
+                <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+                未分组 <span class="folder-count">· 5 源</span>
+              </div>
+              <div class="folder-body">
+                <div class="feed-row" onclick="showPage('feeds'); showState('articles')" oncontextmenu="event.preventDefault(); showContextMenu(event, this);">
+                  <svg class="drag-handle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+                  <div class="health-dot healthy"></div>
+                  <div class="favicon-wrap"><img src="https://www.google.com/s2/favicons?domain=blog.rust-lang.org&sz=32" alt=""></div>
+                  <div class="feed-info">
+                    <div class="feed-name">Rust Blog</div>
+                    <div class="feed-url">blog.rust-lang.org</div>
+                  </div>
+                  <div class="feed-meta"><span class="feed-unread">12</span><span class="feed-sync">10 分钟前</span></div>
+                  <div class="feed-row-actions">
+                    <button class="row-act" title="刷新"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg></button>
+                    <button class="row-act danger" title="删除"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sync strategy -->
+          <div class="settings-section">
+            <div class="settings-section-title">同步策略</div>
+            <div class="card" style="padding:0; overflow:hidden;">
+              <div class="settings-row">
+                <div>
+                  <div class="settings-row-label">自动同步间隔</div>
+                  <div class="settings-row-desc">多久刷新一次订阅源</div>
+                </div>
+                <select class="settings-select">
+                  <option>30 分钟</option>
+                  <option selected>1 小时</option>
+                  <option>2 小时</option>
+                  <option>6 小时</option>
+                  <option>手动</option>
+                </select>
+              </div>
+              <div class="settings-row">
+                <div>
+                  <div class="settings-row-label">后台同步</div>
+                  <div class="settings-row-desc">应用未激活时继续在后台同步</div>
+                </div>
+                <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+              </div>
+              <div class="settings-row">
+                <div>
+                  <div class="settings-row-label">仅 Wi-Fi 同步</div>
+                  <div class="settings-row-desc">避免在移动网络下消耗流量</div>
+                </div>
+                <button class="toggle" onclick="this.classList.toggle('on')"></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Starter packs -->
+          <div class="settings-section">
+            <div class="settings-section-title">已安装的 Starter Pack</div>
+            <div class="card" style="padding:16px;">
+              <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+                <span style="font-size:12px; color:var(--text-tertiary);">2 个 Pack · 18 个来源</span>
+                <button class="btn btn-ghost" style="font-size:11px;" onclick="showPage('onboarding'); showOnboardingStep(3);">浏览更多 Pack</button>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:8px;">
+                <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; background:var(--bg-sidebar); border-radius:var(--radius-sm);">
+                  <span style="font-size:18px;">🤖</span>
+                  <div style="flex:1;">
+                    <div style="font-size:12px; font-weight:600; color:var(--text-primary);">AI & Machine Learning</div>
+                    <div style="font-size:10px; color:var(--text-tertiary);">8 个来源 · 已安装</div>
+                  </div>
+                  <button class="btn btn-ghost" style="font-size:11px; color:var(--red);">卸载</button>
+                </div>
+                <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; background:var(--bg-sidebar); border-radius:var(--radius-sm);">
+                  <span style="font-size:18px;">⚙️</span>
+                  <div style="flex:1;">
+                    <div style="font-size:12px; font-weight:600; color:var(--text-primary);">Developer Tools & OSS</div>
+                    <div style="font-size:10px; color:var(--text-tertiary);">10 个来源 · 已安装</div>
+                  </div>
+                  <button class="btn btn-ghost" style="font-size:11px; color:var(--red);">卸载</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Appearance Panel -->
+        <div id="settings-panel-appearance" class="settings-panel-content">
+          <div class="settings-section">
+            <div class="settings-section-title">主题</div>
+            <div class="card" style="padding:16px;">
+              <div style="display:flex; gap:10px;">
+                <label style="flex:1; display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;">
+                  <div style="width:100%; height:56px; background:var(--bg-app); border:2px solid var(--accent); border-radius:var(--radius); display:flex; align-items:center; justify-content:center;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-tertiary)" stroke-width="1.5"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                  </div>
+                  <span style="font-size:11px; color:var(--accent); font-weight:500;">浅色</span>
+                </label>
+                <label style="flex:1; display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;">
+                  <div style="width:100%; height:56px; background:#1a1d26; border:1px solid var(--border); border-radius:var(--radius); display:flex; align-items:center; justify-content:center;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                  </div>
+                  <span style="font-size:11px; color:var(--text-tertiary);">深色</span>
+                </label>
+                <label style="flex:1; display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;">
+                  <div style="width:100%; height:56px; background:linear-gradient(135deg, var(--bg-app) 50%, #1a1d26 50%); border:1px solid var(--border); border-radius:var(--radius); display:flex; align-items:center; justify-content:center;">
+                    <span style="font-size:10px; font-weight:600; color:var(--text-tertiary);">Auto</span>
+                  </div>
+                  <span style="font-size:11px; color:var(--text-tertiary);">跟随系统</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-section">
+            <div class="settings-section-title">阅读排版</div>
+            <div class="card" style="padding:0; overflow:hidden;">
+              <div class="settings-row">
+                <div>
+                  <div class="settings-row-label">正文字号</div>
+                  <div class="settings-row-desc">文章内容区字体大小</div>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <button class="btn btn-ghost" style="padding:4px 10px; font-size:12px;">A−</button>
+                  <span style="font-size:12px; font-weight:600; color:var(--text-primary); min-width:28px; text-align:center;">15</span>
+                  <button class="btn btn-ghost" style="padding:4px 10px; font-size:12px;">A+</button>
+                </div>
+              </div>
+              <div class="settings-row">
+                <div>
+                  <div class="settings-row-label">行间距</div>
+                </div>
+                <select class="settings-select">
+                  <option>1.6</option>
+                  <option selected>1.8</option>
+                  <option>2.0</option>
+                </select>
+              </div>
+              <div class="settings-row">
+                <div>
+                  <div class="settings-row-label">信息密度</div>
+                  <div class="settings-row-desc">文章列表的显示密度</div>
+                </div>
+                <select class="settings-select">
+                  <option>紧凑</option>
+                  <option selected>标准</option>
+                  <option>宽松</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-section">
+            <div class="settings-section-title">Today 卡片偏好</div>
+            <div class="card" style="padding:0; overflow:hidden;">
+              <div class="settings-row">
+                <div>
+                  <div class="settings-row-label">默认展开 Why It Matters</div>
+                  <div class="settings-row-desc">进入 Today 时自动展开所有判断说明</div>
+                </div>
+                <button class="toggle" onclick="this.classList.toggle('on')"></button>
+              </div>
+              <div class="settings-row">
+                <div>
+                  <div class="settings-row-label">显示置信度指标</div>
+                  <div class="settings-row-desc">在信号卡片上显示 AI 置信度</div>
+                </div>
+                <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Behavior Panel -->
+        <div id="settings-panel-behavior" class="settings-panel-content">
+          <div class="settings-section">
+            <div class="settings-section-title">启动行为</div>
+            <div class="card" style="padding:0; overflow:hidden;">
+              <div class="settings-row">
+                <div>
+                  <div class="settings-row-label">启动时打开页面</div>
+                  <div class="settings-row-desc">应用启动时默认显示的页面</div>
+                </div>
+                <select class="settings-select">
+                  <option selected>Today</option>
+                  <option>上次打开的页面</option>
+                  <option>Topics</option>
+                  <option>Feeds</option>
+                </select>
+              </div>
+              <div class="settings-row">
+                <div>
+                  <div class="settings-row-label">启动时自动同步</div>
+                  <div class="settings-row-desc">启动后立即刷新所有订阅源</div>
+                </div>
+                <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+              </div>
+              <div class="settings-row">
+                <div>
+                  <div class="settings-row-label">启动时触发 AI 分析</div>
+                  <div class="settings-row-desc">同步完成后自动运行今日信号分析</div>
+                </div>
+                <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-section">
+            <div class="settings-section-title">通知</div>
+            <div class="card" style="padding:0; overflow:hidden;">
+              <div class="settings-row">
+                <div>
+                  <div class="settings-row-label">Today 分析完成通知</div>
+                  <div class="settings-row-desc">分析完成时显示系统通知</div>
+                </div>
+                <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+              </div>
+              <div class="settings-row">
+                <div>
+                  <div class="settings-row-label">新高信号提醒</div>
+                  <div class="settings-row-desc">出现高置信度信号时发送通知</div>
+                </div>
+                <button class="toggle" onclick="this.classList.toggle('on')"></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-section">
+            <div class="settings-section-title">数据与缓存</div>
+            <div class="card" style="padding:0; overflow:hidden;">
+              <div class="settings-row">
+                <div>
+                  <div class="settings-row-label">文章保留时长</div>
+                  <div class="settings-row-desc">多久后自动清理已读文章</div>
+                </div>
+                <select class="settings-select">
+                  <option>7 天</option>
+                  <option>14 天</option>
+                  <option selected>30 天</option>
+                  <option>永久</option>
+                </select>
+              </div>
+              <div class="settings-row">
+                <div>
+                  <div class="settings-row-label">缓存大小</div>
+                  <div class="settings-row-desc" style="color:var(--text-secondary);">当前使用 <strong>248 MB</strong></div>
+                </div>
+                <button class="btn btn-ghost" style="font-size:11px;">清理缓存</button>
+              </div>
+              <div class="settings-row">
+                <div>
+                  <div class="settings-row-label">导出数据</div>
+                  <div class="settings-row-desc">收藏、笔记和订阅列表</div>
+                </div>
+                <button class="btn btn-ghost" style="font-size:11px;">
+                  <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg>
+                  导出
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-section">
+            <div class="settings-section-title">关于</div>
+            <div class="card" style="padding:14px 16px; display:flex; align-items:center; gap:12px;">
+              <div style="width:36px; height:36px; background:var(--accent); border-radius:8px; display:flex; align-items:center; justify-content:center;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
+              </div>
+              <div style="flex:1;">
+                <div style="font-size:13px; font-weight:600; color:var(--text-primary);">Lettura</div>
+                <div style="font-size:11px; color:var(--text-tertiary);">Version 0.1.0-beta · Daily Intelligence Reader</div>
+              </div>
+              <button class="btn btn-ghost" style="font-size:11px;">检查更新</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div><!-- /page-settings -->
+
+
+<!-- ==================== PAGE: ONBOARDING ==================== -->
+<div id="page-onboarding" class="app-shell" style="display:none;">
+  <div style="flex:1; background:var(--bg-app); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:24px; overflow-y:auto;">
+    <!-- Progress dots -->
+    <div class="onboarding-progress" id="onboarding-progress">
+      <div class="onboarding-dot done" id="ob-dot-1"></div>
+      <div class="onboarding-dot active" id="ob-dot-2"></div>
+      <div class="onboarding-dot" id="ob-dot-3"></div>
+      <div class="onboarding-dot" id="ob-dot-4"></div>
+    </div>
+
+    <!-- Step 1: Welcome -->
+    <div class="onboarding-step" id="onboarding-step-1">
+      <div class="onboarding-card" style="text-align:center;">
+        <div style="width:56px; height:56px; background:var(--accent); border-radius:14px; display:flex; align-items:center; justify-content:center; margin:0 auto 20px;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
+        </div>
+        <h1 style="font-size:24px; font-weight:700; color:var(--text-primary); margin-bottom:10px; line-height:1.3;">欢迎使用 Lettura</h1>
+        <p style="font-size:14px; color:var(--text-secondary); line-height:1.8; margin-bottom:8px;">
+          Lettura 不是普通的 RSS 阅读器。<br>
+          它是你的<strong>每日判断入口</strong>——帮你从信息流中提炼真正重要的变化。
+        </p>
+        <p style="font-size:13px; color:var(--text-tertiary); line-height:1.7; margin-bottom:28px;">
+          每天早晨，Lettura 分析你订阅的所有来源，<br>提炼出 3–5 个高信号判断，而不是把 200 篇文章都推给你。
+        </p>
+        <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:0;">
+          <button class="btn btn-primary" style="justify-content:center; padding:10px 24px; font-size:13px;" onclick="showOnboardingStep(2)">
+            开始设置（约 2 分钟）
+            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+          <button class="btn btn-ghost" style="justify-content:center; font-size:12px;" onclick="showPage('today')">先跳过，自己探索</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2: Interest Selection -->
+    <div class="onboarding-step" id="onboarding-step-2">
+      <div class="onboarding-card">
+        <div style="font-size:10px; font-weight:700; color:var(--accent); text-transform:uppercase; letter-spacing:0.6px; margin-bottom:8px;">第 1 步 · 兴趣选择</div>
+        <h2 style="font-size:20px; font-weight:700; color:var(--text-primary); margin-bottom:6px;">你主要关注哪些领域？</h2>
+        <p style="font-size:12px; color:var(--text-tertiary); margin-bottom:4px;">选择至少一个，我们会推荐匹配的 Starter Pack。</p>
+        <div class="interest-grid">
+          <button class="interest-chip selected" onclick="this.classList.toggle('selected')">
+            <div style="font-size:20px; margin-bottom:4px;">🤖</div>AI &amp; ML
+          </button>
+          <button class="interest-chip selected" onclick="this.classList.toggle('selected')">
+            <div style="font-size:20px; margin-bottom:4px;">⚙️</div>开发者工具
+          </button>
+          <button class="interest-chip" onclick="this.classList.toggle('selected')">
+            <div style="font-size:20px; margin-bottom:4px;">🚀</div>初创 &amp; 创业
+          </button>
+          <button class="interest-chip" onclick="this.classList.toggle('selected')">
+            <div style="font-size:20px; margin-bottom:4px;">🎨</div>设计 &amp; UX
+          </button>
+          <button class="interest-chip" onclick="this.classList.toggle('selected')">
+            <div style="font-size:20px; margin-bottom:4px;">📦</div>产品管理
+          </button>
+          <button class="interest-chip" onclick="this.classList.toggle('selected')">
+            <div style="font-size:20px; margin-bottom:4px;">💡</div>科学 &amp; 研究
+          </button>
+          <button class="interest-chip" onclick="this.classList.toggle('selected')">
+            <div style="font-size:20px; margin-bottom:4px;">💰</div>商业 &amp; 商业化
+          </button>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; padding-top:8px;">
+          <button class="btn btn-ghost" style="font-size:12px;" onclick="showOnboardingStep(1)">上一步</button>
+          <button class="btn btn-primary" style="font-size:12px;" onclick="showOnboardingStep(3)">
+            下一步：选择订阅包
+            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3: Starter Packs -->
+    <div class="onboarding-step active" id="onboarding-step-3">
+      <div class="onboarding-card">
+        <div style="font-size:10px; font-weight:700; color:var(--accent); text-transform:uppercase; letter-spacing:0.6px; margin-bottom:8px;">第 2 步 · 安装订阅包</div>
+        <h2 style="font-size:20px; font-weight:700; color:var(--text-primary); margin-bottom:4px;">选择 Starter Pack</h2>
+        <p style="font-size:12px; color:var(--text-tertiary); margin-bottom:14px;">每个 Pack 包含精选的高质量信息源，安装后可在 Feeds 中随时调整。</p>
+        <div style="max-height:320px; overflow-y:auto; padding-right:4px;">
+          <div class="starter-pack-card selected" onclick="this.classList.toggle('selected')">
+            <div class="pack-icon">🤖</div>
+            <div style="flex:1; min-width:0;">
+              <div class="pack-name">AI & Machine Learning</div>
+              <div class="pack-desc">OpenAI Blog、Anthropic、Hugging Face、arXiv AI、DeepMind 等</div>
+              <div class="pack-meta">8 个来源 · 高质量 · 推荐</div>
+            </div>
+            <div class="pack-checkmark">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="m5 12 5 5L20 7"/></svg>
+            </div>
+          </div>
+          <div class="starter-pack-card selected" onclick="this.classList.toggle('selected')">
+            <div class="pack-icon">⚙️</div>
+            <div style="flex:1; min-width:0;">
+              <div class="pack-name">Developer Tools & OSS</div>
+              <div class="pack-desc">Hacker News、GitHub Blog、Rust Blog、Simon Willison 等</div>
+              <div class="pack-meta">10 个来源 · 高频更新</div>
+            </div>
+            <div class="pack-checkmark">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="m5 12 5 5L20 7"/></svg>
+            </div>
+          </div>
+          <div class="starter-pack-card" onclick="this.classList.toggle('selected')">
+            <div class="pack-icon">🚀</div>
+            <div style="flex:1; min-width:0;">
+              <div class="pack-name">Startup & Venture Capital</div>
+              <div class="pack-desc">TechCrunch、The Information、Stratechery、First Round Review 等</div>
+              <div class="pack-meta">7 个来源 · 中频更新</div>
+            </div>
+            <div class="pack-checkmark">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--border)" stroke-width="2"><path d="m5 12 5 5L20 7"/></svg>
+            </div>
+          </div>
+          <div class="starter-pack-card" onclick="this.classList.toggle('selected')">
+            <div class="pack-icon">🎨</div>
+            <div style="flex:1; min-width:0;">
+              <div class="pack-name">Design & UX</div>
+              <div class="pack-desc">Sidebar.io、Nielsen Norman Group、Figma Blog、Smashing Magazine 等</div>
+              <div class="pack-meta">6 个来源 · 低频精品</div>
+            </div>
+            <div class="pack-checkmark">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--border)" stroke-width="2"><path d="m5 12 5 5L20 7"/></svg>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px;">
+          <button class="btn btn-ghost" style="font-size:12px;" onclick="showOnboardingStep(2)">上一步</button>
+          <button class="btn btn-primary" style="font-size:12px;" onclick="showOnboardingStep(4)">
+            安装所选 Pack (2)
+            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 4: Installation Progress -->
+    <div class="onboarding-step" id="onboarding-step-4">
+      <div class="onboarding-card" style="text-align:center;">
+        <div style="width:52px; height:52px; background:var(--accent-light); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 16px;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+        </div>
+        <h2 style="font-size:20px; font-weight:700; color:var(--text-primary); margin-bottom:6px;">正在安装订阅包</h2>
+        <p style="font-size:12px; color:var(--text-tertiary); margin-bottom:20px;">这通常只需要几秒钟。</p>
+        <div style="text-align:left; border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; margin-bottom:16px;">
+          <div class="install-item">
+            <div style="width:22px; height:22px; border-radius:50%; background:var(--green); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="m5 12 5 5L20 7"/></svg>
+            </div>
+            <div style="flex:1;">
+              <div style="font-size:12px; font-weight:500; color:var(--text-primary);">AI & Machine Learning Pack</div>
+              <div style="font-size:11px; color:var(--text-tertiary);">8 个来源 · 已完成</div>
+            </div>
+            <span class="tag tag-green" style="font-size:10px;">完成</span>
+          </div>
+          <div class="install-item">
+            <div style="width:22px; height:22px; border-radius:50%; background:var(--accent-light); border:2px solid var(--accent); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+              <div style="width:8px; height:8px; border-radius:50%; background:var(--accent); animation:pulse 1s infinite;"></div>
+            </div>
+            <div style="flex:1;">
+              <div style="font-size:12px; font-weight:500; color:var(--text-primary);">Developer Tools & OSS Pack</div>
+              <div style="font-size:11px; color:var(--text-tertiary);">10 个来源 · 同步中...</div>
+            </div>
+            <span class="tag tag-accent" style="font-size:10px;">进行中</span>
+          </div>
+          <div class="install-item" style="opacity:0.4;">
+            <div style="width:22px; height:22px; border-radius:50%; background:var(--border); flex-shrink:0;"></div>
+            <div style="flex:1;">
+              <div style="font-size:12px; color:var(--text-tertiary);">初始 AI 信号分析</div>
+              <div style="font-size:11px; color:var(--text-tertiary);">等待同步完成...</div>
+            </div>
+          </div>
+        </div>
+        <div class="progress-bar" style="margin-bottom:8px;">
+          <div class="fill" style="width:60%;"></div>
+        </div>
+        <div style="font-size:11px; color:var(--text-tertiary); margin-bottom:20px;">60% · 剩余约 4 秒</div>
+        <button class="btn btn-primary" style="width:100%; justify-content:center; padding:10px;" onclick="showOnboardingStep(5)">
+          安装已完成 → 前往 Today
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div><!-- /page-onboarding -->
 
 
 <!-- ==================== PAGE: SEARCH ==================== -->
@@ -2730,36 +3790,55 @@ function showContextMenu(e, row) {
   menu.style.display = 'block';
 }
 
-function toggleInlineReader(item) {
-  const reader = item.nextElementSibling;
-  if (!reader || !reader.classList.contains('inline-reader')) return;
-  const isVisible = reader.style.display !== 'none';
-  reader.style.display = isVisible ? 'none' : 'block';
-  item.classList.toggle('expanded', !isVisible);
-  if (!isVisible) {
-    item.closest('.main-scroll').querySelectorAll('.article-list-item').forEach(el => {
-      if (el !== item) el.style.opacity = '0.5';
+function openArticleReader(item) {
+  const reader = document.getElementById('art-inline-reader');
+  if (!reader) return;
+  const currentActive = document.querySelector('#state-articles .art-row.active');
+  if (currentActive === item) { closeArticleReader(); return; }
+  document.querySelectorAll('#state-articles .art-row').forEach(el => el.classList.remove('active', 'dimmed'));
+  item.classList.add('active');
+  reader.classList.remove('open');
+  reader.style.display = 'none';
+  item.after(reader);
+  document.querySelectorAll('#state-articles .art-row').forEach(el => {
+    if (el !== item) el.classList.add('dimmed');
+  });
+  requestAnimationFrame(() => {
+    reader.style.display = 'block';
+    requestAnimationFrame(() => {
+      reader.classList.add('open');
+      // scroll item just above the viewport so reader fills the visible area
+      const scrollContainer = document.getElementById('art-scroll');
+      if (scrollContainer) {
+        const containerRect = scrollContainer.getBoundingClientRect();
+        const itemRect = item.getBoundingClientRect();
+        const targetScroll = scrollContainer.scrollTop + (itemRect.bottom - containerRect.top);
+        scrollContainer.scrollTo({ top: targetScroll, behavior: 'smooth' });
+      }
     });
-    setTimeout(() => item.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
-  } else {
-    item.closest('.main-scroll').querySelectorAll('.article-list-item').forEach(el => {
-      el.style.opacity = '';
-    });
-  }
+  });
 }
 
-function closeInlineReader() {
-  const reader = document.querySelector('#state-articles .inline-reader');
-  if (reader) {
-    reader.style.display = 'none';
-    const prevItem = reader.previousElementSibling;
-    if (prevItem) {
-      prevItem.classList.remove('expanded');
-      prevItem.closest('.main-scroll').querySelectorAll('.article-list-item').forEach(el => {
-        el.style.opacity = '';
-      });
-    }
-  }
+function closeArticleReader() {
+  const reader = document.getElementById('art-inline-reader');
+  if (reader) { reader.classList.remove('open'); setTimeout(() => { reader.style.display = 'none'; }, 220); }
+  document.querySelectorAll('#state-articles .art-row').forEach(el => el.classList.remove('active', 'dimmed'));
+}
+
+function prevArticle() {
+  const active = document.querySelector('#state-articles .art-row.active');
+  if (!active) return;
+  let prev = active.previousElementSibling;
+  while (prev && !prev.classList.contains('art-row')) prev = prev.previousElementSibling;
+  if (prev) openArticleReader(prev);
+}
+
+function nextArticle() {
+  const reader = document.getElementById('art-inline-reader');
+  if (!reader) return;
+  let next = reader.nextElementSibling;
+  while (next && !next.classList.contains('art-row')) next = next.nextElementSibling;
+  if (next) openArticleReader(next);
 }
 
 document.addEventListener('click', (e) => {
@@ -2768,6 +3847,25 @@ document.addEventListener('click', (e) => {
     ctx.style.display = 'none';
   }
 });
+
+function showSettingsTab(tab, btn) {
+  document.querySelectorAll('#page-settings .settings-panel-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('#page-settings .settings-tab').forEach(el => el.classList.remove('active'));
+  document.getElementById('settings-panel-' + tab)?.classList.add('active');
+  (btn || document.querySelector(`#page-settings .settings-tab[onclick*="${tab}"]`))?.classList.add('active');
+}
+
+function showOnboardingStep(n) {
+  if (n === 5) { showPage('today'); return; }
+  document.querySelectorAll('.onboarding-step').forEach(el => el.classList.remove('active'));
+  const step = document.getElementById('onboarding-step-' + n);
+  if (step) step.classList.add('active');
+  document.querySelectorAll('#onboarding-progress .onboarding-dot').forEach((dot, i) => {
+    dot.classList.remove('active', 'done');
+    if (i + 1 < n) dot.classList.add('done');
+    else if (i + 1 === n) dot.classList.add('active');
+  });
+}
 
 function showState(state) {
   document.querySelectorAll('#main-area .plan-b-state').forEach(el => el.classList.remove('active'));

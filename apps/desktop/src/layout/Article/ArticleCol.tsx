@@ -58,6 +58,7 @@ export interface ArticleColRefObject {
   expandPrevArticle: () => void;
   canExpandPrev: boolean;
   canExpandNext: boolean;
+  markAllRead: () => Promise<void>;
 }
 
 interface ArticleColProps {
@@ -66,6 +67,8 @@ interface ArticleColProps {
   wide?: boolean;
   showFilters?: boolean;
   showManagementActions?: boolean;
+  hideHeader?: boolean;
+  itemDensity?: import("@/components/ArticleItem").ArticleItemDensity;
 }
 
 export const ArticleCol = React.memo(
@@ -78,6 +81,8 @@ export const ArticleCol = React.memo(
         wide = false,
         showFilters = false,
         showManagementActions = false,
+        hideHeader = false,
+        itemDensity: itemDensityProp,
       } = props;
       const params = useParams() as { name: string };
       const navigate = useNavigate();
@@ -405,6 +410,7 @@ export const ArticleCol = React.memo(
           expandPrevArticle,
           canExpandPrev: expandedIdx > 0,
           canExpandNext: expandedIdx >= 0 && expandedIdx < articles.length - 1,
+          markAllRead,
         };
       });
 
@@ -418,7 +424,7 @@ export const ArticleCol = React.memo(
             wide ? "flex-1 min-w-0" : "w-[var(--app-article-width)]",
           )}
         >
-          <div className="shrink-0 border-b border-[var(--gray-4)] bg-[var(--gray-1)] px-4 py-3">
+          {!hideHeader && (<div className="shrink-0 border-b border-[var(--gray-4)] bg-[var(--gray-1)] px-4 py-3">
             <div className="flex min-w-0 items-center gap-3">
               <div className="min-w-0 flex-1">
                 <div className="truncate text-sm font-semibold text-[var(--gray-12)]">
@@ -517,14 +523,14 @@ export const ArticleCol = React.memo(
                 </div>
               )}
             </div>
-          </div>
+          </div>)}
           <ArticleListVirtual
             ref={listRef}
             articles={articles}
             title={params.name}
             type={type}
             feedUuid={feedUuid}
-            itemDensity={wide ? "regular" : "compact"}
+            itemDensity={itemDensityProp ?? (wide ? "regular" : "compact")}
             isLoading={isLoading}
             isEmpty={isEmpty}
             isReachingEnd={isReachingEnd}
