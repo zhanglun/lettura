@@ -20,11 +20,11 @@ export function EvidencePanel({ signal }: EvidencePanelProps) {
   const visibleSources = expanded ? signal.sources : signal.sources.slice(0, PREVIEW_COUNT);
 
   return (
-    <div className="min-w-0 p-4">
+    <div className="min-w-0 px-4 py-5">
       <div className="flex items-center gap-2 mb-2.5">
-        <Text size="2" weight="medium" className="min-w-0 text-[var(--gray-12)] uppercase text-[11px] tracking-wide">
+        <div className="text-[11px] font-semibold text-[var(--gray-9)] uppercase tracking-[0.5px]">
           {t("today.right_panel.evidence_title")}
-        </Text>
+        </div>
         {hasMore && (
           <Text size="1" className="text-[var(--gray-8)]">
             ({signal.sources.length})
@@ -38,7 +38,7 @@ export function EvidencePanel({ signal }: EvidencePanelProps) {
             key={source.article_id}
             className={`flex min-w-0 gap-2.5 py-2 text-xs ${index < visibleSources.length - 1 ? 'border-b border-[var(--gray-4)]' : ''}`}
           >
-            <span className="min-w-[72px] max-w-[92px] shrink-0 break-words font-medium leading-relaxed text-[var(--gray-12)]">
+            <span className="min-w-[80px] max-w-[100px] shrink-0 break-words font-medium leading-relaxed text-[var(--gray-12)]">
               {source.feed_title}
             </span>
             <span className="min-w-0 break-words leading-relaxed text-[var(--gray-11)]">

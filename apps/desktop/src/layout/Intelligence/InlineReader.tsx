@@ -50,20 +50,14 @@ export function InlineReader({
   const canGoNext = currentIndex < sources.length - 1;
   const sourceDate = formatSourceDate(source.pub_date);
 
-  const rawContent = pickArticleContent(
-    articleDetail?.content,
-    articleDetail?.description,
-    source.excerpt,
-  );
+  const rawContent = pickArticleContent(articleDetail?.content, articleDetail?.description, source.excerpt);
   const processedHtml = processArticleHtml(rawContent);
   const contentElement = wraperWithRadix(processedHtml);
   const hasContent = rawContent.length > 0;
 
   return (
     <div className="flex h-full min-w-0 flex-col">
-      <div
-        className="flex min-w-0 items-center gap-2 px-5 py-3 border-b border-[var(--gray-4)] shrink-0"
-      >
+      <div className="flex min-w-0 items-center gap-2 px-5 py-3 border-b border-[var(--gray-4)] shrink-0">
         <button
           onClick={onBack}
           className="flex shrink-0 items-center gap-1 text-[11px] text-[var(--gray-9)] hover:text-[var(--gray-12)] transition-colors px-2 py-1 rounded hover:bg-[var(--gray-3)]"
@@ -120,11 +114,7 @@ export function InlineReader({
         >
           {source.feed_title}
         </div>
-        <h1
-          className="mb-3 break-words text-[20px] font-bold leading-[1.3] text-[var(--gray-12)]"
-        >
-          {source.title}
-        </h1>
+        <h1 className="mb-3 break-words text-[20px] font-bold leading-[1.3] text-[var(--gray-12)]">{source.title}</h1>
         <div className="mb-6 break-words text-[12px] leading-5 text-[var(--gray-9)]">
           {source.feed_title}
           {sourceDate && <> · {sourceDate}</>}

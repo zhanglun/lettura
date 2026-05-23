@@ -1,8 +1,7 @@
-import { Text, Flex } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { RouteConfig } from "@/config";
-import { Compass, ArrowRight, Settings } from "lucide-react";
+import { Layers, Rss, Settings } from "lucide-react";
 
 interface NextStepsProps {
   hasSignals: boolean;
@@ -15,37 +14,34 @@ export function NextSteps({ hasSignals, hasApiKey, onOpenSettings }: NextStepsPr
   const navigate = useNavigate();
 
   return (
-    <div className="min-w-0 p-4 border-t border-[var(--gray-4)]">
-      <Flex align="center" gap="2" mb="3">
-        <Compass size={16} className="text-[var(--gray-9)]" />
-        <Text size="2" weight="medium" className="min-w-0 break-words text-[var(--gray-12)]">
-          {t("today.right_panel.next_steps.title")}
-        </Text>
-      </Flex>
+    <div className="min-w-0 px-4 py-5 border-t border-[var(--gray-3)]">
+      <div className="text-[11px] font-semibold text-[var(--gray-9)] uppercase tracking-[0.5px] mb-2.5">
+        {t("today.right_panel.next_steps.title")}
+      </div>
 
       <div className="flex min-w-0 flex-col gap-2">
         {hasSignals && (
           <button
             onClick={() => navigate(RouteConfig.LOCAL_TOPICS)}
-            className="flex min-w-0 items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-[var(--gray-11)] hover:bg-[var(--gray-3)] hover:text-[var(--gray-12)] transition-colors"
+            className="flex min-w-0 w-full items-center gap-1.5 rounded-md px-3 py-1.5 text-left text-xs font-medium text-[var(--gray-11)] border border-[var(--gray-5)] bg-transparent hover:bg-[var(--gray-2)] hover:border-[var(--gray-6)] transition-colors"
           >
-            <ArrowRight size={14} className="shrink-0" />
+            <Layers size={14} className="shrink-0" />
             <span className="min-w-0 break-words">{t("today.right_panel.next_steps.explore_topics")}</span>
           </button>
         )}
 
         <button
           onClick={() => navigate(RouteConfig.LOCAL_ALL)}
-          className="flex min-w-0 items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-[var(--gray-11)] hover:bg-[var(--gray-3)] hover:text-[var(--gray-12)] transition-colors"
+          className="flex min-w-0 w-full items-center gap-1.5 rounded-md px-3 py-1.5 text-left text-xs font-medium text-[var(--gray-11)] border border-[var(--gray-5)] bg-transparent hover:bg-[var(--gray-2)] hover:border-[var(--gray-6)] transition-colors"
         >
-          <ArrowRight size={14} className="shrink-0" />
+          <Rss size={14} className="shrink-0" />
           <span className="min-w-0 break-words">{t("today.right_panel.next_steps.manage_feeds")}</span>
         </button>
 
         {!hasApiKey && (
           <button
             onClick={onOpenSettings}
-            className="flex min-w-0 items-center gap-2 rounded-md px-3 py-2 text-left text-sm text-[var(--accent-9)] hover:bg-[var(--accent-2)] transition-colors"
+            className="flex min-w-0 w-full items-center gap-1.5 rounded-md px-3 py-1.5 text-left text-xs font-medium text-[var(--accent-9)] border border-[var(--accent-6)] bg-transparent hover:bg-[var(--accent-2)] transition-colors"
           >
             <Settings size={14} className="shrink-0" />
             <span className="min-w-0 break-words">{t("today.right_panel.next_steps.configure_ai")}</span>

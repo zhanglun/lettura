@@ -39,7 +39,7 @@ export function TodayOverview({
   if (overviewError) {
     return (
       <div className="flex items-center gap-2 px-3 py-2 bg-[var(--accent-a3)] rounded-md mb-5">
-        <Text size="2" className="text-[var(--gray-9)]">
+        <Text size="2" className="text-[var(--accent-11)]">
           {t("today.overview_error")}
         </Text>
       </div>
@@ -49,7 +49,7 @@ export function TodayOverview({
   if (!overview) {
     return (
       <div className="flex items-center gap-2 px-3 py-2 bg-[var(--accent-a3)] rounded-md mb-5">
-        <Text size="2" className="text-[var(--gray-9)]">
+        <Text size="2" className="text-[var(--accent-11)]">
           {t("today.overview_no_data")}
         </Text>
       </div>
@@ -63,8 +63,8 @@ export function TodayOverview({
   return (
     <div className="flex items-center gap-2 px-3 py-2 bg-[var(--accent-a3)] rounded-md mb-5">
       <Clock size={14} className="shrink-0 text-[var(--accent-9)]" />
-      <Text size="2" className="text-[var(--gray-11)]">
-        <strong>{t("today.overview_title")}</strong> {overview.summary}
+      <Text size="2" className="text-[var(--accent-11)]">
+        <strong>{t("today.overview_title")}：</strong> {overview.summary}
       </Text>
       {minutesAgo !== null && (
         <Text size="1" className="shrink-0 text-[var(--gray-8)]">

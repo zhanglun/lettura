@@ -95,7 +95,7 @@ export function SidebarToday() {
       <div className="flex-1 overflow-y-auto">
         <div className="px-3 pt-3 pb-2">
           <div className="px-2 py-1.5">
-            <span className="text-xs font-medium text-[var(--gray-11)]">
+            <span className="text-[10px] font-semibold text-[var(--gray-9)] uppercase tracking-[0.5px]">
               {t("layout.sidebar.today_focus")}
             </span>
           </div>
@@ -137,7 +137,7 @@ export function SidebarToday() {
 
         <div className="px-3 pb-2">
           <div className="px-2 py-1.5">
-            <span className="text-xs font-medium text-[var(--gray-11)]">
+            <span className="text-[10px] font-semibold text-[var(--gray-9)] uppercase tracking-[0.5px]">
               {t("layout.sidebar.tracked_topics")}
             </span>
             {showingTopicSuggestions && (

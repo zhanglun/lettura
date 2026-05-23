@@ -7,7 +7,7 @@ import { Signal } from "@/stores/createTodaySlice";
 import { RouteConfig } from "@/config";
 import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
-import { ChevronDown, ChevronUp, Layers } from "lucide-react";
+import { ChevronDown, ChevronRight, ChevronUp, Layers } from "lucide-react";
 import { SignalSourceList } from "./SignalSourceList";
 
 type SignalLevel = "high" | "medium" | "low";
@@ -167,18 +167,6 @@ export function SignalCard({ signal, isActive, isDimmed, onInlineRead, activeRea
             ))}
           </span>
 
-          {!isDimmed && (
-            <span className={`text-[10px] font-medium ${
-              level === "high" ? "text-[var(--accent-9)]" 
-              : level === "medium" ? "text-[var(--amber-11)]" 
-              : "text-[var(--gray-9)]"
-            }`}>
-              {level === "high" ? t("today.signal.level_top") 
-               : level === "medium" ? t("today.signal.level_watch") 
-               : t("today.signal.level_signal")}
-            </span>
-          )}
-
           {signal.topic_id && signal.topic_title && signal.topic_uuid && (
             <Link
               to={`${RouteConfig.LOCAL_TOPICS}/${signal.topic_uuid}`}
@@ -233,7 +221,7 @@ export function SignalCard({ signal, isActive, isDimmed, onInlineRead, activeRea
               {wimExpanded ? (
                 <ChevronDown size={12} />
               ) : (
-                <ChevronUp size={12} />
+                <ChevronRight size={12} />
               )}
               <span>{t("today.why_short")}</span>
             </button>
@@ -322,7 +310,7 @@ export function SignalCard({ signal, isActive, isDimmed, onInlineRead, activeRea
                   : "text-[var(--gray-9)] hover:text-[var(--gray-11)]"
               }`}
             >
-              {t("today.feedback.useful")}
+              👍 {t("today.feedback.useful")}
             </button>
             <button
               onClick={() => handleFeedback("not_relevant")}
@@ -333,7 +321,7 @@ export function SignalCard({ signal, isActive, isDimmed, onInlineRead, activeRea
                   : "text-[var(--gray-9)] hover:text-[var(--gray-11)]"
               }`}
             >
-              {t("today.feedback.not_relevant")}
+              👎 {t("today.feedback.not_relevant")}
             </button>
             <button
               onClick={() => handleFeedback("follow_topic")}
@@ -344,7 +332,7 @@ export function SignalCard({ signal, isActive, isDimmed, onInlineRead, activeRea
                   : "text-[var(--gray-9)] hover:text-[var(--gray-11)]"
               }`}
             >
-              {t("today.feedback.follow_topic")}
+              📌 {t("today.feedback.follow_topic")}
             </button>
             {currentFeedback && (
               <button
