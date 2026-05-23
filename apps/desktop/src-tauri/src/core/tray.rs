@@ -1,8 +1,18 @@
 use tauri::{
+  image::Image,
   menu::{MenuBuilder, MenuItemBuilder},
   tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
   App, Manager, Runtime,
 };
+
+#[cfg(target_os = "macos")]
+const TRAY_ICON_BYTES: &[u8] = include_bytes!("../../icons/tray-mac.png");
+
+#[cfg(target_os = "windows")]
+const TRAY_ICON_BYTES: &[u8] = include_bytes!("../../icons/icon.ico");
+
+#[cfg(target_os = "linux")]
+const TRAY_ICON_BYTES: &[u8] = include_bytes!("../../icons/32x32.png");
 
 pub fn setup_tray<R: Runtime>(app: &App<R>) -> tauri::Result<()> {
   let open_window = MenuItemBuilder::with_id("open_window", "Open Lettura").build(app)?;
@@ -19,8 +29,12 @@ pub fn setup_tray<R: Runtime>(app: &App<R>) -> tauri::Result<()> {
     .item(&quit)
     .build()?;
 
+  let tray_icon = Image::from_bytes(TRAY_ICON_BYTES)
+    .expect("Failed to load tray icon");
+
   TrayIconBuilder::new()
-    .icon(app.default_window_icon().cloned().unwrap())
+    .icon(tray_icon)
+    .icon_as_template(cfg!(target_os = "macos"))
     .menu(&tray_menu)
     .on_menu_event(|app, event| match event.id().as_ref() {
       "open_window" => {

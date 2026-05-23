@@ -22,10 +22,6 @@
         "dragDropEnabled": false
       }
     ],
-    "trayIcon": {
-      "iconPath": "icons/tray-mac.png",
-      "iconAsTemplate": true
-    },
     "security": {
       "csp": null
     }
