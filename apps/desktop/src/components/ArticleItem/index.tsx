@@ -96,9 +96,8 @@ export const ArticleItem = React.forwardRef(
     if (density === "feeds") {
       return (
         <li
-          data-expand-uuid={article.uuid}
           className={clsx(
-            "list-none border-b border-[var(--gray-4)] flex items-center gap-2.5 px-4 py-2.5 select-none transition-colors cursor-pointer group border-l-2",
+            "list-none border-b border-[var(--gray-4)] flex items-center gap-2.5 px-[18px] py-2.5 select-none transition-colors cursor-pointer group border-l-2",
             "hover:bg-[var(--gray-a3)]",
             highlight
               ? "bg-[var(--accent-a2)] hover:bg-[var(--accent-a2)] border-l-[var(--accent-9)]"

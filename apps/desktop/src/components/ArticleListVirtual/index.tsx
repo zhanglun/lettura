@@ -1,12 +1,10 @@
 import React, {
-  Fragment,
   useEffect,
   useRef,
   useImperativeHandle,
   useCallback,
   useState,
 } from "react";
-import { AnimatePresence } from "framer-motion";
 import { ArticleItem, ArticleItemDensity } from "../ArticleItem";
 import { ArticleInlineReader } from "@/layout/Article/ArticleInlineReader";
 import { Skeleton } from "@radix-ui/themes";
@@ -29,6 +27,7 @@ export type ArticleListVirtualProps = {
   expandedArticleUuid?: string | null;
   onExpandArticle?: (article: ArticleResItem) => void;
   onCloseInlineReader?: () => void;
+  listHeader?: React.ReactNode;
 };
 
 export interface ArticleListVirtualRefType {
@@ -53,6 +52,7 @@ export const ArticleListVirtual = React.memo(
         expandedArticleUuid,
         onExpandArticle,
         onCloseInlineReader,
+        listHeader,
       } = props;
       const { t } = useTranslation();
       const internalParentRef = useRef<HTMLDivElement>(null);
@@ -60,12 +60,28 @@ export const ArticleListVirtual = React.memo(
 
       useEffect(() => {
         if (!expandedArticleUuid || !internalParentRef.current) return;
-        const target = internalParentRef.current.querySelector(
-          `[data-expand-uuid="${expandedArticleUuid}"]`,
-        );
-        if (target) {
-          target.scrollIntoView({ behavior: "smooth", block: "start" });
-        }
+        const container = internalParentRef.current;
+        const itemEl = container.querySelector(
+          `[data-item-uuid="${expandedArticleUuid}"]`,
+        ) as HTMLElement | null;
+        if (!itemEl) return;
+        // firstElementChild is the article row (the slot reader comes after it).
+        const rowEl = itemEl.firstElementChild as HTMLElement | null;
+        const target = rowEl ?? itemEl;
+        // Compute an ABSOLUTE scroll target so that the row's bottom sits exactly at
+        // the container's visible top (row just scrolled out of view, reader slot starts).
+        //
+        // Using scrollBy(delta) is buggy: delta is measured at one scroll position but
+        // scrollBy executes from a (possibly different) position mid-smooth-animation,
+        // causing error = execution_pos - measurement_pos that accumulates over time.
+        //
+        // scrollTo(absolute) is always correct: the target is row_abs_bottom regardless
+        // of the current scroll position or any in-progress smooth animation.
+        const delta =
+          target.getBoundingClientRect().bottom -
+          container.getBoundingClientRect().top;
+        const targetScrollTop = container.scrollTop + delta;
+        container.scrollTo({ top: targetScrollTop, behavior: "smooth" });
       }, [expandedArticleUuid]);
 
       useImperativeHandle(
@@ -121,7 +137,7 @@ export const ArticleListVirtual = React.memo(
       return (
         <div
           ref={internalParentRef}
-          className="w-full flex-1 overflow-y-auto scrollbar-gutter"
+          className="w-full flex-1 min-h-0 overflow-y-auto scrollbar-gutter"
         >
           {isEmpty ? (
             <div className="flex flex-col justify-center items-center gap-1 text-muted-foreground min-h-full py-20">
@@ -129,44 +145,37 @@ export const ArticleListVirtual = React.memo(
               <p>{t("Yay, no matching items.")}</p>
             </div>
           ) : (
-            <ul className="list-none m-0 p-0">
+            <>
+              {listHeader}
+              <ul className="list-none m-0 p-0">
               {articles.map((article, index) => {
-                const isExpanded = expandedArticleUuid != null && article.uuid === expandedArticleUuid;
-                const isDimmed = expandedArticleUuid != null && !isExpanded;
+                const isExpanded = expandedArticleUuid === article.uuid;
 
                 return (
-                  <Fragment key={`${article.uuid}-${index}`}>
-                    <li
-                      data-expand-uuid={article.uuid}
-                      className={isDimmed ? "opacity-50 transition-opacity duration-200" : ""}
-                    >
-                      <ArticleItem
+                  <li key={`${article.uuid}-${index}`} data-item-uuid={article.uuid}>
+                    <ArticleItem
+                      article={article}
+                      density={itemDensity}
+                      onRead={onArticleRead}
+                      onExpand={onExpandArticle}
+                    />
+                    {isExpanded && (
+                      <ArticleInlineReader
                         article={article}
-                        density={itemDensity}
-                        onRead={onArticleRead}
-                        onExpand={onExpandArticle}
+                        onClose={onCloseInlineReader!}
+                        goPrev={index > 0 ? () => onExpandArticle?.(articles[index - 1]) : undefined}
+                        goNext={index < articles.length - 1 ? () => onExpandArticle?.(articles[index + 1]) : undefined}
+                        canPrev={index > 0}
+                        canNext={index < articles.length - 1}
+                        index={index}
+                        total={articles.length}
                       />
-                    </li>
-                    <AnimatePresence initial={false}>
-                      {isExpanded && (
-                        <li key={`reader-${article.uuid}`}>
-                          <ArticleInlineReader
-                            article={article}
-                            onClose={onCloseInlineReader!}
-                            goPrev={index > 0 ? () => onExpandArticle?.(articles[index - 1]) : undefined}
-                            goNext={index < articles.length - 1 ? () => onExpandArticle?.(articles[index + 1]) : undefined}
-                            canPrev={index > 0}
-                            canNext={index < articles.length - 1}
-                            index={index}
-                            total={articles.length}
-                          />
-                        </li>
-                      )}
-                    </AnimatePresence>
-                  </Fragment>
+                    )}
+                  </li>
                 );
               })}
             </ul>
+            </>
           )}
           {isLoading && (
             <div className="p-2 pl-6 grid gap-1 relative shrink-0">
