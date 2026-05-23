@@ -35,7 +35,7 @@ export function FeedsPage() {
   }, [navigate]);
 
   return (
-    <div className="relative flex flex-1 overflow-hidden">
+    <div className="relative flex flex-1 h-full overflow-hidden">
       {feed ? (
         <FeedsArticles feed={feed} onBack={handleBack} />
       ) : (

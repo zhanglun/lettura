@@ -97,12 +97,12 @@ export function useArticle(props: UseArticleProps) {
   const getKey = useCallback(
     (pageIndex: number, previousPageData: any) => {
       if (previousPageData && !previousPageData.list?.length)
-        return null; // 已经到最后一页
+        return null;
 
       return {
         ...query,
         cursor: pageIndex + 1,
-      }; // SWR key
+      };
     },
     [query],
   );

@@ -279,7 +279,7 @@
       "level_watch": "关注",
       "level_signal": "信号"
     },
-    "why_short": "为什么",
+    "why_short": "为什么重要",
     "why_expand": "查看原因",
     "why_collapse": "收起",
     "sources": {
@@ -592,7 +592,10 @@
       "topics_list": "话题列表",
       "today_desc": "Daily Intelligence Reader — 每日判断入口",
       "topics_desc": "追踪主题、信号和相关来源",
-      "feeds_desc": "管理你的订阅源"
+      "feeds_desc": "管理你的订阅源",
+      "feeds": "文件夹",
+      "manage": "管理",
+      "manage_feeds": "管理订阅源"
     }
   },
   "starred": {

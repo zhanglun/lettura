@@ -1,8 +1,8 @@
-import React, { useRef, useCallback } from "react";
-import { ChevronLeft, CheckCheck, Search } from "lucide-react";
+import React, { useRef, useCallback, useState } from "react";
+import { ChevronLeft, CheckCheck, RefreshCw, Search } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type { FeedResItem } from "@/db";
-import { ArticleCol, ArticleColRefObject } from "@/layout/Article/ArticleCol";
+import { FeedArticleList, FeedArticleListRefObject } from "./FeedArticleList";
 import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
 import clsx from "clsx";
@@ -23,12 +23,14 @@ function getHealthColor(status: number | undefined): string {
 
 export const FeedsArticles = React.memo(function FeedsArticles({ feed, onBack }: FeedsArticlesProps) {
   const { t } = useTranslation();
-  const colRef = useRef<ArticleColRefObject>(null);
+  const colRef = useRef<FeedArticleListRefObject>(null);
+  const [syncing, setSyncing] = useState(false);
 
   const store = useBearStore(
     useShallow((state) => ({
       currentFilter: state.currentFilter,
       setFilter: state.setFilter,
+      syncArticles: state.syncArticles,
     })),
   );
 
@@ -42,9 +44,18 @@ export const FeedsArticles = React.memo(function FeedsArticles({ feed, onBack }:
     colRef.current?.markAllRead();
   }, []);
 
+  const handleSync = useCallback(async () => {
+    setSyncing(true);
+    try {
+      await store.syncArticles(feed);
+    } finally {
+      setSyncing(false);
+    }
+  }, [feed, store.syncArticles]);
+
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
-      {/* Unified header — matches mockup art-list-header */}
+      {/* Header — flex-shrink-0, stays fixed above scrolling list */}
       <div className="flex items-center justify-between gap-2 px-3.5 py-2 border-b border-[var(--gray-4)] bg-[var(--gray-1)] flex-shrink-0 flex-wrap">
         {/* Left: back + feed identity */}
         <div className="flex items-center gap-2 min-w-0">
@@ -69,7 +80,7 @@ export const FeedsArticles = React.memo(function FeedsArticles({ feed, onBack }:
           )}
         </div>
 
-        {/* Right: search + filter tabs + mark all read */}
+        {/* Right: search + filter tabs + sync + mark all read */}
         <div className="flex items-center gap-1.5 flex-shrink-0">
           <div className="relative">
             <Search size={12} className="absolute left-2 top-1/2 -translate-y-1/2 text-[var(--gray-9)] pointer-events-none" />
@@ -88,7 +99,7 @@ export const FeedsArticles = React.memo(function FeedsArticles({ feed, onBack }:
                   className={clsx(
                     "px-2.5 py-1 rounded text-[11px] font-medium transition-colors",
                     active
-                      ? "bg-white text-[var(--gray-12)] shadow-sm"
+                      ? "bg-[var(--color-panel-solid)] text-[var(--accent-9)] shadow-sm"
                       : "text-[var(--gray-9)] hover:text-[var(--gray-12)]",
                   )}
                   onClick={() => store.setFilter(f)}
@@ -100,6 +111,15 @@ export const FeedsArticles = React.memo(function FeedsArticles({ feed, onBack }:
           </div>
           <button
             type="button"
+            disabled={syncing}
+            className="flex items-center gap-1 px-2 py-1 text-[11px] text-[var(--gray-9)] hover:text-[var(--gray-12)] hover:bg-[var(--gray-a3)] rounded-md transition-colors disabled:opacity-50"
+            onClick={handleSync}
+            title={t("Reload feeds")}
+          >
+            <RefreshCw size={12} className={syncing ? "animate-spin" : ""} />
+          </button>
+          <button
+            type="button"
             className="flex items-center gap-1 px-2 py-1 text-[11px] text-[var(--gray-9)] hover:text-[var(--gray-12)] hover:bg-[var(--gray-a3)] rounded-md transition-colors"
             onClick={handleMarkAllRead}
           >
@@ -109,14 +129,8 @@ export const FeedsArticles = React.memo(function FeedsArticles({ feed, onBack }:
         </div>
       </div>
 
-      {/* Article list — flat feeds density, no inner header */}
-      <ArticleCol
-        ref={colRef}
-        feedUuid={feed.uuid}
-        hideHeader
-        itemDensity="feeds"
-        wide
-      />
+      {/* Article list — flex-1 min-h-0 so it scrolls without pushing header */}
+      <FeedArticleList ref={colRef} feedUuid={feed.uuid} feedUnread={feed.unread} />
     </div>
   );
 });

@@ -257,7 +257,7 @@
       "level_watch": "Watch",
       "level_signal": "Signal"
     },
-    "why_short": "Why",
+    "why_short": "Why it matters",
     "why_expand": "Show why",
     "why_collapse": "Hide",
     "sources": {
@@ -570,7 +570,10 @@
       "topics_list": "Topics",
       "today_desc": "Daily Intelligence Reader — your daily decision entry point",
       "topics_desc": "Track topics, signals, and related sources",
-      "feeds_desc": "Manage your subscriptions"
+      "feeds_desc": "Manage your subscriptions",
+      "feeds": "Folders",
+      "manage": "Manage",
+      "manage_feeds": "Manage subscriptions"
     }
   },
   "starred": {

@@ -6,7 +6,7 @@ import { Avatar, Button } from "@radix-ui/themes";
 import { ArticleResItem } from "@/db";
 import { MainPanel } from "@/components/MainPanel";
 import { View } from "../Article/View";
-import { useArticle } from "../Article/useArticle";
+import { useArticle } from "@/hooks/useArticle";
 import { getFeedLogo } from "@/helpers/parseXML";
 import {
   getCollections,

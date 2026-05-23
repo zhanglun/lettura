@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useMatch } from "react-router-dom";
+import { useMatch, useNavigate } from "react-router-dom";
 import {
   CheckCheck,
   Pencil,
+  Settings,
   Trash2,
   Rss,
   Image,
@@ -37,6 +38,7 @@ import { useTranslation } from "react-i18next";
 const ChannelList = (): JSX.Element => {
   console.log("ChannelList rendered");
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const isToday = useMatch(RouteConfig.LOCAL_TODAY);
   const isAll = useMatch(RouteConfig.LOCAL_ALL);
   const [editFolderDialogStatus, setEditFolderDialogStatus] = useState(false);
@@ -193,10 +195,24 @@ const ChannelList = (): JSX.Element => {
 
   return (
     <>
+      <div className="px-4 py-2 flex items-center justify-between flex-shrink-0">
+        <span className="text-[10px] font-semibold text-[var(--gray-9)] uppercase tracking-[0.5px]">
+          {t("layout.sidebar.feeds")}
+        </span>
+        <button
+          type="button"
+          onClick={() => navigate(`${RouteConfig.SETTINGS}?tab=sources`)}
+          className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] text-[var(--gray-9)] hover:text-[var(--gray-12)] hover:bg-[var(--gray-a3)] transition-colors"
+          title={t("layout.sidebar.manage_feeds")}
+        >
+          <Settings size={10} />
+          <span>{t("layout.sidebar.manage")}</span>
+        </button>
+      </div>
       <div
         {...scrollTopProps}
         className={clsx(
-          "flex-1 overflow-y-auto px-3 py-3 scrollbar-gutter",
+          "flex-1 overflow-y-auto px-3 pb-3 scrollbar-gutter",
           {
             "border-t": scrollTop > 0,
           },
