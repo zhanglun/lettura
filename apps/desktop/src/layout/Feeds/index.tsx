@@ -4,7 +4,7 @@ import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
 import type { FeedResItem } from "@/db";
 import { RouteConfig } from "@/config";
-import { FeedsArticles } from "./FeedsArticles";
+import { ArticleView } from "@/layout/Article/ArticleView";
 
 function findFeedByUuid(
   subscribes: FeedResItem[],
@@ -48,7 +48,7 @@ export function FeedsPage() {
   return (
     <div className="relative flex flex-1 h-full overflow-hidden">
       {feed ? (
-        <FeedsArticles feed={feed} onBack={handleBack} />
+        <ArticleView feed={feed} onBack={handleBack} />
       ) : (
         <div className="flex flex-1 items-center justify-center text-sm text-[var(--gray-9)]">
           从侧边栏选择一个来源开始阅读
