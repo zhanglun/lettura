@@ -66,9 +66,9 @@ export const ArticleList = React.memo(
               <p>{t("Yay, no matching items.")}</p>
             </div>
           ) : null}
-          <ul className="m-0 flex flex-col gap-[2px] pt-1 pr-0 pb-1 pl-1">
+          <div className="m-0 flex flex-col gap-[2px] pt-1 pr-0 pb-1 pl-1">
             {renderList()}
-          </ul>
+          </div>
           <div ref={loadRef} className="pt-1">
             {isLoading && (
               <div className="p-2 pl-6 grid gap-1 relative">
