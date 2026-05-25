@@ -130,7 +130,7 @@ export const FeedsArticles = React.memo(function FeedsArticles({ feed, onBack }:
       </div>
 
       {/* Article list — flex-1 min-h-0 so it scrolls without pushing header */}
-      <FeedArticleList ref={colRef} feedUuid={feed.uuid} feedUnread={feed.unread} />
+      <FeedArticleList ref={colRef} feedUuid={feed.uuid} />
     </div>
   );
 });

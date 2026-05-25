@@ -1,6 +1,7 @@
 import { Appearance } from "./Appearance";
 import { AIConfigPanel } from "./AIConfig";
 import { Sources } from "./Sources";
+import { Subscriptions } from "./Subscriptions";
 import { Behavior } from "./Behavior";
 import { SettingTabKey } from "@/typing";
 import clsx from "clsx";
@@ -11,10 +12,11 @@ import { RouteConfig } from "@/config";
 import "./index.css";
 
 const TABS: { key: SettingTabKey; labelKey: string }[] = [
-  { key: SettingTabKey.AI,         labelKey: "settings.tab.ai_title" },
-  { key: SettingTabKey.SOURCES,    labelKey: "settings.tab.sources_title" },
-  { key: SettingTabKey.APPEARANCE, labelKey: "settings.tab.appearance_title" },
-  { key: SettingTabKey.BEHAVIOR,   labelKey: "settings.tab.behavior_title" },
+  { key: SettingTabKey.AI,            labelKey: "settings.tab.ai_title" },
+  { key: SettingTabKey.SUBSCRIPTIONS, labelKey: "settings.tab.subscriptions_title" },
+  { key: SettingTabKey.SOURCES,       labelKey: "settings.tab.sources_title" },
+  { key: SettingTabKey.APPEARANCE,    labelKey: "settings.tab.appearance_title" },
+  { key: SettingTabKey.BEHAVIOR,      labelKey: "settings.tab.behavior_title" },
 ];
 
 export function SettingPage() {
@@ -23,9 +25,10 @@ export function SettingPage() {
   const search = useLocation().search;
   const tabParam = new URLSearchParams(search).get("tab");
   const effectiveTab =
-    tabParam === "sources"    ? SettingTabKey.SOURCES
-    : tabParam === "appearance" ? SettingTabKey.APPEARANCE
-    : tabParam === "behavior"   ? SettingTabKey.BEHAVIOR
+    tabParam === "subscriptions" ? SettingTabKey.SUBSCRIPTIONS
+    : tabParam === "sources"     ? SettingTabKey.SOURCES
+    : tabParam === "appearance"  ? SettingTabKey.APPEARANCE
+    : tabParam === "behavior"    ? SettingTabKey.BEHAVIOR
     : SettingTabKey.AI;
 
   const handleTabChange = (key: SettingTabKey) => {
@@ -68,10 +71,11 @@ export function SettingPage() {
       {/* Scrollable content */}
       <div className="flex-1 overflow-auto px-8 py-7">
         <div className="max-w-[860px]">
-          {effectiveTab === SettingTabKey.AI         && <AIConfigPanel />}
-          {effectiveTab === SettingTabKey.SOURCES     && <Sources />}
-          {effectiveTab === SettingTabKey.APPEARANCE  && <Appearance />}
-          {effectiveTab === SettingTabKey.BEHAVIOR    && <Behavior />}
+          {effectiveTab === SettingTabKey.AI            && <AIConfigPanel />}
+          {effectiveTab === SettingTabKey.SUBSCRIPTIONS && <Subscriptions />}
+          {effectiveTab === SettingTabKey.SOURCES       && <Sources />}
+          {effectiveTab === SettingTabKey.APPEARANCE    && <Appearance />}
+          {effectiveTab === SettingTabKey.BEHAVIOR      && <Behavior />}
         </div>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
@@ -26,12 +26,23 @@ export function FeedsPage() {
   const { uuid } = useParams<{ uuid?: string }>();
   const navigate = useNavigate();
 
-  const subscribes = useBearStore(useShallow((state) => state.subscribes));
+  const { subscribes, getSubscribes } = useBearStore(
+    useShallow((state) => ({
+      subscribes: state.subscribes,
+      getSubscribes: state.getSubscribes,
+    })),
+  );
 
   const feed = uuid ? findFeedByUuid(subscribes, uuid) : null;
 
+  useEffect(() => {
+    if (uuid && subscribes.length === 0) {
+      getSubscribes();
+    }
+  }, [uuid]);
+
   const handleBack = useCallback(() => {
-    navigate(`${RouteConfig.SETTINGS}?tab=sources`);
+    navigate(`${RouteConfig.SETTINGS}?tab=subscriptions`);
   }, [navigate]);
 
   return (

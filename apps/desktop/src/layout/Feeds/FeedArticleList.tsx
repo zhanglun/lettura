@@ -1,16 +1,13 @@
-import React, { useRef, useCallback, useImperativeHandle, useMemo } from "react";
+import React, { useRef, useCallback, useImperativeHandle } from "react";
 import { ArticleListVirtual, ArticleListVirtualRefType } from "@/components/ArticleListVirtual";
 import { useArticle } from "@/hooks/useArticle";
 import { retainArticleAfterRead } from "@/helpers/articleHelpers";
 import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
 import { ArticleResItem } from "@/db";
-import { ArticleReadStatus } from "@/typing";
-import { useTranslation } from "react-i18next";
 
 interface FeedArticleListProps {
   feedUuid: string;
-  feedUnread?: number;
 }
 
 export interface FeedArticleListRefObject {
@@ -19,8 +16,7 @@ export interface FeedArticleListRefObject {
 
 export const FeedArticleList = React.memo(
   React.forwardRef<FeedArticleListRefObject, FeedArticleListProps>((props, ref) => {
-    const { feedUuid, feedUnread } = props;
-    const { t } = useTranslation();
+    const { feedUuid } = props;
     const listRef = useRef<ArticleListVirtualRefType | null>(null);
 
     const { articles, isLoading, size, setSize, isEmpty, isReachingEnd, mutate } = useArticle({ feedUuid });
@@ -30,26 +26,8 @@ export const FeedArticleList = React.memo(
         expandedArticleUuid: state.expandedArticleUuid,
         setExpandedArticleUuid: state.setExpandedArticleUuid,
         markArticleListAsRead: state.markArticleListAsRead,
-        currentFilter: state.currentFilter,
       })),
     );
-
-    const listHeader = useMemo(() => {
-      const filterId = store.currentFilter.id;
-      let label: string;
-      if (filterId === ArticleReadStatus.UNREAD) {
-        label = feedUnread != null ? `${t("Unread")} · ${feedUnread}` : t("Unread");
-      } else if (filterId === ArticleReadStatus.READ) {
-        label = t("Read");
-      } else {
-        label = t("All articles");
-      }
-      return (
-        <div className="px-[18px] py-1 text-[10px] font-bold text-[var(--gray-9)] uppercase tracking-[0.5px] bg-[var(--gray-2)] border-b border-[var(--gray-4)]">
-          {label}
-        </div>
-      );
-    }, [store.currentFilter.id, feedUnread, t]);
 
     const handleArticleRead = useCallback(
       (nextArticle: ArticleResItem) => {
@@ -96,7 +74,6 @@ export const FeedArticleList = React.memo(
         expandedArticleUuid={store.expandedArticleUuid}
         onExpandArticle={handleExpandArticle}
         onCloseInlineReader={handleCloseInlineReader}
-        listHeader={listHeader}
       />
     );
   }),

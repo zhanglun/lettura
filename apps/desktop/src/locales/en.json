@@ -335,8 +335,10 @@
     "tab": {
       "ai_title": "AI Configuration",
       "ai_desc": "Model, key, connection status",
-      "sources_title": "Sources Management",
-      "sources_desc": "Feed health, packs, sync strategy",
+      "subscriptions_title": "Subscriptions",
+      "subscriptions_desc": "Manage your feed subscriptions",
+      "sources_title": "Sources",
+      "sources_desc": "Sync strategy, feed health, packs",
       "appearance_title": "Appearance & Reading",
       "appearance_desc": "Theme, font size, card density",
       "behavior_title": "App Behavior",

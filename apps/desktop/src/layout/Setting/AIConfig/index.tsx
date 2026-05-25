@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Select,
@@ -22,9 +22,7 @@ export function AIConfigPanel() {
 
   const [apiKey, setApiKey] = useState("");
   const [model, setModel] = useState("gpt-4o-mini");
-  const [embeddingModel, setEmbeddingModel] = useState(
-    "text-embedding-3-small",
-  );
+  const [embeddingModel, setEmbeddingModel] = useState("text-embedding-3-small");
   const [baseUrl, setBaseUrl] = useState("https://api.openai.com/v1");
   const [pipelineInterval, setPipelineInterval] = useState("6");
   const [enableEmbedding, setEnableEmbedding] = useState(true);
@@ -47,9 +45,11 @@ export function AIConfigPanel() {
   } | null>(null);
 
   useEffect(() => {
-    getDedupStats()
-      .then(setDedupStats)
-      .catch(() => {});
+    store.fetchAIConfig();
+    getDedupStats().then(setDedupStats).catch(() => {});
+  }, []);
+
+  useEffect(() => {
     if (store.aiConfig) {
       setModel(store.aiConfig.model || "gpt-4o-mini");
       setEmbeddingModel(store.aiConfig.embedding_model || "text-embedding-3-small");
@@ -60,7 +60,7 @@ export function AIConfigPanel() {
     }
   }, [store.aiConfig]);
 
-  const handleValidate = useCallback(async () => {
+  const handleValidate = async () => {
     if (!apiKey.trim() && !store.aiConfig?.has_api_key) return;
     setValidating(true);
     setValidationResult(null);
@@ -72,9 +72,9 @@ export function AIConfigPanel() {
     } finally {
       setValidating(false);
     }
-  }, [apiKey, store.aiConfig?.has_api_key]);
+  };
 
-  const handleSave = useCallback(async () => {
+  const handleSave = async () => {
     setSaving(true);
     try {
       await saveAIConfig({
@@ -93,9 +93,9 @@ export function AIConfigPanel() {
     } finally {
       setSaving(false);
     }
-  }, [apiKey, model, embeddingModel, baseUrl, pipelineInterval, enableEmbedding, store, t]);
+  };
 
-  const handleTriggerPipeline = useCallback(async () => {
+  const handleTriggerPipeline = async () => {
     setTriggeringPipeline(true);
     try {
       await triggerPipeline("manual");
@@ -105,30 +105,12 @@ export function AIConfigPanel() {
     } finally {
       setTriggeringPipeline(false);
     }
-  }, [t]);
+  };
 
   return (
-    <div className="settings-grid-wide">
+    <div className="flex flex-col gap-4">
+      {/* API credentials */}
       <div className="settings-panel">
-        <div className="settings-panel-header">
-          <div>
-            <div className="settings-panel-title">{t("settings.ai.panel_title")}</div>
-            <div className="settings-panel-desc">{t("settings.ai.panel_desc")}</div>
-          </div>
-          <button
-            className="btn-primary"
-            onClick={handleValidate}
-            disabled={(!apiKey.trim() && !store.aiConfig?.has_api_key) || validating}
-          >
-            {validating ? (
-              <Loader2 size={14} className="animate-spin" />
-            ) : validationResult?.valid ? (
-              <CheckCircle size={14} />
-            ) : null}
-            {validating ? t("settings.ai.validating") : t("settings.ai.validate")}
-          </button>
-        </div>
-
         <div className="settings-section">
           <div className="settings-row">
             <div>
@@ -182,12 +164,14 @@ export function AIConfigPanel() {
                 <Select.Item value="gpt-4.1-mini">gpt-4.1-mini</Select.Item>
               </Select.Content>
             </Select.Root>
-            {validationResult?.valid && (
-              <span className="settings-tag settings-tag--green">{t("settings.ai.connected")}</span>
-            )}
-            {!validationResult?.valid && validationResult && (
-              <span className="settings-tag settings-tag--amber">{t("settings.ai.validation_failed")}</span>
-            )}
+            <div>
+              {validationResult?.valid && (
+                <span className="settings-tag settings-tag--green">{t("settings.ai.connected")}</span>
+              )}
+              {!validationResult?.valid && validationResult && (
+                <span className="settings-tag settings-tag--amber">{t("settings.ai.validation_failed")}</span>
+              )}
+            </div>
           </div>
 
           <div className="settings-row">
@@ -196,19 +180,32 @@ export function AIConfigPanel() {
               <div className="settings-help">{t("settings.ai.save_help")}</div>
             </div>
             <div />
-            <button
-              className="btn-primary"
-              onClick={handleSave}
-              disabled={saving}
-            >
-              {saving ? <Loader2 size={14} className="animate-spin" /> : null}
-              {saving ? t("settings.ai.saving") : t("settings.ai.save")}
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                className="btn-ghost"
+                onClick={handleValidate}
+                disabled={(!apiKey.trim() && !store.aiConfig?.has_api_key) || validating}
+              >
+                {validating ? (
+                  <Loader2 size={14} className="animate-spin" />
+                ) : validationResult?.valid ? (
+                  <CheckCircle size={14} />
+                ) : null}
+                {validating ? t("settings.ai.validating") : t("settings.ai.validate")}
+              </button>
+              <button className="btn-primary" onClick={handleSave} disabled={saving}>
+                {saving ? <Loader2 size={14} className="animate-spin" /> : null}
+                {saving ? t("settings.ai.saving") : t("settings.ai.save")}
+              </button>
+            </div>
           </div>
         </div>
+      </div>
 
+      {/* Analysis stats */}
+      <div className="settings-panel">
         <div className="settings-section">
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+          <div className="flex items-center justify-between mb-3">
             <div className="settings-label">{t("settings.ai.analysis_status")}</div>
             <span className="settings-tag settings-tag--accent">{t("settings.ai.last_analysis")}</span>
           </div>
@@ -227,26 +224,18 @@ export function AIConfigPanel() {
             </div>
           </div>
         </div>
+      </div>
 
+      {/* Pipeline settings */}
+      <div className="settings-panel">
         <div className="settings-section">
           <div className="settings-row">
             <div>
               <div className="settings-label">{t("settings.ai.enable_embedding")}</div>
               <div className="settings-help">{t("settings.ai.enable_embedding_desc")}</div>
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <div
-                className="settings-slider"
-                style={{ width: 80, cursor: "pointer" }}
-                onClick={() => setEnableEmbedding(!enableEmbedding)}
-              >
-                <div className="fill" style={{ width: enableEmbedding ? "100%" : "0%" }} />
-              </div>
-            </div>
-            <Switch
-              checked={enableEmbedding}
-              onCheckedChange={setEnableEmbedding}
-            />
+            <div />
+            <Switch checked={enableEmbedding} onCheckedChange={setEnableEmbedding} />
           </div>
 
           <div className="settings-row">
@@ -278,73 +267,53 @@ export function AIConfigPanel() {
         </div>
       </div>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-        <div className="settings-panel">
-          <div style={{ padding: "14px 18px" }}>
-            <div className="settings-panel-title">{t("settings.ai.trust_title")}</div>
-            <div className="settings-panel-desc">{t("settings.ai.trust_desc")}</div>
-          </div>
-          <div style={{ padding: "4px 18px 14px" }}>
-            <div className="settings-trust-list">
-              <div className="settings-trust-item">
-                <span className="w-2 h-2 rounded-full bg-[var(--green-9)] shrink-0 mt-[5px]"></span>
-                <span>{t("settings.ai.trust_1")}</span>
-              </div>
-              <div className="settings-trust-item">
-                <span className="w-2 h-2 rounded-full bg-[var(--green-9)] shrink-0 mt-[5px]"></span>
-                <span>{t("settings.ai.trust_2")}</span>
-              </div>
-              <div className="settings-trust-item">
-                <span className="w-2 h-2 rounded-full bg-[var(--amber-9)] shrink-0 mt-[5px]"></span>
-                <span>{t("settings.ai.trust_3")}</span>
-              </div>
+      {/* Trust */}
+      <div className="settings-panel">
+        <div className="settings-section">
+          <div className="settings-label mb-1">{t("settings.ai.trust_title")}</div>
+          <div className="settings-help mb-3">{t("settings.ai.trust_desc")}</div>
+          <div className="settings-trust-list">
+            <div className="settings-trust-item">
+              <span className="w-2 h-2 rounded-full bg-[var(--green-9)] shrink-0 mt-[5px]"></span>
+              <span>{t("settings.ai.trust_1")}</span>
+            </div>
+            <div className="settings-trust-item">
+              <span className="w-2 h-2 rounded-full bg-[var(--green-9)] shrink-0 mt-[5px]"></span>
+              <span>{t("settings.ai.trust_2")}</span>
+            </div>
+            <div className="settings-trust-item">
+              <span className="w-2 h-2 rounded-full bg-[var(--amber-9)] shrink-0 mt-[5px]"></span>
+              <span>{t("settings.ai.trust_3")}</span>
             </div>
           </div>
         </div>
+      </div>
 
-        <div className="settings-panel">
-          <div style={{ padding: "14px 18px" }}>
-            <div className="settings-panel-title">{t("settings.ai.packs_title")}</div>
-            <div className="settings-panel-desc">{t("settings.ai.packs_desc")}</div>
+      {/* Packs + background sync */}
+      <div className="settings-panel">
+        <div className="settings-section">
+          <div className="settings-label mb-1">{t("settings.ai.packs_title")}</div>
+          <div className="settings-help mb-3">{t("settings.ai.packs_desc")}</div>
+          <div className="settings-pack-row">
+            <div className="text-xs font-semibold text-[var(--gray-12)]">{t("settings.ai.pack_ai_starter")}</div>
+            <span className="settings-tag settings-tag--green">{t("settings.ai.pack_tag_active")}</span>
           </div>
-          <div style={{ padding: "4px 18px 14px" }}>
-            <div className="settings-pack-row">
-              <div style={{ fontSize: 12, fontWeight: 600, color: "var(--gray-12)" }}>{t("settings.ai.pack_ai_starter")}</div>
-              <div style={{ display: "flex", gap: 6 }}>
-                <span className="settings-tag settings-tag--green">{t("settings.ai.pack_tag_active")}</span>
-              </div>
-            </div>
-            <div className="settings-pack-row">
-              <div style={{ fontSize: 12, fontWeight: 600, color: "var(--gray-12)" }}>{t("settings.ai.pack_developer")}</div>
-              <div style={{ display: "flex", gap: 6 }}>
-                <span className="settings-tag settings-tag--blue">{t("settings.ai.pack_tag_beta")}</span>
-              </div>
-            </div>
-            <div className="settings-pack-row">
-              <div style={{ fontSize: 12, fontWeight: 600, color: "var(--gray-12)" }}>{t("settings.ai.pack_design")}</div>
-              <div style={{ display: "flex", gap: 6 }}>
-                <span className="settings-tag settings-tag--amber">{t("settings.ai.pack_tag_coming")}</span>
-              </div>
-            </div>
+          <div className="settings-pack-row">
+            <div className="text-xs font-semibold text-[var(--gray-12)]">{t("settings.ai.pack_developer")}</div>
+            <span className="settings-tag settings-tag--blue">{t("settings.ai.pack_tag_beta")}</span>
+          </div>
+          <div className="settings-pack-row">
+            <div className="text-xs font-semibold text-[var(--gray-12)]">{t("settings.ai.pack_design")}</div>
+            <span className="settings-tag settings-tag--amber">{t("settings.ai.pack_tag_coming")}</span>
           </div>
         </div>
-
-        <div className="settings-panel">
-          <div style={{ padding: "14px 18px" }}>
-            <div className="settings-panel-title">{t("settings.ai.sync_title")}</div>
-            <div className="settings-panel-desc">{t("settings.ai.sync_desc")}</div>
-          </div>
-          <div style={{ padding: "4px 18px 14px" }}>
-            <div className="settings-pack-row">
-              <div>
-                <div style={{ fontSize: 12, fontWeight: 600, color: "var(--gray-12)" }}>{t("settings.ai.sync_background")}</div>
-                <div className="settings-help">{t("settings.ai.sync_background_desc")}</div>
-              </div>
-              <Switch
-                checked={backgroundSync}
-                onCheckedChange={setBackgroundSync}
-              />
+        <div className="settings-section">
+          <div className="settings-pack-row">
+            <div>
+              <div className="settings-label">{t("settings.ai.sync_background")}</div>
+              <div className="settings-help">{t("settings.ai.sync_background_desc")}</div>
             </div>
+            <Switch checked={backgroundSync} onCheckedChange={setBackgroundSync} />
           </div>
         </div>
       </div>

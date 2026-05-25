@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { CustomizeStyle } from "@/layout/Setting/CustomizeStyle";
 import { useBearStore } from "@/stores";
 import clsx from "clsx";
@@ -55,234 +55,176 @@ export const Appearance = () => {
 
   const cfg = store.userConfig.customize_style;
 
-  const fontSizePercent = useMemo(() => {
-    if (!cfg?.font_size) return 50;
-    return ((cfg.font_size - 14) / (25 - 14)) * 100;
-  }, [cfg?.font_size]);
+  const lineHeightPercent = cfg?.line_height
+    ? ((cfg.line_height - 1.4) / (2.1 - 1.4)) * 100
+    : 50;
 
-  const lineHeightPercent = useMemo(() => {
-    if (!cfg?.line_height) return 50;
-    return ((cfg.line_height - 1.4) / (2.1 - 1.4)) * 100;
-  }, [cfg?.line_height]);
+  const previewStyle = {
+    fontSize: "var(--reading-p-font-size)",
+    fontFamily: "var(--reading-editable-typeface)",
+    lineHeight: "var(--reading-p-line-height)",
+    maxWidth: "calc(var(--reading-editable-line-width) * 1px)",
+  };
 
-  const previewStyle = useMemo(
-    () => ({
-      fontSize: "var(--reading-p-font-size)",
-      fontFamily: "var(--reading-editable-typeface)",
-      lineHeight: "var(--reading-p-line-height)",
-      maxWidth: "calc(var(--reading-editable-line-width) * 1px)",
-    }),
-    [store.userConfig],
-  );
-
-  const modeLabel = useMemo(() => {
-    const scheme = store.userConfig.color_scheme;
-    if (scheme === "dark") return t("Dark");
-    if (scheme === "system") return t("Auto");
-    return t("Light");
-  }, [store.userConfig.color_scheme, t]);
+  const scheme = store.userConfig.color_scheme;
+  const modeLabel = scheme === "dark" ? t("Dark") : scheme === "system" ? t("Auto") : t("Light");
 
   return (
-    <div className="outline-none">
-      <div className="settings-grid-wide">
-        <div className="settings-panel">
-          <div className="settings-panel-header">
+    <div className="flex flex-col gap-4">
+      {/* Appearance & reading settings */}
+      <div className="settings-panel">
+        <div className="settings-section">
+          <div className="settings-row">
             <div>
-              <div className="settings-panel-title">{t("Appearance & Reading")}</div>
-              <div className="settings-panel-desc">
-                {t("Keep long reading sessions quiet, clear, and low-friction.")}
-              </div>
-            </div>
-          </div>
-
-          <div className="settings-section">
-            <div className="settings-row">
-              <div>
-                <div className="settings-label">{t("Theme")}</div>
-                <div className="settings-help">
-                  {t("Choose light, dark, or follow system preference.")}
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <ColorScheme />
-              </div>
-              <span className="settings-tag settings-tag--blue">
-                {modeLabel}
-              </span>
-            </div>
-
-            <div className="settings-row">
-              <div>
-                <div className="settings-label">{t("Font size")}</div>
-                <div className="settings-help">
-                  {t("Adjust the reading font size.")}
-                </div>
-              </div>
-              <CustomizeStyle styleConfig={cfg} className="!max-w-none flex-1 [&>div]:!border-0 [&>div]:!gap-0" />
-              <span className="settings-tag settings-tag--accent">
-                {cfg?.font_size ?? 18}px
-              </span>
-            </div>
-
-            <div className="settings-row">
-              <div>
-                <div className="settings-label">{t("Line height")}</div>
-                <div className="settings-help">
-                  {t("Adjust the reading line height.")}
-                </div>
-              </div>
-              <div className="flex items-center gap-3 flex-1">
-                <div className="settings-slider flex-1">
-                  <div
-                    className="fill"
-                    style={{ width: `${lineHeightPercent}%` }}
-                  />
-                </div>
-              </div>
-              <span className="settings-tag settings-tag--accent">
-                {cfg?.line_height ?? 1.6}
-              </span>
-            </div>
-
-            <div className="settings-row">
-              <div>
-                <div className="settings-label">{t("Accent color")}</div>
-                <div className="settings-help">
-                  {t("Pick an accent color for the interface.")}
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <Accent />
-              </div>
-            </div>
-          </div>
-
-          <div className="settings-section">
-            <div className="settings-label" style={{ marginBottom: 10 }}>
-              {t("Reader preference")}
-            </div>
-            <div className="settings-choice-grid">
-              <div
-                className={clsx("settings-choice", {
-                  active: readerPreset === "compact",
-                })}
-                onClick={() => {
-                  setReaderPreset("compact");
-                  store.updateUserConfig({ ...store.userConfig, reader_preset: "compact" });
-                }}
-              >
-                <div className="settings-label">{t("Compact")}</div>
-                <div className="settings-help">
-                  {t("More content in less space.")}
-                </div>
-              </div>
-              <div
-                className={clsx("settings-choice", {
-                  active: readerPreset === "comfortable",
-                })}
-                onClick={() => {
-                  setReaderPreset("comfortable");
-                  store.updateUserConfig({ ...store.userConfig, reader_preset: "comfortable" });
-                }}
-              >
-                <div className="settings-label">{t("Comfortable")}</div>
-                <div className="settings-help">
-                  {t("Balanced readability and density.")}
-                </div>
-              </div>
-              <div
-                className={clsx("settings-choice", {
-                  active: readerPreset === "immersive",
-                })}
-                onClick={() => {
-                  setReaderPreset("immersive");
-                  store.updateUserConfig({ ...store.userConfig, reader_preset: "immersive" });
-                }}
-              >
-                <div className="settings-label">{t("Immersive")}</div>
-                <div className="settings-help">
-                  {t("Maximum focus, minimal clutter.")}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="settings-section">
-            <div className="settings-row">
-              <div>
-                <div className="settings-label">{t("Card density")}</div>
-                <div className="settings-help">
-                  {t("Control the compactness of feed cards.")}
-                </div>
-              </div>
-              <select
-                className="settings-select"
-                value={cardDensity}
-                onChange={(e) => {
-                  const val = e.target.value as "comfortable" | "compact";
-                  setCardDensity(val);
-                  store.updateUserConfig({ ...store.userConfig, card_density: val });
-                }}
-              >
-                <option value="comfortable">{t("Comfortable")}</option>
-                <option value="compact">{t("Compact")}</option>
-              </select>
-              <button className="btn-ghost" onClick={() => previewRef.current?.scrollIntoView({ behavior: "smooth" })}>{t("Preview")}</button>
-            </div>
-          </div>
-        </div>
-
-        <div className="settings-panel" ref={previewRef}>
-          <div className="settings-panel-header">
-            <div>
-              <div className="settings-panel-title">{t("Reading preview")}</div>
+              <div className="settings-label">{t("Theme")}</div>
               <div className="settings-help">
-                {t("See how your settings affect the reading experience.")}
+                {t("Choose light, dark, or follow system preference.")}
               </div>
             </div>
+            <div className="flex items-center gap-3">
+              <ColorScheme />
+            </div>
+            <span className="settings-tag settings-tag--blue">{modeLabel}</span>
           </div>
-          <div className="settings-section">
-            <div className="settings-preview">
-              <div
-                className={clsx("settings-preview-article", "reading-content")}
-                style={previewStyle}
-              >
-                <h2
-                  style={{
-                    fontSize: "1.25em",
-                    fontWeight: 700,
-                    marginBottom: 6,
-                    lineHeight: 1.3,
-                  }}
-                >
-                  {PREVIEW_ARTICLE_TITLE}
-                </h2>
-                <div
-                  style={{
-                    fontSize: "0.85em",
-                    color: "var(--gray-9)",
-                    marginBottom: 14,
-                  }}
-                >
-                  {PREVIEW_ARTICLE_META}
-                </div>
-                {PREVIEW_PARAGRAPHS.map((p, i) => (
-                  <p key={i} style={{ marginBottom: 8 }}>
-                    {p}
-                  </p>
-                ))}
+
+          <div className="settings-row">
+            <div>
+              <div className="settings-label">{t("Font size")}</div>
+              <div className="settings-help">{t("Adjust the reading font size.")}</div>
+            </div>
+            <CustomizeStyle styleConfig={cfg} className="!max-w-none flex-1 [&>div]:!border-0 [&>div]:!gap-0" />
+            <span className="settings-tag settings-tag--accent">{cfg?.font_size ?? 18}px</span>
+          </div>
+
+          <div className="settings-row">
+            <div>
+              <div className="settings-label">{t("Line height")}</div>
+              <div className="settings-help">{t("Adjust the reading line height.")}</div>
+            </div>
+            <div className="flex items-center gap-3 flex-1">
+              <div className="settings-slider flex-1">
+                <div className="fill" style={{ width: `${lineHeightPercent}%` }} />
               </div>
+            </div>
+            <span className="settings-tag settings-tag--accent">{cfg?.line_height ?? 1.6}</span>
+          </div>
+
+          <div className="settings-row">
+            <div>
+              <div className="settings-label">{t("Accent color")}</div>
+              <div className="settings-help">{t("Pick an accent color for the interface.")}</div>
+            </div>
+            <div className="flex items-center gap-3">
+              <Accent />
+            </div>
+            <div />
+          </div>
+        </div>
+
+        <div className="settings-section">
+          <div className="settings-label mb-3">{t("Reader preference")}</div>
+          <div className="settings-choice-grid">
+            <div
+              className={clsx("settings-choice", { active: readerPreset === "compact" })}
+              onClick={() => {
+                setReaderPreset("compact");
+                store.updateUserConfig({ ...store.userConfig, reader_preset: "compact" });
+              }}
+            >
+              <div className="settings-label">{t("Compact")}</div>
+              <div className="settings-help">{t("More content in less space.")}</div>
+            </div>
+            <div
+              className={clsx("settings-choice", { active: readerPreset === "comfortable" })}
+              onClick={() => {
+                setReaderPreset("comfortable");
+                store.updateUserConfig({ ...store.userConfig, reader_preset: "comfortable" });
+              }}
+            >
+              <div className="settings-label">{t("Comfortable")}</div>
+              <div className="settings-help">{t("Balanced readability and density.")}</div>
+            </div>
+            <div
+              className={clsx("settings-choice", { active: readerPreset === "immersive" })}
+              onClick={() => {
+                setReaderPreset("immersive");
+                store.updateUserConfig({ ...store.userConfig, reader_preset: "immersive" });
+              }}
+            >
+              <div className="settings-label">{t("Immersive")}</div>
+              <div className="settings-help">{t("Maximum focus, minimal clutter.")}</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="settings-section">
+          <div className="settings-row">
+            <div>
+              <div className="settings-label">{t("Card density")}</div>
+              <div className="settings-help">{t("Control the compactness of feed cards.")}</div>
+            </div>
+            <select
+              className="settings-select"
+              value={cardDensity}
+              onChange={(e) => {
+                const val = e.target.value as "comfortable" | "compact";
+                setCardDensity(val);
+                store.updateUserConfig({ ...store.userConfig, card_density: val });
+              }}
+            >
+              <option value="comfortable">{t("Comfortable")}</option>
+              <option value="compact">{t("Compact")}</option>
+            </select>
+            <button
+              className="btn-ghost"
+              onClick={() => previewRef.current?.scrollIntoView({ behavior: "smooth" })}
+            >
+              {t("Preview")}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Reading preview */}
+      <div className="settings-panel" ref={previewRef}>
+        <div className="settings-section">
+          <div className="settings-label mb-3">{t("Reading preview")}</div>
+          <div className="settings-preview">
+            <div
+              className={clsx("settings-preview-article", "reading-content")}
+              style={previewStyle}
+            >
+              <h2
+                style={{
+                  fontSize: "1.25em",
+                  fontWeight: 700,
+                  marginBottom: 6,
+                  lineHeight: 1.3,
+                }}
+              >
+                {PREVIEW_ARTICLE_TITLE}
+              </h2>
+              <div
+                style={{
+                  fontSize: "0.85em",
+                  color: "var(--gray-9)",
+                  marginBottom: 14,
+                }}
+              >
+                {PREVIEW_ARTICLE_META}
+              </div>
+              {PREVIEW_PARAGRAPHS.map((p, i) => (
+                <p key={i} style={{ marginBottom: 8 }}>
+                  {p}
+                </p>
+              ))}
             </div>
           </div>
         </div>
       </div>
 
-      <div style={{ marginTop: 24 }}>
-        <ProxySetting />
-      </div>
-      <div style={{ marginTop: 16 }}>
-        <Shortcut />
-      </div>
+      <ProxySetting />
+      <Shortcut />
     </div>
   );
 };

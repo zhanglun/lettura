@@ -357,8 +357,10 @@
     "tab": {
       "ai_title": "AI 配置",
       "ai_desc": "模型、密钥、连接状态",
-      "sources_title": "来源管理",
-      "sources_desc": "源健康、订阅包、同步策略",
+      "subscriptions_title": "订阅管理",
+      "subscriptions_desc": "管理你的订阅源",
+      "sources_title": "来源设置",
+      "sources_desc": "同步策略、源健康、订阅包",
       "appearance_title": "外观与阅读",
       "appearance_desc": "主题、字号、卡片密度",
       "behavior_title": "应用行为",
