@@ -97,7 +97,7 @@ export function ArticleInlineReader({
           />
           <ToolbarBtn
             icon={ExternalLink}
-            label={t("article.open_original_short") || "原文"}
+            label={t("Open in browser")}
             onClick={handleOpenOriginal}
           />
 
@@ -142,37 +142,6 @@ export function ArticleInlineReader({
           <div className="mx-auto max-w-[680px] px-6 pt-5 pb-4">
             <ArticleDetail article={article} />
           </div>
-        </div>
-
-        {/* Footer — prev/next + open in browser */}
-        <div className="flex items-center justify-between px-4 py-2 border-t border-[var(--gray-4)]">
-          <div className="flex items-center gap-1">
-            <button
-              type="button"
-              disabled={!canPrev}
-              onClick={goPrev}
-              className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] text-[var(--gray-9)] hover:bg-[var(--gray-3)] hover:text-[var(--gray-12)] transition-all disabled:opacity-40 disabled:cursor-default"
-            >
-              <ChevronLeft size={12} />
-              {t("article.view.prev")}
-            </button>
-            <button
-              type="button"
-              disabled={!canNext}
-              onClick={goNext}
-              className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] text-[var(--gray-9)] hover:bg-[var(--gray-3)] hover:text-[var(--gray-12)] transition-all disabled:opacity-40 disabled:cursor-default"
-            >
-              {t("article.view.next")}
-              <ChevronRight size={12} />
-            </button>
-          </div>
-          <button
-            type="button"
-            onClick={handleOpenOriginal}
-            className="text-[11px] text-[var(--accent-9)] hover:text-[var(--accent-11)] transition-colors"
-          >
-            {t("Open in browser")} →
-          </button>
         </div>
     </div>
   );

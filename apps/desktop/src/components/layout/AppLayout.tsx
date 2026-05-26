@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useMemo } from "react";
 import { Outlet, useLocation } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
 import { Rail } from "./Rail";
 import { Sidebar, SidebarContext } from "./Sidebar";
 
@@ -62,24 +61,15 @@ export const AppLayout = React.memo(function () {
   return (
     <div className="flex flex-row h-full bg-canvas">
       <Rail />
-      <AnimatePresence initial={false}>
-        {showSidebar && (
-          <motion.div
-            key="app-sidebar"
-            className="h-full shrink-0 overflow-hidden"
-            initial={{ width: 0, opacity: 0 }}
-            animate={{ width: 220, opacity: 1 }}
-            exit={{ width: 0, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 360, damping: 36 }}
-          >
-            <Sidebar
-              collapsed={false}
-              onToggle={toggleSidebar}
-              context={sidebarContext}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {showSidebar && (
+        <div className="h-full w-[220px] shrink-0 overflow-hidden">
+          <Sidebar
+            collapsed={false}
+            onToggle={toggleSidebar}
+            context={sidebarContext}
+          />
+        </div>
+      )}
       <div className="flex-1 overflow-hidden h-full">
         <Outlet />
       </div>

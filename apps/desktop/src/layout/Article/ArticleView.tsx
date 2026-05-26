@@ -47,6 +47,7 @@ export function ArticleView({ feed, onBack }: ArticleViewProps) {
       tracks: state.tracks,
       podcastPlayingStatus: state.podcastPlayingStatus,
       viewMeta: state.viewMeta,
+      collectionMeta: state.collectionMeta,
       expandedArticleUuid: state.expandedArticleUuid,
       setExpandedArticleUuid: state.setExpandedArticleUuid,
       currentFilter: state.currentFilter,
@@ -69,10 +70,6 @@ export function ArticleView({ feed, onBack }: ArticleViewProps) {
     isToday,
     isAll,
   } = useArticle({ feedUuid, type });
-
-  const unreadCount = articles.filter(
-    (a) => a.read_status === ArticleReadStatus.UNREAD,
-  ).length;
 
   const filters = [
     { id: 0, title: t("All articles") },
@@ -152,6 +149,15 @@ export function ArticleView({ feed, onBack }: ArticleViewProps) {
   });
 
   const title = feed?.title ?? store.viewMeta?.title ?? "";
+  const unreadCount = feed?.unread
+    ?? (feedUuid
+      ? store.viewMeta?.unread
+      : isToday
+        ? store.collectionMeta.today.unread
+        : isAll
+          ? store.collectionMeta.total.unread
+          : store.viewMeta?.unread)
+    ?? 0;
   const shouldShowPodcast = store.tracks?.length > 0 || store.podcastPlayingStatus;
 
   return (
