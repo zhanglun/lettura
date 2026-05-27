@@ -5,8 +5,6 @@ import clsx from "clsx";
 import { Accent } from "./Accent";
 import { ColorScheme } from "./ColorScheme";
 import { useTranslation } from "react-i18next";
-import { ProxySetting } from "../Proxy";
-import { Shortcut } from "../ShortCut";
 
 const PREVIEW_ARTICLE_TITLE = "Stray Birds";
 const PREVIEW_ARTICLE_META = "Rabindranath Tagore · 1916";
@@ -222,9 +220,6 @@ export const Appearance = () => {
           </div>
         </div>
       </div>
-
-      <ProxySetting />
-      <Shortcut />
     </div>
   );
 };

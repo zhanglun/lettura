@@ -35,8 +35,17 @@ export const Sources = () => {
   const allFeeds = store.subscribes.filter((f) => f.item_type === "channel");
   const brokenFeeds = allFeeds.filter((f) => f.health_status === 1);
   const healthyFeeds = allFeeds.filter((f) => f.health_status !== 1);
+  const recentHealthyFeeds = healthyFeeds.slice(0, 3);
   const threads = store.userConfig.threads ?? 3;
   const healthyRate = allFeeds.length > 0 ? Math.round((healthyFeeds.length / allFeeds.length) * 100) : 100;
+
+  const getSourceHost = (feed: { link?: string; feed_url?: string }) => {
+    try {
+      return new URL(feed.link || feed.feed_url || "").host;
+    } catch {
+      return feed.link || feed.feed_url || "";
+    }
+  };
 
   return (
     <div className="flex flex-col gap-4">
@@ -139,6 +148,33 @@ export const Sources = () => {
           )}
         </div>
       </div>
+
+      {recentHealthyFeeds.length > 0 && (
+        <div className="settings-panel">
+          <div className="settings-section">
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <div className="settings-label">{t("settings.sources.recent_healthy_title")}</div>
+                <div className="settings-help">{t("settings.sources.recent_healthy_help")}</div>
+              </div>
+            </div>
+            <div className="settings-choice-grid">
+              {recentHealthyFeeds.map((feed, index) => (
+                <div key={feed.uuid} className={index === 0 ? "settings-choice active" : "settings-choice"}>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="truncate text-xs font-semibold text-[var(--gray-12)]">{feed.title}</span>
+                    <span className="settings-tag settings-tag--green">{t("settings.sources.health_ok")}</span>
+                  </div>
+                  <div className="settings-help mt-1 truncate">
+                    {getSourceHost(feed)}
+                    {feed.last_sync_date ? ` · ${feed.last_sync_date}` : ""}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Starter packs */}
       <div className="settings-panel">

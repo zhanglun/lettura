@@ -350,7 +350,7 @@
     }
   },
   "settings": {
-    "subtitle": "配置 Lettura 如何读取、分析和展示你的信息来源。",
+    "subtitle": "配置 AI 分析、订阅源、来源质量、阅读体验与应用行为。",
     "status_secure": "本地配置安全",
     "status_sources": "42 个源活跃",
     "status_analysis": "上次分析 2 小时前",
@@ -365,6 +365,15 @@
       "appearance_desc": "主题、字号、卡片密度",
       "behavior_title": "应用行为",
       "behavior_desc": "启动、通知、缓存保留"
+    },
+    "subscriptions": {
+      "kpi_feeds": "订阅源",
+      "kpi_folders": "文件夹",
+      "kpi_unread": "未读文章",
+      "kpi_broken": "异常源",
+      "ungrouped": "未分组",
+      "folder_meta": "{{sources}} 源 · {{unread}} 未读",
+      "context_hint": "右键订阅源可查看文章、同步、全部已读、编辑、移动、停用或删除。"
     },
     "sources": {
       "sources_title": "来源管理",
@@ -396,6 +405,8 @@
       "kpi_active_sources": "活跃来源",
       "kpi_sync_rate": "同步成功率",
       "kpi_needs_check": "需检查",
+      "recent_healthy_title": "最近正常同步的来源",
+      "recent_healthy_help": "取自当前订阅列表，用于快速确认正常来源。",
       "broken_advice_title": "失效源处理建议",
       "broken_advice_help": "考虑移除或替换持续失败的订阅源。检查源地址是否有变更，或尝试重新订阅。"
     },

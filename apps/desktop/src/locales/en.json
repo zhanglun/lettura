@@ -328,7 +328,7 @@
     }
   },
   "settings": {
-    "subtitle": "Configure how Lettura reads, analyzes, and presents your information sources.",
+    "subtitle": "Configure AI analysis, subscriptions, source quality, reading experience, and app behavior.",
     "status_secure": "Local config secure",
     "status_sources": "42 sources active",
     "status_analysis": "Last analysis 2h ago",
@@ -343,6 +343,15 @@
       "appearance_desc": "Theme, font size, card density",
       "behavior_title": "App Behavior",
       "behavior_desc": "Startup, notifications, cache retention"
+    },
+    "subscriptions": {
+      "kpi_feeds": "Feeds",
+      "kpi_folders": "Folders",
+      "kpi_unread": "Unread Articles",
+      "kpi_broken": "Broken Feeds",
+      "ungrouped": "Ungrouped",
+      "folder_meta": "{{sources}} feeds · {{unread}} unread",
+      "context_hint": "Right-click a feed to view articles, sync, mark all read, edit, move, disable, or delete."
     },
     "sources": {
       "sources_title": "Sources Management",
@@ -374,6 +383,8 @@
       "kpi_active_sources": "Active Sources",
       "kpi_sync_rate": "Sync Success Rate",
       "kpi_needs_check": "Needs Check",
+      "recent_healthy_title": "Recently Healthy Sources",
+      "recent_healthy_help": "Pulled from the current subscription list to quickly confirm working sources.",
       "broken_advice_title": "Broken Feed Advice",
       "broken_advice_help": "Consider removing or replacing feeds that consistently fail. Check the source URL for changes or try re-subscribing."
     },

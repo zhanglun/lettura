@@ -26,9 +26,6 @@ export function AIConfigPanel() {
   const [baseUrl, setBaseUrl] = useState("https://api.openai.com/v1");
   const [pipelineInterval, setPipelineInterval] = useState("6");
   const [enableEmbedding, setEnableEmbedding] = useState(true);
-  const [backgroundSync, setBackgroundSync] = useState(
-    () => store.aiConfig?.enable_auto_pipeline ?? true,
-  );
 
   const [validating, setValidating] = useState(false);
   const [validationResult, setValidationResult] = useState<{
@@ -56,7 +53,6 @@ export function AIConfigPanel() {
       setBaseUrl(store.aiConfig.base_url || "https://api.openai.com/v1");
       setEnableEmbedding(store.aiConfig.enable_embedding ?? true);
       setPipelineInterval(String(store.aiConfig.pipeline_interval_hours || 6));
-      setBackgroundSync(store.aiConfig.enable_auto_pipeline ?? true);
     }
   }, [store.aiConfig]);
 
@@ -84,7 +80,7 @@ export function AIConfigPanel() {
         baseUrl,
         pipelineIntervalHours: parseInt(pipelineInterval) || 1,
         enableEmbedding,
-        enableAutoPipeline: backgroundSync,
+        enableAutoPipeline: store.aiConfig?.enable_auto_pipeline ?? true,
       });
       toast.success(t("settings.ai.saved"));
       store.fetchAIConfig();
@@ -267,56 +263,6 @@ export function AIConfigPanel() {
         </div>
       </div>
 
-      {/* Trust */}
-      <div className="settings-panel">
-        <div className="settings-section">
-          <div className="settings-label mb-1">{t("settings.ai.trust_title")}</div>
-          <div className="settings-help mb-3">{t("settings.ai.trust_desc")}</div>
-          <div className="settings-trust-list">
-            <div className="settings-trust-item">
-              <span className="w-2 h-2 rounded-full bg-[var(--green-9)] shrink-0 mt-[5px]"></span>
-              <span>{t("settings.ai.trust_1")}</span>
-            </div>
-            <div className="settings-trust-item">
-              <span className="w-2 h-2 rounded-full bg-[var(--green-9)] shrink-0 mt-[5px]"></span>
-              <span>{t("settings.ai.trust_2")}</span>
-            </div>
-            <div className="settings-trust-item">
-              <span className="w-2 h-2 rounded-full bg-[var(--amber-9)] shrink-0 mt-[5px]"></span>
-              <span>{t("settings.ai.trust_3")}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Packs + background sync */}
-      <div className="settings-panel">
-        <div className="settings-section">
-          <div className="settings-label mb-1">{t("settings.ai.packs_title")}</div>
-          <div className="settings-help mb-3">{t("settings.ai.packs_desc")}</div>
-          <div className="settings-pack-row">
-            <div className="text-xs font-semibold text-[var(--gray-12)]">{t("settings.ai.pack_ai_starter")}</div>
-            <span className="settings-tag settings-tag--green">{t("settings.ai.pack_tag_active")}</span>
-          </div>
-          <div className="settings-pack-row">
-            <div className="text-xs font-semibold text-[var(--gray-12)]">{t("settings.ai.pack_developer")}</div>
-            <span className="settings-tag settings-tag--blue">{t("settings.ai.pack_tag_beta")}</span>
-          </div>
-          <div className="settings-pack-row">
-            <div className="text-xs font-semibold text-[var(--gray-12)]">{t("settings.ai.pack_design")}</div>
-            <span className="settings-tag settings-tag--amber">{t("settings.ai.pack_tag_coming")}</span>
-          </div>
-        </div>
-        <div className="settings-section">
-          <div className="settings-pack-row">
-            <div>
-              <div className="settings-label">{t("settings.ai.sync_background")}</div>
-              <div className="settings-help">{t("settings.ai.sync_background_desc")}</div>
-            </div>
-            <Switch checked={backgroundSync} onCheckedChange={setBackgroundSync} />
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

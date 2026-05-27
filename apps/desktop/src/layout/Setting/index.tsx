@@ -70,7 +70,7 @@ export function SettingPage() {
 
       {/* Scrollable content */}
       <div className="flex-1 overflow-auto px-8 py-7">
-        <div className="max-w-[860px]">
+        <div className="max-w-[960px]">
           {effectiveTab === SettingTabKey.AI            && <AIConfigPanel />}
           {effectiveTab === SettingTabKey.SUBSCRIPTIONS && <Subscriptions />}
           {effectiveTab === SettingTabKey.SOURCES       && <Sources />}
