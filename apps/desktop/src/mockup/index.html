@@ -1295,9 +1295,72 @@
       cursor: pointer;
     }
     .settings-select:focus { border-color: var(--accent); }
+    .settings-input {
+      min-width: 190px;
+      padding: 6px 10px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      font-size: 12px;
+      background: var(--bg-card);
+      color: var(--text-primary);
+      outline: none;
+    }
+    .settings-input:focus { border-color: var(--accent); }
+    .settings-filter-chip {
+      padding: 5px 10px;
+      border: 1px solid transparent;
+      border-radius: var(--radius);
+      background: transparent;
+      color: var(--text-tertiary);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .settings-filter-chip.active {
+      color: var(--accent);
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+    .settings-mini-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .settings-mini-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--bg-sidebar);
+      min-width: 0;
+    }
+    .settings-preview {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--bg-sidebar);
+      padding: 18px;
+      overflow: hidden;
+    }
+    .settings-preview-article {
+      max-width: 620px;
+      margin: 0 auto;
+      color: var(--text-primary);
+      font-size: 15px;
+      line-height: 1.75;
+    }
+    .settings-preview-article h3 {
+      font-size: 20px;
+      line-height: 1.3;
+      margin-bottom: 6px;
+    }
+    .settings-preview-article p { margin-top: 10px; }
     .settings-panel .btn,
     .settings-panel .btn-ghost,
     .settings-panel .tool-btn,
+    .settings-panel .settings-input,
     .settings-panel .settings-select {
       border-radius: var(--radius);
     }
@@ -2576,89 +2639,96 @@
 
         <!-- AI Config Panel -->
         <div id="settings-panel-ai" class="settings-panel-content active">
-          <div class="settings-section">
-            <div class="settings-section-title">AI 引擎状态</div>
-            <div class="card" style="padding:16px;">
-              <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
-                <div class="status-dot green"></div>
-                <span style="font-size:13px; font-weight:600; color:var(--text-primary);">本地推理引擎已就绪</span>
-                <span class="tag tag-green" style="margin-left:auto;">运行中</span>
+          <div style="display:flex; flex-direction:column; gap:16px;">
+            <div class="settings-grid-wide">
+              <div class="settings-panel">
+                <div class="settings-section">
+                  <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px;">
+                    <div>
+                      <div class="settings-label">AI Provider</div>
+                      <div class="settings-help">OpenAI-compatible endpoint, stored in local config.</div>
+                    </div>
+                    <span class="settings-tag settings-tag--green">已配置</span>
+                  </div>
+                  <div class="settings-row">
+                    <div>
+                      <div class="settings-row-label">API Key</div>
+                      <div class="settings-row-desc">仅保存到本机配置文件，不进入数据库。</div>
+                    </div>
+                    <input class="settings-input" type="password" value="sk-proj-••••••••••••">
+                    <button class="btn btn-ghost" style="font-size:11px;">验证连接</button>
+                  </div>
+                  <div class="settings-row">
+                    <div>
+                      <div class="settings-row-label">API Endpoint</div>
+                      <div class="settings-row-desc">兼容 OpenAI API 的服务地址。</div>
+                    </div>
+                    <input class="settings-input" value="https://api.openai.com/v1">
+                    <button class="btn btn-ghost" style="font-size:11px;">重置</button>
+                  </div>
+                  <div class="settings-row">
+                    <div>
+                      <div class="settings-row-label">分析模型</div>
+                      <div class="settings-row-desc">用于信号识别、摘要和 Why It Matters。</div>
+                    </div>
+                    <select class="settings-select">
+                      <option selected>gpt-4o-mini</option>
+                      <option>gpt-4.1-mini</option>
+                      <option>自定义模型</option>
+                    </select>
+                    <button class="btn btn-primary" style="font-size:11px;">保存配置</button>
+                  </div>
+                </div>
               </div>
-              <div style="font-size:12px; color:var(--text-secondary); line-height:1.6; margin-bottom:12px;">
-                Lettura 使用本地模型分析你的订阅流，所有处理在设备上完成，不上传任何文章内容。
-              </div>
-              <div style="display:flex; gap:20px; font-size:11px; color:var(--text-tertiary); border-top:1px solid var(--border); padding-top:10px;">
-                <span>上次分析：<strong style="color:var(--text-primary);">09:45</strong></span>
-                <span>分析耗时：<strong style="color:var(--text-primary);">3.2s</strong></span>
-                <span>已分析：<strong style="color:var(--text-primary);">1,247 篇</strong></span>
+
+              <div class="settings-panel">
+                <div class="settings-section">
+                  <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px;">
+                    <div>
+                      <div class="settings-label">Analysis Status</div>
+                      <div class="settings-help">当前 Pipeline 与去重状态。</div>
+                    </div>
+                    <span class="settings-tag settings-tag--blue">上次分析 2h 前</span>
+                  </div>
+                  <div class="settings-kpi">
+                    <div class="card"><div class="settings-kpi-value">1,247</div><div class="settings-kpi-label">已分析文章</div></div>
+                    <div class="card"><div class="settings-kpi-value">86</div><div class="settings-kpi-label">发现重复</div></div>
+                    <div class="card"><div class="settings-kpi-value">23</div><div class="settings-kpi-label">重复分组</div></div>
+                  </div>
+                </div>
+                <div class="settings-section">
+                  <div class="settings-label">隐私边界</div>
+                  <div class="settings-help">API Key 只保存在本地 TOML。文章内容仅在触发分析时发送给配置的 API Provider。</div>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div class="settings-section">
-            <div class="settings-section-title">本地模型</div>
-            <div class="card" style="padding:0; overflow:hidden;">
-              <div class="settings-row">
-                <div>
-                  <div class="settings-row-label">推理模型</div>
-                  <div class="settings-row-desc">用于信号识别和摘要生成</div>
+            <div class="settings-panel">
+              <div class="settings-section">
+                <div class="settings-row">
+                  <div>
+                    <div class="settings-row-label">启用 Embedding</div>
+                    <div class="settings-row-desc">语义去重、聚类和相似文章识别依赖 Embedding。</div>
+                  </div>
+                  <select class="settings-select">
+                    <option selected>text-embedding-3-small</option>
+                    <option>text-embedding-3-large</option>
+                    <option>自定义 embedding 模型</option>
+                  </select>
+                  <button class="toggle on" onclick="this.classList.toggle('on')"></button>
                 </div>
-                <select class="settings-select">
-                  <option selected>Llama 3.2 3B（默认）</option>
-                  <option>Llama 3.1 8B</option>
-                  <option>Phi-3.5 Mini</option>
-                  <option>Gemma 2 2B</option>
-                </select>
-              </div>
-              <div class="settings-row">
-                <div>
-                  <div class="settings-row-label">嵌入模型</div>
-                  <div class="settings-row-desc">用于语义去重和相关性计算</div>
+                <div class="settings-row">
+                  <div>
+                    <div class="settings-row-label">Pipeline 间隔</div>
+                    <div class="settings-row-desc">自动分析新文章的运行周期。</div>
+                  </div>
+                  <select class="settings-select">
+                    <option selected>每 6 小时</option>
+                    <option>每 12 小时</option>
+                    <option>每 24 小时</option>
+                  </select>
+                  <button class="btn btn-ghost" style="font-size:11px;">立即运行</button>
                 </div>
-                <select class="settings-select">
-                  <option selected>nomic-embed-text（默认）</option>
-                  <option>mxbai-embed-large</option>
-                </select>
-              </div>
-              <div class="settings-row">
-                <div>
-                  <div class="settings-row-label">每日分析时间</div>
-                  <div class="settings-row-desc">在指定时间自动运行分析</div>
-                </div>
-                <select class="settings-select">
-                  <option>06:00</option>
-                  <option>07:00</option>
-                  <option selected>08:00</option>
-                  <option>09:00</option>
-                  <option>手动触发</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <div class="settings-section">
-            <div class="settings-section-title">云端 API（可选增强）</div>
-            <div class="card" style="padding:0; overflow:hidden;">
-              <div class="settings-row">
-                <div>
-                  <div class="settings-row-label">OpenAI API 密钥</div>
-                  <div class="settings-row-desc">用于生成更高质量的 Why It Matters</div>
-                </div>
-                <div style="display:flex; gap:6px; align-items:center;">
-                  <input type="password" value="sk-proj-••••••••••••" style="width:180px; padding:5px 10px; border-radius:var(--radius-sm); border:1px solid var(--border); font-size:12px; outline:none; background:var(--bg-card);">
-                  <button class="btn btn-ghost" style="font-size:11px; padding:5px 10px;">验证</button>
-                </div>
-              </div>
-              <div class="settings-row">
-                <div>
-                  <div class="settings-row-label">调用云端 API 的场景</div>
-                  <div class="settings-row-desc">选择哪些任务可以使用云端模型</div>
-                </div>
-                <select class="settings-select">
-                  <option selected>仅高价值信号增强</option>
-                  <option>全部分析</option>
-                  <option>从不</option>
-                </select>
               </div>
             </div>
           </div>
@@ -2668,8 +2738,8 @@
         <div id="settings-panel-subscriptions" class="settings-panel-content">
           <div style="display:grid; grid-template-columns:minmax(0, 1fr) 300px; gap:14px; align-items:start;">
             <div class="settings-panel">
-              <div class="feeds-toolbar" style="padding:12px 14px; border-bottom:1px solid var(--border); flex-wrap:wrap;">
-                <input type="text" class="search-input" placeholder="搜索订阅源、文件夹或 URL..." style="flex:1; min-width:220px;">
+              <div style="padding:12px 14px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                <input type="text" class="settings-input" placeholder="搜索订阅源、文件夹或 URL..." style="flex:1; min-width:220px;">
                 <button class="tool-btn" onclick="document.getElementById('add-feed-dialog').style.display='flex'">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
                   添加订阅
@@ -2684,10 +2754,10 @@
 
               <div style="padding:10px 14px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; gap:12px; background:var(--bg-card);">
                 <div style="display:flex; gap:6px; flex-wrap:wrap;">
-                  <button class="settings-tab active" style="padding:5px 10px; border-bottom:0; border-radius:var(--radius); background:var(--accent-light);">全部 269</button>
-                  <button class="settings-tab" style="padding:5px 10px; border-bottom:0;">未读 19418</button>
-                  <button class="settings-tab" style="padding:5px 10px; border-bottom:0;">异常 52</button>
-                  <button class="settings-tab" style="padding:5px 10px; border-bottom:0;">未分组 268</button>
+                  <button class="settings-filter-chip active">全部 269</button>
+                  <button class="settings-filter-chip">未读 19418</button>
+                  <button class="settings-filter-chip">异常 52</button>
+                  <button class="settings-filter-chip">未分组 268</button>
                 </div>
                 <div style="display:flex; gap:8px;">
                   <button class="btn btn-ghost" style="font-size:11px;">导入 OPML</button>
@@ -2795,6 +2865,13 @@
             <div class="settings-grid-wide">
               <div class="settings-panel">
                 <div class="settings-section">
+                  <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px;">
+                    <div>
+                      <div class="settings-label">同步策略</div>
+                      <div class="settings-help">控制所有订阅源的抓取节奏，不负责增删改订阅。</div>
+                    </div>
+                    <span class="settings-tag settings-tag--blue">手动同步</span>
+                  </div>
                   <div class="settings-row">
                     <div>
                       <div class="settings-label">同步频率</div>
@@ -2837,7 +2914,13 @@
 
               <div class="settings-panel">
                 <div class="settings-section">
-                  <div class="settings-label" style="margin-bottom:12px;">输入质量</div>
+                  <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px;">
+                    <div>
+                      <div class="settings-label">来源健康中心</div>
+                      <div class="settings-help">快速判断当前订阅输入是否可靠。</div>
+                    </div>
+                    <button class="btn btn-ghost" style="font-size:11px;" onclick="showSettingsTab('subscriptions', null)">进入订阅管理</button>
+                  </div>
                   <div class="settings-kpi">
                     <div class="card">
                       <div class="settings-kpi-value">269</div>
@@ -2855,22 +2938,22 @@
                   <div class="settings-help" style="margin-top:10px;">当前数据库：217 个正常源，52 个异常源，未读文章 19,418 篇。</div>
                 </div>
                 <div class="settings-section">
-                  <div class="settings-label" style="margin-bottom:8px;">失效源处理建议</div>
-                  <div style="display:flex; flex-direction:column; gap:8px;">
-                    <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 10px; border:1px solid var(--border); border-radius:var(--radius); background:var(--bg-sidebar);">
+                  <div class="settings-label" style="margin-bottom:8px;">异常源队列</div>
+                  <div class="settings-mini-list">
+                    <div class="settings-mini-row">
                       <span style="font-size:12px; color:var(--text-primary); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">First Round Review</span>
                       <button class="btn btn-ghost" style="font-size:11px; padding:3px 8px;">重试</button>
                     </div>
-                    <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 10px; border:1px solid var(--border); border-radius:var(--radius); background:var(--bg-sidebar);">
+                    <div class="settings-mini-row">
                       <span style="font-size:12px; color:var(--text-primary); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">a16z Blog</span>
                       <button class="btn btn-ghost" style="font-size:11px; padding:3px 8px;">重试</button>
                     </div>
-                    <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 10px; border:1px solid var(--border); border-radius:var(--radius); background:var(--bg-sidebar);">
+                    <div class="settings-mini-row">
                       <span style="font-size:12px; color:var(--text-primary); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">The Information</span>
                       <button class="btn btn-ghost" style="font-size:11px; padding:3px 8px;">重试</button>
                     </div>
                   </div>
-                  <div class="settings-help">主要失败原因：Could not find a feed at the location / Not 200 OK。</div>
+                  <div class="settings-help">主要失败原因：Could not find a feed at the location / Not 200 OK。具体删除、移动、复制 URL 在订阅管理中处理。</div>
                 </div>
               </div>
             </div>
@@ -2949,86 +3032,100 @@
 
         <!-- Appearance Panel -->
         <div id="settings-panel-appearance" class="settings-panel-content">
-          <div class="settings-section">
-            <div class="settings-section-title">主题</div>
-            <div class="card" style="padding:16px;">
-              <div style="display:flex; gap:10px;">
-                <label style="flex:1; display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;">
-                  <div style="width:100%; height:56px; background:var(--bg-app); border:2px solid var(--accent); border-radius:var(--radius); display:flex; align-items:center; justify-content:center;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-tertiary)" stroke-width="1.5"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+          <div style="display:flex; flex-direction:column; gap:16px;">
+            <div class="settings-grid-wide">
+              <div class="settings-panel">
+                <div class="settings-section">
+                  <div class="settings-label" style="margin-bottom:12px;">主题模式</div>
+                  <div class="settings-choice-grid">
+                    <div class="settings-choice active">
+                      <div style="height:44px; border:1px solid var(--accent); border-radius:var(--radius); background:var(--bg-app); margin-bottom:8px;"></div>
+                      <div class="settings-label">浅色</div>
+                      <div class="settings-help">适合白天和高亮环境。</div>
+                    </div>
+                    <div class="settings-choice">
+                      <div style="height:44px; border:1px solid var(--border); border-radius:var(--radius); background:#171a22; margin-bottom:8px;"></div>
+                      <div class="settings-label">深色</div>
+                      <div class="settings-help">低光环境阅读。</div>
+                    </div>
+                    <div class="settings-choice">
+                      <div style="height:44px; border:1px solid var(--border); border-radius:var(--radius); background:linear-gradient(135deg, var(--bg-app) 50%, #171a22 50%); margin-bottom:8px;"></div>
+                      <div class="settings-label">跟随系统</div>
+                      <div class="settings-help">自动切换明暗主题。</div>
+                    </div>
                   </div>
-                  <span style="font-size:11px; color:var(--accent); font-weight:500;">浅色</span>
-                </label>
-                <label style="flex:1; display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;">
-                  <div style="width:100%; height:56px; background:#1a1d26; border:1px solid var(--border); border-radius:var(--radius); display:flex; align-items:center; justify-content:center;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                </div>
+                <div class="settings-section">
+                  <div class="settings-label" style="margin-bottom:12px;">强调色</div>
+                  <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                    <button class="settings-filter-chip active" style="background:#eef4ff; color:#2563eb; border-color:#2563eb;">Indigo</button>
+                    <button class="settings-filter-chip" style="background:#ecfdf5; color:#059669;">Green</button>
+                    <button class="settings-filter-chip" style="background:#fff7ed; color:#ea580c;">Orange</button>
+                    <button class="settings-filter-chip" style="background:#fdf2f8; color:#db2777;">Pink</button>
                   </div>
-                  <span style="font-size:11px; color:var(--text-tertiary);">深色</span>
-                </label>
-                <label style="flex:1; display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer;">
-                  <div style="width:100%; height:56px; background:linear-gradient(135deg, var(--bg-app) 50%, #1a1d26 50%); border:1px solid var(--border); border-radius:var(--radius); display:flex; align-items:center; justify-content:center;">
-                    <span style="font-size:10px; font-weight:600; color:var(--text-tertiary);">Auto</span>
+                </div>
+              </div>
+
+              <div class="settings-panel">
+                <div class="settings-section">
+                  <div class="settings-label" style="margin-bottom:12px;">阅读预设</div>
+                  <div class="settings-mini-list">
+                    <div class="settings-mini-row"><div><div class="settings-label">紧凑</div><div class="settings-help">更多内容，更少留白。</div></div><span class="settings-tag settings-tag--blue">列表优先</span></div>
+                    <div class="settings-mini-row" style="border-color:var(--accent); background:var(--accent-light);"><div><div class="settings-label">舒适</div><div class="settings-help">平衡阅读和信息密度。</div></div><span class="settings-tag settings-tag--green">当前</span></div>
+                    <div class="settings-mini-row"><div><div class="settings-label">沉浸</div><div class="settings-help">更宽松的正文和更少干扰。</div></div><span class="settings-tag settings-tag--amber">长读</span></div>
                   </div>
-                  <span style="font-size:11px; color:var(--text-tertiary);">跟随系统</span>
-                </label>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div class="settings-section">
-            <div class="settings-section-title">阅读排版</div>
-            <div class="card" style="padding:0; overflow:hidden;">
-              <div class="settings-row">
-                <div>
-                  <div class="settings-row-label">正文字号</div>
-                  <div class="settings-row-desc">文章内容区字体大小</div>
+            <div class="settings-panel">
+              <div class="settings-section">
+                <div class="settings-row">
+                  <div>
+                    <div class="settings-row-label">正文字号</div>
+                    <div class="settings-row-desc">文章内容区字体大小。</div>
+                  </div>
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <button class="btn btn-ghost" style="font-size:12px;">A-</button>
+                    <span class="settings-tag settings-tag--blue">18px</span>
+                    <button class="btn btn-ghost" style="font-size:12px;">A+</button>
+                  </div>
+                  <div></div>
                 </div>
-                <div style="display:flex; align-items:center; gap:8px;">
-                  <button class="btn btn-ghost" style="padding:4px 10px; font-size:12px;">A−</button>
-                  <span style="font-size:12px; font-weight:600; color:var(--text-primary); min-width:28px; text-align:center;">15</span>
-                  <button class="btn btn-ghost" style="padding:4px 10px; font-size:12px;">A+</button>
+                <div class="settings-row">
+                  <div>
+                    <div class="settings-row-label">行高</div>
+                    <div class="settings-row-desc">控制正文段落的垂直节奏。</div>
+                  </div>
+                  <div style="display:flex; align-items:center; gap:12px; min-width:220px;">
+                    <div class="settings-slider" style="flex:1;"><div class="fill" style="width:55%;"></div></div>
+                    <span class="settings-tag settings-tag--blue">1.6</span>
+                  </div>
+                  <div></div>
                 </div>
-              </div>
-              <div class="settings-row">
-                <div>
-                  <div class="settings-row-label">行间距</div>
+                <div class="settings-row">
+                  <div>
+                    <div class="settings-row-label">列表密度</div>
+                    <div class="settings-row-desc">文章列表卡片的紧凑程度。</div>
+                  </div>
+                  <select class="settings-select"><option>紧凑</option><option selected>舒适</option></select>
+                  <button class="btn btn-ghost" style="font-size:11px;">预览</button>
                 </div>
-                <select class="settings-select">
-                  <option>1.6</option>
-                  <option selected>1.8</option>
-                  <option>2.0</option>
-                </select>
-              </div>
-              <div class="settings-row">
-                <div>
-                  <div class="settings-row-label">信息密度</div>
-                  <div class="settings-row-desc">文章列表的显示密度</div>
-                </div>
-                <select class="settings-select">
-                  <option>紧凑</option>
-                  <option selected>标准</option>
-                  <option>宽松</option>
-                </select>
               </div>
             </div>
-          </div>
 
-          <div class="settings-section">
-            <div class="settings-section-title">Today 卡片偏好</div>
-            <div class="card" style="padding:0; overflow:hidden;">
-              <div class="settings-row">
-                <div>
-                  <div class="settings-row-label">默认展开 Why It Matters</div>
-                  <div class="settings-row-desc">进入 Today 时自动展开所有判断说明</div>
+            <div class="settings-panel">
+              <div class="settings-section">
+                <div class="settings-label" style="margin-bottom:12px;">阅读预览</div>
+                <div class="settings-preview">
+                  <div class="settings-preview-article">
+                    <h3>Stray Birds</h3>
+                    <div class="settings-help">Rabindranath Tagore · 1916</div>
+                    <p>Stray birds of summer come to my window to sing and fly away.</p>
+                    <p>夏天的飞鸟，飞到我的窗前唱歌，又飞去了。</p>
+                    <p>The world puts off its mask of vastness to its lover. It becomes small as one song, as one kiss of the eternal.</p>
+                  </div>
                 </div>
-                <button class="toggle" onclick="this.classList.toggle('on')"></button>
-              </div>
-              <div class="settings-row">
-                <div>
-                  <div class="settings-row-label">显示置信度指标</div>
-                  <div class="settings-row-desc">在信号卡片上显示 AI 置信度</div>
-                </div>
-                <button class="toggle on" onclick="this.classList.toggle('on')"></button>
               </div>
             </div>
           </div>
@@ -3036,6 +3133,23 @@
 
         <!-- Behavior Panel -->
         <div id="settings-panel-behavior" class="settings-panel-content">
+          <div class="settings-section">
+            <div class="settings-section-title">运行状态</div>
+            <div class="settings-kpi">
+              <div class="card">
+                <div class="settings-kpi-value">中文</div>
+                <div class="settings-kpi-label">界面语言</div>
+              </div>
+              <div class="card">
+                <div class="settings-kpi-value">Tray</div>
+                <div class="settings-kpi-label">关闭窗口行为</div>
+              </div>
+              <div class="card">
+                <div class="settings-kpi-value">30d</div>
+                <div class="settings-kpi-label">缓存保留</div>
+              </div>
+            </div>
+          </div>
           <div class="settings-section">
             <div class="settings-section-title">系统行为</div>
             <div class="card" style="padding:0; overflow:hidden;">

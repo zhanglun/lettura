@@ -92,10 +92,31 @@ export const Behavior = () => {
   };
 
   return (
-    <div className="flex flex-col gap-4">
-      {/* System behavior */}
+    <div className="settings-behavior-layout">
       <div className="settings-panel">
         <div className="settings-section">
+          <div className="settings-section-title">{t("settings.behavior.runtime_status")}</div>
+          <div className="settings-kpi">
+            <div className="card">
+              <div className="settings-kpi-value">{LANGS[lang]?.nativeName ?? lang}</div>
+              <div className="settings-kpi-label">{t("settings.behavior.kpi_language")}</div>
+            </div>
+            <div className="card">
+              <div className="settings-kpi-value">Tray</div>
+              <div className="settings-kpi-label">{t("settings.behavior.kpi_close_behavior")}</div>
+            </div>
+            <div className="card">
+              <div className="settings-kpi-value">{cacheRetention}d</div>
+              <div className="settings-kpi-label">{t("settings.behavior.kpi_cache_retention")}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* System behavior */}
+      <div className="settings-panel settings-behavior-system-panel">
+        <div className="settings-section">
+          <div className="settings-section-title">{t("settings.behavior.system_behavior")}</div>
           <div className="settings-row">
             <div>
               <div className="settings-label">{t("Launch at Login")}</div>
@@ -165,8 +186,9 @@ export const Behavior = () => {
       </div>
 
       {/* Data management */}
-      <div className="settings-panel">
+      <div className="settings-panel settings-behavior-data-panel">
         <div className="settings-section">
+          <div className="settings-section-title">{t("settings.behavior.data_cache")}</div>
           <div className="settings-row">
             <div>
               <div className="settings-label">{t("Cache Retention")}</div>
@@ -250,8 +272,9 @@ export const Behavior = () => {
       </div>
 
       {/* Local storage info */}
-      <div className="settings-panel">
+      <div className="settings-panel settings-behavior-storage-panel">
         <div className="settings-section">
+          <div className="settings-section-title">{t("settings.behavior.local_storage")}</div>
           <div className="settings-label mb-1">{t("Local Storage")}</div>
           <div className="settings-help mb-3">{t("Let users know where data is stored")}</div>
           <div className="settings-pack-row">
@@ -279,8 +302,9 @@ export const Behavior = () => {
       </div>
 
       {/* Exit behavior */}
-      <div className="settings-panel">
+      <div className="settings-panel settings-behavior-exit-panel">
         <div className="settings-section">
+          <div className="settings-section-title">{t("settings.behavior.exit_behavior")}</div>
           <div className="settings-label mb-2">{t("Exit Behavior")}</div>
           <div className="settings-help">
             {t("Closing the main window hides to system tray; truly exit via tray menu to avoid interrupting background sync.")}

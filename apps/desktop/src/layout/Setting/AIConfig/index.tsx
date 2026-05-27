@@ -104,46 +104,102 @@ export function AIConfigPanel() {
   };
 
   return (
-    <div className="flex flex-col gap-4">
-      {/* API credentials */}
-      <div className="settings-panel">
-        <div className="settings-section">
-          <div className="settings-row">
-            <div>
-              <div className="settings-label">{t("settings.ai.api_key")}</div>
-              <div className="settings-help">{t("settings.ai.api_key_help")}</div>
+    <div className="settings-ai-layout">
+      <div className="settings-grid-wide">
+        <div className="settings-panel settings-ai-provider-panel">
+          <div className="settings-section">
+            <div className="settings-ai-head">
+              <div>
+                <div className="settings-label">{t("settings.ai.provider_title")}</div>
+                <div className="settings-help">{t("settings.ai.provider_desc")}</div>
+              </div>
+              {store.aiConfig?.has_api_key && (
+                <span className="settings-tag settings-tag--green">{t("settings.ai.configured")}</span>
+              )}
             </div>
-            <input
-              type="password"
-              className="settings-input"
-              placeholder={
-                store.aiConfig?.has_api_key
-                  ? "••••••••••••••••"
-                  : t("settings.ai.api_key_placeholder")
-              }
-              value={apiKey}
-              onChange={(e) => setApiKey(e.target.value)}
-            />
-            <button className="btn-ghost" onClick={() => setApiKey("")}>
-              {t("settings.ai.change")}
-            </button>
-          </div>
 
-          <div className="settings-row">
-            <div>
-              <div className="settings-label">{t("settings.ai.base_url")}</div>
-              <div className="settings-help">{t("settings.ai.base_url_help")}</div>
+            <div className="settings-row">
+              <div>
+                <label className="settings-label" htmlFor="ai-api-key">
+                  {t("settings.ai.api_key")}
+                </label>
+                <div className="settings-help">{t("settings.ai.api_key_help")}</div>
+              </div>
+              <input
+                id="ai-api-key"
+                aria-label={t("settings.ai.api_key")}
+                type="password"
+                className="settings-input"
+                placeholder={
+                  store.aiConfig?.has_api_key
+                    ? "••••••••••••••••"
+                    : t("settings.ai.api_key_placeholder")
+                }
+                value={apiKey}
+                onChange={(e) => setApiKey(e.target.value)}
+              />
+              <button className="btn-ghost" onClick={() => setApiKey("")}>
+                {t("settings.ai.change")}
+              </button>
             </div>
-            <input
-              className="settings-input"
-              placeholder={t("settings.ai.base_url_placeholder")}
-              value={baseUrl}
-              onChange={(e) => setBaseUrl(e.target.value)}
-            />
-            <button className="btn-ghost" onClick={() => setBaseUrl("https://api.openai.com/v1")}>
-              {t("settings.ai.reset")}
-            </button>
+
+            <div className="settings-row">
+              <div>
+                <label className="settings-label" htmlFor="ai-base-url">
+                  {t("settings.ai.base_url")}
+                </label>
+                <div className="settings-help">{t("settings.ai.base_url_help")}</div>
+              </div>
+              <input
+                id="ai-base-url"
+                aria-label={t("settings.ai.base_url")}
+                className="settings-input"
+                placeholder={t("settings.ai.base_url_placeholder")}
+                value={baseUrl}
+                onChange={(e) => setBaseUrl(e.target.value)}
+              />
+              <button className="btn-ghost" onClick={() => setBaseUrl("https://api.openai.com/v1")}>
+                {t("settings.ai.reset")}
+              </button>
+            </div>
           </div>
+        </div>
+
+        <div className="settings-panel settings-ai-status-panel">
+          <div className="settings-section">
+            <div className="settings-ai-head">
+              <div>
+                <div className="settings-label">{t("settings.ai.analysis_status")}</div>
+                <div className="settings-help">{t("settings.ai.analysis_status_help")}</div>
+              </div>
+              <span className="settings-tag settings-tag--blue">{t("settings.ai.last_analysis")}</span>
+            </div>
+            <div className="settings-kpi">
+              <div className="card">
+                <div className="settings-kpi-value">{dedupStats?.total_analyzed ?? 0}</div>
+                <div className="settings-kpi-label">{t("settings.ai.dedup_total")}</div>
+              </div>
+              <div className="card">
+                <div className="settings-kpi-value">{dedupStats?.duplicates_found ?? 0}</div>
+                <div className="settings-kpi-label">{t("settings.ai.dedup_duplicates")}</div>
+              </div>
+              <div className="card">
+                <div className="settings-kpi-value">{dedupStats?.duplicate_groups ?? 0}</div>
+                <div className="settings-kpi-label">{t("settings.ai.dedup_groups")}</div>
+              </div>
+            </div>
+          </div>
+          <div className="settings-section">
+            <div className="settings-label mb-1">{t("settings.ai.privacy_title")}</div>
+            <div className="settings-help">{t("settings.ai.privacy_desc")}</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="settings-panel settings-ai-run-panel">
+        <div className="settings-section">
+          <div className="settings-label mb-1">{t("settings.ai.modeling_title")}</div>
+          <div className="settings-help mb-3">{t("settings.ai.modeling_desc")}</div>
 
           <div className="settings-row">
             <div>
@@ -160,77 +216,29 @@ export function AIConfigPanel() {
                 <Select.Item value="gpt-4.1-mini">gpt-4.1-mini</Select.Item>
               </Select.Content>
             </Select.Root>
-            <div>
-              {validationResult?.valid && (
-                <span className="settings-tag settings-tag--green">{t("settings.ai.connected")}</span>
-              )}
-              {!validationResult?.valid && validationResult && (
-                <span className="settings-tag settings-tag--amber">{t("settings.ai.validation_failed")}</span>
-              )}
-            </div>
+            <button className="btn-primary" onClick={handleSave} disabled={saving}>
+              {saving ? <Loader2 size={14} className="animate-spin" /> : null}
+              {saving ? t("settings.ai.saving") : t("settings.ai.save")}
+            </button>
           </div>
 
-          <div className="settings-row">
-            <div>
-              <div className="settings-label">{t("settings.ai.save_label")}</div>
-              <div className="settings-help">{t("settings.ai.save_help")}</div>
-            </div>
-            <div />
-            <div className="flex items-center gap-2">
-              <button
-                className="btn-ghost"
-                onClick={handleValidate}
-                disabled={(!apiKey.trim() && !store.aiConfig?.has_api_key) || validating}
-              >
-                {validating ? (
-                  <Loader2 size={14} className="animate-spin" />
-                ) : validationResult?.valid ? (
-                  <CheckCircle size={14} />
-                ) : null}
-                {validating ? t("settings.ai.validating") : t("settings.ai.validate")}
-              </button>
-              <button className="btn-primary" onClick={handleSave} disabled={saving}>
-                {saving ? <Loader2 size={14} className="animate-spin" /> : null}
-                {saving ? t("settings.ai.saving") : t("settings.ai.save")}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Analysis stats */}
-      <div className="settings-panel">
-        <div className="settings-section">
-          <div className="flex items-center justify-between mb-3">
-            <div className="settings-label">{t("settings.ai.analysis_status")}</div>
-            <span className="settings-tag settings-tag--accent">{t("settings.ai.last_analysis")}</span>
-          </div>
-          <div className="settings-kpi">
-            <div className="card">
-              <div className="settings-kpi-value">{dedupStats?.total_analyzed ?? 0}</div>
-              <div className="settings-kpi-label">{t("settings.ai.kpi_sources")}</div>
-            </div>
-            <div className="card">
-              <div className="settings-kpi-value">{dedupStats?.duplicates_found ?? 0}</div>
-              <div className="settings-kpi-label">{t("settings.ai.kpi_articles")}</div>
-            </div>
-            <div className="card">
-              <div className="settings-kpi-value">{dedupStats?.duplicate_groups ?? 0}</div>
-              <div className="settings-kpi-label">{t("settings.ai.kpi_signals")}</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Pipeline settings */}
-      <div className="settings-panel">
-        <div className="settings-section">
           <div className="settings-row">
             <div>
               <div className="settings-label">{t("settings.ai.enable_embedding")}</div>
               <div className="settings-help">{t("settings.ai.enable_embedding_desc")}</div>
             </div>
-            <div />
+            <Select.Root value={embeddingModel} onValueChange={setEmbeddingModel}>
+              <Select.Trigger className="settings-select" />
+              <Select.Content>
+                {embeddingModel !== "text-embedding-3-small" &&
+                  embeddingModel !== "text-embedding-3-large" &&
+                  embeddingModel && (
+                    <Select.Item value={embeddingModel}>{embeddingModel}</Select.Item>
+                  )}
+                <Select.Item value="text-embedding-3-small">text-embedding-3-small</Select.Item>
+                <Select.Item value="text-embedding-3-large">text-embedding-3-large</Select.Item>
+              </Select.Content>
+            </Select.Root>
             <Switch checked={enableEmbedding} onCheckedChange={setEnableEmbedding} />
           </div>
 
@@ -260,9 +268,35 @@ export function AIConfigPanel() {
               {t("settings.ai.trigger_pipeline")}
             </button>
           </div>
+
+          <div className="settings-row">
+            <div>
+              <div className="settings-label">{t("settings.ai.connection_title")}</div>
+              <div className="settings-help">{t("settings.ai.connection_help")}</div>
+            </div>
+            <div>
+              {validationResult?.valid && (
+                <span className="settings-tag settings-tag--green">{t("settings.ai.connected")}</span>
+              )}
+              {!validationResult?.valid && validationResult && (
+                <span className="settings-tag settings-tag--amber">{t("settings.ai.validation_failed")}</span>
+              )}
+            </div>
+            <button
+              className="btn-ghost"
+              onClick={handleValidate}
+              disabled={(!apiKey.trim() && !store.aiConfig?.has_api_key) || validating}
+            >
+              {validating ? (
+                <Loader2 size={14} className="animate-spin" />
+              ) : validationResult?.valid ? (
+                <CheckCircle size={14} />
+              ) : null}
+              {validating ? t("settings.ai.validating") : t("settings.ai.validate")}
+            </button>
+          </div>
         </div>
       </div>
-
     </div>
   );
 }

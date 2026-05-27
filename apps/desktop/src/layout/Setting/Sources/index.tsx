@@ -6,6 +6,7 @@ import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
 import * as dataAgent from "@/helpers/dataAgent";
 import { busChannel } from "@/helpers/busChannel";
+import { RouteConfig } from "@/config";
 
 export const Sources = () => {
   const { t } = useTranslation();
@@ -32,9 +33,15 @@ export const Sources = () => {
     [t],
   );
 
-  const allFeeds = store.subscribes.filter((f) => f.item_type === "channel");
-  const brokenFeeds = allFeeds.filter((f) => f.health_status === 1);
-  const healthyFeeds = allFeeds.filter((f) => f.health_status !== 1);
+  const allFeeds = useMemo(
+    () =>
+      store.subscribes.flatMap((item) =>
+        item.item_type === "folder" ? item.children ?? [] : [item],
+      ).filter((f) => f.item_type === "channel"),
+    [store.subscribes],
+  );
+  const brokenFeeds = allFeeds.filter((f) => (f.health_status ?? 0) > 0);
+  const healthyFeeds = allFeeds.filter((f) => (f.health_status ?? 0) === 0);
   const recentHealthyFeeds = healthyFeeds.slice(0, 3);
   const threads = store.userConfig.threads ?? 3;
   const healthyRate = allFeeds.length > 0 ? Math.round((healthyFeeds.length / allFeeds.length) * 100) : 100;
@@ -47,13 +54,25 @@ export const Sources = () => {
     }
   };
 
+  const openSubscriptionManagement = () => {
+    window.history.pushState({}, "", `${RouteConfig.SETTINGS}?tab=subscriptions`);
+    window.dispatchEvent(new PopStateEvent("popstate"));
+  };
+
   return (
-    <div className="flex flex-col gap-4">
+    <div className="settings-sources-layout">
       {/* Health overview + Sync settings */}
-      <div className="grid grid-cols-[1fr_260px] gap-4 items-start">
+      <div className="settings-grid-wide">
         {/* Sync settings */}
-        <div className="settings-panel">
+        <div className="settings-panel settings-sources-sync-panel">
           <div className="settings-section">
+            <div className="flex items-center justify-between gap-3 mb-3">
+              <div>
+                <div className="settings-label">{t("settings.sources.sync_strategy_title")}</div>
+                <div className="settings-help">{t("settings.sources.sync_strategy_help")}</div>
+              </div>
+              <span className="settings-tag settings-tag--blue">{intervalOptions.find((opt) => opt.value === store.userConfig.update_interval)?.label ?? i18next.t("Manual")}</span>
+            </div>
             <div className="settings-row">
               <div>
                 <div className="settings-label">{t("settings.sources.sync_frequency")}</div>
@@ -109,9 +128,17 @@ export const Sources = () => {
         </div>
 
         {/* Health KPIs */}
-        <div className="settings-panel">
+        <div className="settings-panel settings-sources-health-panel">
           <div className="settings-section">
-            <div className="settings-label mb-3">{t("settings.sources.input_quality")}</div>
+            <div className="settings-sources-panel-head">
+              <div>
+                <div className="settings-label mb-1">{t("settings.sources.health_center_title")}</div>
+                <div className="settings-help">{t("settings.sources.health_center_help")}</div>
+              </div>
+              <button className="btn-ghost" type="button" onClick={openSubscriptionManagement}>
+                {t("settings.sources.open_subscription_management")}
+              </button>
+            </div>
             <div className="settings-kpi">
               <div className="card">
                 <div className="settings-kpi-value">{allFeeds.length}</div>
@@ -126,24 +153,39 @@ export const Sources = () => {
                 <div className="settings-kpi-label">{t("settings.sources.kpi_needs_check")}</div>
               </div>
             </div>
+            <div className="settings-help mt-3">
+              {t("settings.sources.health_summary", {
+                healthy: healthyFeeds.length,
+                broken: brokenFeeds.length,
+                unread: allFeeds.reduce((sum, feed) => sum + (feed.unread ?? 0), 0),
+              })}
+            </div>
           </div>
           {brokenFeeds.length > 0 && (
             <div className="settings-section">
-              <div className="settings-label mb-2">{t("settings.sources.broken_advice_title")}</div>
-              {brokenFeeds.slice(0, 3).map((feed) => (
-                <div key={feed.uuid} className="flex items-center justify-between gap-2 py-1.5 text-xs border-b border-[var(--gray-a5)] last:border-0">
-                  <span className="truncate text-[var(--gray-12)] flex-1">{feed.title}</span>
-                  <button
-                    className="btn-ghost text-[11px] py-0.5"
-                    onClick={async () => {
-                      await dataAgent.syncFeed("channel", feed.uuid);
-                      busChannel.emit("getChannels");
-                    }}
-                  >
-                    {t("settings.sources.action_retry")}
-                  </button>
-                </div>
-              ))}
+              <div className="settings-label mb-2">{t("settings.sources.broken_queue_title")}</div>
+              <div className="settings-mini-list settings-sources-broken-list">
+                {brokenFeeds.slice(0, 3).map((feed) => (
+                  <div key={feed.uuid} className="settings-mini-row">
+                    <div className="min-w-0">
+                      <div className="settings-label truncate">{feed.title}</div>
+                      <div className="settings-help truncate">
+                        {getSourceHost(feed) || t("settings.sources.health_broken")}
+                      </div>
+                    </div>
+                    <button
+                      className="btn-ghost text-[11px] py-0.5"
+                      onClick={async () => {
+                        await dataAgent.syncFeed("channel", feed.uuid);
+                        busChannel.emit("getChannels");
+                      }}
+                    >
+                      {t("settings.sources.action_retry")}
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <div className="settings-help mt-3">{t("settings.sources.broken_queue_help")}</div>
             </div>
           )}
         </div>
@@ -177,7 +219,7 @@ export const Sources = () => {
       )}
 
       {/* Starter packs */}
-      <div className="settings-panel">
+      <div className="settings-panel settings-sources-packs-panel">
         <div className="settings-section">
           <div className="flex items-center justify-between mb-3">
             <div>
