@@ -367,13 +367,31 @@
       "behavior_desc": "启动、通知、缓存保留"
     },
     "subscriptions": {
+      "search_placeholder": "按订阅名、源地址或主页搜索...",
+      "filter_all": "全部",
+      "filter_unread": "未读",
+      "filter_broken": "异常",
+      "filter_ungrouped": "未分组",
       "kpi_feeds": "订阅源",
       "kpi_folders": "文件夹",
       "kpi_unread": "未读文章",
       "kpi_broken": "异常源",
       "ungrouped": "未分组",
       "folder_meta": "{{sources}} 源 · {{unread}} 未读",
-      "context_hint": "右键订阅源可查看文章、同步、全部已读、编辑、移动、停用或删除。"
+      "context_hint": "右键订阅源可查看文章、同步、全部已读、编辑、移动、停用或删除。",
+      "view_detail": "查看详情",
+      "move_title": "移动订阅源",
+      "moved": "订阅源已移动",
+      "move_failed": "移动订阅源失败",
+      "detail_empty_title": "选择一个订阅源",
+      "detail_empty_help": "从列表中选择订阅源，查看 URL、同步状态、所属文件夹和管理操作。",
+      "detail_title": "来源详情",
+      "home_url": "主页",
+      "feed_url": "源地址",
+      "last_sync": "上次同步",
+      "folder": "文件夹",
+      "failure_reason": "失败原因",
+      "management_actions": "管理操作"
     },
     "sources": {
       "sources_title": "来源管理",

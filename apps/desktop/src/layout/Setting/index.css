@@ -132,6 +132,14 @@
     padding: 12px 14px;
     border-bottom: 1px solid var(--gray-a5);
     background: var(--gray-a2);
+    flex-wrap: wrap;
+  }
+
+  .settings-subscriptions-admin {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 14px;
+    align-items: start;
   }
 
   .settings-subscriptions-search {
@@ -194,6 +202,37 @@
     margin: 0 2px;
   }
 
+  .settings-subscriptions-filterbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--gray-a5);
+    background: var(--color-background);
+  }
+
+  .settings-subscriptions-filter {
+    border: 1px solid transparent;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--gray-10);
+    padding: 5px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .settings-subscriptions-filter:hover {
+    background: var(--gray-a3);
+    color: var(--gray-12);
+  }
+
+  .settings-subscriptions-filter.active {
+    border-color: var(--accent-a6);
+    background: var(--accent-a3);
+    color: var(--accent-11);
+  }
+
   .settings-subscriptions-kpi {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -217,18 +256,41 @@
     width: 100%;
     display: flex;
     align-items: center;
-    gap: 8px;
     min-height: 38px;
-    padding: 0 14px;
-    border: none;
     background: transparent;
     color: var(--gray-12);
-    cursor: pointer;
-    text-align: left;
   }
 
   .settings-subscriptions-folder-header:hover {
     background: var(--gray-a2);
+  }
+
+  .settings-subscriptions-folder-toggle {
+    min-width: 0;
+    flex: 1;
+    min-height: 38px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 14px;
+    border: none;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    text-align: left;
+  }
+
+  .settings-subscriptions-folder-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding-right: 12px;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+
+  .settings-subscriptions-folder-header:hover .settings-subscriptions-folder-actions {
+    opacity: 1;
   }
 
   .settings-subscriptions-folder-title {
@@ -254,6 +316,10 @@
 
   .settings-subscriptions-row:hover {
     background: var(--accent-a2);
+  }
+
+  .settings-subscriptions-row.selected {
+    background: var(--accent-a3);
   }
 
   .settings-subscriptions-drag {
@@ -297,6 +363,12 @@
     color: var(--gray-9);
     font-size: 11px;
     font-weight: 600;
+  }
+
+  .settings-subscriptions-favicon.detail {
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
   }
 
   .settings-subscriptions-favicon img {
@@ -403,6 +475,133 @@
     margin-left: auto;
     text-align: right;
     line-height: 1.4;
+  }
+
+  .settings-subscriptions-detail {
+    position: sticky;
+    top: 0;
+  }
+
+  .settings-subscriptions-detail-head {
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr) auto;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .settings-subscriptions-detail-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .settings-subscriptions-detail-list div {
+    min-width: 0;
+    display: grid;
+    grid-template-columns: 72px minmax(0, 1fr);
+    gap: 8px;
+    font-size: 11px;
+    line-height: 1.45;
+  }
+
+  .settings-subscriptions-detail-list span {
+    color: var(--gray-9);
+  }
+
+  .settings-subscriptions-detail-list strong {
+    min-width: 0;
+    color: var(--gray-12);
+    font-weight: 500;
+    overflow-wrap: anywhere;
+  }
+
+  .settings-subscriptions-detail-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .settings-subscriptions-danger-button {
+    width: 100%;
+    min-height: 30px;
+    margin-top: 10px;
+    border: 1px solid var(--red-a5);
+    border-radius: 10px;
+    background: var(--red-a2);
+    color: var(--red-11);
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .settings-subscriptions-danger-button:hover {
+    background: var(--red-a3);
+  }
+
+  .settings-subscriptions-menu-layer,
+  .settings-subscriptions-modal-layer {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+  }
+
+  .settings-subscriptions-menu {
+    position: absolute;
+    min-width: 190px;
+    border: 1px solid var(--gray-a5);
+    border-radius: 10px;
+    background: var(--color-background);
+    box-shadow: 0 12px 28px var(--gray-a6);
+    padding: 5px;
+  }
+
+  .settings-subscriptions-menu-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--gray-12);
+    padding: 8px 9px;
+    font-size: 12px;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .settings-subscriptions-menu-item:hover {
+    background: var(--accent-a3);
+  }
+
+  .settings-subscriptions-menu-item.danger {
+    color: var(--red-11);
+  }
+
+  .settings-subscriptions-menu-item.danger:hover {
+    background: var(--red-a3);
+  }
+
+  .settings-subscriptions-menu-separator {
+    height: 1px;
+    background: var(--gray-a5);
+    margin: 5px 0;
+  }
+
+  .settings-subscriptions-modal-layer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--black-a6);
+  }
+
+  .settings-subscriptions-modal {
+    width: min(420px, calc(100vw - 32px));
+    border: 1px solid var(--gray-a5);
+    border-radius: 12px;
+    background: var(--color-background);
+    padding: 18px;
+    box-shadow: 0 20px 42px var(--gray-a7);
   }
 
   .settings-pack-row {

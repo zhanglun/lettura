@@ -2666,125 +2666,125 @@
 
         <!-- Subscriptions Panel -->
         <div id="settings-panel-subscriptions" class="settings-panel-content">
-          <div class="settings-panel">
-            <div class="feeds-toolbar" style="padding:12px 14px; border-bottom:1px solid var(--border);">
-              <input type="text" class="search-input" placeholder="搜索订阅源或文件夹..." style="flex:1; min-width:180px;">
-              <button class="tool-btn" onclick="document.getElementById('add-feed-dialog').style.display='flex'">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-                添加订阅
-              </button>
-              <button class="tool-btn">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-                新建文件夹
-              </button>
-              <div style="width:1px; height:18px; background:var(--border); margin:0 2px;"></div>
-              <button class="tool-btn">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>
-                同步全部
-              </button>
-              <button class="tool-btn">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
-                全部已读
-              </button>
-            </div>
+          <div style="display:grid; grid-template-columns:minmax(0, 1fr) 300px; gap:14px; align-items:start;">
+            <div class="settings-panel">
+              <div class="feeds-toolbar" style="padding:12px 14px; border-bottom:1px solid var(--border); flex-wrap:wrap;">
+                <input type="text" class="search-input" placeholder="搜索订阅源、文件夹或 URL..." style="flex:1; min-width:220px;">
+                <button class="tool-btn" onclick="document.getElementById('add-feed-dialog').style.display='flex'">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                  添加订阅
+                </button>
+                <button class="tool-btn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                  新建文件夹
+                </button>
+                <button class="tool-btn">同步全部</button>
+                <button class="tool-btn">全部已读</button>
+              </div>
 
-            <div class="card" style="margin:12px 14px; padding:12px 14px; display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:10px; box-shadow:none; background:var(--bg-sidebar);">
-              <div>
-                <div class="settings-kpi-value">269</div>
-                <div class="settings-kpi-label">订阅源</div>
+              <div style="padding:10px 14px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; gap:12px; background:var(--bg-card);">
+                <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                  <button class="settings-tab active" style="padding:5px 10px; border-bottom:0; border-radius:var(--radius); background:var(--accent-light);">全部 269</button>
+                  <button class="settings-tab" style="padding:5px 10px; border-bottom:0;">未读 19418</button>
+                  <button class="settings-tab" style="padding:5px 10px; border-bottom:0;">异常 52</button>
+                  <button class="settings-tab" style="padding:5px 10px; border-bottom:0;">未分组 268</button>
+                </div>
+                <div style="display:flex; gap:8px;">
+                  <button class="btn btn-ghost" style="font-size:11px;">导入 OPML</button>
+                  <button class="btn btn-ghost" style="font-size:11px;">导出 OPML</button>
+                </div>
               </div>
-              <div>
-                <div class="settings-kpi-value">2</div>
-                <div class="settings-kpi-label">文件夹</div>
-              </div>
-              <div>
-                <div class="settings-kpi-value">19,418</div>
-                <div class="settings-kpi-label">未读文章</div>
-              </div>
-              <div>
-                <div class="settings-kpi-value">52</div>
-                <div class="settings-kpi-label">异常源</div>
-              </div>
-            </div>
 
-            <div class="folder-group" style="border-top:1px solid var(--border);">
-              <div class="folder-header" onclick="this.classList.toggle('collapsed'); this.nextElementSibling.classList.toggle('collapsed');">
-                <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
-                未分组 <span class="folder-count">· 268 源 · 19,418 未读</span>
+              <div class="card" style="margin:12px 14px; padding:12px 14px; display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:10px; box-shadow:none; background:var(--bg-sidebar);">
+                <div><div class="settings-kpi-value">269</div><div class="settings-kpi-label">订阅源</div></div>
+                <div><div class="settings-kpi-value">2</div><div class="settings-kpi-label">文件夹</div></div>
+                <div><div class="settings-kpi-value">19,418</div><div class="settings-kpi-label">未读文章</div></div>
+                <div><div class="settings-kpi-value">52</div><div class="settings-kpi-label">异常源</div></div>
               </div>
-              <div class="folder-body">
-                <div class="feed-row" onclick="showPage('feeds'); showState('articles')" oncontextmenu="event.preventDefault(); showContextMenu(event, this);">
-                  <svg class="drag-handle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
-                  <div class="health-dot healthy"></div>
-                  <div class="favicon-wrap"><img src="https://www.google.com/s2/favicons?domain=vercel.com&sz=32" alt=""></div>
-                  <div class="feed-info">
-                    <div class="feed-name">Vercel Blog</div>
-                    <div class="feed-url">vercel.com/blog</div>
-                  </div>
-                  <div class="feed-meta"><span class="feed-unread">1172</span><span class="feed-sync">2026-05-26 09:56</span></div>
-                  <div class="feed-row-actions">
-                    <button class="row-act" title="同步"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg></button>
-                    <button class="row-act danger" title="删除"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>
+
+              <div class="folder-group" style="border-top:1px solid var(--border);">
+                <div class="folder-header">
+                  <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+                  未分组 <span class="folder-count">· 268 源 · 19,418 未读</span>
+                  <div style="margin-left:auto; display:flex; gap:4px;">
+                    <button class="row-act" title="同步文件夹">↻</button>
+                    <button class="row-act" title="全部已读">✓</button>
                   </div>
                 </div>
-                <div class="feed-row" onclick="showPage('feeds'); showState('articles')" oncontextmenu="event.preventDefault(); showContextMenu(event, this);">
-                  <svg class="drag-handle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
-                  <div class="health-dot healthy"></div>
-                  <div class="favicon-wrap"><img src="https://www.google.com/s2/favicons?domain=openai.com&sz=32" alt=""></div>
-                  <div class="feed-info">
-                    <div class="feed-name">OpenAI Blog</div>
-                    <div class="feed-url">openai.com/blog</div>
+                <div class="folder-body">
+                  <div class="feed-row active" oncontextmenu="event.preventDefault(); showContextMenu(event, this);">
+                    <svg class="drag-handle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+                    <div class="health-dot healthy"></div>
+                    <div class="favicon-wrap"><img src="https://www.google.com/s2/favicons?domain=vercel.com&sz=32" alt=""></div>
+                    <div class="feed-info"><div class="feed-name">Vercel Blog</div><div class="feed-url">vercel.com/blog</div></div>
+                    <div class="feed-meta"><span class="feed-unread">1172</span><span class="feed-sync">2026-05-26 09:56</span></div>
+                    <div class="feed-row-actions"><button class="row-act" title="同步">↻</button><button class="row-act" title="移动">↷</button><button class="row-act danger" title="删除">×</button></div>
                   </div>
-                  <div class="feed-meta"><span class="feed-unread">976</span><span class="feed-sync">2026-05-26 09:56</span></div>
-                  <div class="feed-row-actions">
-                    <button class="row-act" title="同步"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg></button>
-                    <button class="row-act danger" title="删除"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>
+                  <div class="feed-row" oncontextmenu="event.preventDefault(); showContextMenu(event, this);">
+                    <svg class="drag-handle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+                    <div class="health-dot healthy"></div>
+                    <div class="favicon-wrap"><img src="https://www.google.com/s2/favicons?domain=openai.com&sz=32" alt=""></div>
+                    <div class="feed-info"><div class="feed-name">OpenAI Blog</div><div class="feed-url">openai.com/blog</div></div>
+                    <div class="feed-meta"><span class="feed-unread">976</span><span class="feed-sync">2026-05-26 09:56</span></div>
+                    <div class="feed-row-actions"><button class="row-act" title="同步">↻</button><button class="row-act" title="移动">↷</button><button class="row-act danger" title="删除">×</button></div>
+                  </div>
+                  <div class="feed-row" oncontextmenu="event.preventDefault(); showContextMenu(event, this);">
+                    <svg class="drag-handle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+                    <div class="health-dot error"></div>
+                    <div class="favicon-wrap"><img src="https://www.google.com/s2/favicons?domain=theinformation.com&sz=32" alt=""></div>
+                    <div class="feed-info"><div class="feed-name">The Information</div><div class="feed-url" style="color:var(--red)">rsshub.app/theinformation · Not 200 OK</div></div>
+                    <div class="feed-meta"><span class="feed-unread">0</span><span class="feed-sync" style="color:var(--red)">失败</span></div>
+                    <div class="feed-row-actions"><button class="row-act" title="重试">↻</button><button class="row-act" title="移动">↷</button><button class="row-act danger" title="删除">×</button></div>
                   </div>
                 </div>
-                <div class="feed-row" onclick="showPage('feeds'); showState('articles')" oncontextmenu="event.preventDefault(); showContextMenu(event, this);">
-                  <svg class="drag-handle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
-                  <div class="health-dot error"></div>
-                  <div class="favicon-wrap"><img src="https://www.google.com/s2/favicons?domain=theinformation.com&sz=32" alt=""></div>
-                  <div class="feed-info">
-                    <div class="feed-name">The Information</div>
-                    <div class="feed-url" style="color:var(--red)">rsshub.app/theinformation · Not 200 OK</div>
-                  </div>
-                  <div class="feed-meta"><span class="feed-unread">0</span><span class="feed-sync" style="color:var(--red)">失败</span></div>
-                  <div class="feed-row-actions">
-                    <button class="row-act" title="重试"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg></button>
-                    <button class="row-act danger" title="删除"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>
-                  </div>
+              </div>
+
+              <div class="folder-group">
+                <div class="folder-header">
+                  <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+                  Engineering <span class="folder-count">· 1 源 · 0 未读</span>
+                  <div style="margin-left:auto; display:flex; gap:4px;"><button class="row-act" title="重命名">✎</button><button class="row-act danger" title="删除文件夹">×</button></div>
+                </div>
+                <div class="folder-body">
+                  <div class="feed-row"><svg class="drag-handle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg><div class="health-dot healthy"></div><div class="favicon-wrap"><img src="https://www.google.com/s2/favicons?domain=lobste.rs&sz=32" alt=""></div><div class="feed-info"><div class="feed-name">lobste.rs</div><div class="feed-url">lobste.rs/rss</div></div><div class="feed-meta"><span class="feed-sync">2026-05-26 09:57</span></div><div class="feed-row-actions"><button class="row-act">↻</button><button class="row-act">↷</button></div></div>
                 </div>
               </div>
             </div>
 
-            <div class="folder-group">
-              <div class="folder-header" onclick="this.classList.toggle('collapsed'); this.nextElementSibling.classList.toggle('collapsed');">
-                <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
-                奥斯丁发射点法的时候 <span class="folder-count">· 1 源</span>
-              </div>
-              <div class="folder-body">
-                <div class="feed-row" onclick="showPage('feeds'); showState('articles')" oncontextmenu="event.preventDefault(); showContextMenu(event, this);">
-                  <svg class="drag-handle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
-                  <div class="health-dot healthy"></div>
-                  <div class="favicon-wrap"><img src="https://www.google.com/s2/favicons?domain=lobste.rs&sz=32" alt=""></div>
-                  <div class="feed-info">
-                    <div class="feed-name">lobste.rs</div>
-                    <div class="feed-url">lobste.rs/rss</div>
+            <div class="settings-panel" style="position:sticky; top:0;">
+              <div class="settings-section">
+                <div style="display:flex; align-items:center; gap:10px;">
+                  <div class="favicon-wrap" style="width:34px; height:34px;"><img src="https://www.google.com/s2/favicons?domain=vercel.com&sz=64" alt=""></div>
+                  <div style="min-width:0;">
+                    <div class="settings-label" style="font-size:14px;">Vercel Blog</div>
+                    <div class="settings-help">未分组 · 1172 未读</div>
                   </div>
-                  <div class="feed-meta"><span class="feed-unread">0</span><span class="feed-sync">2026-05-26 09:57</span></div>
-                  <div class="feed-row-actions">
-                    <button class="row-act" title="同步"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg></button>
-                    <button class="row-act danger" title="删除"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>
-                  </div>
+                  <span class="settings-tag settings-tag--green" style="margin-left:auto;">正常</span>
                 </div>
               </div>
-            </div>
-
-            <div style="border-top:1px solid var(--border); padding:10px 14px; display:flex; align-items:center; gap:12px; background:var(--bg-sidebar);">
-              <button class="btn btn-ghost" style="font-size:11px;">导入 OPML</button>
-              <button class="btn btn-ghost" style="font-size:11px;">导出 OPML</button>
-              <span style="font-size:11px; color:var(--text-tertiary); margin-left:auto;">右键订阅源可查看文章、同步、全部已读、编辑、移动、停用或删除。</span>
+              <div class="settings-section">
+                <div class="settings-label" style="margin-bottom:8px;">来源详情</div>
+                <div class="settings-help">主页：vercel.com/blog</div>
+                <div class="settings-help">Feed：vercel.com/feed</div>
+                <div class="settings-help">上次同步：2026-05-26 09:56</div>
+                <div class="settings-help">描述：产品更新、平台架构与前端工程实践。</div>
+              </div>
+              <div class="settings-section">
+                <div class="settings-label" style="margin-bottom:8px;">管理操作</div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                  <button class="btn btn-ghost" style="font-size:11px;">查看文章</button>
+                  <button class="btn btn-ghost" style="font-size:11px;">同步</button>
+                  <button class="btn btn-ghost" style="font-size:11px;">移动到文件夹</button>
+                  <button class="btn btn-ghost" style="font-size:11px;">全部已读</button>
+                  <button class="btn btn-ghost" style="font-size:11px;">复制 Feed URL</button>
+                  <button class="btn btn-ghost" style="font-size:11px;">打开主页</button>
+                </div>
+                <button class="btn btn-ghost" style="font-size:11px; color:var(--red); margin-top:10px; width:100%;">取消订阅</button>
+              </div>
+              <div class="settings-section">
+                <div class="settings-label" style="margin-bottom:8px;">异常源处理</div>
+                <div class="settings-help">选择异常筛选后，右侧显示失败原因、最近失败时间，并提供重试、复制 URL、删除源。</div>
+              </div>
             </div>
           </div>
         </div>

@@ -345,13 +345,31 @@
       "behavior_desc": "Startup, notifications, cache retention"
     },
     "subscriptions": {
+      "search_placeholder": "Search by feed name, URL, or homepage...",
+      "filter_all": "All",
+      "filter_unread": "Unread",
+      "filter_broken": "Broken",
+      "filter_ungrouped": "Ungrouped",
       "kpi_feeds": "Feeds",
       "kpi_folders": "Folders",
       "kpi_unread": "Unread Articles",
       "kpi_broken": "Broken Feeds",
       "ungrouped": "Ungrouped",
       "folder_meta": "{{sources}} feeds · {{unread}} unread",
-      "context_hint": "Right-click a feed to view articles, sync, mark all read, edit, move, disable, or delete."
+      "context_hint": "Right-click a feed to view articles, sync, mark all read, edit, move, disable, or delete.",
+      "view_detail": "View Details",
+      "move_title": "Move Feed",
+      "moved": "Feed moved",
+      "move_failed": "Failed to move feed",
+      "detail_empty_title": "Select a feed",
+      "detail_empty_help": "Choose a feed from the list to inspect URLs, sync status, folder placement, and management actions.",
+      "detail_title": "Source Details",
+      "home_url": "Homepage",
+      "feed_url": "Feed URL",
+      "last_sync": "Last Sync",
+      "folder": "Folder",
+      "failure_reason": "Failure Reason",
+      "management_actions": "Management Actions"
     },
     "sources": {
       "sources_title": "Sources Management",
