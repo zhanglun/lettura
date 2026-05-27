@@ -778,6 +778,8 @@
     "duplicate": "重复",
     "list_count": "{{count}} 篇",
     "list_unread_count": "{{count}} 篇未读",
+    "list_loaded_count": "已加载 {{count}} 篇",
+    "current_filter": "当前筛选",
     "actions": {
       "read_later": "稍后读",
       "remove_read_later": "移出稍后读"

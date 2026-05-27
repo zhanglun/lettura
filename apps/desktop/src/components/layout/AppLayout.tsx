@@ -26,7 +26,7 @@ function getSidebarContext(pathname: string): SidebarContext {
   if (/^\/local\/feeds\/[^/]+/.test(pathname)) {
     return "feeds";
   }
-  if (pathname === "/local/feeds") return "feeds-manage";
+  if (pathname === "/local/feeds") return "feeds";
   if (pathname.startsWith("/local/all")) return "feeds";
   return "default";
 }

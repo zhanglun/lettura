@@ -1476,6 +1476,14 @@
       padding: 9px 14px; border-bottom: 1px solid var(--border);
       background: var(--bg-card); flex-shrink: 0; gap: 10px; flex-wrap: wrap;
     }
+    .art-list-title {
+      font-size: 13px; font-weight: 600; color: var(--text-primary);
+      max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .art-list-subtitle {
+      font-size: 11px; color: var(--text-tertiary); margin-top: 2px;
+      display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+    }
     .art-filter {
       padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 500;
       border: none; background: transparent; color: var(--text-tertiary); cursor: pointer;
@@ -1555,11 +1563,6 @@
       border-left: 3px solid var(--accent); padding: 10px 16px; margin: 14px 0;
       background: var(--accent-light); border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
       font-style: italic; font-size: 13px; color: var(--text-secondary); line-height: 1.6;
-    }
-    .art-reader-footer {
-      padding: 8px 16px; border-top: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: space-between;
-      font-size: 11px; color: var(--text-tertiary);
     }
   </style>
 </head>
@@ -2350,25 +2353,25 @@
     <div class="plan-b-state active" id="state-articles">
       <!-- Header -->
       <div class="art-list-header">
-        <div style="display:flex; align-items:center; gap:8px;">
-          <button class="back-btn" onclick="showPage('settings'); showSettingsTab('subscriptions', null)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
-          </button>
-          <img src="https://www.google.com/s2/favicons?domain=news.ycombinator.com&sz=32" style="width:16px;height:16px;border-radius:3px;">
-          <span style="font-size:13px; font-weight:600; color:var(--text-primary);">Hacker News</span>
-          <div class="health-dot healthy"></div>
-          <span style="font-size:11px; color:var(--text-tertiary);">156 未读</span>
+        <div style="min-width:0;">
+          <div class="art-list-title">Hacker News</div>
+          <div class="art-list-subtitle">
+            <span>156 未读</span>
+            <span>·</span>
+            <span>已加载 7 篇</span>
+            <span>·</span>
+            <span>当前筛选：全部</span>
+          </div>
         </div>
         <div style="display:flex; align-items:center; gap:6px;">
-          <div style="position:relative;">
-            <svg style="position:absolute;left:8px;top:50%;transform:translateY(-50%);width:12px;height:12px;color:var(--text-tertiary);pointer-events:none;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-            <input placeholder="搜索文章..." style="padding:5px 10px 5px 26px; border:1px solid var(--border); border-radius:var(--radius-sm); font-size:12px; outline:none; background:var(--bg-app); color:var(--text-primary); width:160px;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">
-          </div>
           <div style="display:flex; gap:1px; background:var(--bg-sidebar); border-radius:var(--radius-sm); padding:2px;">
             <button class="art-filter active" onclick="document.querySelectorAll('#state-articles .art-filter').forEach(b=>b.classList.remove('active')); this.classList.add('active')">全部</button>
             <button class="art-filter" onclick="document.querySelectorAll('#state-articles .art-filter').forEach(b=>b.classList.remove('active')); this.classList.add('active')">未读</button>
             <button class="art-filter" onclick="document.querySelectorAll('#state-articles .art-filter').forEach(b=>b.classList.remove('active')); this.classList.add('active')">已读</button>
           </div>
+          <button class="tool-btn" style="font-size:11px;" title="同步当前文章列表">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;"><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M16 8h5V3"/></svg>
+          </button>
           <button class="tool-btn" style="font-size:11px;">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
             全部已读
@@ -2436,17 +2439,6 @@
             <p>So I built a desktop RSS reader that uses local LLM inference to detect "signals" — meaningful changes, trends, and developments across your feeds. Instead of showing you 200 articles, it surfaces 5–8 signals that represent what's actually worth your attention.</p>
             <blockquote>The key insight: most news is noise. A signal is something that changes your mental model of a topic.</blockquote>
             <p>Tech stack: Tauri v2 (Rust backend) + React frontend. The AI pipeline runs entirely locally — no data leaves your machine. Embedding-based deduplication + a lightweight ranking model to prioritize what matters.</p>
-          </div>
-          <div class="art-reader-footer">
-            <div style="display:flex; gap:6px;">
-              <button class="reader-toolbar-btn" style="opacity:0.3; pointer-events:none;">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;"><path d="m15 18-6-6 6-6"/></svg>上一篇
-              </button>
-              <button class="reader-toolbar-btn" onclick="nextArticle()">
-                下一篇<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;"><path d="m9 18 6-6-6-6"/></svg>
-              </button>
-            </div>
-            <span style="color:var(--accent); cursor:pointer;">在浏览器中打开 →</span>
           </div>
         </div>
 

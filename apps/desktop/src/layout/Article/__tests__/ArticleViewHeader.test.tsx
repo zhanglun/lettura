@@ -121,4 +121,21 @@ describe("ArticleView header", () => {
     expect(screen.getByText("article.list_unread_count:42")).toBeInTheDocument();
     expect(screen.queryByText("article.list_unread_count:2")).not.toBeInTheDocument();
   });
+
+  it("shows loaded article and active filter metadata in the unified header", () => {
+    render(
+      <MemoryRouter
+        initialEntries={["/local/feeds/feed-1?feedUuid=feed-1&type=channel"]}
+        future={{ v7_relativeSplatPath: true, v7_startTransition: true }}
+      >
+        <Routes>
+          <Route path="/local/feeds/:uuid" element={<ArticleView />} />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText("article.list_loaded_count:2")).toBeInTheDocument();
+    expect(screen.getByText("article.current_filter")).toBeInTheDocument();
+    expect(screen.getAllByText("Unread").length).toBeGreaterThan(0);
+  });
 });

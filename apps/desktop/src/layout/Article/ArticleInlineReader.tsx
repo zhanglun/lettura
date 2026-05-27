@@ -109,8 +109,8 @@ export function ArticleInlineReader({
 
           <button
             type="button"
-            disabled={!canPrev}
-            onClick={goPrev}
+            disabled={!canPrev || !goPrev}
+            onClick={() => goPrev?.()}
             className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] text-[var(--gray-9)] hover:bg-[var(--gray-3)] hover:text-[var(--gray-12)] transition-all disabled:opacity-40 disabled:cursor-default"
           >
             <ChevronLeft size={12} />
@@ -118,8 +118,8 @@ export function ArticleInlineReader({
           </button>
           <button
             type="button"
-            disabled={!canNext}
-            onClick={goNext}
+            disabled={!canNext || !goNext}
+            onClick={() => goNext?.()}
             className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] text-[var(--gray-9)] hover:bg-[var(--gray-3)] hover:text-[var(--gray-12)] transition-all disabled:opacity-40 disabled:cursor-default"
           >
             {t("article.view.next")}

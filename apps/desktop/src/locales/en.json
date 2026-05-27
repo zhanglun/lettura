@@ -756,6 +756,8 @@
     "duplicate": "Duplicate",
     "list_count": "{{count}} articles",
     "list_unread_count": "{{count}} unread",
+    "list_loaded_count": "{{count}} loaded",
+    "current_filter": "Filter",
     "actions": {
       "read_later": "Read later",
       "remove_read_later": "Remove from read later"
