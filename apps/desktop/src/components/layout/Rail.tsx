@@ -103,13 +103,13 @@ export const Rail = React.memo(function () {
         className={clsx(
           "group relative flex h-9 w-9 cursor-pointer items-center justify-center rounded-md border-0 p-0 transition-all duration-150",
           active
-            ? "bg-[var(--accent-9)] text-white shadow-sm hover:bg-[var(--accent-10)] hover:text-white"
+            ? "bg-[var(--accent-9)] text-[var(--accent-contrast)] shadow-sm hover:bg-[var(--accent-10)] hover:text-[var(--accent-contrast)]"
             : "bg-transparent text-[var(--gray-9)] hover:bg-[var(--gray-a3)] hover:text-[var(--gray-11)]",
         )}
         onClick={() => handleClick(item)}
       >
         {item.icon}
-        <span className="pointer-events-none absolute left-12 z-[100] hidden whitespace-nowrap rounded bg-[var(--gray-12)] px-2 py-1 text-xs font-normal leading-4 text-white shadow-sm group-hover:block">
+        <span className="pointer-events-none absolute left-12 z-[100] hidden whitespace-nowrap rounded border border-[var(--gray-a6)] bg-[var(--color-background)] px-2 py-1 text-xs font-normal leading-4 text-[var(--gray-12)] shadow-sm group-hover:block">
           {item.labelKey}
         </span>
       </button>

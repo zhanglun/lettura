@@ -122,7 +122,7 @@ export const Sidebar = React.memo(function ({
   }[context];
 
   return (
-    <div className="flex flex-col h-full w-[220px] bg-[var(--gray-2)] border-r border-[var(--gray-5)] select-none shrink-0 overflow-hidden">
+    <div className="flex flex-col h-full w-[220px] bg-[var(--app-sidebar)] border-r border-[var(--gray-5)] select-none shrink-0 overflow-hidden">
       <div className="px-4 py-3.5 border-b border-[var(--gray-5)] shrink-0">
         <div className="min-w-0">
           <div className="truncate text-[13px] font-semibold text-[var(--gray-12)] tracking-tight">
@@ -185,7 +185,7 @@ export const Sidebar = React.memo(function ({
       )}
 
       {(context === "feeds" || context === "feeds-manage") && (
-        <div className="border-t border-[var(--gray-5)] bg-[var(--gray-2)] px-4 py-3 text-[10px] leading-4 text-[var(--gray-9)]">
+        <div className="border-t border-[var(--gray-5)] bg-[var(--app-sidebar)] px-4 py-3 text-[10px] leading-4 text-[var(--gray-9)]">
           {t("layout.sidebar.feed_footer_text", {
             count: feedStats.count,
             sync: feedStats.latestSync

@@ -256,7 +256,7 @@
     font-size: 12px;
     font-weight: 500;
     background: var(--accent-9);
-    color: white;
+    color: var(--accent-contrast);
     border: none;
     cursor: pointer;
     transition: background-color 0.15s;
@@ -264,6 +264,7 @@
 
   .btn-primary:hover {
     background: var(--accent-10);
+    color: var(--accent-contrast);
   }
 
   .btn-ghost {

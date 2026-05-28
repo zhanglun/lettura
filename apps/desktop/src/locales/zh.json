@@ -39,7 +39,6 @@
   "Save": "保存",
   "Saving": "保存中",
 
-
   "Are you absolutely sure?": "你确定吗？",
   "This action cannot be undone. This will permanently delete the data relates with": "此操作无法撤消。这将永久删除与 <bold>{{title}}</bold> 相关的数据",
 
@@ -61,7 +60,7 @@
   "Playlist": "播放列表",
 
   "General": "通用",
-  "Update Interval":"更新间隔",
+  "Update Interval": "更新间隔",
   "set the update interval": "设置自动更新的间隔时间",
   "Manual": "手动",
   "hour": "小时",
@@ -100,7 +99,6 @@
   "indigo": "靛蓝",
   "teal": "青色",
   "jade": "翡翠色",
-
 
   "Style": "样式",
 
@@ -414,7 +412,7 @@
       "custom_model_required": "请填写自定义模型名",
       "connected": "已连接",
       "base_url": "API 端点",
-      "base_url_placeholder": "https://api.openai.com/v1",
+      "base_url_placeholder": "https://api.deepseek.com",
       "base_url_help": "兼容 OpenAI API 的服务地址",
       "reset": "重置",
       "save_label": "保存配置",

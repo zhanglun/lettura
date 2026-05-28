@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { emit, listen } from "@tauri-apps/api/event";
 import { useBearStore } from "@/stores";
@@ -33,6 +33,39 @@ function App() {
       ? "indigo"
       : store.userConfig.theme || "indigo";
   }, [store.userConfig.theme]);
+  const [systemPrefersDark, setSystemPrefersDark] = useState(() =>
+    window.matchMedia("(prefers-color-scheme: dark)").matches,
+  );
+  const resolvedAppearance = useMemo<"light" | "dark">(() => {
+    const colorScheme = store.userConfig.color_scheme || "light";
+
+    if (colorScheme === "system") {
+      return systemPrefersDark ? "dark" : "light";
+    }
+
+    return colorScheme === "dark" ? "dark" : "light";
+  }, [store.userConfig.color_scheme, systemPrefersDark]);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const handleChange = (event: MediaQueryListEvent) => {
+      setSystemPrefersDark(event.matches);
+    };
+
+    setSystemPrefersDark(mediaQuery.matches);
+    mediaQuery.addEventListener("change", handleChange);
+
+    return () => {
+      mediaQuery.removeEventListener("change", handleChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    const isDark = resolvedAppearance === "dark";
+    document.body.classList.toggle("dark-theme", isDark);
+    document.documentElement.classList.toggle("dark", isDark);
+    document.documentElement.dataset.colorScheme = resolvedAppearance;
+  }, [resolvedAppearance]);
 
   useEffect(() => {
     if ((window as any).__TAURI_INTERNALS__) {
@@ -145,20 +178,6 @@ function App() {
       console.log("app render");
       getUserConfigRef.current().then((cfg: UserConfig) => {
         const { color_scheme, customize_style } = cfg;
-        let mode = color_scheme || "light";
-
-        if (color_scheme === "system") {
-          mode = window.matchMedia("(prefers-color-scheme: dark)").matches
-            ? "dark"
-            : "light";
-        }
-
-        if (mode === "dark") {
-          document.body.classList.add("dark-theme");
-        } else {
-          document.body.classList.remove("dark-theme");
-        }
-
         if (customize_style && Object.keys(customize_style).length) {
           for (const key of Object.keys(customize_style)) {
             document.documentElement.style.setProperty(
@@ -180,6 +199,7 @@ function App() {
     <Theme
       className="w-[100vw] h-[100vh] "
       accentColor={accentColor}
+      appearance={resolvedAppearance}
       panelBackground="translucent"
     >
       <ErrorBoundary>

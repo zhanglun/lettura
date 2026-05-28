@@ -392,7 +392,7 @@
       "custom_model_required": "Please enter a custom model name",
       "connected": "Connected",
       "base_url": "API Endpoint",
-      "base_url_placeholder": "https://api.openai.com/v1",
+      "base_url_placeholder": "https://api.deepseek.com",
       "base_url_help": "OpenAI-compatible API service URL",
       "reset": "Reset",
       "save_label": "Save Config",

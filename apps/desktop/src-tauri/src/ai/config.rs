@@ -31,7 +31,7 @@ fn default_embedding_model() -> String {
 }
 
 fn default_base_url() -> String {
-  "https://api.openai.com/v1".to_string()
+  "https://api.deepseek.com".to_string()
 }
 
 fn default_pipeline_interval_hours() -> u64 {
@@ -155,7 +155,7 @@ mod tests {
     assert!(config.api_key.is_empty());
     assert_eq!(config.model, "gpt-4o-mini");
     assert_eq!(config.embedding_model, "text-embedding-3-small");
-    assert_eq!(config.base_url, "https://api.openai.com/v1");
+    assert_eq!(config.base_url, "https://api.deepseek.com");
   }
 
   #[test]
@@ -216,7 +216,7 @@ mod tests {
     assert_eq!(detect_provider("https://qianfan.baidubce.com/v2"), Provider::Qianfan);
     assert_eq!(detect_provider("https://api.siliconflow.cn/v1"), Provider::SiliconFlow);
     assert_eq!(detect_provider("http://localhost:11434/v1"), Provider::Ollama);
-    assert_eq!(detect_provider("https://api.openai.com/v1"), Provider::OpenAI);
+    assert_eq!(detect_provider("https://api.deepseek.com"), Provider::OpenAI);
     assert_eq!(detect_provider("https://custom.llm.api/v1"), Provider::Unknown);
   }
 
@@ -252,7 +252,7 @@ mod tests {
 
   #[test]
   fn test_resolve_preserves_openai() {
-    let model = resolve_embedding_model("text-embedding-3-small", "https://api.openai.com/v1");
+    let model = resolve_embedding_model("text-embedding-3-small", "https://api.deepseek.com");
     assert_eq!(model, "text-embedding-3-small");
   }
 

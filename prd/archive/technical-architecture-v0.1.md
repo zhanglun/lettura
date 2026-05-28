@@ -595,6 +595,7 @@ struct LocalEmbedding { model_path: PathBuf }
 ```
 
 选择理由：
+
 - API 方案起步成本最低，不需要下载模型
 - text-embedding-3-small 是性价比最优选择
 - 本地模型作为离线后备，3.x 阶段再引入
@@ -660,7 +661,7 @@ flowchart TD
 api_key = "sk-..."
 model = "gpt-4o-mini"
 embedding_model = "text-embedding-3-small"
-base_url = "https://api.openai.com/v1"  # 可改为 Ollama 等本地端点
+base_url = "https://api.deepseek.com"  # 可改为 Ollama 等本地端点
 
 [app]
 onboarding_completed = false  # 首次启动后设为 true
@@ -762,7 +763,7 @@ sequenceDiagram
 interface OnboardingState {
   packs: StarterPack[];
   selectedPacks: string[];
-  status: 'idle' | 'selecting' | 'installing' | 'done';
+  status: "idle" | "selecting" | "installing" | "done";
   progress: { current: number; total: number };
 }
 
@@ -787,12 +788,12 @@ interface TopicState {
 ```typescript
 // helpers/dataAgent.ts 扩展
 const AI_COMMANDS = {
-  getStarterPacks: () => invoke('get_starter_packs'),
-  previewPack: (id: string) => invoke('preview_pack', { packId: id }),
-  installPack: (id: string) => invoke('install_pack', { packId: id }),
-  getTodaySignals: () => invoke('get_today_signals'),
-  getTopicDetail: (id: number) => invoke('get_topic_detail', { topicId: id }),
-  submitFeedback: (articleId: number, type: string) => invoke('submit_feedback', { articleId, type }),
+  getStarterPacks: () => invoke("get_starter_packs"),
+  previewPack: (id: string) => invoke("preview_pack", { packId: id }),
+  installPack: (id: string) => invoke("install_pack", { packId: id }),
+  getTodaySignals: () => invoke("get_today_signals"),
+  getTopicDetail: (id: number) => invoke("get_topic_detail", { topicId: id }),
+  submitFeedback: (articleId: number, type: string) => invoke("submit_feedback", { articleId, type }),
 };
 ```
 
@@ -800,9 +801,15 @@ const AI_COMMANDS = {
 
 ```typescript
 // App.tsx 扩展
-listen('pipeline:completed', () => { /* 刷新 Today */ });
-listen('feed:synced', (event) => { /* 更新 Onboarding 进度 */ });
-listen('ai:stream', (event) => { /* 流式接收 AI 输出 */ });
+listen("pipeline:completed", () => {
+  /* 刷新 Today */
+});
+listen("feed:synced", (event) => {
+  /* 更新 Onboarding 进度 */
+});
+listen("ai:stream", (event) => {
+  /* 流式接收 AI 输出 */
+});
 ```
 
 ---
@@ -853,21 +860,21 @@ graph LR
 
 ### 10.2 技术范围与新增映射
 
-| Minor | 技术范围 | 新增模块/表 | 关键依赖 |
-|-------|---------|------------|---------|
-| 2.1 Starter Pack + Onboarding | sources/ 模块 + Pack JSON + Onboarding UI | sources 表, feeds 增加 source_id 列, 3 个 IPC 命令, onboardingSlice | — |
-| 2.2 Today 入口重构 | Today 页面重构为 Intelligence 入口 | todaySlice, Intelligence/ 组件 | — |
-| 2.3 Top Signals MVP | AI Pipeline 最小版 + Signal 卡片 | ai/ 模块, article_ai_analysis, pipeline_runs | async-openai |
-| 2.4 Why It Matters | LLM 生成解释 | ai/llm.rs, ai/why_it_matters.rs | async-openai |
-| 2.5 来源透明 | 展示来源文章 | SignalSourceList 组件 | — |
-| 2.6 去重与压缩 | 内存 cosine similarity 去重 + 信息密度评估 | ai/dedup.rs, article_ai_analysis 增加 3 列 | — |
-| 2.7 基础反馈闭环 | 用户反馈记录 | user_feedback 表 | — |
-| 2.8 Today 概览 | 一句话概览生成 | ai/summary.rs 扩展 | — |
-| 2.9 Topic 最小引入 | Topic 对象 + 关联 | topics, topic_articles, ai/ranking.rs | — |
-| 2.10 Topic 基础页 | Topic 展示页 | Topics/ 组件, topicSlice | — |
-| 2.11 Topic 聚合 | 多来源归组 + 多观点 | topic 排序逻辑 | — |
-| 2.12 Topic 持续跟踪 | 排序 + Continue Tracking | 兴趣权重逻辑 | — |
-| 2.13 Topic 收口 | 验证 + 判断 | — | — |
+| Minor                         | 技术范围                                   | 新增模块/表                                                         | 关键依赖     |
+| ----------------------------- | ------------------------------------------ | ------------------------------------------------------------------- | ------------ |
+| 2.1 Starter Pack + Onboarding | sources/ 模块 + Pack JSON + Onboarding UI  | sources 表, feeds 增加 source_id 列, 3 个 IPC 命令, onboardingSlice | —            |
+| 2.2 Today 入口重构            | Today 页面重构为 Intelligence 入口         | todaySlice, Intelligence/ 组件                                      | —            |
+| 2.3 Top Signals MVP           | AI Pipeline 最小版 + Signal 卡片           | ai/ 模块, article_ai_analysis, pipeline_runs                        | async-openai |
+| 2.4 Why It Matters            | LLM 生成解释                               | ai/llm.rs, ai/why_it_matters.rs                                     | async-openai |
+| 2.5 来源透明                  | 展示来源文章                               | SignalSourceList 组件                                               | —            |
+| 2.6 去重与压缩                | 内存 cosine similarity 去重 + 信息密度评估 | ai/dedup.rs, article_ai_analysis 增加 3 列                          | —            |
+| 2.7 基础反馈闭环              | 用户反馈记录                               | user_feedback 表                                                    | —            |
+| 2.8 Today 概览                | 一句话概览生成                             | ai/summary.rs 扩展                                                  | —            |
+| 2.9 Topic 最小引入            | Topic 对象 + 关联                          | topics, topic_articles, ai/ranking.rs                               | —            |
+| 2.10 Topic 基础页             | Topic 展示页                               | Topics/ 组件, topicSlice                                            | —            |
+| 2.11 Topic 聚合               | 多来源归组 + 多观点                        | topic 排序逻辑                                                      | —            |
+| 2.12 Topic 持续跟踪           | 排序 + Continue Tracking                   | 兴趣权重逻辑                                                        | —            |
+| 2.13 Topic 收口               | 验证 + 判断                                | —                                                                   | —            |
 
 ---
 
@@ -893,8 +900,8 @@ async-openai = "0.25"      # LLM + Embedding API 调用
 
 ```json
 {
-  "lucide-react": "^0.x",   // 图标（已有则跳过）
-  "framer-motion": "^11.x"   // Signal 卡片动画（可选）
+  "lucide-react": "^0.x", // 图标（已有则跳过）
+  "framer-motion": "^11.x" // Signal 卡片动画（可选）
 }
 ```
 
@@ -909,13 +916,13 @@ async-openai = "0.25"      # LLM + Embedding API 调用
 
 ## 12. 技术风险与缓解
 
-| 风险 | 影响 | 缓解 |
-|------|------|------|
-| API 调用成本超预期 | 用户流失 | BYOK + 本地后备 + 批量处理 + 缓存 |
+| 风险                | 影响          | 缓解                               |
+| ------------------- | ------------- | ---------------------------------- |
+| API 调用成本超预期  | 用户流失      | BYOK + 本地后备 + 批量处理 + 缓存  |
 | sqlite-vec 性能不足 | 聚类/去重变慢 | 增量聚类 + 定期校正 + 限制文章数量 |
-| Pipeline 阻塞主线程 | UI 卡顿 | tokio::spawn 异步 + 进度通知 |
-| Embedding 模型变更 | 向量不兼容 | model_version 字段 + 版本迁移脚本 |
-| Starter Pack 源失效 | 数据质量下降 | health_status 监控 + 定期审核 |
+| Pipeline 阻塞主线程 | UI 卡顿       | tokio::spawn 异步 + 进度通知       |
+| Embedding 模型变更  | 向量不兼容    | model_version 字段 + 版本迁移脚本  |
+| Starter Pack 源失效 | 数据质量下降  | health_status 监控 + 定期审核      |
 
 ---
 

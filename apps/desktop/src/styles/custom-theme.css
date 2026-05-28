@@ -162,6 +162,9 @@
 
 .dark,
 .dark-theme {
+  --app-canvas: #101114;
+  --app-sidebar: #17191d;
+
   --default-1: #111;
   --default-2: #191919;
   --default-3: #232323;
@@ -229,6 +232,9 @@
   @media (color-gamut: p3) {
     .dark,
     .dark-theme {
+      --app-canvas: oklch(17% 0.01 260);
+      --app-sidebar: oklch(20% 0.01 260);
+
       --default-1: oklch(17.8% 0 0);
       --default-2: oklch(21.5% 0 0);
       --default-3: oklch(25.5% 0 0);
