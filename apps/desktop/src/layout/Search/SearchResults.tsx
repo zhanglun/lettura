@@ -36,8 +36,8 @@ export function SearchResults({
   const { t } = useTranslation();
 
   return (
-    <div className="flex-1 overflow-auto p-5">
-      <div className="mb-3 flex items-center justify-between text-xs text-[var(--gray-10)]">
+    <div className="search-results">
+      <div className="search-results-summary">
         <span>
           {resultList.length > 0
             ? t("search.result_count", { count: resultList.length })
@@ -49,28 +49,36 @@ export function SearchResults({
       </div>
 
       {signalResults.length > 0 && (
-        <div className="mb-4">
-          <div className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-[var(--gray-10)]">
+        <div className="search-result-section">
+          <div className="search-result-section-title">
             {t("search.section.signals")}
           </div>
-          <div className="grid gap-2">
+          <div className="search-result-stack">
             {signalResults.map((signal, i) => (
               <div
                 key={i}
-                className="rounded-lg border border-[var(--gray-5)] bg-[var(--color-panel-solid)] p-3 cursor-pointer transition-colors hover:border-[var(--gray-7)] hover:bg-[var(--gray-a2)]"
+                className="search-result-card search-result-card--signal"
                 onClick={onNavigateToToday}
               >
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm font-medium text-[var(--gray-12)]">{signal.signal_title}</span>
-                  <span className="text-xs text-[var(--gray-9)]">{signal.article_count} articles · {signal.source_count} sources</span>
-                </div>
-                {signal.summary && (
-                  <p className="text-xs text-[var(--gray-10)] line-clamp-2">{signal.summary}</p>
-                )}
-                {signal.topic_title && (
-                  <span className="mt-1 inline-block text-[10px] px-1.5 py-0.5 rounded bg-[var(--accent-a3)] text-[var(--accent-11)]">
-                    {signal.topic_title}
+                <div className="search-result-meta">
+                  <span className="search-result-type">
+                    {t("search.result_type.signal")}
                   </span>
+                  {signal.topic_title && (
+                    <span className="search-result-tag search-result-tag--topic">
+                      {signal.topic_title}
+                    </span>
+                  )}
+                  <span className="search-result-time">
+                    {t("search.result_meta", {
+                      articles: signal.article_count,
+                      sources: signal.source_count,
+                    })}
+                  </span>
+                </div>
+                <div className="search-result-title">{signal.signal_title}</div>
+                {signal.summary && (
+                  <p className="search-result-snippet">{signal.summary}</p>
                 )}
               </div>
             ))}
@@ -79,23 +87,31 @@ export function SearchResults({
       )}
 
       {topicResults.length > 0 && (
-        <div className="mb-4">
-          <div className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-[var(--gray-10)]">
+        <div className="search-result-section">
+          <div className="search-result-section-title">
             {t("search.section.topics")}
           </div>
-          <div className="grid gap-2">
+          <div className="search-result-stack">
             {topicResults.map((topic) => (
               <div
                 key={topic.uuid}
-                className="rounded-lg border border-[var(--gray-5)] bg-[var(--color-panel-solid)] p-3 cursor-pointer transition-colors hover:border-[var(--gray-7)] hover:bg-[var(--gray-a2)]"
+                className="search-result-card search-result-card--topic"
                 onClick={() => onNavigateToTopic(topic.uuid)}
               >
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm font-medium text-[var(--gray-12)]">{topic.title}</span>
-                  <span className="text-xs text-[var(--gray-9)]">{topic.article_count} articles · {topic.source_count} sources</span>
+                <div className="search-result-meta">
+                  <span className="search-result-type">
+                    {t("search.result_type.topic")}
+                  </span>
+                  <span className="search-result-time">
+                    {t("search.result_meta", {
+                      articles: topic.article_count,
+                      sources: topic.source_count,
+                    })}
+                  </span>
                 </div>
+                <div className="search-result-title">{topic.title}</div>
                 {topic.description && (
-                  <p className="text-xs text-[var(--gray-10)] line-clamp-2">{topic.description}</p>
+                  <p className="search-result-snippet">{topic.description}</p>
                 )}
               </div>
             ))}
@@ -104,11 +120,11 @@ export function SearchResults({
       )}
 
       {resultList.length === 0 && isFetching ? (
-        <div className="grid gap-3">
+        <div className="search-result-stack">
           {[0, 1, 2].map((item) => (
             <div
               key={item}
-              className="rounded-lg border border-[var(--gray-5)] bg-[var(--color-panel-solid)] p-4"
+              className="search-result-card"
             >
               <div className="mb-3 h-3 w-32 rounded bg-[var(--gray-a4)]" />
               <div className="mb-2 h-4 w-3/4 rounded bg-[var(--gray-a4)]" />
@@ -117,7 +133,7 @@ export function SearchResults({
           ))}
         </div>
       ) : resultList.length === 0 ? (
-        <div className="flex min-h-[360px] flex-col items-center justify-center rounded-lg border border-dashed border-[var(--gray-6)] bg-[var(--gray-a2)] p-8 text-center">
+        <div className="search-empty-card">
           <FileSearch
             size={38}
             strokeWidth={1.5}
@@ -131,7 +147,7 @@ export function SearchResults({
           </p>
         </div>
       ) : (
-        <div className="grid gap-3">
+        <div className="search-result-stack">
           {resultList.map((article) => (
             <SearchResultCard
               key={article.uuid}

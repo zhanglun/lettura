@@ -83,35 +83,38 @@ export function SearchResultCard(props: {
     <button
       type="button"
       onClick={() => onOpen(article)}
-      className="group w-full rounded-lg border border-[var(--gray-5)] bg-[var(--color-panel-solid)] p-4 text-left transition hover:border-[var(--accent-7)] hover:bg-[var(--accent-a2)]"
+      className="search-result-card search-result-card--article"
     >
-      <div className="mb-2 flex items-center gap-2">
+      <div className="search-result-meta">
+        <span className="search-result-type">
+          {t("search.result_type.article")}
+        </span>
         <Avatar
           size="1"
           src={article.feed_logo || getFeedLogo(article.feed_url)}
           fallback={article.feed_title?.slice(0, 1) || "L"}
           className="rounded"
         />
-        <span className="text-xs font-medium text-[var(--gray-11)]">
+        <span className="search-result-source">
           {article.feed_title || t("search.unknown_feed")}
         </span>
         {article.starred === 1 && (
-          <span className="rounded-full bg-[var(--amber-a3)] px-2 py-0.5 text-[10px] font-medium text-[var(--amber-11)]">
+          <span className="search-result-tag search-result-tag--starred">
             {t("search.filter.starred")}
           </span>
         )}
-        <span className="ml-auto text-xs text-[var(--gray-10)]">
+        <span className="search-result-time">
           {formatTime(article.create_date)}
         </span>
       </div>
-      <div className="line-clamp-2 text-sm font-semibold leading-6 text-[var(--gray-12)]">
+      <div className="search-result-title">
         {article.title}
       </div>
-      <p className="mt-2 line-clamp-3 text-xs leading-5 text-[var(--gray-11)]">
+      <p className="search-result-snippet">
         {hasMatch ? (
           <>
             {before.slice(-120)}
-            <mark className="rounded bg-[var(--amber-a4)] px-1 text-[var(--amber-12)]">
+            <mark className="search-result-mark">
               {hit}
             </mark>
             {after.slice(0, 220)}

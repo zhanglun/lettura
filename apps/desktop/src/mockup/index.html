@@ -1063,6 +1063,68 @@
       border-color: var(--accent);
       color: var(--accent-text);
     }
+    .search-workbench-header {
+      padding: 20px 28px 16px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-card);
+    }
+    .search-workbench-title-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+    .search-workbench-result {
+      width: 100%;
+      border: 1px solid #e4e7ed;
+      border-radius: 10px;
+      background: var(--bg-card);
+      padding: 14px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .search-workbench-result:hover {
+      border-color: #cdd2dc;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    }
+    .search-workbench-result.signal {
+      border-color: #c7d2fe;
+      background: #f8faff;
+    }
+    .search-workbench-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .search-workbench-type {
+      border-radius: 999px;
+      background: #eef2ff;
+      color: #4338ca;
+      padding: 2px 7px;
+      font-size: 10px;
+      font-weight: 700;
+    }
+    .search-workbench-time {
+      margin-left: auto;
+      color: var(--text-tertiary);
+      font-size: 11px;
+    }
+    .search-workbench-result-title {
+      color: var(--text-primary);
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+    .search-workbench-snippet {
+      margin-top: 6px;
+      color: var(--text-secondary);
+      font-size: 12px;
+      line-height: 1.65;
+    }
     .result-snippet {
       font-size: 12px;
       color: var(--text-secondary);
@@ -3705,11 +3767,17 @@
   </div>
 
   <div class="main-content">
-    <div class="page-header">
-      <div class="page-title">Search</div>
-      <div class="page-subtitle">从每日信号回到原始文章，或把常用查询保存为动态视图</div>
-    </div>
-    <div style="padding:0 28px 16px;">
+    <div class="search-workbench-header">
+      <div class="search-workbench-title-row">
+        <div>
+          <div class="page-title">Search</div>
+          <div class="page-subtitle">从每日信号回到原始文章，或把常用查询保存为动态视图</div>
+        </div>
+        <button class="btn btn-ghost" style="font-size:11px;">
+          <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></svg>
+          保存搜索
+        </button>
+      </div>
       <div class="search-input-wrap">
         <svg class="icon" style="color:var(--text-tertiary);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
         <input class="search-input" value="agent sdk" aria-label="Search articles" />
@@ -3717,7 +3785,9 @@
       </div>
       <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:12px;">
         <button class="filter-chip active">全部</button>
-        <button class="filter-chip">未读</button>
+        <button class="filter-chip">文章</button>
+        <button class="filter-chip">Signals</button>
+        <button class="filter-chip">Topics</button>
         <button class="filter-chip">已收藏</button>
         <button class="filter-chip">高信号</button>
         <button class="filter-chip">
@@ -3733,49 +3803,52 @@
     <div class="main-scroll" style="padding:0 28px 24px;">
       <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
         <div style="font-size:12px; color:var(--text-tertiary);">18 个结果 · 按相关度排序</div>
-        <button class="btn btn-ghost" style="font-size:11px;">
-          <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></svg>
-          保存搜索
-        </button>
+        <div style="font-size:11px; color:var(--text-tertiary);">来源：所有来源</div>
       </div>
 
-      <div class="card" style="margin-bottom:10px; border-color:var(--accent);">
-        <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
-          <span class="tag tag-accent">高信号</span>
+      <div class="search-workbench-result signal">
+        <div class="search-workbench-meta">
+          <span class="search-workbench-type">Signal</span>
           <span class="tag tag-blue">AI Agent</span>
-          <span style="font-size:11px; color:var(--text-tertiary); margin-left:auto;">TechCrunch · 2 小时前</span>
+          <span class="search-workbench-time">7 篇文章 · 4 个来源</span>
         </div>
-        <div style="font-size:14px; font-weight:600; color:var(--text-primary);">OpenAI releases open-source Agent SDK for building multi-agent systems</div>
-        <div class="result-snippet">
-          OpenAI 发布新的开源 <mark>Agent SDK</mark>，提供链式推理、工具调用和多 Agent 协作能力，直接影响 LangChain 与 CrewAI 生态。
-        </div>
-        <div style="display:flex; align-items:center; gap:8px; margin-top:10px;">
-          <button class="btn btn-ghost" style="font-size:11px;">打开文章</button>
-          <button class="btn btn-ghost" style="font-size:11px;">
-            <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-            收藏
-          </button>
+        <div class="search-workbench-result-title">Agent SDK 正在改变工具链竞争</div>
+        <div class="search-workbench-snippet">
+          多个来源集中提到调试追踪、工具调用协议和框架迁移成本，适合回到 Today 查看证据。
         </div>
       </div>
 
-      <div class="card" style="margin-bottom:10px;">
-        <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
-          <span class="tag tag-accent">讨论</span>
-          <span style="font-size:11px; color:var(--text-tertiary); margin-left:auto;">Hacker News · 3 小时前</span>
+      <div class="search-workbench-result">
+        <div class="search-workbench-meta">
+          <span class="search-workbench-type">Topic</span>
+          <span class="search-workbench-time">18 篇文章 · 9 个来源</span>
         </div>
-        <div style="font-size:14px; font-weight:600; color:var(--text-primary);">社区热议 Agent 框架对比：官方 SDK 是否会重塑工具链</div>
-        <div class="result-snippet">
+        <div class="search-workbench-result-title">AI Agent 竞争格局</div>
+        <div class="search-workbench-snippet">
+          长期追踪官方 SDK、开源框架和企业落地工具链之间的变化。
+        </div>
+      </div>
+
+      <div class="search-workbench-result">
+        <div class="search-workbench-meta">
+          <span class="search-workbench-type">文章</span>
+          <span class="tag tag-accent">讨论</span>
+          <span class="search-workbench-time">Hacker News · 3 小时前</span>
+        </div>
+        <div class="search-workbench-result-title">社区热议 Agent 框架对比：官方 SDK 是否会重塑工具链</div>
+        <div class="search-workbench-snippet">
           HN 用户集中讨论 <mark>Agent SDK</mark> 的模型绑定、可移植性和调试体验，评论区出现了与 AutoGen 的详细比较。
         </div>
       </div>
 
-      <div class="card" style="margin-bottom:10px;">
-        <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+      <div class="search-workbench-result">
+        <div class="search-workbench-meta">
+          <span class="search-workbench-type">文章</span>
           <span class="tag tag-green">开源生态</span>
-          <span style="font-size:11px; color:var(--text-tertiary); margin-left:auto;">Simon Willison · 昨天</span>
+          <span class="search-workbench-time">Simon Willison · 昨天</span>
         </div>
-        <div style="font-size:14px; font-weight:600; color:var(--text-primary);">Notes on agent frameworks, tool calls, and debugging traces</div>
-        <div class="result-snippet">
+        <div class="search-workbench-result-title">Notes on agent frameworks, tool calls, and debugging traces</div>
+        <div class="search-workbench-snippet">
           文章把 <mark>agent</mark> 框架拆成工具协议、状态管理和追踪界面三层，并指出官方 SDK 的优势可能在调试链路。
         </div>
       </div>

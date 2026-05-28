@@ -706,6 +706,7 @@
     }
   },
   "search": {
+    "title": "Search",
     "unknown_feed": "Unknown feed",
     "no_summary": "No summary available.",
     "sidebar": {
@@ -722,11 +723,20 @@
     "placeholder": "Search content in your Lettura",
     "filter": {
       "all": "All",
+      "articles": "Articles",
+      "signals": "Signals",
+      "topics": "Topics",
       "starred": "Starred",
       "high_signal": "High Signal",
       "advanced": "Filters",
       "all_sources": "All Sources"
     },
+    "result_type": {
+      "article": "Article",
+      "signal": "Signal",
+      "topic": "Topic"
+    },
+    "result_meta": "{{articles}} articles · {{sources}} sources",
     "result_count": "{{count}} results · Sorted by relevance",
     "hint_enter": "Press Enter or click Search to start",
     "hint_type": "Type a keyword to start searching",

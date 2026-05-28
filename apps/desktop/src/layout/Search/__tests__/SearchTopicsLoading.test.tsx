@@ -36,7 +36,7 @@ vi.mock("react-i18next", () => ({
 
 vi.mock("@/helpers/request", () => ({
   request: {
-    get: vi.fn().mockResolvedValue({ data: [] }),
+    get: vi.fn(() => new Promise(() => {})),
   },
 }));
 

@@ -11,6 +11,7 @@ interface SearchInsightPanelProps {
   onToggleStarred: () => void;
   onSetDateRange: (start: string, end: string) => void;
   onClearFilters: () => void;
+  onNavigateToTopic: (uuid: string) => void;
 }
 
 export function SearchInsightPanel({
@@ -21,44 +22,45 @@ export function SearchInsightPanel({
   onToggleStarred,
   onSetDateRange,
   onClearFilters,
+  onNavigateToTopic,
 }: SearchInsightPanelProps) {
   const { t } = useTranslation();
 
   return (
-    <aside className="hidden w-[280px] shrink-0 overflow-auto border-l border-[var(--gray-5)] bg-[var(--gray-2)] p-4 lg:block">
-      <div className="mb-5">
-        <div className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-[var(--gray-10)]">
+    <aside className="search-insight-panel">
+      <div className="search-insight-section">
+        <div className="search-insight-title">
           {t("search.insight.title")}
         </div>
-        <div className="rounded-lg border border-[var(--gray-5)] bg-[var(--color-panel-solid)] p-3">
+        <div className="search-insight-card">
           {searchInsight ? (
             <>
-              <div className="text-sm font-semibold text-[var(--gray-12)]">
+              <div className="search-insight-card-title">
                 {searchInsight.summary}
               </div>
               {searchInsight.details.length > 0 && (
-                <p className="mt-2 text-xs leading-5 text-[var(--gray-11)]">
+                <p className="search-insight-card-text">
                   {searchInsight.details.join("；")}
                 </p>
               )}
             </>
           ) : (
             <>
-              <div className="text-sm font-semibold text-[var(--gray-12)]">
+              <div className="search-insight-card-title">
                 {t("search.insight.title_text")}
               </div>
-              <p className="mt-2 text-xs leading-5 text-[var(--gray-11)]">
+              <p className="search-insight-card-text">
                 {t("search.insight.description")}
               </p>
             </>
           )}
         </div>
       </div>
-      <div className="mb-5">
-        <div className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-[var(--gray-10)]">
+      <div className="search-insight-section">
+        <div className="search-insight-title">
           {t("search.quick_filter.title")}
         </div>
-        <div className="grid gap-2">
+        <div className="search-quick-filter-list">
           <SearchChip
             active={hasActiveFilters}
             onClick={() => {
@@ -90,18 +92,23 @@ export function SearchInsightPanel({
         </div>
       </div>
       <div>
-        <div className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-[var(--gray-10)]">
+        <div className="search-insight-title">
           {t("search.related_topics")}
         </div>
         {relatedTopics.length > 0 ? (
           relatedTopics.map((topic) => (
-            <div
+            <button
+              type="button"
               key={topic.id}
-              className="mb-2 flex items-center gap-2 rounded-md bg-[var(--gray-a2)] px-2 py-2 text-xs text-[var(--gray-11)]"
+              className="search-related-topic"
+              onClick={() => onNavigateToTopic(topic.uuid)}
             >
               <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent-9)]" />
-              {topic.title}
-            </div>
+              <span className="truncate">{topic.title}</span>
+              <span className="ml-auto text-[10px] text-[var(--gray-8)]">
+                {topic.article_count}
+              </span>
+            </button>
           ))
         ) : (
           <div className="text-xs text-[var(--gray-9)]">

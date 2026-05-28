@@ -728,6 +728,7 @@
     }
   },
   "search": {
+    "title": "搜索",
     "unknown_feed": "未知来源",
     "no_summary": "暂无摘要。",
     "sidebar": {
@@ -741,14 +742,23 @@
       "subtitle": "从每日信号回到原始文章，或把常用查询保存为动态视图。"
     },
     "button": "搜索",
-    "placeholder": "Search content in your Lettura",
+    "placeholder": "搜索文章、Signal 或 Topic",
     "filter": {
       "all": "全部",
+      "articles": "文章",
+      "signals": "信号",
+      "topics": "Topic",
       "starred": "已收藏",
       "high_signal": "高信号",
       "advanced": "筛选",
       "all_sources": "所有来源"
     },
+    "result_type": {
+      "article": "文章",
+      "signal": "信号",
+      "topic": "Topic"
+    },
+    "result_meta": "{{articles}} 篇文章 · {{sources}} 个来源",
     "result_count": "{{count}} 个结果 · 按相关度排序",
     "hint_enter": "按 Enter 或点击搜索开始检索",
     "hint_type": "输入关键词开始搜索",

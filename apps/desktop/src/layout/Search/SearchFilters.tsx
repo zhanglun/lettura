@@ -59,13 +59,13 @@ export function SearchFilters({
   const { t } = useTranslation();
 
   return (
-    <div className="border-b border-[var(--gray-5)] p-5">
-      <div className="flex items-start justify-between gap-4">
+    <div className="search-header">
+      <div className="search-title-row">
         <div>
-          <h1 className="text-xl font-bold text-[var(--gray-12)]">
-            Search
+          <h1 className="search-page-title">
+            {t("search.title")}
           </h1>
-          <p className="mt-1 text-sm text-[var(--gray-10)]">
+          <p className="search-page-subtitle">
             {t("search.header.subtitle")}
           </p>
         </div>
@@ -79,12 +79,12 @@ export function SearchFilters({
           </IconButton>
         )}
       </div>
-      <div className="mt-4 flex gap-2">
+      <div className="search-query-row">
         <TextField.Root
-          className="flex-1"
+          className="search-query-input"
           size="3"
           value={query}
-          placeholder="Search content in your Lettura"
+          placeholder={t("search.placeholder")}
           onChange={(event) => onQueryChange(event.target.value)}
           onKeyDown={(event) => {
             if (event.key === "Enter") onSearch();
@@ -119,12 +119,21 @@ export function SearchFilters({
           <Star size={16} />
         </IconButton>
       </div>
-      <div className="mt-3 flex flex-wrap items-center gap-2">
+      <div className="search-filter-row">
         <SearchChip
           active={!isStarred && !highSignal}
           onClick={onResetFilters}
         >
           {t("search.filter.all")}
+        </SearchChip>
+        <SearchChip>
+          {t("search.filter.articles")}
+        </SearchChip>
+        <SearchChip>
+          {t("search.filter.signals")}
+        </SearchChip>
+        <SearchChip>
+          {t("search.filter.topics")}
         </SearchChip>
         <SearchChip
           active={isStarred}
@@ -144,23 +153,23 @@ export function SearchFilters({
           <Filter size={12} />
           {t("search.filter.advanced")}
         </SearchChip>
-        <div className="ml-auto flex items-center gap-2">
+        <div className="search-advanced-controls">
           <input
             type="date"
             value={startDate}
             onChange={(event) => onStartDateChange(event.target.value)}
-            className="h-8 rounded-md border border-[var(--gray-5)] bg-transparent px-2 text-xs text-[var(--gray-11)]"
+            className="search-filter-input"
           />
           <input
             type="date"
             value={endDate}
             onChange={(event) => onEndDateChange(event.target.value)}
-            className="h-8 rounded-md border border-[var(--gray-5)] bg-transparent px-2 text-xs text-[var(--gray-11)]"
+            className="search-filter-input"
           />
           <select
             value={feedUuid}
             onChange={(event) => onFeedChange(event.target.value)}
-            className="h-8 max-w-[160px] rounded-md border border-[var(--gray-5)] bg-transparent px-2 text-xs text-[var(--gray-11)]"
+            className="search-filter-select"
           >
             <option value="">{t("search.filter.all_sources")}</option>
             {feeds.map((feed) => (
