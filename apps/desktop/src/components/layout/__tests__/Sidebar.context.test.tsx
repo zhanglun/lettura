@@ -53,14 +53,6 @@ vi.mock("@/hooks/useRefresh", () => ({
   useRefresh: () => ({ startRefresh: vi.fn() }),
 }));
 
-vi.mock("react-dnd", () => ({
-  DndProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-}));
-
-vi.mock("react-dnd-html5-backend", () => ({
-  HTML5Backend: {},
-}));
-
 vi.mock("@/components/Subscribes", () => ({
   ChannelList: () => <div data-testid="channel-list">Channels</div>,
 }));
