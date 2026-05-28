@@ -4,7 +4,7 @@ use feed_rs::{
   parser,
 };
 use log;
-use reqwest;
+use reqwest::{self, header};
 use serde::{ser::SerializeStruct, Serialize, Serializer};
 
 pub mod article;
@@ -14,9 +14,27 @@ pub mod folder;
 pub mod opml;
 pub mod tag;
 
+const DEFAULT_USER_AGENT: &str =
+  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36";
+const DEFAULT_ACCEPT: &str = "application/rss+xml, application/xml;q=0.9,*/*;q=0.8";
+
+fn create_default_headers() -> header::HeaderMap {
+  let mut headers = header::HeaderMap::new();
+  headers.insert(
+    header::USER_AGENT,
+    header::HeaderValue::from_static(DEFAULT_USER_AGENT),
+  );
+  headers.insert(
+    header::ACCEPT,
+    header::HeaderValue::from_static(DEFAULT_ACCEPT),
+  );
+
+  headers
+}
+
 pub fn create_client(url: &str) -> reqwest::Client {
   let proxy = find_proxy(url);
-  let client_builder = reqwest::Client::builder();
+  let client_builder = reqwest::Client::builder().default_headers(create_default_headers());
 
   if let Some(proxy) = proxy {
     let scheme = format!("socks5h://{}:{}", proxy.server, proxy.port);
@@ -69,14 +87,7 @@ pub fn find_proxy(url: &str) -> Option<config::Proxy> {
 /// ```
 pub async fn parse_feed(url: &str) -> Result<feed_rs::model::Feed, String> {
   let client = create_client(url);
-  let result = client
-    .get(url)
-    .header(
-      "accept",
-      "text/html,application/xhtml+xml,application/xml;q=0.9,application/atom+xml;q=0.8,*/*;q=0.8",
-    )
-    .send()
-    .await;
+  let result = client.get(url).send().await;
 
   let a = match result {
     Ok(response) => match response.status() {

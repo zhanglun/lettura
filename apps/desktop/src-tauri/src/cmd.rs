@@ -3,7 +3,7 @@ use serde::Serialize;
 use tauri::{command, Emitter, State, WebviewWindow};
 use uuid::Uuid;
 
-use crate::ai::embedding::EmbeddingProvider;
+use crate::ai::llm::LLMProvider;
 use crate::core::config;
 use crate::feed::WrappedMediaObject;
 use crate::models;
@@ -433,41 +433,67 @@ pub struct ValidateAiConfigResult {
 }
 
 #[command]
-pub async fn validate_ai_config() -> Result<ValidateAiConfigResult, String> {
+pub async fn validate_ai_config(
+  api_key: String,
+  model: String,
+  _embedding_model: String,
+  base_url: String,
+  _enable_embedding: Option<bool>,
+) -> Result<ValidateAiConfigResult, String> {
   let user_config = config::get_user_config();
-  let ai_config = match user_config.ai {
-    Some(ref c) if c.has_api_key() => c.clone(),
-    _ => {
-      return Ok(ValidateAiConfigResult {
-        valid: false,
-        message: "API key not configured".to_string(),
-      })
-    }
+  let existing_key = user_config
+    .ai
+    .as_ref()
+    .map(|c| c.api_key.clone())
+    .unwrap_or_default();
+  let final_key = if api_key.trim().is_empty() {
+    existing_key
+  } else {
+    api_key
   };
 
-  if !ai_config.enable_embedding {
+  let ai_config = crate::ai::config::AiConfig {
+    api_key: final_key,
+    model,
+    embedding_model: String::new(),
+    base_url,
+    pipeline_interval_hours: user_config
+      .ai
+      .as_ref()
+      .map(|c| c.pipeline_interval_hours)
+      .unwrap_or_else(|| crate::ai::config::AiConfig::default().pipeline_interval_hours),
+    enable_embedding: false,
+    enable_auto_pipeline: user_config
+      .ai
+      .as_ref()
+      .map(|c| c.enable_auto_pipeline)
+      .unwrap_or(true),
+  };
+
+  if !ai_config.has_api_key() {
     return Ok(ValidateAiConfigResult {
-      valid: true,
-      message: "API key configured (embedding disabled)".to_string(),
+      valid: false,
+      message: "API key not configured".to_string(),
     });
   }
 
-  let embedding = crate::ai::embedding::OpenAIEmbedding::new(
+  let llm = crate::ai::llm::OpenAILLM::new(
     &ai_config.api_key,
     &ai_config.base_url,
-    ai_config.resolved_embedding_model(),
+    ai_config.model.clone(),
   );
 
-  match embedding.embed(vec!["test"]).await {
-    Ok(_) => Ok(ValidateAiConfigResult {
-      valid: true,
-      message: "API key is valid".to_string(),
-    }),
-    Err(e) => Ok(ValidateAiConfigResult {
+  if let Err(e) = llm.complete("Reply with exactly: ok", "You are a connection test.").await {
+    return Ok(ValidateAiConfigResult {
       valid: false,
-      message: format!("API key validation failed: {}", e),
-    }),
+      message: format!("LLM validation failed: {}", e),
+    });
   }
+
+  Ok(ValidateAiConfigResult {
+    valid: true,
+    message: "LLM connection is valid".to_string(),
+  })
 }
 
 #[command]

@@ -1,14 +1,18 @@
 import { useState, useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  Select,
-  Switch,
-} from "@radix-ui/themes";
+import { Select, Switch } from "@radix-ui/themes";
 import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
 import { saveAIConfig, validateAIConfig, triggerPipeline, getDedupStats } from "@/helpers/dataAgent";
 import { CheckCircle, Loader2, Play } from "lucide-react";
 import { toast } from "sonner";
+
+const MODEL_OPTIONS = ["gpt-4o-mini", "gpt-4.1-mini"];
+const CUSTOM_MODEL_VALUE = "__custom_model__";
+
+function isPresetModel(value: string) {
+  return MODEL_OPTIONS.includes(value);
+}
 
 export function AIConfigPanel() {
   const { t } = useTranslation();
@@ -22,15 +26,12 @@ export function AIConfigPanel() {
 
   const [apiKey, setApiKey] = useState("");
   const [model, setModel] = useState("gpt-4o-mini");
-  const [embeddingModel, setEmbeddingModel] = useState(
-    "text-embedding-3-small",
-  );
-  const [baseUrl, setBaseUrl] = useState("https://api.openai.com/v1");
+  const [customModel, setCustomModel] = useState("");
+  const [embeddingModel, setEmbeddingModel] = useState("text-embedding-3-small");
+  const [baseUrl, setBaseUrl] = useState("https://api.deepseek.com");
   const [pipelineInterval, setPipelineInterval] = useState("6");
   const [enableEmbedding, setEnableEmbedding] = useState(true);
-  const [backgroundSync, setBackgroundSync] = useState(
-    () => store.aiConfig?.enable_auto_pipeline ?? true,
-  );
+  const [backgroundSync, setBackgroundSync] = useState(() => store.aiConfig?.enable_auto_pipeline ?? true);
 
   const [validating, setValidating] = useState(false);
   const [validationResult, setValidationResult] = useState<{
@@ -51,9 +52,15 @@ export function AIConfigPanel() {
       .then(setDedupStats)
       .catch(() => {});
     if (store.aiConfig) {
-      setModel(store.aiConfig.model || "gpt-4o-mini");
+      const configuredModel = store.aiConfig.model || "gpt-4o-mini";
+      if (isPresetModel(configuredModel)) {
+        setModel(configuredModel);
+      } else {
+        setModel(CUSTOM_MODEL_VALUE);
+        setCustomModel(configuredModel);
+      }
       setEmbeddingModel(store.aiConfig.embedding_model || "text-embedding-3-small");
-      setBaseUrl(store.aiConfig.base_url || "https://api.openai.com/v1");
+      setBaseUrl(store.aiConfig.base_url || "https://api.deepseek.com");
       setEnableEmbedding(store.aiConfig.enable_embedding ?? true);
       setPipelineInterval(String(store.aiConfig.pipeline_interval_hours || 6));
       setBackgroundSync(store.aiConfig.enable_auto_pipeline ?? true);
@@ -62,24 +69,42 @@ export function AIConfigPanel() {
 
   const handleValidate = useCallback(async () => {
     if (!apiKey.trim() && !store.aiConfig?.has_api_key) return;
+    const selectedModel = model === CUSTOM_MODEL_VALUE ? customModel.trim() : model;
+    if (!selectedModel) {
+      setValidationResult({ valid: false, message: t("settings.ai.custom_model_required") });
+      return;
+    }
+
     setValidating(true);
     setValidationResult(null);
     try {
-      const result = await validateAIConfig();
+      const result = await validateAIConfig({
+        apiKey,
+        model: selectedModel,
+        embeddingModel,
+        baseUrl,
+        enableEmbedding,
+      });
       setValidationResult(result);
     } catch (e) {
       setValidationResult({ valid: false, message: String(e) });
     } finally {
       setValidating(false);
     }
-  }, [apiKey, store.aiConfig?.has_api_key]);
+  }, [apiKey, model, customModel, embeddingModel, baseUrl, enableEmbedding, store.aiConfig?.has_api_key, t]);
 
   const handleSave = useCallback(async () => {
+    const selectedModel = model === CUSTOM_MODEL_VALUE ? customModel.trim() : model;
+    if (!selectedModel) {
+      toast.error(t("settings.ai.custom_model_required"));
+      return;
+    }
+
     setSaving(true);
     try {
       await saveAIConfig({
         apiKey,
-        model,
+        model: selectedModel,
         embeddingModel,
         baseUrl,
         pipelineIntervalHours: parseInt(pipelineInterval) || 1,
@@ -93,7 +118,18 @@ export function AIConfigPanel() {
     } finally {
       setSaving(false);
     }
-  }, [apiKey, model, embeddingModel, baseUrl, pipelineInterval, enableEmbedding, store, t]);
+  }, [
+    apiKey,
+    model,
+    customModel,
+    embeddingModel,
+    baseUrl,
+    pipelineInterval,
+    enableEmbedding,
+    backgroundSync,
+    store,
+    t,
+  ]);
 
   const handleTriggerPipeline = useCallback(async () => {
     setTriggeringPipeline(true);
@@ -138,11 +174,7 @@ export function AIConfigPanel() {
             <input
               type="password"
               className="settings-input"
-              placeholder={
-                store.aiConfig?.has_api_key
-                  ? "••••••••••••••••"
-                  : t("settings.ai.api_key_placeholder")
-              }
+              placeholder={store.aiConfig?.has_api_key ? "••••••••••••••••" : t("settings.ai.api_key_placeholder")}
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
             />
@@ -162,7 +194,7 @@ export function AIConfigPanel() {
               value={baseUrl}
               onChange={(e) => setBaseUrl(e.target.value)}
             />
-            <button className="btn-ghost" onClick={() => setBaseUrl("https://api.openai.com/v1")}>
+            <button className="btn-ghost" onClick={() => setBaseUrl("https://api.deepseek.com")}>
               {t("settings.ai.reset")}
             </button>
           </div>
@@ -175,11 +207,12 @@ export function AIConfigPanel() {
             <Select.Root value={model} onValueChange={setModel}>
               <Select.Trigger className="settings-select" />
               <Select.Content>
-                {model !== "gpt-4o-mini" && model !== "gpt-4.1-mini" && model && (
-                  <Select.Item value={model}>{model}</Select.Item>
-                )}
-                <Select.Item value="gpt-4o-mini">gpt-4o-mini</Select.Item>
-                <Select.Item value="gpt-4.1-mini">gpt-4.1-mini</Select.Item>
+                {MODEL_OPTIONS.map((option) => (
+                  <Select.Item key={option} value={option}>
+                    {option}
+                  </Select.Item>
+                ))}
+                <Select.Item value={CUSTOM_MODEL_VALUE}>{t("settings.ai.custom_model_option")}</Select.Item>
               </Select.Content>
             </Select.Root>
             {validationResult?.valid && (
@@ -190,17 +223,42 @@ export function AIConfigPanel() {
             )}
           </div>
 
+          {model === CUSTOM_MODEL_VALUE && (
+            <div className="settings-row">
+              <div>
+                <div className="settings-label">{t("settings.ai.custom_model")}</div>
+                <div className="settings-help">{t("settings.ai.custom_model_help")}</div>
+              </div>
+              <input
+                className="settings-input"
+                placeholder={t("settings.ai.custom_model_placeholder")}
+                value={customModel}
+                onChange={(e) => setCustomModel(e.target.value)}
+              />
+              <div />
+            </div>
+          )}
+
+          {validationResult?.message && (
+            <div className="settings-row">
+              <div>
+                <div className="settings-label">
+                  {validationResult.valid ? t("settings.ai.validation_success") : t("settings.ai.validation_failed")}
+                </div>
+                <div className="settings-help">{validationResult.message}</div>
+              </div>
+              <div />
+              <div />
+            </div>
+          )}
+
           <div className="settings-row">
             <div>
               <div className="settings-label">{t("settings.ai.save_label")}</div>
               <div className="settings-help">{t("settings.ai.save_help")}</div>
             </div>
             <div />
-            <button
-              className="btn-primary"
-              onClick={handleSave}
-              disabled={saving}
-            >
+            <button className="btn-primary" onClick={handleSave} disabled={saving}>
               {saving ? <Loader2 size={14} className="animate-spin" /> : null}
               {saving ? t("settings.ai.saving") : t("settings.ai.save")}
             </button>
@@ -243,10 +301,7 @@ export function AIConfigPanel() {
                 <div className="fill" style={{ width: enableEmbedding ? "100%" : "0%" }} />
               </div>
             </div>
-            <Switch
-              checked={enableEmbedding}
-              onCheckedChange={setEnableEmbedding}
-            />
+            <Switch checked={enableEmbedding} onCheckedChange={setEnableEmbedding} />
           </div>
 
           <div className="settings-row">
@@ -267,11 +322,7 @@ export function AIConfigPanel() {
               onClick={handleTriggerPipeline}
               disabled={triggeringPipeline || store.pipelineStatus === "running"}
             >
-              {triggeringPipeline ? (
-                <Loader2 size={14} className="animate-spin" />
-              ) : (
-                <Play size={14} />
-              )}
+              {triggeringPipeline ? <Loader2 size={14} className="animate-spin" /> : <Play size={14} />}
               {t("settings.ai.trigger_pipeline")}
             </button>
           </div>
@@ -309,19 +360,25 @@ export function AIConfigPanel() {
           </div>
           <div style={{ padding: "4px 18px 14px" }}>
             <div className="settings-pack-row">
-              <div style={{ fontSize: 12, fontWeight: 600, color: "var(--gray-12)" }}>{t("settings.ai.pack_ai_starter")}</div>
+              <div style={{ fontSize: 12, fontWeight: 600, color: "var(--gray-12)" }}>
+                {t("settings.ai.pack_ai_starter")}
+              </div>
               <div style={{ display: "flex", gap: 6 }}>
                 <span className="settings-tag settings-tag--green">{t("settings.ai.pack_tag_active")}</span>
               </div>
             </div>
             <div className="settings-pack-row">
-              <div style={{ fontSize: 12, fontWeight: 600, color: "var(--gray-12)" }}>{t("settings.ai.pack_developer")}</div>
+              <div style={{ fontSize: 12, fontWeight: 600, color: "var(--gray-12)" }}>
+                {t("settings.ai.pack_developer")}
+              </div>
               <div style={{ display: "flex", gap: 6 }}>
                 <span className="settings-tag settings-tag--blue">{t("settings.ai.pack_tag_beta")}</span>
               </div>
             </div>
             <div className="settings-pack-row">
-              <div style={{ fontSize: 12, fontWeight: 600, color: "var(--gray-12)" }}>{t("settings.ai.pack_design")}</div>
+              <div style={{ fontSize: 12, fontWeight: 600, color: "var(--gray-12)" }}>
+                {t("settings.ai.pack_design")}
+              </div>
               <div style={{ display: "flex", gap: 6 }}>
                 <span className="settings-tag settings-tag--amber">{t("settings.ai.pack_tag_coming")}</span>
               </div>
@@ -337,13 +394,12 @@ export function AIConfigPanel() {
           <div style={{ padding: "4px 18px 14px" }}>
             <div className="settings-pack-row">
               <div>
-                <div style={{ fontSize: 12, fontWeight: 600, color: "var(--gray-12)" }}>{t("settings.ai.sync_background")}</div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: "var(--gray-12)" }}>
+                  {t("settings.ai.sync_background")}
+                </div>
                 <div className="settings-help">{t("settings.ai.sync_background_desc")}</div>
               </div>
-              <Switch
-                checked={backgroundSync}
-                onCheckedChange={setBackgroundSync}
-              />
+              <Switch checked={backgroundSync} onCheckedChange={setBackgroundSync} />
             </div>
           </div>
         </div>
