@@ -81,6 +81,12 @@ const makeSignal = (overrides: Partial<Signal> = {}): Signal => ({
   ...overrides,
 });
 
+const getCssRule = (css: string, selector: string) => {
+  const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return css.match(new RegExp(`${escaped}\\s*\\{(?<body>[^}]+)\\}`))?.groups
+    ?.body ?? "";
+};
+
 describe("SignalCard", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -97,14 +103,19 @@ describe("SignalCard", () => {
         "utf8",
       );
 
-      expect(css).toContain("border: 1px solid #e4e7ed;");
-      expect(css).toContain("border-radius: 10px;");
-      expect(css).toContain("transition: all 0.15s;");
-      expect(css).toContain(".today-signal-card:hover");
-      expect(css).toContain("border-color: #cdd2dc;");
-      expect(css).toContain("box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);");
-      expect(css).toContain(".today-signal-card--active:hover");
-      expect(css).toContain("border-color: #6366f1;");
+      const cardRule = getCssRule(css, ".today-signal-card");
+      const hoverRule = getCssRule(css, ".today-signal-card:hover");
+      const activeRule = getCssRule(css, ".today-signal-card--active");
+      const activeHoverRule = getCssRule(css, ".today-signal-card--active:hover");
+
+      expect(cardRule).toContain("border: 1px solid var(--workbench-border);");
+      expect(cardRule).toContain("border-radius: var(--workbench-card-radius);");
+      expect(cardRule).toContain("transition: all 0.15s;");
+      expect(hoverRule).toContain("border-color: var(--workbench-border-hover);");
+      expect(hoverRule).toContain("box-shadow: var(--workbench-shadow-hover);");
+      expect(activeRule).toContain("border-color: var(--workbench-accent);");
+      expect(activeRule).not.toContain("border-width");
+      expect(activeHoverRule).toContain("border-color: var(--workbench-accent);");
     });
 
     it("uses the judgment-desk signal card structure", () => {

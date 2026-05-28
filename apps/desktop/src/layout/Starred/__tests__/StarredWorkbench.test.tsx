@@ -119,7 +119,7 @@ describe("Starred workbench layout", () => {
       /\.starred-article-card--active\s*\{(?<body>[^}]+)\}/,
     );
 
-    expect(activeRule?.groups?.body).toContain("border-color:");
+    expect(activeRule?.groups?.body).toContain("border-color: var(--workbench-amber);");
     expect(activeRule?.groups?.body).not.toContain("border-width");
     expect(activeRule?.groups?.body).not.toContain("border: 2px");
   });

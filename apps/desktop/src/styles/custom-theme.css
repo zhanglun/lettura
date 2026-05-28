@@ -18,6 +18,24 @@
 .light-theme {
   --app-canvas: #f8f9fb;
   --app-sidebar: #f1f3f7;
+  --workbench-canvas: #fbfcfe;
+  --workbench-sidebar: var(--app-sidebar);
+  --workbench-border: #e4e7ed;
+  --workbench-border-hover: #cdd2dc;
+  --workbench-card-radius: 10px;
+  --workbench-shadow-hover: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --workbench-text: #1a1d26;
+  --workbench-text-secondary: #5c6270;
+  --workbench-text-tertiary: #8e94a2;
+  --workbench-subtle: #f8fafc;
+  --workbench-hover: rgba(0, 0, 0, 0.03);
+  --workbench-accent: #6366f1;
+  --workbench-accent-hover: #4f46e5;
+  --workbench-accent-soft: #eef2ff;
+  --workbench-accent-text: #4338ca;
+  --workbench-amber: var(--amber-9);
+  --workbench-amber-soft: var(--amber-3);
+  --workbench-amber-text: var(--amber-11);
 
   --default-1: #fcfcfc;
   --default-2: #f9f9f9;
@@ -164,6 +182,24 @@
 .dark-theme {
   --app-canvas: #111;
   --app-sidebar: #191919;
+  --workbench-canvas: var(--gray-1);
+  --workbench-sidebar: var(--app-sidebar);
+  --workbench-border: var(--gray-5);
+  --workbench-border-hover: var(--gray-7);
+  --workbench-card-radius: 10px;
+  --workbench-shadow-hover: var(--shadow-1);
+  --workbench-text: var(--gray-12);
+  --workbench-text-secondary: var(--gray-11);
+  --workbench-text-tertiary: var(--gray-9);
+  --workbench-subtle: var(--gray-2);
+  --workbench-hover: var(--gray-a3);
+  --workbench-accent: var(--indigo-9);
+  --workbench-accent-hover: var(--indigo-10);
+  --workbench-accent-soft: var(--indigo-3);
+  --workbench-accent-text: var(--indigo-11);
+  --workbench-amber: var(--amber-9);
+  --workbench-amber-soft: var(--amber-3);
+  --workbench-amber-text: var(--amber-11);
 
   --default-1: #111;
   --default-2: #191919;

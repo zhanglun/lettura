@@ -27,6 +27,12 @@ const topic: TopicItem = {
 	confidence: 0.86,
 };
 
+const getCssRule = (css: string, selector: string) => {
+	const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+	return css.match(new RegExp(`${escaped}\\s*\\{(?<body>[^}]+)\\}`))?.groups
+		?.body ?? "";
+};
+
 describe("TopicCard", () => {
 	it("uses the mockup topic card structure and action row", () => {
 		render(
@@ -90,15 +96,16 @@ describe("TopicCard", () => {
 			"utf8",
 		);
 
-		expect(css).toContain(".topic-card");
-		expect(css).toContain("border: 1px solid #e4e7ed;");
-		expect(css).toContain(".topic-card:hover");
-		expect(css).toContain("border-color: #cdd2dc;");
-		expect(css).toContain(".topic-card--active:hover");
-		expect(css).toContain("border-color: #6366f1;");
-		expect(css).not.toContain(
-			".topic-card--active {\n    border-color: #6366f1;\n    border-width: 2px;",
-		);
-		expect(css).toContain("inset 0 0 0 1px #6366f1");
+		const cardRule = getCssRule(css, ".topic-card");
+		const hoverRule = getCssRule(css, ".topic-card:hover");
+		const activeRule = getCssRule(css, ".topic-card--active");
+		const activeHoverRule = getCssRule(css, ".topic-card--active:hover");
+
+		expect(cardRule).toContain("border: 1px solid var(--workbench-border);");
+		expect(hoverRule).toContain("border-color: var(--workbench-border-hover);");
+		expect(activeRule).toContain("border-color: var(--workbench-accent);");
+		expect(activeRule).toContain("inset 0 0 0 1px var(--workbench-accent)");
+		expect(activeRule).not.toContain("border-width");
+		expect(activeHoverRule).toContain("border-color: var(--workbench-accent);");
 	});
 });

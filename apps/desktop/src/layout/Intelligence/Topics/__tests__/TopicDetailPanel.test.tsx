@@ -140,7 +140,7 @@ describe("TopicDetailPanel", () => {
 		);
 
 		expect(css).toContain(".topic-detail-panel");
-		expect(css).toContain("background: #f1f3f7;");
+		expect(css).toContain("background: var(--workbench-sidebar);");
 		expect(css).toContain(".topic-detail-card");
 		expect(css).toContain("background: var(--color-background);");
 	});
