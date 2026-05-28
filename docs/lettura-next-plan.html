@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <title>Lettura 后续计划</title>
+</head>
+<body>
+  <h1>Lettura 后续计划</h1>
+
+  <section>
+    <h2>当前状态</h2>
+    <ul>
+      <li>Settings、Article、Today、Topics、Search、Starred、Onboarding、Feeds 侧栏已完成阶段性收口。</li>
+      <li>工作台样式 token 已抽取，Today / Topics / Search / Starred 已开始共享视觉变量。</li>
+      <li>内联阅读器操作语义已统一：打开原文、收藏、已读、上一篇/下一篇禁用逻辑更一致。</li>
+      <li>最近提交：<code>29ce4c9 refactor(Article): 统一内联阅读器操作语义</code></li>
+      <li>不要提交 <code>.sisyphus/run-continuation/*.json</code>。</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>建议流程</h2>
+    <ol>
+      <li>先检查 <code>apps/desktop/src/mockup/index.html</code> 是否定义目标态。</li>
+      <li>再对齐真实 React 实现。</li>
+      <li>补测试覆盖核心交互、空态、错误态、样式不跳动。</li>
+      <li>验证：<code>pnpm test</code>、<code>git diff --check</code>、<code>pnpm build</code>。</li>
+      <li>每个主题独立提交，中文 Conventional Commit。</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>下一优先级 1：阅读体验继续统一</h2>
+    <ul>
+      <li>检查普通 Article 阅读页、Today inline reader、Starred reader 的顶部操作区是否完全一致。</li>
+      <li>统一无外链、无正文、加载失败、长标题、图片异常等状态。</li>
+      <li>确认收藏/已读后 store、列表、右侧阅读器状态是否同步。</li>
+      <li>考虑抽取共享 reader controls，减少三套按钮继续漂移。</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>下一优先级 2：Feeds 阅读侧栏实机校准</h2>
+    <ul>
+      <li>确认订阅列表、folder 展开、feed 点击、右键菜单在真实数据下稳定。</li>
+      <li>侧栏只保留阅读导航能力，管理入口跳 Settings -> 订阅管理。</li>
+      <li>不要恢复 DnD 订阅树。</li>
+      <li>继续清理旧管理弹窗和无入口代码。</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>下一优先级 3：暗色主题回归</h2>
+    <ul>
+      <li>Today、Topics、Search、Starred 的新增 workbench 样式需要暗色主题视觉检查。</li>
+      <li>优先消灭硬编码浅色值，改用 <code>--workbench-*</code> token。</li>
+      <li>选中态不要用 <code>border-width: 2px</code>，继续用 inset shadow/ring。</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>验证命令</h2>
+    <pre><code>cd apps/desktop
+pnpm test --run src/layout/Article/__tests__ src/layout/Intelligence/__tests__ src/layout/Starred/__tests__
+pnpm test --run src/layout/Search/__tests__ src/layout/Intelligence/Topics/__tests__
+git diff --check
+pnpm build</code></pre>
+  </section>
+
+  <section>
+    <h2>注意事项</h2>
+    <ul>
+      <li>HTTP 请求端口必须动态读取 <code>localStorage.port</code>，不要重新缓存模块加载时端口。</li>
+      <li>生产 SQLite 在 <code>~/.lettura/lettura.db</code>，不要执行清库或迁移重建。</li>
+      <li>用户希望中文沟通。</li>
+    </ul>
+  </section>
+</body>
+</html>
