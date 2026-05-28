@@ -126,4 +126,29 @@ describe("OnboardingDialog", () => {
 
     expect(screen.getByText("onboarding.select_pack.recommended")).toBeInTheDocument();
   });
+
+  it("shows a retryable error state when starter packs fail to load", () => {
+    mockState.onboardingStep = "select-pack";
+    mockState.packs = [];
+    mockState.packsError = "Network timeout";
+
+    render(<OnboardingDialog />);
+
+    expect(screen.getByText("onboarding.select_pack.error_title")).toBeInTheDocument();
+    expect(screen.getByText("Network timeout")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText("onboarding.select_pack.retry"));
+
+    expect(mockState.fetchPacks).toHaveBeenCalledTimes(2);
+  });
+
+  it("shows an empty state when no starter packs are available", () => {
+    mockState.onboardingStep = "select-pack";
+    mockState.packs = [];
+
+    render(<OnboardingDialog />);
+
+    expect(screen.getByText("onboarding.select_pack.empty_title")).toBeInTheDocument();
+    expect(screen.getByText("onboarding.select_pack.empty_subtitle")).toBeInTheDocument();
+  });
 });

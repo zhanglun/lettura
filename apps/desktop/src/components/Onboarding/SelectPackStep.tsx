@@ -4,7 +4,7 @@ import { AlertDialog } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
 import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { AlertTriangle, ChevronLeft, ChevronRight, PackageSearch, RefreshCw } from "lucide-react";
 import {
   getPackInterestScore,
   type StarterPackSummary,
@@ -77,6 +77,7 @@ export function SelectPackStep() {
   const {
     packs,
     packsLoading,
+    packsError,
     fetchPacks,
     selectedPackIds,
     selectedInterestIds,
@@ -87,6 +88,7 @@ export function SelectPackStep() {
     useShallow((state) => ({
       packs: state.packs,
       packsLoading: state.packsLoading,
+      packsError: state.packsError,
       fetchPacks: state.fetchPacks,
       selectedPackIds: state.selectedPackIds,
       selectedInterestIds: state.selectedInterestIds,
@@ -124,6 +126,26 @@ export function SelectPackStep() {
 
       {packsLoading ? (
         <div className="onboarding-loading">Loading...</div>
+      ) : packsError ? (
+        <div className="onboarding-state-card">
+          <AlertTriangle size={28} />
+          <div>
+            <h3>{t("onboarding.select_pack.error_title")}</h3>
+            <p>{packsError}</p>
+          </div>
+          <Button variant="outline" onClick={fetchPacks}>
+            <RefreshCw size={14} />
+            {t("onboarding.select_pack.retry")}
+          </Button>
+        </div>
+      ) : packs.length === 0 ? (
+        <div className="onboarding-state-card">
+          <PackageSearch size={28} />
+          <div>
+            <h3>{t("onboarding.select_pack.empty_title")}</h3>
+            <p>{t("onboarding.select_pack.empty_subtitle")}</p>
+          </div>
+        </div>
       ) : (
         <div className="onboarding-pack-list">
           {packs.map((pack) => (

@@ -1605,6 +1605,31 @@
     @apply my-8 rounded-lg border border-[var(--gray-5)] bg-[var(--gray-2)] px-4 py-8 text-center text-sm text-[var(--gray-10)];
   }
 
+  .onboarding-state-card {
+    @apply my-6 flex flex-col items-center justify-center gap-4 text-center;
+    min-height: 240px;
+    border: 1px dashed var(--gray-6);
+    border-radius: 10px;
+    background: var(--gray-2);
+    padding: 28px;
+    color: var(--gray-10);
+  }
+
+  .onboarding-state-card h3 {
+    color: var(--gray-12);
+    font-size: 14px;
+    font-weight: 800;
+    line-height: 1.45;
+  }
+
+  .onboarding-state-card p {
+    margin-top: 6px;
+    max-width: 360px;
+    color: var(--gray-10);
+    font-size: 12px;
+    line-height: 1.65;
+  }
+
   .onboarding-progress-box {
     @apply w-full max-w-sm;
   }

@@ -179,6 +179,10 @@
       "confirm_button": "Install",
       "back": "Back",
       "install": "Install Selected",
+      "retry": "Retry",
+      "error_title": "Could not load starter packs",
+      "empty_title": "No starter packs available",
+      "empty_subtitle": "Go back to adjust your interests, or import existing subscriptions with OPML.",
       "none_selected": "Please select at least one pack"
     },
     "installing": {
