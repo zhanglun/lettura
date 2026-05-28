@@ -1,4 +1,4 @@
-import { Flex, Text, Heading, Button } from "@radix-ui/themes";
+import { Button } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
 import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
@@ -13,19 +13,19 @@ export function CompleteStep() {
   );
 
   return (
-    <Flex direction="column" align="center" justify="center" gap="5" p="8">
+    <div className="onboarding-step-card onboarding-step-card--centered">
       <PartyPopper size={48} className="text-indigo-9" />
-      <Flex direction="column" align="center" gap="2" className="max-w-md text-center">
-        <Heading size="6" weight="bold">
+      <div className="onboarding-copy">
+        <h2 className="onboarding-step-title">
           {t("onboarding.complete.title")}
-        </Heading>
-        <Text size="3" color="gray" className="leading-relaxed">
+        </h2>
+        <p className="onboarding-step-subtitle">
           {t("onboarding.complete.subtitle")}
-        </Text>
-      </Flex>
-      <Button size="3" onClick={completeOnboarding} mt="4">
+        </p>
+      </div>
+      <Button size="3" onClick={completeOnboarding}>
         {t("onboarding.complete.start_reading")}
       </Button>
-    </Flex>
+    </div>
   );
 }

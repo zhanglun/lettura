@@ -34,27 +34,27 @@ export function CollectionSuggestion({
   };
 
   return (
-    <div className="mb-5">
-      <div className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-[var(--gray-10)]">
+    <div className="starred-panel-section">
+      <div className="starred-panel-title">
         {t("starred.suggest.title")}
       </div>
-      <div className="rounded-lg border border-[var(--gray-5)] bg-[var(--color-panel-solid)] p-3">
+      <div className="starred-suggestion-card">
         {suggestion ? (
           <>
-            <div className="flex items-center gap-2 text-sm font-semibold text-[var(--gray-12)]">
+            <div className="starred-suggestion-title">
               <FolderPlus size={14} />
               {t("starred.suggest.suggested_name", {
                 name: suggestion.collectionName,
               })}
             </div>
-            <p className="mt-2 text-xs leading-5 text-[var(--gray-11)]">
+            <p className="starred-suggestion-copy">
               {t("starred.suggest.suggested_reason", {
                 count: suggestion.articleCount,
                 name: suggestion.collectionName,
               })}
             </p>
             {showInput ? (
-              <div className="mt-3 flex gap-2">
+              <div className="starred-suggestion-input-row">
                 <input
                   type="text"
                   value={newName}
@@ -63,7 +63,7 @@ export function CollectionSuggestion({
                     if (e.key === "Enter") handleCreate();
                   }}
                   placeholder={t("starred.collection_input_placeholder")}
-                  className="min-w-0 flex-1 rounded-md border border-[var(--gray-7)] bg-[var(--gray-2)] px-2 py-1 text-xs text-[var(--gray-12)] outline-none focus:border-[var(--accent-8)]"
+                  className="starred-suggestion-input"
                   disabled={isCreating}
                 />
                 <Button
@@ -78,7 +78,7 @@ export function CollectionSuggestion({
               </div>
             ) : (
               <Button
-                className="mt-3"
+                className="starred-suggestion-button"
                 size="1"
                 onClick={() => {
                   setNewName(suggestion.collectionName);
@@ -91,17 +91,17 @@ export function CollectionSuggestion({
           </>
         ) : (
           <>
-            <div className="flex items-center gap-2 text-sm font-semibold text-[var(--gray-12)]">
+            <div className="starred-suggestion-title">
               <FolderPlus size={14} />
               {t("starred.suggest.create")}
             </div>
-            <p className="mt-2 text-xs leading-5 text-[var(--gray-11)]">
+            <p className="starred-suggestion-copy">
               {t("starred.suggest.has_notes", {
                 count: withNotesCount,
               })}
             </p>
             {showInput ? (
-              <div className="mt-3 flex gap-2">
+              <div className="starred-suggestion-input-row">
                 <input
                   type="text"
                   value={newName}
@@ -110,7 +110,7 @@ export function CollectionSuggestion({
                     if (e.key === "Enter") handleCreate();
                   }}
                   placeholder={t("starred.collection_input_placeholder")}
-                  className="min-w-0 flex-1 rounded-md border border-[var(--gray-7)] bg-[var(--gray-2)] px-2 py-1 text-xs text-[var(--gray-12)] outline-none focus:border-[var(--accent-8)]"
+                  className="starred-suggestion-input"
                   disabled={isCreating}
                 />
                 <Button
@@ -125,7 +125,7 @@ export function CollectionSuggestion({
               </div>
             ) : (
               <Button
-                className="mt-3"
+                className="starred-suggestion-button"
                 size="1"
                 onClick={() => setShowInput(true)}
               >

@@ -9,13 +9,13 @@ const mockUseArticle = vi.fn().mockReturnValue({
   setSize: vi.fn(),
 });
 
-vi.mock("@/layout/Article/useArticle", () => ({
+vi.mock("@/hooks/useArticle", () => ({
   useArticle: (props: Record<string, unknown>) => mockUseArticle(props),
 }));
 
 vi.mock("@/helpers/starredApi", () => ({
-  getCollections: vi.fn().mockResolvedValue([]),
-  getTags: vi.fn().mockResolvedValue([]),
+  getCollections: vi.fn(() => new Promise(() => {})),
+  getTags: vi.fn(() => new Promise(() => {})),
   createCollection: vi.fn(),
 }));
 

@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Flex, Text, Heading, Button, Box, Progress } from "@radix-ui/themes";
+import { Button, Progress } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
 import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
@@ -39,12 +39,12 @@ export function InstallingStep() {
 
   if (isInstalling) {
     return (
-      <Flex direction="column" align="center" justify="center" gap="5" p="8">
-        <Heading size="5">{t("onboarding.installing.title")}</Heading>
-        <Text size="2" color="gray">
+      <div className="onboarding-step-card onboarding-step-card--centered">
+        <h2 className="onboarding-step-title">{t("onboarding.installing.title")}</h2>
+        <p className="onboarding-step-subtitle">
           {t("onboarding.installing.subtitle")}
-        </Text>
-        <Box className="w-full max-w-sm">
+        </p>
+        <div className="onboarding-progress-box">
           <Progress
             value={
               installProgress.total > 0
@@ -53,55 +53,55 @@ export function InstallingStep() {
             }
             className="w-full"
           />
-        </Box>
-        <Text size="2" color="gray">
+        </div>
+        <p className="onboarding-step-subtitle">
           {t("onboarding.installing.progress", {
             current: installProgress.completed,
             total: installProgress.total,
           })}
-        </Text>
-      </Flex>
+        </p>
+      </div>
     );
   }
 
   if (isSuccess) {
     return (
-      <Flex direction="column" align="center" justify="center" gap="4" p="8">
+      <div className="onboarding-step-card onboarding-step-card--centered">
         <CheckCircle size={48} className="text-green-9" />
-        <Heading size="5">{t("onboarding.installing.success_title")}</Heading>
-      </Flex>
+        <h2 className="onboarding-step-title">{t("onboarding.installing.success_title")}</h2>
+      </div>
     );
   }
 
   if (isPartial) {
     return (
-      <Flex direction="column" align="center" justify="center" gap="4" p="8">
+      <div className="onboarding-step-card onboarding-step-card--centered">
         <AlertTriangle size={48} className="text-yellow-9" />
-        <Heading size="5">{t("onboarding.installing.partial_title")}</Heading>
-        <Text size="2" color="gray">
+        <h2 className="onboarding-step-title">{t("onboarding.installing.partial_title")}</h2>
+        <p className="onboarding-step-subtitle">
           {t("onboarding.installing.partial_subtitle")}
-        </Text>
-        <Flex gap="3" mt="3">
+        </p>
+        <div className="onboarding-step-actions onboarding-step-actions--center">
           <Button variant="outline" onClick={completeOnboarding}>
             {t("onboarding.installing.skip")}
           </Button>
-        </Flex>
-      </Flex>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Flex direction="column" align="center" justify="center" gap="4" p="8">
+    <div className="onboarding-step-card onboarding-step-card--centered">
       <XCircle size={48} className="text-red-9" />
-      <Heading size="5">{t("onboarding.installing.error_title")}</Heading>
-      <Text size="2" color="gray">
+      <h2 className="onboarding-step-title">{t("onboarding.installing.error_title")}</h2>
+      <p className="onboarding-step-subtitle">
         {installError || t("onboarding.installing.error_subtitle")}
-      </Text>
-      <Flex gap="3" mt="3">
+      </p>
+      <div className="onboarding-step-actions onboarding-step-actions--center">
         <Button variant="outline" onClick={completeOnboarding}>
           {t("onboarding.installing.skip")}
         </Button>
-      </Flex>
-    </Flex>
+      </div>
+    </div>
   );
 }

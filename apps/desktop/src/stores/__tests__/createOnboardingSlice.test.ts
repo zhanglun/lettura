@@ -85,6 +85,7 @@ describe("createOnboardingSlice", () => {
       expect(state.packsLoading).toBe(false);
       expect(state.packsError).toBeNull();
       expect(state.selectedPackIds).toEqual([]);
+      expect(state.selectedInterestIds).toEqual(["ai", "developer"]);
       expect(state.previewPack).toBeNull();
       expect(state.previewLoading).toBe(false);
       expect(state.installStatus).toBe("idle");
@@ -113,8 +114,9 @@ describe("createOnboardingSlice", () => {
   });
 
   describe("setOnboardingStep", () => {
-    const steps: Array<["welcome" | "select-pack" | "installing" | "complete"]> = [
+    const steps: Array<["welcome" | "interests" | "select-pack" | "installing" | "complete"]> = [
       ["welcome"],
+      ["interests"],
       ["select-pack"],
       ["installing"],
       ["complete"],
@@ -129,6 +131,9 @@ describe("createOnboardingSlice", () => {
     it("should cycle through all steps", () => {
       store.getState().setOnboardingStep("welcome");
       expect(store.getState().onboardingStep).toBe("welcome");
+
+      store.getState().setOnboardingStep("interests");
+      expect(store.getState().onboardingStep).toBe("interests");
 
       store.getState().setOnboardingStep("select-pack");
       expect(store.getState().onboardingStep).toBe("select-pack");
@@ -181,6 +186,24 @@ describe("createOnboardingSlice", () => {
       store.getState().setSelectedPackIds([]);
 
       expect(store.getState().selectedPackIds).toEqual([]);
+    });
+  });
+
+  describe("toggleInterestSelection", () => {
+    it("should remove a selected interest", () => {
+      store.getState().toggleInterestSelection("ai");
+
+      expect(store.getState().selectedInterestIds).toEqual(["developer"]);
+    });
+
+    it("should add a new interest", () => {
+      store.getState().toggleInterestSelection("design");
+
+      expect(store.getState().selectedInterestIds).toEqual([
+        "ai",
+        "developer",
+        "design",
+      ]);
     });
   });
 

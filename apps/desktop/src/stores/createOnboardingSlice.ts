@@ -2,7 +2,12 @@ import { StateCreator } from "zustand";
 import type { UserConfigSlice } from "@/stores/createUserConfigSlice";
 import * as dataAgent from "@/helpers/dataAgent";
 
-export type OnboardingStep = "welcome" | "select-pack" | "installing" | "complete";
+export type OnboardingStep =
+  | "welcome"
+  | "interests"
+  | "select-pack"
+  | "installing"
+  | "complete";
 export type InstallStatus = "idle" | "installing" | "partial_success" | "all_failed" | "success";
 
 export interface StarterPackSummary {
@@ -50,6 +55,11 @@ export interface OnboardingSlice {
   selectedPackIds: string[];
   togglePackSelection: (packId: string) => void;
   setSelectedPackIds: (ids: string[]) => void;
+
+  // Selected interest IDs
+  selectedInterestIds: string[];
+  toggleInterestSelection: (interestId: string) => void;
+  setSelectedInterestIds: (ids: string[]) => void;
 
   // Pack preview
   previewPack: PackPreview | null;
@@ -106,6 +116,17 @@ export const createOnboardingSlice: StateCreator<OnboardingSlice> = (
     }
   },
   setSelectedPackIds: (ids) => set({ selectedPackIds: ids }),
+
+  selectedInterestIds: ["ai", "developer"],
+  toggleInterestSelection: (interestId) => {
+    const current = get().selectedInterestIds;
+    if (current.includes(interestId)) {
+      set({ selectedInterestIds: current.filter((id) => id !== interestId) });
+    } else {
+      set({ selectedInterestIds: [...current, interestId] });
+    }
+  },
+  setSelectedInterestIds: (ids) => set({ selectedInterestIds: ids }),
 
   previewPack: null,
   previewLoading: false,

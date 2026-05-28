@@ -162,6 +162,9 @@
 
 .dark,
 .dark-theme {
+  --app-canvas: #111;
+  --app-sidebar: #191919;
+
   --default-1: #111;
   --default-2: #191919;
   --default-3: #232323;

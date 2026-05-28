@@ -176,17 +176,24 @@
   "onboarding": {
     "welcome": {
       "title": "欢迎使用 Lettura",
-      "subtitle": "您的个人 RSS 阅读器。关注您最喜欢的来源，不要错过任何故事。",
-      "get_started": "开始使用",
+      "subtitle": "Lettura 是你的每日判断入口。先选关注方向和 Starter Pack，我们会帮你把信息流整理成可阅读、可追踪的信号。",
+      "get_started": "开始设置",
       "import_opml": "导入 OPML",
       "import_opml_desc": "已有订阅？从 OPML 文件导入。",
       "importing": "导入中...",
       "import_success": "OPML 导入成功！",
       "import_error": "导入 OPML 文件失败"
     },
+    "interests": {
+      "step": "第 1 步 · 兴趣选择",
+      "title": "你主要关注哪些领域？",
+      "subtitle": "选择至少一个方向，用于推荐更合适的 Starter Pack。后续仍然可以在设置里调整来源。",
+      "next": "下一步：选择订阅包"
+    },
     "select_pack": {
-      "title": "选择您感兴趣的领域",
-      "subtitle": "选择一个或多个入门包开始使用。您可以稍后随时添加更多。",
+      "step": "第 2 步 · 安装订阅包",
+      "title": "选择 Starter Pack",
+      "subtitle": "每个 Pack 包含精选信息源，安装后可在订阅管理里继续增删和整理。",
       "sources_count": "{{count}} 个源",
       "confirm_title": "确认安装",
       "confirm_description": "即将安装 {{count}} 个包，共 {{sources}} 个源。",

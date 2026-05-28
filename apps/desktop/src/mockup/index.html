@@ -1162,6 +1162,31 @@
       color: var(--text-secondary);
       line-height: 1.5;
     }
+    .starred-article-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      width: 100%;
+      padding: 14px;
+      border: 1px solid transparent;
+      border-top-color: var(--border);
+      background: var(--bg-card);
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.15s;
+    }
+    .starred-article-card:first-child {
+      border-top-color: transparent;
+    }
+    .starred-article-card:hover {
+      border-color: var(--border-hover);
+      box-shadow: var(--shadow-sm);
+    }
+    .starred-article-card.active {
+      border-color: var(--amber);
+      background: var(--amber-bg);
+      box-shadow: inset 3px 0 0 var(--amber);
+    }
 
     /* ===== Feeds Management ===== */
     .feed-row {
@@ -3896,69 +3921,71 @@
     <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span class="tooltip">Settings</span></button>
   </div>
 
-  <div class="sidebar">
-    <div class="sidebar-header">
-      <div class="sidebar-title">Starred</div>
-      <div class="sidebar-desc">收藏、稍后读和长期参考资料</div>
+  <div class="sidebar starred-library-sidebar">
+    <div class="sidebar-header starred-library-header">
+      <div class="sidebar-title starred-library-title">Starred</div>
+      <div class="sidebar-desc starred-library-desc">收藏、稍后读和长期参考资料</div>
     </div>
-    <div class="sidebar-content">
-      <div class="sidebar-section-title">收藏夹</div>
-      <div class="sidebar-item active">
-        <span class="dot" style="background:var(--amber)"></span>
+    <div class="sidebar-content starred-library-content">
+      <div class="sidebar-section-title starred-library-section-title">收藏夹</div>
+      <div class="sidebar-item starred-library-item starred-library-item--active active">
+        <span class="dot starred-library-dot" style="background:var(--amber)"></span>
         全部收藏
-        <span class="count">32</span>
+        <span class="count starred-library-count">32</span>
       </div>
-      <div class="sidebar-item">
-        <span class="dot" style="background:var(--accent)"></span>
+      <div class="sidebar-item starred-library-item">
+        <span class="dot starred-library-dot" style="background:var(--accent)"></span>
         研究素材
-        <span class="count">12</span>
+        <span class="count starred-library-count">12</span>
       </div>
-      <div class="sidebar-item">
-        <span class="dot" style="background:var(--green)"></span>
+      <div class="sidebar-item starred-library-item">
+        <span class="dot starred-library-dot" style="background:var(--green)"></span>
         工程实践
-        <span class="count">9</span>
+        <span class="count starred-library-count">9</span>
       </div>
-      <div class="sidebar-item">
-        <span class="dot" style="background:var(--blue)"></span>
+      <div class="sidebar-item starred-library-item">
+        <span class="dot starred-library-dot" style="background:var(--blue)"></span>
         产品观察
-        <span class="count">6</span>
+        <span class="count starred-library-count">6</span>
       </div>
-      <div class="sidebar-section-title">标签</div>
-      <div class="sidebar-item"># agent-frameworks <span class="count">8</span></div>
-      <div class="sidebar-item"># rust <span class="count">5</span></div>
-      <div class="sidebar-item"># pricing <span class="count">4</span></div>
+      <div class="sidebar-section-title starred-library-section-title starred-library-section-title--spaced">标签</div>
+      <div class="sidebar-item starred-library-item"># agent-frameworks <span class="count starred-library-count">8</span></div>
+      <div class="sidebar-item starred-library-item"># rust <span class="count starred-library-count">5</span></div>
+      <div class="sidebar-item starred-library-item"># pricing <span class="count starred-library-count">4</span></div>
     </div>
     <div class="sidebar-footer">
       本周新增 7 条收藏，其中 3 条来自今日信号。
     </div>
   </div>
 
-  <div class="main-content">
-    <div class="page-header">
-      <div class="page-title">Starred</div>
-      <div class="page-subtitle">把有长期价值的文章沉淀成可回看的资料库</div>
-    </div>
-    <div style="display:flex; align-items:center; gap:8px; padding:0 28px 16px; flex-wrap:wrap;">
-      <div style="display:flex; gap:2px; background:var(--bg-sidebar); border-radius:var(--radius-sm); padding:2px;">
-        <button class="btn btn-ghost active" style="padding:4px 12px; font-size:11px; border:none;">全部</button>
-        <button class="btn btn-ghost" style="padding:4px 12px; font-size:11px; border:none;">稍后读</button>
-        <button class="btn btn-ghost" style="padding:4px 12px; font-size:11px; border:none;">已归档</button>
+  <div class="main-content starred-main">
+    <div class="page-header starred-header">
+      <div>
+        <div class="page-title starred-title">Starred</div>
+        <div class="page-subtitle starred-subtitle">把有长期价值的文章沉淀成可回看的资料库</div>
       </div>
-      <button class="filter-chip active">按收藏时间</button>
-      <button class="filter-chip">只看笔记</button>
-      <button class="filter-chip">高信号</button>
+    </div>
+    <div class="starred-filter-row" style="display:flex; align-items:center; gap:8px; padding:0 28px 16px; flex-wrap:wrap;">
+      <div style="display:flex; gap:2px; background:var(--bg-sidebar); border-radius:var(--radius-sm); padding:2px;">
+        <button class="btn btn-ghost starred-filter-chip starred-filter-chip--active active" style="padding:4px 12px; font-size:11px; border:none;">全部</button>
+        <button class="btn btn-ghost starred-filter-chip" style="padding:4px 12px; font-size:11px; border:none;">稍后读</button>
+        <button class="btn btn-ghost starred-filter-chip" style="padding:4px 12px; font-size:11px; border:none;">已归档</button>
+      </div>
+      <button class="filter-chip starred-filter-chip active">按收藏时间</button>
+      <button class="filter-chip starred-filter-chip">只看笔记</button>
+      <button class="filter-chip starred-filter-chip">高信号</button>
       <button class="btn btn-ghost" style="font-size:11px; margin-left:auto;">
         <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg>
         导出
       </button>
     </div>
-    <div class="main-scroll" style="padding:0 28px 24px;">
-      <div class="saved-group">
-        <div class="saved-group-header">
-          <div style="font-size:12px; font-weight:600;">今天收藏</div>
-          <div style="font-size:11px; color:var(--text-tertiary);">3 篇</div>
+    <div class="main-scroll starred-scroll" style="padding:0 28px 24px;">
+      <div class="saved-group starred-group">
+        <div class="saved-group-header starred-group-header">
+          <div class="starred-group-title" style="font-size:12px; font-weight:600;">今天收藏</div>
+          <div class="starred-group-subtitle" style="font-size:11px; color:var(--text-tertiary);">3 篇</div>
         </div>
-        <div class="article-item">
+        <div class="starred-article-card active">
           <div style="flex:1;">
             <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
               <div style="font-size:13px; font-weight:600; color:var(--text-primary);">OpenAI releases open-source Agent SDK for building multi-agent systems</div>
@@ -3971,7 +3998,7 @@
             <svg class="icon-sm" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
           </button>
         </div>
-        <div class="article-item">
+        <div class="starred-article-card">
           <div style="flex:1;">
             <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
               <div style="font-size:13px; font-weight:600; color:var(--text-primary);">Rust 1.85: async fn in traits is now stable</div>
@@ -3985,12 +4012,12 @@
         </div>
       </div>
 
-      <div class="saved-group">
-        <div class="saved-group-header">
-          <div style="font-size:12px; font-weight:600;">本周回看</div>
-          <div style="font-size:11px; color:var(--text-tertiary);">按 Topic 聚合</div>
+      <div class="saved-group starred-group">
+        <div class="saved-group-header starred-group-header">
+          <div class="starred-group-title" style="font-size:12px; font-weight:600;">本周回看</div>
+          <div class="starred-group-subtitle" style="font-size:11px; color:var(--text-tertiary);">按 Topic 聚合</div>
         </div>
-        <div class="article-item">
+        <div class="starred-article-card">
           <div style="flex:1;">
             <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
               <div style="font-size:13px; font-weight:600; color:var(--text-primary);">Show HN: Local LLM inference benchmark comparing llama.cpp, vLLM and TGI</div>
@@ -4003,7 +4030,7 @@
             </div>
           </div>
         </div>
-        <div class="article-item">
+        <div class="starred-article-card">
           <div style="flex:1;">
             <div style="font-size:13px; font-weight:600; color:var(--text-primary); margin-bottom:4px;">Quantization showdown: GGUF vs AWQ vs GPTQ</div>
             <div class="article-meta">Simon Willison · 5 天前 · 已读 62%</div>
@@ -4013,32 +4040,32 @@
     </div>
   </div>
 
-  <div class="right-panel">
-    <div class="right-panel-section">
-      <div class="right-panel-title">收藏状态</div>
+  <div class="right-panel starred-panel">
+    <div class="right-panel-section starred-panel-section">
+      <div class="right-panel-title starred-panel-title">收藏状态</div>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-        <div class="card" style="padding:12px;">
-          <div style="font-size:20px; font-weight:700; color:var(--text-primary);">32</div>
-          <div style="font-size:11px; color:var(--text-tertiary);">全部收藏</div>
+        <div class="card starred-stat-card" style="padding:12px;">
+          <div class="starred-stat-value" style="font-size:20px; font-weight:700; color:var(--text-primary);">32</div>
+          <div class="starred-stat-label" style="font-size:11px; color:var(--text-tertiary);">全部收藏</div>
         </div>
-        <div class="card" style="padding:12px;">
-          <div style="font-size:20px; font-weight:700; color:var(--accent);">7</div>
-          <div style="font-size:11px; color:var(--text-tertiary);">本周新增</div>
+        <div class="card starred-stat-card" style="padding:12px;">
+          <div class="starred-stat-value starred-stat-value--accent" style="font-size:20px; font-weight:700; color:var(--accent);">7</div>
+          <div class="starred-stat-label" style="font-size:11px; color:var(--text-tertiary);">本周新增</div>
         </div>
       </div>
     </div>
-    <div class="right-panel-section">
-      <div class="right-panel-title">建议整理</div>
-      <div class="card" style="padding:12px;">
-        <div style="font-size:13px; font-weight:600; margin-bottom:6px;">创建「Agent 框架」收藏夹</div>
-        <div style="font-size:12px; color:var(--text-secondary); line-height:1.6; margin-bottom:10px;">
+    <div class="right-panel-section starred-panel-section">
+      <div class="right-panel-title starred-panel-title">建议整理</div>
+      <div class="card starred-suggestion-card" style="padding:12px;">
+        <div class="starred-suggestion-title" style="font-size:13px; font-weight:600; margin-bottom:6px;">创建「Agent 框架」收藏夹</div>
+        <div class="starred-suggestion-copy" style="font-size:12px; color:var(--text-secondary); line-height:1.6; margin-bottom:10px;">
           已有 8 篇收藏都和 Agent SDK、工具调用、调试追踪有关。
         </div>
         <button class="btn btn-primary" style="font-size:11px;">创建收藏夹</button>
       </div>
     </div>
-    <div class="right-panel-section">
-      <div class="right-panel-title">阅读队列</div>
+    <div class="right-panel-section starred-panel-section">
+      <div class="right-panel-title starred-panel-title">阅读队列</div>
       <div style="display:flex; flex-direction:column; gap:8px;">
         <div style="font-size:12px; color:var(--text-secondary); line-height:1.5;">Quantization showdown · 已读 62%</div>
         <div class="progress-bar"><div class="fill" style="width:62%;"></div></div>

@@ -154,17 +154,24 @@
   "onboarding": {
     "welcome": {
       "title": "Welcome to Lettura",
-      "subtitle": "Your personal feed reader. Follow your favorite sources and never miss a story.",
-      "get_started": "Get Started",
+      "subtitle": "Lettura is your daily judgment desk. Pick your interests and starter packs, then turn feeds into readable signals.",
+      "get_started": "Start Setup",
       "import_opml": "Import OPML",
       "import_opml_desc": "Already have subscriptions? Import from an OPML file.",
       "importing": "Importing...",
       "import_success": "OPML imported successfully!",
       "import_error": "Failed to import OPML file"
     },
+    "interests": {
+      "step": "Step 1 · Interests",
+      "title": "What do you want to follow?",
+      "subtitle": "Select at least one area so Lettura can recommend starter packs. You can adjust sources later in Settings.",
+      "next": "Next: Choose Packs"
+    },
     "select_pack": {
-      "title": "Choose Your Interests",
-      "subtitle": "Select one or more starter packs to get going. You can always add more later.",
+      "step": "Step 2 · Starter Packs",
+      "title": "Choose Starter Packs",
+      "subtitle": "Each pack contains curated sources. You can add, remove, and organize them later.",
       "sources_count": "{{count}} sources",
       "confirm_title": "Confirm Installation",
       "confirm_description": "You are about to install {{count}} packs with a total of {{sources}} sources.",
