@@ -222,7 +222,8 @@
       "last_updated": "最后更新 {{time}}",
       "analyzing": "分析中...",
       "done": "✓ 已更新 · 基于 {{count}} 个来源",
-      "error_retry": "⚠ 更新失败 · 点击重试"
+      "error_retry": "⚠ 更新失败 · 点击重试",
+      "reanalyze": "重新分析"
     },
     "signals": "关键信号",
     "empty": {
@@ -236,8 +237,12 @@
       "error_subtitle": "加载今日文章时出现了问题，请稍后重试。",
       "retry": "重试",
       "no_api_key": "AI 功能需要配置 API Key。在设置中配置后即可开始使用。",
+      "no_api_key_title": "AI 分析尚未配置",
+      "no_api_key_subtitle": "添加兼容 OpenAI 的 API Key 后，Today 会把今日文章整理成带证据的关键信号。",
       "go_to_settings": "前往设置",
       "no_signals": "还没有信号。运行分析来发现关键洞察。",
+      "no_signals_title": "还没有生成信号",
+      "no_signals_subtitle": "运行分析流水线，聚类今日文章并找出值得阅读的变化。",
       "start_analysis": "开始分析"
     },
     "pipeline": {
@@ -268,6 +273,8 @@
       "sources": "个来源",
       "confidence": "置信度",
       "unverified": "未验证",
+      "read_evidence": "阅读证据",
+      "view_sources": "查看全部来源",
       "level": {
         "high": "高信号",
         "medium": "中信号",

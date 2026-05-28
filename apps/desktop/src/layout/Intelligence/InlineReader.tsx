@@ -56,8 +56,8 @@ export function InlineReader({
   const hasContent = rawContent.length > 0;
 
   return (
-    <div className="flex h-full min-w-0 flex-col">
-      <div className="flex min-w-0 items-center gap-2 px-5 py-3 border-b border-[var(--gray-4)] shrink-0">
+    <div className="today-reading-panel">
+      <div className="today-reading-header">
         <button
           onClick={onBack}
           className="flex shrink-0 items-center gap-1 text-[11px] text-[var(--gray-9)] hover:text-[var(--gray-12)] transition-colors px-2 py-1 rounded hover:bg-[var(--gray-3)]"
@@ -107,15 +107,14 @@ export function InlineReader({
         </button>
       </div>
 
-      <div className="min-w-0 flex-1 overflow-auto px-7 py-6">
+      <div className="today-reading-body">
         <div
-          className="mb-2 break-words text-[10px] font-semibold uppercase tracking-[0.5px]"
-          style={{ color: "var(--accent-9)" }}
+          className="today-reading-feed"
         >
           {source.feed_title}
         </div>
-        <h1 className="mb-3 break-words text-[20px] font-bold leading-[1.3] text-[var(--gray-12)]">{source.title}</h1>
-        <div className="mb-6 break-words text-[12px] leading-5 text-[var(--gray-9)]">
+        <h1 className="today-reading-title">{source.title}</h1>
+        <div className="today-reading-meta">
           {source.feed_title}
           {sourceDate && <> · {sourceDate}</>}
         </div>
@@ -142,7 +141,7 @@ export function InlineReader({
         )}
 
         {!articleLoading && !articleError && hasContent && (
-          <div className="prose prose-sm max-w-none break-words text-[14px] text-[var(--gray-11)] leading-[1.8]">
+          <div className="today-reading-content">
             {contentElement}
           </div>
         )}

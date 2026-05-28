@@ -1,5 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { SignalCard } from "../SignalCard";
 import type { Signal } from "@/stores/createTodaySlice";
 
@@ -89,6 +91,42 @@ describe("SignalCard", () => {
   });
 
   describe("Why It Matters (WIM)", () => {
+    it("keeps card border and hover styles aligned with the mockup", () => {
+      const css = readFileSync(
+        join(process.cwd(), "src/styles/custom-components.css"),
+        "utf8",
+      );
+
+      expect(css).toContain("border: 1px solid #e4e7ed;");
+      expect(css).toContain("border-radius: 10px;");
+      expect(css).toContain("transition: all 0.15s;");
+      expect(css).toContain(".today-signal-card:hover");
+      expect(css).toContain("border-color: #cdd2dc;");
+      expect(css).toContain("box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);");
+      expect(css).toContain(".today-signal-card--active:hover");
+      expect(css).toContain("border-color: #6366f1;");
+    });
+
+    it("uses the judgment-desk signal card structure", () => {
+      const signal = makeSignal({
+        topic_id: 1,
+        topic_title: "AI Agent",
+        topic_uuid: "topic-1",
+        relevance_score: 0.85,
+      });
+      render(<SignalCard signal={signal} />);
+
+      expect(screen.getByText(signal.title).closest(".today-signal-card")).toBeInTheDocument();
+      expect(screen.getByText(signal.title).className).toContain("today-signal-title");
+      expect(screen.getByText(signal.summary).className).toContain("today-signal-summary");
+      expect(screen.getByText("AI Agent").className).toContain("today-signal-tag");
+      expect(screen.getAllByText(/85%/)).toHaveLength(2);
+      expect(screen.getAllByText(/85%/)[1].className).toContain("today-confidence-value");
+      expect(screen.getByText("today.why_short").closest("button")?.className).toContain("today-wim-toggle");
+      expect(screen.getByRole("button", { name: /today.feedback.useful/ }).className).toContain("today-feedback-button");
+      expect(screen.queryByText("today.sources.expand")).not.toBeInTheDocument();
+    });
+
     it("T-WIM-01: shows Why button when why_it_matters is non-empty and differs from summary", () => {
       const signal = makeSignal();
       render(<SignalCard signal={signal} />);
@@ -170,13 +208,33 @@ describe("SignalCard", () => {
       expect(screen.getByTestId("source-list").parentElement).toHaveStyle({ maxHeight: "0px", opacity: "0" });
     });
 
-    it("T-SRC-03: clicking collapse button calls toggleSourceExpand", () => {
+    it("T-SRC-03: clicking title calls toggleSourceExpand", () => {
       const signal = makeSignal();
       mockStore.expandedSignalId = signal.id;
       render(<SignalCard signal={signal} />);
 
-      const collapseButton = screen.getByText("today.sources.collapse");
-      fireEvent.click(collapseButton);
+      fireEvent.click(screen.getByText(signal.title));
+
+      expect(mockStore.toggleSourceExpand).toHaveBeenCalledWith(signal.id);
+    });
+
+    it("T-SRC-04: clicking read evidence opens the first source inline", () => {
+      const signal = makeSignal();
+      const onInlineRead = vi.fn();
+
+      render(<SignalCard signal={signal} onInlineRead={onInlineRead} />);
+
+      fireEvent.click(screen.getByRole("button", { name: "today.signal_card.read_evidence" }));
+
+      expect(onInlineRead).toHaveBeenCalledWith("art-1", "feed-1", 1);
+    });
+
+    it("T-SRC-05: clicking view sources expands the source list", () => {
+      const signal = makeSignal();
+
+      render(<SignalCard signal={signal} />);
+
+      fireEvent.click(screen.getByRole("button", { name: "today.signal_card.view_sources" }));
 
       expect(mockStore.toggleSourceExpand).toHaveBeenCalledWith(signal.id);
     });

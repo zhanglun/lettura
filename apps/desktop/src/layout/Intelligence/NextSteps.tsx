@@ -14,8 +14,8 @@ export function NextSteps({ hasSignals, hasApiKey, onOpenSettings }: NextStepsPr
   const navigate = useNavigate();
 
   return (
-    <div className="min-w-0 px-4 py-5 border-t border-[var(--gray-3)]">
-      <div className="text-[11px] font-semibold text-[var(--gray-9)] uppercase tracking-[0.5px] mb-2.5">
+    <section className="today-right-section">
+      <div className="today-right-title">
         {t("today.right_panel.next_steps.title")}
       </div>
 
@@ -48,6 +48,6 @@ export function NextSteps({ hasSignals, hasApiKey, onOpenSettings }: NextStepsPr
           </button>
         )}
       </div>
-    </div>
+    </section>
   );
 }

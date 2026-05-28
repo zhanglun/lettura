@@ -34,7 +34,7 @@ describe("RightPanel", () => {
     expect(panel.style.width).toBe("var(--right-panel-expanded-width)");
   });
 
-  it("should apply transition class for smooth width change", () => {
+  it("should use the judgment-desk panel class for smooth width change", () => {
     render(
       <RightPanel expanded={false}>
         <div>Content</div>
@@ -42,7 +42,7 @@ describe("RightPanel", () => {
     );
 
     const panel = screen.getByTestId("right-panel");
-    expect(panel.className).toContain("transition-all");
+    expect(panel.className).toContain("today-right-panel");
   });
 
   it("should have correct base styling", () => {
@@ -53,7 +53,17 @@ describe("RightPanel", () => {
     );
 
     const panel = screen.getByTestId("right-panel");
-    expect(panel.className).toContain("border-l");
-    expect(panel.className).toContain("overflow-hidden");
+    expect(panel.className).toContain("today-right-panel");
+  });
+
+  it("should apply expanded judgment-desk class when reading", () => {
+    render(
+      <RightPanel expanded={true}>
+        <div>Content</div>
+      </RightPanel>,
+    );
+
+    const panel = screen.getByTestId("right-panel");
+    expect(panel.className).toContain("today-right-panel--expanded");
   });
 });

@@ -31,6 +31,26 @@ describe("createTodaySlice — source expand/detail", () => {
     expect(store.getState().expandedSignalId).toBeNull();
   });
 
+  it("T-ST-04: focusSignal(42) selects the signal without collapsing it", () => {
+    const store = create<TodaySlice>(createTodaySlice);
+
+    store.getState().focusSignal(42);
+    store.getState().focusSignal(42);
+
+    expect(store.getState().expandedSignalId).toBe(42);
+    expect(store.getState().pendingFocusSignalId).toBe(42);
+  });
+
+  it("T-ST-05: clearPendingFocusSignal clears the one-shot sidebar focus target", () => {
+    const store = create<TodaySlice>(createTodaySlice);
+
+    store.getState().focusSignal(42);
+    store.getState().clearPendingFocusSignal();
+
+    expect(store.getState().expandedSignalId).toBe(42);
+    expect(store.getState().pendingFocusSignalId).toBeNull();
+  });
+
   it("T-ST-03: fetchSignalDetail(42) with mocked invoke stores detail in signalDetails", async () => {
     const mockDetail: SignalDetail = {
       signal: {

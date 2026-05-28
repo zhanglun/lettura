@@ -14,8 +14,8 @@ export function DailyStatus({ overview, loading, progress, highSignalCount }: Da
   const { t } = useTranslation();
 
   return (
-    <div className="min-w-0 px-4 py-5 border-t border-[var(--gray-3)]">
-      <div className="text-[11px] font-semibold text-[var(--gray-9)] uppercase tracking-[0.5px] mb-2.5">
+    <section className="today-right-section">
+      <div className="today-right-title">
         {t("today.right_panel.daily_status.title")}
       </div>
 
@@ -53,6 +53,6 @@ export function DailyStatus({ overview, loading, progress, highSignalCount }: Da
           {t("today.right_panel.daily_status.no_data")}
         </Text>
       )}
-    </div>
+    </section>
   );
 }

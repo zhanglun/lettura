@@ -7,7 +7,7 @@ import { Signal } from "@/stores/createTodaySlice";
 import { RouteConfig } from "@/config";
 import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
-import { ChevronDown, ChevronRight, ChevronUp, Layers } from "lucide-react";
+import { ChevronDown, ChevronRight } from "lucide-react";
 import { SignalSourceList } from "./SignalSourceList";
 
 type SignalLevel = "high" | "medium" | "low";
@@ -92,8 +92,6 @@ export function SignalCard({ signal, isActive, isDimmed, onInlineRead, activeRea
     signal.why_it_matters !== signal.summary &&
     signal.why_it_matters.trim().length > 0;
 
-  const uniqueFeedCount = new Set(signal.sources.map((s) => s.feed_uuid)).size;
-
   const timeAgo = formatDistanceToNow(parseISO(signal.created_at), { addSuffix: true });
 
   const topicColor = signal.topic_title ? getTopicColor(signal.topic_title) : null;
@@ -122,16 +120,15 @@ export function SignalCard({ signal, isActive, isDimmed, onInlineRead, activeRea
     navigate(path);
   };
 
-  useEffect(() => {
-    if (isExpanded && store.scrollPositionMap[signal.id] !== undefined) {
-      requestAnimationFrame(() => {
-        const scrollContainer = document.querySelector('[data-today-scroll]') as HTMLElement | null;
-        if (scrollContainer) {
-          scrollContainer.scrollTop = store.scrollPositionMap[signal.id];
-        }
-      });
+  const handleReadEvidence = () => {
+    const source = sources[0];
+    if (!source) return;
+    if (onInlineRead) {
+      onInlineRead(source.article_uuid, source.feed_uuid, source.article_id);
+    } else {
+      handleSourceClick(source.article_uuid, source.feed_uuid, source.article_id);
     }
-  }, [isExpanded]);
+  };
 
   const handleFeedback = async (feedbackType: "useful" | "not_relevant" | "follow_topic") => {
     setIsSubmitting(true);
@@ -145,21 +142,23 @@ export function SignalCard({ signal, isActive, isDimmed, onInlineRead, activeRea
 
   return (
     <div
-      className={`group rounded-lg border bg-[var(--color-background)] p-4 shadow-level-1 transition-all hover:shadow-sm cursor-default ${
+      className={`today-signal-card cursor-default ${
         currentFeedback === "not_relevant" ? "opacity-50" : ""
       } ${
         isActive
-          ? "border-2 border-[var(--accent-9)] shadow-level-1"
-          : "border-[var(--gray-4)] hover:border-[var(--gray-7)]"
+          ? "today-signal-card--active"
+          : ""
+      } ${
+        isDimmed ? "today-signal-card--dimmed" : ""
       }`}
     >
       <Flex direction="column" gap="2">
-        <Flex align="center" gap="2">
-          <span className="inline-flex items-end gap-[2px]">
+        <Flex align="center" gap="2" className="today-signal-head">
+          <span className="today-signal-bars">
             {BAR_CONFIGS.map((bar, i) => (
               <span
                 key={i}
-                className={`inline-block rounded-[1px] ${
+                className={`today-signal-bar ${
                   i < filledBars ? "bg-[var(--accent-9)]" : "bg-[var(--gray-4)]"
                 }`}
                 style={{ width: 3, height: bar.height }}
@@ -170,33 +169,28 @@ export function SignalCard({ signal, isActive, isDimmed, onInlineRead, activeRea
           {signal.topic_id && signal.topic_title && signal.topic_uuid && (
             <Link
               to={`${RouteConfig.LOCAL_TOPICS}/${signal.topic_uuid}`}
-              className={`inline-flex items-center gap-1 text-[11px] font-medium rounded-full px-2 py-0.5 w-fit transition-colors ${topicColor?.bg} ${topicColor?.text}`}
+              className={`today-signal-tag ${topicColor?.bg} ${topicColor?.text}`}
             >
-              <Layers size={10} />
               {signal.topic_title}
             </Link>
           )}
           {signal.topic_id && signal.topic_title && !signal.topic_uuid && (
             <span
-              className={`inline-flex items-center gap-1 text-[11px] font-medium rounded-full px-2 py-0.5 w-fit ${topicColor?.bg} ${topicColor?.text}`}
+              className={`today-signal-tag ${topicColor?.bg} ${topicColor?.text}`}
             >
-              <Layers size={10} />
               {signal.topic_title}
             </span>
           )}
 
-          <span className="ml-auto text-[11px] text-[var(--gray-8)]">
-            {timeAgo} · {signal.source_count} {t("today.signal_card.articles")} · {uniqueFeedCount} {t("today.signal_card.sources")}
+          <span className="today-signal-meta">
+            {timeAgo} · {signal.source_count} {t("today.signal_card.articles")} · {percent}%
           </span>
         </Flex>
 
         <Text
-          size="4"
-          weight="medium"
-          className={`text-[var(--gray-12)] leading-snug cursor-pointer hover:text-[var(--accent-9)] transition-colors ${
+          className={`today-signal-title ${
             currentFeedback === "not_relevant" ? "line-through" : ""
           }`}
-          style={{ fontSize: 15, fontWeight: 600 }}
           onClick={handleToggleExpand}
         >
           {signal.title}
@@ -204,9 +198,7 @@ export function SignalCard({ signal, isActive, isDimmed, onInlineRead, activeRea
 
         {!isDimmed && (
           <Text
-            size="2"
-            className="text-[var(--gray-11)] leading-[1.6]"
-            style={{ fontSize: 13 }}
+            className="today-signal-summary"
           >
             {signal.summary}
           </Text>
@@ -216,7 +208,7 @@ export function SignalCard({ signal, isActive, isDimmed, onInlineRead, activeRea
           <div className="mt-1">
             <button
               onClick={() => setWimExpanded(!wimExpanded)}
-              className="flex items-center gap-1 text-[var(--gray-9)] hover:text-[var(--gray-11)] transition-colors text-xs"
+              className="today-wim-toggle"
             >
               {wimExpanded ? (
                 <ChevronDown size={12} />
@@ -233,8 +225,7 @@ export function SignalCard({ signal, isActive, isDimmed, onInlineRead, activeRea
               }}
             >
               <Text
-                size="2"
-                className="text-[var(--gray-11)] leading-relaxed mt-2 block"
+                className="today-signal-why block"
                 as="p"
               >
                 {signal.why_it_matters}
@@ -244,42 +235,45 @@ export function SignalCard({ signal, isActive, isDimmed, onInlineRead, activeRea
         )}
 
         {!isDimmed && !isActive && (
-          <Flex align="center" gap="2" mt="1">
-          <span className="text-[10px] text-[var(--gray-9)]">{t("today.signal_card.confidence")}</span>
-          <div
-            className="rounded-full overflow-hidden"
-            style={{ width: 32, height: 4, background: "var(--gray-4)" }}
-          >
-            <div
-              className="h-full rounded-full transition-all"
-              style={{
-                width: `${percent}%`,
-                background: isHighConfidence ? "var(--accent-9)" : "#d97706",
-              }}
-            />
+          <div className="today-confidence-row">
+          <div className="today-confidence">
+            <span className="today-confidence-label">{t("today.signal_card.confidence")}</span>
+            <div className="today-confidence-bar">
+              <div
+                className="today-confidence-fill"
+                style={{
+                  width: `${percent}%`,
+                  background: isHighConfidence ? "#6366f1" : "#d97706",
+                }}
+              />
+            </div>
+            <span className="today-confidence-value">{percent}%</span>
           </div>
           {!isHighConfidence && (
             <span className="text-[10px] font-medium rounded-full px-1.5 py-0.5 bg-[var(--amber-3)] text-[var(--amber-11)]">
               {t("today.signal_card.unverified")}
             </span>
           )}
-        </Flex>
+        </div>
         )}
 
-        {!isDimmed && !isActive && (
-          <Flex align="center" justify="between" mt="1">
+        {!isDimmed && sources.length > 0 && (
+          <div className="today-signal-actions">
             <button
-              onClick={handleToggleExpand}
-              className="flex items-center gap-1 text-[var(--gray-9)] hover:text-[var(--gray-11)] transition-colors text-xs"
+              type="button"
+              className="today-signal-primary-action"
+              onClick={handleReadEvidence}
             >
-              <span>{isExpanded ? t("today.sources.collapse") : t("today.sources.expand")}</span>
-              {isExpanded ? (
-                <ChevronUp size={14} />
-              ) : (
-                <ChevronDown size={14} />
-              )}
+              {t("today.signal_card.read_evidence")}
             </button>
-          </Flex>
+            <button
+              type="button"
+              className="today-signal-secondary-action"
+              onClick={handleToggleExpand}
+            >
+              {t("today.signal_card.view_sources")}
+            </button>
+          </div>
         )}
 
         <div className="overflow-hidden transition-all duration-300 ease-in-out"
@@ -300,14 +294,14 @@ export function SignalCard({ signal, isActive, isDimmed, onInlineRead, activeRea
         </div>
 
         {!isDimmed && (
-        <Flex align="center" gap="3" mt="2" pt="2" className="border-t border-[var(--gray-4)]">
+        <div className="today-feedback-row">
             <button
               onClick={() => handleFeedback("useful")}
               disabled={isSubmitting || !!currentFeedback}
-              className={`flex items-center gap-1 text-xs transition-colors disabled:opacity-50 ${
+              className={`today-feedback-button ${
                 currentFeedback === "useful"
                   ? "text-[var(--accent-9)] font-medium"
-                  : "text-[var(--gray-9)] hover:text-[var(--gray-11)]"
+                  : ""
               }`}
             >
               👍 {t("today.feedback.useful")}
@@ -315,10 +309,10 @@ export function SignalCard({ signal, isActive, isDimmed, onInlineRead, activeRea
             <button
               onClick={() => handleFeedback("not_relevant")}
               disabled={isSubmitting || !!currentFeedback}
-              className={`flex items-center gap-1 text-xs transition-colors disabled:opacity-50 ${
+              className={`today-feedback-button ${
                 currentFeedback === "not_relevant"
                   ? "text-[var(--accent-9)] font-medium"
-                  : "text-[var(--gray-9)] hover:text-[var(--gray-11)]"
+                  : ""
               }`}
             >
               👎 {t("today.feedback.not_relevant")}
@@ -326,10 +320,10 @@ export function SignalCard({ signal, isActive, isDimmed, onInlineRead, activeRea
             <button
               onClick={() => handleFeedback("follow_topic")}
               disabled={isSubmitting || !!currentFeedback}
-              className={`flex items-center gap-1 text-xs transition-colors disabled:opacity-50 ${
+              className={`today-feedback-button ${
                 currentFeedback === "follow_topic"
                   ? "text-[var(--accent-9)] font-medium"
-                  : "text-[var(--gray-9)] hover:text-[var(--gray-11)]"
+                  : ""
               }`}
             >
               📌 {t("today.feedback.follow_topic")}
@@ -337,12 +331,12 @@ export function SignalCard({ signal, isActive, isDimmed, onInlineRead, activeRea
             {currentFeedback && (
               <button
                 onClick={() => store.clearFeedback(signal.id)}
-                className="flex items-center gap-1 text-xs text-[var(--gray-9)] hover:text-[var(--gray-11)] transition-colors"
+                className="today-feedback-button"
               >
                 {t("today.feedback.undo")}
               </button>
             )}
-        </Flex>
+        </div>
         )}
       </Flex>
     </div>

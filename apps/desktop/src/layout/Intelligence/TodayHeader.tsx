@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { Flex, Text, Popover } from "@radix-ui/themes";
+import { Text, Popover } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
 import { formatDistanceToNow, parseISO } from "date-fns";
-import { PipelineStatus, FeedbackEntry } from "@/stores/createTodaySlice";
+import { PipelineStatus } from "@/stores/createTodaySlice";
 import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
 import { Loader2, Check, AlertTriangle, RefreshCw, MessageSquare, WifiOff } from "lucide-react";
@@ -38,30 +38,31 @@ function StatusPill({
   if (status === "idle" && lastUpdated) {
     const timeAgo = formatDistanceToNow(parseISO(lastUpdated), { addSuffix: true });
     return (
-      <Flex align="center" gap="2" className="text-xs rounded-full px-3 py-1 bg-[var(--gray-3)] text-[var(--gray-11)]">
-        <Text size="1">{t("today.header.last_updated", { time: timeAgo })}</Text>
+      <span className="today-status-pill">
+        <span className="today-status-dot bg-[var(--green-9)]" />
+        <span>{t("today.header.last_updated", { time: timeAgo })}</span>
         <button onClick={onRefresh} className="hover:text-[var(--gray-12)] transition-colors">
           <RefreshCw size={12} />
         </button>
-      </Flex>
+      </span>
     );
   }
 
   if (status === "running") {
     return (
-      <Flex align="center" gap="2" className="text-xs rounded-full px-3 py-1 bg-[var(--gray-3)] text-[var(--gray-11)]">
+      <span className="today-status-pill">
         <Loader2 size={12} className="animate-spin" />
-        <Text size="1">{t("today.header.analyzing")}</Text>
-      </Flex>
+        <span>{t("today.header.analyzing")}</span>
+      </span>
     );
   }
 
   if (status === "done") {
     return (
-      <Flex align="center" gap="2" className="text-xs rounded-full px-3 py-1 bg-[var(--gray-3)] text-[var(--gray-11)]">
+      <span className="today-status-pill">
         <Check size={12} className="text-[var(--green-9)]" />
-        <Text size="1">{t("today.header.done", { count: sourceCount })}</Text>
-      </Flex>
+        <span>{t("today.header.done", { count: sourceCount })}</span>
+      </span>
     );
   }
 
@@ -69,15 +70,20 @@ function StatusPill({
     return (
       <button
         onClick={onRetry}
-        className="flex items-center gap-2 text-xs rounded-full px-3 py-1 bg-[var(--gray-3)] text-[var(--gray-11)] hover:text-[var(--gray-12)] transition-colors"
+        className="today-status-pill hover:text-[var(--gray-12)]"
       >
         <AlertTriangle size={12} className="text-[var(--amber-9)]" />
-        <Text size="1">{error || t("today.header.error_retry")}</Text>
+        <span>{error || t("today.header.error_retry")}</span>
       </button>
     );
   }
 
-  return null;
+  return (
+    <span className="today-status-pill">
+      <span className="today-status-dot bg-[var(--gray-7)]" />
+      <span>{t("today.header.done", { count: sourceCount })}</span>
+    </span>
+  );
 }
 
 export function TodayHeader({
@@ -90,19 +96,14 @@ export function TodayHeader({
 }: TodayHeaderProps) {
   const { t } = useTranslation();
 
-  if (pipelineStatus === "idle" && !lastUpdated) {
-    return null;
-  }
-
   return (
-    <div className="flex items-center justify-between px-6 py-4">
+    <div className="today-header">
       <div>
-        <h1 className="text-xl font-semibold text-[var(--gray-12)]">{t("today.title")}</h1>
-        <p className="text-sm text-[var(--gray-10)]">{t("today.subtitle")}</p>
+        <h1 className="today-title">{t("today.title")}</h1>
+        <p className="today-subtitle">{t("today.subtitle")}</p>
       </div>
-      <div className="flex items-center gap-3">
+      <div className="today-header-actions">
         <OfflineIndicator />
-        <FeedbackHistoryPopover />
         <StatusPill
           status={pipelineStatus}
           lastUpdated={lastUpdated}
@@ -111,6 +112,11 @@ export function TodayHeader({
           onRetry={onRetry}
           error={pipelineError}
         />
+        <button className="today-action-button" onClick={onRefresh}>
+          <RefreshCw size={13} />
+          <span>{t("today.header.reanalyze")}</span>
+        </button>
+        <FeedbackHistoryPopover />
       </div>
     </div>
   );
@@ -128,7 +134,7 @@ function FeedbackHistoryPopover() {
 
   const handleOpenChange = (isOpen: boolean) => {
     setOpen(isOpen);
-    if (isOpen && feedbackHistory.length === 0) {
+    if (isOpen && (feedbackHistory ?? []).length === 0) {
       fetchFeedbackHistory(20);
     }
   };
@@ -146,7 +152,7 @@ function FeedbackHistoryPopover() {
     <Popover.Root open={open} onOpenChange={handleOpenChange}>
       <Popover.Trigger>
         <button
-          className="flex items-center gap-1 text-xs text-[var(--gray-9)] hover:text-[var(--gray-11)] transition-colors"
+          className="today-action-button px-2"
           aria-label={t("today.feedback.history")}
         >
           <MessageSquare size={14} />
@@ -157,13 +163,13 @@ function FeedbackHistoryPopover() {
           <Text size="2" weight="medium" className="block mb-2">
             {t("today.feedback.history_title")}
           </Text>
-          {feedbackHistory.length === 0 ? (
+          {(feedbackHistory ?? []).length === 0 ? (
             <Text size="2" className="text-[var(--gray-9)]">
               {t("today.feedback.history_empty")}
             </Text>
           ) : (
             <div className="flex flex-col gap-1.5">
-              {feedbackHistory.map((entry) => (
+              {(feedbackHistory ?? []).map((entry) => (
                 <div key={entry.id} className="flex items-center justify-between text-xs py-1 border-b border-[var(--gray-4)] last:border-0">
                   <div className="flex items-center gap-2 min-w-0">
                     <span className={`shrink-0 px-1.5 py-0.5 rounded text-[10px] font-medium ${
@@ -210,7 +216,7 @@ function OfflineIndicator() {
   if (online) return null;
 
   return (
-    <div className="flex items-center gap-1 text-xs text-[var(--amber-9)]">
+    <div className="today-status-pill border-[var(--amber-5)] text-[var(--amber-11)]">
       <WifiOff size={12} />
       <span>{t("today.offline")}</span>
     </div>

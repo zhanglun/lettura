@@ -844,6 +844,180 @@
       border-radius: 2px;
     }
 
+    /* Today judgment desk */
+    .today-main {
+      padding: 18px 24px 28px;
+    }
+    .today-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+    .today-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.3;
+    }
+    .today-subtitle {
+      margin-top: 4px;
+      font-size: 12px;
+      color: var(--text-tertiary);
+      line-height: 1.5;
+    }
+    .today-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .today-status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 28px;
+      padding: 5px 10px;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      border-radius: 999px;
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+    .today-overview-card {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      margin-bottom: 16px;
+      padding: 12px 14px;
+      border: 1px solid #c7d2fe;
+      background: var(--accent-light);
+      border-radius: var(--radius);
+      color: var(--accent-text);
+      font-size: 12px;
+      line-height: 1.65;
+    }
+    .signal-card {
+      margin-bottom: 12px;
+    }
+    .signal-card.active {
+      border-color: var(--accent);
+      border-width: 2px;
+      box-shadow: var(--shadow-sm);
+    }
+    .signal-card.dimmed {
+      opacity: 0.58;
+    }
+    .signal-card-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .signal-card-meta {
+      margin-left: auto;
+      font-size: 11px;
+      color: var(--text-tertiary);
+      white-space: nowrap;
+    }
+    .signal-card-title {
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.45;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+    }
+    .signal-card-summary {
+      font-size: 13px;
+      line-height: 1.65;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+    .signal-why {
+      margin-top: 8px;
+      padding: 10px 12px;
+      border-left: 3px solid var(--accent);
+      background: var(--accent-light);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-size: 12px;
+      line-height: 1.65;
+      color: var(--accent-text);
+    }
+    .today-evidence-card {
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .today-evidence-card:last-child {
+      border-bottom: 0;
+    }
+    .today-evidence-source {
+      display: inline-flex;
+      margin-bottom: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .today-evidence-title {
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1.5;
+      color: var(--text-primary);
+    }
+    .today-reading-panel {
+      width: 480px;
+      background: var(--bg-card);
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+    .today-reading-header,
+    .today-reading-footer {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .today-reading-footer {
+      border-top: 1px solid var(--border);
+      border-bottom: 0;
+    }
+    .today-reading-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px 28px;
+    }
+    .today-reading-feed {
+      margin-bottom: 8px;
+      color: var(--accent);
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .today-reading-body h1 {
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.32;
+      margin-bottom: 12px;
+    }
+    .today-reading-body .meta {
+      font-size: 12px;
+      color: var(--text-tertiary);
+      margin-bottom: 24px;
+    }
+    .today-reading-body p {
+      font-size: 14px;
+      line-height: 1.8;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+    }
+
     /* Search and saved views */
     .search-input-wrap {
       display: flex;
@@ -1660,30 +1834,38 @@
 
   <!-- Main: Signal cards -->
   <div class="main-content">
-    <div class="main-scroll" style="padding: 20px 24px;">
-      <!-- Today Summary -->
-      <div style="display:flex; align-items:center; gap:8px; margin-bottom:20px; padding:8px 12px; background:var(--accent-light); border-radius:var(--radius-sm);">
+    <div class="main-scroll today-main">
+      <div class="today-header">
+        <div>
+          <div class="today-title">Today</div>
+          <div class="today-subtitle">每天只保留值得改变判断的信号，附带原因、证据和下一步。</div>
+        </div>
+        <div class="today-header-actions">
+          <span class="today-status-pill"><span class="status-dot green"></span>47 篇已分析</span>
+          <button class="btn btn-ghost">重新分析</button>
+        </div>
+      </div>
+
+      <div class="today-overview-card">
         <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-        <span style="font-size:12px; color:var(--accent-text);">
-          <strong>今日概览：</strong>AI Agent 领域出现新的开源竞争者；Rust 1.85 发布带来重要 async 改进；Apple 可能在大模型本地部署上有新动作。
-        </span>
+        <div><strong>今日概览：</strong>AI Agent 领域出现新的开源竞争者；Rust 1.85 发布带来重要 async 改进；Apple 可能在端侧模型部署上加速。</div>
       </div>
 
       <!-- Signal Card 1 -->
-      <div class="card" style="margin-bottom:12px;">
-        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+      <div class="card signal-card">
+        <div class="signal-card-head">
           <div class="signal-level high">
             <div class="bar filled" style="height:8px;"></div>
             <div class="bar filled" style="height:12px;"></div>
             <div class="bar filled" style="height:16px;"></div>
           </div>
           <span class="tag tag-accent">AI Agent</span>
-          <span style="font-size:11px; color:var(--text-tertiary); margin-left:auto;">2 小时前 · 3 个来源</span>
+          <span class="signal-card-meta">2 小时前 · 3 个来源 · 85%</span>
         </div>
-        <div style="font-size:15px; font-weight:600; color:var(--text-primary); margin-bottom:6px; cursor:pointer;">
+        <div class="signal-card-title">
           OpenAI 开源 Agent 框架，直接挑战 LangChain 和 CrewAI 生态
         </div>
-        <div style="font-size:13px; color:var(--text-secondary); line-height:1.6; margin-bottom:8px;">
+        <div class="signal-card-summary">
           OpenAI 发布了新的开源 Agent SDK，提供链式推理、工具调用和多 Agent 协作能力。这直接与 LangChain、CrewAI 等现有框架竞争。
         </div>
         <button class="wim-toggle" onclick="this.nextElementSibling.style.maxHeight = this.nextElementSibling.style.maxHeight === '200px' ? '0px' : '200px'; this.nextElementSibling.style.opacity = this.nextElementSibling.style.opacity === '1' ? '0' : '1';">
@@ -1691,7 +1873,7 @@
           为什么重要
         </button>
         <div class="wim-content" style="max-height:0; opacity:0;">
-          <p style="font-size:12px; color:var(--text-secondary); line-height:1.6; margin-top:8px;">
+          <p class="signal-why">
             OpenAI 入局 Agent 框架意味着该领域将从碎片化走向标准化。现有框架需要在差异化上有更清晰的定位，否则可能被官方方案替代。
           </p>
         </div>
@@ -1702,6 +1884,10 @@
             <span style="font-size:10px; color:var(--accent-text); font-weight:600;">85%</span>
           </div>
         </div>
+        <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:12px;">
+          <button class="btn btn-primary" style="font-size:11px; padding:5px 10px;">阅读证据</button>
+          <button class="btn btn-ghost" style="font-size:11px; padding:5px 10px;">查看全部来源</button>
+        </div>
         <div class="feedback-row">
           <button class="feedback-btn">👍 有用</button>
           <button class="feedback-btn">👎 不相关</button>
@@ -1710,20 +1896,20 @@
       </div>
 
       <!-- Signal Card 2 -->
-      <div class="card" style="margin-bottom:12px;">
-        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+      <div class="card signal-card">
+        <div class="signal-card-head">
           <div class="signal-level high">
             <div class="bar filled" style="height:8px;"></div>
             <div class="bar filled" style="height:12px;"></div>
             <div class="bar filled" style="height:16px;"></div>
           </div>
           <span class="tag tag-green">Rust</span>
-          <span style="font-size:11px; color:var(--text-tertiary); margin-left:auto;">4 小时前 · 2 个来源</span>
+          <span class="signal-card-meta">4 小时前 · 2 个来源 · 82%</span>
         </div>
-        <div style="font-size:15px; font-weight:600; color:var(--text-primary); margin-bottom:6px; cursor:pointer;">
+        <div class="signal-card-title">
           Rust 1.85 发布：async fn in traits 稳定，生命周期语法改进
         </div>
-        <div style="font-size:13px; color:var(--text-secondary); line-height:1.6; margin-bottom:8px;">
+        <div class="signal-card-summary">
           Rust 1.85 正式稳定了 async fn in traits，这是异步 Rust 生态期待已久的里程碑。同时引入了更简洁的生命周期语法。
         </div>
         <button class="wim-toggle" onclick="this.nextElementSibling.style.maxHeight = this.nextElementSibling.style.maxHeight === '200px' ? '0px' : '200px'; this.nextElementSibling.style.opacity = this.nextElementSibling.style.opacity === '1' ? '0' : '1';">
@@ -1731,7 +1917,7 @@
           为什么重要
         </button>
         <div class="wim-content" style="max-height:0; opacity:0;">
-          <p style="font-size:12px; color:var(--text-secondary); line-height:1.6; margin-top:8px;">
+          <p class="signal-why">
             async fn in traits 稳定意味着 Tokio、Tower 等生态库可以大幅简化 trait 定义，推动 Rust 异步生态进入下一个阶段。
           </p>
         </div>
@@ -1743,20 +1929,20 @@
       </div>
 
       <!-- Signal Card 3 -->
-      <div class="card" style="margin-bottom:12px;">
-        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+      <div class="card signal-card">
+        <div class="signal-card-head">
           <div class="signal-level medium">
             <div class="bar filled" style="height:8px;"></div>
             <div class="bar filled" style="height:12px;"></div>
             <div class="bar" style="height:16px;"></div>
           </div>
           <span class="tag tag-blue">Apple</span>
-          <span style="font-size:11px; color:var(--text-tertiary); margin-left:auto;">6 小时前 · 1 个来源</span>
+          <span class="signal-card-meta">6 小时前 · 1 个来源 · 55%</span>
         </div>
-        <div style="font-size:15px; font-weight:600; color:var(--text-primary); margin-bottom:6px; cursor:pointer;">
+        <div class="signal-card-title">
           Apple 据传正在开发本地大模型部署方案，可能在 WWDC 公布
         </div>
-        <div style="font-size:13px; color:var(--text-secondary); line-height:1.6; margin-bottom:8px;">
+        <div class="signal-card-summary">
           多家媒体报道 Apple 正在开发一种让大语言模型在设备端高效运行的技术方案，可能结合 Neural Engine 和统一内存架构。
         </div>
         <div style="display:flex; align-items:center; gap:12px; margin-top:8px;">
@@ -1780,18 +1966,18 @@
   <div class="right-panel">
     <div class="right-panel-section">
       <div class="right-panel-title">来源证据</div>
-      <div class="evidence-item">
-        <span class="evidence-source">TechCrunch</span>
-        <span class="evidence-text">OpenAI releases open-source Agent SDK</span>
-      </div>
-      <div class="evidence-item">
-        <span class="evidence-source">Hacker News</span>
-        <span class="evidence-text">社区热议 Agent 框架对比</span>
-      </div>
-      <div class="evidence-item">
-        <span class="evidence-source">The Verge</span>
-        <span class="evidence-text">OpenAI 战略转向开放生态</span>
-      </div>
+      <button class="today-evidence-card" style="width:100%; text-align:left; background:none; cursor:pointer;">
+        <span class="today-evidence-source">TechCrunch</span>
+        <div class="today-evidence-title">OpenAI releases open-source Agent SDK</div>
+      </button>
+      <button class="today-evidence-card" style="width:100%; text-align:left; background:none; cursor:pointer;">
+        <span class="today-evidence-source">Hacker News</span>
+        <div class="today-evidence-title">社区热议 Agent 框架对比</div>
+      </button>
+      <button class="today-evidence-card" style="width:100%; text-align:left; background:none; cursor:pointer;">
+        <span class="today-evidence-source">The Verge</span>
+        <div class="today-evidence-title">OpenAI 战略转向开放生态</div>
+      </button>
     </div>
 
     <div class="right-panel-section">
@@ -1825,6 +2011,10 @@
         <button class="btn btn-ghost" style="width:100%; justify-content:flex-start;">
           <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
           管理 Feeds 来源
+        </button>
+        <button class="btn btn-ghost" style="width:100%; justify-content:flex-start;">
+          <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg>
+          调整 AI 分析配置
         </button>
       </div>
     </div>
@@ -1905,29 +2095,34 @@
 
   <!-- Signal list (slightly narrower to accommodate expanded reading panel) -->
   <div class="main-content" style="min-width:0;">
-    <div class="main-scroll" style="padding:20px 24px;">
-      <div style="display:flex; align-items:center; gap:8px; margin-bottom:20px; padding:8px 12px; background:var(--accent-light); border-radius:var(--radius-sm);">
+    <div class="main-scroll today-main">
+      <div class="today-header">
+        <div>
+          <div class="today-title">Today</div>
+          <div class="today-subtitle">正在阅读 AI Agent 信号的第 1 个来源，列表保持上下文。</div>
+        </div>
+        <span class="today-status-pill"><span class="status-dot green"></span>来源 1 / 3</span>
+      </div>
+      <div class="today-overview-card">
         <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-        <span style="font-size:12px; color:var(--accent-text);">
-          <strong>今日概览：</strong>AI Agent 领域出现新的开源竞争者；Rust 1.85 发布带来重要 async 改进。
-        </span>
+        <div><strong>今日概览：</strong>AI Agent 领域出现新的开源竞争者；Rust 1.85 发布带来重要 async 改进。</div>
       </div>
 
       <!-- Signal Card 1 - expanded/highlighted to show active reading context -->
-      <div class="card" style="margin-bottom:12px; border-color:var(--accent); border-width:2px;">
-        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+      <div class="card signal-card active">
+        <div class="signal-card-head">
           <div class="signal-level high">
             <div class="bar filled" style="height:8px;"></div>
             <div class="bar filled" style="height:12px;"></div>
             <div class="bar filled" style="height:16px;"></div>
           </div>
           <span class="tag tag-accent">AI Agent</span>
-          <span style="font-size:11px; color:var(--text-tertiary); margin-left:auto;">2 小时前 · 3 个来源</span>
+          <span class="signal-card-meta">2 小时前 · 3 个来源 · 85%</span>
         </div>
-        <div style="font-size:15px; font-weight:600; color:var(--text-primary); margin-bottom:6px;">
+        <div class="signal-card-title">
           OpenAI 开源 Agent 框架，直接挑战 LangChain 和 CrewAI 生态
         </div>
-        <div style="font-size:13px; color:var(--text-secondary); line-height:1.6; margin-bottom:8px;">
+        <div class="signal-card-summary">
           OpenAI 发布了新的开源 Agent SDK，提供链式推理、工具调用和多 Agent 协作能力。
         </div>
         <!-- Source items shown as clickable, first one is "active" (being read) -->
@@ -1954,17 +2149,17 @@
       </div>
 
       <!-- Signal Card 2 (dimmed - not active) -->
-      <div class="card" style="margin-bottom:12px; opacity:0.6;">
-        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+      <div class="card signal-card dimmed">
+        <div class="signal-card-head">
           <div class="signal-level high">
             <div class="bar filled" style="height:8px;"></div>
             <div class="bar filled" style="height:12px;"></div>
             <div class="bar filled" style="height:16px;"></div>
           </div>
           <span class="tag tag-green">Rust</span>
-          <span style="font-size:11px; color:var(--text-tertiary); margin-left:auto;">4 小时前 · 2 个来源</span>
+          <span class="signal-card-meta">4 小时前 · 2 个来源</span>
         </div>
-        <div style="font-size:15px; font-weight:600; color:var(--text-primary); margin-bottom:6px;">
+        <div class="signal-card-title">
           Rust 1.85 发布：async fn in traits 稳定
         </div>
       </div>
@@ -1972,9 +2167,9 @@
   </div>
 
   <!-- Right panel: expanded reading view -->
-  <div style="width:480px; background:var(--bg-card); border-left:1px solid var(--border); display:flex; flex-direction:column; flex-shrink:0;">
+  <div class="today-reading-panel">
     <!-- Reading header -->
-    <div style="padding:12px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:8px;">
+    <div class="today-reading-header">
       <button class="btn btn-ghost" style="font-size:11px; padding:4px 8px;">
         <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
         返回信号
@@ -1989,30 +2184,30 @@
       </button>
     </div>
     <!-- Reading content -->
-    <div style="flex:1; overflow-y:auto; padding:24px 28px;">
-      <div style="font-size:10px; color:var(--accent); font-weight:600; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px;">TechCrunch</div>
-      <h1 style="font-size:20px; font-weight:700; line-height:1.3; color:var(--text-primary); margin-bottom:12px;">OpenAI Releases Open-Source Agent SDK for Building Multi-Agent Systems</h1>
-      <div style="font-size:12px; color:var(--text-tertiary); margin-bottom:24px;">
+    <div class="today-reading-body">
+      <div class="today-reading-feed">TechCrunch</div>
+      <h1>OpenAI Releases Open-Source Agent SDK for Building Multi-Agent Systems</h1>
+      <div class="meta">
         Sarah Chen · May 1, 2026 · 6 min read
       </div>
-      <p style="font-size:14px; color:var(--text-secondary); line-height:1.8; margin-bottom:16px;">
+      <p>
         OpenAI 今天发布了一个全新的开源 Agent SDK，旨在让开发者更轻松地构建多 Agent 系统。该 SDK 提供了链式推理、工具调用、记忆管理和多 Agent 协作等核心能力。
       </p>
-      <p style="font-size:14px; color:var(--text-secondary); line-height:1.8; margin-bottom:16px;">
+      <p>
         这一举动的意义在于，它直接与 LangChain、CrewAI、AutoGen 等现有框架竞争。与这些框架不同的是，OpenAI 的 SDK 从底层就深度整合了 GPT 系列模型的推理能力。
       </p>
       <blockquote style="border-left:3px solid var(--accent); padding:12px 16px; margin:16px 0; background:var(--accent-light); border-radius:0 var(--radius-sm) var(--radius-sm) 0; font-style:italic; color:var(--text-secondary); font-size:13px; line-height:1.6;">
         "我们希望 Agent 开发能像 Web 开发一样简单。今天的 Agent 框架太碎片化了。" — OpenAI 开发者关系负责人
       </blockquote>
-      <p style="font-size:14px; color:var(--text-secondary); line-height:1.8; margin-bottom:16px;">
+      <p>
         SDK 的核心特性包括：声明式的 Agent 定义语法、内置的重试和错误恢复机制、支持流式输出的工具调用接口，以及一个可视化调试工具。
       </p>
-      <p style="font-size:14px; color:var(--text-secondary); line-height:1.8; margin-bottom:16px;">
+      <p>
         目前 SDK 已在 GitHub 上以 MIT 协议开源，首日获得超过 5,000 个 star。
       </p>
     </div>
     <!-- Source navigation -->
-    <div style="padding:12px 20px; border-top:1px solid var(--border); display:flex; align-items:center; gap:8px;">
+    <div class="today-reading-footer">
       <button class="btn btn-ghost" style="font-size:11px; opacity:0.4; cursor:default;">
         <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
         上一篇

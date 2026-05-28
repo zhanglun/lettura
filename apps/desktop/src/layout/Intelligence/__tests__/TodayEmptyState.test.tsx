@@ -40,6 +40,7 @@ describe("TodayEmptyState", () => {
 
       expect(screen.getByText("today.empty.no_feeds_title")).toBeInTheDocument();
       expect(screen.getByText("today.empty.no_feeds_subtitle")).toBeInTheDocument();
+      expect(screen.getByText("today.empty.no_feeds_title").closest(".today-empty-card")).toBeInTheDocument();
     });
 
     it('should render "Add Feeds" button that opens onboarding', () => {
@@ -67,6 +68,36 @@ describe("TodayEmptyState", () => {
       fireEvent.click(exploreButton);
 
       expect(mockNavigate).toHaveBeenCalledWith("/local/all");
+    });
+  });
+
+  describe("no_api_key state", () => {
+    it("renders the AI configuration empty card and calls the settings action", () => {
+      const onConfigureAI = vi.fn();
+      render(<TodayEmptyState type="no_api_key" onConfigureAI={onConfigureAI} />);
+
+      expect(screen.getByText("today.empty.no_api_key_title")).toBeInTheDocument();
+      expect(screen.getByText("today.empty.no_api_key_subtitle")).toBeInTheDocument();
+      expect(screen.getByText("today.empty.no_api_key_title").closest(".today-empty-card")).toBeInTheDocument();
+
+      fireEvent.click(screen.getByText("today.empty.go_to_settings"));
+
+      expect(onConfigureAI).toHaveBeenCalledOnce();
+    });
+  });
+
+  describe("no_signals state", () => {
+    it("renders the analysis empty card and calls the pipeline action", () => {
+      const onRunAnalysis = vi.fn();
+      render(<TodayEmptyState type="no_signals" onRunAnalysis={onRunAnalysis} />);
+
+      expect(screen.getByText("today.empty.no_signals_title")).toBeInTheDocument();
+      expect(screen.getByText("today.empty.no_signals_subtitle")).toBeInTheDocument();
+      expect(screen.getByText("today.empty.no_signals_title").closest(".today-empty-card")).toBeInTheDocument();
+
+      fireEvent.click(screen.getByText("today.empty.start_analysis"));
+
+      expect(onRunAnalysis).toHaveBeenCalledOnce();
     });
   });
 

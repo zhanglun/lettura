@@ -89,6 +89,7 @@ describe("InlineReader", () => {
     );
 
     expect(screen.getByText("Test Article Title")).toBeInTheDocument();
+    expect(screen.getByText("Test Article Title").closest(".today-reading-panel")).toBeInTheDocument();
     expect(screen.getAllByText("Test Feed").length).toBeGreaterThanOrEqual(1);
   });
 

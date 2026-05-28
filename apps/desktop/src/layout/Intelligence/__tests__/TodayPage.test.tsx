@@ -69,12 +69,6 @@ vi.mock("../PipelineIndicator", () => ({
   ),
 }));
 
-vi.mock("../TodayEmptyState", () => ({
-  TodayEmptyState: ({ type }: { type: string }) => (
-    <div data-testid="empty-state">EmptyState: {type}</div>
-  ),
-}));
-
 vi.mock("@/components/MainPanel", () => ({
   MainPanel: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="main-panel">{children}</div>
@@ -99,8 +93,10 @@ describe("TodayPage (Signal-based)", () => {
     // subscribes is [], aiConfig is null
     render(<TodayPage />);
 
-    expect(screen.getByTestId("empty-state")).toBeInTheDocument();
-    expect(screen.getByText("EmptyState: no_subscriptions")).toBeInTheDocument();
+    expect(screen.getByText("today.title")).toBeInTheDocument();
+    expect(screen.getByText("today.subtitle")).toBeInTheDocument();
+    expect(screen.getByText("today.empty.no_feeds_title")).toBeInTheDocument();
+    expect(screen.getByText("today.empty.no_feeds_title").closest(".today-empty-card")).toBeInTheDocument();
   });
 
   it("should render no_api_key state when has subscriptions but no AI config", () => {
@@ -109,7 +105,8 @@ describe("TodayPage (Signal-based)", () => {
 
     render(<TodayPage />);
 
-    expect(screen.getByText("today.empty.no_api_key")).toBeInTheDocument();
+    expect(screen.getByText("today.empty.no_api_key_title")).toBeInTheDocument();
+    expect(screen.getByText("today.empty.no_api_key_subtitle")).toBeInTheDocument();
     expect(screen.getByText("today.empty.go_to_settings")).toBeInTheDocument();
   });
 
@@ -119,7 +116,7 @@ describe("TodayPage (Signal-based)", () => {
 
     render(<TodayPage />);
 
-    expect(screen.getByText("today.empty.no_api_key")).toBeInTheDocument();
+    expect(screen.getByText("today.empty.no_api_key_title")).toBeInTheDocument();
   });
 
   it("should render no_signals state when has API key but no signals", () => {
@@ -129,7 +126,8 @@ describe("TodayPage (Signal-based)", () => {
 
     render(<TodayPage />);
 
-    expect(screen.getByText("today.empty.no_signals")).toBeInTheDocument();
+    expect(screen.getByText("today.empty.no_signals_title")).toBeInTheDocument();
+    expect(screen.getByText("today.empty.no_signals_subtitle")).toBeInTheDocument();
     expect(screen.getByText("today.empty.start_analysis")).toBeInTheDocument();
   });
 
@@ -152,8 +150,10 @@ describe("TodayPage (Signal-based)", () => {
 
     render(<TodayPage />);
 
+    expect(document.querySelector(".today-main")).toBeInTheDocument();
     expect(screen.getByTestId("signal-list")).toBeInTheDocument();
     expect(screen.getByText("Signals: 1")).toBeInTheDocument();
+    expect(screen.queryByTestId("pipeline-indicator")).not.toBeInTheDocument();
   });
 
   it("should call fetchAIConfig and fetchSignals on mount", () => {

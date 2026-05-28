@@ -1,14 +1,13 @@
 import { useEffect, useCallback } from "react";
-import { Flex, Text, Button } from "@radix-ui/themes";
+import { Flex } from "@radix-ui/themes";
 import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
 import { useTranslation } from "react-i18next";
 import { SignalList } from "./SignalList";
-import { PipelineIndicator } from "./PipelineIndicator";
 import { TodayHeader } from "./TodayHeader";
 import { TodayOverview } from "./TodayOverview";
 import { TodayEmptyState } from "./TodayEmptyState";
-import { Settings, Sparkles, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 export function TodayContent() {
   const { t } = useTranslation();
@@ -26,11 +25,11 @@ export function TodayContent() {
       overviewLoading: state.overviewLoading,
       overviewError: state.overviewError,
       expandedSignalId: state.expandedSignalId,
+      pendingFocusSignalId: state.pendingFocusSignalId,
+      clearPendingFocusSignal: state.clearPendingFocusSignal,
       activeReadingSignalId: state.activeReadingSignalId,
       activeReadingSourceIndex: state.activeReadingSourceIndex,
       pipelineStatus: state.pipelineStatus,
-      pipelineStage: state.pipelineStage,
-      pipelineProgress: state.pipelineProgress,
       pipelineError: state.pipelineError,
       lastUpdated: state.lastUpdated,
       startInlineReading: state.startInlineReading,
@@ -40,7 +39,13 @@ export function TodayContent() {
     })),
   );
 
+  const hasApiKey = store.aiConfig?.has_api_key ?? false;
+  const hasSignals = store.signals.length > 0;
+  const hasSubscriptions = store.subscribes.length > 0;
+
   useEffect(() => {
+    if (store.pendingFocusSignalId != null) return;
+
     const signalId = store.expandedSignalId;
     if (signalId != null && store.scrollPositionMap[signalId] !== undefined) {
       requestAnimationFrame(() => {
@@ -54,9 +59,20 @@ export function TodayContent() {
     }
   }, []);
 
-  const hasApiKey = store.aiConfig?.has_api_key ?? false;
-  const hasSignals = store.signals.length > 0;
-  const hasSubscriptions = store.subscribes.length > 0;
+  useEffect(() => {
+    const signalId = store.pendingFocusSignalId;
+    if (signalId == null || !hasSignals) return;
+
+    requestAnimationFrame(() => {
+      const target = document.querySelector(
+        `[data-signal-id="${signalId}"]`,
+      ) as HTMLElement | null;
+      if (target) {
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+        store.clearPendingFocusSignal();
+      }
+    });
+  }, [store.pendingFocusSignalId, hasSignals, store.clearPendingFocusSignal]);
 
   const handleInlineRead = useCallback(
     (articleUuid: string, feedUuid: string, articleId: number) => {
@@ -91,36 +107,19 @@ export function TodayContent() {
 
     if (!hasApiKey) {
       return (
-        <div className="flex flex-col items-center justify-center py-20 text-center h-full">
-          <div className="mb-4">
-            <Settings size={48} className="text-[var(--gray-6)]" />
-          </div>
-          <Text size="5" weight="medium" className="mb-2 text-[var(--gray-12)]">
-            {t("today.empty.no_api_key")}
-          </Text>
-          <Button
-            size="3"
-            onClick={() => store.updateSettingDialogStatus(true)}
-          >
-            {t("today.empty.go_to_settings")}
-          </Button>
-        </div>
+        <TodayEmptyState
+          type="no_api_key"
+          onConfigureAI={() => store.updateSettingDialogStatus(true)}
+        />
       );
     }
 
     if (!hasSignals) {
       return (
-        <div className="flex flex-col items-center justify-center py-20 text-center h-full">
-          <div className="mb-4">
-            <Sparkles size={48} className="text-[var(--gray-6)]" />
-          </div>
-          <Text size="5" weight="medium" className="mb-2 text-[var(--gray-12)]">
-            {t("today.empty.no_signals")}
-          </Text>
-          <Button size="3" onClick={() => store.triggerPipeline()}>
-            {t("today.empty.start_analysis")}
-          </Button>
-        </div>
+        <TodayEmptyState
+          type="no_signals"
+          onRunAnalysis={() => store.triggerPipeline()}
+        />
       );
     }
 
@@ -137,15 +136,6 @@ export function TodayContent() {
         onRetry={() => store.triggerPipeline()}
         pipelineError={store.pipelineError}
       />
-      <PipelineIndicator
-        status={store.pipelineStatus}
-        stage={store.pipelineStage}
-        progress={store.pipelineProgress}
-        error={store.pipelineError}
-        onRetry={() => store.triggerPipeline()}
-        onTrigger={() => store.triggerPipeline()}
-        lastUpdated={store.lastUpdated}
-      />
 
       {store.signalsError ? (
         <TodayEmptyState
@@ -159,7 +149,7 @@ export function TodayContent() {
       ) : !hasApiKey || !hasSignals ? (
         renderEmptyState()
       ) : (
-        <div className="flex-1 overflow-auto px-6 py-5" data-today-scroll>
+        <div className="today-main" data-today-scroll>
           <TodayOverview
             overview={store.overview}
             overviewLoading={store.overviewLoading}
