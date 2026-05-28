@@ -46,4 +46,23 @@ describe("ArticleInlineReader", () => {
     expect(screen.getByRole("button", { name: "article.view.prev" })).toBeDisabled();
     expect(screen.getByRole("button", { name: "article.view.next" })).toBeDisabled();
   });
+
+  it("disables open in browser when the article has no link", () => {
+    render(
+      <ArticleInlineReader
+        article={{
+          uuid: "article-1",
+          title: "Reader article",
+          link: "",
+          read_status: ArticleReadStatus.UNREAD,
+          starred: ArticleStarStatus.UNSTAR,
+        } as any}
+        onClose={vi.fn()}
+        index={0}
+        total={1}
+      />,
+    );
+
+    expect(screen.getByRole("button", { name: "Open in browser" })).toBeDisabled();
+  });
 });

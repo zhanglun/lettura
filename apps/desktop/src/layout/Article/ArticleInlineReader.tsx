@@ -98,6 +98,7 @@ export function ArticleInlineReader({
           <ToolbarBtn
             icon={ExternalLink}
             label={t("Open in browser")}
+            disabled={!article.link}
             onClick={handleOpenOriginal}
           />
 

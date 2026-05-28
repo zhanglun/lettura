@@ -1,7 +1,23 @@
-import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { InlineReader } from "../InlineReader";
 import type { SignalSource } from "@/stores/createTodaySlice";
+import { ArticleReadStatus, ArticleStarStatus } from "@/typing";
+
+const mocks = vi.hoisted(() => ({
+  updateArticleStarStatus: vi.fn(() => Promise.resolve(undefined)),
+  updateArticleReadStatus: vi.fn(() => Promise.resolve(undefined)),
+  open: vi.fn(),
+}));
+
+vi.mock("@/helpers/dataAgent", () => ({
+  updateArticleStarStatus: mocks.updateArticleStarStatus,
+  updateArticleReadStatus: mocks.updateArticleReadStatus,
+}));
+
+vi.mock("@tauri-apps/plugin-shell", () => ({
+  open: mocks.open,
+}));
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
@@ -55,6 +71,10 @@ const mockSources: SignalSource[] = [
 ];
 
 describe("InlineReader", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("should render back button", () => {
     render(
       <InlineReader
@@ -226,5 +246,46 @@ describe("InlineReader", () => {
 
     expect(screen.getByText("Short excerpt of the article")).toBeInTheDocument();
     expect(screen.queryByText("today.inline_reader.content_placeholder")).not.toBeInTheDocument();
+  });
+
+  it("uses the same read, star, and browser actions as the article inline reader", async () => {
+    render(
+      <InlineReader
+        source={mockSource}
+        sources={mockSources}
+        currentIndex={0}
+        onBack={vi.fn()}
+        onNavigate={vi.fn()}
+        articleDetail={{
+          uuid: "uuid-1",
+          content: "Full content",
+          description: "",
+          read_status: ArticleReadStatus.UNREAD,
+          starred: ArticleStarStatus.UNSTAR,
+        } as any}
+        articleLoading={false}
+        articleError={null}
+        onRetry={vi.fn()}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Star it" }));
+    await waitFor(() =>
+      expect(mocks.updateArticleStarStatus).toHaveBeenCalledWith(
+        "uuid-1",
+        ArticleStarStatus.STARRED,
+      ),
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Mark as read" }));
+    await waitFor(() =>
+      expect(mocks.updateArticleReadStatus).toHaveBeenCalledWith(
+        "uuid-1",
+        ArticleReadStatus.READ,
+      ),
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Open in browser" }));
+    expect(mocks.open).toHaveBeenCalledWith("https://example.com/article");
   });
 });
