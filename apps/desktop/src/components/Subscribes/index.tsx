@@ -1,34 +1,25 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import { useMatch, useNavigate } from "react-router-dom";
 import {
   CheckCheck,
-  Pencil,
   Settings,
-  Trash2,
   Rss,
   Image,
   ExternalLink,
-  BellOff,
-  FileText,
   Link,
   Link2,
 } from "lucide-react";
-import { listen } from "@tauri-apps/api/event";
 import { RouteConfig } from "@/config";
-import { FeedResItem, FolderResItem } from "@/db";
+import { FeedResItem } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
 import { busChannel } from "@/helpers/busChannel";
 import { useBearStore } from "@/stores";
-import { AddFolder } from "../AddFolder";
 import { ContextMenu } from "@radix-ui/themes";
-import { DialogUnsubscribeFeed } from "@/layout/Setting/Content/DialogUnsubscribeFeed";
 import { open as openExternal } from "@tauri-apps/plugin-shell";
-import { DialogEditFeed } from "@/layout/Setting/Content/DialogEditFeed";
 import { useQuery } from "@/helpers/parseXML";
 import { ListContainer } from "./ListContainer";
 import { copyText } from "@/helpers/copyText";
 import { toast } from "sonner";
-import { DialogDeleteFolder } from "@/layout/Setting/Content/DialogDeleteFolder";
 import { loadFeed } from "@/hooks/useLoadFeed";
 import clsx from "clsx";
 import { useScrollTop } from "@/hooks/useScrollTop";
@@ -36,23 +27,16 @@ import { useShallow } from "zustand/react/shallow";
 import { useTranslation } from "react-i18next";
 
 const ChannelList = (): JSX.Element => {
-  console.log("ChannelList rendered");
   const { t } = useTranslation();
   const navigate = useNavigate();
   const isToday = useMatch(RouteConfig.LOCAL_TODAY);
   const isAll = useMatch(RouteConfig.LOCAL_ALL);
-  const [editFolderDialogStatus, setEditFolderDialogStatus] = useState(false);
-  const [deleteFolderStatus, setDeleteFolderStatus] = useState(false);
-  const [editFeedStatus, setEditFeedStatus] = useState(false);
-  const [showStatus, setModalStatus] = useState(false);
   const store = useBearStore(
     useShallow((state) => ({
       feed: state.feed,
       setFeed: state.setFeed,
-      updateFeed: state.updateFeed,
 
       feedContextMenuTarget: state.feedContextMenuTarget,
-      setFeedContextMenuTarget: state.setFeedContextMenuTarget,
       setFeedContextMenuStatus: state.setFeedContextMenuStatus,
 
       articleList: state.articleList,
@@ -153,45 +137,12 @@ const ChannelList = (): JSX.Element => {
   };
 
   useEffect(() => {
-    if (listRef.current) {
-      const $list = listRef.current as HTMLDivElement;
-      $list.addEventListener("scroll", handleListScroll);
-    }
+    const list = listRef.current;
+    if (!list) return;
 
-    const listener = async () => {
-      await listen("start-auto-async", (event) => {
-        console.log("%c Line:409 🍑 event", "color:#ea7e5c", event);
-        let input = event.payload;
-        console.log("%c Line:409 🍊 input", "color:#7f2b82", input);
-      });
-    };
-
-    listener();
-  }, []);
-
-  const afterDeleteFolder = () => {
-    if (store.feedContextMenuTarget) {
-      const { uuid } = store.feedContextMenuTarget;
-      if (store.feed?.uuid === uuid) {
-        store.setArticleList([]);
-      }
-      store.setFeedContextMenuTarget(null);
-    }
-
-    store.getSubscribes();
-  };
-
-  const afterUnsubscribeFeed = () => {
-    if (store.feedContextMenuTarget) {
-      const { uuid } = store.feedContextMenuTarget;
-      if (store.feed?.uuid === uuid) {
-        store.setArticleList([]);
-      }
-      store.setFeedContextMenuTarget(null);
-    }
-
-    store.getSubscribes();
-  };
+    list.addEventListener("scroll", handleListScroll);
+    return () => list.removeEventListener("scroll", handleListScroll);
+  }, [handleListScroll]);
 
   return (
     <>
@@ -201,7 +152,7 @@ const ChannelList = (): JSX.Element => {
         </span>
         <button
           type="button"
-          onClick={() => navigate(`${RouteConfig.SETTINGS}?tab=sources`)}
+          onClick={() => navigate(`${RouteConfig.SETTINGS}?tab=subscriptions`)}
           className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] text-[var(--gray-9)] hover:text-[var(--gray-12)] hover:bg-[var(--gray-a3)] transition-colors"
           title={t("layout.sidebar.manage_feeds")}
         >
@@ -237,22 +188,6 @@ const ChannelList = (): JSX.Element => {
               <CheckCheck size={14} /> {t("Mark all as read")}
             </ContextMenu.Item>
             <ContextMenu.Separator />
-            {store.feedContextMenuTarget?.item_type === "folder" && (
-              <>
-                <ContextMenu.Item
-                  onSelect={() => setEditFolderDialogStatus(true)}
-                >
-                  <Pencil size={14} /> {t("Edit folder")}
-                </ContextMenu.Item>
-                <ContextMenu.Separator />
-                <ContextMenu.Item
-                  onClick={() => setDeleteFolderStatus(true)}
-                  className="text-[var(--red-10)] hover:text-white"
-                >
-                  <Trash2 size={14} /> {t("Delete folder")}
-                </ContextMenu.Item>
-              </>
-            )}
             {store.feedContextMenuTarget && (
               <>
                 {store.feedContextMenuTarget?.item_type !== "folder" && (
@@ -309,52 +244,12 @@ const ChannelList = (): JSX.Element => {
                     >
                       <Rss size={14} /> {t("Reload feeds")}
                     </ContextMenu.Item>
-                    <ContextMenu.Separator />
-                    <ContextMenu.Item onClick={() => setEditFeedStatus(true)}>
-                      <FileText size={14} /> {t("View detail")}
-                    </ContextMenu.Item>
-                    <ContextMenu.Separator />
-                    <ContextMenu.Item
-                      onClick={() => setModalStatus(true)}
-                      className="text-[var(--red-10)] hover:text-white"
-                    >
-                      <BellOff size={14} /> {t("Unsubscribe")}
-                    </ContextMenu.Item>
                   </>
                 )}
               </>
             )}
           </ContextMenu.Content>
         </ContextMenu.Root>
-        <DialogUnsubscribeFeed
-          feed={store.feedContextMenuTarget as FeedResItem | null}
-          dialogStatus={showStatus}
-          setDialogStatus={setModalStatus}
-          afterConfirm={afterUnsubscribeFeed}
-          afterCancel={() => store.setFeedContextMenuTarget(null)}
-        />
-        <DialogDeleteFolder
-          folder={store.feedContextMenuTarget as FolderResItem | null}
-          dialogStatus={deleteFolderStatus}
-          setDialogStatus={setDeleteFolderStatus}
-          afterConfirm={afterDeleteFolder}
-          afterCancel={() => store.setFeedContextMenuTarget(null)}
-        />
-        <DialogEditFeed
-          feed={store.feedContextMenuTarget}
-          dialogStatus={editFeedStatus}
-          setDialogStatus={setEditFeedStatus}
-          afterConfirm={store.getSubscribes}
-          afterCancel={() => store.setFeedContextMenuTarget(null)}
-        />
-        <AddFolder
-          action="edit"
-          folder={store.feedContextMenuTarget as FolderResItem | null}
-          dialogStatus={editFolderDialogStatus}
-          setDialogStatus={setEditFolderDialogStatus}
-          afterConfirm={store.getSubscribes}
-          afterCancel={() => store.setFeedContextMenuTarget(null)}
-        />
       </div>
       {/* {store.globalSyncStatus && (
         <div className="sticky bottom-0 left-0 right-0 p-2 text-right">
