@@ -535,7 +535,7 @@
     .topic-card.active {
       border-color: var(--accent);
       background: var(--accent-light);
-      box-shadow: var(--shadow-sm);
+      box-shadow: inset 0 0 0 1px var(--accent), var(--shadow-sm);
     }
     .topic-card-head,
     .topic-actions,
@@ -571,7 +571,8 @@
       margin-top: 12px;
     }
     .topic-detail-panel {
-      background: var(--bg-card);
+      background: var(--bg-sidebar);
+      border-left: 1px solid var(--border);
       display: flex;
       flex-direction: column;
       min-width: 0;
@@ -579,6 +580,7 @@
     .topic-detail-header {
       padding: 20px 22px 16px;
       border-bottom: 1px solid var(--border);
+      background: var(--bg-card);
     }
     .topic-detail-title {
       font-size: 20px;
@@ -905,9 +907,6 @@
       border-color: var(--accent);
       border-width: 2px;
       box-shadow: var(--shadow-sm);
-    }
-    .signal-card.dimmed {
-      opacity: 0.58;
     }
     .signal-card-head {
       display: flex;
@@ -2148,8 +2147,8 @@
         </div>
       </div>
 
-      <!-- Signal Card 2 (dimmed - not active) -->
-      <div class="card signal-card dimmed">
+      <!-- Signal Card 2 remains fully interactive while reading -->
+      <div class="card signal-card">
         <div class="signal-card-head">
           <div class="signal-level high">
             <div class="bar filled" style="height:8px;"></div>
@@ -2246,7 +2245,7 @@
           <span>全部主题</span>
           <span class="count">28</span>
         </button>
-        <button class="sidebar-item" data-topic-filter="tracked">
+        <button class="sidebar-item" data-topic-filter="following">
           <span>追踪中</span>
           <span class="count">12</span>
         </button>
@@ -2297,7 +2296,7 @@
         </div>
         <div class="topic-toolbar">
           <button class="btn btn-ghost active" data-topic-filter="all">全部</button>
-          <button class="btn btn-ghost" data-topic-filter="tracked">追踪中</button>
+          <button class="btn btn-ghost" data-topic-filter="following">追踪中</button>
           <button class="btn btn-ghost" data-topic-filter="discovered">新发现</button>
           <button class="btn btn-ghost" data-topic-filter="updated">有变化</button>
           <select style="margin-left:auto; font-size:11px; color:var(--text-tertiary); background:var(--bg-sidebar); border:1px solid var(--border); border-radius:var(--radius-sm); padding:5px 8px;">

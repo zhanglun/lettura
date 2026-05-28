@@ -207,6 +207,7 @@ export const TopicListPage = React.memo(function () {
       triggerPipeline: state.triggerPipeline,
       lastUpdated: state.lastUpdated,
       updateSettingDialogStatus: state.updateSettingDialogStatus,
+      followTopic: state.followTopic,
       muteTopic: state.muteTopic,
       unmuteTopic: state.unmuteTopic,
     })),
@@ -396,6 +397,8 @@ export const TopicListPage = React.memo(function () {
                 key={topic.id}
                 topic={topic}
                 onClick={(uuid) => navigate(`/local/topics/${uuid}`)}
+                onFollow={(id) => store.followTopic(id)}
+                onMute={(id) => store.muteTopic(id)}
               />
             ))}
           </div>
