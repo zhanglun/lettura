@@ -217,6 +217,57 @@ describe("createOnboardingSlice", () => {
       expect(state.packsError).toBeNull();
     });
 
+    it("should prioritize and preselect packs that match selected interests", async () => {
+      const { getStarterPacks } = await import("@/helpers/dataAgent");
+      (getStarterPacks as any).mockResolvedValueOnce([
+        {
+          id: "design",
+          name: "Design Daily",
+          description: "Daily design inspiration",
+          icon: "Palette",
+          language: "en",
+          tags: ["design"],
+          source_count: 8,
+        },
+        {
+          id: "ai",
+          name: "AI Starter Pack",
+          description: "AI sources",
+          icon: "Bot",
+          language: "en",
+          tags: ["ai", "ml"],
+          source_count: 12,
+        },
+        {
+          id: "developer",
+          name: "Developer Pack",
+          description: "Developer sources",
+          icon: "Code2",
+          language: "en",
+          tags: ["developer", "programming"],
+          source_count: 10,
+        },
+      ]);
+
+      await store.getState().fetchPacks();
+
+      const state = store.getState();
+      expect(state.packs.map((pack) => pack.id)).toEqual([
+        "ai",
+        "developer",
+        "design",
+      ]);
+      expect(state.selectedPackIds).toEqual(["ai", "developer"]);
+    });
+
+    it("should not replace an existing manual pack selection", async () => {
+      store.getState().setSelectedPackIds(["design"]);
+
+      await store.getState().fetchPacks();
+
+      expect(store.getState().selectedPackIds).toEqual(["design"]);
+    });
+
     it("should handle fetch errors", async () => {
       const { getStarterPacks } = await import("@/helpers/dataAgent");
       (getStarterPacks as any).mockRejectedValueOnce(new Error("Network error"));

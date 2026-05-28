@@ -172,6 +172,7 @@
       "step": "Step 2 · Starter Packs",
       "title": "Choose Starter Packs",
       "subtitle": "Each pack contains curated sources. You can add, remove, and organize them later.",
+      "recommended": "Matches your interests",
       "sources_count": "{{count}} sources",
       "confirm_title": "Confirm Installation",
       "confirm_description": "You are about to install {{count}} packs with a total of {{sources}} sources.",

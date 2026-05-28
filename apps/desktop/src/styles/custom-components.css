@@ -1554,6 +1554,19 @@
     line-height: 1.6;
   }
 
+  .onboarding-pack-recommended {
+    display: inline-flex;
+    width: fit-content;
+    margin-top: 8px;
+    border: 1px solid var(--accent-6);
+    border-radius: 999px;
+    background: var(--accent-3);
+    padding: 2px 8px;
+    color: var(--accent-11);
+    font-size: 10px;
+    font-weight: 800;
+  }
+
   .onboarding-pack-meta {
     @apply mt-2 flex flex-wrap gap-1.5;
   }

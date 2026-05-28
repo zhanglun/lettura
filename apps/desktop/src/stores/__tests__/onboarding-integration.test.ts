@@ -73,11 +73,14 @@ describe("C5-C8: Onboarding integration tests", () => {
       expect(store.getState().onboardingOpen).toBe(true);
       expect(store.getState().onboardingStep).toBe("welcome");
 
+      store.getState().setOnboardingStep("interests");
+      expect(store.getState().onboardingStep).toBe("interests");
+
       store.getState().setOnboardingStep("select-pack");
       await store.getState().fetchPacks();
       expect(store.getState().packs.length).toBeGreaterThan(0);
+      expect(store.getState().selectedPackIds).toEqual(["ai"]);
 
-      store.getState().togglePackSelection("ai");
       store.getState().togglePackSelection("tech");
       expect(store.getState().selectedPackIds).toEqual(["ai", "tech"]);
 

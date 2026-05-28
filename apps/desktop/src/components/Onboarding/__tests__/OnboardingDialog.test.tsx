@@ -118,4 +118,12 @@ describe("OnboardingDialog", () => {
     expect(screen.getByText("onboarding.select_pack.title")).toBeInTheDocument();
     expect(screen.getByText("AI Starter Pack")).toBeInTheDocument();
   });
+
+  it("marks starter packs that match the selected interests", () => {
+    mockState.onboardingStep = "select-pack";
+
+    render(<OnboardingDialog />);
+
+    expect(screen.getByText("onboarding.select_pack.recommended")).toBeInTheDocument();
+  });
 });

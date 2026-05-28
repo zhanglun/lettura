@@ -194,6 +194,7 @@
       "step": "第 2 步 · 安装订阅包",
       "title": "选择 Starter Pack",
       "subtitle": "每个 Pack 包含精选信息源，安装后可在订阅管理里继续增删和整理。",
+      "recommended": "匹配你的兴趣",
       "sources_count": "{{count}} 个源",
       "confirm_title": "确认安装",
       "confirm_description": "即将安装 {{count}} 个包，共 {{sources}} 个源。",

@@ -5,7 +5,10 @@ import { useTranslation } from "react-i18next";
 import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import type { StarterPackSummary } from "@/stores/createOnboardingSlice";
+import {
+  getPackInterestScore,
+  type StarterPackSummary,
+} from "@/stores/createOnboardingSlice";
 import * as LucideIcons from "lucide-react";
 
 type LucideIconName = keyof typeof LucideIcons;
@@ -18,12 +21,16 @@ function PackIcon({ name, ...props }: { name: string } & React.SVGProps<SVGSVGEl
 function PackCard({
   pack,
   selected,
+  recommended,
   onToggle,
 }: {
   pack: StarterPackSummary;
   selected: boolean;
+  recommended: boolean;
   onToggle: () => void;
 }) {
+  const { t } = useTranslation();
+
   return (
     <button
       type="button"
@@ -44,6 +51,11 @@ function PackCard({
         <p className="onboarding-pack-desc">
           {pack.description}
         </p>
+        {recommended && (
+          <div className="onboarding-pack-recommended">
+            {t("onboarding.select_pack.recommended")}
+          </div>
+        )}
         <div className="onboarding-pack-meta">
           <span>
             {pack.source_count} sources
@@ -67,6 +79,7 @@ export function SelectPackStep() {
     packsLoading,
     fetchPacks,
     selectedPackIds,
+    selectedInterestIds,
     togglePackSelection,
     setOnboardingStep,
     startInstall,
@@ -76,6 +89,7 @@ export function SelectPackStep() {
       packsLoading: state.packsLoading,
       fetchPacks: state.fetchPacks,
       selectedPackIds: state.selectedPackIds,
+      selectedInterestIds: state.selectedInterestIds,
       togglePackSelection: state.togglePackSelection,
       setOnboardingStep: state.setOnboardingStep,
       startInstall: state.startInstall,
@@ -117,6 +131,7 @@ export function SelectPackStep() {
               key={pack.id}
               pack={pack}
               selected={selectedPackIds.includes(pack.id)}
+              recommended={getPackInterestScore(pack, selectedInterestIds) > 0}
               onToggle={() => togglePackSelection(pack.id)}
             />
           ))}
