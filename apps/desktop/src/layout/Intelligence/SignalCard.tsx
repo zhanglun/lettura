@@ -243,7 +243,7 @@ export function SignalCard({ signal, isActive, isDimmed, onInlineRead, activeRea
                 className="today-confidence-fill"
                 style={{
                   width: `${percent}%`,
-                  background: isHighConfidence ? "#6366f1" : "#d97706",
+                  background: isHighConfidence ? "var(--workbench-accent)" : "var(--workbench-amber)",
                 }}
               />
             </div>
