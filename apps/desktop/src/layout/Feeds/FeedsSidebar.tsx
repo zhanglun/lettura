@@ -1,21 +1,23 @@
 import React, { useMemo } from "react";
 import { Plus } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 import { useBearStore } from "@/stores";
+import { RouteConfig } from "@/config";
 
 export const FeedsSidebar = React.memo(function FeedsSidebar() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const store = useBearStore(
     useShallow((state) => ({
       subscribes: state.subscribes,
       folderFilter: state.folderFilter,
       setFolderFilter: state.setFolderFilter,
-      setAddFeedModalOpen: state.setAddFeedModalOpen,
     })),
   );
 
-  const { subscribes, folderFilter, setFolderFilter, setAddFeedModalOpen } = store;
+  const { subscribes, folderFilter, setFolderFilter } = store;
 
   const folders = useMemo(
     () => subscribes.filter((s) => s.item_type === "folder"),
@@ -53,19 +55,20 @@ export const FeedsSidebar = React.memo(function FeedsSidebar() {
 
   const filterBtnClass = (active: boolean) =>
     active
-      ? "flex items-center gap-2 px-3.5 py-1.5 text-xs rounded-[var(--radius-sm)] bg-[var(--accent-light)] text-[var(--accent-text)] cursor-pointer"
-      : "flex items-center gap-2 px-3.5 py-1.5 text-xs rounded-[var(--radius-sm)] cursor-pointer hover:bg-[var(--accent-light)] text-[var(--text-secondary)]";
+      ? "flex items-center gap-2 px-3.5 py-1.5 text-xs rounded bg-[var(--accent-a3)] text-[var(--accent-11)] cursor-pointer"
+      : "flex items-center gap-2 px-3.5 py-1.5 text-xs rounded cursor-pointer hover:bg-[var(--gray-a3)] text-[var(--gray-11)]";
 
   return (
     <>
       <div className="mb-2 flex items-center justify-between">
-        <span className="text-[10px] font-semibold uppercase tracking-wide text-[var(--text-tertiary)]">
+        <span className="text-[10px] font-semibold uppercase tracking-wide text-[var(--gray-9)]">
           {t("feeds.sidebar.folders")}
         </span>
         <button
           type="button"
-          onClick={() => setAddFeedModalOpen(true)}
-          className="rounded p-0.5 text-[var(--text-tertiary)] hover:text-[var(--text-secondary)]"
+          onClick={() => navigate(`${RouteConfig.SETTINGS}?tab=subscriptions`)}
+          className="rounded p-0.5 text-[var(--gray-9)] hover:text-[var(--gray-12)]"
+          title={t("layout.sidebar.manage_feeds")}
         >
           <Plus size={12} />
         </button>
@@ -111,21 +114,21 @@ export const FeedsSidebar = React.memo(function FeedsSidebar() {
       </div>
 
       <div className="border-t border-[var(--gray-5)] mt-3 pt-3">
-        <div className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-[var(--text-tertiary)]">
+        <div className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-[var(--gray-9)]">
           {t("feeds.health_overview")}
         </div>
         <div className="flex items-center gap-3 text-xs">
           <span className="flex items-center gap-1">
             <span className="w-2 h-2 rounded-full bg-green-500" />
-            <span className="text-[var(--text-secondary)]">{healthSummary.healthy}</span>
+            <span className="text-[var(--gray-9)]">{healthSummary.healthy}</span>
           </span>
           <span className="flex items-center gap-1">
             <span className="w-2 h-2 rounded-full bg-amber-500" />
-            <span className="text-[var(--text-secondary)]">{healthSummary.warning}</span>
+            <span className="text-[var(--gray-9)]">{healthSummary.warning}</span>
           </span>
           <span className="flex items-center gap-1">
             <span className="w-2 h-2 rounded-full bg-red-500" />
-            <span className="text-[var(--text-secondary)]">{healthSummary.error}</span>
+            <span className="text-[var(--gray-9)]">{healthSummary.error}</span>
           </span>
         </div>
       </div>

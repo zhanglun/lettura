@@ -25,16 +25,16 @@ export const FolderGroup = React.memo(function FolderGroup({
   return (
     <div>
       <div
-        className="flex items-center gap-2 px-4 py-2 cursor-pointer hover:bg-[var(--bg-app)] text-sm font-medium"
+        className="flex items-center gap-2 px-4 py-2 cursor-pointer hover:bg-[var(--gray-a3)] text-sm font-medium"
         onClick={() => onToggle(folder.uuid)}
       >
         {isCollapsed ? (
-          <ChevronRight size={14} className="text-[var(--text-tertiary)]" />
+          <ChevronRight size={14} className="text-[var(--gray-9)]" />
         ) : (
-          <ChevronDown size={14} className="text-[var(--text-tertiary)]" />
+          <ChevronDown size={14} className="text-[var(--gray-9)]" />
         )}
-        <span className="text-[var(--text-primary)]">{folder.title}</span>
-        <span className="text-[var(--text-tertiary)] text-xs">
+        <span className="text-[var(--gray-12)]">{folder.title}</span>
+        <span className="text-[var(--gray-9)] text-xs">
           · {folder.children?.length ?? 0} 源
         </span>
       </div>
