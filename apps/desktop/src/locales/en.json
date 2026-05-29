@@ -788,6 +788,7 @@
     "list_unread_count": "{{count}} unread",
     "list_loaded_count": "{{count}} loaded",
     "current_filter": "Filter",
+    "section_label": "{{filter}} · {{count}}",
     "actions": {
       "read_later": "Read later",
       "remove_read_later": "Remove from read later"

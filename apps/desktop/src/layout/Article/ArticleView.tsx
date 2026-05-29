@@ -153,6 +153,10 @@ export function ArticleView() {
           : store.viewMeta?.unread)
     ?? 0;
   const activeFilterTitle = t(store.currentFilter.title);
+  const sectionLabel = t("article.section_label", {
+    filter: activeFilterTitle,
+    count: articles.length,
+  });
   const shouldShowPodcast = store.tracks?.length > 0 || store.podcastPlayingStatus;
 
   return (
@@ -240,6 +244,7 @@ export function ArticleView() {
         expandedArticleUuid={store.expandedArticleUuid}
         onExpandArticle={handleExpandArticle}
         onCloseInlineReader={handleCloseInlineReader}
+        sectionLabel={sectionLabel}
       />
 
       <LPodcast visible={shouldShowPodcast} />

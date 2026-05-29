@@ -87,9 +87,15 @@ vi.mock("zustand/react/shallow", () => ({
 }));
 
 vi.mock("@/components/ArticleListVirtual", () => ({
-  ArticleListVirtual: forwardRef<HTMLDivElement>(() => (
-    <div data-testid="article-list" />
-  )),
+  ArticleListVirtual: forwardRef<HTMLDivElement, { sectionLabel?: string }>(
+    (props, ref) => (
+      <div
+        ref={ref}
+        data-testid="article-list"
+        data-section-label={props.sectionLabel}
+      />
+    ),
+  ),
 }));
 
 vi.mock("@/components/ArticleView/DialogView", () => ({
@@ -137,5 +143,21 @@ describe("ArticleView header", () => {
     expect(screen.getByText("article.list_loaded_count:2")).toBeInTheDocument();
     expect(screen.getByText("article.current_filter")).toBeInTheDocument();
     expect(screen.getAllByText("Unread").length).toBeGreaterThan(0);
+  });
+
+  it("passes a sticky section label reflecting the active filter to the list", () => {
+    render(
+      <MemoryRouter
+        initialEntries={["/local/feeds/feed-1?feedUuid=feed-1&type=channel"]}
+        future={{ v7_relativeSplatPath: true, v7_startTransition: true }}
+      >
+        <Routes>
+          <Route path="/local/feeds/:uuid" element={<ArticleView />} />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    const list = screen.getByTestId("article-list");
+    expect(list.getAttribute("data-section-label")).toBe("article.section_label:2");
   });
 });

@@ -5,6 +5,20 @@
     border: 1px solid red;
   }
 
+  .art-section-label {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    padding: 4px 16px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--gray-9);
+    background: var(--gray-2);
+    border-bottom: 1px solid var(--gray-4);
+  }
+
   .indicator-top::after {
     content: "";
     position: absolute;

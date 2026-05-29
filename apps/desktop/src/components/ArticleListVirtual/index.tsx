@@ -26,6 +26,7 @@ export type ArticleListVirtualProps = {
   expandedArticleUuid?: string | null;
   onExpandArticle?: (article: ArticleResItem) => void;
   onCloseInlineReader?: () => void;
+  sectionLabel?: string;
 };
 
 export interface ArticleListVirtualRefType {
@@ -50,6 +51,7 @@ export const ArticleListVirtual = React.memo(
         expandedArticleUuid,
         onExpandArticle,
         onCloseInlineReader,
+        sectionLabel,
       } = props;
       const { t } = useTranslation();
       const containerRef = useRef<HTMLDivElement>(null);
@@ -118,6 +120,9 @@ export const ArticleListVirtual = React.memo(
             </div>
           ) : (
             <div>
+              {sectionLabel && (
+                <div className="art-section-label">{sectionLabel}</div>
+              )}
               {articles.map((article, index) => {
                 const isExpanded = expandedArticleUuid === article.uuid;
                 return (
