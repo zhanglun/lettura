@@ -54,6 +54,26 @@ export function SearchChip(props: {
   );
 }
 
+export function HighlightText({ text, query }: { text: string; query: string }) {
+  const q = query.trim();
+  if (!q || !text) return <>{text}</>;
+  const escaped = q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const parts = text.split(new RegExp(`(${escaped})`, "gi"));
+  return (
+    <>
+      {parts.map((part, i) =>
+        part.toLowerCase() === q.toLowerCase() ? (
+          <mark key={i} className="search-result-mark">
+            {part}
+          </mark>
+        ) : (
+          part
+        ),
+      )}
+    </>
+  );
+}
+
 export function SearchResultCard(props: {
   article: ArticleResItem;
   query: string;
@@ -62,22 +82,12 @@ export function SearchResultCard(props: {
   const { t } = useTranslation();
   const { article, query, onOpen } = props;
   const description = stripHtml(article.description || article.content || "");
-  const match = query.trim();
-  const hasMatch = match && description.toLowerCase().includes(match.toLowerCase());
-  const before = hasMatch
-    ? description.slice(0, description.toLowerCase().indexOf(match.toLowerCase()))
-    : description;
-  const hit = hasMatch
-    ? description.slice(
-        description.toLowerCase().indexOf(match.toLowerCase()),
-        description.toLowerCase().indexOf(match.toLowerCase()) + match.length,
-      )
-    : "";
-  const after = hasMatch
-    ? description.slice(
-        description.toLowerCase().indexOf(match.toLowerCase()) + match.length,
-      )
-    : "";
+  const q = query.trim();
+  const hitIdx = q ? description.toLowerCase().indexOf(q.toLowerCase()) : -1;
+  const excerpt =
+    hitIdx >= 0
+      ? description.slice(Math.max(0, hitIdx - 120), hitIdx + q.length + 220)
+      : description.slice(0, 300);
 
   return (
     <button
@@ -107,20 +117,12 @@ export function SearchResultCard(props: {
           {formatTime(article.create_date)}
         </span>
       </div>
-      <div className="search-result-title">
-        {article.title}
-      </div>
+      <div className="search-result-title">{article.title}</div>
       <p className="search-result-snippet">
-        {hasMatch ? (
-          <>
-            {before.slice(-120)}
-            <mark className="search-result-mark">
-              {hit}
-            </mark>
-            {after.slice(0, 220)}
-          </>
+        {excerpt ? (
+          <HighlightText text={excerpt} query={query} />
         ) : (
-          description || t("search.no_summary")
+          t("search.no_summary")
         )}
       </p>
     </button>

@@ -4,7 +4,7 @@ import { Button } from "@radix-ui/themes";
 import { ArticleResItem, FeedResItem } from "@/db";
 import { RouteConfig } from "@/config";
 import type { SignalSearchResult, TopicSearchResult } from "./types";
-import { SearchResultCard } from "./utils";
+import { SearchResultCard, HighlightText } from "./utils";
 
 interface SearchResultsProps {
   resultList: ArticleResItem[];
@@ -78,7 +78,9 @@ export function SearchResults({
                 </div>
                 <div className="search-result-title">{signal.signal_title}</div>
                 {signal.summary && (
-                  <p className="search-result-snippet">{signal.summary}</p>
+                  <p className="search-result-snippet">
+                    <HighlightText text={signal.summary} query={query} />
+                  </p>
                 )}
               </div>
             ))}
@@ -111,7 +113,9 @@ export function SearchResults({
                 </div>
                 <div className="search-result-title">{topic.title}</div>
                 {topic.description && (
-                  <p className="search-result-snippet">{topic.description}</p>
+                  <p className="search-result-snippet">
+                    <HighlightText text={topic.description} query={query} />
+                  </p>
                 )}
               </div>
             ))}
