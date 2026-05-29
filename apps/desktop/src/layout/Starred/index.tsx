@@ -51,6 +51,7 @@ function SavedArticleCard(props: {
   const { t } = useTranslation();
   const { article, active, onOpen } = props;
   const summary = stripHtml(article.description || article.content || "");
+  const note = article.notes?.trim();
 
   return (
     <button
@@ -89,6 +90,12 @@ function SavedArticleCard(props: {
             <p className="starred-article-summary">
               {summary}
             </p>
+          )}
+          {note && (
+            <div className="starred-article-note">
+              {t("starred.note_prefix")}
+              {note}
+            </div>
           )}
         </div>
       </div>
@@ -193,10 +200,7 @@ export const StarredPage = () => {
     [articles],
   );
   const withNotesCount = useMemo(
-    () =>
-      articles.filter((article) =>
-        stripHtml(article.description || article.content || ""),
-      ).length,
+    () => articles.filter((article) => article.notes?.trim()).length,
     [articles],
   );
 

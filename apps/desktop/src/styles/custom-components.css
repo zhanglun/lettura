@@ -1220,6 +1220,18 @@
     line-height: 1.65;
   }
 
+  .starred-article-note {
+    @apply mt-2;
+    padding: 8px 10px;
+    border-left: 3px solid var(--accent-9);
+    background: var(--accent-a3);
+    border-radius: 0 var(--radius-2) var(--radius-2) 0;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--starred-text-secondary);
+    text-align: left;
+  }
+
   .starred-panel {
     @apply hidden w-[280px] shrink-0 overflow-auto border-l p-4 lg:block;
     border-color: var(--starred-border);

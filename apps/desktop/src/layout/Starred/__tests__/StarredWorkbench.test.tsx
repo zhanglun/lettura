@@ -110,6 +110,25 @@ describe("Starred workbench layout", () => {
     expect(container.querySelector(".starred-panel")).toBeTruthy();
   });
 
+  it("renders a saved note block only when the article has notes", () => {
+    const { container, rerender } = render(<StarredPage />);
+    expect(container.querySelector(".starred-article-note")).toBeFalsy();
+
+    mockUseArticle.mockReturnValue({
+      articles: [{ ...article, notes: "适合作为生态变化的起点" }],
+      isLoading: false,
+      isEmpty: false,
+      isReachingEnd: true,
+      size: 1,
+      setSize: vi.fn(),
+    });
+    rerender(<StarredPage />);
+
+    const noteEl = container.querySelector(".starred-article-note");
+    expect(noteEl).toBeTruthy();
+    expect(noteEl?.textContent).toContain("适合作为生态变化的起点");
+  });
+
   it("keeps the active saved card border stable in css", () => {
     const css = readFileSync(
       resolve(process.cwd(), "src/styles/custom-components.css"),

@@ -681,6 +681,7 @@
     "subtitle": "收藏、稍后读和长期参考资料。",
     "export": "导出",
     "unknown_feed": "未知来源",
+    "note_prefix": "笔记：",
     "sidebar": {
       "collections": "收藏夹",
       "all": "全部收藏",

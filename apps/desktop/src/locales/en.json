@@ -659,6 +659,7 @@
     "subtitle": "Bookmark, read later, and long-term reference material.",
     "export": "Export",
     "unknown_feed": "Unknown feed",
+    "note_prefix": "Note: ",
     "sidebar": {
       "collections": "Collections",
       "all": "All Starred",
