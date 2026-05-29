@@ -584,6 +584,9 @@
         "start_here_desc": "System recommends the best 1-3 articles to read first",
         "read_original": "Read Original",
         "recommended": "Recommended",
+        "start_here_primary": "Read first",
+        "start_here_alternative": "Opposing view",
+        "state_note": "AI refreshes topics after each run and your tracking makes it sharper; evidence comes from topic-article links, so you can revisit sources and re-analyze.",
         "select_prompt": "Select a topic to view details",
         "view_evidence": "View Evidence"
       },

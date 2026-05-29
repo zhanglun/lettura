@@ -1720,4 +1720,10 @@
   .topic-start-card:hover {
     color: var(--workbench-accent-hover);
   }
+
+  .topic-state-note {
+    @apply mt-3 rounded-md p-2.5 text-[11px] leading-relaxed;
+    color: var(--gray-9);
+    background: var(--gray-2);
+  }
 }

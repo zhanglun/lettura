@@ -282,8 +282,15 @@ export function TopicDetailPanel({
 							{[...topic.articles]
 								.sort((a, b) => b.relevance_score - a.relevance_score)
 								.slice(0, 3)
-								.map((article) => {
+								.map((article, idx, list) => {
 									const feedUuid = feedUuidMap.get(article.article_id);
+									const topFeedUuid = feedUuidMap.get(list[0].article_id);
+									const reasonKey =
+										idx === 0
+											? "start_here_primary"
+											: feedUuid && feedUuid !== topFeedUuid
+											? "start_here_alternative"
+											: "recommended";
 									return (
 										<button
 											type="button"
@@ -298,7 +305,7 @@ export function TopicDetailPanel({
 										>
 											<div className="flex items-center gap-1.5 min-w-0">
 												<span className="shrink-0 text-[9px] font-semibold text-[var(--accent-9)] bg-[var(--accent-a3)] rounded-full px-1.5 py-0.5">
-													{t("layout.topics.detail.recommended")}
+													{t(`layout.topics.detail.${reasonKey}`)}
 												</span>
 												<span className="text-[11px] text-[var(--gray-12)] truncate">
 													{article.title}
@@ -326,6 +333,10 @@ export function TopicDetailPanel({
 						</div>
 					</section>
 				)}
+
+				<div className="topic-state-note">
+					{t("layout.topics.detail.state_note")}
+				</div>
 			</div>
 		</aside>
 	);

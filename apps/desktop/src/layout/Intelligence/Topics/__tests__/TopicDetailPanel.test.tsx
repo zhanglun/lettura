@@ -101,6 +101,24 @@ describe("TopicDetailPanel", () => {
 		).toBeInTheDocument();
 	});
 
+	it("tags the top recommendation as the primary read and shows the state note", () => {
+		render(
+			<TopicDetailPanel
+				topic={topic}
+				loading={false}
+				followTopic={vi.fn()}
+				unfollowTopic={vi.fn()}
+			/>,
+		);
+
+		expect(
+			screen.getByText("layout.topics.detail.start_here_primary"),
+		).toBeInTheDocument();
+		expect(
+			screen.getByText("layout.topics.detail.state_note"),
+		).toBeInTheDocument();
+	});
+
 	it("opens the recommended article from Start Here", () => {
 		render(
 			<TopicDetailPanel

@@ -606,6 +606,9 @@
         "start_here_desc": "系统推荐最值得先读的 1-3 篇原文",
         "read_original": "阅读原文",
         "recommended": "推荐",
+        "start_here_primary": "推荐先读",
+        "start_here_alternative": "看反方观点",
+        "state_note": "AI 每次运行后自动更新主题，你的追踪让它更准确；证据由主题与文章的关联提供，支持回看来源和重新分析。",
         "select_prompt": "选择一个主题查看详情",
         "view_evidence": "查看证据"
       },
