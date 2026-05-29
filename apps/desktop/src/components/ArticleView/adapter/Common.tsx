@@ -1,6 +1,8 @@
 import { wraperWithRadix } from "../ContentRender";
 import { ArticleResItem } from "@/db";
 import Dayjs from "dayjs";
+import { useTranslation } from "react-i18next";
+import { useState } from "react";
 
 export interface CommonAdapterProps {
   content: string;
@@ -13,7 +15,9 @@ export const CommonAdapter = ({
   delegateContentClick,
   content,
 }: CommonAdapterProps) => {
+  const { t } = useTranslation();
   const { pub_date } = article;
+  const [imgError, setImgError] = useState(false);
 
   return (
     <div className="pb-20">
@@ -36,16 +40,37 @@ export const CommonAdapter = ({
         className="reading-detail-content text-[15px] leading-7 text-[var(--gray-12)]"
         onClick={delegateContentClick}
       >
-        {article.image && (
+        {article.image && !imgError && (
           <div className="my-6 w-full text-center">
             <img
               src={article.image}
               alt=""
               className="max-h-[420px] w-full rounded-md object-cover"
+              onError={() => setImgError(true)}
             />
           </div>
         )}
-        <div>{wraperWithRadix(content)}</div>
+        {content ? (
+          <div>{wraperWithRadix(content)}</div>
+        ) : (
+          <div className="flex flex-col items-center justify-center py-16 gap-2 text-[var(--gray-9)]">
+            <p className="text-sm">{t("article.detail.no_content", "No content available")}</p>
+            {article.link && (
+              <a
+                href="#"
+                className="text-[11px] text-[var(--accent-9)] hover:underline"
+                onClick={(e) => {
+                  e.preventDefault();
+                  import("@tauri-apps/plugin-shell").then(({ open }) =>
+                    open(article.link),
+                  );
+                }}
+              >
+                {t("Open in browser")}
+              </a>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

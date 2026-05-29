@@ -138,7 +138,7 @@ export const StarredPage = () => {
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
 
-  const { articles, isLoading, isEmpty, isReachingEnd, size, setSize } =
+  const { articles, isLoading, isEmpty, isReachingEnd, size, setSize, mutate } =
     useArticle({
       collectionUuid: activeCollection,
       tagUuid: activeTag,
@@ -398,6 +398,7 @@ export const StarredPage = () => {
               article={selectedArticle}
               closable
               onClose={() => setSelectedArticle(null)}
+              onArticleUpdate={() => mutate()}
             />
           </div>
         ) : (

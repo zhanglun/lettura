@@ -22,6 +22,7 @@ export type ArticleListVirtualProps = {
   isEmpty: boolean;
   isLoading: boolean;
   onArticleRead?: (article: ArticleResItem) => void;
+  onArticleUpdate?: (updated: ArticleResItem) => void;
   expandedArticleUuid?: string | null;
   onExpandArticle?: (article: ArticleResItem) => void;
   onCloseInlineReader?: () => void;
@@ -45,6 +46,7 @@ export const ArticleListVirtual = React.memo(
         size,
         setSize,
         onArticleRead,
+        onArticleUpdate,
         expandedArticleUuid,
         onExpandArticle,
         onCloseInlineReader,
@@ -135,6 +137,7 @@ export const ArticleListVirtual = React.memo(
                         canNext={index < articles.length - 1}
                         index={index}
                         total={articles.length}
+                        onArticleUpdate={onArticleUpdate}
                       />
                     )}
                   </div>

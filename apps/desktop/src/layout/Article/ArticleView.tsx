@@ -96,6 +96,17 @@ export function ArticleView() {
     [mutate],
   );
 
+  const handleArticleUpdate = useCallback(
+    (updated: ArticleResItem) => {
+      mutate(
+        (pages: { list: ArticleResItem[] }[] | undefined) =>
+          retainArticleAfterRead(pages, updated),
+        false,
+      );
+    },
+    [mutate],
+  );
+
   const handleExpandArticle = useCallback(
     (a: ArticleResItem) => {
       store.setExpandedArticleUuid(
@@ -225,6 +236,7 @@ export function ArticleView() {
         size={size}
         setSize={setSize}
         onArticleRead={handleArticleRead}
+        onArticleUpdate={handleArticleUpdate}
         expandedArticleUuid={store.expandedArticleUuid}
         onExpandArticle={handleExpandArticle}
         onCloseInlineReader={handleCloseInlineReader}

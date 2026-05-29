@@ -39,9 +39,6 @@ const ChannelList = (): JSX.Element => {
       feedContextMenuTarget: state.feedContextMenuTarget,
       setFeedContextMenuStatus: state.setFeedContextMenuStatus,
 
-      articleList: state.articleList,
-      setArticleList: state.setArticleList,
-
       syncArticles: state.syncArticles,
 
       subscribes: state.subscribes,
@@ -92,17 +89,8 @@ const ChannelList = (): JSX.Element => {
         dataAgent.markAllRead({ uuid, isToday: !!isToday, isAll: !!isAll }),
         {
           loading: "Loading...",
-          success: (data) => {
+          success: () => {
             store.getSubscribes();
-
-            if (store.feed?.uuid === uuid) {
-              store.setArticleList(
-                store.articleList.map((_) => {
-                  _.read_status = 2;
-                  return _;
-                }),
-              );
-            }
             return "Done!😀";
           },
           error: "Error🤢",
