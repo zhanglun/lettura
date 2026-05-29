@@ -61,7 +61,7 @@ pub enum PipelineError {
   AlreadyRunning,
   NoApiKey,
   DbError(String),
-  AiError(String),
+  EmbeddingError(String),
 }
 
 impl std::fmt::Display for PipelineError {
@@ -70,7 +70,7 @@ impl std::fmt::Display for PipelineError {
       PipelineError::AlreadyRunning => write!(f, "PL_ALREADY_RUNNING"),
       PipelineError::NoApiKey => write!(f, "AI_NO_API_KEY"),
       PipelineError::DbError(e) => write!(f, "Database error: {}", e),
-      PipelineError::AiError(e) => write!(f, "AI error: {}", e),
+      PipelineError::EmbeddingError(e) => write!(f, "Embedding error: {}", e),
     }
   }
 }
@@ -317,7 +317,7 @@ async fn execute_pipeline_steps(
   }
 
   if ai_config.enable_embedding {
-    execute_with_embedding(
+    match execute_with_embedding(
       conn,
       ai_config,
       embedding_provider,
@@ -326,6 +326,13 @@ async fn execute_pipeline_steps(
       app_handle,
     )
     .await
+    {
+      Ok(processed) => Ok(processed),
+      Err(PipelineError::EmbeddingError(_)) => {
+        execute_without_embedding(conn, ai_config, llm_provider, &unprocessed, app_handle).await
+      }
+      Err(e) => Err(e),
+    }
   } else {
     execute_without_embedding(conn, ai_config, llm_provider, &unprocessed, app_handle).await
   }
@@ -352,7 +359,7 @@ async fn execute_with_embedding(
   let embeddings = embedding_provider
     .embed(text_refs)
     .await
-    .map_err(PipelineError::AiError)?;
+    .map_err(PipelineError::EmbeddingError)?;
 
   for (i, article) in unprocessed.iter().enumerate() {
     let embedding_json = serde_json::to_string(&embeddings[i]).unwrap_or_default();
