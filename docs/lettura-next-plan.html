@@ -10,11 +10,12 @@
   <section>
     <h2>当前状态</h2>
     <ul>
-      <li>Settings、Article、Today、Topics、Search、Starred、Onboarding、Feeds 侧栏已完成阶段性收口。</li>
-      <li>工作台样式 token 已抽取，Today / Topics / Search / Starred 已开始共享视觉变量。</li>
-      <li>内联阅读器操作语义已统一：打开原文、收藏、已读、上一篇/下一篇禁用逻辑更一致。</li>
-      <li>最近提交：<code>29ce4c9 refactor(Article): 统一内联阅读器操作语义</code></li>
-      <li>不要提交 <code>.sisyphus/run-continuation/*.json</code>。</li>
+      <li>共享 <code>ReaderControls</code> 组件已抽取，三端操作栏（内联阅读器、View、DialogView）统一，收藏/已读状态通过回调链同步至 SWR 缓存。</li>
+      <li>Feeds 侧栏 <code>+</code> 按钮已改为跳转 Settings 订阅管理，移除死 store 状态 <code>setAddFeedModalOpen</code>；FeedRow / FolderGroup / FeedContextMenu mock token 全部替换为 Radix 标准 token。</li>
+      <li>暗色主题回归：<code>SignalCard</code> 置信度条硬编码 hex 替换为 <code>var(--workbench-accent/amber)</code>；全局 mock-only token（<code>--text-primary</code>、<code>--text-tertiary</code>、<code>--bg-app</code> 等）清除完毕。</li>
+      <li><code>Detail.tsx</code> 加载失败错误态与 <code>article=null</code> null 守卫均已修复并有测试覆盖（134 cases 全绿）。</li>
+      <li>CLAUDE.md 已添加，规范提交格式（不携带 Co-Authored-By）。</li>
+      <li>最近提交：<code>b8f4950 chore: 添加 CLAUDE.md，规范提交格式与协作约定</code></li>
     </ul>
   </section>
 
@@ -25,36 +26,53 @@
       <li>再对齐真实 React 实现。</li>
       <li>补测试覆盖核心交互、空态、错误态、样式不跳动。</li>
       <li>验证：<code>pnpm test</code>、<code>git diff --check</code>、<code>pnpm build</code>。</li>
-      <li>每个主题独立提交，中文 Conventional Commit。</li>
+      <li>每个主题独立提交，中文 Conventional Commit，不携带 Co-Authored-By。</li>
     </ol>
   </section>
 
   <section>
-    <h2>下一优先级 1：阅读体验继续统一</h2>
+    <h2>优先级 1：Feeds 文章行 dimmed 状态</h2>
     <ul>
-      <li>检查普通 Article 阅读页、Today inline reader、Starred reader 的顶部操作区是否完全一致。</li>
-      <li>统一无外链、无正文、加载失败、长标题、图片异常等状态。</li>
-      <li>确认收藏/已读后 store、列表、右侧阅读器状态是否同步。</li>
-      <li>考虑抽取共享 reader controls，减少三套按钮继续漂移。</li>
+      <li>mockup：<code>.art-row.dimmed { opacity: 0.28; pointer-events: none }</code>，内联阅读器展开时其余行降对比度。</li>
+      <li><code>ArticleListVirtual</code> 已持有 <code>expandedArticleUuid</code>，需向 <code>ArticleItem</code> 传入 <code>isDimmed</code> prop 并应用样式。</li>
+      <li>改动量极小（约 10 行），视觉感知提升明显。</li>
     </ul>
   </section>
 
   <section>
-    <h2>下一优先级 2：Feeds 阅读侧栏实机校准</h2>
+    <h2>优先级 2：Search 结果关键词 &lt;mark&gt; 高亮</h2>
     <ul>
-      <li>确认订阅列表、folder 展开、feed 点击、右键菜单在真实数据下稳定。</li>
-      <li>侧栏只保留阅读导航能力，管理入口跳 Settings -> 订阅管理。</li>
-      <li>不要恢复 DnD 订阅树。</li>
-      <li>继续清理旧管理弹窗和无入口代码。</li>
+      <li>mockup：snippet 中关键词用 <code>&lt;mark&gt;</code> 包裹，琥珀背景（<code>var(--amber-3)</code>）+ 深琥珀文字（<code>var(--amber-11)</code>）。</li>
+      <li>方案一：后端在 snippet 字段中直接返回带 <code>&lt;mark&gt;</code> 的 HTML，前端用 <code>dangerouslySetInnerHTML</code> 渲染（需 DOMPurify 过滤）。</li>
+      <li>方案二：前端拿到搜索词和纯文本 snippet，用正则匹配插入高亮组件（不依赖后端改动）。</li>
+      <li>先确认后端 <code>/search</code> 接口是否已返回 highlight 字段，再选方案。</li>
     </ul>
   </section>
 
   <section>
-    <h2>下一优先级 3：暗色主题回归</h2>
+    <h2>优先级 3：Starred 文章卡笔记展示</h2>
     <ul>
-      <li>Today、Topics、Search、Starred 的新增 workbench 样式需要暗色主题视觉检查。</li>
-      <li>优先消灭硬编码浅色值，改用 <code>--workbench-*</code> token。</li>
-      <li>选中态不要用 <code>border-width: 2px</code>，继续用 inset shadow/ring。</li>
+      <li>mockup：有笔记的文章卡底部显示 <code>.saved-note</code>（靛蓝左边框 3px + <code>var(--accent-a3)</code> 背景，12px 行高 1.5）。</li>
+      <li>需先确认 <code>ArticleResItem</code> 数据模型中是否有 <code>user_note</code> 字段，以及后端 <code>/starred</code> 接口是否返回该字段。</li>
+      <li>如字段存在：在 Starred 文章卡组件中条件渲染笔记块即可。</li>
+      <li>如字段不存在：需先评估是否要新增数据模型和 UI 入口（笔记编辑）。</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>优先级 4：Feeds 文章列表 section label</h2>
+    <ul>
+      <li>mockup：文章行上方有粘性分组标签"未读 · 156 篇"（<code>art-section-label</code>，10px 大写灰底，<code>position: sticky; top: 0</code>）。</li>
+      <li>当前未读数只显示在列表头，列表内无粘性分组。</li>
+      <li>可在 <code>ArticleListVirtual</code> 的虚拟列表中插入一条非文章的 label 行，或在滚动容器顶部固定渲染。</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>优先级 5：Topics 详情面板补全</h2>
+    <ul>
+      <li>"Start Here 推荐阅读"：<code>topic-start-card</code> 需显示推荐理由 badge（"推荐先读"/"看反方观点"），当前仅有占位文案。</li>
+      <li>"状态说明"底部卡：<code>topic-state-note</code>，灰底小字"AI 每次运行后自动更新，你的追踪让它更准确"，当前 <code>TopicDetailPanel</code> 中缺失。</li>
     </ul>
   </section>
 
@@ -63,6 +81,7 @@
     <pre><code>cd apps/desktop
 pnpm test --run src/layout/Article/__tests__ src/layout/Intelligence/__tests__ src/layout/Starred/__tests__
 pnpm test --run src/layout/Search/__tests__ src/layout/Intelligence/Topics/__tests__
+pnpm test --run src/components/ReaderControls/__tests__ src/components/ArticleView/__tests__
 git diff --check
 pnpm build</code></pre>
   </section>
@@ -72,7 +91,8 @@ pnpm build</code></pre>
     <ul>
       <li>HTTP 请求端口必须动态读取 <code>localStorage.port</code>，不要重新缓存模块加载时端口。</li>
       <li>生产 SQLite 在 <code>~/.lettura/lettura.db</code>，不要执行清库或迁移重建。</li>
-      <li>用户希望中文沟通。</li>
+      <li>不要恢复 DnD 订阅树。</li>
+      <li>提交信息用中文 Conventional Commit，不携带 Co-Authored-By。</li>
     </ul>
   </section>
 </body>
