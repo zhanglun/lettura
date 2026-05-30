@@ -709,6 +709,7 @@
       border: none;
     }
     .feedback-btn:hover { color: var(--text-secondary); background: var(--bg-hover); }
+    .feedback-btn.active { color: var(--accent-text); background: var(--accent-light); font-weight: 600; }
 
     /* Scrollbar */
     ::-webkit-scrollbar { width: 6px; }
@@ -1230,6 +1231,7 @@
       background: transparent; color: var(--text-tertiary); cursor: pointer; transition: all 0.12s;
     }
     .row-act:hover { background: var(--bg-sidebar); color: var(--text-primary); }
+    .row-act.active { color: var(--accent); background: var(--accent-light); }
     .row-act.danger:hover { background: var(--red-bg); color: var(--red); }
     .row-act svg { width: 13px; height: 13px; }
 
@@ -1937,7 +1939,7 @@
       </div>
 
       <!-- Signal Card 1 -->
-      <div class="card signal-card">
+      <div class="card signal-card" data-track-topic="AI Agent 工具链">
         <div class="signal-card-head">
           <div class="signal-level high">
             <div class="bar filled" style="height:8px;"></div>
@@ -1976,7 +1978,7 @@
         <div class="feedback-row">
           <button class="feedback-btn">👍 有用</button>
           <button class="feedback-btn">👎 不相关</button>
-          <button class="feedback-btn" onclick="showPage('topics', { topicTitle: 'AI Agent 工具链', follow: true })">📌 追踪主题</button>
+          <button class="feedback-btn">📌 追踪主题</button>
         </div>
       </div>
 
@@ -2014,7 +2016,7 @@
       </div>
 
       <!-- Signal Card 3 -->
-      <div class="card signal-card">
+      <div class="card signal-card" data-track-topic="本地 AI 与端侧模型">
         <div class="signal-card-head">
           <div class="signal-level medium">
             <div class="bar filled" style="height:8px;"></div>
@@ -4173,6 +4175,56 @@ document.querySelectorAll('[data-topic-action]').forEach(action => {
 
 document.querySelectorAll('[data-start-article]').forEach(item => {
   item.addEventListener('click', () => showPage('feeds', { openArticle: 0 }));
+});
+
+// === 阶段2：真实交互 ===
+// 信号反馈：👍/👎 同卡互斥；📌 追踪主题（toggle 状态 + 跳到映射主题）
+document.querySelectorAll('.feedback-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const text = btn.textContent.trim();
+    const isTrack = text.includes('追踪') || text.includes('已追踪');
+    if (isTrack) {
+      const tracked = btn.classList.toggle('active');
+      btn.textContent = tracked ? '✓ 已追踪' : '📌 追踪主题';
+      const topic = btn.closest('.signal-card')?.dataset.trackTopic;
+      if (tracked && topic) showPage('topics', { topicTitle: topic, follow: true });
+    } else {
+      const wasActive = btn.classList.contains('active');
+      btn.closest('.feedback-row')?.querySelectorAll('.feedback-btn').forEach(b => {
+        const t = b.textContent.trim();
+        if (!(t.includes('追踪') || t.includes('已追踪'))) b.classList.remove('active');
+      });
+      if (!wasActive) btn.classList.add('active');
+    }
+  });
+});
+
+// Search 结果：按类型回到对应模块（Signal→Today，Topic→Topics，文章→Feeds 原文）
+document.querySelectorAll('.search-workbench-result').forEach(card => {
+  card.addEventListener('click', () => {
+    const type = card.querySelector('.search-workbench-type')?.textContent?.trim();
+    if (type === 'Signal') showPage('today');
+    else if (type === 'Topic') showPage('topics');
+    else showPage('feeds', { openArticle: 0 });
+  });
+});
+
+// Starred 卡片：高亮选中并打开阅读
+document.querySelectorAll('.starred-article-card').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('#page-starred .starred-article-card')
+      .forEach(c => c.classList.remove('active'));
+    card.classList.add('active');
+    showPage('feeds', { openArticle: 0 });
+  });
+});
+
+// Feeds 行内 星标/已读：toggle 视觉状态（不冒泡打开阅读器）
+document.querySelectorAll('.row-act').forEach(btn => {
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    if (!btn.classList.contains('danger')) btn.classList.toggle('active');
+  });
 });
 
 document.querySelectorAll('.rail-item').forEach(item => {
