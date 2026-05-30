@@ -44,6 +44,16 @@
   </section>
 
   <section>
+    <h2>mockup 收尾：去 toolbar + 组件库</h2>
+    <ul>
+      <li><strong>移除顶部 dev toolbar</strong>（<code>.page-switcher</code> 固定黑条）及其 CSS、<code>.app-shell</code> 的 <code>padding-top:40px</code> 补偿与 <code>showPage/showState</code> 内的死高亮逻辑。导航统一收敛到 rail + 命令面板（⌘K）。原 toolbar 上的演示入口（Today+阅读、订阅管理、来源设置、Onboarding）移入命令面板「演示」组。</li>
+      <li><strong>核实「Today 右侧改坏」</strong>：用无头 Chrome 截图对比 <code>39d348e</code>（阶段1前）与当前，Today 右侧逐像素一致，<em>非本轮回归</em>；最可能的观感问题是固定 toolbar 遮挡，去掉后页面从顶部干净铺开。</li>
+      <li><strong>新增组件库展示页 <code>#page-components</code></strong>：分「基础组件 Primitives」（Tag/Button/FilterChip/ProgressBar/Confidence/SignalLevel/Kbd/FeedbackBtn）与「业务组件 Business Components」（SignalCard/TopicCard/StarredArticleCard/ArticleRow/SearchResult/ReadLaterCard/EvidenceCard）。每个组件标注对应 React 源文件路径，作为 mockup↔代码 的对照入口。命令面板「演示」组可进入。</li>
+      <li><strong>可复用性结论</strong>：核心业务组件本就以 CSS 类自包含、跨页复用（如 <code>.signal-card</code> 同时出现在 Today 与 Today+阅读），完全可抽成独立 React 组件并配 Story/测试。建议优先抽取 SignalCard、TopicCard、ArticleItem、StarredArticleCard、SearchResultCard 这几个高复用件。</li>
+    </ul>
+  </section>
+
+  <section>
     <h2>后续可选优化</h2>
     <ul>
       <li>Start Here 的「看反方观点」目前用「异源」启发式近似，后续如有立场/情感数据可替换为真实判定。</li>

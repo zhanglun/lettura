@@ -718,44 +718,6 @@
     ::-webkit-scrollbar-thumb:hover { background: var(--border-hover); }
 
     /* Page switcher (top bar for demo) */
-    .page-switcher {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 40px;
-      background: var(--text-primary);
-      display: flex;
-      align-items: center;
-      padding: 0 16px;
-      gap: 8px;
-      z-index: 1000;
-    }
-    .page-switcher .label {
-      font-size: 11px;
-      color: rgba(255,255,255,0.5);
-      margin-right: 8px;
-      font-weight: 600;
-      letter-spacing: 0.5px;
-    }
-    .page-switcher button {
-      padding: 4px 12px;
-      border-radius: 4px;
-      font-size: 11px;
-      font-weight: 500;
-      cursor: pointer;
-      border: 1px solid rgba(255,255,255,0.15);
-      background: transparent;
-      color: rgba(255,255,255,0.7);
-      transition: all 0.15s;
-    }
-    .page-switcher button:hover { background: rgba(255,255,255,0.1); color: #fff; }
-    .page-switcher button.active {
-      background: var(--accent);
-      color: #fff;
-      border-color: var(--accent);
-    }
-    .app-shell { padding-top: 40px; height: 100vh; }
 
     /* Empty state */
     .empty-state {
@@ -1928,28 +1890,32 @@
     .compare-article:first-of-type { border-top: none; }
     .compare-article:hover { color: var(--accent); }
     .compare-article-src { font-size: 10px; color: var(--text-tertiary); margin-top: 2px; }
+
+    /* ===== 组件库展示页 ===== */
+    .cmp-page { padding: 24px 32px 48px; max-width: 1040px; }
+    .cmp-section { margin-bottom: 34px; }
+    .cmp-section-title { font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+    .cmp-section-desc { font-size: 12px; color: var(--text-tertiary); margin-bottom: 16px; line-height: 1.6; }
+    .cmp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+    .cmp-item {
+      border: 1px solid var(--border); border-radius: 10px; padding: 16px;
+      background: var(--bg-card); display: flex; flex-direction: column; gap: 12px;
+    }
+    .cmp-item.wide { grid-column: 1 / -1; }
+    .cmp-label {
+      font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+      color: var(--text-tertiary); display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    }
+    .cmp-label .cmp-src {
+      font-weight: 500; text-transform: none; letter-spacing: 0; color: var(--accent);
+      font-size: 10px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    .cmp-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
   </style>
 </head>
 <body>
 
 <!-- Page Switcher -->
-<div class="page-switcher">
-  <span class="label">LETTURA MOCKUP</span>
-  <button class="active" onclick="showPage('today')">Today</button>
-  <button onclick="showPage('today-reading')">Today+阅读</button>
-  <button onclick="showPage('topics')">Topics</button>
-  <button onclick="showPage('feeds'); showState('articles')">Feeds</button>
-  <button onclick="showPage('settings'); showSettingsTab('subscriptions', null)">订阅管理</button>
-  <button onclick="showPage('settings'); showSettingsTab('sources', null)">来源设置</button>
-  <button onclick="showPage('search')">Search</button>
-  <button onclick="showPage('starred')">Starred</button>
-  <button onclick="showPage('readlater')">待读队列</button>
-  <button onclick="showPage('digest')">每日回顾</button>
-  <button onclick="showPage('compare')">主题对比</button>
-  <button onclick="showPage('settings')">Settings</button>
-  <button onclick="showPage('onboarding'); showOnboardingStep(1)">Onboarding</button>
-</div>
-
 <!-- ==================== PAGE: TODAY ==================== -->
 <div id="page-today" class="app-shell">
   <!-- Rail -->
@@ -4323,6 +4289,154 @@
   </div>
 </div>
 
+<!-- ==================== PAGE: 组件库 ==================== -->
+<div id="page-components" class="app-shell" style="display:none;">
+  <div class="rail">
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.912 5.813h6.107l-4.964 3.587 1.912 5.813L12 14.626l-4.967 3.587 1.912-5.813L3.981 8.813h6.107z"/></svg><span class="tooltip">Today</span></button>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg><span class="tooltip">Topics</span></button>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg><span class="tooltip">Feeds</span></button>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span class="tooltip">Search</span></button>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span class="tooltip">Starred</span></button>
+    <div class="rail-spacer"></div>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span class="tooltip">Settings</span></button>
+  </div>
+  <div class="main-content">
+    <div class="page-header">
+      <div class="page-title">组件库</div>
+      <div class="page-subtitle">把界面拆成可复用的基础组件与业务组件，每个都标注对应的 React 源文件，方便对照落地。</div>
+    </div>
+    <div class="main-scroll cmp-page">
+
+      <!-- 基础组件 -->
+      <div class="cmp-section">
+        <div class="cmp-section-title">基础组件 Primitives</div>
+        <div class="cmp-section-desc">无业务语义的原子组件，跨页面通用，对应 Radix Themes 封装或 Tailwind 工具类。</div>
+        <div class="cmp-grid">
+          <div class="cmp-item">
+            <div class="cmp-label">标签 Tag <span class="cmp-src">·tag-*</span></div>
+            <div class="cmp-row"><span class="tag tag-accent">AI Agent</span><span class="tag tag-green">Rust</span><span class="tag tag-blue">Apple</span><span class="tag tag-amber">待验证</span></div>
+          </div>
+          <div class="cmp-item">
+            <div class="cmp-label">按钮 Button <span class="cmp-src">·btn-*</span></div>
+            <div class="cmp-row"><button class="btn btn-primary" style="font-size:12px;">主操作</button><button class="btn btn-ghost" style="font-size:12px;">次操作</button></div>
+          </div>
+          <div class="cmp-item">
+            <div class="cmp-label">过滤标签 FilterChip <span class="cmp-src">·filter-chip</span></div>
+            <div class="cmp-row"><button class="filter-chip active">全部</button><button class="filter-chip">未读</button><button class="filter-chip">已读</button></div>
+          </div>
+          <div class="cmp-item">
+            <div class="cmp-label">进度条 ProgressBar <span class="cmp-src">·progress-bar</span></div>
+            <div class="progress-bar"><div class="fill" style="width:62%;"></div></div>
+          </div>
+          <div class="cmp-item">
+            <div class="cmp-label">置信度 Confidence <span class="cmp-src">SignalCard</span></div>
+            <div class="confidence"><span style="font-size:10px; color:var(--text-tertiary);">置信度</span><div class="confidence-bar"><div class="fill" style="width:85%; background:var(--accent);"></div></div><span style="font-size:10px; color:var(--accent-text); font-weight:600;">85%</span></div>
+          </div>
+          <div class="cmp-item">
+            <div class="cmp-label">信号强度 SignalLevel <span class="cmp-src">SignalCard</span></div>
+            <div class="cmp-row">
+              <div class="signal-level high"><div class="bar filled" style="height:8px;"></div><div class="bar filled" style="height:12px;"></div><div class="bar filled" style="height:16px;"></div></div>
+              <div class="signal-level medium"><div class="bar filled" style="height:8px;"></div><div class="bar filled" style="height:12px;"></div><div class="bar" style="height:16px;"></div></div>
+            </div>
+          </div>
+          <div class="cmp-item">
+            <div class="cmp-label">键帽 Kbd <span class="cmp-src">命令面板/帮助</span></div>
+            <div class="cmp-row"><kbd>⌘</kbd><kbd>K</kbd><kbd>j</kbd><kbd>k</kbd><kbd>esc</kbd></div>
+          </div>
+          <div class="cmp-item">
+            <div class="cmp-label">反馈按钮 FeedbackBtn <span class="cmp-src">·feedback-btn</span></div>
+            <div class="cmp-row"><button class="feedback-btn">👍 有用</button><button class="feedback-btn active">📌 已追踪</button></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 业务组件 -->
+      <div class="cmp-section">
+        <div class="cmp-section-title">业务组件 Business Components</div>
+        <div class="cmp-section-desc">承载业务语义的组合组件，已在多个页面复用，可整体抽成独立 React 组件并配 Story/测试。</div>
+        <div class="cmp-grid">
+
+          <div class="cmp-item wide">
+            <div class="cmp-label">信号卡 SignalCard <span class="cmp-src">layout/Intelligence/SignalCard.tsx</span></div>
+            <div class="card signal-card" style="margin:0;">
+              <div class="signal-card-head">
+                <div class="signal-level high"><div class="bar filled" style="height:8px;"></div><div class="bar filled" style="height:12px;"></div><div class="bar filled" style="height:16px;"></div></div>
+                <span class="tag tag-accent">AI Agent</span>
+                <span class="signal-card-meta">2 小时前 · 3 个来源 · 85%</span>
+              </div>
+              <div class="signal-card-title">OpenAI 开源 Agent 框架，直接挑战 LangChain 生态</div>
+              <div class="signal-card-summary">OpenAI 发布新的开源 Agent SDK，提供链式推理、工具调用和多 Agent 协作能力。</div>
+              <div class="feedback-row"><button class="feedback-btn">👍 有用</button><button class="feedback-btn">👎 不相关</button><button class="feedback-btn">📌 追踪主题</button></div>
+            </div>
+          </div>
+
+          <div class="cmp-item">
+            <div class="cmp-label">主题卡 TopicCard <span class="cmp-src">layout/Intelligence/Topics/TopicCard.tsx</span></div>
+            <article class="topic-card" style="cursor:default;">
+              <div class="topic-card-head"><span class="tag tag-accent">追踪中</span></div>
+              <div class="topic-title">AI Agent 工具链</div>
+              <div class="topic-definition" style="margin:6px 0;">围绕 Agent SDK、工具调用与多 Agent 协作的持续变化。</div>
+              <div class="topic-meta" style="font-size:11px; color:var(--text-tertiary);">18 篇文章 · 9 个来源</div>
+            </article>
+          </div>
+
+          <div class="cmp-item">
+            <div class="cmp-label">收藏卡 StarredArticleCard <span class="cmp-src">layout/Starred/index.tsx</span></div>
+            <div class="starred-article-card" style="cursor:default;">
+              <div class="starred-article-content">
+                <div class="starred-article-title" style="font-size:13px; font-weight:600;">OpenAI releases open-source Agent SDK</div>
+                <div class="starred-article-meta" style="font-size:11px; color:var(--text-tertiary); margin:4px 0;">TechCrunch · 3 天前</div>
+                <div class="saved-note">笔记：适合作为 Agent 框架生态变化的起点。</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="cmp-item wide">
+            <div class="cmp-label">文章行 ArticleRow <span class="cmp-src">components/ArticleItem/index.tsx</span></div>
+            <div class="art-row" style="cursor:default; border:1px solid var(--border); border-radius:8px;">
+              <div class="art-unread-dot"></div>
+              <img class="art-row-favicon" src="https://www.google.com/s2/favicons?domain=news.ycombinator.com&sz=32">
+              <div class="art-row-body">
+                <div class="art-row-title">Show HN: 自托管 RSS 阅读器，带 AI 信号检测</div>
+                <div class="art-row-meta"><span>user123</span><span>·</span><span>42 comments</span></div>
+              </div>
+              <div class="art-row-side"><span class="art-row-time">2h</span></div>
+            </div>
+          </div>
+
+          <div class="cmp-item wide">
+            <div class="cmp-label">搜索结果 SearchResult <span class="cmp-src">layout/Search/utils.tsx · SearchResultCard</span></div>
+            <div class="search-workbench-result" style="cursor:default; margin:0;">
+              <div class="search-workbench-meta"><span class="search-workbench-type">文章</span><span class="tag tag-accent">讨论</span><span class="search-workbench-time">Hacker News · 3 小时前</span></div>
+              <div class="search-workbench-result-title">社区热议 Agent 框架对比</div>
+              <div class="search-workbench-snippet">HN 用户集中讨论 <mark>Agent SDK</mark> 的模型绑定、可移植性和调试体验。</div>
+            </div>
+          </div>
+
+          <div class="cmp-item">
+            <div class="cmp-label">待读卡 ReadLaterCard <span class="cmp-src">（新）待读队列</span></div>
+            <div class="readlater-card" style="cursor:default; margin:0;">
+              <div class="readlater-meta"><span class="tag tag-green">Rust</span><span>blog.rust-lang.org</span></div>
+              <div class="readlater-title" style="font-size:13px;">Rust 1.85：async fn in traits 稳定</div>
+              <div class="readlater-progress-row"><div class="progress-bar"><div class="fill" style="width:18%;"></div></div><span class="readlater-pct">18%</span></div>
+            </div>
+          </div>
+
+          <div class="cmp-item">
+            <div class="cmp-label">来源证据 EvidenceCard <span class="cmp-src">Today · right-panel</span></div>
+            <div class="today-evidence-card">
+              <span class="today-evidence-source">TechCrunch</span>
+              <div class="today-evidence-title">OpenAI releases open-source Agent SDK</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 <!-- ===== 阶段3：全局命令面板 ===== -->
 <div class="cmd-overlay" id="cmd-overlay">
   <div class="cmd-palette" role="dialog" aria-label="命令面板">
@@ -4357,15 +4471,6 @@ function showPage(name, opts) {
   const page = document.getElementById('page-' + name);
   if (!page) return;
   page.style.display = 'flex';
-  document.querySelectorAll('.page-switcher button').forEach(btn => btn.classList.remove('active'));
-  const activeButton = opts.trigger || (typeof event !== 'undefined' ? event.target : null);
-  if (activeButton?.closest?.('.page-switcher')) {
-    activeButton.closest('button')?.classList.add('active');
-  } else if (!activeButton?.classList?.contains('page-switcher')) {
-    const switcherButton = [...document.querySelectorAll('.page-switcher button')]
-      .find(btn => btn.getAttribute('onclick')?.includes(`'${name}'`));
-    switcherButton?.classList.add('active');
-  }
   applyDeepLink(name, opts);
 }
 
@@ -4602,12 +4707,6 @@ function showState(state) {
   const target = document.getElementById('state-' + state);
   if (target) target.classList.add('active');
 
-  // 更新 page-switcher 按钮高亮
-  document.querySelectorAll('.page-switcher button').forEach(btn => btn.classList.remove('active'));
-  const switcherButton = [...document.querySelectorAll('.page-switcher button')]
-    .find(btn => btn.getAttribute('onclick')?.includes(`'${state}'`));
-  if (switcherButton) switcherButton.classList.add('active');
-
   // 更新 sidebar 高亮
   document.querySelectorAll('#page-feeds .sidebar-item').forEach(el => el.classList.remove('active'));
   if (state === 'articles') {
@@ -4649,6 +4748,11 @@ function showState(state) {
         if (d) d.style.display = 'flex';
       } },
     { group: '操作', label: '打开主题：AI Agent 工具链', hint: '', run: () => showPage('topics', { topicTitle: 'AI Agent 工具链' }) },
+    { group: '演示', label: '组件库 · 可复用组件展示', hint: '', run: () => showPage('components') },
+    { group: '演示', label: 'Today + 阅读（内联阅读器）', hint: '', run: () => showPage('today-reading') },
+    { group: '演示', label: '订阅管理（Settings）', hint: '', run: () => { showPage('settings'); showSettingsTab('subscriptions', null); } },
+    { group: '演示', label: '来源设置（Settings）', hint: '', run: () => { showPage('settings'); showSettingsTab('sources', null); } },
+    { group: '演示', label: 'Onboarding 引导', hint: '', run: () => { showPage('onboarding'); showOnboardingStep(1); } },
   ];
 
   let filtered = [];
