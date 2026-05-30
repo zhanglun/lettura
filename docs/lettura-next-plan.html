@@ -23,7 +23,7 @@
   <section>
     <h2>已完成的对齐项（本轮）</h2>
     <ol>
-      <li><strong>Feeds 文章行 dimmed</strong>：内联阅读器展开时其余行 <code>opacity-30 pointer-events-none</code>，<code>ArticleItem</code> 读取 <code>expandedArticleUuid</code> 判定。提交 <code>5b87eeb</code>。</li>
+      <li><s><strong>Feeds 文章行 dimmed</strong>：内联阅读器展开时其余行 <code>opacity-30 pointer-events-none</code>（提交 <code>5b87eeb</code>）</s>。<strong>已按用户反馈撤销</strong>：dimmed 的 <code>pointer-events-none</code> 导致展开一篇时无法点击其他文章、<code>opacity-30</code> 改了其他项颜色，体验不佳。现允许随时切换文章，其余项不变色（<code>handleExpandArticle</code> 本就是 toggle/切换语义，仅展开项保留高亮标识）。这是 mockup 自身的缺陷，不再对齐。</li>
       <li><strong>Search 关键词 &lt;mark&gt; 高亮</strong>：前端方案，新增 <code>HighlightText</code> 组件，覆盖文章/信号/话题三类结果摘要，<code>.search-result-mark</code> 琥珀样式复用。提交 <code>8247617</code>。</li>
       <li><strong>Starred 笔记块</strong>：<code>article.notes</code> 字段已存在，卡片底部条件渲染 <code>.starred-article-note</code>（靛蓝左边框 + accent 软背景）；顺带修正 <code>withNotesCount</code> 误用 summary 的统计 bug。提交 <code>f3a4902</code>。</li>
       <li><strong>Feeds 粘性 section label</strong>：<code>ArticleListVirtual</code> 顶部 <code>.art-section-label</code>（<code>position: sticky</code>），内容为「筛选名 · N 篇」，由 <code>ArticleView</code> 计算传入。提交 <code>fb625b1</code>。</li>

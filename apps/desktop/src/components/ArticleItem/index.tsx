@@ -85,18 +85,14 @@ export const ArticleItem = React.forwardRef(
       setHighlight(isArticleMatch || isExpandedMatch);
     }, [store.article?.id, store.expandedArticleUuid, article.id, article.uuid]);
 
-    const isDimmed =
-      !!store.expandedArticleUuid && store.expandedArticleUuid !== article.uuid;
-
     return (
       <div
         className={clsx(
-          "border-b border-[var(--gray-4)] flex items-start gap-2 px-4 py-2.5 select-none transition-[opacity,background-color] cursor-pointer group border-l-2",
+          "border-b border-[var(--gray-4)] flex items-start gap-2 px-4 py-2.5 select-none transition-colors cursor-pointer group border-l-2",
           "hover:bg-[var(--gray-a3)]",
           highlight
             ? "bg-[var(--accent-a2)] hover:bg-[var(--accent-a2)] border-l-[var(--accent-9)]"
             : "border-l-transparent",
-          isDimmed && "opacity-30 pointer-events-none",
         )}
         onClick={handleClick}
         onKeyDown={handleKeyDown}
