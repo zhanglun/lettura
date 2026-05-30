@@ -1765,7 +1765,6 @@
     }
     .art-row:hover { background: var(--bg-hover); }
     .art-row.active { background: var(--accent-light); border-left-color: var(--accent); }
-    .art-row.dimmed { opacity: 0.28; pointer-events: none; }
     .art-unread-dot {
       width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
       flex-shrink: 0;
@@ -2723,8 +2722,8 @@
           </div>
         </div>
 
-        <!-- Other rows — dimmed while reader is open -->
-        <div class="art-row dimmed" onclick="openArticleReader(this)">
+        <!-- Other rows -->
+        <div class="art-row" onclick="openArticleReader(this)">
           <div class="art-unread-dot"></div>
           <img class="art-row-favicon" src="https://www.google.com/s2/favicons?domain=news.ycombinator.com&sz=32">
           <div class="art-row-body">
@@ -2739,7 +2738,7 @@
             </div>
           </div>
         </div>
-        <div class="art-row dimmed" onclick="openArticleReader(this)">
+        <div class="art-row" onclick="openArticleReader(this)">
           <div class="art-unread-dot"></div>
           <img class="art-row-favicon" src="https://www.google.com/s2/favicons?domain=news.ycombinator.com&sz=32">
           <div class="art-row-body">
@@ -2754,7 +2753,7 @@
             </div>
           </div>
         </div>
-        <div class="art-row dimmed read" onclick="openArticleReader(this)">
+        <div class="art-row read" onclick="openArticleReader(this)">
           <div class="art-unread-dot"></div>
           <img class="art-row-favicon" src="https://www.google.com/s2/favicons?domain=news.ycombinator.com&sz=32">
           <div class="art-row-body">
@@ -2769,7 +2768,7 @@
             </div>
           </div>
         </div>
-        <div class="art-row dimmed" onclick="openArticleReader(this)">
+        <div class="art-row" onclick="openArticleReader(this)">
           <div class="art-unread-dot"></div>
           <img class="art-row-favicon" src="https://www.google.com/s2/favicons?domain=blog.rust-lang.org&sz=32">
           <div class="art-row-body">
@@ -2784,7 +2783,7 @@
             </div>
           </div>
         </div>
-        <div class="art-row dimmed" onclick="openArticleReader(this)">
+        <div class="art-row" onclick="openArticleReader(this)">
           <div class="art-unread-dot"></div>
           <img class="art-row-favicon" src="https://www.google.com/s2/favicons?domain=news.ycombinator.com&sz=32">
           <div class="art-row-body">
@@ -2799,7 +2798,7 @@
             </div>
           </div>
         </div>
-        <div class="art-row dimmed read" onclick="openArticleReader(this)">
+        <div class="art-row read" onclick="openArticleReader(this)">
           <div class="art-unread-dot"></div>
           <img class="art-row-favicon" src="https://www.google.com/s2/favicons?domain=news.ycombinator.com&sz=32">
           <div class="art-row-body">
@@ -4183,14 +4182,11 @@ function openArticleReader(item) {
   if (!reader) return;
   const currentActive = document.querySelector('#state-articles .art-row.active');
   if (currentActive === item) { closeArticleReader(); return; }
-  document.querySelectorAll('#state-articles .art-row').forEach(el => el.classList.remove('active', 'dimmed'));
+  document.querySelectorAll('#state-articles .art-row').forEach(el => el.classList.remove('active'));
   item.classList.add('active');
   reader.classList.remove('open');
   reader.style.display = 'none';
   item.after(reader);
-  document.querySelectorAll('#state-articles .art-row').forEach(el => {
-    if (el !== item) el.classList.add('dimmed');
-  });
   requestAnimationFrame(() => {
     reader.style.display = 'block';
     requestAnimationFrame(() => {
@@ -4210,7 +4206,7 @@ function openArticleReader(item) {
 function closeArticleReader() {
   const reader = document.getElementById('art-inline-reader');
   if (reader) { reader.classList.remove('open'); setTimeout(() => { reader.style.display = 'none'; }, 220); }
-  document.querySelectorAll('#state-articles .art-row').forEach(el => el.classList.remove('active', 'dimmed'));
+  document.querySelectorAll('#state-articles .art-row').forEach(el => el.classList.remove('active'));
 }
 
 function prevArticle() {
