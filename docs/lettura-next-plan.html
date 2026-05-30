@@ -32,6 +32,17 @@
   </section>
 
   <section>
+    <h2>mockup 交互补全路线（进行中）</h2>
+    <p>目标：补齐 mockup 缺失的跨页跳转与真实交互，并拓展新能力页面。逐阶段做、每阶段一次提交+审查。</p>
+    <ol>
+      <li><strong>阶段 1 ｜修复跳转 + 串通信息流</strong>：删除死链 <code>showPage('feeds-reading')</code>，给 <code>showPage</code> 增加深链参数（进入页面后定位/高亮/打开某条）；打通 Today 信号 →（追踪）Topic 主题 →（阅读证据）Feeds 原文 的闭环。</li>
+      <li><strong>阶段 2 ｜补全真实交互</strong>：信号卡「阅读证据/查看全部来源/追踪主题」接上跳转；「👍/👎/📌」toggle 状态+视觉反馈；Search 结果、Starred 卡片点击打开阅读；follow/mute/star/read 等 toggle 在 mockup 内存持久。</li>
+      <li><strong>阶段 3 ｜全局命令面板 + 键盘导航</strong>：Cmd+K 命令面板 overlay；列表 j/k 移动、Enter 打开、Esc 关闭；<code>?</code> 快捷键提示层。</li>
+      <li><strong>阶段 4 ｜拓展新能力页面</strong>：待读队列（read_later 清单+阅读进度）、每日回顾/时间线（Today 信号沉淀）、主题对比视图（同主题多来源立场并排）。</li>
+    </ol>
+  </section>
+
+  <section>
     <h2>后续可选优化</h2>
     <ul>
       <li>Start Here 的「看反方观点」目前用「异源」启发式近似，后续如有立场/情感数据可替换为真实判定。</li>

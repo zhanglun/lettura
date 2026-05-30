@@ -1970,13 +1970,13 @@
           </div>
         </div>
         <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:12px;">
-          <button class="btn btn-primary" style="font-size:11px; padding:5px 10px;">阅读证据</button>
-          <button class="btn btn-ghost" style="font-size:11px; padding:5px 10px;">查看全部来源</button>
+          <button class="btn btn-primary" style="font-size:11px; padding:5px 10px;" onclick="showPage('feeds', { openArticle: 0 })">阅读证据</button>
+          <button class="btn btn-ghost" style="font-size:11px; padding:5px 10px;" onclick="showPage('feeds')">查看全部来源</button>
         </div>
         <div class="feedback-row">
           <button class="feedback-btn">👍 有用</button>
           <button class="feedback-btn">👎 不相关</button>
-          <button class="feedback-btn">📌 追踪主题</button>
+          <button class="feedback-btn" onclick="showPage('topics', { topicTitle: 'AI Agent 工具链', follow: true })">📌 追踪主题</button>
         </div>
       </div>
 
@@ -4076,21 +4076,43 @@
 </div>
 
 <script>
-function showPage(name, trigger) {
+function showPage(name, opts) {
+  // opts: { trigger?, topicTitle?, follow?, openArticle?, note? } — deep-link params
+  opts = (opts && typeof opts === 'object') ? opts : {};
   document.querySelectorAll('.app-shell').forEach(el => el.style.display = 'none');
   const page = document.getElementById('page-' + name);
   if (!page) return;
   page.style.display = 'flex';
   document.querySelectorAll('.page-switcher button').forEach(btn => btn.classList.remove('active'));
-  const activeButton = trigger || (typeof event !== 'undefined' ? event.target : null);
-  if (activeButton?.classList?.contains('page-switcher')) return;
-  if (activeButton?.closest('.page-switcher')) {
-    activeButton.closest('button').classList.add('active');
-    return;
+  const activeButton = opts.trigger || (typeof event !== 'undefined' ? event.target : null);
+  if (activeButton?.closest?.('.page-switcher')) {
+    activeButton.closest('button')?.classList.add('active');
+  } else if (!activeButton?.classList?.contains('page-switcher')) {
+    const switcherButton = [...document.querySelectorAll('.page-switcher button')]
+      .find(btn => btn.getAttribute('onclick')?.includes(`'${name}'`));
+    switcherButton?.classList.add('active');
   }
-  const switcherButton = [...document.querySelectorAll('.page-switcher button')]
-    .find(btn => btn.getAttribute('onclick')?.includes(`'${name}'`));
-  switcherButton?.classList.add('active');
+  applyDeepLink(name, opts);
+}
+
+// 跨页深链：进入目标页后定位/高亮/打开某条内容，打通 Today→Topics→Feeds 信息流
+function applyDeepLink(name, opts) {
+  if (name === 'topics' && opts.topicTitle) {
+    const card = [...document.querySelectorAll('[data-topic-card]')]
+      .find(c => c.dataset.topicTitle === opts.topicTitle);
+    if (card) {
+      card.click();
+      requestAnimationFrame(() => card.scrollIntoView({ behavior: 'smooth', block: 'center' }));
+    }
+  }
+  if (name === 'feeds') {
+    showState('articles');
+    if (opts.openArticle !== undefined) {
+      const rows = document.querySelectorAll('#state-articles .art-row');
+      const row = rows[opts.openArticle] || rows[0];
+      if (row) requestAnimationFrame(() => openArticleReader(row));
+    }
+  }
 }
 
 function setTopicDetail(card) {
@@ -4150,7 +4172,7 @@ document.querySelectorAll('[data-topic-action]').forEach(action => {
 });
 
 document.querySelectorAll('[data-start-article]').forEach(item => {
-  item.addEventListener('click', () => showPage('feeds-reading'));
+  item.addEventListener('click', () => showPage('feeds', { openArticle: 0 }));
 });
 
 document.querySelectorAll('.rail-item').forEach(item => {
