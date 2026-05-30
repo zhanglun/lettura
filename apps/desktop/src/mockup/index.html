@@ -1883,6 +1883,51 @@
     }
     .kbd-help-row:last-child { border-bottom: none; }
     .kbd-help-row .keys { display: flex; gap: 4px; align-items: center; flex-shrink: 0; }
+
+    /* ===== 阶段4：新能力页面 ===== */
+    /* 待读队列 */
+    .readlater-card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px;
+      padding: 14px 16px; margin-bottom: 10px; cursor: pointer; transition: all 0.15s;
+    }
+    .readlater-card:hover { border-color: #cdd2dc; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
+    .readlater-meta { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--text-tertiary); margin-bottom: 6px; }
+    .readlater-title { font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 10px; line-height: 1.4; }
+    .readlater-progress-row { display: flex; align-items: center; gap: 10px; }
+    .readlater-progress-row .progress-bar { flex: 1; }
+    .readlater-pct { font-size: 11px; color: var(--text-secondary); font-weight: 600; min-width: 34px; text-align: right; }
+    /* 每日回顾时间线 */
+    .digest-timeline { position: relative; padding-left: 22px; }
+    .digest-timeline::before {
+      content: ''; position: absolute; left: 6px; top: 4px; bottom: 4px; width: 2px; background: var(--border);
+    }
+    .digest-day { margin-bottom: 22px; }
+    .digest-day-label {
+      position: relative; font-size: 12px; font-weight: 700; color: var(--text-primary); margin-bottom: 10px;
+    }
+    .digest-day-label::before {
+      content: ''; position: absolute; left: -22px; top: 3px; width: 10px; height: 10px;
+      border-radius: 50%; background: var(--accent); border: 2px solid var(--bg-card);
+    }
+    .digest-entry {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px;
+      padding: 12px 14px; margin-bottom: 8px;
+    }
+    .digest-entry-title { font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+    .digest-entry-summary { font-size: 12px; color: var(--text-secondary); line-height: 1.6; }
+    /* 主题对比 */
+    .compare-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .compare-col { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 14px; }
+    .compare-col-head { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .compare-col-stance { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+    .compare-col-summary { font-size: 12px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 12px; }
+    .compare-article {
+      border-top: 1px solid var(--border); padding: 9px 0; font-size: 12px; color: var(--text-secondary);
+      cursor: pointer;
+    }
+    .compare-article:first-of-type { border-top: none; }
+    .compare-article:hover { color: var(--accent); }
+    .compare-article-src { font-size: 10px; color: var(--text-tertiary); margin-top: 2px; }
   </style>
 </head>
 <body>
@@ -1898,6 +1943,9 @@
   <button onclick="showPage('settings'); showSettingsTab('sources', null)">来源设置</button>
   <button onclick="showPage('search')">Search</button>
   <button onclick="showPage('starred')">Starred</button>
+  <button onclick="showPage('readlater')">待读队列</button>
+  <button onclick="showPage('digest')">每日回顾</button>
+  <button onclick="showPage('compare')">主题对比</button>
   <button onclick="showPage('settings')">Settings</button>
   <button onclick="showPage('onboarding'); showOnboardingStep(1)">Onboarding</button>
 </div>
@@ -4135,6 +4183,146 @@
   </div>
 </div>
 
+<!-- ==================== PAGE: 待读队列 ==================== -->
+<div id="page-readlater" class="app-shell" style="display:none;">
+  <div class="rail">
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.912 5.813h6.107l-4.964 3.587 1.912 5.813L12 14.626l-4.967 3.587 1.912-5.813L3.981 8.813h6.107z"/></svg><span class="tooltip">Today</span></button>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg><span class="tooltip">Topics</span></button>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg><span class="tooltip">Feeds</span></button>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span class="tooltip">Search</span></button>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span class="tooltip">Starred</span></button>
+    <div class="rail-spacer"></div>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span class="tooltip">Settings</span></button>
+  </div>
+  <div class="main-content">
+    <div class="page-header">
+      <div class="page-title">待读队列</div>
+      <div class="page-subtitle">标记为「稍后读」的文章，按阅读进度排序，随时接着读。</div>
+    </div>
+    <div style="display:flex; align-items:center; gap:8px; padding:0 28px 16px; flex-wrap:wrap;">
+      <button class="filter-chip active">全部 12</button>
+      <button class="filter-chip">未开始 5</button>
+      <button class="filter-chip">进行中 4</button>
+      <button class="filter-chip">快读完 3</button>
+    </div>
+    <div class="main-scroll" style="padding:0 28px 24px; max-width:760px;">
+      <div class="readlater-card" onclick="showPage('feeds', { openArticle: 0 })">
+        <div class="readlater-meta"><span class="tag tag-accent">AI Agent</span><span>Hacker News</span><span>·</span><span>约 8 分钟</span></div>
+        <div class="readlater-title">社区热议 Agent 框架对比：官方 SDK 是否会重塑工具链</div>
+        <div class="readlater-progress-row"><div class="progress-bar"><div class="fill" style="width:62%;"></div></div><span class="readlater-pct">62%</span></div>
+      </div>
+      <div class="readlater-card" onclick="showPage('feeds', { openArticle: 0 })">
+        <div class="readlater-meta"><span class="tag tag-green">Rust</span><span>blog.rust-lang.org</span><span>·</span><span>约 12 分钟</span></div>
+        <div class="readlater-title">Rust 1.85 发布：async fn in traits 稳定，生命周期语法改进</div>
+        <div class="readlater-progress-row"><div class="progress-bar"><div class="fill" style="width:18%;"></div></div><span class="readlater-pct">18%</span></div>
+      </div>
+      <div class="readlater-card" onclick="showPage('feeds', { openArticle: 0 })">
+        <div class="readlater-meta"><span class="tag tag-blue">本地 AI</span><span>Simon Willison</span><span>·</span><span>约 6 分钟</span></div>
+        <div class="readlater-title">On-device LLM 部署的现实约束：内存、量化与延迟</div>
+        <div class="readlater-progress-row"><div class="progress-bar"><div class="fill" style="width:0%;"></div></div><span class="readlater-pct">0%</span></div>
+      </div>
+      <div class="readlater-card" onclick="showPage('feeds', { openArticle: 0 })">
+        <div class="readlater-meta"><span class="tag tag-amber">WebAssembly</span><span>Mozilla Hacks</span><span>·</span><span>约 15 分钟</span></div>
+        <div class="readlater-title">State of WebAssembly 2026：组件模型与宿主集成</div>
+        <div class="readlater-progress-row"><div class="progress-bar"><div class="fill" style="width:88%;"></div></div><span class="readlater-pct">88%</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PAGE: 每日回顾 ==================== -->
+<div id="page-digest" class="app-shell" style="display:none;">
+  <div class="rail">
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.912 5.813h6.107l-4.964 3.587 1.912 5.813L12 14.626l-4.967 3.587 1.912-5.813L3.981 8.813h6.107z"/></svg><span class="tooltip">Today</span></button>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg><span class="tooltip">Topics</span></button>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg><span class="tooltip">Feeds</span></button>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span class="tooltip">Search</span></button>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span class="tooltip">Starred</span></button>
+    <div class="rail-spacer"></div>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span class="tooltip">Settings</span></button>
+  </div>
+  <div class="main-content">
+    <div class="page-header">
+      <div class="page-title">每日回顾</div>
+      <div class="page-subtitle">把每天的高信号沉淀成可回看的时间线，错过的也能补上。</div>
+    </div>
+    <div class="main-scroll" style="padding:8px 28px 24px; max-width:680px;">
+      <div class="digest-timeline">
+        <div class="digest-day">
+          <div class="digest-day-label">今天 · 5 月 30 日 · 3 条高信号</div>
+          <div class="digest-entry" onclick="showPage('today')">
+            <div class="digest-entry-title">OpenAI 开源 Agent 框架，挑战 LangChain 生态</div>
+            <div class="digest-entry-summary">3 个来源集中报道，置信度 85%。已追踪为「AI Agent 工具链」主题。</div>
+          </div>
+          <div class="digest-entry" onclick="showPage('today')">
+            <div class="digest-entry-title">Rust 1.85：async fn in traits 稳定</div>
+            <div class="digest-entry-summary">异步生态里程碑，Tokio/Tower 可大幅简化 trait 定义。</div>
+          </div>
+          <div class="digest-entry" onclick="showPage('today')">
+            <div class="digest-entry-title">Apple 据传开发本地大模型部署方案</div>
+            <div class="digest-entry-summary">单一来源、待验证（55%），可能在 WWDC 公布。</div>
+          </div>
+        </div>
+        <div class="digest-day">
+          <div class="digest-day-label">昨天 · 5 月 29 日 · 2 条高信号</div>
+          <div class="digest-entry" onclick="showPage('today')">
+            <div class="digest-entry-title">向量数据库价格战升级</div>
+            <div class="digest-entry-summary">多家厂商下调托管定价，开源自托管讨论度上升。</div>
+          </div>
+          <div class="digest-entry" onclick="showPage('today')">
+            <div class="digest-entry-title">WASM 组件模型进入候选标准</div>
+            <div class="digest-entry-summary">跨语言组件复用接近可用，宿主集成方案逐步统一。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PAGE: 主题对比 ==================== -->
+<div id="page-compare" class="app-shell" style="display:none;">
+  <div class="rail">
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.912 5.813h6.107l-4.964 3.587 1.912 5.813L12 14.626l-4.967 3.587 1.912-5.813L3.981 8.813h6.107z"/></svg><span class="tooltip">Today</span></button>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg><span class="tooltip">Topics</span></button>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg><span class="tooltip">Feeds</span></button>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><span class="tooltip">Search</span></button>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span class="tooltip">Starred</span></button>
+    <div class="rail-spacer"></div>
+    <button class="rail-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span class="tooltip">Settings</span></button>
+  </div>
+  <div class="main-content">
+    <div class="page-header">
+      <div class="page-title">主题对比 · AI Agent 工具链</div>
+      <div class="page-subtitle">同一主题下，把不同来源的立场并排，快速看清分歧与共识。</div>
+    </div>
+    <div class="main-scroll" style="padding:8px 28px 24px;">
+      <div class="compare-grid">
+        <div class="compare-col">
+          <div class="compare-col-head"><span class="tag tag-accent">官方视角</span></div>
+          <div class="compare-col-stance">标准化是趋势</div>
+          <div class="compare-col-summary">官方 SDK 提供链式推理、工具调用与多 Agent 协作，主张统一接口降低迁移成本。</div>
+          <div class="compare-article" onclick="showPage('feeds', { openArticle: 0 })">OpenAI releases open-source Agent SDK<div class="compare-article-src">TechCrunch · 6 分钟</div></div>
+          <div class="compare-article" onclick="showPage('feeds', { openArticle: 0 })">官方文档：从 0 构建一个 Agent<div class="compare-article-src">openai.com · 9 分钟</div></div>
+        </div>
+        <div class="compare-col">
+          <div class="compare-col-head"><span class="tag tag-amber">社区质疑</span></div>
+          <div class="compare-col-stance">绑定与可移植性存疑</div>
+          <div class="compare-col-summary">HN 讨论集中在模型绑定、可移植性与调试体验，担心官方方案削弱现有框架差异化。</div>
+          <div class="compare-article" onclick="showPage('feeds', { openArticle: 0 })">社区热议 Agent 框架对比<div class="compare-article-src">Hacker News · 128 评论</div></div>
+          <div class="compare-article" onclick="showPage('feeds', { openArticle: 0 })">为什么我们还没迁移到官方 SDK<div class="compare-article-src">Reddit · 64 评论</div></div>
+        </div>
+        <div class="compare-col">
+          <div class="compare-col-head"><span class="tag tag-green">中立分析</span></div>
+          <div class="compare-col-stance">差异在调试链路</div>
+          <div class="compare-col-summary">把框架拆成工具协议、状态管理与追踪界面三层，认为官方优势主要在调试与观测。</div>
+          <div class="compare-article" onclick="showPage('feeds', { openArticle: 0 })">Notes on agent frameworks &amp; debugging<div class="compare-article-src">Simon Willison · 昨天</div></div>
+          <div class="compare-article" onclick="showPage('feeds', { openArticle: 0 })">工具链三层模型与迁移成本评估<div class="compare-article-src">Newsletter · 2 天前</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ===== 阶段3：全局命令面板 ===== -->
 <div class="cmd-overlay" id="cmd-overlay">
   <div class="cmd-palette" role="dialog" aria-label="命令面板">
@@ -4451,6 +4639,9 @@ function showState(state) {
     { group: '跳转', label: 'Search · 搜索', hint: 'g s', run: () => showPage('search') },
     { group: '跳转', label: 'Starred · 收藏库', hint: 'g b', run: () => showPage('starred') },
     { group: '跳转', label: 'Settings · 设置', hint: '', run: () => showPage('settings') },
+    { group: '视图', label: '待读队列 · 阅读进度', hint: '', run: () => showPage('readlater') },
+    { group: '视图', label: '每日回顾 · 信号时间线', hint: '', run: () => showPage('digest') },
+    { group: '视图', label: '主题对比 · 多来源立场', hint: '', run: () => showPage('compare') },
     { group: '操作', label: '标记全部已读', hint: '', run: () => {} },
     { group: '操作', label: '新建订阅…', hint: '', run: () => {
         showPage('settings');
@@ -4519,6 +4710,9 @@ function showState(state) {
     feeds: '#state-articles .art-row',
     search: '.search-workbench-result',
     starred: '#page-starred .starred-article-card',
+    readlater: '#page-readlater .readlater-card',
+    digest: '#page-digest .digest-entry',
+    compare: '#page-compare .compare-article',
   };
   function currentPage() {
     const shown = [...document.querySelectorAll('.app-shell')].find(el => el.style.display !== 'none');

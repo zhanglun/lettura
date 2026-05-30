@@ -38,8 +38,9 @@
       <li><s><strong>阶段 1 ｜修复跳转 + 串通信息流</strong></s> ✅：删除死链 <code>showPage('feeds-reading')</code>，<code>showPage(name, opts)</code> 增加深链参数 + <code>applyDeepLink</code>（进入页面后定位/高亮/打开某条）；打通 Today 信号 →（追踪）Topic 主题 →（阅读证据）Feeds 原文。</li>
       <li><s><strong>阶段 2 ｜补全真实交互</strong></s> ✅：信号卡导航按钮接上跳转；「👍/👎」同卡互斥 toggle、「📌」追踪 toggle+跳转映射主题（<code>data-track-topic</code>）；Search 结果按类型回到对应模块；Starred 卡片高亮选中并打开阅读；Feeds 行内星标/已读 toggle 视觉状态。DOM 类状态天然在内存持久。</li>
       <li><s><strong>阶段 3 ｜全局命令面板 + 键盘导航</strong></s> ✅：全局 <code>#cmd-overlay</code> 命令面板（Cmd/Ctrl+K，输入过滤跳转/操作，↑↓ 选择，Enter 执行，Esc/点击遮罩关闭）；页面级 <code>j/k</code>（或 ↑↓）在当前页列表移动 <code>.kbd-focus</code> 高亮、Enter 打开；<code>g</code> 前缀跳转（g t/o/f/s/b）；<code>?</code> 快捷键提示层 <code>#kbd-help-overlay</code>。输入框聚焦时不拦截按键。</li>
-      <li><strong>阶段 4 ｜拓展新能力页面</strong>：待读队列（read_later 清单+阅读进度）、每日回顾/时间线（Today 信号沉淀）、主题对比视图（同主题多来源立场并排）。</li>
+      <li><s><strong>阶段 4 ｜拓展新能力页面</strong></s> ✅：新增 3 个 <code>page-*</code> 草图 —— <code>#page-readlater</code>（待读队列，带阅读进度条）、<code>#page-digest</code>（每日回顾，信号时间线）、<code>#page-compare</code>（主题对比，多来源立场三列）。均接入 dev 切换器、命令面板「视图」组、rail 与 j/k 导航。</li>
     </ol>
+    <p><strong>四阶段全部完成。</strong>mockup 已具备跨页深链、真实交互、全局命令面板/键盘导航与 3 个拓展能力页面。后续如要落地到 React app，可按页面逐个评估。</p>
   </section>
 
   <section>
