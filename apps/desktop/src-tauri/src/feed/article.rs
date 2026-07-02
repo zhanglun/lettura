@@ -391,7 +391,7 @@ impl Article {
     for param in params {
       query = query.bind::<Text, _>(param);
     }
-    query = query.sql(" ORDER BY A.pub_date DESC ");
+    query = query.sql(" ORDER BY COALESCE(NULLIF(A.pub_date, ''), A.create_date) DESC ");
 
     if let Some(l) = filter.limit {
       query = query.sql(" limit ?").bind::<Integer, _>(l);

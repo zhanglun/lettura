@@ -1,4 +1,5 @@
 use actix_web::web;
+use chrono::{DateTime, Utc};
 use serde::Serialize;
 use tauri::{command, Emitter, State, WebviewWindow};
 use uuid::Uuid;
@@ -9,6 +10,19 @@ use crate::feed::WrappedMediaObject;
 use crate::models;
 use crate::server::stop_server;
 use crate::{feed, server, sources, AppState};
+
+/// Normalize an optional publish/updated time into a UTC string formatted as
+/// `YYYY-MM-DD HH:MM:SS`, matching SQLite's `CURRENT_TIMESTAMP` and the
+/// `create_date`/`update_date` columns. This keeps `pub_date` comparable to
+/// other timestamp columns by string ordering in SQLite. Returns an empty
+/// string when the source provides no time; the query layer falls back to
+/// `create_date` for such rows.
+fn normalize_pub_date(t: Option<DateTime<Utc>>) -> String {
+  match t {
+    Some(dt) => dt.naive_utc().format("%Y-%m-%d %H:%M:%S").to_string(),
+    None => String::new(),
+  }
+}
 
 #[derive(Debug, Serialize)]
 pub struct FeedFetchResponse {
@@ -72,15 +86,8 @@ pub fn create_feed_model(
     None => String::from(""),
   };
 
-  let pub_date = match res.published {
-    Some(t) => t.to_rfc3339(),
-    None => String::from(""),
-  };
-
-  let updated = match res.updated {
-    Some(t) => t.to_rfc3339(),
-    None => String::from(""),
-  };
+  let pub_date = normalize_pub_date(res.published);
+  let updated = normalize_pub_date(res.updated);
 
   return models::NewFeed {
     uuid: uuid.to_string(),
@@ -129,10 +136,7 @@ pub fn create_article_models(
     };
 
     // Time at which this item was first published
-    let pub_date: String = match entry.published {
-      Some(t) => t.to_rfc3339(),
-      None => String::from(""),
-    };
+    let pub_date: String = normalize_pub_date(entry.published);
 
     // Authors of this item
     let author = match entry.authors.get(0) {

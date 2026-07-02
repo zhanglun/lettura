@@ -1,0 +1,4 @@
+-- Not reversible: the original RFC3339 timezone offsets are lost in the
+-- UTC conversion. The normalized 'YYYY-MM-DD HH:MM:SS' format remains
+-- compatible with the query layer's COALESCE fallback, so leaving rows
+-- as-is on rollback is safe.
