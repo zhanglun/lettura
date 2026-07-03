@@ -26,17 +26,17 @@ export function StarredSidebar({
   const { t } = useTranslation();
 
   return (
-    <aside className="hidden w-[220px] shrink-0 flex-col border-r border-[var(--gray-5)] bg-[var(--gray-2)] md:flex">
-      <div className="border-b border-[var(--gray-5)] p-4">
-        <div className="text-sm font-semibold text-[var(--gray-12)]">
+    <aside className="starred-library-sidebar">
+      <div className="starred-library-header">
+        <div className="starred-library-title">
           Starred
         </div>
-        <div className="mt-1 text-xs leading-5 text-[var(--gray-10)]">
+        <div className="starred-library-desc">
           {t("starred.subtitle")}
         </div>
       </div>
-      <div className="flex-1 overflow-auto p-3">
-        <div className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-[var(--gray-10)]">
+      <div className="starred-library-content">
+        <div className="starred-library-section-title">
           {t("starred.sidebar.collections")}
         </div>
         <button
@@ -44,16 +44,16 @@ export function StarredSidebar({
           onClick={onSelectAll}
           className={
             activeCollection === null && activeTag === null
-              ? "flex w-full items-center gap-2 rounded-md bg-[var(--gray-a3)] px-2 py-1.5 text-left text-xs font-medium text-[var(--gray-12)]"
-              : "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-xs text-[var(--gray-11)] hover:bg-[var(--gray-a3)]"
+              ? "starred-library-item starred-library-item--active"
+              : "starred-library-item"
           }
         >
           <span
-            className="h-1.5 w-1.5 rounded-full"
+            className="starred-library-dot"
             style={{ background: "var(--amber-9)" }}
           />
           <span>{t("starred.sidebar.all")}</span>
-          <span className="ml-auto text-[10px] text-[var(--gray-9)]">
+          <span className="starred-library-count">
             {totalArticles}
           </span>
         </button>
@@ -64,19 +64,24 @@ export function StarredSidebar({
             onClick={() => onSelectCollection(collection.uuid)}
             className={
               activeCollection === collection.uuid
-                ? "flex w-full items-center gap-2 rounded-md bg-[var(--gray-a3)] px-2 py-1.5 text-left text-xs font-medium text-[var(--gray-12)]"
-                : "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-xs text-[var(--gray-11)] hover:bg-[var(--gray-a3)]"
+                ? "starred-library-item starred-library-item--active"
+                : "starred-library-item"
             }
           >
             <span
-              className="h-1.5 w-1.5 rounded-full"
+              className="starred-library-dot"
               style={{ background: "var(--accent-9)" }}
             />
             <span>{collection.name}</span>
+            {typeof collection.article_count === "number" && (
+              <span className="starred-library-count">
+                {collection.article_count}
+              </span>
+            )}
           </button>
         ))}
 
-        <div className="mb-2 mt-5 text-[10px] font-semibold uppercase tracking-wide text-[var(--gray-10)]">
+        <div className="starred-library-section-title starred-library-section-title--spaced">
           {t("starred.sidebar.tags")}
         </div>
         {tags.map((tag) => (
@@ -86,12 +91,17 @@ export function StarredSidebar({
             onClick={() => onSelectTag(tag.uuid)}
             className={
               activeTag === tag.uuid
-                ? "flex w-full items-center gap-2 rounded-md bg-[var(--gray-a3)] px-2 py-1.5 text-left text-xs font-medium text-[var(--gray-12)]"
-                : "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-xs text-[var(--gray-11)] hover:bg-[var(--gray-a3)]"
+                ? "starred-library-item starred-library-item--active"
+                : "starred-library-item"
             }
           >
             <Tags size={12} />
             #{tag.name}
+            {typeof tag.article_count === "number" && (
+              <span className="starred-library-count">
+                {tag.article_count}
+              </span>
+            )}
           </button>
         ))}
       </div>

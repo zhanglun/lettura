@@ -85,6 +85,7 @@ describe("createOnboardingSlice", () => {
       expect(state.packsLoading).toBe(false);
       expect(state.packsError).toBeNull();
       expect(state.selectedPackIds).toEqual([]);
+      expect(state.selectedInterestIds).toEqual(["ai", "developer"]);
       expect(state.previewPack).toBeNull();
       expect(state.previewLoading).toBe(false);
       expect(state.installStatus).toBe("idle");
@@ -113,8 +114,9 @@ describe("createOnboardingSlice", () => {
   });
 
   describe("setOnboardingStep", () => {
-    const steps: Array<["welcome" | "select-pack" | "installing" | "complete"]> = [
+    const steps: Array<["welcome" | "interests" | "select-pack" | "installing" | "complete"]> = [
       ["welcome"],
+      ["interests"],
       ["select-pack"],
       ["installing"],
       ["complete"],
@@ -129,6 +131,9 @@ describe("createOnboardingSlice", () => {
     it("should cycle through all steps", () => {
       store.getState().setOnboardingStep("welcome");
       expect(store.getState().onboardingStep).toBe("welcome");
+
+      store.getState().setOnboardingStep("interests");
+      expect(store.getState().onboardingStep).toBe("interests");
 
       store.getState().setOnboardingStep("select-pack");
       expect(store.getState().onboardingStep).toBe("select-pack");
@@ -184,6 +189,24 @@ describe("createOnboardingSlice", () => {
     });
   });
 
+  describe("toggleInterestSelection", () => {
+    it("should remove a selected interest", () => {
+      store.getState().toggleInterestSelection("ai");
+
+      expect(store.getState().selectedInterestIds).toEqual(["developer"]);
+    });
+
+    it("should add a new interest", () => {
+      store.getState().toggleInterestSelection("design");
+
+      expect(store.getState().selectedInterestIds).toEqual([
+        "ai",
+        "developer",
+        "design",
+      ]);
+    });
+  });
+
   describe("fetchPacks", () => {
     it("should fetch and store packs", async () => {
       await store.getState().fetchPacks();
@@ -192,6 +215,57 @@ describe("createOnboardingSlice", () => {
       expect(state.packs).toEqual(mockPacks);
       expect(state.packsLoading).toBe(false);
       expect(state.packsError).toBeNull();
+    });
+
+    it("should prioritize and preselect packs that match selected interests", async () => {
+      const { getStarterPacks } = await import("@/helpers/dataAgent");
+      (getStarterPacks as any).mockResolvedValueOnce([
+        {
+          id: "design",
+          name: "Design Daily",
+          description: "Daily design inspiration",
+          icon: "Palette",
+          language: "en",
+          tags: ["design"],
+          source_count: 8,
+        },
+        {
+          id: "ai",
+          name: "AI Starter Pack",
+          description: "AI sources",
+          icon: "Bot",
+          language: "en",
+          tags: ["ai", "ml"],
+          source_count: 12,
+        },
+        {
+          id: "developer",
+          name: "Developer Pack",
+          description: "Developer sources",
+          icon: "Code2",
+          language: "en",
+          tags: ["developer", "programming"],
+          source_count: 10,
+        },
+      ]);
+
+      await store.getState().fetchPacks();
+
+      const state = store.getState();
+      expect(state.packs.map((pack) => pack.id)).toEqual([
+        "ai",
+        "developer",
+        "design",
+      ]);
+      expect(state.selectedPackIds).toEqual(["ai", "developer"]);
+    });
+
+    it("should not replace an existing manual pack selection", async () => {
+      store.getState().setSelectedPackIds(["design"]);
+
+      await store.getState().fetchPacks();
+
+      expect(store.getState().selectedPackIds).toEqual(["design"]);
     });
 
     it("should handle fetch errors", async () => {

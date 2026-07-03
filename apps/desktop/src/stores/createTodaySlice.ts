@@ -38,6 +38,7 @@ export interface TodaySlice {
   aiConfig: AIConfigPublic | null;
 
   expandedSignalId: number | null;
+  pendingFocusSignalId: number | null;
   signalDetails: Record<number, SignalDetail>;
 
   overview: TodayOverview | null;
@@ -74,6 +75,8 @@ export interface TodaySlice {
   setPipelineProgress: (stage: string, current: number, total: number) => void;
   setPipelineError: (error: string) => void;
   triggerPipeline: (runType?: string) => Promise<void>;
+  focusSignal: (signalId: number) => void;
+  clearPendingFocusSignal: () => void;
   toggleSourceExpand: (signalId: number) => void;
   fetchSignalDetail: (signalId: number) => Promise<void>;
   fetchOverview: () => Promise<void>;
@@ -96,6 +99,7 @@ export const createTodaySlice: StateCreator<TodaySlice> = (set, get) => ({
   aiConfig: null,
 
   expandedSignalId: null,
+  pendingFocusSignalId: null,
   signalDetails: {},
 
   overview: null,
@@ -179,6 +183,19 @@ export const createTodaySlice: StateCreator<TodaySlice> = (set, get) => ({
     set({
       expandedSignalId: expandedSignalId === signalId ? null : signalId,
     });
+  },
+
+  focusSignal: (signalId) => {
+    set({
+      expandedSignalId: signalId,
+      pendingFocusSignalId: signalId,
+      isInlineReading: false,
+      rightPanelExpanded: false,
+    });
+  },
+
+  clearPendingFocusSignal: () => {
+    set({ pendingFocusSignalId: null });
   },
 
   fetchSignalDetail: async (signalId) => {

@@ -82,7 +82,6 @@ export const FolderList = () => {
   };
 
   useEffect(() => {
-    console.log("folder effect");
     getFolderList();
   }, []);
 

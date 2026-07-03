@@ -39,10 +39,8 @@ export const AddFeedChannel = (props: any) => {
     dataAgent
       .fetchFeed(feedUrl)
       .then((res) => {
-        console.log("res from rust", res);
         const [feed, message] = res;
         if (!feed) {
-          console.log("%c Line:40 🥤 !feed", "color:#f5ce50", !feed);
           toast.error(t("Unable to subscribe"), {
             description: t(message),
             duration: 2000,
@@ -52,7 +50,6 @@ export const AddFeedChannel = (props: any) => {
         }
 
         setFeed(feed);
-        console.log("%c Line:52 🥑 feed", "color:#7f2b82", feed);
         setStep(2);
       })
       .catch((error) => {
@@ -86,7 +83,6 @@ export const AddFeedChannel = (props: any) => {
     dataAgent
       .subscribeFeed(feedUrl)
       .then((res) => {
-        console.log("%c Line:88 🥕 res", "color:#4fff4B", res);
         if (res[2] === "") {
           store.initCollectionMetas();
 

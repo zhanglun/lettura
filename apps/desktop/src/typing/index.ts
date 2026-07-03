@@ -14,6 +14,7 @@ export enum ArticleReadLaterStatus {
 }
 export enum SettingTabKey {
   AI = "ai",
+  SUBSCRIPTIONS = "subscriptions",
   SOURCES = "sources",
   APPEARANCE = "appearance",
   BEHAVIOR = "behavior",

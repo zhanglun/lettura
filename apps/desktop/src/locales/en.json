@@ -154,23 +154,35 @@
   "onboarding": {
     "welcome": {
       "title": "Welcome to Lettura",
-      "subtitle": "Your personal feed reader. Follow your favorite sources and never miss a story.",
-      "get_started": "Get Started",
+      "subtitle": "Lettura is your daily judgment desk. Pick your interests and starter packs, then turn feeds into readable signals.",
+      "get_started": "Start Setup",
       "import_opml": "Import OPML",
       "import_opml_desc": "Already have subscriptions? Import from an OPML file.",
       "importing": "Importing...",
       "import_success": "OPML imported successfully!",
       "import_error": "Failed to import OPML file"
     },
+    "interests": {
+      "step": "Step 1 · Interests",
+      "title": "What do you want to follow?",
+      "subtitle": "Select at least one area so Lettura can recommend starter packs. You can adjust sources later in Settings.",
+      "next": "Next: Choose Packs"
+    },
     "select_pack": {
-      "title": "Choose Your Interests",
-      "subtitle": "Select one or more starter packs to get going. You can always add more later.",
+      "step": "Step 2 · Starter Packs",
+      "title": "Choose Starter Packs",
+      "subtitle": "Each pack contains curated sources. You can add, remove, and organize them later.",
+      "recommended": "Matches your interests",
       "sources_count": "{{count}} sources",
       "confirm_title": "Confirm Installation",
       "confirm_description": "You are about to install {{count}} packs with a total of {{sources}} sources.",
       "confirm_button": "Install",
       "back": "Back",
       "install": "Install Selected",
+      "retry": "Retry",
+      "error_title": "Could not load starter packs",
+      "empty_title": "No starter packs available",
+      "empty_subtitle": "Go back to adjust your interests, or import existing subscriptions with OPML.",
       "none_selected": "Please select at least one pack"
     },
     "installing": {
@@ -200,7 +212,8 @@
       "last_updated": "Last updated {{time}}",
       "analyzing": "Analyzing...",
       "done": "✓ Updated · Based on {{count}} sources",
-      "error_retry": "⚠ Update failed · Click to retry"
+      "error_retry": "⚠ Update failed · Click to retry",
+      "reanalyze": "Reanalyze"
     },
     "signals": "Key Signals",
     "empty": {
@@ -214,8 +227,12 @@
       "error_subtitle": "Something went wrong while loading today's articles. Please try again.",
       "retry": "Retry",
       "no_api_key": "AI features require an API Key. Configure it in Settings to get started.",
+      "no_api_key_title": "AI analysis is not configured",
+      "no_api_key_subtitle": "Add an OpenAI-compatible API key to turn today's articles into ranked signals with evidence.",
       "go_to_settings": "Go to Settings",
       "no_signals": "No signals yet. Run analysis to discover key insights.",
+      "no_signals_title": "No signals generated yet",
+      "no_signals_subtitle": "Run the analysis pipeline to cluster today's articles and surface the changes worth reading.",
       "start_analysis": "Start Analysis"
     },
     "pipeline": {
@@ -246,6 +263,8 @@
       "sources": "sources",
       "confidence": "confidence",
       "unverified": "Unverified",
+      "read_evidence": "Read evidence",
+      "view_sources": "View all sources",
       "level": {
         "high": "High Signal",
         "medium": "Medium Signal",
@@ -257,7 +276,7 @@
       "level_watch": "Watch",
       "level_signal": "Signal"
     },
-    "why_short": "Why",
+    "why_short": "Why it matters",
     "why_expand": "Show why",
     "why_collapse": "Hide",
     "sources": {
@@ -328,19 +347,48 @@
     }
   },
   "settings": {
-    "subtitle": "Configure how Lettura reads, analyzes, and presents your information sources.",
+    "subtitle": "Configure AI analysis, subscriptions, source quality, reading experience, and app behavior.",
     "status_secure": "Local config secure",
     "status_sources": "42 sources active",
     "status_analysis": "Last analysis 2h ago",
     "tab": {
       "ai_title": "AI Configuration",
       "ai_desc": "Model, key, connection status",
-      "sources_title": "Sources Management",
-      "sources_desc": "Feed health, packs, sync strategy",
+      "subscriptions_title": "Subscriptions",
+      "subscriptions_desc": "Manage your feed subscriptions",
+      "sources_title": "Sources",
+      "sources_desc": "Sync strategy, feed health, packs",
       "appearance_title": "Appearance & Reading",
       "appearance_desc": "Theme, font size, card density",
       "behavior_title": "App Behavior",
       "behavior_desc": "Startup, notifications, cache retention"
+    },
+    "subscriptions": {
+      "search_placeholder": "Search by feed name, URL, or homepage...",
+      "filter_all": "All",
+      "filter_unread": "Unread",
+      "filter_broken": "Broken",
+      "filter_ungrouped": "Ungrouped",
+      "kpi_feeds": "Feeds",
+      "kpi_folders": "Folders",
+      "kpi_unread": "Unread Articles",
+      "kpi_broken": "Broken Feeds",
+      "ungrouped": "Ungrouped",
+      "folder_meta": "{{sources}} feeds · {{unread}} unread",
+      "context_hint": "Right-click a feed to view articles, sync, mark all read, edit, move, disable, or delete.",
+      "view_detail": "View Details",
+      "move_title": "Move Feed",
+      "moved": "Feed moved",
+      "move_failed": "Failed to move feed",
+      "detail_empty_title": "Select a feed",
+      "detail_empty_help": "Choose a feed from the list to inspect URLs, sync status, folder placement, and management actions.",
+      "detail_title": "Source Details",
+      "home_url": "Homepage",
+      "feed_url": "Feed URL",
+      "last_sync": "Last Sync",
+      "folder": "Folder",
+      "failure_reason": "Failure Reason",
+      "management_actions": "Management Actions"
     },
     "sources": {
       "sources_title": "Sources Management",
@@ -363,15 +411,25 @@
       "health_ok": "Healthy",
       "action_retry": "Retry",
       "action_sync": "Sync",
+      "sync_strategy_title": "Sync Strategy",
+      "sync_strategy_help": "Controls fetching behavior for all sources; subscription editing lives in Subscriptions.",
       "sync_frequency": "Sync Frequency",
       "concurrent_requests": "Concurrent Requests",
       "request_timeout": "Request Timeout",
       "reset": "Reset",
       "input_quality": "Input Quality",
       "input_quality_desc": "Overview of your feed sources health",
+      "health_center_title": "Source Health Center",
+      "health_center_help": "A quick reliability view for current subscription input.",
+      "open_subscription_management": "Open Subscriptions",
+      "health_summary": "Current database: {{healthy}} healthy source(s), {{broken}} broken source(s), {{unread}} unread articles.",
       "kpi_active_sources": "Active Sources",
       "kpi_sync_rate": "Sync Success Rate",
       "kpi_needs_check": "Needs Check",
+      "recent_healthy_title": "Recently Healthy Sources",
+      "recent_healthy_help": "Pulled from the current subscription list to quickly confirm working sources.",
+      "broken_queue_title": "Broken Source Queue",
+      "broken_queue_help": "Main fixes such as delete, move, copy URL, or re-subscribe live in Subscriptions.",
       "broken_advice_title": "Broken Feed Advice",
       "broken_advice_help": "Consider removing or replacing feeds that consistently fail. Check the source URL for changes or try re-subscribing."
     },
@@ -379,6 +437,9 @@
       "title": "AI Configuration",
       "panel_title": "AI Configuration",
       "panel_desc": "Configure AI models for article analysis and deduplication",
+      "provider_title": "AI Provider",
+      "provider_desc": "OpenAI-compatible endpoint stored in local config.",
+      "configured": "Configured",
       "api_key": "API Key",
       "api_key_placeholder": "sk-...",
       "api_key_help": "Stored in local config file",
@@ -407,6 +468,7 @@
       "pipeline_triggered": "Pipeline started",
       "trigger_pipeline": "Run",
       "analysis_status": "Analysis Status",
+      "analysis_status_help": "Current pipeline and deduplication status.",
       "last_analysis": "Last analysis 2h ago",
       "kpi_sources": "Sources analyzed",
       "kpi_articles": "Recent articles processed",
@@ -419,6 +481,10 @@
       "enable_embedding": "Enable Embedding",
       "enable_embedding_desc": "Required for dedup and clustering. Disable if your plan doesn't include embedding API.",
       "embedding_model": "Embedding Model",
+      "modeling_title": "Models and Pipeline",
+      "modeling_desc": "Choose analysis models, embedding model, and the automatic analysis cadence.",
+      "connection_title": "Connection Test",
+      "connection_help": "Validate the current provider before saving changes.",
       "dedup_stats_title": "Deduplication Statistics",
       "dedup_total": "Total Analyzed",
       "dedup_duplicates": "Duplicates Found",
@@ -440,7 +506,19 @@
       "sync_title": "Background Sync",
       "sync_desc": "Manage background data sync behavior",
       "sync_background": "Auto Background Sync",
-      "sync_background_desc": "Automatically sync feeds on app launch"
+      "sync_background_desc": "Automatically sync feeds on app launch",
+      "privacy_title": "Privacy Boundary",
+      "privacy_desc": "API keys stay in local TOML. Article content is only sent to the configured provider when analysis runs."
+    },
+    "behavior": {
+      "runtime_status": "Runtime Status",
+      "system_behavior": "System Behavior",
+      "data_cache": "Data and Cache",
+      "local_storage": "Local Storage",
+      "exit_behavior": "Exit Behavior",
+      "kpi_language": "Interface Language",
+      "kpi_close_behavior": "Close Behavior",
+      "kpi_cache_retention": "Cache Retention"
     }
   },
   "layout": {
@@ -511,6 +589,9 @@
         "start_here_desc": "System recommends the best 1-3 articles to read first",
         "read_original": "Read Original",
         "recommended": "Recommended",
+        "start_here_primary": "Read first",
+        "start_here_alternative": "Opposing view",
+        "state_note": "AI refreshes topics after each run and your tracking makes it sharper; evidence comes from topic-article links, so you can revisit sources and re-analyze.",
         "select_prompt": "Select a topic to view details",
         "view_evidence": "View Evidence"
       },
@@ -545,6 +626,7 @@
       "feeds": "Feeds",
       "search": "Search",
       "starred": "Starred",
+      "components": "Components",
       "settings": "Settings"
     },
     "feeds": {
@@ -575,7 +657,10 @@
       "topics_list": "Topics",
       "today_desc": "Daily Intelligence Reader — your daily decision entry point",
       "topics_desc": "Track topics, signals, and related sources",
-      "feeds_desc": "Manage your subscriptions"
+      "feeds_desc": "Manage your subscriptions",
+      "feeds": "Folders",
+      "manage": "Manage",
+      "manage_feeds": "Manage subscriptions"
     }
   },
   "starred": {
@@ -583,6 +668,7 @@
     "subtitle": "Bookmark, read later, and long-term reference material.",
     "export": "Export",
     "unknown_feed": "Unknown feed",
+    "note_prefix": "Note: ",
     "sidebar": {
       "collections": "Collections",
       "all": "All Starred",
@@ -642,6 +728,7 @@
     }
   },
   "search": {
+    "title": "Search",
     "unknown_feed": "Unknown feed",
     "no_summary": "No summary available.",
     "sidebar": {
@@ -658,11 +745,20 @@
     "placeholder": "Search content in your Lettura",
     "filter": {
       "all": "All",
+      "articles": "Articles",
+      "signals": "Signals",
+      "topics": "Topics",
       "starred": "Starred",
       "high_signal": "High Signal",
       "advanced": "Filters",
       "all_sources": "All Sources"
     },
+    "result_type": {
+      "article": "Article",
+      "signal": "Signal",
+      "topic": "Topic"
+    },
+    "result_meta": "{{articles}} articles · {{sources}} sources",
     "result_count": "{{count}} results · Sorted by relevance",
     "hint_enter": "Press Enter or click Search to start",
     "hint_type": "Type a keyword to start searching",
@@ -699,6 +795,9 @@
     "duplicate": "Duplicate",
     "list_count": "{{count}} articles",
     "list_unread_count": "{{count}} unread",
+    "list_loaded_count": "{{count}} loaded",
+    "current_filter": "Filter",
+    "section_label": "{{filter}} · {{count}}",
     "actions": {
       "read_later": "Read later",
       "remove_read_later": "Remove from read later"
@@ -712,7 +811,11 @@
   "Appearance & Reading": "Appearance & Reading",
   "Keep long reading sessions quiet, clear, and low-friction.": "Keep long reading sessions quiet, clear, and low-friction.",
   "Theme": "Theme",
+  "Theme mode": "Theme mode",
   "Choose light, dark, or follow system preference.": "Choose light, dark, or follow system preference.",
+  "Best for daytime and bright environments.": "Best for daytime and bright environments.",
+  "Comfortable reading in low light.": "Comfortable reading in low light.",
+  "Follow the system appearance.": "Follow the system appearance.",
   "Font size": "Font size",
   "Adjust the reading font size.": "Adjust the reading font size.",
   "Line height": "Line height",
@@ -722,10 +825,13 @@
   "Reader preference": "Reader preference",
   "Compact": "Compact",
   "More content in less space.": "More content in less space.",
+  "List first": "List first",
+  "Current": "Current",
   "Comfortable": "Comfortable",
   "Balanced readability and density.": "Balanced readability and density.",
   "Immersive": "Immersive",
   "Maximum focus, minimal clutter.": "Maximum focus, minimal clutter.",
+  "Long read": "Long read",
   "Card density": "Card density",
   "Control the compactness of feed cards.": "Control the compactness of feed cards.",
   "Preview": "Preview",

@@ -61,18 +61,6 @@ vi.mock("../PipelineIndicator", () => ({
     <div data-testid="pipeline-indicator">Status: {status}</div>
   ),
 }));
-vi.mock("../TodayEmptyState", () => ({
-  TodayEmptyState: ({ type }: { type: string }) => (
-    <div data-testid="empty-state">
-      <span>EmptyState: {type}</span>
-      {type === "no_subscriptions" && (
-        <button data-testid="add-feeds-btn" onClick={() => mockStore.setOnboardingOpen(true)}>
-          today.empty.add_feeds
-        </button>
-      )}
-    </div>
-  ),
-}));
 vi.mock("@/components/MainPanel", () => ({
   MainPanel: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="main-panel">{children}</div>
@@ -95,7 +83,8 @@ describe("Integration tests: TodayPage signal-based UI", () => {
   it("C4: shows no_subscriptions empty state when no subscriptions", () => {
     render(<TodayPage />);
 
-    expect(screen.getByText("EmptyState: no_subscriptions")).toBeInTheDocument();
+    expect(screen.getByText("today.empty.no_feeds_title")).toBeInTheDocument();
+    expect(screen.getByText("today.empty.no_feeds_title").closest(".today-empty-card")).toBeInTheDocument();
     expect(screen.getByText("today.empty.add_feeds")).toBeInTheDocument();
   });
 
@@ -105,7 +94,8 @@ describe("Integration tests: TodayPage signal-based UI", () => {
 
     render(<TodayPage />);
 
-    expect(screen.getByText("today.empty.no_signals")).toBeInTheDocument();
+    expect(screen.getByText("today.empty.no_signals_title")).toBeInTheDocument();
+    expect(screen.getByText("today.empty.no_signals_subtitle")).toBeInTheDocument();
     expect(screen.getByText("today.empty.start_analysis")).toBeInTheDocument();
   });
 
@@ -129,20 +119,20 @@ describe("Integration tests: TodayPage signal-based UI", () => {
     render(<TodayPage />);
 
     expect(screen.getByTestId("signal-list")).toBeInTheDocument();
-    expect(screen.queryByText("EmptyState: no_subscriptions")).not.toBeInTheDocument();
-    expect(screen.queryByText("today.empty.no_signals")).not.toBeInTheDocument();
+    expect(screen.queryByText("today.empty.no_feeds_title")).not.toBeInTheDocument();
+    expect(screen.queryByText("today.empty.no_signals_title")).not.toBeInTheDocument();
   });
 
   it("C9: clicking Add Feeds button triggers setOnboardingOpen(true)", () => {
     render(<TodayPage />);
 
-    const addFeedsBtn = screen.getByTestId("add-feeds-btn");
+    const addFeedsBtn = screen.getByText("today.empty.add_feeds");
     fireEvent.click(addFeedsBtn);
 
     expect(mockStore.setOnboardingOpen).toHaveBeenCalledWith(true);
   });
 
-  it("shows PipelineIndicator with current status", () => {
+  it("shows pipeline status in the judgment header", () => {
     mockStore.subscribes = [{ uuid: "feed-1", title: "Test Feed" }];
     mockStore.aiConfig = { has_api_key: true, model: "gpt-4o-mini", embedding_model: "text-embedding-3-small", base_url: "" };
     mockStore.signals = [
@@ -162,7 +152,8 @@ describe("Integration tests: TodayPage signal-based UI", () => {
 
     render(<TodayPage />);
 
-    expect(screen.getByText("Status: running")).toBeInTheDocument();
+    expect(screen.getByText("today.header.analyzing")).toBeInTheDocument();
+    expect(screen.queryByTestId("pipeline-indicator")).not.toBeInTheDocument();
   });
 
   it("triggerPipeline is called when start_analysis button is clicked", () => {

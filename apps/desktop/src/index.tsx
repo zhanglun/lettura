@@ -19,6 +19,7 @@ import { FreshRSSPage } from "./layout/FreshRSS";
 import { TopicWorkspace } from "./layout/Intelligence/Topics/TopicWorkspace";
 import { SettingPage } from "./layout/Setting";
 import { FeedsPage } from "./layout/Feeds";
+import { ComponentsGallery } from "./layout/Components";
 
 import "./index.css";
 import "./i18n";
@@ -74,6 +75,10 @@ const router = createBrowserRouter([
         path: RouteConfig.LOCAL_TOPIC_DETAIL,
         element: <TopicWorkspace />,
       },
+      {
+        path: RouteConfig.LOCAL_COMPONENTS,
+        element: <ComponentsGallery />,
+      },
       //   ],
       // },
       {
@@ -96,7 +101,6 @@ const root = createRoot(domNode);
 
 if (typeof (window as any).__TAURI_INTERNALS__ !== "undefined") {
   invoke("get_server_port").then((port) => {
-    console.log("🚀 ~ invoke ~ port:", port);
     window.localStorage.setItem("port", port as string);
     root.render(<RouterProvider router={router} />);
   });

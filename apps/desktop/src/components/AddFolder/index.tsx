@@ -63,7 +63,6 @@ export const AddFolder = React.memo((props: AddFolderProps) => {
     }
 
     p.then((res) => {
-      console.log("🚀 ~ file: index.tsx:59 ~ p.then ~ res:", res);
       if (res[0] > 0) {
         store.getSubscribes();
         afterConfirm?.();
@@ -71,7 +70,6 @@ export const AddFolder = React.memo((props: AddFolderProps) => {
       }
     })
       .catch((err) => {
-        console.log("🚀 ~ file: index.tsx:66 ~ p.then ~ err:", err);
       })
       .finally(() => {
         setConfirming(false);

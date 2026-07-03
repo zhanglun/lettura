@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { EvidencePanel } from "../EvidencePanel";
 import type { Signal } from "@/stores/createTodaySlice";
 
@@ -37,6 +37,7 @@ describe("EvidencePanel", () => {
   it("should render evidence title", () => {
     render(<EvidencePanel signal={baseSignal} />);
     expect(screen.getByText("today.right_panel.evidence_title")).toBeInTheDocument();
+    expect(screen.getByText("today.right_panel.evidence_title").closest(".today-right-section")).toBeInTheDocument();
   });
 
   it("should render source titles", () => {
@@ -50,5 +51,15 @@ describe("EvidencePanel", () => {
     render(<EvidencePanel signal={baseSignal} />);
     expect(screen.getByText("Feed A")).toBeInTheDocument();
     expect(screen.getByText("Feed B")).toBeInTheDocument();
+    expect(screen.getByText("Feed A").className).toContain("today-evidence-source");
+  });
+
+  it("opens a source inline when an evidence item is clicked", () => {
+    const onInlineRead = vi.fn();
+    render(<EvidencePanel signal={baseSignal} onInlineRead={onInlineRead} />);
+
+    fireEvent.click(screen.getByRole("button", { name: /Source 2/ }));
+
+    expect(onInlineRead).toHaveBeenCalledWith("u2", "fb", 2);
   });
 });

@@ -124,10 +124,6 @@ export const Player = React.forwardRef((props: PlayerProps, ref) => {
       playHead.style.width = `${userClickWidthInPercent}%`;
       player.currentTime = (duration * userClickWidthInPercent) / 100;
 
-      console.log(
-        "🚀 ~ changeCurrentTime ~ player.currentTime:",
-        player.currentTime,
-      );
     }
   };
 
@@ -165,7 +161,6 @@ export const Player = React.forwardRef((props: PlayerProps, ref) => {
 
   const receiveNewRecord = useCallback(
     (record: any) => {
-      console.log("%c Line:154 🍅 record", "color:#3f7cff", record);
       if (list?.length) {
         for (let i = 0; i < list.length; i++) {
           if (list[i].uuid === record.uuid) {

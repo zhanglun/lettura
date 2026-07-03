@@ -399,6 +399,7 @@ export const SearchPage = () => {
             onToggleStarred={() => setIsStarred((prev) => !prev)}
             onSetDateRange={handleSetDateRange}
             onClearFilters={handleClearDateFilters}
+            onNavigateToTopic={handleNavigateToTopic}
           />
         )}
       </div>

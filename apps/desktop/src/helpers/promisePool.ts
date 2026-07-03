@@ -21,7 +21,6 @@ export const promisePool = ({
 
     let r = Promise.resolve();
 
-    console.log("tasks.length", tasks.length);
 
     if (limit <= fns.length) {
       const e: Promise<any> = p.then(() => tasks.splice(tasks.indexOf(e), 1));

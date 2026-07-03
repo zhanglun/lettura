@@ -105,6 +105,7 @@ pub fn run() {
       core::menu::setup_menu(app)?;
 
       feed::article::Article::purge_articles();
+      feed::article::Article::purge_by_data_retention();
 
       ai::pipeline::start_pipeline_timer(app.handle().clone());
 

@@ -1,5 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { SignalCard } from "../SignalCard";
 import type { Signal } from "@/stores/createTodaySlice";
 
@@ -79,6 +81,12 @@ const makeSignal = (overrides: Partial<Signal> = {}): Signal => ({
   ...overrides,
 });
 
+const getCssRule = (css: string, selector: string) => {
+  const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return css.match(new RegExp(`${escaped}\\s*\\{(?<body>[^}]+)\\}`))?.groups
+    ?.body ?? "";
+};
+
 describe("SignalCard", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -89,6 +97,47 @@ describe("SignalCard", () => {
   });
 
   describe("Why It Matters (WIM)", () => {
+    it("keeps card border and hover styles aligned with the mockup", () => {
+      const css = readFileSync(
+        join(process.cwd(), "src/styles/custom-components.css"),
+        "utf8",
+      );
+
+      const cardRule = getCssRule(css, ".today-signal-card");
+      const hoverRule = getCssRule(css, ".today-signal-card:hover");
+      const activeRule = getCssRule(css, ".today-signal-card--active");
+      const activeHoverRule = getCssRule(css, ".today-signal-card--active:hover");
+
+      expect(cardRule).toContain("border: 1px solid var(--workbench-border);");
+      expect(cardRule).toContain("border-radius: var(--workbench-card-radius);");
+      expect(cardRule).toContain("transition: all 0.15s;");
+      expect(hoverRule).toContain("border-color: var(--workbench-border-hover);");
+      expect(hoverRule).toContain("box-shadow: var(--workbench-shadow-hover);");
+      expect(activeRule).toContain("border-color: var(--workbench-accent);");
+      expect(activeRule).not.toContain("border-width");
+      expect(activeHoverRule).toContain("border-color: var(--workbench-accent);");
+    });
+
+    it("uses the judgment-desk signal card structure", () => {
+      const signal = makeSignal({
+        topic_id: 1,
+        topic_title: "AI Agent",
+        topic_uuid: "topic-1",
+        relevance_score: 0.85,
+      });
+      render(<SignalCard signal={signal} />);
+
+      expect(screen.getByText(signal.title).closest(".today-signal-card")).toBeInTheDocument();
+      expect(screen.getByText(signal.title).className).toContain("today-signal-title");
+      expect(screen.getByText(signal.summary).className).toContain("today-signal-summary");
+      expect(screen.getByText("AI Agent").className).toContain("today-signal-tag");
+      expect(screen.getAllByText(/85%/)).toHaveLength(2);
+      expect(screen.getAllByText(/85%/)[1].className).toContain("today-confidence-value");
+      expect(screen.getByText("today.why_short").closest("button")?.className).toContain("today-wim-toggle");
+      expect(screen.getByRole("button", { name: /today.feedback.useful/ }).className).toContain("today-feedback-button");
+      expect(screen.queryByText("today.sources.expand")).not.toBeInTheDocument();
+    });
+
     it("T-WIM-01: shows Why button when why_it_matters is non-empty and differs from summary", () => {
       const signal = makeSignal();
       render(<SignalCard signal={signal} />);
@@ -170,13 +219,33 @@ describe("SignalCard", () => {
       expect(screen.getByTestId("source-list").parentElement).toHaveStyle({ maxHeight: "0px", opacity: "0" });
     });
 
-    it("T-SRC-03: clicking collapse button calls toggleSourceExpand", () => {
+    it("T-SRC-03: clicking title calls toggleSourceExpand", () => {
       const signal = makeSignal();
       mockStore.expandedSignalId = signal.id;
       render(<SignalCard signal={signal} />);
 
-      const collapseButton = screen.getByText("today.sources.collapse");
-      fireEvent.click(collapseButton);
+      fireEvent.click(screen.getByText(signal.title));
+
+      expect(mockStore.toggleSourceExpand).toHaveBeenCalledWith(signal.id);
+    });
+
+    it("T-SRC-04: clicking read evidence opens the first source inline", () => {
+      const signal = makeSignal();
+      const onInlineRead = vi.fn();
+
+      render(<SignalCard signal={signal} onInlineRead={onInlineRead} />);
+
+      fireEvent.click(screen.getByRole("button", { name: "today.signal_card.read_evidence" }));
+
+      expect(onInlineRead).toHaveBeenCalledWith("art-1", "feed-1", 1);
+    });
+
+    it("T-SRC-05: clicking view sources expands the source list", () => {
+      const signal = makeSignal();
+
+      render(<SignalCard signal={signal} />);
+
+      fireEvent.click(screen.getByRole("button", { name: "today.signal_card.view_sources" }));
 
       expect(mockStore.toggleSourceExpand).toHaveBeenCalledWith(signal.id);
     });

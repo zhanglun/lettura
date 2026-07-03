@@ -2,7 +2,12 @@ import { StateCreator } from "zustand";
 import type { UserConfigSlice } from "@/stores/createUserConfigSlice";
 import * as dataAgent from "@/helpers/dataAgent";
 
-export type OnboardingStep = "welcome" | "select-pack" | "installing" | "complete";
+export type OnboardingStep =
+  | "welcome"
+  | "interests"
+  | "select-pack"
+  | "installing"
+  | "complete";
 export type InstallStatus = "idle" | "installing" | "partial_success" | "all_failed" | "success";
 
 export interface StarterPackSummary {
@@ -51,6 +56,11 @@ export interface OnboardingSlice {
   togglePackSelection: (packId: string) => void;
   setSelectedPackIds: (ids: string[]) => void;
 
+  // Selected interest IDs
+  selectedInterestIds: string[];
+  toggleInterestSelection: (interestId: string) => void;
+  setSelectedInterestIds: (ids: string[]) => void;
+
   // Pack preview
   previewPack: PackPreview | null;
   previewLoading: boolean;
@@ -73,6 +83,41 @@ export interface OnboardingSlice {
   completeOnboarding: () => Promise<void>;
 }
 
+const INTEREST_TAGS: Record<string, string[]> = {
+  ai: ["ai", "ml", "machine-learning", "artificial intelligence"],
+  developer: ["developer", "dev", "programming", "code", "software", "engineering"],
+  startup: ["startup", "founder", "venture", "vc"],
+  design: ["design", "ux", "ui"],
+  product: ["product", "pm"],
+  research: ["research", "science", "paper", "papers"],
+  business: ["business", "finance", "market", "strategy"],
+};
+
+export const getPackInterestScore = (
+  pack: StarterPackSummary,
+  selectedInterestIds: string[],
+) => {
+  const normalizedTags = pack.tags.map((tag) => tag.toLowerCase());
+  return selectedInterestIds.reduce((score, interestId, index) => {
+    const aliases = INTEREST_TAGS[interestId] || [interestId];
+    const matched = aliases.some((alias) => normalizedTags.includes(alias));
+    if (!matched) return score;
+    return score + (selectedInterestIds.length - index);
+  }, 0);
+};
+
+const rankPacksByInterests = (
+  packs: StarterPackSummary[],
+  selectedInterestIds: string[],
+) =>
+  [...packs].sort((a, b) => {
+    const scoreDiff =
+      getPackInterestScore(b, selectedInterestIds) -
+      getPackInterestScore(a, selectedInterestIds);
+    if (scoreDiff !== 0) return scoreDiff;
+    return b.source_count - a.source_count;
+  });
+
 export const createOnboardingSlice: StateCreator<OnboardingSlice> = (
   set,
   get,
@@ -90,7 +135,19 @@ export const createOnboardingSlice: StateCreator<OnboardingSlice> = (
     set({ packsLoading: true, packsError: null });
     try {
       const packs = await dataAgent.getStarterPacks();
-      set({ packs, packsLoading: false });
+      const selectedInterestIds = get().selectedInterestIds;
+      const rankedPacks = rankPacksByInterests(packs, selectedInterestIds);
+      const selectedPackIds = get().selectedPackIds;
+      const recommendedPackIds = rankedPacks
+        .filter((pack) => getPackInterestScore(pack, selectedInterestIds) > 0)
+        .slice(0, 3)
+        .map((pack) => pack.id);
+      set({
+        packs: rankedPacks,
+        packsLoading: false,
+        selectedPackIds:
+          selectedPackIds.length === 0 ? recommendedPackIds : selectedPackIds,
+      });
     } catch (err: any) {
       set({ packsError: err?.message || "Failed to load packs", packsLoading: false });
     }
@@ -106,6 +163,17 @@ export const createOnboardingSlice: StateCreator<OnboardingSlice> = (
     }
   },
   setSelectedPackIds: (ids) => set({ selectedPackIds: ids }),
+
+  selectedInterestIds: ["ai", "developer"],
+  toggleInterestSelection: (interestId) => {
+    const current = get().selectedInterestIds;
+    if (current.includes(interestId)) {
+      set({ selectedInterestIds: current.filter((id) => id !== interestId) });
+    } else {
+      set({ selectedInterestIds: [...current, interestId] });
+    }
+  },
+  setSelectedInterestIds: (ids) => set({ selectedInterestIds: ids }),
 
   previewPack: null,
   previewLoading: false,

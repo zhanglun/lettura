@@ -102,6 +102,8 @@ pub async fn handle_sync_feed(
 ) -> Result<impl Responder> {
   let res = feed::channel::sync_feed(uuid.to_string(), query.feed_type.to_string()).await;
 
+  feed::article::Article::purge_articles();
+  feed::article::Article::purge_by_data_retention();
   crate::ai::pipeline::spawn_pipeline_if_configured(None);
 
   Ok(web::Json(res))

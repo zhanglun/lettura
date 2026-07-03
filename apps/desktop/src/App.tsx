@@ -175,7 +175,6 @@ function App() {
   useEffect(() => {
     if (!hasFetchedConfig.current) {
       hasFetchedConfig.current = true;
-      console.log("app render");
       getUserConfigRef.current().then((cfg: UserConfig) => {
         const { color_scheme, customize_style } = cfg;
         if (customize_style && Object.keys(customize_style).length) {

@@ -5,7 +5,7 @@ import {
   ScrollBoxRefObject,
 } from "@/components/ArticleView/ScrollBox";
 import { useRef } from "react";
-import { StarAndRead } from "@/layout/Article/StarAndRead";
+import { ReaderControls } from "@/components/ReaderControls";
 import { IconButton } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
 import { ArticleResItem } from "@/db";
@@ -20,9 +20,10 @@ export interface ArticleViewProps {
   goPrev?: () => void;
   closable?: boolean;
   onClose?: () => void;
+  onArticleUpdate?: (updated: ArticleResItem) => void;
 }
 
-export function View(props: ArticleViewProps) {
+export function View({ article, goNext, goPrev, closable, onClose, onArticleUpdate }: ArticleViewProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const params = useParams<{ uuid?: string }>();
@@ -62,8 +63,8 @@ export function View(props: ArticleViewProps) {
   const scrollBoxRef = useRef<ScrollBoxRefObject>(null);
 
   const handleBack = () => {
-    if (props.closable) {
-      props.onClose?.();
+    if (closable) {
+      onClose?.();
       return;
     }
     setArticle(null);
@@ -76,7 +77,7 @@ export function View(props: ArticleViewProps) {
     <div className="flex h-full min-h-0 flex-1 min-w-0 flex-col bg-[var(--color-panel-solid)]">
       <AnimatePresence>
         <motion.article
-          key={props.article?.uuid || "view"}
+          key={article?.uuid || "view"}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -98,21 +99,29 @@ export function View(props: ArticleViewProps) {
                   {t("article.view.back")}
                 </button>
                 <div className="flex-1" />
-                {props.article && <StarAndRead article={props.article} />}
-                {props.closable && (
+                {article && (
+                  <ReaderControls
+                    article={article}
+                    showBrowser
+                    showReadLater
+                    onStarChange={onArticleUpdate}
+                    onReadChange={onArticleUpdate}
+                  />
+                )}
+                {closable && (
                   <IconButton
                     size="2"
                     variant="ghost"
                     color="gray"
                     className="text-[var(--gray-11)]"
-                    onClick={props.onClose}
+                    onClick={onClose}
                   >
                     <X size={16} />
                   </IconButton>
                 )}
               </div>
-              {props.article ? (
-                <ArticleDetail article={props.article} />
+              {article ? (
+                <ArticleDetail article={article} />
               ) : (
                 <div className="flex flex-1 items-center justify-center">
                   {renderPlaceholder()}
@@ -125,8 +134,8 @@ export function View(props: ArticleViewProps) {
       <ArticleNavFooter
         canPrev={hasMorePrev}
         canNext={hasMoreNext}
-        onPrev={props.goPrev}
-        onNext={props.goNext}
+        onPrev={goPrev}
+        onNext={goNext}
         prevLabel={t("article.view.prev")}
         nextLabel={t("article.view.next")}
       />

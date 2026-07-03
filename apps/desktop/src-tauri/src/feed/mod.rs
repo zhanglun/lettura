@@ -81,7 +81,7 @@ pub fn find_proxy(url: &str) -> Option<config::Proxy> {
 /// request feed, parse Feeds
 ///
 /// # Examples
-/// ```
+/// ```ignore
 /// let url = "https://sspai.com/feed".to_string();
 /// let res = parse_feed(&url).await;
 /// ```

@@ -122,7 +122,7 @@ export const Sidebar = React.memo(function ({
   }[context];
 
   return (
-    <div className="flex flex-col h-full w-[220px] bg-[var(--app-sidebar)] border-r border-[var(--gray-5)] select-none shrink-0 overflow-hidden">
+    <div className="flex flex-col h-full w-[276px] bg-[var(--app-sidebar)] border-r border-[var(--gray-5)] select-none shrink-0 overflow-hidden">
       <div className="px-4 py-3.5 border-b border-[var(--gray-5)] shrink-0">
         <div className="min-w-0">
           <div className="truncate text-[13px] font-semibold text-[var(--gray-12)] tracking-tight">
@@ -136,7 +136,7 @@ export const Sidebar = React.memo(function ({
         </div>
       </div>
 
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto scrollbar-gutter">
         {renderContextContent()}
       </div>
 

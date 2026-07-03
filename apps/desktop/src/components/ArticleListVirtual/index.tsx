@@ -1,13 +1,9 @@
 import React, {
-  Fragment,
   useEffect,
   useRef,
-  useImperativeHandle,
-  useCallback,
   useState,
 } from "react";
-import { AnimatePresence } from "framer-motion";
-import { ArticleItem, ArticleItemDensity } from "../ArticleItem";
+import { ArticleItem } from "../ArticleItem";
 import { ArticleInlineReader } from "@/layout/Article/ArticleInlineReader";
 import { Skeleton } from "@radix-ui/themes";
 import type { ArticleResItem } from "@/db";
@@ -24,23 +20,17 @@ export type ArticleListVirtualProps = {
   isReachingEnd?: boolean;
   isEmpty: boolean;
   isLoading: boolean;
-  itemDensity?: ArticleItemDensity;
   onArticleRead?: (article: ArticleResItem) => void;
+  onArticleUpdate?: (updated: ArticleResItem) => void;
   expandedArticleUuid?: string | null;
   onExpandArticle?: (article: ArticleResItem) => void;
   onCloseInlineReader?: () => void;
+  sectionLabel?: string;
 };
 
-export interface ArticleListVirtualRefType {
-  getList: () => void;
-  markAllRead: () => void;
-  articlesRef: any;
-  innerRef: React.RefObject<HTMLDivElement>;
-}
-
-export const ArticleListVirtual = React.memo(
-  React.forwardRef<ArticleListVirtualRefType, ArticleListVirtualProps>(
-    (props: ArticleListVirtualProps, ref) => {
+export const ArticleListVirtual = React.memo(function ArticleListVirtual(
+  props: ArticleListVirtualProps,
+) {
       const {
         articles,
         isEmpty,
@@ -48,80 +38,61 @@ export const ArticleListVirtual = React.memo(
         isReachingEnd,
         size,
         setSize,
-        itemDensity = "regular",
         onArticleRead,
+        onArticleUpdate,
         expandedArticleUuid,
         onExpandArticle,
         onCloseInlineReader,
+        sectionLabel,
       } = props;
       const { t } = useTranslation();
-      const internalParentRef = useRef<HTMLDivElement>(null);
+      const containerRef = useRef<HTMLDivElement>(null);
       const [isScrolled, setIsScrolled] = useState(false);
-
-      useEffect(() => {
-        if (!expandedArticleUuid || !internalParentRef.current) return;
-        const target = internalParentRef.current.querySelector(
-          `[data-expand-uuid="${expandedArticleUuid}"]`,
-        );
-        if (target) {
-          target.scrollIntoView({ behavior: "smooth", block: "start" });
-        }
-      }, [expandedArticleUuid]);
-
-      useImperativeHandle(
-        ref,
-        () => ({
-          getList: () => console.log("getList called"),
-          markAllRead: () => console.log("markAllRead called"),
-          articlesRef: internalParentRef,
-          innerRef: internalParentRef,
-        }),
-        [],
-      );
-
       const isLoadingMoreRef = useRef(false);
 
-      const loadMore = useCallback(() => {
-        if (!(isReachingEnd || isLoading || isLoadingMoreRef.current)) {
-          isLoadingMoreRef.current = true;
-          setSize(size + 1);
-          setTimeout(() => {
-            isLoadingMoreRef.current = false;
-          }, 1000);
-        }
-      }, [isReachingEnd, isLoading, size, setSize]);
-
-      const handleScroll = useCallback(() => {
-        if (!internalParentRef.current) return;
-        const { scrollTop, scrollHeight, clientHeight } =
-          internalParentRef.current;
-        const scrollPercentage = (scrollTop + clientHeight) / scrollHeight;
-        const isAtBottom = scrollPercentage > 0.9;
-
-        if (isAtBottom && !isScrolled) {
-          setIsScrolled(true);
-          loadMore();
-        } else if (!isAtBottom && isScrolled) {
-          setIsScrolled(false);
-        }
-      }, [isScrolled, loadMore]);
+      useEffect(() => {
+        if (!expandedArticleUuid || !containerRef.current) return;
+        const container = containerRef.current;
+        const itemEl = container.querySelector(
+          `[data-item-uuid="${expandedArticleUuid}"]`,
+        ) as HTMLElement | null;
+        if (!itemEl) return;
+        const rowEl = itemEl.firstElementChild as HTMLElement | null;
+        const target = rowEl ?? itemEl;
+        const delta =
+          target.getBoundingClientRect().bottom -
+          container.getBoundingClientRect().top;
+        container.scrollTo({ top: container.scrollTop + delta, behavior: "smooth" });
+      }, [expandedArticleUuid]);
 
       useEffect(() => {
-        if (!internalParentRef.current) return;
+        const container = containerRef.current;
+        if (!container) return;
 
-        const scrollElement = internalParentRef.current;
-        scrollElement.addEventListener("scroll", handleScroll, {
-          passive: true,
-        });
-        return () => {
-          scrollElement.removeEventListener("scroll", handleScroll);
+        const handleScroll = () => {
+          const { scrollTop, scrollHeight, clientHeight } = container;
+          const atBottom = (scrollTop + clientHeight) / scrollHeight > 0.9;
+
+          if (atBottom && !isScrolled) {
+            setIsScrolled(true);
+            if (!(isReachingEnd || isLoading || isLoadingMoreRef.current)) {
+              isLoadingMoreRef.current = true;
+              setSize(size + 1);
+              setTimeout(() => { isLoadingMoreRef.current = false; }, 1000);
+            }
+          } else if (!atBottom && isScrolled) {
+            setIsScrolled(false);
+          }
         };
-      }, [handleScroll]);
+
+        container.addEventListener("scroll", handleScroll, { passive: true });
+        return () => container.removeEventListener("scroll", handleScroll);
+      }, [isScrolled, isReachingEnd, isLoading, size, setSize]);
 
       return (
         <div
-          ref={internalParentRef}
-          className="w-full flex-1 overflow-y-auto scrollbar-gutter"
+          ref={containerRef}
+          className="w-full flex-1 min-h-0 overflow-y-auto scrollbar-gutter"
         >
           {isEmpty ? (
             <div className="flex flex-col justify-center items-center gap-1 text-muted-foreground min-h-full py-20">
@@ -129,44 +100,37 @@ export const ArticleListVirtual = React.memo(
               <p>{t("Yay, no matching items.")}</p>
             </div>
           ) : (
-            <ul className="list-none m-0 p-0">
+            <div>
+              {sectionLabel && (
+                <div className="art-section-label">{sectionLabel}</div>
+              )}
               {articles.map((article, index) => {
-                const isExpanded = expandedArticleUuid != null && article.uuid === expandedArticleUuid;
-                const isDimmed = expandedArticleUuid != null && !isExpanded;
-
+                const isExpanded = expandedArticleUuid === article.uuid;
                 return (
-                  <Fragment key={`${article.uuid}-${index}`}>
-                    <li
-                      data-expand-uuid={article.uuid}
-                      className={isDimmed ? "opacity-50 transition-opacity duration-200" : ""}
-                    >
-                      <ArticleItem
+                  <div key={`${article.uuid}-${index}`} data-item-uuid={article.uuid}>
+                    <ArticleItem
+                      article={article}
+                      onRead={onArticleRead}
+                      onExpand={onExpandArticle}
+                      onUpdate={(patch) => onArticleUpdate?.({ ...article, ...patch })}
+                    />
+                    {isExpanded && (
+                      <ArticleInlineReader
                         article={article}
-                        density={itemDensity}
-                        onRead={onArticleRead}
-                        onExpand={onExpandArticle}
+                        onClose={onCloseInlineReader!}
+                        goPrev={index > 0 ? () => onExpandArticle?.(articles[index - 1]) : undefined}
+                        goNext={index < articles.length - 1 ? () => onExpandArticle?.(articles[index + 1]) : undefined}
+                        canPrev={index > 0}
+                        canNext={index < articles.length - 1}
+                        index={index}
+                        total={articles.length}
+                        onArticleUpdate={onArticleUpdate}
                       />
-                    </li>
-                    <AnimatePresence initial={false}>
-                      {isExpanded && (
-                        <li key={`reader-${article.uuid}`}>
-                          <ArticleInlineReader
-                            article={article}
-                            onClose={onCloseInlineReader!}
-                            goPrev={index > 0 ? () => onExpandArticle?.(articles[index - 1]) : undefined}
-                            goNext={index < articles.length - 1 ? () => onExpandArticle?.(articles[index + 1]) : undefined}
-                            canPrev={index > 0}
-                            canNext={index < articles.length - 1}
-                            index={index}
-                            total={articles.length}
-                          />
-                        </li>
-                      )}
-                    </AnimatePresence>
-                  </Fragment>
+                    )}
+                  </div>
                 );
               })}
-            </ul>
+            </div>
           )}
           {isLoading && (
             <div className="p-2 pl-6 grid gap-1 relative shrink-0">
@@ -185,8 +149,6 @@ export const ArticleListVirtual = React.memo(
           )}
         </div>
       );
-    },
-  ),
-);
+});
 
 export default ArticleListVirtual;

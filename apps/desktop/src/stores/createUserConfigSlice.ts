@@ -64,7 +64,6 @@ export const createUserConfigSlice: StateCreator<UserConfigSlice> = (
   viewOrigin: false,
 
   updateViewOrigin: (status: boolean) => {
-    console.log("%c Line:40 🥃 status", "color:#ea7e5c", status);
     set(() => ({
       viewOrigin: status,
     }));

@@ -57,7 +57,6 @@ export function getBestImages(entries: ArticleResItem[]) {
                 'head meta[property="og:image"]',
               );
 
-              console.log("metaImage", metaImage);
 
               if (metaImage) {
                 const a = dom.createElement("a");

@@ -127,7 +127,6 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
       return feed;
     });
 
-    console.log("%c Line:102 🍢 list", "color:#ea7e5c", list);
 
     set({
       subscribes: list,
@@ -167,7 +166,6 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
 
   feed: null,
   setFeed: (feed: FeedResItem | null) => {
-    console.log("%c Line:148 🥛 feed", "color:#fca650", feed);
     set(() => ({
       feed: feed,
       viewMeta: feed

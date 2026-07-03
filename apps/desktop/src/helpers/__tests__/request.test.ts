@@ -7,6 +7,7 @@ vi.mock("axios");
 describe("request helpers", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    (window.localStorage.getItem as unknown as ReturnType<typeof vi.fn>).mockReturnValue("3000");
   });
 
   describe("createInstance", () => {
@@ -29,6 +30,21 @@ describe("request helpers", () => {
       createInstance(config);
 
       expect(axios.defaults.baseURL).toBe("http://localhost:3000/api");
+    });
+
+    it("should read the current backend port for every request", () => {
+      const config = {};
+      const mockInstance = { get: vi.fn() };
+      const getItem = window.localStorage.getItem as unknown as ReturnType<typeof vi.fn>;
+      (axios.create as any).mockReturnValue(mockInstance);
+
+      getItem.mockReturnValue("3000");
+      createInstance(config);
+      expect(axios.defaults.baseURL).toBe("http://localhost:3000/api");
+
+      getItem.mockReturnValue("3456");
+      createInstance(config);
+      expect(axios.defaults.baseURL).toBe("http://localhost:3456/api");
     });
   });
 

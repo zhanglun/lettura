@@ -1,13 +1,17 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { formatDistanceToNow, parseISO } from "date-fns";
-import { ChevronLeft, ExternalLink, Star, Loader2, AlertCircle, RotateCw } from "lucide-react";
+import { ChevronLeft, ExternalLink, Star, Eye, EyeOff, Loader2, AlertCircle, RotateCw } from "lucide-react";
 import type { SignalSource } from "@/stores/createTodaySlice";
 import type { ArticleResItem } from "@/db";
 import { useBearStore } from "@/stores";
 import { pickArticleContent, processArticleHtml } from "@/helpers/articleContent";
 import { wraperWithRadix } from "@/components/ArticleView/ContentRender";
 import { ArticleNavFooter } from "@/components/ArticleNavFooter";
+import { ArticleReadStatus, ArticleStarStatus } from "@/typing";
+import * as dataAgent from "@/helpers/dataAgent";
+import { open } from "@tauri-apps/plugin-shell";
+import { ReaderIconBtn } from "@/components/ReaderIconBtn";
 
 interface InlineReaderProps {
   source: SignalSource;
@@ -32,6 +36,7 @@ function formatSourceDate(date?: string) {
   }
 }
 
+
 export function InlineReader({
   source,
   sources,
@@ -44,26 +49,73 @@ export function InlineReader({
   onRetry,
 }: InlineReaderProps) {
   const { t } = useTranslation();
-  const [localStarred, setLocalStarred] = useState(false);
+  const [localStarred, setLocalStarred] = useState(
+    articleDetail?.starred ?? ArticleStarStatus.UNSTAR,
+  );
+  const [localReadStatus, setLocalReadStatus] = useState(
+    articleDetail?.read_status ?? ArticleReadStatus.UNREAD,
+  );
 
   const canGoPrev = currentIndex > 0;
   const canGoNext = currentIndex < sources.length - 1;
   const sourceDate = formatSourceDate(source.pub_date);
+  const articleUuid = articleDetail?.uuid ?? source.article_uuid;
+  const isStarred = localStarred === ArticleStarStatus.STARRED;
+  const isRead = localReadStatus === ArticleReadStatus.READ;
 
-  const rawContent = pickArticleContent(
-    articleDetail?.content,
-    articleDetail?.description,
-    source.excerpt,
-  );
+  const rawContent = pickArticleContent(articleDetail?.content, articleDetail?.description, source.excerpt);
   const processedHtml = processArticleHtml(rawContent);
   const contentElement = wraperWithRadix(processedHtml);
   const hasContent = rawContent.length > 0;
 
+  useEffect(() => {
+    setLocalStarred(articleDetail?.starred ?? ArticleStarStatus.UNSTAR);
+  }, [articleDetail?.starred, articleUuid]);
+
+  useEffect(() => {
+    setLocalReadStatus(articleDetail?.read_status ?? ArticleReadStatus.UNREAD);
+  }, [articleDetail?.read_status, articleUuid]);
+
+  const updateStoreArticle = useCallback(
+    (patch: Partial<ArticleResItem>) => {
+      if (!articleUuid) return;
+      const store = useBearStore.getState();
+      const idx = store.articleList.findIndex((a) => a.uuid === articleUuid);
+      if (idx === -1) return;
+      const updated = [...store.articleList];
+      updated[idx] = { ...updated[idx], ...patch };
+      store.setArticleList(updated);
+    },
+    [articleUuid],
+  );
+
+  const toggleStar = useCallback(() => {
+    if (!articleUuid) return;
+    const next = isStarred ? ArticleStarStatus.UNSTAR : ArticleStarStatus.STARRED;
+    dataAgent.updateArticleStarStatus(articleUuid, next).then(() => {
+      setLocalStarred(next);
+      updateStoreArticle({ starred: next });
+    });
+  }, [articleUuid, isStarred, updateStoreArticle]);
+
+  const toggleRead = useCallback(() => {
+    if (!articleUuid) return;
+    const next = isRead ? ArticleReadStatus.UNREAD : ArticleReadStatus.READ;
+    dataAgent.updateArticleReadStatus(articleUuid, next).then(() => {
+      setLocalReadStatus(next);
+      updateStoreArticle({ read_status: next });
+    });
+  }, [articleUuid, isRead, updateStoreArticle]);
+
+  const handleOpenOriginal = useCallback(() => {
+    if (source.link) {
+      open(source.link);
+    }
+  }, [source.link]);
+
   return (
-    <div className="flex h-full min-w-0 flex-col">
-      <div
-        className="flex min-w-0 items-center gap-2 px-5 py-3 border-b border-[var(--gray-4)] shrink-0"
-      >
+    <div className="today-reading-panel">
+      <div className="today-reading-header">
         <button
           onClick={onBack}
           className="flex shrink-0 items-center gap-1 text-[11px] text-[var(--gray-9)] hover:text-[var(--gray-12)] transition-colors px-2 py-1 rounded hover:bg-[var(--gray-3)]"
@@ -78,54 +130,37 @@ export function InlineReader({
           {t("today.inline_reader.source_of", { current: currentIndex + 1, total: sources.length })}
         </span>
 
-        <a
-          href={source.link}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="p-1 rounded text-[var(--gray-9)] hover:text-[var(--gray-12)] hover:bg-[var(--gray-3)] transition-colors"
-        >
-          <ExternalLink size={14} />
-        </a>
+        <ReaderIconBtn
+          icon={ExternalLink}
+          label={t("Open in browser")}
+          disabled={!source.link}
+          onClick={handleOpenOriginal}
+        />
 
-        <button
-          onClick={() => {
-            if (source.article_uuid) {
-              const newStatus = !localStarred ? 1 : 0;
-              setLocalStarred(!localStarred);
-              import("@/helpers/dataAgent").then(({ updateArticleStarStatus }) => {
-                updateArticleStarStatus(source.article_uuid, newStatus).then(() => {
-                  const store = useBearStore.getState();
-                  const list = store.articleList;
-                  const idx = list.findIndex((a) => a.uuid === source.article_uuid);
-                  if (idx !== -1) {
-                    const updated = [...list];
-                    updated[idx] = { ...updated[idx], starred: newStatus };
-                    store.setArticleList(updated);
-                  }
-                });
-              });
-            }
-          }}
-          className="p-1 rounded transition-colors"
-          style={{ color: localStarred ? "var(--accent-9)" : "var(--gray-9)" }}
-        >
-          <Star size={14} fill={localStarred ? "currentColor" : "none"} />
-        </button>
+        <ReaderIconBtn
+          icon={Star}
+          label={t(isStarred ? "Unstar it" : "Star it")}
+          active={isStarred}
+          disabled={!articleUuid}
+          onClick={toggleStar}
+        />
+
+        <ReaderIconBtn
+          icon={isRead ? EyeOff : Eye}
+          label={t(isRead ? "Mark as unread" : "Mark as read")}
+          disabled={!articleUuid}
+          onClick={toggleRead}
+        />
       </div>
 
-      <div className="min-w-0 flex-1 overflow-auto px-7 py-6">
+      <div className="today-reading-body">
         <div
-          className="mb-2 break-words text-[10px] font-semibold uppercase tracking-[0.5px]"
-          style={{ color: "var(--accent-9)" }}
+          className="today-reading-feed"
         >
           {source.feed_title}
         </div>
-        <h1
-          className="mb-3 break-words text-[20px] font-bold leading-[1.3] text-[var(--gray-12)]"
-        >
-          {source.title}
-        </h1>
-        <div className="mb-6 break-words text-[12px] leading-5 text-[var(--gray-9)]">
+        <h1 className="today-reading-title">{source.title}</h1>
+        <div className="today-reading-meta">
           {source.feed_title}
           {sourceDate && <> · {sourceDate}</>}
         </div>
@@ -152,7 +187,7 @@ export function InlineReader({
         )}
 
         {!articleLoading && !articleError && hasContent && (
-          <div className="prose prose-sm max-w-none break-words text-[14px] text-[var(--gray-11)] leading-[1.8]">
+          <div className="today-reading-content">
             {contentElement}
           </div>
         )}

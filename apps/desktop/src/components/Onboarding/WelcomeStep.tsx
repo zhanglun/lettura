@@ -1,8 +1,8 @@
-import { Button, Flex, Text, Heading, Box } from "@radix-ui/themes";
+import { Button } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
 import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
-import { FileUp } from "lucide-react";
+import { ChevronRight, FileUp, Rss } from "lucide-react";
 import { open } from "@tauri-apps/plugin-dialog";
 import { readTextFile } from "@tauri-apps/plugin-fs";
 
@@ -34,40 +34,32 @@ export function WelcomeStep() {
   };
 
   return (
-    <Flex direction="column" align="center" justify="center" gap="6" p="8">
-      <Flex
-        direction="column"
-        align="center"
-        gap="4"
-        className="max-w-md text-center"
-      >
-        <Heading size="7" weight="bold">
+    <div className="onboarding-step-card onboarding-step-card--centered">
+      <div className="onboarding-brand-icon">
+        <Rss size={28} />
+      </div>
+      <div className="onboarding-copy">
+        <h1 className="onboarding-welcome-title">
           {t("onboarding.welcome.title")}
-        </Heading>
-        <Text size="3" color="gray" className="leading-relaxed">
+        </h1>
+        <p className="onboarding-welcome-subtitle">
           {t("onboarding.welcome.subtitle")}
-        </Text>
-      </Flex>
+        </p>
+      </div>
 
-      <Flex direction="column" gap="3" className="w-full max-w-xs mt-4">
+      <div className="onboarding-primary-actions">
         <Button
           size="3"
-          onClick={() => setOnboardingStep("select-pack")}
+          onClick={() => setOnboardingStep("interests")}
           className="w-full"
         >
           {t("onboarding.welcome.get_started")}
+          <ChevronRight size={16} />
         </Button>
 
-        <Box className="relative my-2">
-          <Box className="absolute inset-0 flex items-center">
-            <Box className="w-full border-t border-gray-5" />
-          </Box>
-          <Box className="relative flex justify-center">
-            <Text size="2" color="gray" className="bg-[var(--color-panel-solid)] px-3">
-              or
-            </Text>
-          </Box>
-        </Box>
+        <div className="onboarding-divider">
+          <span>or</span>
+        </div>
 
         <Button
           variant="outline"
@@ -83,11 +75,11 @@ export function WelcomeStep() {
         </Button>
 
         {opmlImportError && (
-          <Text size="2" color="red" className="text-center">
+          <p className="onboarding-error-text">
             {t("onboarding.welcome.import_error")}
-          </Text>
+          </p>
         )}
-      </Flex>
-    </Flex>
+      </div>
+    </div>
   );
 }

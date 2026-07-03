@@ -174,23 +174,35 @@
   "onboarding": {
     "welcome": {
       "title": "欢迎使用 Lettura",
-      "subtitle": "您的个人 RSS 阅读器。关注您最喜欢的来源，不要错过任何故事。",
-      "get_started": "开始使用",
+      "subtitle": "Lettura 是你的每日判断入口。先选关注方向和 Starter Pack，我们会帮你把信息流整理成可阅读、可追踪的信号。",
+      "get_started": "开始设置",
       "import_opml": "导入 OPML",
       "import_opml_desc": "已有订阅？从 OPML 文件导入。",
       "importing": "导入中...",
       "import_success": "OPML 导入成功！",
       "import_error": "导入 OPML 文件失败"
     },
+    "interests": {
+      "step": "第 1 步 · 兴趣选择",
+      "title": "你主要关注哪些领域？",
+      "subtitle": "选择至少一个方向，用于推荐更合适的 Starter Pack。后续仍然可以在设置里调整来源。",
+      "next": "下一步：选择订阅包"
+    },
     "select_pack": {
-      "title": "选择您感兴趣的领域",
-      "subtitle": "选择一个或多个入门包开始使用。您可以稍后随时添加更多。",
+      "step": "第 2 步 · 安装订阅包",
+      "title": "选择 Starter Pack",
+      "subtitle": "每个 Pack 包含精选信息源，安装后可在订阅管理里继续增删和整理。",
+      "recommended": "匹配你的兴趣",
       "sources_count": "{{count}} 个源",
       "confirm_title": "确认安装",
       "confirm_description": "即将安装 {{count}} 个包，共 {{sources}} 个源。",
       "confirm_button": "安装",
       "back": "返回",
       "install": "安装所选",
+      "retry": "重新加载",
+      "error_title": "无法加载 Starter Pack",
+      "empty_title": "暂时没有可用订阅包",
+      "empty_subtitle": "你可以返回上一步调整兴趣，或先通过 OPML 导入已有订阅。",
       "none_selected": "请至少选择一个包"
     },
     "installing": {
@@ -220,7 +232,8 @@
       "last_updated": "最后更新 {{time}}",
       "analyzing": "分析中...",
       "done": "✓ 已更新 · 基于 {{count}} 个来源",
-      "error_retry": "⚠ 更新失败 · 点击重试"
+      "error_retry": "⚠ 更新失败 · 点击重试",
+      "reanalyze": "重新分析"
     },
     "signals": "关键信号",
     "empty": {
@@ -234,8 +247,12 @@
       "error_subtitle": "加载今日文章时出现了问题，请稍后重试。",
       "retry": "重试",
       "no_api_key": "AI 功能需要配置 API Key。在设置中配置后即可开始使用。",
+      "no_api_key_title": "AI 分析尚未配置",
+      "no_api_key_subtitle": "添加兼容 OpenAI 的 API Key 后，Today 会把今日文章整理成带证据的关键信号。",
       "go_to_settings": "前往设置",
       "no_signals": "还没有信号。运行分析来发现关键洞察。",
+      "no_signals_title": "还没有生成信号",
+      "no_signals_subtitle": "运行分析流水线，聚类今日文章并找出值得阅读的变化。",
       "start_analysis": "开始分析"
     },
     "pipeline": {
@@ -266,6 +283,8 @@
       "sources": "个来源",
       "confidence": "置信度",
       "unverified": "未验证",
+      "read_evidence": "阅读证据",
+      "view_sources": "查看全部来源",
       "level": {
         "high": "高信号",
         "medium": "中信号",
@@ -277,7 +296,7 @@
       "level_watch": "关注",
       "level_signal": "信号"
     },
-    "why_short": "为什么",
+    "why_short": "为什么重要",
     "why_expand": "查看原因",
     "why_collapse": "收起",
     "sources": {
@@ -348,19 +367,48 @@
     }
   },
   "settings": {
-    "subtitle": "配置 Lettura 如何读取、分析和展示你的信息来源。",
+    "subtitle": "配置 AI 分析、订阅源、来源质量、阅读体验与应用行为。",
     "status_secure": "本地配置安全",
     "status_sources": "42 个源活跃",
     "status_analysis": "上次分析 2 小时前",
     "tab": {
       "ai_title": "AI 配置",
       "ai_desc": "模型、密钥、连接状态",
-      "sources_title": "来源管理",
-      "sources_desc": "源健康、订阅包、同步策略",
+      "subscriptions_title": "订阅管理",
+      "subscriptions_desc": "管理你的订阅源",
+      "sources_title": "来源设置",
+      "sources_desc": "同步策略、源健康、订阅包",
       "appearance_title": "外观与阅读",
       "appearance_desc": "主题、字号、卡片密度",
       "behavior_title": "应用行为",
       "behavior_desc": "启动、通知、缓存保留"
+    },
+    "subscriptions": {
+      "search_placeholder": "按订阅名、源地址或主页搜索...",
+      "filter_all": "全部",
+      "filter_unread": "未读",
+      "filter_broken": "异常",
+      "filter_ungrouped": "未分组",
+      "kpi_feeds": "订阅源",
+      "kpi_folders": "文件夹",
+      "kpi_unread": "未读文章",
+      "kpi_broken": "异常源",
+      "ungrouped": "未分组",
+      "folder_meta": "{{sources}} 源 · {{unread}} 未读",
+      "context_hint": "右键订阅源可查看文章、同步、全部已读、编辑、移动、停用或删除。",
+      "view_detail": "查看详情",
+      "move_title": "移动订阅源",
+      "moved": "订阅源已移动",
+      "move_failed": "移动订阅源失败",
+      "detail_empty_title": "选择一个订阅源",
+      "detail_empty_help": "从列表中选择订阅源，查看 URL、同步状态、所属文件夹和管理操作。",
+      "detail_title": "来源详情",
+      "home_url": "主页",
+      "feed_url": "源地址",
+      "last_sync": "上次同步",
+      "folder": "文件夹",
+      "failure_reason": "失败原因",
+      "management_actions": "管理操作"
     },
     "sources": {
       "sources_title": "来源管理",
@@ -383,15 +431,25 @@
       "health_ok": "正常",
       "action_retry": "重试",
       "action_sync": "同步",
+      "sync_strategy_title": "同步策略",
+      "sync_strategy_help": "控制所有订阅源的抓取节奏；订阅增删改在订阅管理中处理。",
       "sync_frequency": "同步频率",
       "concurrent_requests": "并发请求",
       "request_timeout": "请求超时",
       "reset": "重置",
       "input_quality": "输入质量",
       "input_quality_desc": "订阅源健康状况概览",
+      "health_center_title": "来源健康中心",
+      "health_center_help": "快速判断当前订阅输入是否可靠。",
+      "open_subscription_management": "进入订阅管理",
+      "health_summary": "当前数据库：{{healthy}} 个正常源，{{broken}} 个异常源，未读文章 {{unread}} 篇。",
       "kpi_active_sources": "活跃来源",
       "kpi_sync_rate": "同步成功率",
       "kpi_needs_check": "需检查",
+      "recent_healthy_title": "最近正常同步的来源",
+      "recent_healthy_help": "取自当前订阅列表，用于快速确认正常来源。",
+      "broken_queue_title": "异常源队列",
+      "broken_queue_help": "删除、移动、复制 URL 或重新订阅等具体处理在订阅管理中完成。",
       "broken_advice_title": "失效源处理建议",
       "broken_advice_help": "考虑移除或替换持续失败的订阅源。检查源地址是否有变更，或尝试重新订阅。"
     },
@@ -399,6 +457,9 @@
       "title": "AI 配置",
       "panel_title": "AI 配置",
       "panel_desc": "配置 AI 模型用于文章分析和去重",
+      "provider_title": "AI Provider",
+      "provider_desc": "兼容 OpenAI API 的服务地址，保存到本机配置。",
+      "configured": "已配置",
       "api_key": "API Key",
       "api_key_placeholder": "sk-...",
       "api_key_help": "保存在本机配置文件中",
@@ -427,6 +488,7 @@
       "pipeline_triggered": "Pipeline 已启动",
       "trigger_pipeline": "运行",
       "analysis_status": "分析状态",
+      "analysis_status_help": "当前 Pipeline 与去重状态。",
       "last_analysis": "最近分析 2 小时前",
       "kpi_sources": "参与分析的来源",
       "kpi_articles": "最近处理文章",
@@ -439,6 +501,10 @@
       "enable_embedding": "启用 Embedding",
       "enable_embedding_desc": "去重和聚类功能需要 Embedding。如果你的套餐不包含 Embedding API，可以关闭。",
       "embedding_model": "Embedding 模型",
+      "modeling_title": "模型与 Pipeline",
+      "modeling_desc": "选择分析模型、Embedding 模型和自动分析周期。",
+      "connection_title": "连接测试",
+      "connection_help": "保存配置前验证当前 Provider。",
       "dedup_stats_title": "去重统计",
       "dedup_total": "已分析文章",
       "dedup_duplicates": "发现重复",
@@ -460,7 +526,19 @@
       "sync_title": "后台同步",
       "sync_desc": "管理后台数据同步行为",
       "sync_background": "自动后台同步",
-      "sync_background_desc": "应用启动时自动同步订阅源"
+      "sync_background_desc": "应用启动时自动同步订阅源",
+      "privacy_title": "隐私边界",
+      "privacy_desc": "API Key 只保存在本地 TOML。文章内容仅在分析运行时发送给你配置的 Provider。"
+    },
+    "behavior": {
+      "runtime_status": "运行状态",
+      "system_behavior": "系统行为",
+      "data_cache": "数据与缓存",
+      "local_storage": "本地存储",
+      "exit_behavior": "退出行为",
+      "kpi_language": "界面语言",
+      "kpi_close_behavior": "关闭行为",
+      "kpi_cache_retention": "缓存保留"
     }
   },
   "layout": {
@@ -531,6 +609,9 @@
         "start_here_desc": "系统推荐最值得先读的 1-3 篇原文",
         "read_original": "阅读原文",
         "recommended": "推荐",
+        "start_here_primary": "推荐先读",
+        "start_here_alternative": "看反方观点",
+        "state_note": "AI 每次运行后自动更新主题，你的追踪让它更准确；证据由主题与文章的关联提供，支持回看来源和重新分析。",
         "select_prompt": "选择一个主题查看详情",
         "view_evidence": "查看证据"
       },
@@ -565,6 +646,7 @@
       "feeds": "订阅",
       "search": "搜索",
       "starred": "星标",
+      "components": "组件库",
       "settings": "设置"
     },
     "feeds": {
@@ -595,7 +677,10 @@
       "topics_list": "话题列表",
       "today_desc": "Daily Intelligence Reader — 每日判断入口",
       "topics_desc": "追踪主题、信号和相关来源",
-      "feeds_desc": "管理你的订阅源"
+      "feeds_desc": "管理你的订阅源",
+      "feeds": "文件夹",
+      "manage": "管理",
+      "manage_feeds": "管理订阅源"
     }
   },
   "starred": {
@@ -603,6 +688,7 @@
     "subtitle": "收藏、稍后读和长期参考资料。",
     "export": "导出",
     "unknown_feed": "未知来源",
+    "note_prefix": "笔记：",
     "sidebar": {
       "collections": "收藏夹",
       "all": "全部收藏",
@@ -662,6 +748,7 @@
     }
   },
   "search": {
+    "title": "搜索",
     "unknown_feed": "未知来源",
     "no_summary": "暂无摘要。",
     "sidebar": {
@@ -675,14 +762,23 @@
       "subtitle": "从每日信号回到原始文章，或把常用查询保存为动态视图。"
     },
     "button": "搜索",
-    "placeholder": "Search content in your Lettura",
+    "placeholder": "搜索文章、Signal 或 Topic",
     "filter": {
       "all": "全部",
+      "articles": "文章",
+      "signals": "信号",
+      "topics": "Topic",
       "starred": "已收藏",
       "high_signal": "高信号",
       "advanced": "筛选",
       "all_sources": "所有来源"
     },
+    "result_type": {
+      "article": "文章",
+      "signal": "信号",
+      "topic": "Topic"
+    },
+    "result_meta": "{{articles}} 篇文章 · {{sources}} 个来源",
     "result_count": "{{count}} 个结果 · 按相关度排序",
     "hint_enter": "按 Enter 或点击搜索开始检索",
     "hint_type": "输入关键词开始搜索",
@@ -719,6 +815,9 @@
     "duplicate": "重复",
     "list_count": "{{count}} 篇",
     "list_unread_count": "{{count}} 篇未读",
+    "list_loaded_count": "已加载 {{count}} 篇",
+    "current_filter": "当前筛选",
+    "section_label": "{{filter}} · {{count}} 篇",
     "actions": {
       "read_later": "稍后读",
       "remove_read_later": "移出稍后读"
@@ -732,7 +831,11 @@
   "Appearance & Reading": "外观与阅读",
   "Keep long reading sessions quiet, clear, and low-friction.": "保持长阅读安静、清晰、低摩擦。",
   "Theme": "主题",
+  "Theme mode": "主题模式",
   "Choose light, dark, or follow system preference.": "选择亮色、暗色或跟随系统偏好。",
+  "Best for daytime and bright environments.": "适合白天和高亮环境。",
+  "Comfortable reading in low light.": "低光环境阅读。",
+  "Follow the system appearance.": "自动跟随系统外观。",
   "Font size": "字号",
   "Adjust the reading font size.": "调整阅读字号。",
   "Line height": "行高",
@@ -742,10 +845,13 @@
   "Reader preference": "阅读器偏好",
   "Compact": "紧凑",
   "More content in less space.": "更少空间显示更多内容。",
+  "List first": "列表优先",
+  "Current": "当前",
   "Comfortable": "舒适",
   "Balanced readability and density.": "可读性与密度的平衡。",
   "Immersive": "沉浸",
   "Maximum focus, minimal clutter.": "最大专注，最小干扰。",
+  "Long read": "长读",
   "Card density": "卡片密度",
   "Control the compactness of feed cards.": "控制信息流卡片的紧凑程度。",
   "Preview": "预览",

@@ -216,7 +216,7 @@ mod tests {
     assert_eq!(detect_provider("https://qianfan.baidubce.com/v2"), Provider::Qianfan);
     assert_eq!(detect_provider("https://api.siliconflow.cn/v1"), Provider::SiliconFlow);
     assert_eq!(detect_provider("http://localhost:11434/v1"), Provider::Ollama);
-    assert_eq!(detect_provider("https://api.deepseek.com"), Provider::OpenAI);
+    assert_eq!(detect_provider("https://api.openai.com/v1"), Provider::OpenAI);
     assert_eq!(detect_provider("https://custom.llm.api/v1"), Provider::Unknown);
   }
 
@@ -252,7 +252,7 @@ mod tests {
 
   #[test]
   fn test_resolve_preserves_openai() {
-    let model = resolve_embedding_model("text-embedding-3-small", "https://api.deepseek.com");
+    let model = resolve_embedding_model("text-embedding-3-small", "https://api.openai.com/v1");
     assert_eq!(model, "text-embedding-3-small");
   }
 

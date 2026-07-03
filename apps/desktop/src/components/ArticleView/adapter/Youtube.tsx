@@ -3,7 +3,6 @@ import { wraperWithRadix } from "../ContentRender";
 
 export function YoutubeAdapter(props: any) {
   const { article, content, medias } = props;
-  console.log("🚀 ~ file: Youtube.tsx:6 ~ YoutubeAdapter ~ article:", article);
 
   function createYoutubePageHeader() {
     return (

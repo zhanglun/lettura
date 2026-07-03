@@ -391,7 +391,7 @@ impl Article {
     for param in params {
       query = query.bind::<Text, _>(param);
     }
-    query = query.sql(" ORDER BY A.pub_date DESC ");
+    query = query.sql(" ORDER BY COALESCE(NULLIF(A.pub_date, ''), A.create_date) DESC ");
 
     if let Some(l) = filter.limit {
       query = query.sql(" limit ?").bind::<Integer, _>(l);
@@ -648,13 +648,39 @@ impl Article {
       query = query.filter(schema::articles::read_status.eq(2));
     }
 
-    let query = query.filter(schema::articles::create_date.lt(expired_date));
+    let query = query
+      .filter(schema::articles::create_date.lt(expired_date))
+      .filter(schema::articles::starred.eq(0))
+      .filter(schema::articles::is_archived.eq(0));
 
     let result = query.execute(&mut connection).expect("purge failed!");
 
     log::info!("{:?} articles purged", result);
 
     return result;
+  }
+
+  pub fn purge_by_data_retention() -> usize {
+    let cfg = get_user_config();
+
+    if cfg.data_retention_days == 0 {
+      return 0;
+    }
+
+    let cutoff = Utc::now().naive_utc() - Duration::days(cfg.data_retention_days as i64);
+    let mut connection = establish_connection();
+
+    let result = diesel::delete(schema::articles::dsl::articles)
+      .filter(schema::articles::read_status.eq(2))
+      .filter(schema::articles::create_date.lt(cutoff))
+      .filter(schema::articles::starred.eq(0))
+      .filter(schema::articles::is_archived.eq(0))
+      .execute(&mut connection)
+      .expect("data retention purge failed!");
+
+    log::info!("{:?} read articles purged by data retention", result);
+
+    result
   }
 }
 

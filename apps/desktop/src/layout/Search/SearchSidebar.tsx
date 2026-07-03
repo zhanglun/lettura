@@ -18,7 +18,7 @@ export function SearchSidebar({
   const { t } = useTranslation();
 
   return (
-    <aside className="hidden w-[220px] shrink-0 flex-col border-r border-[var(--gray-5)] bg-[var(--gray-2)] md:flex">
+    <aside className="hidden w-[276px] shrink-0 flex-col border-r border-[var(--gray-5)] bg-[var(--gray-2)] md:flex">
       <div className="border-b border-[var(--gray-5)] p-4">
         <div className="text-sm font-semibold text-[var(--gray-12)]">
           Search
@@ -27,7 +27,7 @@ export function SearchSidebar({
           {t("search.sidebar.subtitle")}
         </div>
       </div>
-      <div className="flex-1 overflow-auto p-3">
+      <div className="flex-1 overflow-auto p-3 scrollbar-gutter">
         <div className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-[var(--gray-10)]">
           {t("search.sidebar.saved")}
         </div>

@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
-import { Button, Flex, Text, Heading, Box, Badge, Card } from "@radix-ui/themes";
+import { Button } from "@radix-ui/themes";
 import { AlertDialog } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
 import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import type { StarterPackSummary } from "@/stores/createOnboardingSlice";
+import { AlertTriangle, ChevronLeft, ChevronRight, PackageSearch, RefreshCw } from "lucide-react";
+import {
+  getPackInterestScore,
+  type StarterPackSummary,
+} from "@/stores/createOnboardingSlice";
 import * as LucideIcons from "lucide-react";
 
 type LucideIconName = keyof typeof LucideIcons;
@@ -18,41 +21,54 @@ function PackIcon({ name, ...props }: { name: string } & React.SVGProps<SVGSVGEl
 function PackCard({
   pack,
   selected,
+  recommended,
   onToggle,
 }: {
   pack: StarterPackSummary;
   selected: boolean;
+  recommended: boolean;
   onToggle: () => void;
 }) {
+  const { t } = useTranslation();
+
   return (
-    <Card
-      className={`cursor-pointer transition-all hover:shadow-md ${
-        selected ? "ring-2 ring-indigo-9 bg-indigo-2" : ""
-      }`}
+    <button
+      type="button"
+      className={
+        selected
+          ? "onboarding-pack-card onboarding-pack-card--selected"
+          : "onboarding-pack-card"
+      }
       onClick={onToggle}
     >
-      <Flex direction="column" gap="2" p="3">
-        <Flex align="center" gap="2">
-          <PackIcon name={pack.icon} width={20} height={20} />
-          <Text size="3" weight="bold">
-            {pack.name}
-          </Text>
-        </Flex>
-        <Text size="2" color="gray" className="line-clamp-2">
+      <div className="onboarding-pack-icon">
+        <PackIcon name={pack.icon} width={22} height={22} />
+      </div>
+      <div className="onboarding-pack-body">
+        <div className="onboarding-pack-name">
+          {pack.name}
+        </div>
+        <p className="onboarding-pack-desc">
           {pack.description}
-        </Text>
-        <Flex gap="2" mt="1">
-          <Badge color="gray" variant="soft" size="1">
+        </p>
+        {recommended && (
+          <div className="onboarding-pack-recommended">
+            {t("onboarding.select_pack.recommended")}
+          </div>
+        )}
+        <div className="onboarding-pack-meta">
+          <span>
             {pack.source_count} sources
-          </Badge>
+          </span>
           {pack.tags.slice(0, 2).map((tag) => (
-            <Badge color="gray" variant="outline" size="1" key={tag}>
+            <span key={tag}>
               {tag}
-            </Badge>
+            </span>
           ))}
-        </Flex>
-      </Flex>
-    </Card>
+        </div>
+      </div>
+      <div className="onboarding-pack-check" aria-hidden="true" />
+    </button>
   );
 }
 
@@ -61,8 +77,10 @@ export function SelectPackStep() {
   const {
     packs,
     packsLoading,
+    packsError,
     fetchPacks,
     selectedPackIds,
+    selectedInterestIds,
     togglePackSelection,
     setOnboardingStep,
     startInstall,
@@ -70,8 +88,10 @@ export function SelectPackStep() {
     useShallow((state) => ({
       packs: state.packs,
       packsLoading: state.packsLoading,
+      packsError: state.packsError,
       fetchPacks: state.fetchPacks,
       selectedPackIds: state.selectedPackIds,
+      selectedInterestIds: state.selectedInterestIds,
       togglePackSelection: state.togglePackSelection,
       setOnboardingStep: state.setOnboardingStep,
       startInstall: state.startInstall,
@@ -95,35 +115,55 @@ export function SelectPackStep() {
   };
 
   return (
-    <Flex direction="column" gap="4" p="6">
-      <Flex direction="column" gap="1">
-        <Heading size="5">{t("onboarding.select_pack.title")}</Heading>
-        <Text size="2" color="gray">
-          {t("onboarding.select_pack.subtitle")}
-        </Text>
-      </Flex>
+    <div className="onboarding-step-card">
+      <div className="onboarding-step-label">
+        {t("onboarding.select_pack.step")}
+      </div>
+      <h2 className="onboarding-step-title">{t("onboarding.select_pack.title")}</h2>
+      <p className="onboarding-step-subtitle">
+        {t("onboarding.select_pack.subtitle")}
+      </p>
 
       {packsLoading ? (
-        <Flex justify="center" p="6">
-          <Text color="gray">Loading...</Text>
-        </Flex>
+        <div className="onboarding-loading">Loading...</div>
+      ) : packsError ? (
+        <div className="onboarding-state-card">
+          <AlertTriangle size={28} />
+          <div>
+            <h3>{t("onboarding.select_pack.error_title")}</h3>
+            <p>{packsError}</p>
+          </div>
+          <Button variant="outline" onClick={fetchPacks}>
+            <RefreshCw size={14} />
+            {t("onboarding.select_pack.retry")}
+          </Button>
+        </div>
+      ) : packs.length === 0 ? (
+        <div className="onboarding-state-card">
+          <PackageSearch size={28} />
+          <div>
+            <h3>{t("onboarding.select_pack.empty_title")}</h3>
+            <p>{t("onboarding.select_pack.empty_subtitle")}</p>
+          </div>
+        </div>
       ) : (
-        <Box className="grid grid-cols-2 gap-3 max-h-[400px] overflow-y-auto">
+        <div className="onboarding-pack-list">
           {packs.map((pack) => (
             <PackCard
               key={pack.id}
               pack={pack}
               selected={selectedPackIds.includes(pack.id)}
+              recommended={getPackInterestScore(pack, selectedInterestIds) > 0}
               onToggle={() => togglePackSelection(pack.id)}
             />
           ))}
-        </Box>
+        </div>
       )}
 
-      <Flex justify="between" align="center" mt="2">
+      <div className="onboarding-step-actions">
         <Button
           variant="ghost"
-          onClick={() => setOnboardingStep("welcome")}
+          onClick={() => setOnboardingStep("interests")}
         >
           <ChevronLeft size={16} />
           {t("onboarding.select_pack.back")}
@@ -136,7 +176,7 @@ export function SelectPackStep() {
           {t("onboarding.select_pack.install")}
           <ChevronRight size={16} />
         </Button>
-      </Flex>
+      </div>
 
       <AlertDialog.Root open={confirmOpen} onOpenChange={setConfirmOpen}>
         <AlertDialog.Content maxWidth="400px">
@@ -149,7 +189,7 @@ export function SelectPackStep() {
               sources: totalSources,
             })}
           </AlertDialog.Description>
-          <Flex gap="3" mt="4" justify="end">
+          <div className="mt-4 flex justify-end gap-3">
             <AlertDialog.Cancel>
               <Button variant="outline" onClick={() => setConfirmOpen(false)}>
                 {t("Cancel")}
@@ -160,9 +200,9 @@ export function SelectPackStep() {
                 {t("onboarding.select_pack.confirm_button")}
               </Button>
             </AlertDialog.Action>
-          </Flex>
+          </div>
         </AlertDialog.Content>
       </AlertDialog.Root>
-    </Flex>
+    </div>
   );
 }

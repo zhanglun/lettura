@@ -63,7 +63,6 @@ export const useMusicPlayer = () => {
 
   useEffect(() => {
     if (isPlaying) {
-      console.log("is main");
       audio.current.play();
     } else {
       audio.current.pause();

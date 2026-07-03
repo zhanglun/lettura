@@ -14,6 +14,7 @@ export function TodayRightPanel() {
       rightPanelExpanded: state.rightPanelExpanded,
       activeReadingSignalId: state.activeReadingSignalId,
       activeReadingSourceIndex: state.activeReadingSourceIndex,
+      expandedSignalId: state.expandedSignalId,
       signalDetails: state.signalDetails,
       sourceArticleDetail: state.sourceArticleDetail,
       sourceArticleLoading: state.sourceArticleLoading,
@@ -37,6 +38,10 @@ export function TodayRightPanel() {
   const activeReadingSignal = store.signals.find(
     (s) => s.id === store.activeReadingSignalId,
   );
+  const expandedSignal = store.signals.find(
+    (s) => s.id === store.expandedSignalId,
+  );
+  const evidenceSignal = activeReadingSignal ?? expandedSignal ?? store.signals[0] ?? null;
   const activeReadingDetail = store.activeReadingSignalId
     ? store.signalDetails[store.activeReadingSignalId]
     : undefined;
@@ -71,6 +76,32 @@ export function TodayRightPanel() {
     ],
   );
 
+  const handleEvidenceInlineRead = useCallback(
+    (articleUuid: string, feedUuid: string, articleId: number) => {
+      const signal = store.signals.find((item) =>
+        item.sources.some((source) => source.article_id === articleId),
+      );
+      if (!signal) return;
+
+      const detail = store.signalDetails[signal.id];
+      const sources = detail?.all_sources ?? signal.sources;
+      const sourceIndex = sources.findIndex(
+        (source) => source.article_id === articleId,
+      );
+      const source = sources[sourceIndex];
+      if (!source) return;
+
+      store.startInlineReading(signal.id, sourceIndex >= 0 ? sourceIndex : 0);
+      store.openSourceArticle(source);
+    },
+    [
+      store.signals,
+      store.signalDetails,
+      store.startInlineReading,
+      store.openSourceArticle,
+    ],
+  );
+
   return (
     <RightPanel expanded={store.rightPanelExpanded}>
       {store.isInlineReading && currentReadingSource && activeSources.length > 0 ? (
@@ -86,9 +117,10 @@ export function TodayRightPanel() {
           onRetry={store.retrySourceArticle}
         />
       ) : (
-        <div className="flex flex-col h-full overflow-auto">
+        <div className="today-right-scroll">
           <EvidencePanel
-            signal={activeReadingSignal ?? store.signals[0] ?? null}
+            signal={evidenceSignal}
+            onInlineRead={handleEvidenceInlineRead}
           />
           <DailyStatus
             overview={store.overview}

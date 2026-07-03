@@ -54,6 +54,26 @@ export function SearchChip(props: {
   );
 }
 
+export function HighlightText({ text, query }: { text: string; query: string }) {
+  const q = query.trim();
+  if (!q || !text) return <>{text}</>;
+  const escaped = q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const parts = text.split(new RegExp(`(${escaped})`, "gi"));
+  return (
+    <>
+      {parts.map((part, i) =>
+        part.toLowerCase() === q.toLowerCase() ? (
+          <mark key={i} className="search-result-mark">
+            {part}
+          </mark>
+        ) : (
+          part
+        ),
+      )}
+    </>
+  );
+}
+
 export function SearchResultCard(props: {
   article: ArticleResItem;
   query: string;
@@ -62,62 +82,47 @@ export function SearchResultCard(props: {
   const { t } = useTranslation();
   const { article, query, onOpen } = props;
   const description = stripHtml(article.description || article.content || "");
-  const match = query.trim();
-  const hasMatch = match && description.toLowerCase().includes(match.toLowerCase());
-  const before = hasMatch
-    ? description.slice(0, description.toLowerCase().indexOf(match.toLowerCase()))
-    : description;
-  const hit = hasMatch
-    ? description.slice(
-        description.toLowerCase().indexOf(match.toLowerCase()),
-        description.toLowerCase().indexOf(match.toLowerCase()) + match.length,
-      )
-    : "";
-  const after = hasMatch
-    ? description.slice(
-        description.toLowerCase().indexOf(match.toLowerCase()) + match.length,
-      )
-    : "";
+  const q = query.trim();
+  const hitIdx = q ? description.toLowerCase().indexOf(q.toLowerCase()) : -1;
+  const excerpt =
+    hitIdx >= 0
+      ? description.slice(Math.max(0, hitIdx - 120), hitIdx + q.length + 220)
+      : description.slice(0, 300);
 
   return (
     <button
       type="button"
       onClick={() => onOpen(article)}
-      className="group w-full rounded-lg border border-[var(--gray-5)] bg-[var(--color-panel-solid)] p-4 text-left transition hover:border-[var(--accent-7)] hover:bg-[var(--accent-a2)]"
+      className="search-result-card search-result-card--article"
     >
-      <div className="mb-2 flex items-center gap-2">
+      <div className="search-result-meta">
+        <span className="search-result-type">
+          {t("search.result_type.article")}
+        </span>
         <Avatar
           size="1"
           src={article.feed_logo || getFeedLogo(article.feed_url)}
           fallback={article.feed_title?.slice(0, 1) || "L"}
           className="rounded"
         />
-        <span className="text-xs font-medium text-[var(--gray-11)]">
+        <span className="search-result-source">
           {article.feed_title || t("search.unknown_feed")}
         </span>
         {article.starred === 1 && (
-          <span className="rounded-full bg-[var(--amber-a3)] px-2 py-0.5 text-[10px] font-medium text-[var(--amber-11)]">
+          <span className="search-result-tag search-result-tag--starred">
             {t("search.filter.starred")}
           </span>
         )}
-        <span className="ml-auto text-xs text-[var(--gray-10)]">
+        <span className="search-result-time">
           {formatTime(article.create_date)}
         </span>
       </div>
-      <div className="line-clamp-2 text-sm font-semibold leading-6 text-[var(--gray-12)]">
-        {article.title}
-      </div>
-      <p className="mt-2 line-clamp-3 text-xs leading-5 text-[var(--gray-11)]">
-        {hasMatch ? (
-          <>
-            {before.slice(-120)}
-            <mark className="rounded bg-[var(--amber-a4)] px-1 text-[var(--amber-12)]">
-              {hit}
-            </mark>
-            {after.slice(0, 220)}
-          </>
+      <div className="search-result-title">{article.title}</div>
+      <p className="search-result-snippet">
+        {excerpt ? (
+          <HighlightText text={excerpt} query={query} />
         ) : (
-          description || t("search.no_summary")
+          t("search.no_summary")
         )}
       </p>
     </button>

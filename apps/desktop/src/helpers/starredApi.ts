@@ -9,6 +9,7 @@ export interface CollectionItem {
   sort_order: number;
   create_date: string;
   update_date: string;
+  article_count?: number;
 }
 
 export interface TagItem {
@@ -16,6 +17,7 @@ export interface TagItem {
   uuid: string;
   name: string;
   create_date: string;
+  article_count?: number;
 }
 
 export const getCollections = () =>

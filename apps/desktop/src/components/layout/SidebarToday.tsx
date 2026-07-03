@@ -23,6 +23,7 @@ interface FocusGroup {
   topicId: number | null;
   topicTitle: string;
   count: number;
+  signalId: number;
 }
 
 export function SidebarToday() {
@@ -37,6 +38,8 @@ export function SidebarToday() {
       fetchSignals: state.fetchSignals,
       fetchOverview: state.fetchOverview,
       fetchTopics: state.fetchTopics,
+      focusSignal: state.focusSignal,
+      expandedSignalId: state.expandedSignalId,
     })),
   );
 
@@ -65,6 +68,7 @@ export function SidebarToday() {
           topicId: signal.topic_id,
           topicTitle: title,
           count: signal.source_count,
+          signalId: signal.id,
         });
       }
     }
@@ -80,13 +84,7 @@ export function SidebarToday() {
     store.followingTopicIds.size === 0 && followedTopics.length > 0;
 
   const handleClickFocus = (group: FocusGroup) => {
-    if (group.topicId) {
-      const topic = store.topics.find((tp) => tp.id === group.topicId);
-      if (topic) {
-        navigate(`/local/topics/${topic.uuid}`);
-        return;
-      }
-    }
+    store.focusSignal(group.signalId);
     navigate(RouteConfig.LOCAL_TODAY);
   };
 
@@ -95,7 +93,7 @@ export function SidebarToday() {
       <div className="flex-1 overflow-y-auto">
         <div className="px-3 pt-3 pb-2">
           <div className="px-2 py-1.5">
-            <span className="text-xs font-medium text-[var(--gray-11)]">
+            <span className="text-[10px] font-semibold text-[var(--gray-9)] uppercase tracking-[0.5px]">
               {t("layout.sidebar.today_focus")}
             </span>
           </div>
@@ -105,7 +103,9 @@ export function SidebarToday() {
                 <button
                   key={group.topicTitle}
                   onClick={() => handleClickFocus(group)}
-                  className="sidebar-item text-left"
+                  className={`sidebar-item text-left ${
+                    store.expandedSignalId === group.signalId ? "sidebar-item--active" : ""
+                  }`}
                 >
                   <span
                     className="w-1.5 h-1.5 rounded-full shrink-0"
@@ -137,7 +137,7 @@ export function SidebarToday() {
 
         <div className="px-3 pb-2">
           <div className="px-2 py-1.5">
-            <span className="text-xs font-medium text-[var(--gray-11)]">
+            <span className="text-[10px] font-semibold text-[var(--gray-9)] uppercase tracking-[0.5px]">
               {t("layout.sidebar.tracked_topics")}
             </span>
             {showingTopicSuggestions && (

@@ -1,6 +1,6 @@
 import { Text, Flex } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
-import { Activity, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import type { TodayOverview } from "@/stores/createTodaySlice";
 
 interface DailyStatusProps {
@@ -14,13 +14,10 @@ export function DailyStatus({ overview, loading, progress, highSignalCount }: Da
   const { t } = useTranslation();
 
   return (
-    <div className="min-w-0 p-4 border-t border-[var(--gray-4)]">
-      <Flex align="center" gap="2" mb="3">
-        <Activity size={16} className="text-[var(--gray-9)]" />
-        <Text size="2" weight="medium" className="min-w-0 break-words text-[var(--gray-12)]">
-          {t("today.right_panel.daily_status.title")}
-        </Text>
-      </Flex>
+    <section className="today-right-section">
+      <div className="today-right-title">
+        {t("today.right_panel.daily_status.title")}
+      </div>
 
       {loading && (
         <Flex align="center" gap="2">
@@ -56,6 +53,6 @@ export function DailyStatus({ overview, loading, progress, highSignalCount }: Da
           {t("today.right_panel.daily_status.no_data")}
         </Text>
       )}
-    </div>
+    </section>
   );
 }

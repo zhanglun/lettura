@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import clsx from "clsx";
 import { Play, Trash2 } from "lucide-react";
@@ -27,19 +27,11 @@ export const PodcastPlayer = () => {
   }
 
   function removePodcast(record: any) {
-    console.log("%c Line:30 🥥 record", "color:#7f2b82", record);
-    db.podcasts
-      .delete(record.id)
-      .then((res: any) => {
-        console.log("%c Line:33 🍣 res", "color:#ed9ec7", res);
-      })
-      .catch((err: any) => {
-        console.log("%c Line:35 🌰 err", "color:#f5ce50", err);
-      });
+    db.podcasts.delete(record.id);
   }
 
   function renderList() {
-    return (list || []).map((_: any, idx: number) => {
+    return (list || []).map((_: any) => {
       const { description, thumbnail } = _;
 
       return (

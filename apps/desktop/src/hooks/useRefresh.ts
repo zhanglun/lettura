@@ -21,7 +21,6 @@ import { useShallow } from "zustand/react/shallow";
  * ```
  */
 export const useRefresh = () => {
-  console.log("Hooks: useRefresh2 called");
 
   const store = useBearStore(
     useShallow((state) => ({
@@ -50,11 +49,9 @@ export const useRefresh = () => {
         return Promise.resolve();
       })
       .catch((err: any) => {
-        console.log("%c Line:239 🍬 err", "color:#2eafb0", err);
         return Promise.resolve();
       })
       .finally(() => {
-        console.log("%c Line:243 🍭 finally", "color:#4fff4B");
         setDone((done) => done + 1);
       });
   };

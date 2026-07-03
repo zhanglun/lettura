@@ -34,7 +34,7 @@ export const ItemView: FC<CardProps> = ({
   toggleFolder,
   ...props
 }) => {
-  const { isActive, level } = props;
+  const { isActive } = props;
   const navigate = useNavigate();
   const { t } = useTranslation();
   const store = useBearStore(
@@ -136,7 +136,6 @@ export const ItemView: FC<CardProps> = ({
 
         })}
         onContextMenu={() => {
-          console.log("content menu");
           store.setFeedContextMenuTarget(feed);
         }}
         key={feed.title}

@@ -10,16 +10,16 @@ export interface ArticleSlice {
   setArticle: (ArticleResItem: ArticleResItem | null) => void;
   articleList: ArticleResItem[];
   setArticleList: (list: ArticleResItem[]) => void;
-  getArticleList: (query: any) => any;
+  getArticleList: (query: any) => Promise<ArticleResItem[]>;
   cursor: number;
   setCursor: (c: number) => number;
-  markArticleListAsRead: (isToday: boolean, isAll: boolean) => any;
+  markArticleListAsRead: (isToday: boolean, isAll: boolean) => Promise<any>;
 
   updateArticleStatus: (
     article: ArticleResItem,
     status: ArticleReadStatus,
-  ) => any;
-  updateArticleAndIdx: (ArticleResItem: ArticleResItem, idx?: number) => void;
+  ) => Promise<void>;
+  updateArticleAndIdx: (article: ArticleResItem, idx?: number) => void;
 
   hasMorePrev: boolean;
   setHasMorePrev: (more: boolean) => void;
@@ -45,7 +45,7 @@ export const createArticleSlice: StateCreator<
   [],
   [],
   ArticleSlice
-> = (set, get, ...args) => ({
+> = (set, get) => ({
   article: null,
   rightPanelExpanded: false,
   setArticle: (ArticleResItem: ArticleResItem | null) => {
@@ -70,50 +70,41 @@ export const createArticleSlice: StateCreator<
     }));
   },
 
-  getArticleList: (query: any) => {
+  getArticleList: async (query: any) => {
     const currentList = get().articleList;
+    const res = await dataAgent.getArticleList(query);
+    const { list } = res.data as { list: ArticleResItem[] };
 
-    return dataAgent.getArticleList(query).then((res) => {
-      const { list } = res.data as { list: ArticleResItem[] };
+    get().setArticleList([...currentList, ...list]);
 
-      get().setArticleList([...currentList, ...list]);
-
-      return list;
-    });
+    return list;
   },
 
-  updateArticleStatus: (article: ArticleResItem, status: ArticleReadStatus) => {
+  updateArticleStatus: async (article: ArticleResItem, status: ArticleReadStatus) => {
     if (article.read_status === status) {
-      return Promise.resolve();
+      return;
     }
 
-    return dataAgent
-      .updateArticleReadStatus(article.uuid, status)
-      .then((res) => {
-        if (res) {
-          let isToday = dayjs(
-            dayjs(article.create_date).format("YYYY-MM-DD"),
-          ).isSame(dayjs().format("YYYY-MM-DD"));
+    const res = await dataAgent.updateArticleReadStatus(article.uuid, status);
 
-          if (status === ArticleReadStatus.READ) {
-            console.log(
-              "%c Line:80 🥪 ArticleReadStatus.READ",
-              "color:#f5ce50",
-              ArticleReadStatus.READ,
-            );
-            get().updateCollectionMeta(isToday ? -1 : 0, -1);
-            get().updateUnreadCount(article.feed_uuid, "decrease", 1);
-          }
+    if (res) {
+      const isToday = dayjs(
+        dayjs(article.create_date).format("YYYY-MM-DD"),
+      ).isSame(dayjs().format("YYYY-MM-DD"));
 
-          if (status === ArticleReadStatus.UNREAD) {
-            get().updateCollectionMeta(isToday ? 1 : 0, 1);
-            get().updateUnreadCount(article.feed_uuid, "increase", 1);
-          }
-        }
-      });
+      if (status === ArticleReadStatus.READ) {
+        get().updateCollectionMeta(isToday ? -1 : 0, -1);
+        get().updateUnreadCount(article.feed_uuid, "decrease", 1);
+      }
+
+      if (status === ArticleReadStatus.UNREAD) {
+        get().updateCollectionMeta(isToday ? 1 : 0, 1);
+        get().updateUnreadCount(article.feed_uuid, "increase", 1);
+      }
+    }
   },
 
-  updateArticleAndIdx: (article: ArticleResItem, idx?: number) => {
+  updateArticleAndIdx: (article: ArticleResItem, _idx?: number) => {
     set(() => ({
       article,
     }));
@@ -138,41 +129,32 @@ export const createArticleSlice: StateCreator<
     return c;
   },
 
-  markArticleListAsRead(isToday: boolean, isAll: boolean) {
+  markArticleListAsRead: async (isToday: boolean, isAll: boolean) => {
     const feed = get().feed;
-    let params: {
+    const params: {
       uuid?: string;
       is_today?: boolean;
       is_all?: boolean;
     } = {};
 
-    if (isToday) {
-      params.is_today = isToday;
-    }
+    if (isToday) params.is_today = isToday;
+    if (isAll) params.is_all = isAll;
+    if (feed) params.uuid = feed.uuid;
 
-    if (isAll) {
-      params.is_all = isAll;
-    }
+    const res = await dataAgent.markAllRead(params);
+    const { data } = res;
 
-    if (feed) {
-      params.uuid = feed.uuid;
-    }
+    set(() => ({
+      articleList: get().articleList.map((_) => {
+        _.read_status = 2;
+        return _;
+      }),
+    }));
 
-    return dataAgent.markAllRead(params).then((res) => {
-      const { data } = res;
-      console.log("%c Line:131 🍖 data", "color:#e41a6a", data);
-      set(() => ({
-        articleList: get().articleList.map((_) => {
-          _.read_status = 2;
-          return _;
-        }),
-      }));
+    get().getSubscribes();
+    get().initCollectionMetas();
 
-      get().getSubscribes();
-      get().initCollectionMetas();
-
-      return data;
-    });
+    return data;
   },
 
   articleDialogViewStatus: false,

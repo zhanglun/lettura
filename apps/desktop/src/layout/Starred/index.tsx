@@ -6,7 +6,7 @@ import { Avatar, Button } from "@radix-ui/themes";
 import { ArticleResItem } from "@/db";
 import { MainPanel } from "@/components/MainPanel";
 import { View } from "../Article/View";
-import { useArticle } from "../Article/useArticle";
+import { useArticle } from "@/hooks/useArticle";
 import { getFeedLogo } from "@/helpers/parseXML";
 import {
   getCollections,
@@ -51,6 +51,7 @@ function SavedArticleCard(props: {
   const { t } = useTranslation();
   const { article, active, onOpen } = props;
   const summary = stripHtml(article.description || article.content || "");
+  const note = article.notes?.trim();
 
   return (
     <button
@@ -58,37 +59,43 @@ function SavedArticleCard(props: {
       onClick={() => onOpen(article)}
       className={
         active
-          ? "w-full border-l-2 border-[var(--accent-9)] bg-[var(--accent-a2)] px-4 py-3 text-left"
-          : "w-full px-4 py-3 text-left transition hover:bg-[var(--gray-a3)]"
+          ? "starred-article-card starred-article-card--active"
+          : "starred-article-card"
       }
     >
-      <div className="flex items-start gap-3">
+      <div className="starred-article-card-body">
         <Avatar
           size="2"
           src={article.feed_logo || getFeedLogo(article.feed_url)}
           fallback={article.feed_title?.slice(0, 1) || "L"}
-          className="mt-0.5 rounded"
+          className="starred-article-avatar"
         />
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <h3 className="line-clamp-2 text-sm font-semibold leading-5 text-[var(--gray-12)]">
+        <div className="starred-article-content">
+          <div className="starred-article-title-row">
+            <h3 className="starred-article-title">
               {article.title}
             </h3>
             <Star
               size={14}
               fill="currentColor"
-              className="shrink-0 text-[var(--amber-9)]"
+              className="starred-article-star"
             />
           </div>
-          <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-[var(--gray-10)]">
+          <div className="starred-article-meta">
             <span>{article.feed_title || t("starred.unknown_feed")}</span>
             <span>·</span>
             <span>{formatTime(article.create_date)}</span>
           </div>
           {summary && (
-            <p className="mt-2 line-clamp-2 text-xs leading-5 text-[var(--gray-11)]">
+            <p className="starred-article-summary">
               {summary}
             </p>
+          )}
+          {note && (
+            <div className="starred-article-note">
+              {t("starred.note_prefix")}
+              {note}
+            </div>
           )}
         </div>
       </div>
@@ -106,14 +113,14 @@ function SavedGroup(props: {
   if (props.articles.length === 0) return null;
 
   return (
-    <div className="mb-4 overflow-hidden rounded-lg border border-[var(--gray-5)] bg-[var(--color-panel-solid)]">
-      <div className="flex items-center justify-between border-b border-[var(--gray-5)] bg-[var(--gray-2)] px-4 py-2">
-        <div className="text-xs font-semibold text-[var(--gray-12)]">
+    <div className="starred-group">
+      <div className="starred-group-header">
+        <div className="starred-group-title">
           {props.title}
         </div>
-        <div className="text-xs text-[var(--gray-10)]">{props.subtitle}</div>
+        <div className="starred-group-subtitle">{props.subtitle}</div>
       </div>
-      <div className="divide-y divide-[var(--gray-5)]">
+      <div className="starred-group-list">
         {props.articles.map((article) => (
           <SavedArticleCard
             key={article.uuid}
@@ -138,7 +145,7 @@ export const StarredPage = () => {
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
 
-  const { articles, isLoading, isEmpty, isReachingEnd, size, setSize } =
+  const { articles, isLoading, isEmpty, isReachingEnd, size, setSize, mutate } =
     useArticle({
       collectionUuid: activeCollection,
       tagUuid: activeTag,
@@ -193,10 +200,7 @@ export const StarredPage = () => {
     [articles],
   );
   const withNotesCount = useMemo(
-    () =>
-      articles.filter((article) =>
-        stripHtml(article.description || article.content || ""),
-      ).length,
+    () => articles.filter((article) => article.notes?.trim()).length,
     [articles],
   );
 
@@ -266,7 +270,7 @@ export const StarredPage = () => {
 
   return (
     <MainPanel>
-      <div className="flex h-full w-full overflow-hidden bg-[var(--gray-1)]">
+      <div className="starred-workbench">
         <StarredSidebar
           collections={collections}
           tags={tags}
@@ -293,17 +297,17 @@ export const StarredPage = () => {
         <section
           className={
             selectedArticle
-              ? "flex w-[420px] shrink-0 flex-col border-r border-[var(--gray-5)] bg-[var(--color-panel-solid)]"
-              : "flex min-w-0 flex-1 flex-col bg-[var(--color-panel-solid)]"
+              ? "starred-main starred-main--narrow"
+              : "starred-main"
           }
         >
-          <div className="border-b border-[var(--gray-5)] p-5">
-            <div className="flex items-start justify-between gap-4">
+          <div className="starred-header">
+            <div className="starred-header-main">
               <div>
-                <h1 className="text-xl font-bold text-[var(--gray-12)]">
+                <h1 className="starred-title">
                   Starred
                 </h1>
-                <p className="mt-1 text-sm text-[var(--gray-10)]">
+                <p className="starred-subtitle">
                   {t("starred.header.subtitle")}
                 </p>
               </div>
@@ -312,7 +316,7 @@ export const StarredPage = () => {
                 {t("starred.export")}
               </Button>
             </div>
-            <div className="mt-4 flex flex-wrap items-center gap-2">
+            <div className="starred-filter-row">
               {filterChips.map((chip) => (
                 <button
                   type="button"
@@ -320,8 +324,8 @@ export const StarredPage = () => {
                   onClick={() => setActiveFilter(chip.key)}
                   className={
                     activeFilter === chip.key
-                      ? "rounded-full border border-[var(--accent-8)] bg-[var(--accent-a3)] px-3 py-1.5 text-xs font-medium text-[var(--accent-11)]"
-                      : "rounded-full border border-[var(--gray-5)] px-3 py-1.5 text-xs font-medium text-[var(--gray-11)] hover:bg-[var(--gray-a3)]"
+                      ? "starred-filter-chip starred-filter-chip--active"
+                      : "starred-filter-chip"
                   }
                 >
                   {chip.label}
@@ -330,31 +334,31 @@ export const StarredPage = () => {
             </div>
           </div>
 
-          <div className="flex-1 overflow-auto p-5">
+          <div className="starred-scroll">
             {isLoading && articles.length === 0 ? (
-              <div className="grid gap-3">
+              <div className="starred-skeleton-list">
                 {[0, 1, 2].map((item) => (
                   <div
                     key={item}
-                    className="rounded-lg border border-[var(--gray-5)] bg-[var(--color-panel-solid)] p-4"
+                    className="starred-skeleton-card"
                   >
-                    <div className="mb-3 h-3 w-28 rounded bg-[var(--gray-a4)]" />
-                    <div className="mb-2 h-4 w-4/5 rounded bg-[var(--gray-a4)]" />
-                    <div className="h-3 w-full rounded bg-[var(--gray-a3)]" />
+                    <div className="starred-skeleton-line starred-skeleton-line--short" />
+                    <div className="starred-skeleton-line starred-skeleton-line--title" />
+                    <div className="starred-skeleton-line" />
                   </div>
                 ))}
               </div>
             ) : isEmpty ? (
-              <div className="flex min-h-[420px] flex-col items-center justify-center rounded-lg border border-dashed border-[var(--gray-6)] bg-[var(--gray-a2)] p-8 text-center">
+              <div className="starred-empty-card">
                 <Library
                   size={42}
                   strokeWidth={1.5}
-                  className="text-[var(--gray-9)]"
+                  className="starred-empty-icon"
                 />
-                <h2 className="mt-4 text-base font-semibold text-[var(--gray-12)]">
+                <h2 className="starred-empty-title">
                   {t("starred.empty.title")}
                 </h2>
-                <p className="mt-2 max-w-[360px] text-sm leading-6 text-[var(--gray-10)]">
+                <p className="starred-empty-subtitle">
                   {t("starred.empty.subtitle")}
                 </p>
               </div>
@@ -398,6 +402,7 @@ export const StarredPage = () => {
               article={selectedArticle}
               closable
               onClose={() => setSelectedArticle(null)}
+              onArticleUpdate={() => mutate()}
             />
           </div>
         ) : (

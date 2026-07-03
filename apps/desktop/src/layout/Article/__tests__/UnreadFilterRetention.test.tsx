@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { Theme } from "@radix-ui/themes";
 import { ArticleReadStatus, ArticleStarStatus, ArticleReadLaterStatus } from "@/typing";
 import type { ArticleResItem } from "@/db";
-import { retainArticleAfterRead } from "../ArticleCol";
+import { retainArticleAfterRead } from "@/helpers/articleHelpers";
 
 const mockUpdateArticleStatus = vi.fn();
 const mockSetArticle = vi.fn();
@@ -30,6 +30,7 @@ vi.mock("react-i18next", () => ({
 
 vi.mock("react-router-dom", () => ({
   useMatch: () => null,
+  useNavigate: () => vi.fn(),
 }));
 
 vi.mock("date-fns", () => ({

@@ -25,7 +25,6 @@ export const DialogDeleteFolder = React.memo((props: DialogProps) => {
     afterCancel,
     trigger,
   } = props;
-  console.log("🚀 ~ DialogDeleteFolder ~ folder:", folder);
 
   const confirmDelete = () => {
     if (folder?.uuid) {

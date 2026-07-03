@@ -29,7 +29,7 @@ pub fn get_feed_by_uuid(channel_uuid: &str) -> Option<models::Feed> {
 
 /// delete channel and associated articles
 /// # Example
-/// ```
+/// ```ignore
 /// let uuid = String::from("123456");
 /// let result = delete_feed(uuid);
 ///
@@ -211,6 +211,9 @@ pub struct ChildItem {
   pub feed_url: String,
   pub description: String,
   pub create_date: String,
+  pub last_sync_date: String,
+  pub health_status: i32,
+  pub failure_reason: String,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -225,6 +228,9 @@ pub struct SubscribeItem {
   pub feed_url: String,
   pub description: String,
   pub create_date: String,
+  pub last_sync_date: String,
+  pub health_status: i32,
+  pub failure_reason: String,
 }
 
 #[derive(Debug, Queryable, Serialize, QueryableByName)]
@@ -247,6 +253,12 @@ pub struct FeedJoinRecord {
   pub description: String,
   #[diesel(sql_type = diesel::sql_types::Text)]
   pub create_date: String,
+  #[diesel(sql_type = diesel::sql_types::Text)]
+  pub last_sync_date: String,
+  #[diesel(sql_type = diesel::sql_types::Integer)]
+  pub health_status: i32,
+  #[diesel(sql_type = diesel::sql_types::Text)]
+  pub failure_reason: String,
 }
 
 pub fn get_feeds() -> Vec<SubscribeItem> {
@@ -260,6 +272,9 @@ pub fn get_feeds() -> Vec<SubscribeItem> {
       C.feed_url,
       C.description,
       C.create_date,
+      C.last_sync_date,
+      C.health_status,
+      C.failure_reason,
       F.folder_uuid as folder_uuid
     FROM feeds as C
     LEFT JOIN feed_metas AS F
@@ -294,6 +309,9 @@ pub fn get_feeds() -> Vec<SubscribeItem> {
       feed_url: channel.feed_url,
       description: channel.description,
       create_date: channel.create_date,
+      last_sync_date: channel.last_sync_date,
+      health_status: channel.health_status,
+      failure_reason: channel.failure_reason,
     });
 
     filter_uuids.push(channel.uuid);
@@ -315,6 +333,9 @@ pub fn get_feeds() -> Vec<SubscribeItem> {
       feed_url: "".to_string(),
       description: "".to_string(),
       create_date: folder.create_date,
+      last_sync_date: "".to_string(),
+      health_status: 0,
+      failure_reason: "".to_string(),
     });
   }
 
@@ -337,6 +358,9 @@ pub fn get_feeds() -> Vec<SubscribeItem> {
       description: feed.description,
       create_date: feed.create_date,
       children: Some(Vec::new()),
+      last_sync_date: feed.last_sync_date,
+      health_status: feed.health_status,
+      failure_reason: feed.failure_reason,
     });
   }
 
@@ -627,10 +651,10 @@ pub async fn update_icon(uuid: &str, url: &str) -> usize {
 }
 
 pub async fn fetch_site_favicon(url: &str) -> Option<String> {
+  let base_url = url::Url::parse(url).ok()?;
   let client = feed::create_client("");
-  let response = client.get(url).send().await.unwrap();
-  let html = response.text().await.unwrap();
-  let url = String::from(url);
+  let response = client.get(url).send().await.ok()?;
+  let html = response.text().await.ok()?;
   let document = Html::parse_document(&html);
   let selector = Selector::parse("link[rel='icon'], link[rel='shortcut icon']").unwrap();
   let mut favicon_url: Option<String> = None;
@@ -640,8 +664,7 @@ pub async fn fetch_site_favicon(url: &str) -> Option<String> {
       if href.starts_with("http") {
         favicon_url = Some(href.to_string());
       } else {
-        let base_url = url::Url::parse(&url).unwrap();
-        let mut absolute_url = base_url.join(href).unwrap();
+        let mut absolute_url = base_url.join(href).ok()?;
         absolute_url.set_fragment(None);
         favicon_url = Some(absolute_url.as_str().to_string());
       };
