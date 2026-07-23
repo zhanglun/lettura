@@ -9,6 +9,7 @@ import {
   Star,
   LayoutGrid,
   Settings,
+  MessageCircle,
 } from "lucide-react";
 import { RouteConfig } from "@/config";
 import clsx from "clsx";
@@ -38,6 +39,12 @@ export const Rail = React.memo(function () {
       labelKey: t("layout.rail.topics"),
       route: RouteConfig.LOCAL_TOPICS,
       matchPaths: [RouteConfig.LOCAL_TOPICS],
+    },
+    {
+      icon: <MessageCircle size={18} />,
+      labelKey: t("layout.rail.chat"),
+      route: RouteConfig.LOCAL_CHAT,
+      matchPaths: [RouteConfig.LOCAL_CHAT],
     },
     {
       icon: <Rss size={18} />,

@@ -17,6 +17,7 @@ import { SearchPage } from "./layout/Search";
 import { StarredPage } from "./layout/Starred";
 import { FreshRSSPage } from "./layout/FreshRSS";
 import { TopicWorkspace } from "./layout/Intelligence/Topics/TopicWorkspace";
+import { ChatPage } from "./layout/Intelligence/ChatPage";
 import { SettingPage } from "./layout/Setting";
 import { FeedsPage } from "./layout/Feeds";
 import { ComponentsGallery } from "./layout/Components";
@@ -74,6 +75,10 @@ const router = createBrowserRouter([
       {
         path: RouteConfig.LOCAL_TOPIC_DETAIL,
         element: <TopicWorkspace />,
+      },
+      {
+        path: RouteConfig.LOCAL_CHAT,
+        element: <ChatPage />,
       },
       {
         path: RouteConfig.LOCAL_COMPONENTS,
