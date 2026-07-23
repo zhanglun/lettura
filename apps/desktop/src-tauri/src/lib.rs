@@ -165,6 +165,7 @@ pub fn run() {
       cmd::unmute_topic,
       cmd::search_signals,
       cmd::search_topics,
+      cmd::chat_with_agent,
       core::scheduler::start_scheduler,
       core::scheduler::stop_scheduler,
       core::scheduler::is_scheduler_running,

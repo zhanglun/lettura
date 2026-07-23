@@ -582,6 +582,47 @@ pub fn search_topics(query: String) -> Result<Vec<crate::ai::topic::TopicSearchR
   crate::ai::topic::search_topics(conn, &query)
 }
 
+/// Chat with the local AI agent. The agent uses tool-calling to query
+/// analyzed Signals/Topics from the local DB, then returns a grounded answer.
+///
+/// `history` carries prior conversation turns (role/content) so the agent
+/// has multi-turn context.
+#[command]
+pub async fn chat_with_agent(
+  message: String,
+  history: Option<Vec<crate::ai::agent::HistoryMessage>>,
+) -> Result<crate::ai::agent::AgentResult, String> {
+  let user_config = config::get_user_config();
+  let ai_config = match user_config.ai {
+    Some(ref c) if c.has_api_key() => c.clone(),
+    None => return Err("AI_NO_API_KEY".to_string()),
+    Some(_) => return Err("API key is empty".to_string()),
+  };
+
+  log::info!(
+    "chat_with_agent: model={}, base_url={}, history={}",
+    ai_config.model,
+    ai_config.base_url,
+    history.as_ref().map(|h| h.len()).unwrap_or(0)
+  );
+
+  let llm = crate::ai::llm::OpenAILLM::new(
+    &ai_config.api_key,
+    &ai_config.base_url,
+    ai_config.model.clone(),
+  );
+
+  let tools = crate::ai::agent::default_tool_registry();
+  let history = history.unwrap_or_default();
+
+  crate::ai::agent::run_agent(&llm, &tools, history, &message)
+    .await
+    .map_err(|e| {
+      log::error!("chat_with_agent: agent failed: {}", e);
+      e.to_string()
+    })
+}
+
 #[cfg(test)]
 mod tests {
   use super::*;
