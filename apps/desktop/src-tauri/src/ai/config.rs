@@ -31,7 +31,7 @@ fn default_embedding_model() -> String {
 }
 
 fn default_base_url() -> String {
-  "https://api.openai.com/v1".to_string()
+  "https://api.deepseek.com".to_string()
 }
 
 fn default_pipeline_interval_hours() -> u64 {
@@ -155,7 +155,7 @@ mod tests {
     assert!(config.api_key.is_empty());
     assert_eq!(config.model, "gpt-4o-mini");
     assert_eq!(config.embedding_model, "text-embedding-3-small");
-    assert_eq!(config.base_url, "https://api.openai.com/v1");
+    assert_eq!(config.base_url, "https://api.deepseek.com");
   }
 
   #[test]

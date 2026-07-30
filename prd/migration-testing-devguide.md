@@ -278,16 +278,16 @@ async fn test_full_pipeline_with_mock_api() {
 
 ```typescript
 // stores/__tests__/todaySlice.test.ts
-describe('todaySlice', () => {
-  it('should set loading state when fetching signals', () => {
+describe("todaySlice", () => {
+  it("should set loading state when fetching signals", () => {
     const store = createTestStore();
     store.getState().today.setLoading(true);
     expect(store.getState().today.loading).toBe(true);
   });
 
-  it('should update signals after successful fetch', async () => {
+  it("should update signals after successful fetch", async () => {
     const store = createTestStore();
-    mockInvoke('get_today_signals', mockSignals);
+    mockInvoke("get_today_signals", mockSignals);
     await store.getState().today.fetchSignals();
     expect(store.getState().today.signals).toHaveLength(5);
   });
@@ -324,13 +324,17 @@ describe('SignalCard', () => {
 
 ```typescript
 // __tests__/setup.ts 中补充 AI 相关 Mock
-vi.mock('@tauri-apps/api/core', () => ({
+vi.mock("@tauri-apps/api/core", () => ({
   invoke: vi.fn((cmd: string, args?: any) => {
     switch (cmd) {
-      case 'get_today_signals': return Promise.resolve(mockSignals);
-      case 'get_today_overview': return Promise.resolve(mockOverview);
-      case 'get_starter_packs': return Promise.resolve(mockPacks);
-      default: return Promise.resolve(null);
+      case "get_today_signals":
+        return Promise.resolve(mockSignals);
+      case "get_today_overview":
+        return Promise.resolve(mockOverview);
+      case "get_starter_packs":
+        return Promise.resolve(mockPacks);
+      default:
+        return Promise.resolve(null);
     }
   }),
 }));
@@ -338,15 +342,15 @@ vi.mock('@tauri-apps/api/core', () => ({
 
 ## 3. 测试覆盖目标
 
-| 模块 | 目标覆盖率 | 优先级 |
-|------|-----------|-------|
-| ai/pipeline.rs | > 80% | 高 |
-| ai/embedding.rs | > 80% | 高 |
-| ai/summary.rs | > 70% | 高 |
-| sources/starter_pack.rs | > 90% | 高 |
-| todaySlice | > 80% | 高 |
-| SignalCard | > 70% | 中 |
-| Onboarding | > 60% | 中 |
+| 模块                    | 目标覆盖率 | 优先级 |
+| ----------------------- | ---------- | ------ |
+| ai/pipeline.rs          | > 80%      | 高     |
+| ai/embedding.rs         | > 80%      | 高     |
+| ai/summary.rs           | > 70%      | 高     |
+| sources/starter_pack.rs | > 90%      | 高     |
+| todaySlice              | > 80%      | 高     |
+| SignalCard              | > 70%      | 中     |
+| Onboarding              | > 60%      | 中     |
 
 ---
 
@@ -370,7 +374,7 @@ vi.mock('@tauri-apps/api/core', () => ({
 api_key = "sk-..."
 model = "gpt-4o-mini"
 embedding_model = "text-embedding-3-small"
-base_url = "https://api.openai.com/v1"
+base_url = "https://api.deepseek.com"
 ```
 
 ### 1.3 使用 Ollama 替代（可选）
@@ -384,6 +388,7 @@ base_url = "http://localhost:11434/v1"
 ```
 
 启动 Ollama：
+
 ```bash
 ollama pull llama3.2
 ollama pull nomic-embed-text
@@ -399,6 +404,7 @@ export LETTURA_ENV=dev
 ```
 
 `.env` 文件（不提交到 git）：
+
 ```
 DATABASE_URL=~/.lettura/lettura.db
 LETTURA_ENV=dev
@@ -456,11 +462,11 @@ pnpm tauri dev
 
 ## 4. 常见问题
 
-| 问题 | 原因 | 解决 |
-|------|------|------|
-| Pipeline 不运行 | 未配置 API Key | 编辑 lettura.toml |
-| API 调用 401 | Key 无效 | 重新生成 Key |
-| API 调用 429 | 限流 | 等待或升级 plan |
+| 问题                 | 原因                   | 解决                             |
+| -------------------- | ---------------------- | -------------------------------- |
+| Pipeline 不运行      | 未配置 API Key         | 编辑 lettura.toml                |
+| API 调用 401         | Key 无效               | 重新生成 Key                     |
+| API 调用 429         | 限流                   | 等待或升级 plan                  |
 | Embedding 维度不匹配 | 模型切换后向量维度变了 | 清除 ai_analysis 表重新 Pipeline |
-| sqlite-vec 编译失败 | 缺少 C 编译器 | 安装 xcode-select |
-| 前端看不到 Today | 路由未更新 | 检查 config.ts 路由定义 |
+| sqlite-vec 编译失败  | 缺少 C 编译器          | 安装 xcode-select                |
+| 前端看不到 Today     | 路由未更新             | 检查 config.ts 路由定义          |

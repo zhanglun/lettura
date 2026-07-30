@@ -197,7 +197,7 @@ mod tests {
     };
     let prompt = build_wim_prompt(&input);
     assert!(prompt.contains("Test summary."));
-    assert!(prompt.contains("5 articles from 3 different sources"));
+    assert!(prompt.contains("来源数量：5 篇文章，来自 3 个不同来源"));
     assert!(!prompt.contains("Related topic:"));
   }
 

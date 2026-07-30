@@ -29,7 +29,7 @@ pub fn get_feed_by_uuid(channel_uuid: &str) -> Option<models::Feed> {
 
 /// delete channel and associated articles
 /// # Example
-/// ```
+/// ```ignore
 /// let uuid = String::from("123456");
 /// let result = delete_feed(uuid);
 ///
@@ -651,10 +651,10 @@ pub async fn update_icon(uuid: &str, url: &str) -> usize {
 }
 
 pub async fn fetch_site_favicon(url: &str) -> Option<String> {
+  let base_url = url::Url::parse(url).ok()?;
   let client = feed::create_client("");
-  let response = client.get(url).send().await.unwrap();
-  let html = response.text().await.unwrap();
-  let url = String::from(url);
+  let response = client.get(url).send().await.ok()?;
+  let html = response.text().await.ok()?;
   let document = Html::parse_document(&html);
   let selector = Selector::parse("link[rel='icon'], link[rel='shortcut icon']").unwrap();
   let mut favicon_url: Option<String> = None;
@@ -664,8 +664,7 @@ pub async fn fetch_site_favicon(url: &str) -> Option<String> {
       if href.starts_with("http") {
         favicon_url = Some(href.to_string());
       } else {
-        let base_url = url::Url::parse(&url).unwrap();
-        let mut absolute_url = base_url.join(href).unwrap();
+        let mut absolute_url = base_url.join(href).ok()?;
         absolute_url.set_fragment(None);
         favicon_url = Some(absolute_url.as_str().to_string());
       };

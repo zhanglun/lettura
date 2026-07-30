@@ -5,21 +5,16 @@
     "lib": ["DOM", "DOM.Iterable", "ESNext", "WebWorker"],
     "allowJs": false,
     "skipLibCheck": true,
-    "esModuleInterop": false,
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "module": "ESNext",
-    "moduleResolution": "Node",
+    "moduleResolution": "Bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "types": [
-      "vite/client",
-      "vite-plugin-pwa/client",
-      "vite-plugin-pwa/react",
-    ],
+    "types": ["vite/client", "vite-plugin-pwa/client", "vite-plugin-pwa/react"],
     "paths": {
       "@/*": ["./src/*"]
     }

@@ -180,8 +180,8 @@
 
 .dark,
 .dark-theme {
-  --app-canvas: #111;
-  --app-sidebar: #191919;
+  --app-canvas: #101114;
+  --app-sidebar: #17191d;
   --workbench-canvas: var(--gray-1);
   --workbench-sidebar: var(--app-sidebar);
   --workbench-border: var(--gray-5);
@@ -268,6 +268,9 @@
   @media (color-gamut: p3) {
     .dark,
     .dark-theme {
+      --app-canvas: oklch(17% 0.01 260);
+      --app-sidebar: oklch(20% 0.01 260);
+
       --default-1: oklch(17.8% 0 0);
       --default-2: oklch(21.5% 0 0);
       --default-3: oklch(25.5% 0 0);

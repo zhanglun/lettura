@@ -65,10 +65,10 @@ flowchart LR
 
 Settings 顶部展示 3 个全局状态 pill：
 
-| 状态 | 来源 | 示例 |
-|------|------|------|
-| 本地配置 | `getUserConfig` + AI 配置是否存在 | 本地配置安全 |
-| 活跃来源 | Sources 数据 | 42 sources active |
+| 状态     | 来源                              | 示例              |
+| -------- | --------------------------------- | ----------------- |
+| 本地配置 | `getUserConfig` + AI 配置是否存在 | 本地配置安全      |
+| 活跃来源 | Sources 数据                      | 42 sources active |
 | 最近分析 | Pipeline run / Today signals 状态 | 最近分析 2 小时前 |
 
 若数据缺失：
@@ -110,13 +110,13 @@ stateDiagram-v2
 
 ### 3.4 通用反馈
 
-| 场景 | 反馈 |
-|------|------|
+| 场景     | 反馈                               |
+| -------- | ---------------------------------- |
 | 保存成功 | Toast：`设置已保存` 或对应动作成功 |
-| 保存失败 | Inline error + Toast |
-| 正在保存 | 保存按钮 loading，禁用重复提交 |
-| 校验失败 | 字段下方显示错误，焦点回到字段 |
-| 危险操作 | Modal 二次确认 |
+| 保存失败 | Inline error + Toast               |
+| 正在保存 | 保存按钮 loading，禁用重复提交     |
+| 校验失败 | 字段下方显示错误，焦点回到字段     |
+| 危险操作 | Modal 二次确认                     |
 
 ---
 
@@ -124,19 +124,19 @@ stateDiagram-v2
 
 ### 4.1 字段
 
-| 字段 | 控件 | 默认/占位 | 校验 | 保存接口 |
-|------|------|-----------|------|----------|
-| API Key | password input | `sk-••••` | 非空；长度 >= 20；保存后只显示掩码 | `saveAIConfig` |
-| Base URL | text input | `https://api.openai.com/v1` | 必须是 http/https URL | `saveAIConfig` |
-| Model | select/input combo | `gpt-4o-mini` | 非空 | `saveAIConfig` |
-| Embedding Model | select/input combo | `text-embedding-3-small` | 开启 embedding 时必填 | `saveAIConfig` |
-| Enable Embedding | toggle | 开 | boolean | `saveAIConfig` |
-| Pipeline Interval | select | 每 6 小时 | 1/3/6/12/24 小时 | `saveAIConfig` |
+| 字段              | 控件               | 默认/占位                  | 校验                               | 保存接口       |
+| ----------------- | ------------------ | -------------------------- | ---------------------------------- | -------------- |
+| API Key           | password input     | `sk-••••`                  | 非空；长度 >= 20；保存后只显示掩码 | `saveAIConfig` |
+| Base URL          | text input         | `https://api.deepseek.com` | 必须是 http/https URL              | `saveAIConfig` |
+| Model             | select/input combo | `gpt-4o-mini`              | 非空                               | `saveAIConfig` |
+| Embedding Model   | select/input combo | `text-embedding-3-small`   | 开启 embedding 时必填              | `saveAIConfig` |
+| Enable Embedding  | toggle             | 开                         | boolean                            | `saveAIConfig` |
+| Pipeline Interval | select             | 每 6 小时                  | 1/3/6/12/24 小时                   | `saveAIConfig` |
 
 已有前端接口：
 
 ```ts
-getAIConfig()
+getAIConfig();
 saveAIConfig({
   apiKey,
   model,
@@ -144,9 +144,9 @@ saveAIConfig({
   baseUrl,
   pipelineIntervalHours,
   enableEmbedding,
-})
-validateAIConfig()
-triggerPipeline(runType)
+});
+validateAIConfig();
+triggerPipeline(runType);
 ```
 
 ### 4.2 API Key 展示策略
@@ -189,13 +189,13 @@ sequenceDiagram
 
 ### 4.4 Pipeline 操作
 
-| 操作 | 行为 |
-|------|------|
+| 操作          | 行为                                           |
+| ------------- | ---------------------------------------------- |
 | 开启 Pipeline | 保存 `pipelineIntervalHours`，显示下次运行时间 |
-| 关闭 Pipeline | 保存为 disabled 状态；Today 不再自动分析 |
-| 立即分析 | 调用 `triggerPipeline("manual")` |
-| 分析中 | 禁用按钮，显示进度 pill |
-| 分析失败 | 展示失败原因和重试按钮 |
+| 关闭 Pipeline | 保存为 disabled 状态；Today 不再自动分析       |
+| 立即分析      | 调用 `triggerPipeline("manual")`               |
+| 分析中        | 禁用按钮，显示进度 pill                        |
+| 分析失败      | 展示失败原因和重试按钮                         |
 
 ### 4.5 AI 状态卡
 
@@ -216,19 +216,19 @@ sequenceDiagram
 
 Sources 管理不替代 Feeds 页面。
 
-| 页面 | 职责 |
-|------|------|
-| Feeds | 添加、删除、阅读、组织具体源 |
+| 页面               | 职责                                       |
+| ------------------ | ------------------------------------------ |
+| Feeds              | 添加、删除、阅读、组织具体源               |
 | Settings / Sources | 配置源的同步策略、Pack、健康状态和失效处理 |
 
 ### 5.2 Starter Packs
 
-| 操作 | 交互 | 数据变化 |
-|------|------|----------|
-| 浏览 Pack | 打开 Pack 列表或 inline 展开 | 无 |
-| 安装 Pack | Modal 确认安装数量 | 添加 feeds |
-| 卸载 Pack | 二次确认 | 可选择是否删除源 |
-| 查看 Pack 内容 | 展示源列表、领域、质量说明 | 无 |
+| 操作           | 交互                         | 数据变化         |
+| -------------- | ---------------------------- | ---------------- |
+| 浏览 Pack      | 打开 Pack 列表或 inline 展开 | 无               |
+| 安装 Pack      | Modal 确认安装数量           | 添加 feeds       |
+| 卸载 Pack      | 二次确认                     | 可选择是否删除源 |
+| 查看 Pack 内容 | 展示源列表、领域、质量说明   | 无               |
 
 Pack 卡片字段：
 
@@ -258,20 +258,20 @@ flowchart TD
 
 每行字段：
 
-| 字段 | 说明 |
-|------|------|
-| Source | 源名称 + URL / 描述 |
-| Health | 健康 / 注意 / 失效 |
-| Last Sync | 最近同步时间 |
-| Success Rate | 最近 N 次成功率 |
-| Action | 设置 / 修复 / 停用 |
+| 字段         | 说明                |
+| ------------ | ------------------- |
+| Source       | 源名称 + URL / 描述 |
+| Health       | 健康 / 注意 / 失效  |
+| Last Sync    | 最近同步时间        |
+| Success Rate | 最近 N 次成功率     |
+| Action       | 设置 / 修复 / 停用  |
 
 健康判断建议：
 
-| 状态 | 条件 |
-|------|------|
-| 健康 | 最近 5 次成功 >= 4 次 |
-| 注意 | 最近 5 次失败 2-3 次，或响应超时 |
+| 状态 | 条件                                   |
+| ---- | -------------------------------------- |
+| 健康 | 最近 5 次成功 >= 4 次                  |
+| 注意 | 最近 5 次失败 2-3 次，或响应超时       |
 | 失效 | 最近 5 次失败 >= 4 次，或 HTTP 404/410 |
 
 ### 5.4 失效源修复
@@ -293,12 +293,12 @@ flowchart TD
 
 ### 5.5 同步策略
 
-| 设置项 | 控件 | 默认 | 校验/范围 | 接口建议 |
-|--------|------|------|-----------|----------|
-| 后台同步 | toggle | 开 | boolean | `updateInterval` 或 user config |
-| 同步频率 | select | 30 分钟 | 0/15/30/60/180 分钟 | `updateInterval(intervalSeconds)` |
-| 并发请求 | slider/stepper | 3 | 1-5 | `updateThreads(threads)` |
-| 请求超时 | select | 15 秒 | 5/10/15/30 秒 | user config |
+| 设置项   | 控件           | 默认    | 校验/范围           | 接口建议                          |
+| -------- | -------------- | ------- | ------------------- | --------------------------------- |
+| 后台同步 | toggle         | 开      | boolean             | `updateInterval` 或 user config   |
+| 同步频率 | select         | 30 分钟 | 0/15/30/60/180 分钟 | `updateInterval(intervalSeconds)` |
+| 并发请求 | slider/stepper | 3       | 1-5                 | `updateThreads(threads)`          |
+| 请求超时 | select         | 15 秒   | 5/10/15/30 秒       | user config                       |
 
 特殊规则：
 
@@ -312,13 +312,13 @@ flowchart TD
 
 ### 6.1 字段
 
-| 设置项 | 控件 | 默认 | 保存 |
-|--------|------|------|------|
-| 主题 | segmented/select | 跟随系统 | `updateTheme` / user config |
-| 字号 | slider + number | 16px | user config |
-| 行高 | slider + number | 1.6 | user config |
-| 阅读器偏好 | choice card | 舒适 | user config |
-| 卡片密度 | select/segmented | 舒适 | user config |
+| 设置项     | 控件             | 默认     | 保存                        |
+| ---------- | ---------------- | -------- | --------------------------- |
+| 主题       | segmented/select | 跟随系统 | `updateTheme` / user config |
+| 字号       | slider + number  | 16px     | user config                 |
+| 行高       | slider + number  | 1.6      | user config                 |
+| 阅读器偏好 | choice card      | 舒适     | user config                 |
+| 卡片密度   | select/segmented | 舒适     | user config                 |
 
 ### 6.2 即时预览
 
@@ -359,14 +359,14 @@ flowchart LR
 
 ### 7.1 字段
 
-| 设置项 | 控件 | 默认 | 说明 |
-|--------|------|------|------|
-| 开机启动 | toggle | 关 | 系统级设置，可能需要权限 |
-| 后台同步 | toggle | 开 | 关闭窗口后仍同步 |
-| 通知 | select + toggle | 关 | 可选仅高信号提醒 |
-| 缓存保留 | select | 30 天 | 图片/解析/临时内容 |
-| 数据保留 | select | 90 天 | 文章、分析元数据 |
-| 退出行为 | info | 托盘隐藏 | 说明不可配置或另设选项 |
+| 设置项   | 控件            | 默认     | 说明                     |
+| -------- | --------------- | -------- | ------------------------ |
+| 开机启动 | toggle          | 关       | 系统级设置，可能需要权限 |
+| 后台同步 | toggle          | 开       | 关闭窗口后仍同步         |
+| 通知     | select + toggle | 关       | 可选仅高信号提醒         |
+| 缓存保留 | select          | 30 天    | 图片/解析/临时内容       |
+| 数据保留 | select          | 90 天    | 文章、分析元数据         |
+| 退出行为 | info            | 托盘隐藏 | 说明不可配置或另设选项   |
 
 ### 7.2 开机启动
 
@@ -402,11 +402,11 @@ flowchart TD
 
 通知模式：
 
-| 模式 | 行为 |
-|------|------|
-| 关闭 | 不发系统通知 |
+| 模式         | 行为                     |
+| ------------ | ------------------------ |
+| 关闭         | 不发系统通知             |
 | 高信号时通知 | 新增高置信 Signal 时通知 |
-| 每日摘要 | 每天固定时间通知 |
+| 每日摘要     | 每天固定时间通知         |
 
 通知点击：
 
@@ -508,47 +508,47 @@ interface SourceHealth {
 
 已有：
 
-| 功能 | 接口 |
-|------|------|
-| 获取用户配置 | `getUserConfig()` |
-| 更新用户配置 | `updateUserConfig(cfg)` |
-| 更新线程数 | `updateThreads(threads)` |
-| 更新主题 | `updateTheme(theme)` |
-| 更新同步间隔 | `updateInterval(interval)` |
-| 获取 AI 配置 | `getAIConfig()` |
-| 保存 AI 配置 | `saveAIConfig(config)` |
-| 验证 AI 配置 | `validateAIConfig()` |
+| 功能              | 接口                       |
+| ----------------- | -------------------------- |
+| 获取用户配置      | `getUserConfig()`          |
+| 更新用户配置      | `updateUserConfig(cfg)`    |
+| 更新线程数        | `updateThreads(threads)`   |
+| 更新主题          | `updateTheme(theme)`       |
+| 更新同步间隔      | `updateInterval(interval)` |
+| 获取 AI 配置      | `getAIConfig()`            |
+| 保存 AI 配置      | `saveAIConfig(config)`     |
+| 验证 AI 配置      | `validateAIConfig()`       |
 | 手动触发 Pipeline | `triggerPipeline(runType)` |
 
 待补：
 
-| 功能 | 建议接口 |
-|------|----------|
-| Starter Pack 列表 | `getStarterPacks()` |
-| 安装 Pack | `installStarterPack(packId)` |
-| 卸载 Pack | `uninstallStarterPack(packId, options)` |
-| 源健康列表 | `getSourceHealth()` |
-| 重试单个源 | `syncSource(sourceId)` |
-| 停用源 | `disableSource(sourceId)` |
-| 修复 URL | `updateSourceUrl(sourceId, url)` |
-| 清理缓存 | `clearCache(options)` |
-| 统计缓存大小 | `getCacheStats()` |
-| 应用数据保留策略 | `applyRetentionPolicy(options)` |
-| 导出数据 | `exportUserData(options)` |
+| 功能              | 建议接口                                |
+| ----------------- | --------------------------------------- |
+| Starter Pack 列表 | `getStarterPacks()`                     |
+| 安装 Pack         | `installStarterPack(packId)`            |
+| 卸载 Pack         | `uninstallStarterPack(packId, options)` |
+| 源健康列表        | `getSourceHealth()`                     |
+| 重试单个源        | `syncSource(sourceId)`                  |
+| 停用源            | `disableSource(sourceId)`               |
+| 修复 URL          | `updateSourceUrl(sourceId, url)`        |
+| 清理缓存          | `clearCache(options)`                   |
+| 统计缓存大小      | `getCacheStats()`                       |
+| 应用数据保留策略  | `applyRetentionPolicy(options)`         |
+| 导出数据          | `exportUserData(options)`               |
 
 ---
 
 ## 10. 错误处理
 
-| 错误 | 展示 | 恢复 |
-|------|------|------|
-| 网络/API Key 无效 | AI 配置字段下方 inline error | 修改后重试 |
-| Base URL 不合法 | 字段错误 | 禁止保存 |
-| 保存用户配置失败 | Toast + 保留 Dirty 状态 | 重试保存 |
-| 同步源失败 | 源健康状态变为注意/失效 | 修复/重试 |
-| 权限不足 | Modal 说明 | 引导系统设置 |
-| 清理缓存失败 | Toast + 详情 | 重试 |
-| 数据保留应用失败 | 不删除任何数据，显示错误 | 重试 |
+| 错误              | 展示                         | 恢复         |
+| ----------------- | ---------------------------- | ------------ |
+| 网络/API Key 无效 | AI 配置字段下方 inline error | 修改后重试   |
+| Base URL 不合法   | 字段错误                     | 禁止保存     |
+| 保存用户配置失败  | Toast + 保留 Dirty 状态      | 重试保存     |
+| 同步源失败        | 源健康状态变为注意/失效      | 修复/重试    |
+| 权限不足          | Modal 说明                   | 引导系统设置 |
+| 清理缓存失败      | Toast + 详情                 | 重试         |
+| 数据保留应用失败  | 不删除任何数据，显示错误     | 重试         |
 
 ---
 

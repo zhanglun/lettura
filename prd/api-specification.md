@@ -11,40 +11,40 @@
 
 ```typescript
 // 通用 ID 类型
-type UUID = string;              // 标准 UUID v4
-type Timestamp = string;         // ISO 8601: "2026-04-26T10:30:00Z"
-type FeedURL = string;           // 合法的 RSS/Atom URL
-type ErrorCode = string;         // 错误码枚举
+type UUID = string; // 标准 UUID v4
+type Timestamp = string; // ISO 8601: "2026-04-26T10:30:00Z"
+type FeedURL = string; // 合法的 RSS/Atom URL
+type ErrorCode = string; // 错误码枚举
 
 // 通用错误响应
 interface ApiError {
   code: ErrorCode;
-  message: string;               // 人类可读的错误描述
+  message: string; // 人类可读的错误描述
   details?: Record<string, any>; // 可选的附加信息
 }
 ```
 
 ### 1.2 错误码体系
 
-| 范围 | 含义 | 示例 |
-|------|------|------|
-| `SRC_*` | Starter Pack / Source 相关 | `SRC_NOT_FOUND`, `SRC_INSTALL_FAILED` |
-| `AI_*` | AI Pipeline / LLM / Embedding | `AI_NO_API_KEY`, `AI_API_ERROR`, `AI_TIMEOUT` |
-| `PL_*` | Pipeline 运行 | `PL_ALREADY_RUNNING`, `PL_FAILED` |
-| `TODAY_*` | Today 页面 | `TODAY_NO_DATA`, `TODAY_NOT_READY` |
-| `TOPIC_*` | Topic 相关 | `TOPIC_NOT_FOUND`, `TOPIC_EMPTY` |
-| `FB_*` | 用户反馈 | `FB_INVALID_TYPE` |
-| `CFG_*` | 配置相关 | `CFG_INVALID_KEY`, `CFG_MISSING_FIELD` |
+| 范围      | 含义                          | 示例                                          |
+| --------- | ----------------------------- | --------------------------------------------- |
+| `SRC_*`   | Starter Pack / Source 相关    | `SRC_NOT_FOUND`, `SRC_INSTALL_FAILED`         |
+| `AI_*`    | AI Pipeline / LLM / Embedding | `AI_NO_API_KEY`, `AI_API_ERROR`, `AI_TIMEOUT` |
+| `PL_*`    | Pipeline 运行                 | `PL_ALREADY_RUNNING`, `PL_FAILED`             |
+| `TODAY_*` | Today 页面                    | `TODAY_NO_DATA`, `TODAY_NOT_READY`            |
+| `TOPIC_*` | Topic 相关                    | `TOPIC_NOT_FOUND`, `TOPIC_EMPTY`              |
+| `FB_*`    | 用户反馈                      | `FB_INVALID_TYPE`                             |
+| `CFG_*`   | 配置相关                      | `CFG_INVALID_KEY`, `CFG_MISSING_FIELD`        |
 
 ### 1.3 IPC 调用模式
 
 所有新增 IPC 命令通过 `@tauri-apps/api/core` 的 `invoke` 调用：
 
 ```typescript
-import { invoke } from '@tauri-apps/api/core';
+import { invoke } from "@tauri-apps/api/core";
 
 // 成功：返回数据
-const result = await invoke<ReturnType>('command_name', { param: value });
+const result = await invoke<ReturnType>("command_name", { param: value });
 
 // 失败：抛出 Error，message 为 JSON 字符串化的 ApiError
 ```
@@ -63,13 +63,13 @@ invoke<StarterPack[]>("get_starter_packs");
 
 // 返回
 interface StarterPack {
-  id: string;                    // Pack 唯一标识: "ai" | "developer" | ...
-  name: string;                  // 显示名称: "AI & Machine Learning"
-  description: string;           // 一句话描述
-  icon: string;                  // lucide-react 图标名
-  source_count: number;          // 包含的源数量
-  language: string;              // 主要语言: "en" | "zh" | "mixed"
-  tags: string[];                // 标签: ["artificial-intelligence", "llm", "tools"]
+  id: string; // Pack 唯一标识: "ai" | "developer" | ...
+  name: string; // 显示名称: "AI & Machine Learning"
+  description: string; // 一句话描述
+  icon: string; // lucide-react 图标名
+  source_count: number; // 包含的源数量
+  language: string; // 主要语言: "en" | "zh" | "mixed"
+  tags: string[]; // 标签: ["artificial-intelligence", "llm", "tools"]
 }
 
 // 错误
@@ -447,10 +447,10 @@ invoke<AIConfig>("get_ai_config");
 
 // 返回
 interface AIConfig {
-  has_api_key: boolean;          // 是否已配置 API Key
-  model: string;                 // 当前使用的模型
-  embedding_model: string;       // 当前 Embedding 模型
-  base_url: string;              // 当前 API 端点
+  has_api_key: boolean; // 是否已配置 API Key
+  model: string; // 当前使用的模型
+  embedding_model: string; // 当前 Embedding 模型
+  base_url: string; // 当前 API 端点
   last_pipeline_run?: Timestamp; // 上次 Pipeline 运行时间
   pipeline_status: "idle" | "running" | "error";
 }
@@ -472,7 +472,7 @@ interface AIConfigInput {
   api_key: string;               // API Key 明文（写入 toml 后不在内存保留）
   model?: string;                // 可选，默认 "gpt-4o-mini"
   embedding_model?: string;      // 可选，默认 "text-embedding-3-small"
-  base_url?: string;             // 可选，默认 "https://api.openai.com/v1"
+  base_url?: string;             // 可选，默认 "https://api.deepseek.com"
 }
 
 // 返回
@@ -538,55 +538,55 @@ interface PipelineResult {
 
 ### 7.1 事件列表
 
-| 事件名 | Payload | 触发时机 | 前端监听方 |
-|--------|---------|---------|-----------|
+| 事件名               | Payload                                                                 | 触发时机              | 前端监听方      |
+| -------------------- | ----------------------------------------------------------------------- | --------------------- | --------------- |
 | `feed:sync_progress` | `{ feed_uuid, status, articles_fetched, total_feeds, completed_feeds }` | Pack 安装后逐个源抓取 | Onboarding 页面 |
-| `feed:synced` | `{ feed_uuid, article_count }` | 单个源抓取完成 | Local 页面 |
-| `pipeline:started` | `{ run_id, run_type }` | Pipeline 开始运行 | Today 页面 |
-| `pipeline:progress` | `{ run_id, stage, current, total }` | Pipeline 处理进度 | Today 页面 |
-| `pipeline:completed` | `{ run_id, signals_generated, topics_updated }` | Pipeline 完成 | Today 页面 |
-| `pipeline:failed` | `{ run_id, error_code, error_message }` | Pipeline 失败 | Today 页面 |
-| `ai:stream` | `{ request_id, content, done }` | LLM 流式输出 | Ask/详情页 |
-| `ai:config_changed` | `{}` | AI 配置更新 | Settings 页面 |
+| `feed:synced`        | `{ feed_uuid, article_count }`                                          | 单个源抓取完成        | Local 页面      |
+| `pipeline:started`   | `{ run_id, run_type }`                                                  | Pipeline 开始运行     | Today 页面      |
+| `pipeline:progress`  | `{ run_id, stage, current, total }`                                     | Pipeline 处理进度     | Today 页面      |
+| `pipeline:completed` | `{ run_id, signals_generated, topics_updated }`                         | Pipeline 完成         | Today 页面      |
+| `pipeline:failed`    | `{ run_id, error_code, error_message }`                                 | Pipeline 失败         | Today 页面      |
+| `ai:stream`          | `{ request_id, content, done }`                                         | LLM 流式输出          | Ask/详情页      |
+| `ai:config_changed`  | `{}`                                                                    | AI 配置更新           | Settings 页面   |
 
 ### 7.2 Pipeline 进度阶段
 
 ```typescript
 type PipelineStage =
-  | "fetching_articles"    // 提取未处理文章
+  | "fetching_articles" // 提取未处理文章
   | "generating_embeddings" // 生成向量
-  | "deduplicating"        // 去重检测 + 信息密度评估（v2.6）
-  | "clustering"           // 增量聚类
+  | "deduplicating" // 去重检测 + 信息密度评估（v2.6）
+  | "clustering" // 增量聚类
   | "generating_summaries" // 生成摘要
-  | "generating_wim"       // 生成 Why It Matters
-  | "ranking"              // 排序
-  | "storing_results"      // 存储结果
-  | "completed"            // 完成
-  | "failed";              // 失败
+  | "generating_wim" // 生成 Why It Matters
+  | "ranking" // 排序
+  | "storing_results" // 存储结果
+  | "completed" // 完成
+  | "failed"; // 失败
 ```
 
 ### 7.3 前端监听示例
 
 ```typescript
-import { listen } from '@tauri-apps/api/event';
+import { listen } from "@tauri-apps/api/event";
 
 // Today 页面监听 Pipeline 状态
-listen('pipeline:started', (event) => {
+listen("pipeline:started", (event) => {
   store.setState({ pipelineRunning: true });
 });
 
-listen('pipeline:progress', (event) => {
+listen("pipeline:progress", (event) => {
   const { stage, current, total } = event.payload;
   store.setState({ pipelineStage: stage, pipelineProgress: current / total });
 });
 
-listen('pipeline:completed', (event) => {
+listen("pipeline:completed", (event) => {
   const { signals_generated } = event.payload;
   refreshTodaySignals();
   store.setState({ pipelineRunning: false });
 });
 
-listen('pipeline:failed', (event) => {
+listen("pipeline:failed", (event) => {
   const { error_message } = event.payload;
   showToast(`Pipeline failed: ${error_message}`);
   store.setState({ pipelineRunning: false });
@@ -597,14 +597,14 @@ listen('pipeline:failed', (event) => {
 
 ## 8. 与版本的对应关系
 
-| 版本 | 新增 IPC 命令 | 新增事件 |
-|------|-------------|---------|
-| 2.1 | `get_starter_packs`, `preview_pack`, `install_pack` | `feed:sync_progress` |
-| 2.2 | `get_today_overview` | — |
-| 2.3 | `get_today_signals`, `get_ai_config`, `save_ai_config`, `validate_ai_config`, `trigger_pipeline` | `pipeline:*` |
-| 2.4 | — (复用 get_today_signals) | — |
-| 2.5 | `get_signal_detail` | — |
-| 2.6 | `get_dedup_stats` | `pipeline:progress` 增加 `deduplicating` 阶段 |
-| 2.7 | `submit_feedback`, `get_feedback_history` | — |
-| 2.9 | `get_topics`, `get_topic_detail` | — |
-| 2.12 | `follow_topic`, `unfollow_topic` | — |
+| 版本 | 新增 IPC 命令                                                                                    | 新增事件                                      |
+| ---- | ------------------------------------------------------------------------------------------------ | --------------------------------------------- |
+| 2.1  | `get_starter_packs`, `preview_pack`, `install_pack`                                              | `feed:sync_progress`                          |
+| 2.2  | `get_today_overview`                                                                             | —                                             |
+| 2.3  | `get_today_signals`, `get_ai_config`, `save_ai_config`, `validate_ai_config`, `trigger_pipeline` | `pipeline:*`                                  |
+| 2.4  | — (复用 get_today_signals)                                                                       | —                                             |
+| 2.5  | `get_signal_detail`                                                                              | —                                             |
+| 2.6  | `get_dedup_stats`                                                                                | `pipeline:progress` 增加 `deduplicating` 阶段 |
+| 2.7  | `submit_feedback`, `get_feedback_history`                                                        | —                                             |
+| 2.9  | `get_topics`, `get_topic_detail`                                                                 | —                                             |
+| 2.12 | `follow_topic`, `unfollow_topic`                                                                 | —                                             |

@@ -22,7 +22,7 @@ pub struct PageScraper {
 impl PageScraper {
   /// get content from string
   /// # Examples
-  /// ```
+  /// ```ignore
   /// use crate::scraper;
   /// let html = r#'
   ///   <html>

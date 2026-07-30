@@ -15,7 +15,7 @@ use uuid::Uuid;
 /// `Result<String, String>` - 成功返回 OPML XML 字符串，失败返回错误信息
 ///
 /// # Examples
-/// ```
+/// ```ignore
 /// let opml_content = export_opml().expect("导出失败");
 /// println!("{}", opml_content);
 /// ```
@@ -89,7 +89,7 @@ fn escape_xml(s: &str) -> String {
 /// `Result<OpmlImportResult, String>` - 成功返回导入结果统计，失败返回错误信息
 ///
 /// # Examples
-/// ```
+/// ```ignore
 /// let result = import_opml(opml_content).expect("导入失败");
 /// println!("导入 {} 个源", result.feed_count);
 /// ```

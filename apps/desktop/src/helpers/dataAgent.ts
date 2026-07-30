@@ -324,8 +324,20 @@ export const saveAIConfig = async (config: {
   });
 };
 
-export const validateAIConfig = async (): Promise<ValidateAIConfigResult> => {
-  return invoke("validate_ai_config");
+export const validateAIConfig = async (config: {
+  apiKey: string;
+  model: string;
+  embeddingModel: string;
+  baseUrl: string;
+  enableEmbedding?: boolean;
+}): Promise<ValidateAIConfigResult> => {
+  return invoke("validate_ai_config", {
+    apiKey: config.apiKey,
+    model: config.model,
+    embeddingModel: config.embeddingModel,
+    baseUrl: config.baseUrl,
+    enableEmbedding: config.enableEmbedding,
+  });
 };
 
 export const triggerPipeline = async (
