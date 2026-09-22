@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef } from "react";
-import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { emit, listen } from "@tauri-apps/api/event";
 import { useBearStore } from "@/stores";
 import { Theme } from "@radix-ui/themes";
@@ -63,26 +62,6 @@ function App() {
     store.updateAppMetadata,
     navigate,
   ]);
-
-  useEffect(() => {
-    const minBtn = document.getElementById("titlebar-minimize");
-    const maxBtn = document.getElementById("titlebar-maximize");
-    const closeBtn = document.getElementById("titlebar-close");
-
-    const handleMinimize = () => getCurrentWebviewWindow().minimize();
-    const handleMaximize = () => getCurrentWebviewWindow().toggleMaximize();
-    const handleClose = () => getCurrentWebviewWindow().close();
-
-    minBtn?.addEventListener("click", handleMinimize);
-    maxBtn?.addEventListener("click", handleMaximize);
-    closeBtn?.addEventListener("click", handleClose);
-
-    return () => {
-      minBtn?.removeEventListener("click", handleMinimize);
-      maxBtn?.removeEventListener("click", handleMaximize);
-      closeBtn?.removeEventListener("click", handleClose);
-    };
-  }, []);
 
   const hasFetchedConfig = useRef(false);
   const getUserConfigRef = useRef(store.getUserConfig);

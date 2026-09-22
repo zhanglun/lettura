@@ -20,6 +20,7 @@
   position: relative;
   height: 100%;
   background: var(--fusion-ground);
+  border-radius: 16px;
   overflow: hidden;
 }
 
@@ -33,17 +34,12 @@
     radial-gradient(640px 420px at 90% -12%, rgba(94, 109, 210, 0.055), transparent 70%);
 }
 
-/* ── 玻璃主面板 ── */
+/* ── 玻璃主面板（铺满窗口：无外框/圆角，fusion 内容即 app 主体） ── */
 .fusion-panel {
   position: absolute;
-  inset: 22px;
+  inset: 0;
   background: var(--fusion-glass);
   backdrop-filter: blur(22px) saturate(1.5);
-  border: 1px solid var(--fusion-hair2);
-  border-radius: 16px;
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.7) inset,
-    0 32px 64px -20px rgba(29, 30, 32, 0.28);
   display: flex;
   flex-direction: column;
   overflow: hidden;

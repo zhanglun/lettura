@@ -10,12 +10,14 @@
     "frontendDist": "../build"
   },
   "app": {
+    "macOSPrivateApi": true,
     "windows": [
       {
         "fullscreen": false,
         "maximized": false,
         "height": 760,
-        "decorations": true,
+        "decorations": false,
+        "transparent": true,
         "resizable": true,
         "title": "Lettura, Your RSS reader",
         "width": 1440,

@@ -117,10 +117,7 @@ export const AppLayout = React.memo(function () {
 
   return (
     <div className="fusion-root">
-      <section
-        className="fusion-panel"
-        style={playerVisible ? { bottom: 106 } : undefined}
-      >
+      <section className="fusion-panel">
         <header className="fusion-top" data-tauri-drag-region="">
           <span className="fusion-logo" aria-hidden="true">
             <i />
@@ -153,7 +150,13 @@ export const AppLayout = React.memo(function () {
             <kbd>⌘K</kbd>
           </button>
         </header>
-        <Outlet />
+        {/* 播放卡浮在内容上，有音频时底部留出被遮的高度 */}
+        <div
+          className="flex min-h-0 flex-1 flex-col"
+          style={playerVisible ? { paddingBottom: 90 } : undefined}
+        >
+          <Outlet />
+        </div>
       </section>
 
       <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
