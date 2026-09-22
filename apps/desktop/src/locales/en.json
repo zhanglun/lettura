@@ -492,6 +492,10 @@
       "back30": "Back 30s",
       "fwd30": "Forward 30s",
       "open_detail": "Open episode detail"
+    },
+    "podcast": {
+      "empty": "Nothing playing",
+      "empty_hint": "Add a podcast to start listening"
     }
   },
   "fusion": {

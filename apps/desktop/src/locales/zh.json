@@ -509,6 +509,10 @@
       "back30": "后退 30 秒",
       "fwd30": "前进 30 秒",
       "open_detail": "展开单集详情"
+    },
+    "podcast": {
+      "empty": "暂无播放内容",
+      "empty_hint": "添加一些播客开始收听吧"
     }
   },
   "fusion": {

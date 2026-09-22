@@ -85,8 +85,8 @@ export const PlayList: React.FC<PlayListProps> = ({
         transition={listAnimation.transition}
       >
         <Flex className="py-8 items-center justify-center flex-col gap-3">
-          <Text className="text-gray-11 text-xl font-medium">暂无播放内容</Text>
-          <Text className="text-gray-9 text-sm">添加一些播客开始收听吧</Text>
+          <Text className="text-gray-11 text-xl font-medium">{t("podcast.empty")}</Text>
+          <Text className="text-gray-9 text-sm">{t("podcast.empty_hint")}</Text>
         </Flex>
       </motion.div>
     );
