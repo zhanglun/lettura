@@ -62,6 +62,7 @@ export function ArticleView() {
     mutate,
     isToday,
     isAll,
+    isStarred,
   } = useArticle({ feedUuid, type });
 
   // 类型过滤（客户端，不与 read_status/currentFilter 混用）
@@ -318,14 +319,16 @@ export function ArticleView() {
               className={store.globalSyncStatus ? "animate-spin" : ""}
             />
           </button>
-          <button
-            type="button"
-            onClick={markAllRead}
-            className="flex items-center gap-1 px-2 py-1 text-[11px] text-[var(--gray-9)] hover:text-[var(--gray-12)] hover:bg-[var(--gray-a3)] rounded-md transition-colors"
-          >
-            <CheckCheck size={12} />
-            {t("Mark all as read")}
-          </button>
+          {!isStarred && (
+            <button
+              type="button"
+              onClick={markAllRead}
+              className="flex items-center gap-1 px-2 py-1 text-[11px] text-[var(--gray-9)] hover:text-[var(--gray-12)] hover:bg-[var(--gray-a3)] rounded-md transition-colors"
+            >
+              <CheckCheck size={12} />
+              {t("Mark all as read")}
+            </button>
+          )}
         </div>
       </div>
 

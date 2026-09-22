@@ -541,6 +541,13 @@
       "feeds": "来源",
       "add_feed": "添加订阅",
       "sync_all": "刷新全部来源"
+    },
+    "platform": {
+      "bilibili": "Bilibili",
+      "douyin": "抖音",
+      "youtube": "YouTube",
+      "open_on": "在 {{platform}} 打开",
+      "hint": "视频在平台播放；这里渲染 feed 提供的封面与简介。"
     }
   },
   "Appearance & Reading": "外观与阅读",

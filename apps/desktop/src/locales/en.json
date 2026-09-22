@@ -524,6 +524,13 @@
       "feeds": "Feeds",
       "add_feed": "Add subscription",
       "sync_all": "Refresh all feeds"
+    },
+    "platform": {
+      "bilibili": "Bilibili",
+      "douyin": "Douyin",
+      "youtube": "YouTube",
+      "open_on": "Open on {{platform}}",
+      "hint": "Videos play on the platform; the cover and summary come from the feed."
     }
   },
   "Appearance & Reading": "Appearance & Reading",

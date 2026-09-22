@@ -566,3 +566,38 @@
   color: var(--fusion-ink);
   border-color: var(--fusion-sub);
 }
+
+/* ── 平台详情 ── */
+.fusion-platcover {
+  width: 100%;
+  height: 200px;
+  border-radius: 14px;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(232, 106, 146, 0.14), rgba(94, 109, 210, 0.12));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--fusion-pink);
+  border: 1px solid var(--fusion-hair);
+  margin-bottom: 24px;
+}
+
+.fusion-openbtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 16px;
+  margin-top: 6px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--fusion-ink);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.fusion-openbtn:hover {
+  background: #000;
+}

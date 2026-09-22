@@ -46,3 +46,14 @@ export function getPlatformBadge(
   if (BILIBILI_RE.test(articleUrl(a))) return { char: "B", cls: "b-bil" };
   return { char: labels.platform, cls: "b-bil" };
 }
+
+/** 平台全名（详情页用） */
+export function getPlatformName(
+  a: { link?: string; feed_url?: string },
+  names: { bilibili: string; douyin: string; youtube: string; generic: string },
+): string {
+  if (DOUYIN_RE.test(articleUrl(a))) return names.douyin;
+  if (BILIBILI_RE.test(articleUrl(a))) return names.bilibili;
+  if (/youtube\.com|youtu\.be/i.test(articleUrl(a))) return names.youtube;
+  return names.generic;
+}

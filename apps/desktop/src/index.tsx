@@ -12,7 +12,6 @@ import ErrorPage from "./ErrorPage";
 import { RouteConfig } from "./config";
 import { ArticleContainer } from "./layout/Article";
 import { SearchPage } from "./layout/Search";
-import { StarredPage } from "./layout/Starred";
 import { SettingPage } from "./layout/Setting";
 import { FeedsPage } from "./layout/Feeds";
 
@@ -40,7 +39,7 @@ const router = createBrowserRouter([
       },
       {
         path: RouteConfig.LOCAL_STARRED,
-        element: <StarredPage />,
+        element: <ArticleContainer />,
       },
       {
         path: RouteConfig.LOCAL_FEEDS,

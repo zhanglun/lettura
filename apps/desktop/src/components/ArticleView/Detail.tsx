@@ -2,28 +2,22 @@ import React, { useEffect, useState } from "react";
 import * as dataAgent from "@/helpers/dataAgent";
 import { open } from "@tauri-apps/plugin-shell";
 import { ArticleResItem } from "@/db";
-import { YoutubeAdapter } from "./adapter/Youtube";
 import { PodcastAdapter } from "./adapter/Podcast";
+import { PlatformAdapter } from "./adapter/Platform";
 import { CommonAdapter } from "./adapter/Common";
+import { getArticleKind } from "@/helpers/articleKind";
 import { pickArticleContent, processArticleHtml } from "@/helpers/articleContent";
 import { useTranslation } from "react-i18next";
 
 function validateFeed(article: ArticleResItem, medias: any) {
-  const { feed_url } = article;
-
-  let isCommon = true;
-  let isYoutube = false;
-  let isPodcast = false;
-
-  if (/youtube.com\/feeds\/videos.xml/.test(feed_url)) {
-    isYoutube = true;
-    isCommon = false;
-  } else if (medias?.length > 0) {
-    isPodcast = true;
-    isCommon = false;
+  // 分类收敛：URL 平台优先于播客（平台条目也可能带 media）
+  if (getArticleKind(article) === "platform") {
+    return { isCommon: false, isPlatform: true, isPodcast: false };
   }
-
-  return { isCommon, isYoutube, isPodcast };
+  if (medias?.length > 0) {
+    return { isCommon: false, isPlatform: false, isPodcast: true };
+  }
+  return { isCommon: true, isPlatform: false, isPodcast: false };
 }
 
 export interface ArticleDetailProps {
@@ -88,12 +82,10 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
       );
     }
 
-    const { isCommon, isYoutube, isPodcast } = validateFeed(article, medias || []);
+    const { isCommon, isPlatform, isPodcast } = validateFeed(article, medias || []);
 
-    if (isYoutube) {
-      return (
-        <YoutubeAdapter article={article} content={pageContent} medias={medias} />
-      );
+    if (isPlatform) {
+      return <PlatformAdapter article={article} content={pageContent} />;
     } else if (isPodcast) {
       return (
         <PodcastAdapter article={article} content={pageContent} medias={medias} />
