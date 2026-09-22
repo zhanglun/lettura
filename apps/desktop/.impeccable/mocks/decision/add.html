@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>静密 × 聚光 · 添加订阅 · Lettura 0.2.0</title>
+<style>
+  @page{size:1440px 900px;margin:0;}
+  :root{
+    --ground:#F4F4F1;
+    --ink:#1D1E20; --sub:#6A6C6E; --ter:#9EA0A2;
+    --glass:rgba(255,255,255,.78);
+    --hair:rgba(29,30,32,.08); --hair2:rgba(29,30,32,.13);
+    --accent:#5E6AD2; --accent-soft:rgba(94,109,210,.1); --accent-line:rgba(94,109,210,.35);
+    --pink:#E86A92; --pink-soft:rgba(232,106,146,.1);
+    --warn:#C4564A; --warn-soft:#FDF0EE;
+    --amber:#E5A50A;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{width:1180px;height:738px;overflow:hidden;}
+  .stage{width:1440px;height:900px;transform:scale(0.8194);transform-origin:top left;position:relative;}
+  body{
+    background:var(--ground);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Helvetica Neue",sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--accent-soft);}
+  button{font:inherit;border:0;background:none;cursor:pointer;color:inherit;}
+  kbd{font-family:inherit;font-size:10.5px;color:var(--sub);border:1px solid var(--hair2);border-radius:4px;padding:0 4.5px;line-height:15px;background:rgba(255,255,255,.7);}
+  *:focus-visible{outline:2px solid var(--accent);outline-offset:1px;border-radius:4px;}
+
+  .stage::before{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:
+      radial-gradient(560px 380px at 10% -8%,rgba(232,80,96,.05),transparent 70%),
+      radial-gradient(640px 420px at 90% -12%,rgba(94,109,210,.055),transparent 70%);
+  }
+
+  /* ── 玻璃主面板（在场底座）── */
+  .panel{
+    position:absolute;inset:22px 22px 106px;
+    background:var(--glass);backdrop-filter:blur(22px) saturate(1.5);
+    border:1px solid var(--hair2);border-radius:16px;
+    box-shadow:0 1px 0 rgba(255,255,255,.7) inset,0 32px 64px -20px rgba(29,30,32,.28);
+    display:flex;flex-direction:column;overflow:hidden;
+  }
+  .top{height:54px;display:flex;align-items:center;padding:0 20px;gap:10px;border-bottom:1px solid var(--hair);flex:none;}
+  .logo{width:20px;height:20px;border-radius:7px;background:var(--ink);display:flex;align-items:center;justify-content:center;flex:none;}
+  .logo i{width:5px;height:5px;border-radius:50%;background:#fff;}
+  .sec{font-size:13px;font-weight:600;}
+  .cnt{font-size:11px;color:var(--sub);background:rgba(29,30,32,.06);border-radius:999px;padding:1.5px 8px;font-variant-numeric:tabular-nums;}
+  .nav{display:flex;gap:4px;margin-left:14px;}
+  .nav a{font-size:12.5px;color:var(--sub);text-decoration:none;padding:4px 10px;border-radius:7px;cursor:pointer;}
+  .nav a.on{color:var(--ink);font-weight:600;background:rgba(29,30,32,.06);}
+  .spring{flex:1;}
+  .cmdbtn{display:flex;align-items:center;gap:8px;height:30px;padding:0 10px;border:1px solid var(--hair2);border-radius:9px;font-size:12px;color:var(--sub);background:rgba(255,255,255,.55);}
+  .cmdbtn:hover{border-color:var(--accent);color:var(--ink);}
+  .strip{height:42px;display:flex;align-items:center;padding:0 20px;gap:4px;border-bottom:1px solid var(--hair);flex:none;}
+  .tab{font-size:12px;color:var(--sub);padding:4px 10px;border-radius:999px;}
+  .tab.on{background:rgba(29,30,32,.07);color:var(--ink);font-weight:600;}
+  .tab .c{font-variant-numeric:tabular-nums;margin-left:3px;color:var(--ter);font-weight:500;}
+  .strip .meta{margin-left:auto;font-size:11px;color:var(--ter);font-variant-numeric:tabular-nums;}
+  .list{flex:1;overflow:hidden;}
+  .row{display:grid;grid-template-columns:56px 20px 1fr 210px 92px 44px;align-items:center;height:54px;padding-right:20px;border-bottom:1px solid var(--hair);}
+  .st{display:flex;justify-content:center;}
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);}
+  .badge{width:20px;height:20px;border-radius:6px;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+  .b-art{background:rgba(29,30,32,.06);color:var(--sub);}
+  .b-pod{background:var(--accent-soft);color:var(--accent);}
+  .t{font-size:13.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 10px;}
+  .s{font-size:11.5px;color:var(--ter);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .d{font-size:11.5px;color:var(--ter);text-align:right;font-variant-numeric:tabular-nums;}
+
+  /* ── 渐进式订阅面板：⌘K 同语法，宽 640 ── */
+  .veil{position:absolute;inset:0;background:rgba(29,30,32,.14);display:none;z-index:40;}
+  .add{
+    position:absolute;left:50%;top:84px;transform:translateX(-50%);width:640px;z-index:50;
+    border-radius:14px;overflow:hidden;
+    background:rgba(255,255,255,.94);backdrop-filter:blur(28px) saturate(1.6);
+    border:1px solid rgba(29,30,32,.1);
+    box-shadow:0 4px 10px rgba(29,30,32,.06),0 36px 80px -16px rgba(29,30,32,.4);
+    display:none;
+  }
+  .a-in{display:flex;align-items:center;gap:10px;padding:14px 16px 10px;}
+  .a-in input{flex:1;border:0;outline:0;background:none;font:inherit;font-size:14.5px;color:var(--ink);}
+  .a-in input::placeholder{color:var(--ter);}
+  .det{width:22px;height:22px;border-radius:6px;font-size:10px;font-weight:700;display:none;align-items:center;justify-content:center;flex:none;}
+  .det.show{display:flex;}
+
+  .a-seg{display:flex;gap:3px;padding:0 16px 12px;border-bottom:1px solid var(--hair);flex-wrap:wrap;}
+  .aseg{font-size:11.5px;color:var(--sub);padding:3.5px 11px;border-radius:999px;}
+  .aseg:hover{background:rgba(29,30,32,.05);color:var(--ink);}
+  .aseg.on{background:rgba(29,30,32,.07);color:var(--ink);font-weight:600;}
+
+  .a-body{padding:14px 16px 16px;display:none;}
+  .a-body.show{display:block;}
+
+  .trying{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--ter);padding:4px 2px;}
+  .spin{width:13px;height:13px;border-radius:50%;border:2px solid var(--hair2);border-top-color:var(--accent);animation:spin .7s linear infinite;flex:none;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  .err{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--warn);padding:4px 2px;}
+  .err .re{font-size:12px;color:var(--accent);padding:3px 9px;border-radius:7px;}
+  .err .re:hover{background:var(--accent-soft);}
+
+  /* 预览卡：面板内长出 */
+  .card{animation:grow .22s cubic-bezier(.2,.9,.3,1);}
+  @keyframes grow{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+  .c-head{display:flex;gap:12px;align-items:center;padding:2px 2px 12px;}
+  .c-ic{width:34px;height:34px;border-radius:9px;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex:none;}
+  .c-ic.bil{background:var(--pink-soft);color:var(--pink);}
+  .c-t{font-size:14.5px;font-weight:600;line-height:1.35;}
+  .c-d{font-size:11.5px;color:var(--sub);margin-top:2px;}
+  .c-h{font-size:10.5px;font-weight:700;letter-spacing:.1em;color:var(--ter);margin:10px 0 2px;}
+  .c-row{display:flex;align-items:center;gap:10px;height:34px;border-bottom:1px solid var(--hair);font-size:12.5px;}
+  .c-row:last-child{border-bottom:0;}
+  .c-row .rt{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink);font-weight:500;}
+  .c-row .rd{font-size:11px;color:var(--ter);font-variant-numeric:tabular-nums;flex:none;}
+  .gen{margin:10px 0 2px;display:flex;align-items:center;gap:8px;font-size:11px;color:var(--ter);}
+  .gen code{font-family:"SF Mono",Menlo,monospace;font-size:10.5px;color:var(--sub);background:rgba(29,30,32,.05);border-radius:6px;padding:2.5px 8px;}
+  .c-foot{display:flex;align-items:center;gap:10px;margin-top:14px;}
+  .btn-gh{display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 14px;border:1px solid var(--hair2);border-radius:9px;font-size:12.5px;color:var(--sub);background:rgba(255,255,255,.55);}
+  .btn-gh:hover{color:var(--ink);border-color:var(--sub);}
+  .btn-ink{display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 15px;border-radius:9px;background:var(--accent);color:#fff;font-size:12.5px;font-weight:600;box-shadow:0 4px 10px -3px rgba(94,109,210,.5);}
+  .btn-ink:hover{transform:scale(1.04);}
+  .sel{position:relative;}
+  .sel-btn{display:flex;align-items:center;gap:9px;height:32px;padding:0 10px 0 12px;border:1px solid var(--hair2);border-radius:9px;font-size:12.5px;color:var(--sub);background:rgba(255,255,255,.55);min-width:118px;justify-content:space-between;}
+  .sel-btn:hover{border-color:var(--accent);}
+  .menu{position:absolute;left:0;bottom:40px;z-index:20;min-width:100%;background:rgba(255,255,255,.94);backdrop-filter:blur(28px) saturate(1.6);border:1px solid rgba(29,30,32,.1);border-radius:10px;padding:5px;box-shadow:0 4px 10px rgba(29,30,32,.06),0 18px 40px -12px rgba(29,30,32,.3);display:none;}
+  .menu.open{display:block;}
+  .mi{display:flex;align-items:center;gap:9px;width:100%;height:31px;padding:0 10px;border-radius:7px;font-size:12.5px;color:var(--ink);text-align:left;}
+  .mi:hover{background:rgba(29,30,32,.05);}
+  .mi.on{font-weight:600;background:var(--accent-soft);}
+  .mi .ck{margin-left:auto;color:var(--accent);opacity:0;}
+  .mi.on .ck{opacity:1;}
+
+  .done{display:flex;align-items:center;gap:10px;padding:6px 2px;font-size:13px;color:var(--ink);}
+  .done .ok{width:22px;height:22px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;flex:none;}
+
+  .try{display:flex;gap:7px;flex-wrap:wrap;padding:0 16px 14px;}
+  .try span{font-size:10.5px;color:var(--ter);align-self:center;letter-spacing:.06em;}
+  .tchip{font-size:11px;color:var(--sub);border:1px solid var(--hair2);border-radius:999px;padding:3px 10px;background:rgba(255,255,255,.5);}
+  .tchip:hover{border-color:var(--accent);color:var(--ink);}
+  .tchip.bad:hover{border-color:var(--warn);color:var(--warn);}
+
+  .a-foot{height:34px;display:flex;align-items:center;gap:14px;padding:0 16px;border-top:1px solid var(--hair);font-size:10.5px;color:var(--ter);background:rgba(255,255,255,.5);}
+
+  /* ── 播放卡 ── */
+  .player{
+    position:absolute;left:22px;right:22px;bottom:22px;height:68px;z-index:30;
+    background:var(--glass);backdrop-filter:blur(22px) saturate(1.5);
+    border:1px solid var(--hair2);border-radius:14px;
+    box-shadow:0 20px 44px -16px rgba(29,30,32,.26);
+    display:flex;align-items:center;gap:14px;padding:0 18px;
+  }
+  .pc{width:32px;height:32px;border-radius:999px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;flex:none;box-shadow:0 4px 10px -2px rgba(94,109,210,.5);}
+  .pmeta{flex:none;width:240px;}
+  .pmeta .ep{font-size:11px;color:var(--sub);}
+  .pmeta .nm{font-size:13px;font-weight:600;margin-top:1px;}
+  .ptrack{flex:1;display:flex;align-items:center;gap:12px;}
+  .pt{font-size:11px;color:var(--sub);font-variant-numeric:tabular-nums;flex:none;}
+  .pbar{flex:1;height:3px;border-radius:999px;background:rgba(29,30,32,.1);position:relative;}
+  .pbar b{position:absolute;left:0;top:0;bottom:0;width:26%;border-radius:999px;background:var(--accent);}
+  .pbar i{position:absolute;left:26%;top:50%;width:9px;height:9px;border-radius:50%;background:var(--accent);transform:translate(-50%,-50%);box-shadow:0 0 0 3px rgba(255,255,255,.9);}
+  .chip{font-size:11px;color:var(--sub);background:rgba(29,30,32,.06);border-radius:6px;padding:2.5px 8px;flex:none;}
+
+  .synthetic{position:absolute;right:36px;bottom:100px;font-size:10px;color:var(--ter);letter-spacing:.1em;z-index:5;}
+  .hintbar{position:absolute;left:36px;bottom:100px;font-size:10.5px;color:var(--ter);z-index:5;letter-spacing:.03em;}
+  .hintbar b{color:var(--sub);font-weight:600;}
+</style>
+</head>
+<body>
+<!--
+  SURFACE CONTRACT · 添加订阅 · Lettura 0.2.0 「静密 × 聚光」扩展面
+  THESIS: 添加订阅是一条渐进式面板流——一个输入框粘贴任何地址（RSS / B站 / 知乎 / 微博 / Newsletter 主页），检测即在输入框内显影为类型徽章，面板向下长出预览卡：源信息、最近条目、生成地址（平台源经 RSSHub，运维门槛挡在界面后面）、分组与添加。无向导、无多步路由、无系统弹窗。
+  OWN-WORLD: 完全继承 fusion：⌘K 面板语法（同位、同浮层、同 veil、同底足注），预览卡内是列表行语法收紧至 34px；类型徽章复用文/播/B 词汇；错误用 --warn 行内呈现，永远不用弹窗。
+  STORY: ⌘K「添加订阅」或订阅管理页进入；粘贴 → 等 0.5 秒 → 预览卡长出（唯一动效：grow 22ms 缓出）；确认分组，回车或点「订阅」，✓ 即成，esc 随时离开回列表。
+  FIRST VIEWPORT: 玻璃面板压暗，中央 640px 订阅面板：输入行（搜索图标 + 地址框 + esc）→ 平台分段（自动检测默认开）→ 试试 chips；预览态在分段下方长出卡片，底部足注 ⏎ 订阅 · esc 关闭。
+  FORM: fusion 世界的直接扩展（渐进式面板，用户 2026-02 轮选定，否决第四视图与系统弹窗）。
+  FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance.
+-->
+<div class="stage">
+
+  <section class="panel">
+    <header class="top">
+      <span class="logo"><i></i></span>
+      <span class="sec">未读</span>
+      <span class="cnt">247</span>
+      <nav class="nav"><a class="on">未读</a><a>星标</a><a>历史</a><a>订阅</a></nav>
+      <span class="spring"></span>
+      <button class="cmdbtn" id="openAdd">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#6A6C6E" stroke-width="1.7"><circle cx="7" cy="7" r="4.8"/><path d="m11.2 11.2 3 3"/></svg>
+        搜索或输入命令<span class="spring"></span><kbd>⌘K</kbd>
+      </button>
+    </header>
+    <div class="strip">
+      <button class="tab on">全部 <span class="c">247</span></button>
+      <button class="tab">文章 <span class="c">229</span></button>
+      <button class="tab">播客 <span class="c">3</span></button>
+      <button class="tab">平台 <span class="c">15</span></button>
+      <span class="meta">34 个来源 · 最近同步 09:41</span>
+    </div>
+    <main class="list" id="viewList"></main>
+  </section>
+
+  <!-- 渐进式订阅面板 -->
+  <div class="veil" id="veil"></div>
+  <section class="add" id="addPanel">
+    <div class="a-in">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#9EA0A2" stroke-width="1.7"><circle cx="7" cy="7" r="4.8"/><path d="m11.2 11.2 3 3"/></svg>
+      <input id="addInput" placeholder="粘贴 RSS 地址，或 B站 / 知乎 / 微博 / Newsletter 主页链接…" autocomplete="off">
+      <span class="det" id="det"></span>
+      <kbd>esc</kbd>
+    </div>
+    <div class="a-seg" id="platSeg">
+      <button class="aseg on" data-p="auto">自动检测</button>
+      <button class="aseg" data-p="rss">RSS / Atom</button>
+      <button class="aseg" data-p="bil">B站</button>
+      <button class="aseg" data-p="zh">知乎</button>
+      <button class="aseg" data-p="wb">微博</button>
+      <button class="aseg" data-p="nl">Newsletter</button>
+    </div>
+    <div class="a-body" id="aBody"></div>
+    <div class="try" id="tryRow" style="display:none;">
+      <span>试试</span>
+      <button class="tchip" data-url="https://openai.com/news/rss.xml">openai.com/news/rss.xml</button>
+      <button class="tchip" data-url="https://space.bilibili.com/2207410">space.bilibili.com/2207410</button>
+      <button class="tchip bad" data-url="https://example.com/no-feed">example.com/no-feed（失败态）</button>
+    </div>
+    <div class="a-foot"><span>⏎ 订阅</span><span>esc 关闭</span><span class="spring"></span><span>平台源经 RSSHub 生成，无需自建</span></div>
+  </section>
+
+  <span class="hintbar"><b>⌘K</b> 命令 · <b>space</b> 播放 · <b>?</b> 帮助</span>
+  <span class="synthetic">演示内容为合成数据</span>
+
+  <footer class="player">
+    <button class="pc"><svg width="11" height="11" viewBox="0 0 12 12" fill="#fff"><rect x="1.5" y="1" width="3" height="10" rx="1"/><rect x="7.5" y="1" width="3" height="10" rx="1"/></svg></button>
+    <span class="pmeta"><div class="ep">内核恐慌 · EP.87</div><div class="nm">与 guevaria 聊本地优先软件</div></span>
+    <span class="ptrack"><span class="pt">18:30</span><span class="pbar"><b></b><i></i></span><span class="pt">72:00</span></span>
+    <span class="chip">1.5×</span>
+  </footer>
+</div>
+
+<script>
+const ROWS=[
+ {k:"art",t:"Rust 1.90 发布：编译器并行化进入第二阶段",s:"rust-lang.org",d:"09:41"},
+ {k:"art",t:"为什么我把全部阅读搬回了 RSS",s:"overreacted.io",d:"08:52"},
+ {k:"pod",t:"EP.87 与 guevaria 聊本地优先软件",s:"内核恐慌",d:"72:00"},
+ {k:"art",t:"SQLite 在 2026：一个文件如何扛住一切",s:"fly.io",d:"昨日 21:33"},
+];
+const KLABEL={art:["文","b-art"],pod:["播","b-pod"]};
+document.getElementById("viewList").innerHTML=ROWS.map(r=>`
+ <div class="row"><span class="st"><span class="dot"></span></span>
+ <span class="badge ${KLABEL[r.k][1]}">${KLABEL[r.k][0]}</span>
+ <span class="t">${r.t}</span><span class="s">${r.s}</span><span class="d">${r.d}</span><span class="acts"></span></div>`).join("");
+
+/* ── 面板开合 ── */
+const veil=document.getElementById("veil"),panel=document.getElementById("addPanel"),input=document.getElementById("addInput");
+const aBody=document.getElementById("aBody"),tryRow=document.getElementById("tryRow"),det=document.getElementById("det");
+let open=false,timer=null;
+function openPanel(){open=true;veil.style.display="block";panel.style.display="block";tryRow.style.display="flex";input.value="";reset();input.focus();}
+function closePanel(){open=false;veil.style.display="none";panel.style.display="none";}
+document.getElementById("openAdd").addEventListener("click",openPanel);
+veil.addEventListener("click",closePanel);
+
+/* ── 平台分段 ── */
+let plat="auto";
+document.querySelectorAll("#platSeg .aseg").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll("#platSeg .aseg").forEach(x=>x.classList.remove("on"));b.classList.add("on");
+  plat=b.dataset.p;
+  input.placeholder=plat==="auto"?"粘贴 RSS 地址，或 B站 / 知乎 / 微博 / Newsletter 主页链接…"
+    :plat==="rss"?"粘贴 RSS / Atom 地址…"
+    :plat==="bil"?"粘贴 UP 主主页链接（space.bilibili.com/…）"
+    :plat==="zh"?"粘贴知乎用户主页或专栏链接…"
+    :plat==="wb"?"粘贴微博用户主页（weibo.com/u/…）…"
+    :"粘贴 Newsletter 订阅页（Substack / Buttondown / Kill the Newsletter）…";
+  if(input.value)detect(input.value);
+}));
+
+/* ── 检测 ── */
+const KINDS={
+ rss:{tag:"RSS",cls:"b-art",title:"OpenAI Blog",desc:"Research updates and product news from OpenAI",host:"openai.com",items:[["Sora 2 开放 API 并下调定价","昨日"],["GPT-5.1 系统卡与安全评估","3 天前"],["o 系列推理模型的成本曲线","上周"]]},
+ bil:{tag:"B",cls:"b-pod bil",title:"科技 UP 主",desc:"B站 · 经 RSSHub 生成，视频投稿即文章",host:"space.bilibili.com/2207410",items:[["【B站】2026 年的本地模型到底能干什么","昨日 23:07"],["【B站】把 Tauri 塞进 5MB 的三种办法","上周"],["【B站】三分钟看懂编译器并行化","两周前"]]},
+ zh:{tag:"知",cls:"b-art",title:"知乎 · 技术专栏",desc:"知乎 · 经 RSSHub 生成",host:"zhihu.com/people/writer",items:[["回答：2026 年还值得写博客吗","2 天前"],["文章：我的极简阅读栈","上周"]]},
+ wb:{tag:"微",cls:"b-art",title:"微博 · 科技博主",desc:"微博 · 经 RSSHub 生成",host:"weibo.com/u/1234567",items:[["今天试了 Lettura 0.2.0，未读即队列…","昨日"],["本地优先不是离线优先","3 天前"]]},
+ nl:{tag:"✉",cls:"b-pod",title:"Weekly #212",desc:"Newsletter · 经 Kill the Newsletter 转 RSS",host:"buttondown.email/weekly",items:[["Weekly #212：工具的形状","昨日"],["Weekly #211：阅读的伦理","上周"]]},
+};
+function classify(url){
+  if(/space\.bilibili\.com|bilibili\.com/.test(url))return "bil";
+  if(/zhihu\.com/.test(url))return "zh";
+  if(/weibo\.com/.test(url))return "wb";
+  if(/substack|buttondown|beehiiv|kill-the-newsletter|newsletter/i.test(url))return "nl";
+  if(/\.(xml|rss)(\?|$)|\/feed\/?$|\/rss\/?$|feeds?\./i.test(url))return "rss";
+  if(/openai\.com/.test(url))return "rss";
+  return null;
+}
+let curKind=null;
+function reset(){clearTimeout(timer);aBody.classList.remove("show");aBody.innerHTML="";det.classList.remove("show");curKind=null;}
+function detect(url){
+  reset();
+  if(!url.trim()){return;}
+  aBody.classList.add("show");
+  aBody.innerHTML='<div class="trying"><span class="spin"></span>正在探测地址…</div>';
+  timer=setTimeout(()=>{
+    let k=classify(url);
+    if(plat!=="auto"&&k!==plat)k=plat; /* 手动指定优先 */
+    if(!k){
+      aBody.innerHTML='<div class="err"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="8" cy="8" r="6.2"/><path d="M8 4.8v3.6M8 10.8v.4"/></svg>没找到 feed——试试 RSS 地址（.xml / /feed）或平台主页链接<button class="re">重试</button></div>';
+      aBody.querySelector(".re").addEventListener("click",()=>detect(url));
+      return;
+    }
+    curKind=k;
+    const K=KINDS[k];
+    det.textContent=K.tag;det.className="det show "+K.cls;
+    aBody.innerHTML=`
+     <div class="card">
+       <div class="c-head">
+         <span class="c-ic ${k==="bil"?"bil":""}">${K.tag}</span>
+         <div><div class="c-t">${K.title}</div><div class="c-d">${K.desc} · ${K.host}</div></div>
+       </div>
+       <div class="c-h">最近条目 RECENT</div>
+       ${K.items.map(it=>`<div class="c-row"><span class="rt">${it[0]}</span><span class="rd">${it[1]}</span></div>`).join("")}
+       ${k!=="rss"?`<div class="gen"><svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9M13.5 2.5V5h-2.5"/></svg>生成地址 <code>rsshub.app/${k}/…</code><span>由 Lettura 生成并托管订阅，无需自建</span></div>`:""}
+       <div class="c-foot">
+         <div class="sel"><button class="sel-btn"><span class="cv">技术</span><svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="#6A6C6E" stroke-width="1.8" stroke-linecap="round"><path d="m3.5 10 4.5-4.5L12.5 10"/></svg></button>
+           <div class="menu">
+             <button class="mi on">技术<span class="ck">✓</span></button><button class="mi">平台源<span class="ck">✓</span></button>
+             <button class="mi">Newsletter<span class="ck">✓</span></button><button class="mi">新建分组…<span class="ck">✓</span></button>
+           </div></div>
+         <span class="spring"></span>
+         <button class="btn-gh" id="cancelAdd">取消</button>
+         <button class="btn-ink" id="doAdd">
+           <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"><path d="M8 3v10M3 8h10"/></svg>订阅
+         </button>
+       </div>
+     </div>`;
+    const menu=aBody.querySelector(".menu"),sbtn=aBody.querySelector(".sel-btn");
+    sbtn.addEventListener("click",e=>{e.stopPropagation();menu.classList.toggle("open");});
+    menu.querySelectorAll(".mi").forEach(mi=>mi.addEventListener("click",()=>{
+      menu.querySelectorAll(".mi").forEach(x=>x.classList.remove("on"));mi.classList.add("on");
+      sbtn.querySelector(".cv").textContent=mi.textContent.replace("✓","").trim();menu.classList.remove("open");
+    }));
+    aBody.querySelector("#cancelAdd").addEventListener("click",closePanel);
+    aBody.querySelector("#doAdd").addEventListener("click",doAdd);
+  },520);
+}
+function doAdd(){
+  const K=KINDS[curKind];
+  const folder=(document.querySelector("#addPanel .cv")||{}).textContent||"技术";
+  aBody.innerHTML=`<div class="done"><span class="ok"><svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m3.5 8.5 3 3 6-6.5"/></svg></span>已订阅「${K.title}」· 分组「${folder}」</div>`;
+  setTimeout(closePanel,900);
+}
+input.addEventListener("input",e=>detect(e.target.value));
+document.querySelectorAll(".tchip").forEach(c=>c.addEventListener("click",()=>{input.value=c.dataset.url;input.focus();detect(c.dataset.url);}));
+document.addEventListener("click",()=>document.querySelectorAll(".menu.open").forEach(m=>m.classList.remove("open")));
+document.addEventListener("keydown",e=>{
+  if(!open){if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==="k"){openPanel();e.preventDefault();}return;}
+  if(e.key==="Escape"){closePanel();e.preventDefault();}
+  if(e.key==="Enter"&&curKind){doAdd();e.preventDefault();}
+});
+openPanel();
+</script>
+</body>
+</html>

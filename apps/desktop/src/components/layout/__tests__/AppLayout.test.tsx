@@ -30,6 +30,7 @@ vi.mock("@/stores", () => ({
       currentFilter: { id: 1, title: "Unread" },
       setFilter: vi.fn(),
       getSubscribes: vi.fn(),
+      initCollectionMetas: vi.fn(),
       tracks: [],
       podcastPlayingStatus: false,
       updatePodcastPlayingStatus: vi.fn(),

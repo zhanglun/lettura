@@ -29,6 +29,7 @@ export const AppLayout = React.memo(function () {
       currentFilter: state.currentFilter,
       setFilter: state.setFilter,
       getSubscribes: state.getSubscribes,
+      initCollectionMetas: state.initCollectionMetas,
       tracks: state.tracks,
       podcastPlayingStatus: state.podcastPlayingStatus,
       updatePodcastPlayingStatus: state.updatePodcastPlayingStatus,
@@ -38,9 +39,10 @@ export const AppLayout = React.memo(function () {
     })),
   );
 
-  // Sidebar 退役后，订阅初始化移到壳层
+  // Sidebar 退役后，订阅与全局未读数初始化移到壳层
   useEffect(() => {
     store.getSubscribes();
+    store.initCollectionMetas();
     const unsub = busChannel.on("getChannels", () => store.getSubscribes());
     return () => {
       unsub();
