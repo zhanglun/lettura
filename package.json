@@ -1,7 +1,7 @@
 {
   "name": "lettura-monorepo",
   "private": true,
-  "version": "0.1.22",
+  "version": "0.2.0",
   "scripts": {
     "dev:desktop": "pnpm --filter @lettura/desktop dev",
     "dev:docs": "pnpm --filter @lettura/docs dev",
