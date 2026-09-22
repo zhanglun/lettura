@@ -292,7 +292,33 @@
       "kpi_close_behavior": "Close Behavior",
       "kpi_cache_retention": "Cache Retention"
     },
-    "sync_sources": "Sync & Sources"
+    "sync_sources": "Sync & Sources",
+    "sec": {
+      "appearance": "Appearance & Reading",
+      "sync": "Sync & Sources",
+      "system": "Behavior & Data"
+    },
+    "dsrc": "Lettura · Preferences",
+    "instant": "Changes apply instantly and persist locally",
+    "theme_help": "Dark is the named variant “Night Reader”, not a simple invert",
+    "accent_help": "Focus line, dots, playback and selection share one color",
+    "font_help": "Serif size for article reading",
+    "lh_help": "Line-height multiplier",
+    "density_help": "Compactness of unread list rows",
+    "follow_system": "System",
+    "preview": "Preview",
+    "preview_live": "Reflects settings above in real time",
+    "prev_row1": "Why I moved all my reading back to RSS",
+    "prev_row2": "EP.87 Local-first software with guevaria",
+    "prev_serif": "Over five years I cycled through four read-later apps, three aggregators and two note systems. The problem was never the tool — unread is not debt, just today's weather.",
+    "subs_manage": "Subscriptions",
+    "subs_manage_help": "Add, group, move and unsubscribe feeds",
+    "subs_manage_btn": "Manage",
+    "lang_help": "Interface language, switches instantly",
+    "opml_help": "Full import/export of your list; data belongs to you",
+    "Off": "Off",
+    "Keep forever": "Keep forever",
+    "days": "days"
   },
   "layout": {
     "topics": {},
@@ -660,5 +686,8 @@
   "opml_import": "OPML Import",
   "Enabled": "Enabled",
   "Cache cleaned": "Cache cleaned",
-  "Export completed": "Export completed"
+  "Export completed": "Export completed",
+  "Export": "Export",
+  "days": "days",
+  "Off": "Off"
 }

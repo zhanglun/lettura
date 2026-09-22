@@ -309,7 +309,33 @@
       "kpi_close_behavior": "关闭行为",
       "kpi_cache_retention": "缓存保留"
     },
-    "sync_sources": "同步与来源"
+    "sync_sources": "同步与来源",
+    "sec": {
+      "appearance": "外观与阅读",
+      "sync": "同步与来源",
+      "system": "行为与数据"
+    },
+    "dsrc": "Lettura · 偏好",
+    "instant": "更改即时生效并写入本地配置",
+    "theme_help": "深色为命名候「夜读本」，非简单反色",
+    "accent_help": "焦点线、圆点、播放与选中共用一色",
+    "font_help": "文章阅读的宋体字号",
+    "lh_help": "行间距倍数",
+    "density_help": "未读列表行的紧凑程度",
+    "follow_system": "跟随系统",
+    "preview": "阅读预览",
+    "preview_live": "实时反映上方设置",
+    "prev_row1": "为什么我把全部阅读搬回了 RSS",
+    "prev_row2": "EP.87 与 guevaria 聊本地优先软件",
+    "prev_serif": "五年里我换过四个稍后读应用、三个聚合器、两套笔记系统。问题不在工具，在形态——未读不是债务，只是今天的天气。",
+    "subs_manage": "订阅管理",
+    "subs_manage_help": "添加、分组、移动与退订来源",
+    "subs_manage_btn": "管理订阅",
+    "lang_help": "界面语言，即时切换",
+    "opml_help": "订阅列表完全进出，数据属于用户",
+    "Off": "关闭",
+    "Keep forever": "永久保留",
+    "days": "天"
   },
   "layout": {
     "topics": {},
@@ -676,5 +702,8 @@
   "opml_import": "OPML 导入",
   "Enabled": "已启用",
   "Cache cleaned": "缓存已清理",
-  "Export completed": "导出完成"
+  "Export completed": "导出完成",
+  "Export": "导出",
+  "days": "天",
+  "Off": "关闭"
 }
