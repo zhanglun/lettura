@@ -58,3 +58,5 @@ dev-dist
 target
 .astro/
 .playwright-mcp/
+# Local Pi runtime state
+.atl/

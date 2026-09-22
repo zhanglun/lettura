@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>静密 × 聚光 · Lettura 0.2.0</title>
+<style>
+  @page{size:1440px 900px;margin:0;}
+  :root{
+    --ground:#F4F4F1;
+    --ink:#1D1E20; --sub:#6A6C6E; --ter:#9EA0A2;
+    --glass:rgba(255,255,255,.78);
+    --hair:rgba(29,30,32,.08); --hair2:rgba(29,30,32,.13);
+    --accent:#5E6AD2; --accent-soft:rgba(94,109,210,.1); --accent-line:rgba(94,109,210,.35);
+    --pink:#E86A92; --pink-soft:rgba(232,106,146,.1);
+    --warn:#C4564A; --warn-soft:#FDF0EE;
+    --amber:#E5A50A;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{width:1180px;height:738px;overflow:hidden;}
+  .stage{width:1440px;height:900px;transform:scale(0.8194);transform-origin:top left;position:relative;}
+  body{
+    background:var(--ground);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Helvetica Neue",sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--accent-soft);}
+  button{font:inherit;border:0;background:none;cursor:pointer;color:inherit;}
+  kbd{font-family:inherit;font-size:10.5px;color:var(--sub);border:1px solid var(--hair2);border-radius:4px;padding:0 4.5px;line-height:15px;background:rgba(255,255,255,.7);}
+
+  .stage::before{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:
+      radial-gradient(560px 380px at 10% -8%,rgba(232,80,96,.05),transparent 70%),
+      radial-gradient(640px 420px at 90% -12%,rgba(94,109,210,.055),transparent 70%);
+  }
+
+  /* ── 玻璃主面板 ── */
+  .panel{
+    position:absolute;inset:22px 22px 106px;
+    background:var(--glass);backdrop-filter:blur(22px) saturate(1.5);
+    border:1px solid var(--hair2);border-radius:16px;
+    box-shadow:0 1px 0 rgba(255,255,255,.7) inset,0 32px 64px -20px rgba(29,30,32,.28);
+    display:flex;flex-direction:column;overflow:hidden;
+  }
+
+  .top{height:54px;display:flex;align-items:center;padding:0 20px;gap:10px;border-bottom:1px solid var(--hair);flex:none;}
+  .logo{width:20px;height:20px;border-radius:7px;background:var(--ink);display:flex;align-items:center;justify-content:center;flex:none;}
+  .logo i{width:5px;height:5px;border-radius:50%;background:#fff;}
+  .sec{font-size:13px;font-weight:600;}
+  .cnt{font-size:11px;color:var(--sub);background:rgba(29,30,32,.06);border-radius:999px;padding:1.5px 8px;font-variant-numeric:tabular-nums;}
+  .nav{display:flex;gap:4px;margin-left:14px;}
+  .nav a{font-size:12.5px;color:var(--sub);text-decoration:none;padding:4px 10px;border-radius:7px;cursor:pointer;}
+  .nav a:hover{background:rgba(29,30,32,.05);}
+  .nav a.on{color:var(--ink);font-weight:600;background:rgba(29,30,32,.06);}
+  .spring{flex:1;}
+  .cmdbtn{display:flex;align-items:center;gap:8px;height:30px;padding:0 10px;border:1px solid var(--hair2);border-radius:9px;font-size:12px;color:var(--sub);background:rgba(255,255,255,.55);}
+  .cmdbtn:hover{border-color:var(--accent);color:var(--ink);}
+
+  .strip{height:42px;display:flex;align-items:center;padding:0 20px;gap:4px;border-bottom:1px solid var(--hair);flex:none;}
+  .tab{font-size:12px;color:var(--sub);padding:4px 10px;border-radius:999px;}
+  .tab:hover{background:rgba(29,30,32,.05);}
+  .tab.on{background:rgba(29,30,32,.07);color:var(--ink);font-weight:600;}
+  .tab .c{font-variant-numeric:tabular-nums;margin-left:3px;color:var(--ter);font-weight:500;}
+  .strip .meta{margin-left:auto;font-size:11px;color:var(--ter);font-variant-numeric:tabular-nums;}
+
+  /* ── 列表视图 ── */
+  .list{flex:1;overflow:hidden;}
+  .row{
+    display:grid;grid-template-columns:56px 20px 1fr 210px 92px 44px;
+    align-items:center;height:54px;padding-right:20px;border-bottom:1px solid var(--hair);cursor:pointer;
+  }
+  .row:hover{background:rgba(29,30,32,.035);}
+  .st{display:flex;justify-content:center;}
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);}
+  .read .dot{background:#CFD1D3;}
+  .badge{
+    width:20px;height:20px;border-radius:6px;font-size:10px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .b-art{background:rgba(29,30,32,.06);color:var(--sub);}
+  .b-pod{background:var(--accent-soft);color:var(--accent);}
+  .b-bil{background:var(--pink-soft);color:var(--pink);}
+  .b-dou{background:rgba(29,30,32,.08);color:var(--ink);}
+  .t{font-size:13.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 10px;}
+  .read .t{color:var(--ter);font-weight:400;}
+  .s{font-size:11.5px;color:var(--ter);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .s .fail{color:var(--warn);}
+  .s .live{color:var(--accent);}
+  .d{font-size:11.5px;color:var(--ter);text-align:right;font-variant-numeric:tabular-nums;}
+  .acts{display:flex;justify-content:center;align-items:center;gap:6px;}
+  .star{color:var(--amber);}
+  .focus{background:rgba(29,30,32,.045)!important;box-shadow:inset 2px 0 0 var(--accent);}
+  .focus .dot{outline:3px solid var(--accent-soft);outline-offset:1.5px;}
+
+  /* ── 详情视图 ── */
+  .detail{flex:1;overflow:hidden;display:none;flex-direction:column;}
+  .d-top{height:50px;display:flex;align-items:center;gap:8px;padding:0 20px;border-bottom:1px solid var(--hair);flex:none;}
+  .back{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--sub);padding:5px 10px;border-radius:7px;}
+  .back:hover{background:rgba(29,30,32,.05);color:var(--ink);}
+  .d-src{font-size:11.5px;color:var(--ter);margin-left:6px;}
+  .d-actions{display:flex;gap:2px;margin-left:auto;}
+  .qa{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--sub);}
+  .qa:hover{background:rgba(29,30,32,.06);color:var(--ink);}
+  .qa.on{color:var(--amber);}
+  .d-body{flex:1;overflow:hidden;padding:44px 96px;}
+  .d-inner{max-width:640px;margin:0 auto;}
+  .d-kind{font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--accent);margin-bottom:12px;}
+  .d-inner h1{font-size:24px;font-weight:700;line-height:1.4;letter-spacing:.005em;}
+  .d-meta{font-size:12px;color:var(--ter);margin:12px 0 30px;display:flex;gap:10px;align-items:center;font-variant-numeric:tabular-nums;}
+  .d-inner p{font-family:"Songti SC","STSong","Noto Serif SC",serif;font-size:15.5px;line-height:2.0;color:#33363B;margin-bottom:22px;}
+  .d-inner p.note{font-family:inherit;font-size:13.5px;line-height:1.85;color:#4A4D52;}
+
+  /* 播客详情 */
+  .ep-head{display:flex;gap:20px;margin-bottom:26px;}
+  .cover{
+    width:112px;height:112px;border-radius:18px;background:var(--accent-soft);flex:none;
+    display:flex;align-items:center;justify-content:center;color:var(--accent);
+    box-shadow:0 12px 28px -10px rgba(94,109,210,.35);
+  }
+  .ep-info h1{font-size:21px;}
+  .ep-info .d-meta{margin:10px 0 14px;}
+  .ep-ctrl{display:flex;align-items:center;gap:10px;}
+  .bigplay{width:40px;height:40px;border-radius:999px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 14px -3px rgba(94,109,210,.5);}
+  .bigplay:hover{transform:scale(1.05);}
+  .skipbtn{width:30px;height:30px;border-radius:999px;display:flex;align-items:center;justify-content:center;color:var(--sub);border:1px solid var(--hair2);}
+  .skipbtn:hover{color:var(--ink);border-color:var(--sub);}
+  .chapters{margin-top:26px;}
+  .ch-h{font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--ter);margin-bottom:10px;}
+  .ch{display:flex;gap:14px;align-items:center;height:38px;font-size:13px;border-bottom:1px solid var(--hair);}
+  .ch .ts{font-family:"SF Mono",Menlo,monospace;font-size:11px;color:var(--ter);font-variant-numeric:tabular-nums;width:44px;}
+  .ch .now .ts{color:var(--accent);}
+  .ch .now .tt{color:var(--ink);font-weight:600;}
+
+  /* 平台详情（B站/抖音）*/
+  .plat-cover{
+    width:100%;height:200px;border-radius:14px;margin-bottom:24px;
+    background:linear-gradient(135deg,rgba(232,106,146,.14),rgba(94,109,210,.12));
+    display:flex;align-items:center;justify-content:center;color:var(--pink);
+    border:1px solid var(--hair);
+  }
+  .openbtn{
+    display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 16px;margin-top:6px;
+    border-radius:10px;background:var(--ink);color:#fff;font-size:13px;font-weight:600;
+  }
+  .openbtn:hover{background:#000;}
+
+  /* ── 命令面板 ── */
+  .veil{position:absolute;inset:0;background:rgba(29,30,32,.14);display:none;z-index:40;}
+  .palette{
+    position:absolute;left:50%;top:84px;transform:translateX(-50%);width:580px;z-index:50;
+    border-radius:14px;overflow:hidden;display:none;
+    background:rgba(255,255,255,.94);backdrop-filter:blur(28px) saturate(1.6);
+    border:1px solid rgba(29,30,32,.1);
+    box-shadow:0 4px 10px rgba(29,30,32,.06),0 36px 80px -16px rgba(29,30,32,.4);
+  }
+  .p-in{height:52px;display:flex;align-items:center;gap:10px;padding:0 16px;border-bottom:1px solid var(--hair);}
+  .p-in input{flex:1;border:0;outline:0;background:none;font:inherit;font-size:14.5px;color:var(--ink);}
+  .p-in input::placeholder{color:var(--ter);}
+  .res{padding:6px;max-height:280px;overflow:hidden;}
+  .r{display:flex;align-items:center;gap:11px;height:44px;padding:0 12px;border-radius:9px;cursor:pointer;}
+  .r.sel{background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent-line);}
+  .r .ic{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex:none;}
+  .r .lbl{font-size:13px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .r .lbl b{color:var(--accent);font-weight:600;}
+  .r .hint{font-size:11px;color:var(--ter);flex:none;font-variant-numeric:tabular-nums;}
+  .p-foot{height:34px;display:flex;align-items:center;gap:14px;padding:0 16px;border-top:1px solid var(--hair);font-size:10.5px;color:var(--ter);background:rgba(255,255,255,.5);}
+
+  /* ── 播放器（全局，浮动玻璃卡） ── */
+  .player{
+    position:absolute;left:22px;right:22px;bottom:22px;height:68px;z-index:30;
+    background:var(--glass);backdrop-filter:blur(22px) saturate(1.5);
+    border:1px solid var(--hair2);border-radius:14px;
+    box-shadow:0 20px 44px -16px rgba(29,30,32,.26);
+    display:flex;align-items:center;gap:14px;padding:0 18px;
+  }
+  .pc{width:32px;height:32px;border-radius:999px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;flex:none;box-shadow:0 4px 10px -2px rgba(94,109,210,.5);transition:transform .15s ease;}
+  .pc:hover{transform:scale(1.06);}
+  .pskip{width:24px;height:24px;border-radius:999px;display:flex;align-items:center;justify-content:center;color:var(--sub);}
+  .pskip:hover{background:rgba(29,30,32,.06);color:var(--ink);}
+  .pmeta{flex:none;width:240px;cursor:pointer;}
+  .pmeta .ep{font-size:11px;color:var(--sub);}
+  .pmeta .nm{font-size:13px;font-weight:600;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .ptrack{flex:1;display:flex;align-items:center;gap:12px;}
+  .pt{font-size:11px;color:var(--sub);font-variant-numeric:tabular-nums;flex:none;}
+  .pbar{flex:1;height:3px;border-radius:999px;background:rgba(29,30,32,.1);position:relative;cursor:pointer;}
+  .pbar b{position:absolute;left:0;top:0;bottom:0;width:26%;border-radius:999px;background:var(--accent);}
+  .pbar i{position:absolute;left:26%;top:50%;width:9px;height:9px;border-radius:50%;background:var(--accent);transform:translate(-50%,-50%);box-shadow:0 0 0 3px rgba(255,255,255,.9);}
+  .chip{font-size:11px;color:var(--sub);background:rgba(29,30,32,.06);border-radius:6px;padding:2.5px 8px;flex:none;}
+  .expand{width:24px;height:24px;border-radius:7px;display:flex;align-items:center;justify-content:center;color:var(--ter);}
+  .expand:hover{background:rgba(29,30,32,.06);color:var(--ink);}
+
+  .synthetic{position:absolute;right:36px;bottom:100px;font-size:10px;color:var(--ter);letter-spacing:.1em;z-index:5;}
+  .hintbar{position:absolute;left:36px;bottom:100px;font-size:10.5px;color:var(--ter);z-index:5;letter-spacing:.03em;}
+  .hintbar b{color:var(--sub);font-weight:600;}
+</style>
+</head>
+<body>
+<!--
+  DIRECTION CONTRACT · Lettura 0.2.0 「静密 × 聚光」
+  THESIS: 界面是一台睡在玻璃上的精密仪器——排版做层级，键盘做导航，命令面板做入口；内容即界面，读完就走。
+  OWN-WORLD: 暖灰画布＋双色环境光上的磨砂玻璃面板；靓蓝单强调色；发丝线列表行；20px 类型徽章（文/播/B/抖）；全局浮动玻璃播放卡；⌘K 命令面板。
+  STORY: 打开即未读列表，j/k 扫读，Enter 进类型感知详情（文章宋体正文 / 播客章节 / 平台外跳），m 已读并下移，关掉，结束。
+  FIRST VIEWPORT: 玻璃面板内：顶栏（章节＋计数药丸＋⌘K 搜索）→ 过滤条（全部/文章/播客/平台）→ 发丝行列表，焦点行带 2px 靓蓝左线；面板下方独立浮动玻璃播放卡。
+  FORM: 静密（Linear 谱系）× 聚光（Raycast/Arc 谱系）融合；用户两轮选定，复古/材质隐喻整体否决；seed bcc3aef8。
+  FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance.
+-->
+<div class="stage">
+
+  <section class="panel">
+    <header class="top">
+      <span class="logo"><i></i></span>
+      <span class="sec">未读</span>
+      <span class="cnt">247</span>
+      <nav class="nav">
+        <a class="on">未读</a><a>星标</a><a>历史</a><a>订阅</a>
+      </nav>
+      <span class="spring"></span>
+      <button class="cmdbtn" id="openPalette">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#6A6C6E" stroke-width="1.7"><circle cx="7" cy="7" r="4.8"/><path d="m11.2 11.2 3 3"/></svg>
+        搜索或输入命令<span class="spring"></span><kbd>⌘K</kbd>
+      </button>
+    </header>
+
+    <!-- 列表视图 -->
+    <div class="strip" id="listStrip">
+      <button class="tab on">全部 <span class="c">247</span></button>
+      <button class="tab">文章 <span class="c">229</span></button>
+      <button class="tab">播客 <span class="c">3</span></button>
+      <button class="tab">平台 <span class="c">15</span></button>
+      <span class="meta">34 个来源 · 最近同步 09:41</span>
+    </div>
+
+    <main class="list" id="viewList"></main>
+
+    <!-- 详情视图 -->
+    <section class="detail" id="viewDetail">
+      <div class="d-top">
+        <button class="back" id="backBtn">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M10 3 5 8l5 5"/></svg>
+          返回 <kbd>esc</kbd>
+        </button>
+        <span class="d-src" id="dSrc"></span>
+        <span class="d-actions">
+          <button class="qa" id="dStar" title="星标 f">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1.8l1.85 3.9 4.3.55-3.2 2.9.85 4.2L8 11.3l-3.8 2.05.85-4.2-3.2-2.9 4.3-.55z"/></svg>
+          </button>
+          <button class="qa" title="浏览器打开 v">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M6.5 3H3v10h10V9.5M9 3h4v4M12.8 3.2 7.5 8.5"/></svg>
+          </button>
+          <button class="qa" title="已读并下移 m">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="m3 8.5 3.2 3L13 5"/></svg>
+          </button>
+        </span>
+      </div>
+      <div class="d-body" id="dBody"></div>
+    </section>
+  </section>
+
+  <!-- 命令面板 -->
+  <div class="veil" id="veil"></div>
+  <section class="palette" id="palette">
+    <div class="p-in">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#9EA0A2" stroke-width="1.7"><circle cx="7" cy="7" r="4.8"/><path d="m11.2 11.2 3 3"/></svg>
+      <input id="pInput" placeholder="搜索文章、来源，或输入命令…" autocomplete="off">
+      <kbd>esc</kbd>
+    </div>
+    <div class="res" id="pRes"></div>
+    <div class="p-foot"><span>↑↓ 选择</span><span>⏎ 打开</span><span class="spring"></span><span id="pCount"></span></div>
+  </section>
+
+  <span class="hintbar" id="hintbar"><b>j/k</b> 移动 · <b>⏎</b> 打开 · <b>m</b> 已读 · <b>f</b> 星标 · <b>space</b> 播放 · <b>⌘K</b> 命令</span>
+  <span class="synthetic">演示内容为合成数据</span>
+
+  <!-- 播放器 -->
+  <footer class="player">
+    <button class="pc" id="playBtn"><svg width="11" height="11" viewBox="0 0 12 12" fill="#fff"><rect x="1.5" y="1" width="3" height="10" rx="1"/><rect x="7.5" y="1" width="3" height="10" rx="1"/></svg></button>
+    <button class="pskip"><svg width="13" height="13" viewBox="0 0 16 16" fill="#6A6C6E"><path d="M2.5 3.5v9l7-4.5zM11 3.5h1.8v9H11z"/></svg></button>
+    <button class="pskip"><svg width="13" height="13" viewBox="0 0 16 16" fill="#6A6C6E"><path d="M13.5 3.5v9l-7-4.5zM3.2 3.5H5v9H3.2z"/></svg></button>
+    <span class="pmeta" id="pmetaClick" title="展开单集详情">
+      <div class="ep">内核恐慌 · EP.87</div>
+      <div class="nm">与 guevaria 聊本地优先软件</div>
+    </span>
+    <span class="ptrack">
+      <span class="pt">18:30</span>
+      <span class="pbar"><b></b><i></i></span>
+      <span class="pt">72:00</span>
+    </span>
+    <span class="chip">1.5×</span>
+    <button class="expand" id="expandBtn" title="展开详情">
+      <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 6l5-5 5 5M3 10l5 5 5-5"/></svg>
+    </button>
+  </footer>
+</div>
+
+<script>
+const ROWS=[
+ {k:"art",t:"Rust 1.90 发布：编译器并行化进入第二阶段",s:"rust-lang.org",d:"09:41",read:false,star:false},
+ {k:"art",t:"为什么我把全部阅读搬回了 RSS",s:"overreacted.io",d:"08:52",read:false,star:false},
+ {k:"pod",t:"EP.87 与 guevaria 聊本地优先软件",s:'内核恐慌 · <span class="live">播放中</span>',d:"72:00",read:false,star:false},
+ {k:"bil",t:"【B站】2026 年的本地模型到底能干什么",s:"科技 UP 主 · 经 RSSHub",d:"昨日 23:07",read:false,star:false},
+ {k:"dou",t:"【抖音】三分钟看懂编译器并行化",s:"抖音 · 经 RSSHub",d:"昨日 22:40",read:false,star:false},
+ {k:"art",t:"SQLite 在 2026：一个文件如何扛住一切",s:"fly.io",d:"昨日 21:33",read:false,star:true},
+ {k:"art",t:"Weekly #212：工具的形状",s:"newsletter",d:"昨日 19:20",read:true,star:false},
+ {k:"art",t:"TypeScript 7.0 原生移植的半年进展",s:"devblogs.microsoft.com",d:"昨日 17:02",read:false,star:false},
+ {k:"art",t:"关于本地优先的三条反直觉",s:'<span class="fail">arcadia.dev · 同步失败</span>',d:"周一",read:false,star:false},
+ {k:"art",t:"从 NetNewsWire 学减法",s:"随笔",d:"周一",read:true,star:false},
+];
+const KLABEL={art:["文","b-art"],pod:["播","b-pod"],bil:["B","b-bil"],dou:["抖","b-dou"]};
+const KINDNAME={art:"文章",pod:"播客 · 单集",bil:"Bilibili",dou:"抖音"};
+let focusIdx=1,view="list",playing=true;
+
+const vl=document.getElementById("viewList");
+function renderList(){
+  vl.innerHTML=ROWS.map((r,i)=>`
+   <div class="row ${r.read?"read":""} ${i===focusIdx?"focus":""}" data-i="${i}">
+     <span class="st"><span class="dot"></span></span>
+     <span class="badge ${KLABEL[r.k][1]}">${KLABEL[r.k][0]}</span>
+     <span class="t">${r.t}</span>
+     <span class="s">${r.s}</span>
+     <span class="d">${r.d}</span>
+     <span class="acts">${r.star?'<svg class="star" width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1.8l1.85 3.9 4.3.55-3.2 2.9.85 4.2L8 11.3l-3.8 2.05.85-4.2-3.2-2.9 4.3-.55z"/></svg>':""}</span>
+   </div>`).join("");
+  vl.querySelectorAll(".row").forEach(el=>el.addEventListener("click",()=>{focusIdx=+el.dataset.i;openDetail(focusIdx);}));
+}
+function setFocus(i){focusIdx=Math.max(0,Math.min(ROWS.length-1,i));renderList();}
+
+const ARTICLES={
+ 1:{body:`<p>五年里我换过四个稍后读应用、三个聚合器、两套笔记系统。每一件都 promising 地开始，都以同一个症状结束：收藏的东西越来越多，读完的越来越少。</p><p>问题不在工具，在形态。稍后读是一个承诺——「以后读」——而「以后」是一个永远不会到来的时间点。RSS 不承诺任何东西，它只是把今天到了的东西放在门口，你拿走多少算多少。</p><p>于是我退回了最老的协议。未读 247 不是债务，只是今天的天气。</p>`},
+};
+const DETAILS={
+ pod:`<div class="d-inner">
+   <div class="d-kind">播客 · 单集</div>
+   <div class="ep-head">
+     <span class="cover"><svg width="40" height="40" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 7.5v5M7.3 5v10M10.6 8v4M14 6v8M17.3 7.5v5"/></svg></span>
+     <div class="ep-info">
+       <h1>EP.87 与 guevaria 聊本地优先软件</h1>
+       <div class="d-meta"><span>内核恐慌</span>·<span>72:00</span>·<span>已播放 26%</span></div>
+       <div class="ep-ctrl">
+         <button class="bigplay" onclick="togglePlay()"><svg width="13" height="13" viewBox="0 0 12 12" fill="#fff"><rect x="1.5" y="1" width="3" height="10" rx="1"/><rect x="7.5" y="1" width="3" height="10" rx="1"/></svg></button>
+         <button class="skipbtn">−30s</button><button class="skipbtn">+30s</button>
+         <span class="chip">1.5×</span>
+       </div>
+     </div>
+   </div>
+   <p class="note">本地优先不是离线优先。这一期我们聊为什么「数据在你手里」和「断网可用」是两件事，以及 2026 年的本地同步栈（CRDT、SQLite、文件系统）成熟到了什么程度。嘉宾 guevaria 是本地优先工具的开发者。</p>
+   <div class="chapters">
+     <div class="ch-h">章节 CHAPTERS</div>
+     <div class="ch now"><span class="ts">00:00</span><span class="tt">开场：什么是本地优先</span></div>
+     <div class="ch"><span class="ts">18:30</span><span class="tt">SQLite 与文件同步的现实</span></div>
+     <div class="ch"><span class="ts">41:12</span><span class="tt">CRDT 适合谁</span></div>
+     <div class="ch"><span class="ts">58:40</span><span class="tt">问答：迁移成本</span></div>
+   </div>
+ </div>`,
+ bil:`<div class="d-inner">
+   <div class="d-kind" style="color:var(--pink)">Bilibili · 经 RSSHub</div>
+   <div class="plat-cover"><svg width="44" height="44" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M6 4.5 8 7M14 4.5 12 7M4 7h12v8.5H4zM8 10.5v2M12 10.5v2"/></svg></div>
+   <h1>【B站】2026 年的本地模型到底能干什么</h1>
+   <div class="d-meta"><span>科技 UP 主</span>·<span>昨日 23:07</span>·<span>视频 · 18:42</span></div>
+   <p class="note">用三台不同年代的 Mac 跑了同一组本地模型任务：摘要、翻译、代码补全、RAG。结论比想象中乐观，但瓶颈不在算力，在内存带宽。本期数据全部开源在简介里。</p>
+   <button class="openbtn">在 Bilibili 打开
+     <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round"><path d="M6.5 3H3v10h10V9.5M9 3h4v4M12.8 3.2 7.5 8.5"/></svg>
+   </button>
+   <p class="note" style="margin-top:22px;color:var(--ter);font-size:12px;">视频在平台播放；这里渲染 feed 提供的封面与简介。</p>
+ </div>`,
+};
+
+function openDetail(i){
+  const r=ROWS[i];
+  const isPod=r.k==="pod",isPlat=r.k==="bil"||r.k==="dou";
+  const body= isPod?DETAILS.pod : isPlat?DETAILS.bil :
+    `<div class="d-inner"><div class="d-kind">${KINDNAME[r.k]}</div><h1>${r.t}</h1>
+     <div class="d-meta"><span>${r.s.replace(/<[^>]+>/g,"")}</span>·<span>${r.d}</span>·<span>约 8 分钟</span></div>
+     ${(ARTICLES[i]||ARTICLES[1]).body}</div>`;
+  document.getElementById("dBody").innerHTML=body;
+  document.getElementById("dSrc").textContent=`${r.s.replace(/<[^>]+>/g,"")} · ${r.d}`;
+  document.getElementById("viewList").style.display="none";
+  document.getElementById("listStrip").style.display="none";
+  document.getElementById("viewDetail").style.display="flex";
+  document.getElementById("hintbar").innerHTML="<b>esc</b> 返回列表 · <b>j/k</b> 下一篇 · <b>m</b> 已读并下移";
+  view="detail";
+}
+function backToList(){
+  document.getElementById("viewDetail").style.display="none";
+  document.getElementById("viewList").style.display="block";
+  document.getElementById("listStrip").style.display="flex";
+  document.getElementById("hintbar").innerHTML="<b>j/k</b> 移动 · <b>⏎</b> 打开 · <b>m</b> 已读 · <b>f</b> 星标 · <b>space</b> 播放 · <b>⌘K</b> 命令";
+  view="list";renderList();
+}
+document.getElementById("backBtn").addEventListener("click",backToList);
+document.getElementById("pmetaClick").addEventListener("click",()=>openDetail(2));
+document.getElementById("expandBtn").addEventListener("click",()=>openDetail(2));
+
+function togglePlay(){
+  playing=!playing;
+  document.getElementById("playBtn").innerHTML=playing
+   ?'<svg width="11" height="11" viewBox="0 0 12 12" fill="#fff"><rect x="1.5" y="1" width="3" height="10" rx="1"/><rect x="7.5" y="1" width="3" height="10" rx="1"/></svg>'
+   :'<svg width="11" height="11" viewBox="0 0 12 12" fill="#fff"><path d="M2.5 1.2v9.6l8-4.8z"/></svg>';
+}
+document.getElementById("playBtn").addEventListener("click",togglePlay);
+
+/* 命令面板 */
+const veil=document.getElementById("veil"),pal=document.getElementById("palette"),pin=document.getElementById("pInput"),pres=document.getElementById("pRes");
+const CMDS=[
+ {ic:"文",cls:"b-art",l:"Rust 1.90 发布：编译器并行化进入第二阶段",h:"rust-lang.org · 09:41",i:0},
+ {ic:"文",cls:"b-art",l:"为什么我把全部阅读搬回了 RSS",h:"overreacted.io · 08:52",i:1},
+ {ic:"播",cls:"b-pod",l:"EP.87 与 guevaria 聊本地优先软件",h:"内核恐慌 · 72:00",i:2},
+ {ic:"B",cls:"b-bil",l:"【B站】2026 年的本地模型到底能干什么",h:"科技 UP 主 · 昨日",i:3},
+ {ic:"抖",cls:"b-dou",l:"【抖音】三分钟看懂编译器并行化",h:"抖音 · 昨日",i:4},
+ {ic:"＋",cls:"b-art",l:"添加订阅（含 B站 / 抖音 / Newsletter 平台源）",h:"命令",i:-1},
+ {ic:"↻",cls:"b-art",l:"刷新全部来源",h:"命令 · R",i:-1},
+];
+let pOpen=false;
+function renderPal(q=""){
+  const ql=q.toLowerCase();
+  const hits=CMDS.filter(c=>c.l.toLowerCase().includes(ql));
+  pres.innerHTML=hits.map((c,idx)=>`
+   <div class="r ${idx===0?"sel":""}" data-i="${c.i}">
+     <span class="ic ${c.cls}">${c.ic}</span>
+     <span class="lbl">${c.l}</span><span class="hint">${c.h}</span><kbd>⏎</kbd>
+   </div>`).join("")||`<div style="padding:18px 16px;font-size:13px;color:var(--ter);">没有匹配</div>`;
+  document.getElementById("pCount").textContent=`共 ${hits.length} 项`;
+  pres.querySelectorAll(".r").forEach(el=>el.addEventListener("click",()=>{
+    closePal(); if(+el.dataset.i>=0) openDetail(+el.dataset.i);
+  }));
+}
+function openPal(){pOpen=true;veil.style.display="block";pal.style.display="block";pin.value="";renderPal();pin.focus();}
+function closePal(){pOpen=false;veil.style.display="none";pal.style.display="none";}
+document.getElementById("openPalette").addEventListener("click",openPal);
+veil.addEventListener("click",closePal);
+pin.addEventListener("input",e=>renderPal(e.target.value));
+
+document.addEventListener("keydown",e=>{
+  if(pOpen){
+    if(e.key==="Escape"){closePal();e.preventDefault();}
+    if(e.key==="Enter"){
+      const first=pres.querySelector(".r");
+      if(first){closePal(); if(+first.dataset.i>=0) openDetail(+first.dataset.i);}
+      e.preventDefault();
+    }
+    return;
+  }
+  if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==="k"){openPal();e.preventDefault();return;}
+  if(view==="list"){
+    if(e.key==="j"||e.key==="ArrowDown"){setFocus(focusIdx+1);e.preventDefault();}
+    if(e.key==="k"||e.key==="ArrowUp"){setFocus(focusIdx-1);e.preventDefault();}
+    if(e.key==="Enter"||e.key==="o"){openDetail(focusIdx);e.preventDefault();}
+    if(e.key==="m"){ROWS[focusIdx].read=true;setFocus(focusIdx+1);e.preventDefault();}
+    if(e.key==="f"){ROWS[focusIdx].star=!ROWS[focusIdx].star;renderList();e.preventDefault();}
+  }else{
+    if(e.key==="Escape"){backToList();e.preventDefault();}
+    if(e.key==="j"){setFocus(focusIdx+1);openDetail(focusIdx);e.preventDefault();}
+    if(e.key==="k"){setFocus(focusIdx-1);openDetail(focusIdx);e.preventDefault();}
+    if(e.key==="m"){ROWS[focusIdx].read=true;setFocus(focusIdx+1);openDetail(focusIdx);e.preventDefault();}
+  }
+  if(e.key===" "){togglePlay();e.preventDefault();}
+});
+
+renderList();
+</script>
+</body>
+</html>

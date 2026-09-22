@@ -1,4 +1,10 @@
 packages:
   - apps/*
 
+allowBuilds:
+  '@parcel/watcher': true
+  esbuild: true
+  rome: true
+  sharp: true
+
 onlyBuiltDependencies: sharp

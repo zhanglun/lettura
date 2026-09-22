@@ -1,0 +1,51 @@
+{
+  "title": "选定 Lettura 0.2.0 的视觉世界 · 第二轮",
+  "question": "按你的方向盘（Linear/Things/Arc/Raycast 的现代工艺）重摇的三个方向，选一个。",
+  "options": [
+    {
+      "id": "precision",
+      "label": "静密",
+      "kicker": "方案 A · 现代·精密",
+      "lineage": "Linear 谱系：发丝线系统、4px 网格、克制的单一强调色",
+      "thesis": "界面是一台精密仪器：间距和字重做完全部层级，状态是安静的填充，键盘是第一公民。",
+      "palette": ["#FCFCFC", "#17181A", "#5E6AD2", "#EBECED"],
+      "materials": ["发丝分隔线", "药丸计数", "焦点行的细左线", "浮动阴影播放卡"],
+      "viewport": "顶栏（章节+计数药丸+⌘K 搜索）→ 过滤条（全部/文章/播客）→ 发丝行列表，焦点行左侧 2px 强调线，底部浮动圆角播放卡。",
+      "risk": "最安静也最依赖执行精度——间距或字重差 1px 就会垮成「性冷淡」。"
+    },
+    {
+      "id": "warmth",
+      "label": "温润",
+      "kicker": "方案 B · 现代·温润",
+      "lineage": "Things 3 谱系：物件感的软卡、圆形勾选、晨光配色",
+      "thesis": "读订阅像在 Things 里过今天：每篇是一张软卡，读完打一个勾，愉悦但不吵。",
+      "palette": ["#F7F6F3", "#292823", "#3D7BFA", "#FFF6E3"],
+      "materials": ["圆角软卡+双层柔影", "圆形勾选框", "琥珀标签", "跳动均衡器"],
+      "viewport": "大标题「未读」+日期副题+圆形添加按钮，按「今天/昨天」分组的软卡列表，播放中的卡有蓝色氛围和均衡器，底部 16px 圆角播放卡带倍速分段。",
+      "risk": "卡片比「界面消失」多一层容器感；勾选的愉悦要靠真机交互兑现，静态图只能示意。"
+    },
+    {
+      "id": "spotlight",
+      "label": "聚光",
+      "kicker": "方案 C · 现代·材质",
+      "lineage": "Raycast/Arc 谱系：玻璃主面板、环境光、命令面板为中心",
+      "thesis": "内容睡在一张玻璃面板上，一切操作穿过 ⌘K 命令面板——键盘优先被做成了可见的仪式。",
+      "palette": ["#F5F5F2", "#1D1E20", "#E85060", "rgba(255,255,255,.78)"],
+      "materials": ["backdrop 玻璃", "双色环境光", "命令面板大阴影", "均衡器"],
+      "viewport": "磨砂玻璃主面板浮在微带红蓝环境光的画布上，⌘K 命令面板正在打开（查询「rust」，带模糊匹配高亮和 kbd 提示），列表在面板后轻微压暗。",
+      "risk": "材质依赖真实 backdrop-filter，静态图只能逼近；红色强调色比前两者更有存在感，与「界面消失」有一点点张力。"
+    }
+  ],
+  "reroll": { "registers": ["bolder"] },
+  "buildPath": { "value": "code" },
+  "canon": true,
+  "canonCard": {
+    "label": "标准桌面阅读器",
+    "thesis": "类别标准（对标 Reeder / NetNewsWire / Readwise Reader）：侧栏 + 列表 + 阅读，做满工艺。",
+    "palette": ["#FFFFFF", "#1F2328", "#2563EB"],
+    "materials": ["干净网格", "原生控件"],
+    "viewport": "经典三段式：左栏订阅、中列条目、右侧阅读。",
+    "risk": "上一轮已看过并否决——按设计无法与 Reeder / NetNewsWire 区分。"
+  },
+  "steer": true
+}
