@@ -48,8 +48,8 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({
   onExpand,
 }) => {
   return (
-    <Box className="bg-[var(--gray-1)] rounded-lg shadow-sm overflow-hidden w-[380px] border">
-      <Flex align="center" className="p-2 gap-3">
+    <Box className="fusion-player w-full px-3 py-2">
+      <Flex align="center" className="p-0 gap-3">
         {/* Cover with play/pause overlay */}
         <div className="mini-player-cover">
           <Avatar

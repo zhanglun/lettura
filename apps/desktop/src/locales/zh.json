@@ -497,6 +497,39 @@
       "next": "下一篇"
     }
   },
+  "fusion": {
+    "nav": {
+      "unread": "未读",
+      "starred": "星标",
+      "history": "历史",
+      "subscriptions": "订阅"
+    },
+    "search": {
+      "placeholder": "搜索或输入命令"
+    },
+    "filter": {
+      "all": "全部",
+      "article": "文章",
+      "podcast": "播客",
+      "platform": "平台"
+    },
+    "strip": {
+      "meta": "{{sources}} 个来源 · 最近同步 {{time}}"
+    },
+    "badge": {
+      "article": "文",
+      "podcast": "播",
+      "platform": "视",
+      "douyin": "抖"
+    },
+    "cmd": {
+      "commands": "命令",
+      "articles": "文章",
+      "feeds": "来源",
+      "add_feed": "添加订阅",
+      "sync_all": "刷新全部来源"
+    }
+  },
   "Appearance & Reading": "外观与阅读",
   "Keep long reading sessions quiet, clear, and low-friction.": "保持长阅读安静、清晰、低摩擦。",
   "Theme": "主题",

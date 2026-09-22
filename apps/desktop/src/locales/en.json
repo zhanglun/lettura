@@ -480,6 +480,39 @@
       "next": "Next"
     }
   },
+  "fusion": {
+    "nav": {
+      "unread": "Unread",
+      "starred": "Starred",
+      "history": "History",
+      "subscriptions": "Subscriptions"
+    },
+    "search": {
+      "placeholder": "Search or type a command"
+    },
+    "filter": {
+      "all": "All",
+      "article": "Articles",
+      "podcast": "Podcasts",
+      "platform": "Platforms"
+    },
+    "strip": {
+      "meta": "{{sources}} sources · synced {{time}}"
+    },
+    "badge": {
+      "article": "A",
+      "podcast": "P",
+      "platform": "V",
+      "douyin": "D"
+    },
+    "cmd": {
+      "commands": "Commands",
+      "articles": "Articles",
+      "feeds": "Feeds",
+      "add_feed": "Add subscription",
+      "sync_all": "Refresh all feeds"
+    }
+  },
   "Appearance & Reading": "Appearance & Reading",
   "Keep long reading sessions quiet, clear, and low-friction.": "Keep long reading sessions quiet, clear, and low-friction.",
   "Theme": "Theme",

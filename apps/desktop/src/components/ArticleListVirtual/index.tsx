@@ -25,6 +25,7 @@ export type ArticleListVirtualProps = {
   expandedArticleUuid?: string | null;
   onExpandArticle?: (article: ArticleResItem) => void;
   onCloseInlineReader?: () => void;
+  focusedUuid?: string;
   sectionLabel?: string;
 };
 
@@ -43,12 +44,21 @@ export const ArticleListVirtual = React.memo(function ArticleListVirtual(
         expandedArticleUuid,
         onExpandArticle,
         onCloseInlineReader,
+        focusedUuid,
         sectionLabel,
       } = props;
       const { t } = useTranslation();
       const containerRef = useRef<HTMLDivElement>(null);
       const [isScrolled, setIsScrolled] = useState(false);
       const isLoadingMoreRef = useRef(false);
+
+      useEffect(() => {
+        if (!focusedUuid || !containerRef.current) return;
+        const el = containerRef.current.querySelector(
+          `[data-item-uuid="${focusedUuid}"]`,
+        ) as HTMLElement | null;
+        el?.scrollIntoView({ block: "nearest" });
+      }, [focusedUuid]);
 
       useEffect(() => {
         if (!expandedArticleUuid || !containerRef.current) return;

@@ -1,7 +1,6 @@
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import * as dataAgent from "@/helpers/dataAgent";
-import { useModal } from "../Modal/useModal";
 
 import {
   Avatar,
@@ -25,7 +24,14 @@ export const AddFeedChannel = (props: any) => {
     initCollectionMetas: state.initCollectionMetas,
     addNewFeed: state.addNewFeed,
   }));
-  const [showStatus, , showModal, , toggleModal] = useModal();
+  // 受控模式（AppLayout 挂载，走 store.addFeedModalOpen）；非受控时内部状态兜底
+  const isControlled = typeof props.open === "boolean";
+  const [internalOpen, setInternalOpen] = useState(false);
+  const showStatus = isControlled ? !!props.open : internalOpen;
+  const setShowStatus = (v: boolean) => {
+    props.onOpenChange?.(v);
+    if (!isControlled) setInternalOpen(v);
+  };
   const [step, setStep] = useState(1);
   const [feedUrl, setFeedUrl] = useState("");
   const [feed, setFeed] = useState<any>({});
@@ -70,11 +76,11 @@ export const AddFeedChannel = (props: any) => {
     setStep(1);
     setFeedUrl("");
     setFeed({});
-    toggleModal();
+    setShowStatus(false);
   };
 
-  const handleStatusChange = () => {
-    handleCancel();
+  const handleStatusChange = (open: boolean) => {
+    if (!open) handleCancel();
   };
 
   const handleSave = async () => {
@@ -108,7 +114,7 @@ export const AddFeedChannel = (props: any) => {
   };
 
   useHotkeys("c", () => {
-    showModal();
+    setShowStatus(true);
   });
 
   useEffect(() => {

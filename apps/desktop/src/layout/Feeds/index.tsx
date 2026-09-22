@@ -1,34 +1,16 @@
-import { useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { useBearStore } from "@/stores";
-import { useShallow } from "zustand/react/shallow";
+import { useParams, Navigate } from "react-router-dom";
 import { ArticleView } from "@/layout/Article/ArticleView";
+import { RouteConfig } from "@/config";
 
 export function FeedsPage() {
   const { uuid } = useParams<{ uuid?: string }>();
 
-  const { subscribes, getSubscribes } = useBearStore(
-    useShallow((state) => ({
-      subscribes: state.subscribes,
-      getSubscribes: state.getSubscribes,
-    })),
-  );
-
-  useEffect(() => {
-    if (uuid && subscribes.length === 0) {
-      getSubscribes();
-    }
-  }, [uuid]);
-
-  return (
+  // Sidebar 退役：无 uuid 的 /local/feeds 直接回未读列表
+  return uuid ? (
     <div className="relative flex flex-1 h-full overflow-hidden">
-      {uuid ? (
-        <ArticleView />
-      ) : (
-        <div className="flex flex-1 items-center justify-center text-sm text-[var(--gray-9)]">
-          从侧边栏选择一个来源开始阅读
-        </div>
-      )}
+      <ArticleView />
     </div>
+  ) : (
+    <Navigate to={RouteConfig.LOCAL_ALL} replace />
   );
 }

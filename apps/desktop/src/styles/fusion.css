@@ -1,0 +1,360 @@
+/* fusion 壳 · Lettura 0.2.0 第二刀
+   Ground truth: apps/desktop/.impeccable/mocks/decision/fusion.html（静密 × 聚光） */
+
+:root {
+  --fusion-ground: #f4f4f1;
+  --fusion-ink: #1d1e20;
+  --fusion-sub: #6a6c6e;
+  --fusion-ter: #9ea0a2;
+  --fusion-glass: rgba(255, 255, 255, 0.78);
+  --fusion-hair: rgba(29, 30, 32, 0.08);
+  --fusion-hair2: rgba(29, 30, 32, 0.13);
+  --fusion-accent: #5e6ad2;
+  --fusion-accent-soft: rgba(94, 109, 210, 0.1);
+  --fusion-pink: #e86a92;
+  --fusion-pink-soft: rgba(232, 106, 146, 0.1);
+  --fusion-amber: #e5a50a;
+}
+
+.fusion-root {
+  position: relative;
+  height: 100%;
+  background: var(--fusion-ground);
+  overflow: hidden;
+}
+
+.fusion-root::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(560px 380px at 10% -8%, rgba(232, 80, 96, 0.05), transparent 70%),
+    radial-gradient(640px 420px at 90% -12%, rgba(94, 109, 210, 0.055), transparent 70%);
+}
+
+/* ── 玻璃主面板 ── */
+.fusion-panel {
+  position: absolute;
+  inset: 22px;
+  background: var(--fusion-glass);
+  backdrop-filter: blur(22px) saturate(1.5);
+  border: 1px solid var(--fusion-hair2);
+  border-radius: 16px;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.7) inset,
+    0 32px 64px -20px rgba(29, 30, 32, 0.28);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.fusion-top {
+  height: 54px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 10px;
+  border-bottom: 1px solid var(--fusion-hair);
+  flex: none;
+}
+
+.fusion-logo {
+  width: 20px;
+  height: 20px;
+  border-radius: 7px;
+  background: var(--fusion-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+
+.fusion-logo i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.fusion-sec {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fusion-ink);
+  white-space: nowrap;
+}
+
+.fusion-cnt {
+  font-size: 11px;
+  color: var(--fusion-sub);
+  background: rgba(29, 30, 32, 0.06);
+  border-radius: 999px;
+  padding: 1.5px 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+.fusion-nav {
+  display: flex;
+  gap: 4px;
+  margin-left: 14px;
+}
+
+.fusion-nav button {
+  font: inherit;
+  font-size: 12.5px;
+  color: var(--fusion-sub);
+  padding: 4px 10px;
+  border: 0;
+  background: none;
+  border-radius: 7px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.fusion-nav button:hover {
+  background: rgba(29, 30, 32, 0.05);
+}
+
+.fusion-nav button.on {
+  color: var(--fusion-ink);
+  font-weight: 600;
+  background: rgba(29, 30, 32, 0.06);
+}
+
+.fusion-spring {
+  flex: 1;
+}
+
+.fusion-cmdbtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 30px;
+  padding: 0 10px;
+  border: 1px solid var(--fusion-hair2);
+  border-radius: 9px;
+  font-size: 12px;
+  color: var(--fusion-sub);
+  background: rgba(255, 255, 255, 0.55);
+  min-width: 210px;
+  cursor: pointer;
+}
+
+.fusion-cmdbtn:hover {
+  border-color: var(--fusion-accent);
+  color: var(--fusion-ink);
+}
+
+.fusion-cmdbtn kbd {
+  font-family: inherit;
+  font-size: 10.5px;
+  color: var(--fusion-sub);
+  border: 1px solid var(--fusion-hair2);
+  border-radius: 4px;
+  padding: 0 4.5px;
+  line-height: 15px;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+/* ── 过滤条（全部/文章/播客/平台） ── */
+.fusion-strip {
+  height: 42px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 4px;
+  border-bottom: 1px solid var(--fusion-hair);
+  flex: none;
+}
+
+.fusion-tab {
+  font-size: 12px;
+  color: var(--fusion-sub);
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.fusion-tab:hover {
+  background: rgba(29, 30, 32, 0.05);
+}
+
+.fusion-tab.on {
+  background: rgba(29, 30, 32, 0.07);
+  color: var(--fusion-ink);
+  font-weight: 600;
+}
+
+.fusion-tab .c {
+  font-variant-numeric: tabular-nums;
+  margin-left: 3px;
+  color: var(--fusion-ter);
+  font-weight: 500;
+}
+
+.fusion-strip-meta {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--fusion-ter);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* ── 发丝行列表 ── */
+.fusion-row {
+  display: grid;
+  grid-template-columns: 44px 22px 1fr 200px 86px 44px;
+  align-items: center;
+  height: 54px;
+  border-bottom: 1px solid var(--fusion-hair);
+  cursor: pointer;
+  user-select: none;
+}
+
+.fusion-row:hover {
+  background: rgba(29, 30, 32, 0.035);
+}
+
+.fusion-st {
+  display: flex;
+  justify-content: center;
+}
+
+.fusion-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--fusion-accent);
+}
+
+.fusion-row.is-read .fusion-dot {
+  background: #cfd1d3;
+}
+
+.fusion-badge {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fusion-badge.b-art {
+  background: rgba(29, 30, 32, 0.06);
+  color: var(--fusion-sub);
+}
+
+.fusion-badge.b-pod {
+  background: var(--fusion-accent-soft);
+  color: var(--fusion-accent);
+}
+
+.fusion-badge.b-bil {
+  background: var(--fusion-pink-soft);
+  color: var(--fusion-pink);
+}
+
+.fusion-badge.b-dou {
+  background: rgba(29, 30, 32, 0.08);
+  color: var(--fusion-ink);
+}
+
+.fusion-title {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--fusion-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 10px;
+}
+
+.fusion-row.is-read .fusion-title {
+  color: var(--fusion-ter);
+  font-weight: 400;
+}
+
+.fusion-src {
+  font-size: 11.5px;
+  color: var(--fusion-ter);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fusion-date {
+  font-size: 11.5px;
+  color: var(--fusion-ter);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  padding-right: 6px;
+}
+
+.fusion-acts {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+}
+
+.fusion-star {
+  color: var(--fusion-amber);
+}
+
+.fusion-row.is-focused {
+  background: rgba(29, 30, 32, 0.045) !important;
+  box-shadow: inset 2px 0 0 var(--fusion-accent);
+}
+
+.fusion-row.is-focused .fusion-dot {
+  outline: 3px solid var(--fusion-accent-soft);
+  outline-offset: 1.5px;
+}
+
+.fusion-act-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--fusion-ter);
+  opacity: 0;
+  transition: opacity 0.12s ease;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.fusion-row:hover .fusion-act-btn,
+.fusion-act-btn.is-on {
+  opacity: 1;
+}
+
+.fusion-act-btn:hover {
+  background: rgba(29, 30, 32, 0.06);
+  color: var(--fusion-ink);
+}
+
+/* ── 全局浮动玻璃播放卡 ── */
+.fusion-player-slot {
+  position: absolute;
+  left: 22px;
+  right: 22px;
+  bottom: 22px;
+  z-index: 30;
+}
+
+.fusion-player {
+  background: var(--fusion-glass);
+  backdrop-filter: blur(22px) saturate(1.5);
+  border: 1px solid var(--fusion-hair2);
+  border-radius: 14px;
+  box-shadow: 0 20px 44px -16px rgba(29, 30, 32, 0.26);
+}

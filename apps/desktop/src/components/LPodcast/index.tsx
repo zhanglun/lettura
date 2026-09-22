@@ -105,7 +105,7 @@ export const LPodcast: React.FC<LPodcastProps> = ({ visible = true }) => {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 20 }}
         transition={{ duration: 0.2 }}
-        className="fixed bottom-5 right-5 z-50"
+        className="fusion-player-slot"
       >
         {isMini ? (
           <MiniPlayer
@@ -115,7 +115,7 @@ export const LPodcast: React.FC<LPodcastProps> = ({ visible = true }) => {
             onExpand={() => setIsMini(false)}
           />
         ) : (
-          <Box className="fixed bottom-0 left-0 right-0 bg-[var(--gray-1)] shadow-sm border-t border-[var(--gray-6)]">
+          <Box className="fusion-player w-full">
             <Box p="3" className="max-w-[1200px] mx-auto">
               <Flex gap="6" align="center">
                 {/* Section A: Cover and Info */}

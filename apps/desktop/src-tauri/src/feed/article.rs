@@ -112,6 +112,8 @@ pub struct ArticleQueryItem {
   pub create_date: String,
   #[diesel(sql_type = Integer)]
   pub read_status: i32,
+  #[diesel(sql_type = Text)]
+  pub media_object: String,
   #[diesel(sql_type = Integer)]
   pub starred: i32,
   #[diesel(sql_type = Integer)]
@@ -160,6 +162,7 @@ impl Article {
       A.create_date,
       A.read_status,
       A.starred,
+      COALESCE(A.media_object, '') as media_object,
       COALESCE(AAA.is_duplicate, 0) as is_duplicate,
       A.starred_at,
       A.is_archived,

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type React from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -15,7 +15,6 @@ import type { FeedResItem, FolderResItem } from "@/db";
 import { DialogUnsubscribeFeed } from "@/layout/Setting/Content/DialogUnsubscribeFeed";
 import { DialogDeleteFolder } from "@/layout/Setting/Content/DialogDeleteFolder";
 import { AddFolder } from "@/components/AddFolder";
-import { AddFeedChannel } from "@/components/AddFeed";
 import { copyText } from "@/helpers/copyText";
 import { open as openExternal } from "@tauri-apps/plugin-shell";
 import {
@@ -575,7 +574,6 @@ function SubscriptionDetailPanel({
 export const Subscriptions = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const addFeedTriggerRef = useRef<HTMLSpanElement>(null);
 
   const store = useBearStore(
     useShallow((state) => ({
@@ -592,6 +590,7 @@ export const Subscriptions = () => {
       syncAllArticles: state.syncAllArticles,
       getSubscribes: state.getSubscribes,
       setFeed: state.setFeed,
+      setAddFeedModalOpen: state.setAddFeedModalOpen,
     })),
   );
 
@@ -806,7 +805,7 @@ export const Subscriptions = () => {
           counts={counts}
           onSearchChange={store.setFeedsSearchQuery}
           onFilterChange={setActiveFilter}
-          onAddFeed={() => addFeedTriggerRef.current?.click()}
+          onAddFeed={() => store.setAddFeedModalOpen(true)}
           onAddFolder={() => setAddFolderDialogStatus(true)}
           onSyncAll={() => store.syncAllArticles()}
           onMarkAllRead={handleMarkAllRead}
@@ -953,9 +952,6 @@ export const Subscriptions = () => {
         }}
         afterCancel={() => setFolderTarget(null)}
       />
-      <AddFeedChannel>
-        <span ref={addFeedTriggerRef} className="hidden" />
-      </AddFeedChannel>
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import React, { ForwardedRef, useEffect, useState } from "react";
+import React, { ForwardedRef, useEffect, useMemo, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { useBearStore } from "@/stores";
@@ -9,11 +9,14 @@ import { useShallow } from "zustand/react/shallow";
 import { RouteConfig } from "@/config";
 import { Star, CheckCheck } from "lucide-react";
 import * as dataAgent from "@/helpers/dataAgent";
+import { useTranslation } from "react-i18next";
+import { getArticleKind, getPlatformBadge } from "@/helpers/articleKind";
 
 export const ArticleItem = React.forwardRef(
   (
     props: {
       article: ArticleResItem;
+      focused?: boolean;
       onRead?: (article: ArticleResItem) => void;
       onExpand?: (article: ArticleResItem) => void;
       onUpdate?: (patch: Partial<ArticleResItem>) => void;
@@ -28,9 +31,9 @@ export const ArticleItem = React.forwardRef(
         expandedArticleUuid: state.expandedArticleUuid,
       })),
     );
-    const { article, onRead, onExpand, onUpdate } = props;
+    const { article, focused, onRead, onExpand, onUpdate } = props;
+    const { t } = useTranslation();
     const navigate = useNavigate();
-    const [highlight, setHighlight] = useState<boolean>();
     const [readStatus, setReadStatus] = useState(article.read_status);
     const [starred, setStarred] = useState(article.starred);
 
@@ -77,6 +80,21 @@ export const ArticleItem = React.forwardRef(
       { includeSeconds: true, addSuffix: true },
     );
 
+    // 类型徽章（文/播/平台），随 fusion mock
+    const badge = useMemo(() => {
+      const kind = getArticleKind(article);
+      if (kind === "podcast") {
+        return { char: t("fusion.badge.podcast"), cls: "b-pod" };
+      }
+      if (kind === "platform") {
+        return getPlatformBadge(article, {
+          platform: t("fusion.badge.platform"),
+          douyin: t("fusion.badge.douyin"),
+        });
+      }
+      return { char: t("fusion.badge.article"), cls: "b-art" };
+    }, [article.link, article.feed_url, article.media_object, t]);
+
     useEffect(() => {
       setReadStatus(article.read_status);
     }, [article.read_status]);
@@ -85,20 +103,12 @@ export const ArticleItem = React.forwardRef(
       setStarred(article.starred);
     }, [article.starred]);
 
-    useEffect(() => {
-      const isArticleMatch = store.article?.id === article.id;
-      const isExpandedMatch = store.expandedArticleUuid === article.uuid;
-      setHighlight(isArticleMatch || isExpandedMatch);
-    }, [store.article?.id, store.expandedArticleUuid, article.id, article.uuid]);
-
     return (
       <div
         className={clsx(
-          "border-b border-[var(--gray-4)] flex items-start gap-2 px-4 py-2.5 select-none transition-colors cursor-pointer group",
-          "hover:bg-[var(--gray-a3)]",
-          highlight
-            ? "bg-[var(--accent-a2)] hover:bg-[var(--accent-a2)] shadow-[inset_3px_0_0_var(--accent-9)]"
-            : "",
+          "fusion-row",
+          readStatus === ArticleReadStatus.READ && "is-read",
+          focused && "is-focused",
         )}
         onClick={handleClick}
         onKeyDown={handleKeyDown}
@@ -107,54 +117,26 @@ export const ArticleItem = React.forwardRef(
         ref={ref}
         id={article.uuid}
       >
-        <div
-          className={clsx(
-            "mt-[5px] w-1.5 h-1.5 rounded-full flex-shrink-0",
-            readStatus === ArticleReadStatus.UNREAD
-              ? "bg-[var(--accent-9)]"
-              : "bg-transparent",
-          )}
-        />
-        {article.feed_logo ? (
-          <img
-            src={article.feed_logo}
-            alt=""
-            className="mt-0.5 w-3.5 h-3.5 rounded-[2px] flex-shrink-0 object-cover"
-          />
-        ) : (
-          <div className="mt-0.5 w-3.5 h-3.5 rounded-[2px] flex-shrink-0 bg-[var(--gray-5)]" />
-        )}
-        <div className="flex-1 min-w-0">
-          <div
-            className={clsx(
-              "text-[13px] font-medium leading-[1.4] line-clamp-2",
-              readStatus === ArticleReadStatus.READ
-                ? "text-[var(--gray-9)] font-normal"
-                : "text-[var(--gray-12)]",
-              highlight && "text-[var(--accent-11)]",
-            )}
-          >
-            {article.title}
-          </div>
-          <div className="text-[11px] text-[var(--gray-9)] mt-0.5 flex items-center gap-1 min-w-0">
-            {article.feed_title && (
-              <span className="truncate">{article.feed_title}</span>
-            )}
-            {article.feed_title && (
-              <span className="flex-shrink-0">·</span>
-            )}
-            <span className="flex-shrink-0 whitespace-nowrap">{timeLabel}</span>
-          </div>
-        </div>
-        <div className="flex-shrink-0 flex items-center opacity-0 group-hover:opacity-100 transition-opacity gap-0.5 mt-0.5">
+        <span className="fusion-st">
+          <span className="fusion-dot" />
+        </span>
+        <span className={clsx("fusion-badge", badge.cls)}>{badge.char}</span>
+        <span className="fusion-title">{article.title}</span>
+        <span className="fusion-src">{article.feed_title}</span>
+        <span className="fusion-date">{timeLabel}</span>
+        <span className="fusion-acts">
           <button
             type="button"
             className={clsx(
-              "w-6 h-6 rounded flex items-center justify-center hover:bg-[var(--gray-a4)] transition-colors",
-              starred === ArticleStarStatus.STARRED
-                ? "text-[#fe9e2b]"
-                : "text-[var(--gray-9)]",
+              "fusion-act-btn",
+              starred === ArticleStarStatus.STARRED && "is-on",
             )}
+            style={
+              starred === ArticleStarStatus.STARRED
+                ? { color: "var(--fusion-amber)" }
+                : undefined
+            }
+            title={t("Star it")}
             onClick={(e) => {
               e.stopPropagation();
               const next =
@@ -168,21 +150,22 @@ export const ArticleItem = React.forwardRef(
             }}
           >
             <Star
-              size={11}
+              size={12}
               fill={starred === ArticleStarStatus.STARRED ? "currentColor" : "none"}
             />
           </button>
           <button
             type="button"
-            className="w-6 h-6 rounded flex items-center justify-center hover:bg-[var(--gray-a4)] text-[var(--gray-9)]"
+            className="fusion-act-btn"
+            title={t("Mark as read")}
             onClick={(e) => {
               e.stopPropagation();
               markAsRead(article);
             }}
           >
-            <CheckCheck size={11} />
+            <CheckCheck size={12} />
           </button>
-        </div>
+        </span>
       </div>
     );
   },

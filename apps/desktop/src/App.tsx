@@ -93,20 +93,10 @@ function App() {
     if (!hasFetchedConfig.current) {
       hasFetchedConfig.current = true;
       getUserConfigRef.current().then((cfg: UserConfig) => {
-        const { color_scheme, customize_style } = cfg;
-        let mode = color_scheme || "light";
+        const { customize_style } = cfg;
 
-        if (color_scheme === "system") {
-          mode = window.matchMedia("(prefers-color-scheme: dark)").matches
-            ? "dark"
-            : "light";
-        }
-
-        if (mode === "dark") {
-          document.body.classList.add("dark-theme");
-        } else {
-          document.body.classList.remove("dark-theme");
-        }
+        // fusion 壳 0.2.0：light-only，不再应用 dark-theme（CSS 保留未删）
+        document.body.classList.remove("dark-theme");
 
         if (customize_style && Object.keys(customize_style).length) {
           for (const key of Object.keys(customize_style)) {
