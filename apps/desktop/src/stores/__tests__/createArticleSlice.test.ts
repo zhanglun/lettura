@@ -24,8 +24,6 @@ describe("createArticleSlice", () => {
       expect(state.article).toBeNull();
       expect(state.articleList).toEqual([]);
       expect(state.cursor).toBe(1);
-      expect(state.hasMorePrev).toBe(false);
-      expect(state.hasMoreNext).toBe(true);
       expect(state.articleDialogViewStatus).toBe(false);
       expect(state.currentFilter).toEqual({
         id: 1,
@@ -230,37 +228,6 @@ describe("createArticleSlice", () => {
       store.getState().setCursor(-1);
 
       expect(store.getState().cursor).toBe(-1);
-    });
-  });
-
-  describe("setHasMorePrev", () => {
-    it("should set hasMorePrev to true", () => {
-      store.getState().setHasMorePrev(true);
-
-      expect(store.getState().hasMorePrev).toBe(true);
-    });
-
-    it("should set hasMorePrev to false", () => {
-      store.getState().setHasMorePrev(true);
-      expect(store.getState().hasMorePrev).toBe(true);
-
-      store.getState().setHasMorePrev(false);
-      expect(store.getState().hasMorePrev).toBe(false);
-    });
-  });
-
-  describe("setHasMoreNext", () => {
-    it("should set hasMoreNext to true", () => {
-      store.getState().setHasMoreNext(false);
-      store.getState().setHasMoreNext(true);
-
-      expect(store.getState().hasMoreNext).toBe(true);
-    });
-
-    it("should set hasMoreNext to false", () => {
-      store.getState().setHasMoreNext(false);
-
-      expect(store.getState().hasMoreNext).toBe(false);
     });
   });
 

@@ -964,14 +964,17 @@
   align-items: center;
 }
 
-.fusion-quietline a {
+.fusion-quietline button {
+  border: 0;
+  background: none;
+  padding: 0 0 1px;
+  font: inherit;
   color: var(--fusion-sub);
   cursor: pointer;
   border-bottom: 1px solid var(--fusion-hair2);
-  padding-bottom: 1px;
 }
 
-.fusion-quietline a:hover {
+.fusion-quietline button:hover {
   color: var(--fusion-ink);
   border-color: var(--fusion-ink);
 }

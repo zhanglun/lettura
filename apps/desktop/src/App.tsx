@@ -97,7 +97,7 @@ function App() {
           }[accent];
           if (hex) {
             document.documentElement.style.setProperty("--fusion-accent", hex);
-            document.documentElement.style.setProperty("--fusion-accent-soft", hex + "1a");
+            document.documentElement.style.setProperty("--fusion-accent-soft", `${hex}1a`);
           }
         }
         document.documentElement.style.setProperty(

@@ -46,8 +46,6 @@ export function ArticleView() {
       globalSyncStatus: state.globalSyncStatus,
       syncAllArticles: state.syncAllArticles,
       markArticleListAsRead: state.markArticleListAsRead,
-      setHasMorePrev: state.setHasMorePrev,
-      setHasMoreNext: state.setHasMoreNext,
       subscribes: state.subscribes,
       userConfig: state.userConfig,
     })),

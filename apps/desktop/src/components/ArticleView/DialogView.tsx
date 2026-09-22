@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useCallback } from "react";
 import { X } from "lucide-react";
-import { Icon } from "../Icon";
-import { Separator, Dialog } from "@radix-ui/themes";
+import { Separator, Dialog, IconButton } from "@radix-ui/themes";
 import { ReadingOptions } from "@/layout/Article/ReadingOptions";
 import { ReaderControls } from "@/components/ReaderControls";
 import { ArticleDetail } from "@/components/ArticleView/Detail";
@@ -57,9 +56,15 @@ export const ArticleDialogView = (
                 <div className="flex items-center gap-0.5">
                   <ReadingOptions article={article} />
                   <Separator orientation="vertical" className="h-4 mx-1" />
-                  <Icon onClick={() => handleDialogChange(false)}>
+                  <IconButton
+                    size="1"
+                    variant="ghost"
+                    color="gray"
+                    onClick={() => handleDialogChange(false)}
+                    aria-label="Close"
+                  >
                     <X size={16} />
-                  </Icon>
+                  </IconButton>
                 </div>
               </div>
             </div>

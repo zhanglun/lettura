@@ -33,12 +33,21 @@ export function EmptyFace({ mode }: { mode: "first" | "clear" }) {
         <h1>{t("fusion.empty.clear_title")}</h1>
         <p className="lede">{t("fusion.empty.clear_lede")}</p>
         <div className="fusion-quietline">
-          <a onClick={() => {
-            store.initCollectionMetas();
-            navigate(RouteConfig.LOCAL_ALL);
-          }}>{t("fusion.nav.history")}</a>
-          <a onClick={() => navigate(RouteConfig.LOCAL_STARRED)}>{t("fusion.nav.starred")}</a>
-          <a onClick={() => store.setAddFeedModalOpen(true)}>{t("fusion.cmd.add_feed")}</a>
+          <button
+            type="button"
+            onClick={() => {
+              store.initCollectionMetas();
+              navigate(RouteConfig.LOCAL_ALL);
+            }}
+          >
+            {t("fusion.nav.history")}
+          </button>
+          <button type="button" onClick={() => navigate(RouteConfig.LOCAL_STARRED)}>
+            {t("fusion.nav.starred")}
+          </button>
+          <button type="button" onClick={() => store.setAddFeedModalOpen(true)}>
+            {t("fusion.cmd.add_feed")}
+          </button>
         </div>
       </div>
     );

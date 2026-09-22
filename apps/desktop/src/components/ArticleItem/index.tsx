@@ -1,4 +1,4 @@
-import React, { ForwardedRef, useEffect, useMemo, useState } from "react";
+import React, { ForwardedRef, useEffect, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { useBearStore } from "@/stores";
@@ -10,7 +10,7 @@ import { RouteConfig } from "@/config";
 import { Star, CheckCheck } from "lucide-react";
 import * as dataAgent from "@/helpers/dataAgent";
 import { useTranslation } from "react-i18next";
-import { getArticleKind, getPlatformBadge } from "@/helpers/articleKind";
+import { KindBadge } from "@/components/KindBadge";
 
 export const ArticleItem = React.forwardRef(
   (
@@ -80,21 +80,6 @@ export const ArticleItem = React.forwardRef(
       { includeSeconds: true, addSuffix: true },
     );
 
-    // 类型徽章（文/播/平台），随 fusion mock
-    const badge = useMemo(() => {
-      const kind = getArticleKind(article);
-      if (kind === "podcast") {
-        return { char: t("fusion.badge.podcast"), cls: "b-pod" };
-      }
-      if (kind === "platform") {
-        return getPlatformBadge(article, {
-          platform: t("fusion.badge.platform"),
-          douyin: t("fusion.badge.douyin"),
-        });
-      }
-      return { char: t("fusion.badge.article"), cls: "b-art" };
-    }, [article.link, article.feed_url, article.media_object, t]);
-
     useEffect(() => {
       setReadStatus(article.read_status);
     }, [article.read_status]);
@@ -120,7 +105,11 @@ export const ArticleItem = React.forwardRef(
         <span className="fusion-st">
           <span className="fusion-dot" />
         </span>
-        <span className={clsx("fusion-badge", badge.cls)}>{badge.char}</span>
+        <KindBadge
+          link={article.link}
+          feed_url={article.feed_url}
+          media_object={article.media_object}
+        />
         <span className="fusion-title">{article.title}</span>
         <span className="fusion-src">{article.feed_title}</span>
         <span className="fusion-date">{timeLabel}</span>

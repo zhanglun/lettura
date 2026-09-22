@@ -30,10 +30,10 @@ export const ScrollBox = React.forwardRef((props: ScrollBoxProps, ref: any) => {
   });
 
   const handleScroll = () => {
-    if (!onProgress || !scrollRef.current) return;
+    if (!(onProgress && scrollRef.current)) return;
     const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
     const max = scrollHeight - clientHeight;
-    onProgress(max > 0 ? Math.min(100, (scrollTop / max) * 100) : 0);
+    onProgress(max <= 0 ? 0 : Math.min(100, (scrollTop / max) * 100));
   };
 
   return (

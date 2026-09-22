@@ -21,12 +21,6 @@ export interface ArticleSlice {
   ) => Promise<void>;
   updateArticleAndIdx: (article: ArticleResItem, idx?: number) => void;
 
-  hasMorePrev: boolean;
-  setHasMorePrev: (more: boolean) => void;
-
-  hasMoreNext: boolean;
-  setHasMoreNext: (more: boolean) => void;
-
   articleDialogViewStatus: boolean;
   setArticleDialogViewStatus: (status: boolean) => void;
 
@@ -108,16 +102,6 @@ export const createArticleSlice: StateCreator<
     set(() => ({
       article,
     }));
-  },
-
-  hasMoreNext: true,
-  setHasMoreNext: (more: boolean) => {
-    set(() => ({ hasMoreNext: more }));
-  },
-
-  hasMorePrev: false,
-  setHasMorePrev: (more: boolean) => {
-    set(() => ({ hasMorePrev: more }));
   },
 
   cursor: 1,
