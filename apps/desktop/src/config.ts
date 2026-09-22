@@ -3,7 +3,6 @@ export enum RouteConfig {
   ALL = "/all",
   TODAY = "/today",
   FAVORITE = "/favorite",
-  SEARCH = "/search",
 
   LOCAL = "/local",
   LOCAL_ALL = "/local/all",

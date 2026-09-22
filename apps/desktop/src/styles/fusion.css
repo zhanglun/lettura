@@ -601,3 +601,15 @@
 .fusion-openbtn:hover {
   background: #000;
 }
+
+.fusion-kbd {
+  font-family: inherit;
+  font-size: 10.5px;
+  color: var(--fusion-sub);
+  border: 1px solid var(--fusion-hair2);
+  border-radius: 4px;
+  padding: 1px 6px;
+  background: rgba(255, 255, 255, 0.7);
+  white-space: nowrap;
+  justify-self: start;
+}

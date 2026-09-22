@@ -365,7 +365,6 @@ export function ArticleView() {
         onArticleUpdate={handleArticleUpdate}
         focusedUuid={focused?.uuid}
         onExpandArticle={openArticle}
-        onCloseInlineReader={closeDetail}
         sectionLabel={sectionLabel}
       />
       <ArticleDialogView

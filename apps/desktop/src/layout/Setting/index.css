@@ -908,3 +908,4 @@
     color: var(--gray-12);
   }
 }
+.settings-section-h { font-size: 13px; font-weight: 600; color: var(--gray-11); letter-spacing: .02em; padding-bottom: 6px; border-bottom: 1px solid var(--gray-4); margin-bottom: 16px; }

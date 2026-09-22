@@ -6,6 +6,7 @@ import { request } from "@/helpers/request";
 import { useBearStore } from "@/stores";
 import { RouteConfig } from "@/config";
 import { FeedResItem } from "@/db";
+import { getArticleKind, getPlatformBadge } from "@/helpers/articleKind";
 import {
   CommandDialog,
   CommandEmpty,
@@ -27,6 +28,20 @@ function flattenFeeds(items: FeedResItem[]): FeedResItem[] {
   return items.flatMap((item) =>
     item.item_type === "folder" ? flattenFeeds(item.children || []) : [item],
   );
+}
+
+function articleBadge(a: any, t: (k: string) => string) {
+  const kind = getArticleKind(a);
+  if (kind === "podcast") {
+    return { char: t("fusion.badge.podcast"), cls: "b-pod" };
+  }
+  if (kind === "platform") {
+    return getPlatformBadge(a, {
+      platform: t("fusion.badge.platform"),
+      douyin: t("fusion.badge.douyin"),
+    });
+  }
+  return { char: t("fusion.badge.article"), cls: "b-art" };
 }
 
 /** ⌘K 命令面板：文章（防抖搜索）/ 来源（本地订阅）/ 命令 */
@@ -177,11 +192,17 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
         )}
         {articles.length > 0 && (
           <CommandGroup heading={t("fusion.cmd.articles")}>
-            {articles.map((a) => (
-              <CommandItem key={a.uuid} value={a.title} onSelect={() => goArticle(a)}>
-                {a.title}
-              </CommandItem>
-            ))}
+            {articles.map((a) => {
+              const badge = articleBadge(a, t);
+              return (
+                <CommandItem key={a.uuid} value={a.title} onSelect={() => goArticle(a)}>
+                  <span className={`fusion-badge ${badge.cls}`} style={{ marginRight: 8, flex: "none" }}>
+                    {badge.char}
+                  </span>
+                  <span className="truncate">{a.title}</span>
+                </CommandItem>
+              );
+            })}
           </CommandGroup>
         )}
       </CommandList>

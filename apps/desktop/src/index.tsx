@@ -11,7 +11,6 @@ import App from "./App";
 import ErrorPage from "./ErrorPage";
 import { RouteConfig } from "./config";
 import { ArticleContainer } from "./layout/Article";
-import { SearchPage } from "./layout/Search";
 import { SettingPage } from "./layout/Setting";
 import { FeedsPage } from "./layout/Feeds";
 
@@ -52,10 +51,6 @@ const router = createBrowserRouter([
       {
         path: RouteConfig.LOCAL_ARTICLE,
         element: <ArticleContainer />,
-      },
-      {
-        path: RouteConfig.SEARCH,
-        element: <SearchPage />,
       },
       {
         path: RouteConfig.SETTINGS,

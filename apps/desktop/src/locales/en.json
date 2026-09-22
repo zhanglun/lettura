@@ -196,7 +196,7 @@
     }
   },
   "settings": {
-    "subtitle": "Configure AI analysis, subscriptions, source quality, reading experience, and app behavior.",
+    "subtitle": "Sync, appearance, OPML and data — all on one page.",
     "status_secure": "Local config secure",
     "status_sources": "42 sources active",
     "status_analysis": "Last analysis 2h ago",
@@ -291,7 +291,8 @@
       "kpi_language": "Interface Language",
       "kpi_close_behavior": "Close Behavior",
       "kpi_cache_retention": "Cache Retention"
-    }
+    },
+    "sync_sources": "Sync & Sources"
   },
   "layout": {
     "topics": {},
@@ -531,6 +532,22 @@
       "youtube": "YouTube",
       "open_on": "Open on {{platform}}",
       "hint": "Videos play on the platform; the cover and summary come from the feed."
+    },
+    "help": {
+      "title": "Keyboard Shortcuts",
+      "desc": "The full keyboard model of the fusion shell",
+      "jk": "Move focus (in detail = next/prev article)",
+      "open": "Open focused row",
+      "esc": "Back to list / close panel",
+      "m": "Mark read and move down",
+      "M": "Mark unread",
+      "f": "Star",
+      "v": "Open original in browser",
+      "space": "Global play/pause",
+      "R": "Refresh all feeds",
+      "c": "Add subscription",
+      "palette": "Command palette",
+      "help": "Shortcut help"
     }
   },
   "Appearance & Reading": "Appearance & Reading",

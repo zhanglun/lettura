@@ -213,7 +213,7 @@
     }
   },
   "settings": {
-    "subtitle": "配置 AI 分析、订阅源、来源质量、阅读体验与应用行为。",
+    "subtitle": "同步、外观、OPML 与数据，都在这一页。",
     "status_secure": "本地配置安全",
     "status_sources": "42 个源活跃",
     "status_analysis": "上次分析 2 小时前",
@@ -308,7 +308,8 @@
       "kpi_language": "界面语言",
       "kpi_close_behavior": "关闭行为",
       "kpi_cache_retention": "缓存保留"
-    }
+    },
+    "sync_sources": "同步与来源"
   },
   "layout": {
     "topics": {},
@@ -548,6 +549,22 @@
       "youtube": "YouTube",
       "open_on": "在 {{platform}} 打开",
       "hint": "视频在平台播放；这里渲染 feed 提供的封面与简介。"
+    },
+    "help": {
+      "title": "键盘快捷键",
+      "desc": "fusion 壳的完整键盘模型",
+      "jk": "移动焦点（详情内 = 下一篇/上一篇）",
+      "open": "打开焦点行",
+      "esc": "返回列表 / 关闭面板",
+      "m": "已读并下移",
+      "M": "标记未读",
+      "f": "星标",
+      "v": "浏览器打开原文",
+      "space": "全局播放/暂停",
+      "R": "刷新全部来源",
+      "c": "添加订阅",
+      "palette": "命令面板",
+      "help": "快捷键帮助"
     }
   },
   "Appearance & Reading": "外观与阅读",

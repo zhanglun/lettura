@@ -46,6 +46,9 @@ pub struct ArticleQueryItem {
   #[diesel(sql_type = Integer)]
   pub read_status: i32,
 
+  #[diesel(sql_type = Text)]
+  pub media_object: String,
+
   #[diesel(sql_type = Integer)]
   pub starred: i32,
 
@@ -128,6 +131,7 @@ impl Common {
           A.create_date,
           A.update_date,
           A.read_status,
+          COALESCE(A.media_object, '') as media_object,
           A.starred,
           A.starred_at
         FROM

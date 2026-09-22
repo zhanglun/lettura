@@ -1,10 +1,5 @@
-import React, {
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ArticleItem } from "../ArticleItem";
-import { ArticleInlineReader } from "@/layout/Article/ArticleInlineReader";
 import { Skeleton } from "@radix-ui/themes";
 import type { ArticleResItem } from "@/db";
 import { Snail } from "lucide-react";
@@ -22,9 +17,7 @@ export type ArticleListVirtualProps = {
   isLoading: boolean;
   onArticleRead?: (article: ArticleResItem) => void;
   onArticleUpdate?: (updated: ArticleResItem) => void;
-  expandedArticleUuid?: string | null;
   onExpandArticle?: (article: ArticleResItem) => void;
-  onCloseInlineReader?: () => void;
   focusedUuid?: string;
   sectionLabel?: string;
 };
@@ -32,133 +25,106 @@ export type ArticleListVirtualProps = {
 export const ArticleListVirtual = React.memo(function ArticleListVirtual(
   props: ArticleListVirtualProps,
 ) {
-      const {
-        articles,
-        isEmpty,
-        isLoading,
-        isReachingEnd,
-        size,
-        setSize,
-        onArticleRead,
-        onArticleUpdate,
-        expandedArticleUuid,
-        onExpandArticle,
-        onCloseInlineReader,
-        focusedUuid,
-        sectionLabel,
-      } = props;
-      const { t } = useTranslation();
-      const containerRef = useRef<HTMLDivElement>(null);
-      const [isScrolled, setIsScrolled] = useState(false);
-      const isLoadingMoreRef = useRef(false);
+  const {
+    articles,
+    isEmpty,
+    isLoading,
+    isReachingEnd,
+    size,
+    setSize,
+    onArticleRead,
+    onArticleUpdate,
+    onExpandArticle,
+    focusedUuid,
+    sectionLabel,
+  } = props;
+  const { t } = useTranslation();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const isLoadingMoreRef = useRef(false);
 
-      useEffect(() => {
-        if (!focusedUuid || !containerRef.current) return;
-        const el = containerRef.current.querySelector(
-          `[data-item-uuid="${focusedUuid}"]`,
-        ) as HTMLElement | null;
-        el?.scrollIntoView({ block: "nearest" });
-      }, [focusedUuid]);
+  // 键盘焦点行滚动到可视区
+  useEffect(() => {
+    if (!focusedUuid || !containerRef.current) return;
+    const el = containerRef.current.querySelector(
+      `[data-item-uuid="${focusedUuid}"]`,
+    ) as HTMLElement | null;
+    el?.scrollIntoView({ block: "nearest" });
+  }, [focusedUuid]);
 
-      useEffect(() => {
-        if (!expandedArticleUuid || !containerRef.current) return;
-        const container = containerRef.current;
-        const itemEl = container.querySelector(
-          `[data-item-uuid="${expandedArticleUuid}"]`,
-        ) as HTMLElement | null;
-        if (!itemEl) return;
-        const rowEl = itemEl.firstElementChild as HTMLElement | null;
-        const target = rowEl ?? itemEl;
-        const delta =
-          target.getBoundingClientRect().bottom -
-          container.getBoundingClientRect().top;
-        container.scrollTo({ top: container.scrollTop + delta, behavior: "smooth" });
-      }, [expandedArticleUuid]);
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
 
-      useEffect(() => {
-        const container = containerRef.current;
-        if (!container) return;
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = container;
+      const atBottom = (scrollTop + clientHeight) / scrollHeight > 0.9;
 
-        const handleScroll = () => {
-          const { scrollTop, scrollHeight, clientHeight } = container;
-          const atBottom = (scrollTop + clientHeight) / scrollHeight > 0.9;
+      if (atBottom && !isScrolled) {
+        setIsScrolled(true);
+        if (!(isReachingEnd || isLoading || isLoadingMoreRef.current)) {
+          isLoadingMoreRef.current = true;
+          setSize(size + 1);
+          setTimeout(() => {
+            isLoadingMoreRef.current = false;
+          }, 1000);
+        }
+      } else if (!atBottom && isScrolled) {
+        setIsScrolled(false);
+      }
+    };
 
-          if (atBottom && !isScrolled) {
-            setIsScrolled(true);
-            if (!(isReachingEnd || isLoading || isLoadingMoreRef.current)) {
-              isLoadingMoreRef.current = true;
-              setSize(size + 1);
-              setTimeout(() => { isLoadingMoreRef.current = false; }, 1000);
-            }
-          } else if (!atBottom && isScrolled) {
-            setIsScrolled(false);
-          }
-        };
+    container.addEventListener("scroll", handleScroll, { passive: true });
+    return () => container.removeEventListener("scroll", handleScroll);
+  }, [isScrolled, isReachingEnd, isLoading, size, setSize]);
 
-        container.addEventListener("scroll", handleScroll, { passive: true });
-        return () => container.removeEventListener("scroll", handleScroll);
-      }, [isScrolled, isReachingEnd, isLoading, size, setSize]);
-
-      return (
-        <div
-          ref={containerRef}
-          className="w-full flex-1 min-h-0 overflow-y-auto scrollbar-gutter"
-        >
-          {isEmpty ? (
-            <div className="flex flex-col justify-center items-center gap-1 text-muted-foreground min-h-full py-20">
-              <Snail size={34} strokeWidth={1} />
-              <p>{t("Yay, no matching items.")}</p>
-            </div>
-          ) : (
-            <div>
-              {sectionLabel && (
-                <div className="art-section-label">{sectionLabel}</div>
-              )}
-              {articles.map((article, index) => {
-                const isExpanded = expandedArticleUuid === article.uuid;
-                return (
-                  <div key={`${article.uuid}-${index}`} data-item-uuid={article.uuid}>
-                    <ArticleItem
-                      article={article}
-                      onRead={onArticleRead}
-                      onExpand={onExpandArticle}
-                      onUpdate={(patch) => onArticleUpdate?.({ ...article, ...patch })}
-                    />
-                    {isExpanded && (
-                      <ArticleInlineReader
-                        article={article}
-                        onClose={onCloseInlineReader!}
-                        goPrev={index > 0 ? () => onExpandArticle?.(articles[index - 1]) : undefined}
-                        goNext={index < articles.length - 1 ? () => onExpandArticle?.(articles[index + 1]) : undefined}
-                        canPrev={index > 0}
-                        canNext={index < articles.length - 1}
-                        index={index}
-                        total={articles.length}
-                        onArticleUpdate={onArticleUpdate}
-                      />
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          )}
-          {isLoading && (
-            <div className="p-2 pl-6 grid gap-1 relative shrink-0">
-              <Skeleton className="h-5 w-full" />
-              <div>
-                <Skeleton className="h-3 w-full" />
-              </div>
-              <div>
-                <Skeleton className="h-3 w-full" />
-              </div>
-              <div className="flex justify-between">
-                <Skeleton className="h-3 w-32" />
-                <Skeleton className="h-3 w-16" />
-              </div>
-            </div>
-          )}
+  return (
+    <div
+      ref={containerRef}
+      className="w-full flex-1 min-h-0 overflow-y-auto scrollbar-gutter"
+    >
+      {isEmpty ? (
+        <div className="flex flex-col justify-center items-center gap-1 text-muted-foreground min-h-full py-20">
+          <Snail size={34} strokeWidth={1} />
+          <p>{t("Yay, no matching items.")}</p>
         </div>
-      );
+      ) : (
+        <div>
+          {sectionLabel && (
+            <div className="art-section-label">{sectionLabel}</div>
+          )}
+          {articles.map((article, index) => (
+            <div key={`${article.uuid}-${index}`} data-item-uuid={article.uuid}>
+              <ArticleItem
+                article={article}
+                focused={focusedUuid === article.uuid}
+                onRead={onArticleRead}
+                onExpand={onExpandArticle}
+                onUpdate={(patch) =>
+                  onArticleUpdate?.({ ...article, ...patch })
+                }
+              />
+            </div>
+          ))}
+        </div>
+      )}
+      {isLoading && (
+        <div className="p-2 pl-6 grid gap-1 relative shrink-0">
+          <Skeleton className="h-5 w-full" />
+          <div>
+            <Skeleton className="h-3 w-full" />
+          </div>
+          <div>
+            <Skeleton className="h-3 w-full" />
+          </div>
+          <div className="flex justify-between">
+            <Skeleton className="h-3 w-32" />
+            <Skeleton className="h-3 w-16" />
+          </div>
+        </div>
+      )}
+    </div>
+  );
 });
 
 export default ArticleListVirtual;
