@@ -138,7 +138,7 @@ export const AppLayout = React.memo(function () {
               </button>
             ))}
           </nav>
-          <span className="fusion-spring" />
+          <span className="fusion-spring" data-tauri-drag-region="" />
           <button
             type="button"
             className="fusion-cmdbtn"

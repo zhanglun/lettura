@@ -24,6 +24,11 @@ body {
   background: transparent;
 }
 
+/* Radix Theme 根自带实底背景，透明窗口下必须盖掉（组件库注入顺序不定，上 important） */
+.radix-themes:where([data-has-background='true']) {
+  background: transparent !important;
+}
+
 body {
   background: transparent;
   -webkit-font-smoothing: antialiased;
