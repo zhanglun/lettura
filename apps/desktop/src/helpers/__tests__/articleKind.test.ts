@@ -10,8 +10,19 @@ describe("getArticleKind", () => {
   });
 
   it("classifies media_object with enclosure as podcast", () => {
-    const media = JSON.stringify([{ content: [{ url: "https://cdn.example.com/ep1.mp3" }] }]);
+    const media = JSON.stringify([
+      { content: [{ url: "https://cdn.example.com/ep1.mp3", content_type: "audio/mpeg" }] },
+    ]);
     expect(getArticleKind({ media_object: media })).toBe("podcast");
+  });
+
+  it("does not misclassify non-audio media:content as podcast", () => {
+    const thumb = JSON.stringify([
+      { content: [{ url: "https://cdn.example.com/thumb.jpg", content_type: "image/jpeg" }] },
+    ]);
+    expect(getArticleKind({ media_object: thumb })).toBe("article");
+    const noType = JSON.stringify([{ content: [{ url: "https://x.com/v" }] }]);
+    expect(getArticleKind({ media_object: noType })).toBe("article");
   });
 
   it("classifies everything else as article", () => {

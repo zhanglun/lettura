@@ -18,9 +18,17 @@ function hasAudioEnclosure(mediaObject?: string): boolean {
   try {
     const medias = JSON.parse(mediaObject || "[]");
     if (!Array.isArray(medias)) return false;
-    // ponytail: 只认 content[].url 存在即为播客，不做 content_type 细分，误判时再收紧
+    // 与 PodcastAdapter 同标准：enclosure 的 content_type 必须是 audio/*，
+    // 否则 media:content 缩略图/视频会把普通文章误判成播客
     return medias.some((m: any) =>
-      Array.isArray(m?.content) && m.content.some((c: any) => typeof c?.url === "string" && c.url),
+      Array.isArray(m?.content) &&
+      m.content.some(
+        (c: any) =>
+          typeof c?.url === "string" &&
+          c.url &&
+          typeof c?.content_type === "string" &&
+          c.content_type.indexOf("audio") === 0,
+      ),
     );
   } catch {
     return false;

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>夜读本 · Lettura 0.2.0 深色命名候</title>
+<style>
+  @page{size:1440px 900px;margin:0;}
+  :root{
+    /* 夜读本令牌：暖黑画布 + 深色玻璃，强调色提亮——非反色 */
+    --ground:#17171A;
+    --ink:#E9E9E6; --sub:#A2A4A8; --ter:#6B6D73;
+    --glass:rgba(22,22,25,.72);
+    --paper:#26262B;                 /* 详情阅读面：抬高的暗纸 */
+    --hair:rgba(233,233,230,.08); --hair2:rgba(233,233,230,.13);
+    --accent:#848CE8; --accent-soft:rgba(132,140,232,.14); --accent-line:rgba(132,140,232,.4);
+    --pink:#EE8BAB; --pink-soft:rgba(238,139,171,.12);
+    --warn:#D97B6F; --warn-soft:rgba(217,123,111,.12);
+    --amber:#EDB433;
+    --serif-ink:#D3D4D8;             /* 宋体正文在暗纸上的墨色 */
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{width:1180px;height:738px;overflow:hidden;}
+  .stage{width:1440px;height:900px;transform:scale(0.8194);transform-origin:top left;position:relative;}
+  body{
+    background:var(--ground);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Helvetica Neue",sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--accent-soft);}
+  button{font:inherit;border:0;background:none;cursor:pointer;color:inherit;}
+  kbd{font-family:inherit;font-size:10.5px;color:var(--sub);border:1px solid var(--hair2);border-radius:4px;padding:0 4.5px;line-height:15px;background:rgba(233,233,230,.06);}
+  *:focus-visible{outline:2px solid var(--accent);outline-offset:1px;border-radius:4px;}
+
+  /* 夜间环境光：昼间双色的月相残照，更弱 */
+  .stage::before{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:
+      radial-gradient(620px 420px at 8% -10%,rgba(232,80,96,.03),transparent 70%),
+      radial-gradient(700px 460px at 92% -14%,rgba(94,109,210,.045),transparent 70%);
+  }
+
+  /* ── 深色玻璃主面板：内高光改上缘冷光 ── */
+  .panel{
+    position:absolute;inset:22px 22px 106px;
+    background:var(--glass);backdrop-filter:blur(22px) saturate(1.3);
+    border:1px solid var(--hair2);border-radius:16px;
+    box-shadow:0 1px 0 rgba(233,233,230,.09) inset,0 32px 64px -18px rgba(0,0,0,.6);
+    display:flex;flex-direction:column;overflow:hidden;
+  }
+  .top{height:54px;display:flex;align-items:center;padding:0 20px;gap:10px;border-bottom:1px solid var(--hair);flex:none;}
+  .logo{width:20px;height:20px;border-radius:7px;background:var(--ink);display:flex;align-items:center;justify-content:center;flex:none;}
+  .logo i{width:5px;height:5px;border-radius:50%;background:var(--ground);}
+  .sec{font-size:13px;font-weight:600;}
+  .cnt{font-size:11px;color:var(--sub);background:rgba(233,233,230,.07);border-radius:999px;padding:1.5px 8px;font-variant-numeric:tabular-nums;}
+  .nav{display:flex;gap:4px;margin-left:14px;}
+  .nav a{font-size:12.5px;color:var(--sub);text-decoration:none;padding:4px 10px;border-radius:7px;cursor:pointer;}
+  .nav a:hover{background:rgba(233,233,230,.05);}
+  .nav a.on{color:var(--ink);font-weight:600;background:rgba(233,233,230,.07);}
+  .spring{flex:1;}
+  .cmdbtn{display:flex;align-items:center;gap:8px;height:30px;padding:0 10px;border:1px solid var(--hair2);border-radius:9px;font-size:12px;color:var(--sub);background:rgba(233,233,230,.05);}
+  .cmdbtn:hover{border-color:var(--accent);color:var(--ink);}
+
+  .strip{height:42px;display:flex;align-items:center;padding:0 20px;gap:4px;border-bottom:1px solid var(--hair);flex:none;}
+  .tab{font-size:12px;color:var(--sub);padding:4px 10px;border-radius:999px;}
+  .tab:hover{background:rgba(233,233,230,.05);}
+  .tab.on{background:rgba(233,233,230,.08);color:var(--ink);font-weight:600;}
+  .tab .c{font-variant-numeric:tabular-nums;margin-left:3px;color:var(--ter);font-weight:500;}
+  .strip .meta{margin-left:auto;font-size:11px;color:var(--ter);font-variant-numeric:tabular-nums;}
+
+  /* ── 列表 ── */
+  .list{flex:1;overflow:hidden;}
+  .row{
+    display:grid;grid-template-columns:56px 20px 1fr 210px 92px 44px;
+    align-items:center;height:54px;padding-right:20px;border-bottom:1px solid var(--hair);cursor:pointer;
+  }
+  .row:hover{background:rgba(233,233,230,.035);}
+  .st{display:flex;justify-content:center;}
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);}
+  .read .dot{background:#4E5055;}
+  .badge{width:20px;height:20px;border-radius:6px;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+  .b-art{background:rgba(233,233,230,.08);color:var(--sub);}
+  .b-pod{background:var(--accent-soft);color:var(--accent);}
+  .b-bil{background:var(--pink-soft);color:var(--pink);}
+  .t{font-size:13.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 10px;}
+  .read .t{color:var(--ter);font-weight:400;}
+  .s{font-size:11.5px;color:var(--ter);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .s .fail{color:var(--warn);}
+  .s .live{color:var(--accent);}
+  .d{font-size:11.5px;color:var(--ter);text-align:right;font-variant-numeric:tabular-nums;}
+  .acts{display:flex;justify-content:center;align-items:center;gap:6px;}
+  .star{color:var(--amber);}
+  .focus{background:rgba(233,233,230,.05)!important;box-shadow:inset 2px 0 0 var(--accent);}
+  .focus .dot{outline:3px solid var(--accent-soft);outline-offset:1.5px;}
+
+  /* ── 详情：暗纸阅读面 ── */
+  .detail{flex:1;overflow:hidden;display:none;flex-direction:column;}
+  .d-top{height:50px;display:flex;align-items:center;gap:8px;padding:0 20px;border-bottom:1px solid var(--hair);flex:none;}
+  .back{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--sub);padding:5px 10px;border-radius:7px;}
+  .back:hover{background:rgba(233,233,230,.05);color:var(--ink);}
+  .d-src{font-size:11.5px;color:var(--ter);margin-left:6px;}
+  .d-body{flex:1;overflow:hidden;padding:44px 96px;}
+  .d-inner{max-width:640px;margin:0 auto;}
+  .d-kind{font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--accent);margin-bottom:12px;}
+  .d-inner h1{font-size:24px;font-weight:700;line-height:1.4;letter-spacing:.005em;color:var(--ink);}
+  .d-meta{font-size:12px;color:var(--ter);margin:12px 0 30px;display:flex;gap:10px;font-variant-numeric:tabular-nums;}
+  .d-inner p{font-family:"Songti SC","STSong","Noto Serif SC",serif;font-size:15.5px;line-height:2.0;color:var(--serif-ink);margin-bottom:22px;}
+
+  /* ── ⌘K：深色面板 ── */
+  .veil{position:absolute;inset:0;background:rgba(0,0,0,.32);display:none;z-index:40;}
+  .palette{
+    position:absolute;left:50%;top:84px;transform:translateX(-50%);width:580px;z-index:50;
+    border-radius:14px;overflow:hidden;display:none;
+    background:rgba(30,30,34,.92);backdrop-filter:blur(28px) saturate(1.4);
+    border:1px solid rgba(233,233,230,.12);
+    box-shadow:0 4px 10px rgba(0,0,0,.25),0 36px 80px -16px rgba(0,0,0,.65);
+  }
+  .p-in{height:52px;display:flex;align-items:center;gap:10px;padding:0 16px;border-bottom:1px solid var(--hair);}
+  .p-in input{flex:1;border:0;outline:0;background:none;font:inherit;font-size:14.5px;color:var(--ink);}
+  .p-in input::placeholder{color:var(--ter);}
+  .res{padding:6px;max-height:280px;overflow:hidden;}
+  .r{display:flex;align-items:center;gap:11px;height:44px;padding:0 12px;border-radius:9px;cursor:pointer;}
+  .r.sel{background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent-line);}
+  .r .ic{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex:none;}
+  .r .lbl{font-size:13px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .r .lbl b{color:var(--accent);font-weight:600;}
+  .r .hint{font-size:11px;color:var(--ter);flex:none;font-variant-numeric:tabular-nums;}
+  .p-foot{height:34px;display:flex;align-items:center;gap:14px;padding:0 16px;border-top:1px solid var(--hair);font-size:10.5px;color:var(--ter);background:rgba(233,233,230,.04);}
+
+  /* ── 播放卡 ── */
+  .player{
+    position:absolute;left:22px;right:22px;bottom:22px;height:68px;z-index:30;
+    background:var(--glass);backdrop-filter:blur(22px) saturate(1.3);
+    border:1px solid var(--hair2);border-radius:14px;
+    box-shadow:0 20px 44px -16px rgba(0,0,0,.55);
+    display:flex;align-items:center;gap:14px;padding:0 18px;
+  }
+  .pc{width:32px;height:32px;border-radius:999px;background:var(--accent);color:#14141A;display:flex;align-items:center;justify-content:center;flex:none;box-shadow:0 4px 10px -2px rgba(132,140,232,.4);}
+  .pmeta{flex:none;width:240px;}
+  .pmeta .ep{font-size:11px;color:var(--sub);}
+  .pmeta .nm{font-size:13px;font-weight:600;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink);}
+  .ptrack{flex:1;display:flex;align-items:center;gap:12px;}
+  .pt{font-size:11px;color:var(--sub);font-variant-numeric:tabular-nums;flex:none;}
+  .pbar{flex:1;height:3px;border-radius:999px;background:rgba(233,233,230,.12);position:relative;}
+  .pbar b{position:absolute;left:0;top:0;bottom:0;width:26%;border-radius:999px;background:var(--accent);}
+  .pbar i{position:absolute;left:26%;top:50%;width:9px;height:9px;border-radius:50%;background:var(--accent);transform:translate(-50%,-50%);box-shadow:0 0 0 3px rgba(23,23,26,.9);}
+  .chip{font-size:11px;color:var(--sub);background:rgba(233,233,230,.08);border-radius:6px;padding:2.5px 8px;flex:none;}
+
+  /* 演示切换 */
+  .demo-tabs{position:absolute;top:34px;right:40px;z-index:70;display:flex;gap:3px;padding:3px;border:1px solid var(--hair2);border-radius:999px;background:rgba(30,30,34,.9);backdrop-filter:blur(22px);}
+  .dtab{font-size:11.5px;color:var(--sub);padding:4px 12px;border-radius:999px;}
+  .dtab.on{background:rgba(233,233,230,.08);color:var(--ink);font-weight:600;}
+
+  .synthetic{position:absolute;right:36px;bottom:100px;font-size:10px;color:var(--ter);letter-spacing:.1em;z-index:5;}
+  .hintbar{position:absolute;left:36px;bottom:100px;font-size:10.5px;color:var(--ter);z-index:5;letter-spacing:.03em;}
+  .hintbar b{color:var(--sub);font-weight:600;}
+</style>
+</head>
+<body>
+<!--
+  SURFACE CONTRACT · 夜读本（深色命名候） · Lettura 0.2.0「静密 × 聚光」色彩变体
+  THESIS: 夜读本不是反色——是同一台仪器在夜间的样子：暖黑画布（#17171A，非蓝黑）、更深更透的玻璃、上缘冷内高光、昼间双色环境光弱化为月相残照；强调色提亮到 #848CE8 以保对比度，正文落在抬高的暗纸（--paper #26262B）上以宋体暗墨（--serif-ink）阅读。
+  OWN-WORLD: 继承全部 fusion 结构与组件语法（列表行/焦点线/徽章/详情/⌘K/播放卡），仅替换色彩令牌层；veil 压暗加深至 .32，阴影系全部转黑，徽章与药丸的灰阶由墨色改用浅色投影。
+  STORY: 跟随系统或手动切换；夜读时打开，列表焦点线的靛蓝在暗玻璃上更亮一点，正文行距不变、墨色变柔，读完即走。
+  FIRST VIEWPORT: 暖黑画布上的深色玻璃面板：顶栏 → 过滤条 → 发丝行列表（焦点行 2px 提亮靛蓝左线）→ 浮动深色播放卡；演示 tab 切换 列表 / 详情（暗纸宋体）/ ⌘K 三帧。
+  FORM: fusion 的色彩变体（命名候「夜读本」，DESIGN.md 范围约束中预留）；所有面（设置/订阅/添加/帮助/空状态）继承此令牌层。
+  FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance.
+-->
+<div class="stage">
+
+  <div class="demo-tabs">
+    <button class="dtab on" data-s="list">列表</button>
+    <button class="dtab" data-s="detail">详情 · 暗纸</button>
+    <button class="dtab" data-s="cmd">⌘K</button>
+  </div>
+
+  <section class="panel">
+    <header class="top">
+      <span class="logo"><i></i></span>
+      <span class="sec">未读</span>
+      <span class="cnt">247</span>
+      <nav class="nav"><a class="on">未读</a><a>星标</a><a>历史</a><a>订阅</a></nav>
+      <span class="spring"></span>
+      <button class="cmdbtn" id="openPalette">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#A2A4A8" stroke-width="1.7"><circle cx="7" cy="7" r="4.8"/><path d="m11.2 11.2 3 3"/></svg>
+        搜索或输入命令<span class="spring"></span><kbd>⌘K</kbd>
+      </button>
+    </header>
+
+    <div class="strip" id="listStrip">
+      <button class="tab on">全部 <span class="c">247</span></button>
+      <button class="tab">文章 <span class="c">229</span></button>
+      <button class="tab">播客 <span class="c">3</span></button>
+      <button class="tab">平台 <span class="c">15</span></button>
+      <span class="meta">34 个来源 · 最近同步 09:41</span>
+    </div>
+
+    <main class="list" id="viewList"></main>
+
+    <section class="detail" id="viewDetail">
+      <div class="d-top">
+        <button class="back" id="backBtn">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M10 3 5 8l5 5"/></svg>
+          返回 <kbd>esc</kbd>
+        </button>
+        <span class="d-src">overreacted.io · 08:52</span>
+      </div>
+      <div class="d-body">
+        <div class="d-inner">
+          <div class="d-kind">文章</div>
+          <h1>为什么我把全部阅读搬回了 RSS</h1>
+          <div class="d-meta"><span>overreacted.io</span>·<span>08:52</span>·<span>约 8 分钟</span></div>
+          <p>五年里我换过四个稍后读应用、三个聚合器、两套笔记系统。每一件都 promising 地开始，都以同一个症状结束：收藏的东西越来越多，读完的越来越少。</p>
+          <p>问题不在工具，在形态。稍后读是一个承诺——「以后读」——而「以后」是一个永远不会到来的时间点。RSS 不承诺任何东西，它只是把今天到了的东西放在门口，你拿走多少算多少。</p>
+          <p>于是我退回了最老的协议。未读 247 不是债务，只是今天的天气。</p>
+        </div>
+      </div>
+    </section>
+  </section>
+
+  <div class="veil" id="veil"></div>
+  <section class="palette" id="palette">
+    <div class="p-in">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#6B6D73" stroke-width="1.7"><circle cx="7" cy="7" r="4.8"/><path d="m11.2 11.2 3 3"/></svg>
+      <input id="pInput" placeholder="搜索文章、来源，或输入命令…" autocomplete="off">
+      <kbd>esc</kbd>
+    </div>
+    <div class="res" id="pRes"></div>
+    <div class="p-foot"><span>↑↓ 选择</span><span>⏎ 打开</span><span class="spring"></span><span>夜读本 · 深色令牌</span></div>
+  </section>
+
+  <span class="hintbar" id="hintbar"><b>j/k</b> 移动 · <b>⏎</b> 打开 · <b>m</b> 已读 · <b>f</b> 星标 · <b>space</b> 播放 · <b>⌘K</b> 命令</span>
+  <span class="synthetic">演示内容为合成数据</span>
+
+  <footer class="player">
+    <button class="pc"><svg width="11" height="11" viewBox="0 0 12 12" fill="#14141A"><rect x="1.5" y="1" width="3" height="10" rx="1"/><rect x="7.5" y="1" width="3" height="10" rx="1"/></svg></button>
+    <span class="pmeta"><div class="ep">内核恐慌 · EP.87</div><div class="nm">与 guevaria 聊本地优先软件</div></span>
+    <span class="ptrack"><span class="pt">18:30</span><span class="pbar"><b></b><i></i></span><span class="pt">72:00</span></span>
+    <span class="chip">1.5×</span>
+  </footer>
+</div>
+
+<script>
+const ROWS=[
+ {k:"art",t:"Rust 1.90 发布：编译器并行化进入第二阶段",s:"rust-lang.org",d:"09:41",read:false,star:false},
+ {k:"art",t:"为什么我把全部阅读搬回了 RSS",s:"overreacted.io",d:"08:52",read:false,star:false},
+ {k:"pod",t:"EP.87 与 guevaria 聊本地优先软件",s:'内核恐慌 · <span class="live">播放中</span>',d:"72:00",read:false,star:false},
+ {k:"bil",t:"【B站】2026 年的本地模型到底能干什么",s:"科技 UP 主 · 经 RSSHub",d:"昨日 23:07",read:false,star:false},
+ {k:"art",t:"SQLite 在 2026：一个文件如何扛住一切",s:"fly.io",d:"昨日 21:33",read:false,star:true},
+ {k:"art",t:"关于本地优先的三条反直觉",s:'<span class="fail">arcadia.dev · 同步失败</span>',d:"周一",read:false,star:false},
+ {k:"art",t:"从 NetNewsWire 学减法",s:"随笔",d:"周一",read:true,star:false},
+];
+const KLABEL={art:["文","b-art"],pod:["播","b-pod"],bil:["B","b-bil"]};
+let focusIdx=1;
+const vl=document.getElementById("viewList");
+function renderList(){
+  vl.innerHTML=ROWS.map((r,i)=>`
+   <div class="row ${r.read?"read":""} ${i===focusIdx?"focus":""}" data-i="${i}">
+     <span class="st"><span class="dot"></span></span>
+     <span class="badge ${KLABEL[r.k][1]}">${KLABEL[r.k][0]}</span>
+     <span class="t">${r.t}</span>
+     <span class="s">${r.s}</span>
+     <span class="d">${r.d}</span>
+     <span class="acts">${r.star?'<svg class="star" width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1.8l1.85 3.9 4.3.55-3.2 2.9.85 4.2L8 11.3l-3.8 2.05.85-4.2-3.2-2.9 4.3-.55z"/></svg>':""}</span>
+   </div>`).join("");
+}
+
+/* ⌘K */
+const CMDS=[
+ {ic:"文",cls:"b-art",l:"为什么我把全部阅读搬回了 <b>RSS</b>",h:"overreacted.io · 08:52"},
+ {ic:"文",cls:"b-art",l:"Rust 1.90 发布：<b>编译器并行化</b>进入第二阶段",h:"rust-lang.org · 09:41"},
+ {ic:"＋",cls:"b-art",l:"添加订阅（含 B站 / 抖音 / Newsletter 平台源）",h:"命令"},
+ {ic:"⚙",cls:"b-art",l:"打开设置",h:"命令"},
+];
+let pOpen=false;
+const veil=document.getElementById("veil"),pal=document.getElementById("palette"),pin=document.getElementById("pInput"),pres=document.getElementById("pRes");
+function renderPal(q=""){
+  const ql=q.toLowerCase();
+  const hits=CMDS.filter(c=>c.l.toLowerCase().includes(ql));
+  pres.innerHTML=hits.map((c,idx)=>`
+   <div class="r ${idx===0?"sel":""}"><span class="ic ${c.cls}">${c.ic}</span>
+   <span class="lbl">${c.l}</span><span class="hint">${c.h}</span><kbd>⏎</kbd></div>`).join("")
+   ||`<div style="padding:18px 16px;font-size:13px;color:var(--ter);">没有匹配</div>`;
+}
+function openPal(){pOpen=true;veil.style.display="block";pal.style.display="block";pin.value="";renderPal();pin.focus();}
+function closePal(){pOpen=false;veil.style.display="none";pal.style.display="none";}
+document.getElementById("openPalette").addEventListener("click",openPal);
+veil.addEventListener("click",closePal);
+pin.addEventListener("input",e=>renderPal(e.target.value));
+
+/* 帧切换 */
+function frame(s){
+  const list=s==="list",det=s==="detail",cmd=s==="cmd";
+  document.getElementById("viewList").style.display=list?"block":"none";
+  document.getElementById("listStrip").style.display=list?"flex":"none";
+  document.getElementById("viewDetail").style.display=det?"flex":"none";
+  cmd?openPal():closePal();
+  document.getElementById("hintbar").innerHTML=det
+    ?"<b>esc</b> 返回列表 · <b>j/k</b> 下一篇"
+    :"<b>j/k</b> 移动 · <b>⏎</b> 打开 · <b>m</b> 已读 · <b>f</b> 星标 · <b>space</b> 播放 · <b>⌘K</b> 命令";
+}
+document.querySelectorAll(".dtab").forEach(t=>t.addEventListener("click",()=>{
+  document.querySelectorAll(".dtab").forEach(x=>x.classList.remove("on"));t.classList.add("on");frame(t.dataset.s);
+}));
+document.getElementById("backBtn").addEventListener("click",()=>{document.querySelector('[data-s="list"]').click();});
+document.addEventListener("keydown",e=>{
+  if(pOpen&&e.key==="Escape"){document.querySelector('[data-s="list"]').click();e.preventDefault();return;}
+  if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==="k"){document.querySelector('[data-s="cmd"]').click();e.preventDefault();return;}
+  if(e.key==="Escape"&&document.querySelector('[data-s="detail"]').classList.contains("on")){document.querySelector('[data-s="list"]').click();e.preventDefault();}
+});
+
+renderList();
+const q=new URLSearchParams(location.search).get("state");
+if(q)document.querySelector(`[data-s="${q}"]`)?.click();
+</script>
+</body>
+</html>

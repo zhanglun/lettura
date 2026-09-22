@@ -21,23 +21,26 @@ export const CommonAdapter = ({
 
   return (
     <div className="pb-20">
-      <div className="pb-5">
-        <h1 className="mb-4 text-[28px] font-bold leading-[1.3] text-[var(--gray-12)]">
-          {article.title}
-        </h1>
-        <div className="mb-8 text-[13px] text-[var(--gray-9)]">
-          <span className="font-medium text-[var(--accent-9)]">
-            {article.feed_title}
-          </span>
-          {article.author && <span> · {article.author}</span>}
-          <span>
-            {" "}
-            · {Dayjs(new Date(pub_date || new Date())).format("YYYY-MM-DD")}
-          </span>
-        </div>
+      {/* fusion 详情头部：类型标签 + 24px 题 + 灰 meta */}
+      <div className="fusion-dkind">{t("fusion.filter.article")}</div>
+      <h1 className="mb-3 text-[24px] font-bold leading-[1.4] text-[var(--fusion-ink)]">
+        {article.title}
+      </h1>
+      <div className="fusion-dmeta">
+        <span>{article.feed_title}</span>
+        {article.author && (
+          <>
+            <span>·</span>
+            <span>{article.author}</span>
+          </>
+        )}
+        <span>·</span>
+        <span>
+          {Dayjs(new Date(pub_date || new Date())).format("YYYY-MM-DD HH:mm")}
+        </span>
       </div>
       <div
-        className="reading-detail-content text-[15px] leading-7 text-[var(--gray-12)]"
+        className="reading-detail-content fusion-article-body mt-8"
         onClick={delegateContentClick}
       >
         {article.image && !imgError && (

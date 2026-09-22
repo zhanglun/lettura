@@ -457,7 +457,7 @@ impl Article {
               A.pub_date,
               A.create_date,
               A.read_status,
-               A.media_object,
+               COALESCE(A.media_object, '') as media_object,
                A.starred,
                A.starred_at,
                A.is_archived,

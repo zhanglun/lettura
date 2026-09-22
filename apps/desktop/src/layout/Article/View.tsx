@@ -88,7 +88,7 @@ export function View({ article, goNext, goPrev, closable, onClose, onArticleUpda
             className="min-h-0 w-full"
             ref={scrollBoxRef}
           >
-            <div className="mx-auto flex min-h-full w-full max-w-[680px] flex-col px-8 py-10 font-[var(--reading-font-body)]">
+            <div className="mx-auto flex min-h-full w-full max-w-[640px] flex-col px-10 py-11 font-[var(--reading-font-body)]">
               <div className="mb-6 flex items-center gap-2 border-b border-[var(--gray-5)] pb-4">
                 <button
                   type="button"

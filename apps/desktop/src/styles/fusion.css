@@ -609,3 +609,11 @@
   white-space: nowrap;
   justify-self: start;
 }
+
+/* ── 文章正文（外壳精密，内容读书） ── */
+.fusion-article-body {
+  font-family: "Songti SC", "STSong", "Noto Serif SC", serif;
+  font-size: 15.5px;
+  line-height: 2;
+  color: #33363b;
+}

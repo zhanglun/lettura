@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>静密 × 聚光 · 快捷键帮助 · Lettura 0.2.0</title>
+<style>
+  @page{size:1440px 900px;margin:0;}
+  :root{
+    --ground:#F4F4F1;
+    --ink:#1D1E20; --sub:#6A6C6E; --ter:#9EA0A2;
+    --glass:rgba(255,255,255,.78);
+    --hair:rgba(29,30,32,.08); --hair2:rgba(29,30,32,.13);
+    --accent:#5E6AD2; --accent-soft:rgba(94,109,210,.1); --accent-line:rgba(94,109,210,.35);
+    --amber:#E5A50A;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{width:1180px;height:738px;overflow:hidden;}
+  .stage{width:1440px;height:900px;transform:scale(0.8194);transform-origin:top left;position:relative;}
+  body{
+    background:var(--ground);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Helvetica Neue",sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--accent-soft);}
+  button{font:inherit;border:0;background:none;cursor:pointer;color:inherit;}
+  kbd{font-family:inherit;font-size:10.5px;color:var(--sub);border:1px solid var(--hair2);border-radius:4px;padding:0 4.5px;line-height:15px;background:rgba(255,255,255,.7);min-width:22px;text-align:center;display:inline-block;}
+  *:focus-visible{outline:2px solid var(--accent);outline-offset:1px;border-radius:4px;}
+
+  .stage::before{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:
+      radial-gradient(560px 380px at 10% -8%,rgba(232,80,96,.05),transparent 70%),
+      radial-gradient(640px 420px at 90% -12%,rgba(94,109,210,.055),transparent 70%);
+  }
+
+  /* 玻璃主面板（压暗底座）*/
+  .panel{
+    position:absolute;inset:22px 22px 106px;
+    background:var(--glass);backdrop-filter:blur(22px) saturate(1.5);
+    border:1px solid var(--hair2);border-radius:16px;
+    box-shadow:0 1px 0 rgba(255,255,255,.7) inset,0 32px 64px -20px rgba(29,30,32,.28);
+    display:flex;flex-direction:column;overflow:hidden;
+  }
+  .top{height:54px;display:flex;align-items:center;padding:0 20px;gap:10px;border-bottom:1px solid var(--hair);flex:none;}
+  .logo{width:20px;height:20px;border-radius:7px;background:var(--ink);display:flex;align-items:center;justify-content:center;flex:none;}
+  .logo i{width:5px;height:5px;border-radius:50%;background:#fff;}
+  .sec{font-size:13px;font-weight:600;}
+  .cnt{font-size:11px;color:var(--sub);background:rgba(29,30,32,.06);border-radius:999px;padding:1.5px 8px;font-variant-numeric:tabular-nums;}
+  .nav{display:flex;gap:4px;margin-left:14px;}
+  .nav a{font-size:12.5px;color:var(--sub);text-decoration:none;padding:4px 10px;border-radius:7px;cursor:pointer;}
+  .nav a.on{color:var(--ink);font-weight:600;background:rgba(29,30,32,.06);}
+  .spring{flex:1;}
+  .cmdbtn{display:flex;align-items:center;gap:8px;height:30px;padding:0 10px;border:1px solid var(--hair2);border-radius:9px;font-size:12px;color:var(--sub);background:rgba(255,255,255,.55);}
+
+  .row{display:grid;grid-template-columns:56px 20px 1fr 210px 92px 44px;align-items:center;height:54px;padding-right:20px;border-bottom:1px solid var(--hair);}
+  .st{display:flex;justify-content:center;}
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);}
+  .badge{width:20px;height:20px;border-radius:6px;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+  .b-art{background:rgba(29,30,32,.06);color:var(--sub);}
+  .t{font-size:13.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 10px;}
+  .s{font-size:11.5px;color:var(--ter);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .d{font-size:11.5px;color:var(--ter);text-align:right;font-variant-numeric:tabular-nums;}
+
+  /* ── 帮助面板：⌘K 同语法，双列 ── */
+  .veil{position:absolute;inset:0;background:rgba(29,30,32,.14);z-index:40;display:block;}
+  .help{
+    position:absolute;left:50%;top:84px;transform:translateX(-50%);width:720px;z-index:50;
+    border-radius:14px;overflow:hidden;
+    background:rgba(255,255,255,.94);backdrop-filter:blur(28px) saturate(1.6);
+    border:1px solid rgba(29,30,32,.1);
+    box-shadow:0 4px 10px rgba(29,30,32,.06),0 36px 80px -16px rgba(29,30,32,.4);
+  }
+  .h-in{height:52px;display:flex;align-items:center;gap:10px;padding:0 16px;border-bottom:1px solid var(--hair);}
+  .h-in .tt{font-size:14px;font-weight:700;flex:1;}
+  .h-in .sub{font-size:11px;color:var(--ter);}
+
+  .cols{display:grid;grid-template-columns:1fr 1fr;column-gap:0;padding:8px 6px 12px;}
+  .grp{padding:6px 12px;}
+  .g-h{font-size:10.5px;font-weight:700;letter-spacing:.1em;color:var(--ter);margin:10px 0 4px;}
+  .k-row{display:flex;align-items:center;gap:12px;height:33px;border-bottom:1px solid var(--hair);}
+  .k-row:last-child{border-bottom:0;}
+  .k-keys{display:flex;gap:4px;flex:none;width:104px;justify-content:flex-end;}
+  .k-desc{font-size:12.5px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .k-desc .q{color:var(--ter);}
+
+  .h-foot{height:34px;display:flex;align-items:center;gap:14px;padding:0 16px;border-top:1px solid var(--hair);font-size:10.5px;color:var(--ter);background:rgba(255,255,255,.5);}
+
+  .synthetic{position:absolute;right:36px;bottom:100px;font-size:10px;color:var(--ter);letter-spacing:.1em;z-index:5;}
+  .hintbar{position:absolute;left:36px;bottom:100px;font-size:10.5px;color:var(--ter);z-index:5;letter-spacing:.03em;}
+  .hintbar b{color:var(--sub);font-weight:600;}
+</style>
+</head>
+<body>
+<!--
+  SURFACE CONTRACT · 快捷键帮助（? 键） · Lettura 0.2.0 「静密 × 聚光」扩展面
+  THESIS: 帮助是一张可扫读的键位卡——双列分组表，键右描述左对齐，一次视口看完全部键位；它是 ⌘K 面板的姊妹浮层（同位、同材质、同足注），不是文档页。
+  OWN-WORLD: 完全继承 fusion 浮层语法（.94 白 + 模糊 + veil 压暗 + 底部足注行），内容是发丝线行 33px + kbd 词汇；分组标题用章节字。
+  STORY: 任何时候按 ? 弹出；扫一遍记住 j/k 与 m 两件大事；esc 或点 veil 离开，不离开列表位置。
+  FIRST VIEWPORT: 玻璃面板压暗，中央 720px 双列帮助卡：标题行「快捷键 · ?」→ 导航/标记/阅读 三组与 全局/来源 两组对称排布 → 足注 esc 关闭。
+  FORM: fusion 世界的直接扩展（浮层卡，用户 2026-02 轮确认）。
+  FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance.
+-->
+<div class="stage">
+
+  <section class="panel">
+    <header class="top">
+      <span class="logo"><i></i></span>
+      <span class="sec">未读</span>
+      <span class="cnt">247</span>
+      <nav class="nav"><a class="on">未读</a><a>星标</a><a>历史</a><a>订阅</a></nav>
+      <span class="spring"></span>
+      <button class="cmdbtn">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#6A6C6E" stroke-width="1.7"><circle cx="7" cy="7" r="4.8"/><path d="m11.2 11.2 3 3"/></svg>
+        搜索或输入命令<span class="spring"></span><kbd>⌘K</kbd>
+      </button>
+    </header>
+    <div class="row"><span class="st"><span class="dot"></span></span><span class="badge b-art">文</span><span class="t">Rust 1.90 发布：编译器并行化进入第二阶段</span><span class="s">rust-lang.org</span><span class="d">09:41</span><span></span></div>
+    <div class="row"><span class="st"><span class="dot"></span></span><span class="badge b-art">文</span><span class="t">为什么我把全部阅读搬回了 RSS</span><span class="s">overreacted.io</span><span class="d">08:52</span><span></span></div>
+  </section>
+
+  <!-- 帮助浮层 -->
+  <div class="veil" id="veil"></div>
+  <section class="help">
+    <div class="h-in">
+      <span class="tt">快捷键</span>
+      <span class="sub">键盘优先 · 列表与详情内全局生效</span>
+      <kbd>esc</kbd>
+    </div>
+    <div class="cols">
+      <div class="grp">
+        <div class="g-h">导航 NAVIGATE</div>
+        <div class="k-row"><span class="k-keys"><kbd>j</kbd><kbd>k</kbd></span><span class="k-desc">下移 / 上移焦点</span></div>
+        <div class="k-row"><span class="k-keys"><kbd>⏎</kbd><kbd>o</kbd></span><span class="k-desc">打开焦点行</span></div>
+        <div class="k-row"><span class="k-keys"><kbd>esc</kbd></span><span class="k-desc">返回列表 / 逐级关闭 <span class="q">（订阅→设置→未读）</span></span></div>
+        <div class="k-row"><span class="k-keys"><kbd>⌘K</kbd><kbd>/</kbd></span><span class="k-desc">命令面板 <span class="q">（文章 / 来源 / 命令）</span></span></div>
+        <div class="g-h">标记 MARK</div>
+        <div class="k-row"><span class="k-keys"><kbd>m</kbd></span><span class="k-desc">已读并下移</span></div>
+        <div class="k-row"><span class="k-keys"><kbd>M</kbd></span><span class="k-desc">已读并上移</span></div>
+        <div class="k-row"><span class="k-keys"><kbd>f</kbd></span><span class="k-desc">星标 / 取消星标</span></div>
+      </div>
+      <div class="grp">
+        <div class="g-h">阅读 READ</div>
+        <div class="k-row"><span class="k-keys"><kbd>v</kbd></span><span class="k-desc">浏览器打开原文</span></div>
+        <div class="k-row"><span class="k-keys"><kbd>space</kbd></span><span class="k-desc">全局播放 / 暂停</span></div>
+        <div class="g-h">全局 GLOBAL</div>
+        <div class="k-row"><span class="k-keys"><kbd>R</kbd></span><span class="k-desc">刷新全部来源</span></div>
+        <div class="k-row"><span class="k-keys"><kbd>?</kbd></span><span class="k-desc">本帮助</span></div>
+        <div class="k-row"><span class="k-keys"><kbd>⌘,</kbd></span><span class="k-desc">打开设置 <span class="q">（同 ⌘K「打开设置」）</span></span></div>
+      </div>
+    </div>
+    <div class="h-foot"><span>esc 关闭</span><span class="spring"></span><span>键盘优先，鼠标永远可用</span></div>
+  </section>
+
+  <span class="hintbar"><b>j/k</b> 移动 · <b>⏎</b> 打开 · <b>m</b> 已读 · <b>f</b> 星标 · <b>space</b> 播放 · <b>?</b> 帮助</span>
+  <span class="synthetic">演示内容为合成数据</span>
+</div>
+
+<script>
+const veil=document.getElementById("veil");
+veil.addEventListener("click",()=>veil.style.display="none");
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape"){veil.style.display="none";e.preventDefault();}
+  if(e.key==="?"){veil.style.display=veil.style.display==="none"?"block":"none";e.preventDefault();}
+});
+</script>
+</body>
+</html>

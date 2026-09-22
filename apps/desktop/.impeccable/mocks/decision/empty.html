@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>静密 × 聚光 · 空状态 · Lettura 0.2.0</title>
+<style>
+  @page{size:1440px 900px;margin:0;}
+  :root{
+    --ground:#F4F4F1;
+    --ink:#1D1E20; --sub:#6A6C6E; --ter:#9EA0A2;
+    --glass:rgba(255,255,255,.78);
+    --hair:rgba(29,30,32,.08); --hair2:rgba(29,30,32,.13);
+    --accent:#5E6AD2; --accent-soft:rgba(94,109,210,.1); --accent-line:rgba(94,109,210,.35);
+    --pink:#E86A92; --pink-soft:rgba(232,106,146,.1);
+    --warn:#C4564A; --warn-soft:#FDF0EE;
+    --amber:#E5A50A;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{width:1180px;height:738px;overflow:hidden;}
+  .stage{width:1440px;height:900px;transform:scale(0.8194);transform-origin:top left;position:relative;}
+  body{
+    background:var(--ground);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Helvetica Neue",sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--accent-soft);}
+  button{font:inherit;border:0;background:none;cursor:pointer;color:inherit;}
+  kbd{font-family:inherit;font-size:10.5px;color:var(--sub);border:1px solid var(--hair2);border-radius:4px;padding:0 4.5px;line-height:15px;background:rgba(255,255,255,.7);}
+  *:focus-visible{outline:2px solid var(--accent);outline-offset:1px;border-radius:4px;}
+
+  .stage::before{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:
+      radial-gradient(560px 380px at 10% -8%,rgba(232,80,96,.05),transparent 70%),
+      radial-gradient(640px 420px at 90% -12%,rgba(94,109,210,.055),transparent 70%);
+  }
+
+  /* ── 玻璃主面板 ── */
+  .panel{
+    position:absolute;inset:22px 22px 106px;
+    background:var(--glass);backdrop-filter:blur(22px) saturate(1.5);
+    border:1px solid var(--hair2);border-radius:16px;
+    box-shadow:0 1px 0 rgba(255,255,255,.7) inset,0 32px 64px -20px rgba(29,30,32,.28);
+    display:flex;flex-direction:column;overflow:hidden;
+  }
+  .top{height:54px;display:flex;align-items:center;padding:0 20px;gap:10px;border-bottom:1px solid var(--hair);flex:none;}
+  .logo{width:20px;height:20px;border-radius:7px;background:var(--ink);display:flex;align-items:center;justify-content:center;flex:none;}
+  .logo i{width:5px;height:5px;border-radius:50%;background:#fff;}
+  .sec{font-size:13px;font-weight:600;}
+  .cnt{font-size:11px;color:var(--sub);background:rgba(29,30,32,.06);border-radius:999px;padding:1.5px 8px;font-variant-numeric:tabular-nums;}
+  .nav{display:flex;gap:4px;margin-left:14px;}
+  .nav a{font-size:12.5px;color:var(--sub);text-decoration:none;padding:4px 10px;border-radius:7px;cursor:pointer;}
+  .nav a.on{color:var(--ink);font-weight:600;background:rgba(29,30,32,.06);}
+  .spring{flex:1;}
+  .cmdbtn{display:flex;align-items:center;gap:8px;height:30px;padding:0 10px;border:1px solid var(--hair2);border-radius:9px;font-size:12px;color:var(--sub);background:rgba(255,255,255,.55);}
+  .cmdbtn:hover{border-color:var(--accent);color:var(--ink);}
+
+  /* ── 空状态视图区 ── */
+  .face{flex:1;overflow-y:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 96px;scrollbar-width:thin;scrollbar-color:rgba(29,30,32,.18) transparent;}
+  .face::-webkit-scrollbar{width:8px;}
+  .face::-webkit-scrollbar-thumb{background:rgba(29,30,32,.15);border-radius:999px;border:2px solid transparent;background-clip:content-box;}
+
+  .mark{width:52px;height:52px;border-radius:16px;background:var(--ink);display:flex;align-items:center;justify-content:center;box-shadow:0 14px 30px -10px rgba(29,30,32,.35);flex:none;}
+  .mark i{width:12px;height:12px;border-radius:50%;background:#fff;}
+  .mark.quiet{background:var(--accent-soft);box-shadow:0 0 0 6px rgba(94,109,210,.06);}
+  .mark.quiet i{background:var(--accent);}
+
+  h1{font-size:26px;font-weight:700;letter-spacing:.005em;margin-top:26px;text-align:center;}
+  .lede{font-size:14px;color:var(--sub);margin-top:10px;text-align:center;line-height:1.7;max-width:460px;}
+  .cta{display:flex;gap:10px;margin-top:26px;}
+  .btn-ink{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 18px;border-radius:10px;background:var(--accent);color:#fff;font-size:13px;font-weight:600;box-shadow:0 6px 14px -3px rgba(94,109,210,.5);transition:transform .15s ease;}
+  .btn-ink:hover{transform:scale(1.04);}
+  .btn-gh{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 16px;border:1px solid var(--hair2);border-radius:10px;font-size:13px;color:var(--sub);background:rgba(255,255,255,.55);}
+  .btn-gh:hover{color:var(--ink);border-color:var(--sub);}
+
+  /* starter pack */
+  .pack{margin-top:38px;width:100%;max-width:520px;border:1px solid var(--hair);border-radius:14px;background:rgba(255,255,255,.5);padding:18px 22px 20px;}
+  .pk-h{display:flex;align-items:center;gap:10px;}
+  .pk-t{font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--ter);}
+  .pk-d{font-size:11.5px;color:var(--sub);margin-top:6px;line-height:1.6;}
+  .pk-list{margin-top:12px;}
+  .pk-row{display:flex;align-items:center;gap:11px;height:36px;border-bottom:1px solid var(--hair);font-size:12.5px;}
+  .pk-row:last-child{border-bottom:0;}
+  .cb{width:16px;height:16px;border-radius:5px;border:1px solid var(--hair2);background:rgba(255,255,255,.7);display:flex;align-items:center;justify-content:center;flex:none;color:#fff;}
+  .pk-row.on .cb{background:var(--accent);border-color:var(--accent);}
+  .cb svg{opacity:0;}
+  .pk-row.on .cb svg{opacity:1;}
+  .pk-n{flex:1;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .pk-row:not(.on) .pk-n{color:var(--sub);font-weight:400;}
+  .pk-h2{font-size:11px;color:var(--ter);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .pk-foot{display:flex;align-items:center;gap:10px;margin-top:14px;}
+  .pk-all{font-size:12px;color:var(--accent);padding:4px 10px;border-radius:7px;}
+  .pk-all:hover{background:var(--accent-soft);}
+  .pk-count{font-size:11px;color:var(--ter);margin-left:auto;font-variant-numeric:tabular-nums;}
+  .pk-sub{margin-left:auto;display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 12px;border-radius:8px;background:var(--accent);color:#fff;font-size:12px;font-weight:600;box-shadow:0 4px 10px -3px rgba(94,109,210,.5);opacity:.35;pointer-events:none;transition:opacity .15s ease;}
+  .pk-sub.ready{opacity:1;pointer-events:auto;}
+  .pk-sub.ready:hover{transform:scale(1.04);}
+
+  /* 清空态（读完就走） */
+  .quietline{font-size:12.5px;color:var(--ter);margin-top:22px;display:flex;gap:16px;align-items:center;}
+  .quietline a{color:var(--sub);text-decoration:none;border-bottom:1px solid var(--hair2);padding-bottom:1px;}
+  .quietline a:hover{color:var(--ink);border-color:var(--ink);}
+
+  .demo-tabs{position:absolute;top:34px;right:40px;z-index:70;display:flex;gap:3px;padding:3px;border:1px solid var(--hair2);border-radius:999px;background:rgba(255,255,255,.9);backdrop-filter:blur(22px);}
+  .dtab{font-size:11.5px;color:var(--sub);padding:4px 12px;border-radius:999px;}
+  .dtab.on{background:rgba(29,30,32,.07);color:var(--ink);font-weight:600;}
+
+  .synthetic{position:absolute;right:36px;bottom:100px;font-size:10px;color:var(--ter);letter-spacing:.1em;z-index:5;}
+  .hintbar{position:absolute;left:36px;bottom:100px;font-size:10.5px;color:var(--ter);z-index:5;letter-spacing:.03em;}
+  .hintbar b{color:var(--sub);font-weight:600;}
+</style>
+</head>
+<body>
+<!--
+  SURFACE CONTRACT · 空状态（即引导） · Lettura 0.2.0 「静密 × 聚光」扩展面
+  THESIS: 空状态不是缺数据的错误页，是产品最好的自我介绍时刻——零订阅时列表位置直接变成引导面（大主张 + 添加/导入 + starter pack 一键订阅），零未读时是一句安静的收尾（「今天的队列清空了」）。无独立 onboarding 路由，空状态即首启。
+  OWN-WORLD: 完全继承 fusion：同一玻璃面板与顶栏，引导面居中排版（26px 主张与详情题同级）；starter pack 行复用订阅行语法收紧至 36px + 勾选格；勾选即点亮订阅钮，静密语法无庆祝动画。
+  STORY: 首启打开 → 「订阅你想读的」+ 两个入口 + AI 推荐包；勾选来源，「订阅 N 个来源」点亮，一键完成，进入未读列表。每日清空后：一个圆点 + 一句话 + 历史/星标出口，读完就走。
+  FIRST VIEWPORT: 玻璃面板视图区居中：墨色 logo 方标 → 「订阅你想读的」→ 一行副文 → [添加订阅] [导入 OPML] → 520px starter pack 卡（15 源选 6 展示）；演示稿右上角双 tab 切换零订阅/已清空两态。
+  FORM: fusion 世界的直接扩展（空状态即引导，用户 2026-02 轮选定，否决独立 onboarding 流程）。
+  FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance.
+-->
+<div class="stage">
+
+  <!-- 演示切换 -->
+  <div class="demo-tabs">
+    <button class="dtab on" data-s="first">零订阅 · 首启</button>
+    <button class="dtab" data-s="clear">已清空 · 读完</button>
+  </div>
+
+  <section class="panel">
+    <header class="top">
+      <span class="logo"><i></i></span>
+      <span class="sec" id="secName">未读</span>
+      <span class="cnt" id="secCnt">0</span>
+      <nav class="nav"><a class="on" id="navUnread">未读</a><a>星标</a><a>历史</a><a>订阅</a></nav>
+      <span class="spring"></span>
+      <button class="cmdbtn">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#6A6C6E" stroke-width="1.7"><circle cx="7" cy="7" r="4.8"/><path d="m11.2 11.2 3 3"/></svg>
+        搜索或输入命令<span class="spring"></span><kbd>⌘K</kbd>
+      </button>
+    </header>
+
+    <!-- 零订阅 · 首启 -->
+    <main class="face" id="faceFirst">
+      <span class="mark"><i></i></span>
+      <h1>订阅你想读的</h1>
+      <p class="lede">RSS、B站、知乎、微博、Newsletter——粘贴一个地址，其余交给 Lettura。数据在本机，读完就走。</p>
+      <div class="cta">
+        <button class="btn-ink">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"><path d="M8 3v10M3 8h10"/></svg>
+          添加订阅
+        </button>
+        <button class="btn-gh">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M8 11V2.5M5 5.5 8 2.5l3 3M3 11v2.5h10V11"/></svg>
+          导入 OPML
+        </button>
+      </div>
+
+      <div class="pack">
+        <div class="pk-h">
+          <span class="pk-t">STARTER PACK · AI 与机器学习</span>
+          <span class="pk-count" id="pkCount">已选 0 / 6</span>
+        </div>
+        <p class="pk-d">仓库自带推荐包（<code style="font-size:10.5px;">sources/packs/ai.json</code>）精选 6 源，勾选即订阅。</p>
+        <div class="pk-list" id="pkList"></div>
+        <div class="pk-foot">
+          <button class="pk-all" id="pkAll">全选</button>
+          <button class="pk-sub" id="pkSub">
+            <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"><path d="m3.5 8.5 3 3 6-6.5"/></svg>
+            <span id="pkSubL">订阅所选</span>
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <!-- 已清空 · 读完 -->
+    <main class="face" id="faceClear" style="display:none;">
+      <span class="mark quiet"><i></i></span>
+      <h1>今天的队列清空了</h1>
+      <p class="lede">读完就走。明天同一时间，新的未读会在这里等你。</p>
+      <div class="quietline">
+        <a>查看历史</a><a>星标</a><a>添加订阅</a>
+      </div>
+    </main>
+  </section>
+
+  <span class="hintbar" id="hintbar"><b>⌘K</b> 命令 · <b>?</b> 帮助</span>
+  <span class="synthetic">演示内容为合成数据（推荐包来自仓库 ai.json）</span>
+</div>
+
+<script>
+/* starter pack 数据：真实取自 apps/desktop/src-tauri/src/sources/packs/ai.json */
+const PACK=[
+ ["OpenAI Blog","openai.com"],
+ ["DeepMind Blog","deepmind.google"],
+ ["Hugging Face Blog","huggingface.co"],
+ ["MIT Technology Review","technologyreview.com"],
+ ["The Batch (DeepLearning.AI)","deeplearningai.com"],
+ ["Anthropic News","anthropic.com"],
+];
+const list=document.getElementById("pkList");
+list.innerHTML=PACK.map((p,i)=>`
+ <button class="pk-row" data-i="${i}">
+   <span class="cb"><svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m3.5 8.5 3 3 6-6.5"/></svg></span>
+   <span class="pk-n">${p[0]}</span>
+   <span class="pk-h2">${p[1]}</span>
+ </button>`).join("");
+const sel=new Set();
+function sync(){
+  document.querySelectorAll(".pk-row").forEach(r=>r.classList.toggle("on",sel.has(+r.dataset.i)));
+  document.getElementById("pkCount").textContent=`已选 ${sel.size} / ${PACK.length}`;
+  const sub=document.getElementById("pkSub");
+  sub.classList.toggle("ready",sel.size>0);
+  document.getElementById("pkSubL").textContent=sel.size>0?`订阅所选 · ${sel.size} 源`:"订阅所选";
+}
+document.querySelectorAll(".pk-row").forEach(r=>r.addEventListener("click",()=>{
+  const i=+r.dataset.i;sel.has(i)?sel.delete(i):sel.add(i);sync();
+}));
+document.getElementById("pkAll").addEventListener("click",()=>{
+  sel.size===PACK.length?sel.clear():PACK.forEach((_,i)=>sel.add(i));sync();
+  document.getElementById("pkAll").textContent=sel.size===PACK.length?"取消全选":"全选";
+});
+
+/* 演示切换 */
+document.querySelectorAll(".dtab").forEach(t=>t.addEventListener("click",()=>{
+  document.querySelectorAll(".dtab").forEach(x=>x.classList.remove("on"));t.classList.add("on");
+  const first=t.dataset.s==="first";
+  document.getElementById("faceFirst").style.display=first?"flex":"none";
+  document.getElementById("faceClear").style.display=first?"none":"flex";
+}));
+sync();
+</script>
+</body>
+</html>
