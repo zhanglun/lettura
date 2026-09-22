@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>静密 × 聚光 · 设置 · Lettura 0.2.0</title>
+<style>
+  @page{size:1440px 900px;margin:0;}
+  :root{
+    --ground:#F4F4F1;
+    --ink:#1D1E20; --sub:#6A6C6E; --ter:#9EA0A2;
+    --glass:rgba(255,255,255,.78);
+    --hair:rgba(29,30,32,.08); --hair2:rgba(29,30,32,.13);
+    --accent:#5E6AD2; --accent-soft:rgba(94,109,210,.1); --accent-line:rgba(94,109,210,.35);
+    --pink:#E86A92; --pink-soft:rgba(232,106,146,.1);
+    --warn:#C4564A; --warn-soft:#FDF0EE;
+    --amber:#E5A50A;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{width:1180px;height:738px;overflow:hidden;}
+  .stage{width:1440px;height:900px;transform:scale(0.8194);transform-origin:top left;position:relative;}
+  body{
+    background:var(--ground);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Helvetica Neue",sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--accent-soft);}
+  button{font:inherit;border:0;background:none;cursor:pointer;color:inherit;}
+  kbd{font-family:inherit;font-size:10.5px;color:var(--sub);border:1px solid var(--hair2);border-radius:4px;padding:0 4.5px;line-height:15px;background:rgba(255,255,255,.7);}
+  *:focus-visible{outline:2px solid var(--accent);outline-offset:1px;border-radius:4px;}
+
+  .stage::before{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:
+      radial-gradient(560px 380px at 10% -8%,rgba(232,80,96,.05),transparent 70%),
+      radial-gradient(640px 420px at 90% -12%,rgba(94,109,210,.055),transparent 70%);
+  }
+
+  /* ── 玻璃主面板 ── */
+  .panel{
+    position:absolute;inset:22px 22px 106px;
+    background:var(--glass);backdrop-filter:blur(22px) saturate(1.5);
+    border:1px solid var(--hair2);border-radius:16px;
+    box-shadow:0 1px 0 rgba(255,255,255,.7) inset,0 32px 64px -20px rgba(29,30,32,.28);
+    display:flex;flex-direction:column;overflow:hidden;
+  }
+
+  .top{height:54px;display:flex;align-items:center;padding:0 20px;gap:10px;border-bottom:1px solid var(--hair);flex:none;}
+  .logo{width:20px;height:20px;border-radius:7px;background:var(--ink);display:flex;align-items:center;justify-content:center;flex:none;}
+  .logo i{width:5px;height:5px;border-radius:50%;background:#fff;}
+  .sec{font-size:13px;font-weight:600;}
+  .cnt{font-size:11px;color:var(--sub);background:rgba(29,30,32,.06);border-radius:999px;padding:1.5px 8px;font-variant-numeric:tabular-nums;}
+  .nav{display:flex;gap:4px;margin-left:14px;}
+  .nav a{font-size:12.5px;color:var(--sub);text-decoration:none;padding:4px 10px;border-radius:7px;cursor:pointer;}
+  .nav a:hover{background:rgba(29,30,32,.05);}
+  .nav a.on{color:var(--ink);font-weight:600;background:rgba(29,30,32,.06);}
+  .spring{flex:1;}
+  .cmdbtn{display:flex;align-items:center;gap:8px;height:30px;padding:0 10px;border:1px solid var(--hair2);border-radius:9px;font-size:12px;color:var(--sub);background:rgba(255,255,255,.55);}
+  .cmdbtn:hover{border-color:var(--accent);color:var(--ink);}
+
+  /* ── 列表视图（最小在场，证明第三态替换）── */
+  .list{flex:1;overflow:hidden;display:none;}
+  .row{
+    display:grid;grid-template-columns:56px 20px 1fr 210px 92px 44px;
+    align-items:center;height:54px;padding-right:20px;border-bottom:1px solid var(--hair);cursor:pointer;
+  }
+  .row:hover{background:rgba(29,30,32,.035);}
+  .st{display:flex;justify-content:center;}
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);}
+  .badge{width:20px;height:20px;border-radius:6px;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+  .b-art{background:rgba(29,30,32,.06);color:var(--sub);}
+  .b-pod{background:var(--accent-soft);color:var(--accent);}
+  .t{font-size:13.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 10px;}
+  .s{font-size:11.5px;color:var(--ter);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .d{font-size:11.5px;color:var(--ter);text-align:right;font-variant-numeric:tabular-nums;}
+  .strip{height:42px;display:flex;align-items:center;padding:0 20px;gap:4px;border-bottom:1px solid var(--hair);flex:none;display:none;}
+  .tab{font-size:12px;color:var(--sub);padding:4px 10px;border-radius:999px;}
+  .tab.on{background:rgba(29,30,32,.07);color:var(--ink);font-weight:600;}
+  .tab .c{font-variant-numeric:tabular-nums;margin-left:3px;color:var(--ter);font-weight:500;}
+  .strip .meta{margin-left:auto;font-size:11px;color:var(--ter);font-variant-numeric:tabular-nums;}
+
+  /* ── 设置视图：面板内第三态 ── */
+  .set{flex:1;overflow:hidden;display:none;flex-direction:column;}
+  .d-top{height:50px;display:flex;align-items:center;gap:8px;padding:0 20px;border-bottom:1px solid var(--hair);flex:none;}
+  .back{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--sub);padding:5px 10px;border-radius:7px;}
+  .back:hover{background:rgba(29,30,32,.05);color:var(--ink);}
+  .d-src{font-size:11.5px;color:var(--ter);margin-left:6px;}
+
+  .set-body{flex:1;overflow-y:auto;overflow-x:hidden;padding:40px 96px 56px;scrollbar-width:thin;scrollbar-color:rgba(29,30,32,.18) transparent;}
+  .set-body::-webkit-scrollbar{width:8px;}
+  .set-body::-webkit-scrollbar-thumb{background:rgba(29,30,32,.15);border-radius:999px;border:2px solid transparent;background-clip:content-box;}
+  .set-inner{max-width:680px;margin:0 auto;}
+
+  .set-h{font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--ter);margin:34px 0 4px;}
+  .set-h:first-child{margin-top:0;}
+  .set-desc{font-size:11.5px;color:var(--ter);margin:6px 0 4px;}
+
+  /* 设置行：标签左、控件右，发丝线分隔 */
+  .srow{
+    display:grid;grid-template-columns:1fr auto;align-items:center;gap:24px;
+    min-height:52px;padding:8px 0;border-bottom:1px solid var(--hair);
+  }
+  .srow:hover{background:rgba(29,30,32,.02);}
+  .lb{font-size:13.5px;font-weight:500;}
+  .hp{font-size:11.5px;color:var(--sub);margin-top:2.5px;line-height:1.5;}
+  .ctl{display:flex;align-items:center;gap:10px;justify-items:end;}
+
+  /* 分段控件（主题/密度/通知）*/
+  .seg{display:flex;gap:3px;padding:3px;border:1px solid var(--hair2);border-radius:999px;background:rgba(255,255,255,.55);}
+  .seg button{font-size:12px;color:var(--sub);padding:4px 13px;border-radius:999px;}
+  .seg button:hover{color:var(--ink);}
+  .seg button.on{background:rgba(29,30,32,.07);color:var(--ink);font-weight:600;}
+
+  /* 下拉（同步频率/超时/语言/保留期）*/
+  .sel{position:relative;}
+  .sel-btn{display:flex;align-items:center;gap:9px;height:30px;padding:0 10px 0 12px;border:1px solid var(--hair2);border-radius:9px;font-size:12.5px;color:var(--ink);background:rgba(255,255,255,.55);min-width:104px;justify-content:space-between;}
+  .sel-btn:hover{border-color:var(--accent);}
+  .sel-btn .cv{color:var(--ink);}
+  .sel-btn svg{flex:none;}
+  .menu{
+    position:absolute;right:0;top:36px;z-index:20;min-width:100%;
+    background:rgba(255,255,255,.94);backdrop-filter:blur(28px) saturate(1.6);
+    border:1px solid rgba(29,30,32,.1);border-radius:10px;padding:5px;
+    box-shadow:0 4px 10px rgba(29,30,32,.06),0 18px 40px -12px rgba(29,30,32,.3);
+    display:none;
+  }
+  .menu.open{display:block;}
+  .mi{display:flex;align-items:center;gap:9px;width:100%;height:31px;padding:0 10px;border-radius:7px;font-size:12.5px;color:var(--ink);text-align:left;}
+  .mi:hover{background:rgba(29,30,32,.05);}
+  .mi.on{color:var(--ink);font-weight:600;background:var(--accent-soft);}
+  .mi .ck{margin-left:auto;color:var(--accent);opacity:0;}
+  .mi.on .ck{opacity:1;}
+
+  /* 开关 */
+  .sw{width:36px;height:21px;border-radius:999px;background:rgba(29,30,32,.14);position:relative;transition:background .15s ease;flex:none;}
+  .sw::after{content:"";position:absolute;left:2px;top:2px;width:17px;height:17px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(29,30,32,.25);transition:left .15s ease;}
+  .sw.on{background:var(--accent);}
+  .sw.on::after{left:17px;}
+
+  /* 滑杆（字号/行高/并发）*/
+  .sld{display:flex;align-items:center;gap:12px;}
+  .track{width:150px;height:3px;border-radius:999px;background:rgba(29,30,32,.1);position:relative;cursor:pointer;}
+  .track .fill{position:absolute;left:0;top:0;bottom:0;border-radius:999px;background:var(--accent);}
+  .track .knob{position:absolute;top:50%;width:11px;height:11px;border-radius:50%;background:var(--accent);transform:translate(-50%,-50%);box-shadow:0 0 0 3px rgba(255,255,255,.9);}
+  .chip{font-size:11px;color:var(--sub);background:rgba(29,30,32,.06);border-radius:6px;padding:2.5px 8px;flex:none;font-variant-numeric:tabular-nums;min-width:44px;text-align:center;}
+
+  /* 强调色样本 */
+  .swatches{display:flex;gap:9px;align-items:center;}
+  .swatch{width:18px;height:18px;border-radius:50%;border:1px solid rgba(29,30,32,.08);cursor:pointer;position:relative;}
+  .swatch.on{outline:2px solid var(--accent-line);outline-offset:2.5px;}
+
+  /* 按钮 */
+  .btn-gh{display:inline-flex;align-items:center;gap:7px;height:30px;padding:0 13px;border:1px solid var(--hair2);border-radius:9px;font-size:12.5px;color:var(--sub);background:rgba(255,255,255,.55);}
+  .btn-gh:hover{color:var(--ink);border-color:var(--sub);}
+  .btn-ink{display:inline-flex;align-items:center;gap:7px;height:30px;padding:0 14px;border-radius:9px;background:var(--ink);color:#fff;font-size:12.5px;font-weight:600;}
+  .btn-ink:hover{background:#000;}
+  .btn-ink svg,.btn-gh svg{flex:none;}
+
+  /* 健康状况行内态 */
+  .hl-ok{color:var(--sub);font-variant-numeric:tabular-nums;font-size:12.5px;}
+  .hl-fail{color:var(--warn);font-size:12.5px;}
+  .retry{font-size:12px;color:var(--accent);padding:3px 9px;border-radius:7px;}
+  .retry:hover{background:var(--accent-soft);}
+
+  /* ── 阅读预览：校准台 ── */
+  .prev{
+    margin:18px 0 6px;border:1px solid var(--hair);border-radius:14px;
+    background:rgba(255,255,255,.5);padding:22px 26px 24px;
+  }
+  .prev .cap{font-size:10.5px;color:var(--ter);letter-spacing:.08em;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;}
+  .prev .cap .live{color:var(--accent);}
+  .prow{
+    display:grid;grid-template-columns:24px 20px 1fr 110px 56px;align-items:center;
+    border-bottom:1px solid var(--hair);
+  }
+  .prow .pd{width:6px;height:6px;border-radius:50%;background:var(--accent);justify-self:center;}
+  .prow .pt2{font-size:13.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 10px;}
+  .prow .ps{font-size:11.5px;color:var(--ter);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .prow .pdd{font-size:11.5px;color:var(--ter);text-align:right;font-variant-numeric:tabular-nums;}
+  .prev .serif{margin-top:20px;font-family:"Songti SC","STSong","Noto Serif SC",serif;color:#33363B;}
+
+  /* ── 订阅管理视图 ── */
+  .subs-bar{display:flex;align-items:center;gap:10px;padding:16px 0 14px;}
+  .subs-search{display:flex;align-items:center;gap:9px;height:34px;flex:1;border:1px solid var(--hair2);border-radius:9px;padding:0 11px;background:rgba(255,255,255,.55);}
+  .subs-search:focus-within{border-color:var(--accent);}
+  .subs-search input{flex:1;border:0;outline:0;background:none;font:inherit;font-size:12.5px;color:var(--ink);}
+  .subs-search input::placeholder{color:var(--ter);}
+  .folder{margin-top:18px;}
+  .f-h{display:flex;align-items:center;gap:7px;height:32px;cursor:pointer;user-select:none;}
+  .f-h:hover .f-t{color:var(--ink);}
+  .f-h .chev{color:var(--ter);display:flex;transition:transform .15s ease;}
+  .folder.closed .chev{transform:rotate(-90deg);}
+  .f-t{font-size:12.5px;font-weight:600;color:var(--sub);}
+  .f-m{font-size:11px;color:var(--ter);font-variant-numeric:tabular-nums;}
+  .f-a{margin-left:auto;display:flex;gap:2px;opacity:0;transition:opacity .12s ease;}
+  .f-h:hover .f-a{opacity:1;}
+  .qa2{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;color:var(--sub);}
+  .qa2:hover{background:rgba(29,30,32,.06);color:var(--ink);}
+  .qa2.danger:hover{color:var(--warn);background:var(--warn-soft);}
+  .feeds{border-top:1px solid var(--hair);}
+  .feed{
+    display:grid;grid-template-columns:22px 1fr 120px 96px 44px;align-items:center;
+    height:44px;border-bottom:1px solid var(--hair);
+  }
+  .feed:hover{background:rgba(29,30,32,.035);}
+  .feed .fi{width:18px;height:18px;border-radius:5px;background:rgba(29,30,32,.06);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--sub);justify-self:center;}
+  .feed .fi.pod{background:var(--accent-soft);color:var(--accent);}
+  .feed .fi.bil{background:var(--pink-soft);color:var(--pink);}
+  .feed .ft{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 10px;display:flex;align-items:center;gap:8px;}
+  .feed .ft .uc{font-size:11px;color:var(--sub);background:rgba(29,30,32,.06);border-radius:999px;padding:1px 7px;font-variant-numeric:tabular-nums;font-weight:500;}
+  .feed .fh{font-size:11.5px;color:var(--ter);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .feed .fh.fail{color:var(--warn);}
+  .feed .fd{font-size:11.5px;color:var(--ter);text-align:right;font-variant-numeric:tabular-nums;}
+  .feed .fa{display:flex;justify-content:flex-end;gap:1px;opacity:0;}
+  .feed:hover .fa{opacity:1;}
+  .qa3{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--ter);}
+  .qa3:hover{background:rgba(29,30,32,.06);color:var(--ink);}
+  .qa3.danger:hover{color:var(--warn);background:var(--warn-soft);}
+
+  /* 右键菜单 */
+  .ctx{position:fixed;z-index:60;min-width:186px;background:rgba(255,255,255,.94);backdrop-filter:blur(28px) saturate(1.6);border:1px solid rgba(29,30,32,.1);border-radius:10px;padding:5px;box-shadow:0 4px 10px rgba(29,30,32,.06),0 18px 40px -12px rgba(29,30,32,.3);display:none;}
+  .ctx.open{display:block;}
+  .ctx .mi svg{color:var(--sub);}
+  .ctx .mi.danger{color:var(--warn);}
+  .ctx .mi.danger svg{color:var(--warn);}
+  .ctx hr{border:0;border-top:1px solid var(--hair);margin:4px 8px;}
+
+  /* ── 命令面板 ── */
+  .veil{position:absolute;inset:0;background:rgba(29,30,32,.14);display:none;z-index:40;}
+  .palette{
+    position:absolute;left:50%;top:84px;transform:translateX(-50%);width:580px;z-index:50;
+    border-radius:14px;overflow:hidden;display:none;
+    background:rgba(255,255,255,.94);backdrop-filter:blur(28px) saturate(1.6);
+    border:1px solid rgba(29,30,32,.1);
+    box-shadow:0 4px 10px rgba(29,30,32,.06),0 36px 80px -16px rgba(29,30,32,.4);
+  }
+  .p-in{height:52px;display:flex;align-items:center;gap:10px;padding:0 16px;border-bottom:1px solid var(--hair);}
+  .p-in input{flex:1;border:0;outline:0;background:none;font:inherit;font-size:14.5px;color:var(--ink);}
+  .p-in input::placeholder{color:var(--ter);}
+  .res{padding:6px;max-height:280px;overflow:hidden;}
+  .r{display:flex;align-items:center;gap:11px;height:44px;padding:0 12px;border-radius:9px;cursor:pointer;}
+  .r.sel{background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent-line);}
+  .r .ic{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex:none;}
+  .r .lbl{font-size:13px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .r .lbl b{color:var(--accent);font-weight:600;}
+  .r .hint{font-size:11px;color:var(--ter);flex:none;font-variant-numeric:tabular-nums;}
+  .p-foot{height:34px;display:flex;align-items:center;gap:14px;padding:0 16px;border-top:1px solid var(--hair);font-size:10.5px;color:var(--ter);background:rgba(255,255,255,.5);}
+
+  /* ── 播放器 ── */
+  .player{
+    position:absolute;left:22px;right:22px;bottom:22px;height:68px;z-index:30;
+    background:var(--glass);backdrop-filter:blur(22px) saturate(1.5);
+    border:1px solid var(--hair2);border-radius:14px;
+    box-shadow:0 20px 44px -16px rgba(29,30,32,.26);
+    display:flex;align-items:center;gap:14px;padding:0 18px;
+  }
+  .pc{width:32px;height:32px;border-radius:999px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;flex:none;box-shadow:0 4px 10px -2px rgba(94,109,210,.5);transition:transform .15s ease;}
+  .pc:hover{transform:scale(1.06);}
+  .pskip{width:24px;height:24px;border-radius:999px;display:flex;align-items:center;justify-content:center;color:var(--sub);}
+  .pskip:hover{background:rgba(29,30,32,.06);color:var(--ink);}
+  .pmeta{flex:none;width:240px;cursor:pointer;}
+  .pmeta .ep{font-size:11px;color:var(--sub);}
+  .pmeta .nm{font-size:13px;font-weight:600;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .ptrack{flex:1;display:flex;align-items:center;gap:12px;}
+  .pt{font-size:11px;color:var(--sub);font-variant-numeric:tabular-nums;flex:none;}
+  .pbar{flex:1;height:3px;border-radius:999px;background:rgba(29,30,32,.1);position:relative;cursor:pointer;}
+  .pbar b{position:absolute;left:0;top:0;bottom:0;width:26%;border-radius:999px;background:var(--accent);}
+  .pbar i{position:absolute;left:26%;top:50%;width:9px;height:9px;border-radius:50%;background:var(--accent);transform:translate(-50%,-50%);box-shadow:0 0 0 3px rgba(255,255,255,.9);}
+  .expand{width:24px;height:24px;border-radius:7px;display:flex;align-items:center;justify-content:center;color:var(--ter);}
+  .expand:hover{background:rgba(29,30,32,.06);color:var(--ink);}
+
+  .synthetic{position:absolute;right:36px;bottom:100px;font-size:10px;color:var(--ter);letter-spacing:.1em;z-index:5;}
+  .hintbar{position:absolute;left:36px;bottom:100px;font-size:10.5px;color:var(--ter);z-index:5;letter-spacing:.03em;}
+  .hintbar b{color:var(--sub);font-weight:600;}
+</style>
+</head>
+<body>
+<!--
+  SURFACE CONTRACT · 设置 · Lettura 0.2.0 「静密 × 聚光」扩展面
+  THESIS: 设置是这台仪器的校准台——不是独立房间，是列表/详情之后的第三视图；外观改动在预览块上实时显影，仪器不离开阅读上下文。
+  OWN-WORLD: 完全继承 fusion：同一玻璃面板、同一顶栏与 ⌘K、同一播放卡。新增语法：设置行（标签左/控件右/发丝线）、段题（章节字）、预览块（校准台）、订阅行（列表行语法收紧至 44px）。
+  STORY: ⌘K 输入「设置」进入；三段一页（外观与阅读/同步与来源/行为与数据）；拖字号滑杆，下方宋体预览立刻变；esc 一路退回未读列表，位置保留。
+  FIRST VIEWPORT: 面板内：顶栏章节变「设置」→ 返回条（esc）→ 居中 680px 三段设置行，第一段是主题分段与强调色样本，段尾即实时预览块；底部播放卡持续在场。
+  FORM: fusion 世界的直接扩展（面板内第三视图），无新世界；能力按现状三段重组，零增减。
+  FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance.
+-->
+<div class="stage">
+
+  <section class="panel">
+    <header class="top">
+      <span class="logo"><i></i></span>
+      <span class="sec" id="secName">未读</span>
+      <span class="cnt">247</span>
+      <nav class="nav">
+        <a class="on" id="navUnread">未读</a><a>星标</a><a>历史</a><a>订阅</a>
+      </nav>
+      <span class="spring"></span>
+      <button class="cmdbtn" id="openPalette">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#6A6C6E" stroke-width="1.7"><circle cx="7" cy="7" r="4.8"/><path d="m11.2 11.2 3 3"/></svg>
+        搜索或输入命令<span class="spring"></span><kbd>⌘K</kbd>
+      </button>
+    </header>
+
+    <!-- 列表视图（第三态替换的参照）-->
+    <div class="strip" id="listStrip">
+      <button class="tab on">全部 <span class="c">247</span></button>
+      <button class="tab">文章 <span class="c">229</span></button>
+      <button class="tab">播客 <span class="c">3</span></button>
+      <button class="tab">平台 <span class="c">15</span></button>
+      <span class="meta">34 个来源 · 最近同步 09:41</span>
+    </div>
+    <main class="list" id="viewList"></main>
+
+    <!-- 设置视图 -->
+    <section class="set" id="viewSettings">
+      <div class="d-top">
+        <button class="back" id="backFromSettings">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M10 3 5 8l5 5"/></svg>
+          返回 <kbd>esc</kbd>
+        </button>
+        <span class="d-src">Lettura · 偏好</span>
+        <span class="spring"></span>
+        <span style="font-size:11px;color:var(--ter);">更改即时生效并写入本地配置</span>
+      </div>
+      <div class="set-body" id="setBody">
+        <div class="set-inner">
+
+          <div class="set-h">外观与阅读 APPEARANCE</div>
+          <div class="srow">
+            <div><div class="lb">主题模式</div><div class="hp">深色为命名候「夜读本」，非简单反色</div></div>
+            <div class="ctl">
+              <div class="seg" id="segTheme">
+                <button>浅色</button><button class="on">跟随系统</button><button>深色</button>
+              </div>
+            </div>
+          </div>
+          <div class="srow">
+            <div><div class="lb">强调色</div><div class="hp">焦点线、圆点、播放与选中共用一色</div></div>
+            <div class="ctl">
+              <div class="swatches" id="swatches">
+                <button class="swatch on" data-c="#5E6AD2" style="background:#5E6AD2" title="靛蓝"></button>
+                <button class="swatch" data-c="#3E8E6D" style="background:#3E8E6D" title="苔绿"></button>
+                <button class="swatch" data-c="#B06A3B" style="background:#B06A3B" title="赭石"></button>
+                <button class="swatch" data-c="#C4564A" style="background:#C4564A" title="砖红"></button>
+                <button class="swatch" data-c="#8A6BB8" style="background:#8A6BB8" title="藤紫"></button>
+              </div>
+            </div>
+          </div>
+          <div class="srow">
+            <div><div class="lb">正文字号</div><div class="hp">文章阅读的宋体字号</div></div>
+            <div class="ctl">
+              <div class="sld">
+                <span class="track" id="sldSize"><span class="fill" style="width:40%"></span><span class="knob" style="left:40%"></span></span>
+                <span class="chip" id="sizeVal">15.5px</span>
+              </div>
+            </div>
+          </div>
+          <div class="srow">
+            <div><div class="lb">正文行高</div><div class="hp">行间距倍数</div></div>
+            <div class="ctl">
+              <div class="sld">
+                <span class="track" id="sldLH"><span class="fill" style="width:50%"></span><span class="knob" style="left:50%"></span></span>
+                <span class="chip" id="lhVal">2.0</span>
+              </div>
+            </div>
+          </div>
+          <div class="srow">
+            <div><div class="lb">列表密度</div><div class="hp">未读列表行的紧凑程度</div></div>
+            <div class="ctl">
+              <div class="seg" id="segDensity">
+                <button class="on">舒适</button><button>紧凑</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 校准台 -->
+          <div class="prev">
+            <div class="cap"><span>阅读预览 PREVIEW</span><span class="live" id="prevLive">实时反映上方设置</span></div>
+            <div class="prow" id="prevRow1">
+              <span class="pd"></span>
+              <span class="badge b-art">文</span>
+              <span class="pt2">为什么我把全部阅读搬回了 RSS</span>
+              <span class="ps">overreacted.io</span>
+              <span class="pdd">08:52</span>
+            </div>
+            <div class="prow" id="prevRow2">
+              <span class="pd" style="background:#CFD1D3"></span>
+              <span class="badge b-pod">播</span>
+              <span class="pt2" style="color:var(--ter);font-weight:400;">EP.87 与 guevaria 聊本地优先软件</span>
+              <span class="ps">内核恐慌</span>
+              <span class="pdd">72:00</span>
+            </div>
+            <p class="serif" id="prevSerif" style="font-size:15.5px;line-height:2;">五年里我换过四个稍后读应用、三个聚合器、两套笔记系统。每一件都 promising 地开始，都以同一个症状结束：收藏的东西越来越多，读完的越来越少。问题不在工具，在形态——未读不是债务，只是今天的天气。</p>
+          </div>
+
+          <div class="set-h">同步与来源 SYNC</div>
+          <div class="srow">
+            <div><div class="lb">同步频率</div><div class="hp">后台调度器按此间隔拉取全部来源</div></div>
+            <div class="ctl">
+              <div class="sel" id="selFreq">
+                <button class="sel-btn"><span class="cv">每 6 小时</span>
+                  <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="#6A6C6E" stroke-width="1.8" stroke-linecap="round"><path d="m3.5 6 4.5 4.5L12.5 6"/></svg>
+                </button>
+                <div class="menu">
+                  <button class="mi">手动<span class="ck">✓</span></button>
+                  <button class="mi">每 1 小时<span class="ck">✓</span></button>
+                  <button class="mi on">每 6 小时<span class="ck">✓</span></button>
+                  <button class="mi">每 12 小时<span class="ck">✓</span></button>
+                  <button class="mi">每 24 小时<span class="ck">✓</span></button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="srow">
+            <div><div class="lb">并发线程</div><div class="hp">同时拉取的来源数上限</div></div>
+            <div class="ctl">
+              <div class="sld">
+                <span class="track" id="sldThreads"><span class="fill" style="width:50%"></span><span class="knob" style="left:50%"></span></span>
+                <span class="chip" id="thVal">3 / 5</span>
+              </div>
+            </div>
+          </div>
+          <div class="srow">
+            <div><div class="lb">请求超时</div><div class="hp">单个来源的最长等待</div></div>
+            <div class="ctl">
+              <div class="sel">
+                <button class="sel-btn"><span class="cv">30 秒</span>
+                  <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="#6A6C6E" stroke-width="1.8" stroke-linecap="round"><path d="m3.5 6 4.5 4.5L12.5 6"/></svg>
+                </button>
+                <div class="menu">
+                  <button class="mi">15 秒<span class="ck">✓</span></button>
+                  <button class="mi on">30 秒<span class="ck">✓</span></button>
+                  <button class="mi">60 秒<span class="ck">✓</span></button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="srow">
+            <div><div class="lb">来源健康</div><div class="hp" id="healthHelp">34 个来源 · 33 健康 · 1 失败</div></div>
+            <div class="ctl">
+              <span class="hl-fail">arcadia.dev · 同步失败</span>
+              <button class="retry">重试</button>
+            </div>
+          </div>
+          <div class="srow">
+            <div><div class="lb">订阅管理</div><div class="hp">添加、分组、移动与退订来源</div></div>
+            <div class="ctl">
+              <button class="btn-gh" id="goSubs">管理订阅
+                <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="m6 3 5 5-5 5"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="set-h">行为与数据 SYSTEM</div>
+          <div class="srow">
+            <div><div class="lb">开机启动</div><div class="hp">随系统启动，不显示窗口</div></div>
+            <div class="ctl"><button class="sw" id="swLaunch" aria-label="开机启动"></button></div>
+          </div>
+          <div class="srow">
+            <div><div class="lb">后台同步</div><div class="hp">关闭窗口后经系统托盘继续同步</div></div>
+            <div class="ctl"><button class="sw on" id="swBg" aria-label="后台同步"></button></div>
+          </div>
+          <div class="srow">
+            <div><div class="lb">通知</div><div class="hp">仅高信号：新播客单集与来源恢复</div></div>
+            <div class="ctl">
+              <div class="seg" id="segNotify">
+                <button class="on">关闭</button><button>仅高信号</button>
+              </div>
+            </div>
+          </div>
+          <div class="srow">
+            <div><div class="lb">语言</div><div class="hp">界面语言，即时切换</div></div>
+            <div class="ctl">
+              <div class="sel">
+                <button class="sel-btn"><span class="cv">中文</span>
+                  <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="#6A6C6E" stroke-width="1.8" stroke-linecap="round"><path d="m3.5 6 4.5 4.5L12.5 6"/></svg>
+                </button>
+                <div class="menu">
+                  <button class="mi on">中文<span class="ck">✓</span></button>
+                  <button class="mi">English<span class="ck">✓</span></button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="srow">
+            <div><div class="lb">缓存保留期</div><div class="hp">过期后清除已缓存的文章正文与图标</div></div>
+            <div class="ctl">
+              <div class="sel">
+                <button class="sel-btn"><span class="cv">30 天</span>
+                  <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="#6A6C6E" stroke-width="1.8" stroke-linecap="round"><path d="m3.5 6 4.5 4.5L12.5 6"/></svg>
+                </button>
+                <div class="menu">
+                  <button class="mi">7 天<span class="ck">✓</span></button>
+                  <button class="mi on">30 天<span class="ck">✓</span></button>
+                  <button class="mi">90 天<span class="ck">✓</span></button>
+                </div>
+              </div>
+              <button class="btn-gh">清除缓存</button>
+            </div>
+          </div>
+          <div class="srow">
+            <div><div class="lb">数据保留期</div><div class="hp">已读文章与元数据的保留时长</div></div>
+            <div class="ctl">
+              <div class="sel">
+                <button class="sel-btn"><span class="cv">90 天</span>
+                  <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="#6A6C6E" stroke-width="1.8" stroke-linecap="round"><path d="m3.5 6 4.5 4.5L12.5 6"/></svg>
+                </button>
+                <div class="menu">
+                  <button class="mi">30 天<span class="ck">✓</span></button>
+                  <button class="mi on">90 天<span class="ck">✓</span></button>
+                  <button class="mi">永久保留<span class="ck">✓</span></button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="srow" style="border-bottom:0;">
+            <div><div class="lb">OPML 备份</div><div class="hp">订阅列表完全进出，数据属于用户</div></div>
+            <div class="ctl">
+              <button class="btn-gh">
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M8 11V2.5M5 5.5 8 2.5l3 3M3 11v2.5h10V11"/></svg>
+                导出
+              </button>
+              <button class="btn-gh">
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M8 2.5V11M5 8l3 3 3-3M3 11v2.5h10V11"/></svg>
+                导入
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- 订阅管理视图 -->
+    <section class="set" id="viewSubs">
+      <div class="d-top">
+        <button class="back" id="backFromSubs">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M10 3 5 8l5 5"/></svg>
+          设置 <kbd>esc</kbd>
+        </button>
+        <span class="d-src">订阅管理</span>
+        <span class="spring"></span>
+        <span style="font-size:11px;color:var(--ter);font-variant-numeric:tabular-nums;">34 个来源 · 4 个分组</span>
+      </div>
+      <div class="set-body">
+        <div class="set-inner">
+          <div class="subs-bar">
+            <span class="subs-search">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#9EA0A2" stroke-width="1.7"><circle cx="7" cy="7" r="4.8"/><path d="m11.2 11.2 3 3"/></svg>
+              <input placeholder="搜索来源或域名…">
+            </span>
+            <button class="btn-gh">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M8 3v10M3 8h10"/></svg>
+              新建分组
+            </button>
+            <button class="btn-ink">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round"><path d="M8 3v10M3 8h10"/></svg>
+              添加订阅
+            </button>
+          </div>
+
+          <div class="folder" id="folderTech">
+            <div class="f-h" data-folder>
+              <span class="chev"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m3.5 6 4.5 4.5L12.5 6"/></svg></span>
+              <span class="f-t">技术</span><span class="f-m">· 9 个来源 · 82 未读</span>
+              <span class="f-a">
+                <button class="qa2" title="同步此组"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9M13.5 2.5V5h-2.5"/></svg></button>
+                <button class="qa2" title="全部标为已读"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="m3 8.5 3.2 3L13 5"/><path d="m3 3.8 3.2 3M8 4l1 1" opacity=".45"/></svg></button>
+                <button class="qa2" title="编辑分组"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M11.5 2.5l2 2L6 12l-2.8.8L4 10z"/></svg></button>
+                <button class="qa2 danger" title="删除分组"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5 5.2 13h5.6l.7-8.5"/></svg></button>
+              </span>
+            </div>
+            <div class="feeds">
+              <div class="feed" data-feed>
+                <span class="fi">R</span>
+                <span class="ft">Rust 官方博客 <span class="uc">12</span></span>
+                <span class="fh">blog.rust-lang.org</span>
+                <span class="fd">09:41</span>
+                <span class="fa">
+                  <button class="qa3" title="同步"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9M13.5 2.5V5h-2.5"/></svg></button>
+                  <button class="qa3 danger" title="退订"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5 5.2 13h5.6l.7-8.5"/></svg></button>
+                </span>
+              </div>
+              <div class="feed" data-feed>
+                <span class="fi pod">播</span>
+                <span class="ft">内核恐慌 <span class="uc">3</span></span>
+                <span class="fh">kernelpanic.fm</span>
+                <span class="fd">昨日</span>
+                <span class="fa">
+                  <button class="qa3" title="同步"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9M13.5 2.5V5h-2.5"/></svg></button>
+                  <button class="qa3 danger" title="退订"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5 5.2 13h5.6l.7-8.5"/></svg></button>
+                </span>
+              </div>
+              <div class="feed" data-feed>
+                <span class="fi">文</span>
+                <span class="ft">Overreacted</span>
+                <span class="fh">overreacted.io</span>
+                <span class="fd">昨日</span>
+                <span class="fa">
+                  <button class="qa3" title="同步"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9M13.5 2.5V5h-2.5"/></svg></button>
+                  <button class="qa3 danger" title="退订"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5 5.2 13h5.6l.7-8.5"/></svg></button>
+                </span>
+              </div>
+              <div class="feed" data-feed>
+                <span class="fi">文</span>
+                <span class="ft" style="color:var(--ter);font-weight:400;">Arcadia 随笔</span>
+                <span class="fh fail">arcadia.dev · 同步失败</span>
+                <span class="fd">周一</span>
+                <span class="fa">
+                  <button class="qa3" title="重试"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9M13.5 2.5V5h-2.5"/></svg></button>
+                  <button class="qa3 danger" title="退订"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5 5.2 13h5.6l.7-8.5"/></svg></button>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="folder" id="folderBil">
+            <div class="f-h" data-folder>
+              <span class="chev"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m3.5 6 4.5 4.5L12.5 6"/></svg></span>
+              <span class="f-t">平台源</span><span class="f-m">· 15 个来源 · 131 未读</span>
+              <span class="f-a">
+                <button class="qa2" title="同步此组"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9M13.5 2.5V5h-2.5"/></svg></button>
+                <button class="qa2" title="全部标为已读"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="m3 8.5 3.2 3L13 5"/><path d="m3 3.8 3.2 3M8 4l1 1" opacity=".45"/></svg></button>
+                <button class="qa2" title="编辑分组"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M11.5 2.5l2 2L6 12l-2.8.8L4 10z"/></svg></button>
+                <button class="qa2 danger" title="删除分组"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5 5.2 13h5.6l.7-8.5"/></svg></button>
+              </span>
+            </div>
+            <div class="feeds">
+              <div class="feed" data-feed>
+                <span class="fi bil">B</span>
+                <span class="ft">科技 UP 主 <span class="uc">15</span></span>
+                <span class="fh">space.bilibili.com · 经 RSSHub</span>
+                <span class="fd">昨日</span>
+                <span class="fa">
+                  <button class="qa3" title="同步"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9M13.5 2.5V5h-2.5"/></svg></button>
+                  <button class="qa3 danger" title="退订"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5 5.2 13h5.6l.7-8.5"/></svg></button>
+                </span>
+              </div>
+              <div class="feed" data-feed>
+                <span class="fi">抖</span>
+                <span class="ft" style="color:var(--ter);font-weight:400;">抖音 · 前沿搬运</span>
+                <span class="fh">douyin.com · 经 RSSHub</span>
+                <span class="fd">昨日</span>
+                <span class="fa">
+                  <button class="qa3" title="同步"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9M13.5 2.5V5h-2.5"/></svg></button>
+                  <button class="qa3 danger" title="退订"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5 5.2 13h5.6l.7-8.5"/></svg></button>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="folder closed" id="folderNews">
+            <div class="f-h" data-folder>
+              <span class="chev"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m3.5 6 4.5 4.5L12.5 6"/></svg></span>
+              <span class="f-t">Newsletter</span><span class="f-m">· 6 个来源 · 34 未读</span>
+              <span class="f-a">
+                <button class="qa2" title="同步此组"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9M13.5 2.5V5h-2.5"/></svg></button>
+              </span>
+            </div>
+            <div class="feeds" style="display:none;"></div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  </section>
+
+  <!-- 右键菜单（订阅行）-->
+  <div class="ctx" id="ctx">
+    <button class="mi"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 3h10L8.5 8.5v3.5L6 13V8.5z" transform="translate(0 .5) scale(.9) translate(1 0)"/></svg>查看此源文章</button>
+    <button class="mi"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9M13.5 2.5V5h-2.5"/></svg>立即同步</button>
+    <button class="mi"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="m3 8.5 3.2 3L13 5"/><path d="m3 3.8 3.2 3M8 4l1 1" opacity=".45"/></svg>全部标为已读</button>
+    <button class="mi"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="2.5" y="2.5" width="11" height="11" rx="2"/><path d="M5.5 2.5v11M2.5 5.5h11"/></svg>移动到分组…</button>
+    <hr>
+    <button class="mi"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6.5 3H3v10h10V9.5M9 3h4v4M12.8 3.2 7.5 8.5"/></svg>打开主页</button>
+    <button class="mi"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="5.5" y="5.5" width="8" height="8" rx="1.5"/><path d="M10.5 5.5v-2a1.5 1.5 0 0 0-1.5-1.5H4A1.5 1.5 0 0 0 2.5 3.5v5A1.5 1.5 0 0 0 4 10h1.5"/></svg>复制 Feed URL</button>
+    <hr>
+    <button class="mi danger"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5 5.2 13h5.6l.7-8.5"/></svg>退订…</button>
+  </div>
+
+  <!-- 命令面板 -->
+  <div class="veil" id="veil"></div>
+  <section class="palette" id="palette">
+    <div class="p-in">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#9EA0A2" stroke-width="1.7"><circle cx="7" cy="7" r="4.8"/><path d="m11.2 11.2 3 3"/></svg>
+      <input id="pInput" placeholder="搜索文章、来源，或输入命令…" autocomplete="off">
+      <kbd>esc</kbd>
+    </div>
+    <div class="res" id="pRes"></div>
+    <div class="p-foot"><span>↑↓ 选择</span><span>⏎ 打开</span><span class="spring"></span><span id="pCount"></span></div>
+  </section>
+
+  <span class="hintbar" id="hintbar"><b>j/k</b> 移动 · <b>⏎</b> 打开 · <b>m</b> 已读 · <b>f</b> 星标 · <b>space</b> 播放 · <b>⌘K</b> 命令</span>
+  <span class="synthetic">演示内容为合成数据</span>
+
+  <!-- 播放器 -->
+  <footer class="player">
+    <button class="pc" id="playBtn"><svg width="11" height="11" viewBox="0 0 12 12" fill="#fff"><rect x="1.5" y="1" width="3" height="10" rx="1"/><rect x="7.5" y="1" width="3" height="10" rx="1"/></svg></button>
+    <button class="pskip"><svg width="13" height="13" viewBox="0 0 16 16" fill="#6A6C6E"><path d="M2.5 3.5v9l7-4.5zM11 3.5h1.8v9H11z"/></svg></button>
+    <button class="pskip"><svg width="13" height="13" viewBox="0 0 16 16" fill="#6A6C6E"><path d="M13.5 3.5v9l-7-4.5zM3.2 3.5H5v9H3.2z"/></svg></button>
+    <span class="pmeta">
+      <div class="ep">内核恐慌 · EP.87</div>
+      <div class="nm">与 guevaria 聊本地优先软件</div>
+    </span>
+    <span class="ptrack">
+      <span class="pt">18:30</span>
+      <span class="pbar"><b></b><i></i></span>
+      <span class="pt">72:00</span>
+    </span>
+    <span class="chip">1.5×</span>
+    <button class="expand">
+      <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 6l5-5 5 5M3 10l5 5 5-5"/></svg>
+    </button>
+  </footer>
+</div>
+
+<script>
+const ROWS=[
+ {k:"art",t:"Rust 1.90 发布：编译器并行化进入第二阶段",s:"rust-lang.org",d:"09:41"},
+ {k:"art",t:"为什么我把全部阅读搬回了 RSS",s:"overreacted.io",d:"08:52"},
+ {k:"pod",t:"EP.87 与 guevaria 聊本地优先软件",s:"内核恐慌",d:"72:00"},
+ {k:"art",t:"SQLite 在 2026：一个文件如何扛住一切",s:"fly.io",d:"昨日 21:33"},
+ {k:"art",t:"从 NetNewsWire 学减法",s:"随笔",d:"周一"},
+];
+const KLABEL={art:["文","b-art"],pod:["播","b-pod"]};
+const vl=document.getElementById("viewList");
+function renderList(){
+  vl.innerHTML=ROWS.map((r,i)=>`
+   <div class="row" data-i="${i}">
+     <span class="st"><span class="dot"></span></span>
+     <span class="badge ${KLABEL[r.k][1]}">${KLABEL[r.k][0]}</span>
+     <span class="t">${r.t}</span>
+     <span class="s">${r.s}</span>
+     <span class="d">${r.d}</span>
+     <span class="acts"></span>
+   </div>`).join("");
+}
+renderList();
+
+/* ── 视图路由：list ⇄ settings ⇄ subs ── */
+let view="settings";
+const V={list:"viewList",settings:"viewSettings",subs:"viewSubs"};
+const HINTS={
+  list:'<b>j/k</b> 移动 · <b>⏎</b> 打开 · <b>m</b> 已读 · <b>f</b> 星标 · <b>space</b> 播放 · <b>⌘K</b> 命令',
+  settings:'<b>esc</b> 返回未读 · 更改即时生效 · <b>⌘K</b> 命令',
+  subs:'<b>esc</b> 返回设置 · 右键来源行打开菜单 · <b>⌘K</b> 命令',
+};
+const SEC={list:"未读",settings:"设置",subs:"设置 · 订阅"};
+function go(v){
+  view=v;
+  for(const k in V)document.getElementById(V[k]).style.display=k===v?(k==="list"?"block":"flex"):"none";
+  document.getElementById("listStrip").style.display=v==="list"?"flex":"none";
+  document.getElementById("hintbar").innerHTML=HINTS[v];
+  document.getElementById("secName").textContent=SEC[v];
+  document.querySelectorAll(".nav a").forEach(a=>a.classList.toggle("on",v==="list"&&a.id==="navUnread"));
+}
+document.getElementById("backFromSettings").addEventListener("click",()=>go("list"));
+document.getElementById("backFromSubs").addEventListener("click",()=>go("settings"));
+document.getElementById("goSubs").addEventListener("click",()=>go("subs"));
+document.getElementById("navUnread").addEventListener("click",()=>go("list"));
+go("settings");
+
+/* ── 控件：分段 ── */
+document.querySelectorAll(".seg").forEach(seg=>{
+  seg.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{
+    seg.querySelectorAll("button").forEach(x=>x.classList.remove("on"));b.classList.add("on");
+    if(seg.id==="segDensity")applyDensity();
+  }));
+});
+function applyDensity(){
+  const compact=document.querySelector("#segDensity button.on").textContent==="紧凑";
+  const h=compact?42:54,pad=compact?14:20;
+  document.querySelectorAll(".prow").forEach(r=>{
+    r.style.height=h+"px";r.style.paddingRight=pad+"px";
+  });
+  document.getElementById("prevLive").textContent="实时反映上方设置";
+}
+
+/* ── 控件：下拉 ── */
+document.querySelectorAll(".sel").forEach(sel=>{
+  const btn=sel.querySelector(".sel-btn"),menu=sel.querySelector(".menu");
+  btn.addEventListener("click",e=>{e.stopPropagation();
+    document.querySelectorAll(".menu.open").forEach(m=>m!==menu&&m.classList.remove("open"));
+    menu.classList.toggle("open");
+  });
+  menu.querySelectorAll(".mi").forEach(mi=>mi.addEventListener("click",()=>{
+    menu.querySelectorAll(".mi").forEach(x=>x.classList.remove("on"));mi.classList.add("on");
+    btn.querySelector(".cv").textContent=mi.textContent.replace("✓","").trim();
+    menu.classList.remove("open");
+  }));
+});
+document.addEventListener("click",()=>document.querySelectorAll(".menu.open,.ctx.open").forEach(m=>m.classList.remove("open")));
+
+/* ── 控件：开关 ── */
+document.querySelectorAll(".sw").forEach(sw=>sw.addEventListener("click",()=>sw.classList.toggle("on")));
+
+/* ── 控件：滑杆 ── */
+function bindSlider(id,onInput){
+  const tr=document.getElementById(id);
+  const set=pct=>{pct=Math.max(0,Math.min(100,pct));
+    tr.querySelector(".fill").style.width=pct+"%";tr.querySelector(".knob").style.left=pct+"%";onInput(pct);};
+  const fromEvent=e=>{const r=tr.getBoundingClientRect();set((e.clientX-r.left)/r.width*100);};
+  let drag=false;
+  tr.addEventListener("pointerdown",e=>{drag=true;fromEvent(e);});
+  window.addEventListener("pointermove",e=>drag&&fromEvent(e));
+  window.addEventListener("pointerup",()=>drag=false);
+  tr.querySelectorAll(".fill,.knob").forEach(el=>el.style.pointerEvents="none");
+}
+let fontSize=15.5,lineHeight=2.0;
+const serif=document.getElementById("prevSerif");
+bindSlider("sldSize",p=>{fontSize=(13+p/100*6);serif.style.fontSize=fontSize+"px";
+  document.getElementById("sizeVal").textContent=fontSize.toFixed(1)+"px";});
+bindSlider("sldLH",p=>{lineHeight=(1.6+p/100*.8);serif.style.lineHeight=lineHeight.toFixed(2);
+  document.getElementById("lhVal").textContent=lineHeight.toFixed(1);});
+bindSlider("sldThreads",p=>{document.getElementById("thVal").textContent=(1+Math.round(p/100*4))+" / 5";});
+
+/* ── 强调色样本：整台仪器换色 ── */
+document.querySelectorAll("#swatches .swatch").forEach(sw=>sw.addEventListener("click",()=>{
+  document.querySelectorAll("#swatches .swatch").forEach(x=>x.classList.remove("on"));sw.classList.add("on");
+  const c=sw.dataset.c;
+  const r=parseInt(c.slice(1,3),16),g=parseInt(c.slice(3,5),16),b=parseInt(c.slice(5,7),16);
+  const root=document.documentElement.style;
+  root.setProperty("--accent",c);
+  root.setProperty("--accent-soft",`rgba(${r},${g},${b},.1)`);
+  root.setProperty("--accent-line",`rgba(${r},${g},${b},.35)`);
+}));
+
+/* ── 订阅分组折叠 ── */
+document.querySelectorAll(".f-h").forEach(h=>h.addEventListener("click",()=>{
+  const f=h.closest(".folder");f.classList.toggle("closed");
+  f.querySelector(".feeds").style.display=f.classList.contains("closed")?"none":"block";
+}));
+
+/* ── 右键菜单 ── */
+const ctx=document.getElementById("ctx");
+document.querySelectorAll("[data-feed]").forEach(f=>f.addEventListener("contextmenu",e=>{
+  e.preventDefault();
+  ctx.style.left=e.clientX/0.8194+"px";ctx.style.top=e.clientY/0.8194+"px";
+  ctx.classList.add("open");
+}));
+
+/* ── 命令面板 ── */
+const veil=document.getElementById("veil"),pal=document.getElementById("palette"),pin=document.getElementById("pInput"),pres=document.getElementById("pRes");
+const CMDS=[
+ {ic:"⚙",cls:"b-art",l:"打开设置",h:"命令",act:()=>go("settings")},
+ {ic:"＋",cls:"b-art",l:"添加订阅（含 B站 / 抖音 / Newsletter 平台源）",h:"命令",act:()=>{}},
+ {ic:"↻",cls:"b-art",l:"刷新全部来源",h:"命令 · R",act:()=>{}},
+ {ic:"文",cls:"b-art",l:"为什么我把全部阅读搬回了 RSS",h:"overreacted.io · 08:52",act:()=>go("list")},
+ {ic:"播",cls:"b-pod",l:"EP.87 与 guevaria 聊本地优先软件",h:"内核恐慌 · 72:00",act:()=>go("list")},
+];
+let pOpen=false;
+function renderPal(q=""){
+  const ql=q.toLowerCase();
+  const hits=CMDS.filter(c=>c.l.toLowerCase().includes(ql));
+  pres.innerHTML=hits.map((c,idx)=>`
+   <div class="r ${idx===0?"sel":""}" data-i="${CMDS.indexOf(c)}">
+     <span class="ic ${c.cls}">${c.ic}</span>
+     <span class="lbl">${c.l}</span><span class="hint">${c.h}</span><kbd>⏎</kbd>
+   </div>`).join("")||`<div style="padding:18px 16px;font-size:13px;color:var(--ter);">没有匹配</div>`;
+  document.getElementById("pCount").textContent=`共 ${hits.length} 项`;
+  pres.querySelectorAll(".r").forEach(el=>el.addEventListener("click",()=>{closePal();CMDS[+el.dataset.i].act();}));
+}
+function openPal(){pOpen=true;veil.style.display="block";pal.style.display="block";pin.value="";renderPal();pin.focus();}
+function closePal(){pOpen=false;veil.style.display="none";pal.style.display="none";}
+document.getElementById("openPalette").addEventListener("click",openPal);
+veil.addEventListener("click",closePal);
+pin.addEventListener("input",e=>renderPal(e.target.value));
+
+document.addEventListener("keydown",e=>{
+  if(pOpen){
+    if(e.key==="Escape"){closePal();e.preventDefault();}
+    if(e.key==="Enter"){const first=pres.querySelector(".r");if(first){closePal();CMDS[+first.dataset.i].act();}e.preventDefault();}
+    return;
+  }
+  if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==="k"){openPal();e.preventDefault();return;}
+  if(e.key==="Escape"){
+    if(view==="subs")go("settings");
+    else if(view==="settings")go("list");
+    e.preventDefault();
+  }
+  if(e.key===" "){togglePlay();e.preventDefault();}
+});
+
+function togglePlay(){
+  const pb=document.getElementById("playBtn");
+  const playing=pb.dataset.p!=="0";
+  pb.dataset.p=playing?"0":"1";
+  pb.innerHTML=playing
+   ?'<svg width="11" height="11" viewBox="0 0 12 12" fill="#fff"><path d="M2.5 1.2v9.6l8-4.8z"/></svg>'
+   :'<svg width="11" height="11" viewBox="0 0 12 12" fill="#fff"><rect x="1.5" y="1" width="3" height="10" rx="1"/><rect x="7.5" y="1" width="3" height="10" rx="1"/></svg>';
+}
+document.getElementById("playBtn").addEventListener("click",togglePlay);
+
+/* ── URL 状态（截图/文档直链用）：?view=list|settings|subs&focus=sync|system|prev）── */
+(()=>{
+  const q=new URLSearchParams(location.search);
+  if(q.get("view"))go(q.get("view"));
+  const anchors={sync:"selFreq",system:"swLaunch",prev:"prevRow1"};
+  const a=q.get("focus");
+  if(a&&anchors[a]){const el=document.getElementById(anchors[a]);el&&el.scrollIntoView({block:"center"});}
+})();
+</script>
+</body>
+</html>
