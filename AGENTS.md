@@ -25,7 +25,7 @@ config over prose when something conflicts.
 ## Commands
 
 - Install: `pnpm install` (`.npmrc` sets `auto-install-peers=true`).
-- Frontend dev only: `pnpm dev` (Vite on fixed port 3000).
+- Frontend dev only: `pnpm dev` (Vite on fixed port 9527).
 - Full desktop dev: `pnpm tauri dev` (runs `pnpm dev` via
   `src-tauri/tauri.conf.json`).
 - Frontend build/typecheck: `pnpm build` (`tsc && vite build`); Vite outputs to
@@ -39,7 +39,7 @@ config over prose when something conflicts.
 
 ## Runtime and storage gotchas
 
-- Vite uses `server.strictPort = true` on port 3000. The Actix API server uses
+- Vite uses `server.strictPort = true` on port 9527. The Actix API server uses
   the configured app port, then falls back to 8000-9000 if occupied.
 - Outside Tauri, `src/index.tsx` defaults `localStorage.port` to `3456`; inside
   Tauri it calls `invoke("get_server_port")` before rendering.
