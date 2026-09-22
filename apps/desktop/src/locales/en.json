@@ -562,6 +562,20 @@
       "settings": "Open settings (same as ⌘K “Open settings”)",
       "foot_close": "esc to close",
       "foot_mouse": "Keyboard first, mouse always works"
+    },
+    "empty": {
+      "first_title": "Subscribe to what you read",
+      "first_lede": "RSS, Bilibili, Zhihu, Weibo, newsletters — paste an address and Lettura handles the rest. Data stays local; read and go.",
+      "clear_title": "Today's queue is clear",
+      "clear_lede": "Read and leave. New unread will be here tomorrow, same time.",
+      "import_opml": "Import OPML",
+      "pack_title": "STARTER PACK · {{name}}",
+      "pack_count": "{{selected}} / {{total}} selected",
+      "select_all": "Select all",
+      "unselect_all": "Clear",
+      "subscribe_selected": "Subscribe",
+      "subscribe_n": "Subscribe · {{count}} feeds",
+      "subscribed": "Subscribed to {{count}} feeds"
     }
   },
   "Appearance & Reading": "Appearance & Reading",

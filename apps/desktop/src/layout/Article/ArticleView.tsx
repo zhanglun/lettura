@@ -14,6 +14,7 @@ import { request } from "@/helpers/request";
 import { useArticle } from "@/hooks/useArticle";
 import { retainArticleAfterRead } from "@/helpers/articleHelpers";
 import { getArticleKind } from "@/helpers/articleKind";
+import { EmptyFace } from "./EmptyFace";
 import * as dataAgent from "@/helpers/dataAgent";
 import { ArticleReadStatus, ArticleStarStatus } from "@/typing";
 import type { ArticleResItem } from "@/db";
@@ -284,6 +285,20 @@ export function ArticleView() {
     { key: "podcast", label: t("fusion.filter.podcast") },
     { key: "platform", label: t("fusion.filter.platform") },
   ];
+
+  const isFirstRun = (store.subscribes?.length ?? 0) === 0;
+  const isClearQuiet =
+    !isFirstRun &&
+    isAll &&
+    store.currentFilter.id === 1 &&
+    kindFilter === "all" &&
+    isEmpty;
+
+  if (isFirstRun || isClearQuiet) {
+    return (
+      <EmptyFace mode={isFirstRun ? "first" : "clear"} />
+    );
+  }
 
   return (
     <div className="flex h-full w-full flex-col overflow-hidden">

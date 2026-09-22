@@ -78,7 +78,7 @@ vi.mock("@/stores", () => ({
       updateArticleStatus: vi.fn(),
       setHasMorePrev: vi.fn(),
       setHasMoreNext: vi.fn(),
-      subscribes: [],
+      subscribes: [{ uuid: "feed-1", item_type: "channel", children: [] }],
       userConfig: {},
       globalSyncStatus: false,
       syncAllArticles: mocks.syncAllArticles,

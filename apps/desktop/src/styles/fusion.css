@@ -870,3 +870,267 @@
   color: var(--fusion-ink);
   border-color: var(--fusion-sub);
 }
+
+/* ── 空状态即引导（empty.html 契约） ── */
+.fusion-face {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 96px;
+}
+
+.fusion-mark {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: var(--fusion-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 14px 30px -10px rgba(29, 30, 32, 0.35);
+  flex: none;
+}
+
+.fusion-mark i {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.fusion-mark.quiet {
+  background: var(--fusion-accent-soft);
+  box-shadow: 0 0 0 6px rgba(94, 109, 210, 0.06);
+}
+
+.fusion-mark.quiet i {
+  background: var(--fusion-accent);
+}
+
+.fusion-face h1 {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 0.005em;
+  margin-top: 26px;
+  text-align: center;
+  color: var(--fusion-ink);
+}
+
+.fusion-face .lede {
+  font-size: 14px;
+  color: var(--fusion-sub);
+  margin-top: 10px;
+  text-align: center;
+  line-height: 1.7;
+  max-width: 460px;
+}
+
+.fusion-cta {
+  display: flex;
+  gap: 10px;
+  margin-top: 26px;
+}
+
+.fusion-btn-ink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--fusion-accent);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 6px 14px -3px rgba(94, 109, 210, 0.5);
+  transition: transform 0.15s ease;
+  cursor: pointer;
+}
+
+.fusion-btn-ink:hover {
+  transform: scale(1.04);
+}
+
+.fusion-quietline {
+  font-size: 12.5px;
+  color: var(--fusion-ter);
+  margin-top: 22px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.fusion-quietline a {
+  color: var(--fusion-sub);
+  cursor: pointer;
+  border-bottom: 1px solid var(--fusion-hair2);
+  padding-bottom: 1px;
+}
+
+.fusion-quietline a:hover {
+  color: var(--fusion-ink);
+  border-color: var(--fusion-ink);
+}
+
+/* starter pack 卡 */
+.fusion-pack {
+  margin-top: 38px;
+  width: 100%;
+  max-width: 520px;
+  border: 1px solid var(--fusion-hair);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.5);
+  padding: 18px 22px 20px;
+}
+
+.fusion-pack .pk-h {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.fusion-pack .pk-t {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--fusion-ter);
+}
+
+.fusion-pack .pk-count {
+  font-size: 11px;
+  color: var(--fusion-ter);
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+}
+
+.fusion-pack .pk-d {
+  font-size: 11.5px;
+  color: var(--fusion-sub);
+  margin-top: 6px;
+  line-height: 1.6;
+}
+
+.fusion-pack .pk-list {
+  margin-top: 12px;
+}
+
+.fusion-pack .pk-row {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  height: 36px;
+  border: 0;
+  background: none;
+  border-bottom: 1px solid var(--fusion-hair);
+  font-size: 12.5px;
+  width: 100%;
+  cursor: pointer;
+  text-align: left;
+  padding: 0;
+}
+
+.fusion-pack .pk-row:last-child {
+  border-bottom: 0;
+}
+
+.fusion-pack .cb {
+  width: 16px;
+  height: 16px;
+  border-radius: 5px;
+  border: 1px solid var(--fusion-hair2);
+  background: rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  color: #fff;
+}
+
+.fusion-pack .pk-row.on .cb {
+  background: var(--fusion-accent);
+  border-color: var(--fusion-accent);
+}
+
+.fusion-pack .cb svg {
+  opacity: 0;
+}
+
+.fusion-pack .pk-row.on .cb svg {
+  opacity: 1;
+}
+
+.fusion-pack .pk-n {
+  flex: 1;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--fusion-ink);
+}
+
+.fusion-pack .pk-row:not(.on) .pk-n {
+  color: var(--fusion-sub);
+  font-weight: 400;
+}
+
+.fusion-pack .pk-h2 {
+  font-size: 11px;
+  color: var(--fusion-ter);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fusion-pack .pk-foot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.fusion-pack .pk-all {
+  font-size: 12px;
+  color: var(--fusion-accent);
+  padding: 4px 10px;
+  border-radius: 7px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.fusion-pack .pk-all:hover {
+  background: var(--fusion-accent-soft);
+}
+
+.fusion-pack .pk-sub {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--fusion-accent);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: 0 4px 10px -3px rgba(94, 109, 210, 0.5);
+  opacity: 0.35;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+  cursor: pointer;
+}
+
+.fusion-pack .pk-sub.ready {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.fusion-pack .pk-sub.ready:hover {
+  transform: scale(1.04);
+}

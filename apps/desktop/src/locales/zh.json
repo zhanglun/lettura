@@ -579,6 +579,20 @@
       "settings": "打开设置（同 ⌘K「打开设置」）",
       "foot_close": "esc 关闭",
       "foot_mouse": "键盘优先，鼠标永远可用"
+    },
+    "empty": {
+      "first_title": "订阅你想读的",
+      "first_lede": "RSS、B站、知乎、微博、Newsletter——粘贴一个地址，其余交给 Lettura。数据在本机，读完就走。",
+      "clear_title": "今天的队列清空了",
+      "clear_lede": "读完就走。明天同一时间，新的未读会在这里等你。",
+      "import_opml": "导入 OPML",
+      "pack_title": "STARTER PACK · {{name}}",
+      "pack_count": "已选 {{selected}} / {{total}}",
+      "select_all": "全选",
+      "unselect_all": "取消全选",
+      "subscribe_selected": "订阅所选",
+      "subscribe_n": "订阅所选 · {{count}} 源",
+      "subscribed": "已订阅 {{count}} 个来源"
     }
   },
   "Appearance & Reading": "外观与阅读",
