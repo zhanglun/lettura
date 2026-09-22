@@ -1636,3 +1636,146 @@
   color: #33363b;
   margin-top: 10px;
 }
+
+/* ── 夜读本（dark.html 契约）：暖黑画布 + 深色玻璃，非反色 ── */
+body.dark-theme {
+  --fusion-ground: #17171a;
+  --fusion-ink: #e9e9e6;
+  --fusion-sub: #a2a4a8;
+  --fusion-ter: #6b6d73;
+  --fusion-glass: rgba(22, 22, 25, 0.72);
+  --fusion-hair: rgba(233, 233, 230, 0.08);
+  --fusion-hair2: rgba(233, 233, 230, 0.13);
+  --fusion-accent: #848ce8;
+  --fusion-accent-soft: rgba(132, 140, 232, 0.14);
+  --fusion-pink: #ee8bab;
+  --fusion-pink-soft: rgba(238, 139, 171, 0.12);
+  --fusion-amber: #edb433;
+  --fusion-serif-ink: #d3d4d8;
+}
+
+body.dark-theme .fusion-root::before {
+  background:
+    radial-gradient(620px 420px at 8% -10%, rgba(232, 80, 96, 0.03), transparent 70%),
+    radial-gradient(700px 460px at 92% -14%, rgba(94, 109, 210, 0.045), transparent 70%);
+}
+
+body.dark-theme .fusion-article-body {
+  color: var(--fusion-serif-ink);
+}
+
+body.dark-theme .fusion-logo i {
+  background: var(--fusion-ground);
+}
+
+/* 灰阶由墨色投影改浅色投影 */
+body.dark-theme .fusion-nav button:hover,
+body.dark-theme .fusion-tab:hover,
+body.dark-theme .fusion-snav:hover,
+body.dark-theme .fusion-back:hover,
+body.dark-theme .fusion-pskip:hover,
+body.dark-theme .fusion-aseg button:hover,
+body.dark-theme .fusion-aerr button:hover,
+body.dark-theme .fusion-act-btn:hover {
+  background: rgba(233, 233, 230, 0.05);
+}
+
+body.dark-theme .fusion-nav button.on,
+body.dark-theme .fusion-tab.on,
+body.dark-theme .fusion-aseg button.on,
+body.dark-theme .fusion-seg button.on {
+  background: rgba(233, 233, 230, 0.08);
+}
+
+body.dark-theme .fusion-cnt,
+body.dark-theme .fusion-chip,
+body.dark-theme .fusion-article-body code,
+body.dark-theme .fusion-card .gen code {
+  background: rgba(233, 233, 230, 0.07);
+  color: var(--fusion-sub);
+}
+
+body.dark-theme .fusion-row:hover,
+body.dark-theme .fusion-row.is-focused,
+body.dark-theme .fusion-srow:hover {
+  background: rgba(233, 233, 230, 0.035);
+}
+
+body.dark-theme .fusion-snav.on {
+  background: rgba(233, 233, 230, 0.05);
+}
+
+body.dark-theme .fusion-row.is-read .fusion-dot {
+  background: #4e5055;
+}
+
+body.dark-theme .fusion-badge.b-art {
+  background: rgba(233, 233, 230, 0.08);
+}
+
+body.dark-theme .fusion-badge.b-dou {
+  background: rgba(233, 233, 230, 0.1);
+}
+
+/* 浮层：深色面板 */
+body.dark-theme .fusion-veil {
+  background: rgba(0, 0, 0, 0.32);
+}
+
+body.dark-theme .fusion-float {
+  background: rgba(30, 30, 34, 0.92);
+  border-color: rgba(233, 233, 230, 0.12);
+  box-shadow:
+    0 4px 10px rgba(0, 0, 0, 0.25),
+    0 36px 80px -16px rgba(0, 0, 0, 0.65);
+}
+
+body.dark-theme .fusion-float-foot {
+  background: rgba(233, 233, 230, 0.04);
+}
+
+body.dark-theme .fusion-add-in input,
+body.dark-theme .fusion-card .c-t,
+body.dark-theme .fusion-krow .desc,
+body.dark-theme .fusion-help-in .tt {
+  color: var(--fusion-ink);
+}
+
+body.dark-theme .fusion-kbd {
+  background: rgba(233, 233, 230, 0.06);
+}
+
+body.dark-theme .fusion-btn-gh,
+body.dark-theme .fusion-sel,
+body.dark-theme .fusion-seg,
+body.dark-theme .fusion-cmdbtn {
+  background: rgba(233, 233, 230, 0.05);
+  color: var(--fusion-sub);
+}
+
+body.dark-theme .fusion-cmdbtn {
+  background: rgba(233, 233, 230, 0.05);
+}
+
+body.dark-theme .fusion-article-body pre {
+  background: rgba(233, 233, 230, 0.05);
+  border-color: var(--fusion-hair2);
+}
+
+body.dark-theme .fusion-pack,
+body.dark-theme .fusion-prev {
+  background: rgba(233, 233, 230, 0.04);
+}
+
+body.dark-theme .fusion-pack .cb {
+  background: rgba(233, 233, 230, 0.06);
+}
+
+body.dark-theme .fusion-ptrack .pt,
+body.dark-theme .fusion-pbar {
+  background: rgba(233, 233, 230, 0.12);
+}
+
+body.dark-theme .fusion-mark.quiet {
+  box-shadow: 0 0 0 6px rgba(132, 140, 232, 0.08);
+}

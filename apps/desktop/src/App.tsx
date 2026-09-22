@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { emit, listen } from "@tauri-apps/api/event";
 import { useBearStore } from "@/stores";
 import { Theme } from "@radix-ui/themes";
@@ -12,6 +12,7 @@ import { AppLayout } from "./components/layout/AppLayout";
 
 function App() {
   const navigate = useNavigate();
+  const [isDark, setIsDark] = useState(false);
   const store = useBearStore(
     useShallow((state) => ({
       userConfig: state.userConfig,
@@ -72,10 +73,37 @@ function App() {
     if (!hasFetchedConfig.current) {
       hasFetchedConfig.current = true;
       getUserConfigRef.current().then((cfg: UserConfig) => {
-        const { customize_style } = cfg;
+        const { customize_style, color_scheme } = cfg;
 
-        // fusion 壳 0.2.0：light-only，不再应用 dark-theme（CSS 保留未删）
-        document.body.classList.remove("dark-theme");
+        // 夜读本：跟随配置或系统（设置页切换即时生效）
+        const mode =
+          color_scheme === "system" || !color_scheme
+            ? window.matchMedia("(prefers-color-scheme: dark)").matches
+              ? "dark"
+              : "light"
+            : color_scheme;
+        document.body.classList.toggle("dark-theme", mode === "dark");
+        setIsDark(mode === "dark");
+
+        // 强调色 / 列表密度（localStorage）
+        const accent = localStorage.getItem("fusion_accent");
+        if (accent) {
+          const hex = {
+            indigo: "#5E6AD2",
+            moss: "#3E8E6D",
+            ochre: "#B06A3B",
+            brick: "#C4564A",
+            vine: "#8A6BB8",
+          }[accent];
+          if (hex) {
+            document.documentElement.style.setProperty("--fusion-accent", hex);
+            document.documentElement.style.setProperty("--fusion-accent-soft", hex + "1a");
+          }
+        }
+        document.documentElement.style.setProperty(
+          "--row-h",
+          cfg.card_density === "compact" ? "44px" : "54px",
+        );
 
         if (customize_style && Object.keys(customize_style).length) {
           for (const key of Object.keys(customize_style)) {
@@ -89,10 +117,24 @@ function App() {
     }
   }, []);
 
+  // 跟随系统时的实时切换
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const onChange = (e: MediaQueryListEvent) => {
+      if (store.userConfig.color_scheme === "system" || !store.userConfig.color_scheme) {
+        document.body.classList.toggle("dark-theme", e.matches);
+        setIsDark(e.matches);
+      }
+    };
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, [store.userConfig.color_scheme]);
+
   return (
     <Theme
       className="w-[100vw] h-[100vh] "
       accentColor={accentColor}
+      appearance={isDark ? "dark" : "light"}
       panelBackground="translucent"
     >
       <ErrorBoundary>
