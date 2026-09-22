@@ -576,6 +576,26 @@
       "subscribe_selected": "Subscribe",
       "subscribe_n": "Subscribe · {{count}} feeds",
       "subscribed": "Subscribed to {{count}} feeds"
+    },
+    "add": {
+      "ph_auto": "Paste an RSS address, or a Bilibili / Zhihu / Weibo / newsletter homepage link…",
+      "ph_rss": "Paste an RSS / Atom address…",
+      "ph_bil": "Paste an uploader homepage (space.bilibili.com/…)",
+      "ph_zh": "Paste a Zhihu profile or column link…",
+      "ph_wb": "Paste a Weibo profile (weibo.com/u/…)…",
+      "ph_nl": "Paste a newsletter page (Substack / Buttondown / Kill the Newsletter)…",
+      "seg_auto": "Auto",
+      "seg_rss": "RSS / Atom",
+      "seg_bil": "Bilibili",
+      "seg_zh": "Zhihu",
+      "seg_wb": "Weibo",
+      "seg_nl": "Newsletter",
+      "detecting": "Detecting address…",
+      "err_no_feed": "No feed found — try an RSS address (.xml / /feed) or a platform homepage link",
+      "ungrouped": "Ungrouped",
+      "done": "Subscribed to “{{title}}” · folder “{{folder}}”",
+      "gen_hint": "Generated via RSSHub, no self-hosting",
+      "foot_rsshub": "Platform feeds generated via RSSHub, no self-hosting"
     }
   },
   "Appearance & Reading": "Appearance & Reading",

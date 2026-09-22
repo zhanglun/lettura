@@ -593,6 +593,26 @@
       "subscribe_selected": "订阅所选",
       "subscribe_n": "订阅所选 · {{count}} 源",
       "subscribed": "已订阅 {{count}} 个来源"
+    },
+    "add": {
+      "ph_auto": "粘贴 RSS 地址，或 B站 / 知乎 / 微博 / Newsletter 主页链接…",
+      "ph_rss": "粘贴 RSS / Atom 地址…",
+      "ph_bil": "粘贴 UP 主主页链接（space.bilibili.com/…）",
+      "ph_zh": "粘贴知乎用户主页或专栏链接…",
+      "ph_wb": "粘贴微博用户主页（weibo.com/u/…）…",
+      "ph_nl": "粘贴 Newsletter 订阅页（Substack / Buttondown / Kill the Newsletter）…",
+      "seg_auto": "自动检测",
+      "seg_rss": "RSS / Atom",
+      "seg_bil": "B站",
+      "seg_zh": "知乎",
+      "seg_wb": "微博",
+      "seg_nl": "Newsletter",
+      "detecting": "正在探测地址…",
+      "err_no_feed": "没找到 feed——试试 RSS 地址（.xml / /feed）或平台主页链接",
+      "ungrouped": "未分组",
+      "done": "已订阅「{{title}}」· 分组「{{folder}}」",
+      "gen_hint": "由 RSSHub 生成，无需自建",
+      "foot_rsshub": "平台源经 RSSHub 生成，无需自建"
     }
   },
   "Appearance & Reading": "外观与阅读",
