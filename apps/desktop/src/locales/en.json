@@ -480,6 +480,19 @@
       "next": "Next"
     }
   },
+  "Play": "Play",
+  "Pause": "Pause",
+  "podcast": {
+    "kind": "Podcast · Episode",
+    "episode": "Episode",
+    "no_track": "No track selected",
+    "played_pct": "{{pct}}% played",
+    "ctl": {
+      "back30": "Back 30s",
+      "fwd30": "Forward 30s",
+      "open_detail": "Open episode detail"
+    }
+  },
   "fusion": {
     "nav": {
       "unread": "Unread",

@@ -1,128 +1,117 @@
 import React from "react";
-import { Box, Flex, IconButton, Text, Avatar } from "@radix-ui/themes";
-import { PlayIcon, ChevronUpIcon } from "@radix-ui/react-icons";
+import { IconButton } from "@radix-ui/themes";
+import { PlayIcon, PauseIcon, ChevronUpIcon } from "@radix-ui/react-icons";
 import { AudioTrack } from "./index";
-import { motion } from "framer-motion";
-import "./shared.css";
+import { formatTime } from "./utils";
 import { PlayListPopover } from "./PlayListPopover";
+import { useTranslation } from "react-i18next";
 
-const AudioWaveform = () => {
-  const bars = [
-    { height: [8, 16, 8], delay: 0 },
-    { height: [10, 20, 10], delay: 0.2 },
-    { height: [6, 14, 6], delay: 0.4 },
-    { height: [12, 18, 12], delay: 0.6 },
-  ];
-
-  return (
-    <Flex className="h-6 items-center justify-center gap-1">
-      {bars.map((bar) => (
-        <motion.div
-          key={bar.delay}
-          initial={{ height: bar.height[0] }}
-          animate={{ height: bar.height }}
-          transition={{
-            duration: 0.8,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: bar.delay,
-          }}
-          className="w-0.5 bg-white rounded-[1px]"
-        />
-      ))}
-    </Flex>
-  );
-};
+const RATES = [1, 1.25, 1.5, 2];
 
 interface MiniPlayerProps {
   currentTrack: AudioTrack | null;
   isPlaying: boolean;
+  progress: number;
+  duration: number;
+  playbackRate: number;
   togglePlay: () => void;
-  onExpand: () => void;
+  seek: (time: number) => void;
+  skip: (delta: number) => void;
+  cycleRate: () => void;
+  onOpenDetail: () => void;
 }
 
+/** fusion 播放卡：播放/暂停 · ±30s · 单集信息(点击展开详情) · 进度条带旋钮 · 倍速 chip · 展开箭头 */
 export const MiniPlayer: React.FC<MiniPlayerProps> = ({
   currentTrack,
   isPlaying,
+  progress,
+  duration,
+  playbackRate,
   togglePlay,
-  onExpand,
+  seek,
+  skip,
+  cycleRate,
+  onOpenDetail,
 }) => {
+  const { t } = useTranslation();
+  const pct = duration > 0 ? Math.min(100, (progress / duration) * 100) : 0;
+
+  const handleBarClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!duration) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    seek(((e.clientX - rect.left) / rect.width) * duration);
+  };
+
   return (
-    <Box className="fusion-player w-full px-3 py-2">
-      <Flex align="center" className="p-0 gap-3">
-        {/* Cover with play/pause overlay */}
-        <div className="mini-player-cover">
-          <Avatar
-            size="3"
-            radius="medium"
-            src={currentTrack?.thumbnail}
-            fallback={
-              <div className="w-full h-full flex items-center justify-center bg-[var(--gray-3)]">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <circle cx="12" cy="12" r="4" />
-                  <path d="M12 8v8" />
-                  <path d="M8 12h8" />
-                </svg>
-              </div>
-            }
-            className="cursor-pointer"
-          />
+    <div className="fusion-player flex items-center gap-3.5 px-4.5 h-[68px]">
+      <button
+        type="button"
+        className="fusion-pc"
+        onClick={togglePlay}
+        aria-label={isPlaying ? t("Pause") : t("Play")}
+      >
+        {isPlaying ? (
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="#fff">
+            <rect x="1.5" y="1" width="3" height="10" rx="1" />
+            <rect x="7.5" y="1" width="3" height="10" rx="1" />
+          </svg>
+        ) : (
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="#fff">
+            <path d="M2.5 1.2v9.6l8-4.8z" />
+          </svg>
+        )}
+      </button>
+      <button
+        type="button"
+        className="fusion-pskip"
+        title={t("podcast.ctl.back30")}
+        onClick={() => skip(-30)}
+      >
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="var(--fusion-sub)">
+          <path d="M13.5 3.5v9l-7-4.5zM3.2 3.5H5v9H3.2z" />
+        </svg>
+      </button>
+      <button
+        type="button"
+        className="fusion-pskip"
+        title={t("podcast.ctl.fwd30")}
+        onClick={() => skip(30)}
+      >
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="var(--fusion-sub)">
+          <path d="M2.5 3.5v9l7-4.5zM11 3.5h1.8v9H11z" />
+        </svg>
+      </button>
 
-          {/* Always visible overlay */}
-          <div
-            className="play-button-overlay !opacity-100"
-            onClick={togglePlay}
-          >
-            {isPlaying ? (
-              <AudioWaveform />
-            ) : (
-              <motion.div
-                animate={{
-                  scale: [1, 1.1, 1],
-                  opacity: [0.8, 1, 0.8],
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
-              >
-                <PlayIcon className="text-white w-5 h-5" />
-              </motion.div>
-            )}
-          </div>
+      <button
+        type="button"
+        className="fusion-pmeta"
+        onClick={onOpenDetail}
+        title={t("podcast.ctl.open_detail")}
+      >
+        <div className="ep">{currentTrack?.feed_title || currentTrack?.author || ""}</div>
+        <div className="nm">{currentTrack?.title || t("podcast.no_track")}</div>
+      </button>
+
+      <div className="fusion-ptrack">
+        <span className="pt">{formatTime(progress)}</span>
+        <div className="fusion-pbar" onClick={handleBarClick}>
+          <b style={{ width: `${pct}%` }} />
+          <i style={{ left: `${pct}%` }} />
         </div>
+        <span className="pt">{formatTime(duration)}</span>
+      </div>
 
-        <Flex
-          direction="column"
-          className="flex-1 min-w-0 max-w-[calc(100%-80px)]"
-        >
-          <div className="text-sm font-medium flex-1 truncate">
-            {currentTrack?.title || "No track selected"}
-          </div>
-          <div className="text-xs flex-1 truncate">
-            {currentTrack?.author ||
-              currentTrack?.feed_title ||
-              "Unknown artist"}
-          </div>
-        </Flex>
+      <button type="button" className="fusion-chip" onClick={cycleRate}>
+        {playbackRate}×
+      </button>
 
-        <PlayListPopover currentTrack={currentTrack} isPlaying={isPlaying} />
-        {/* Expand Button */}
-        <IconButton size="1" variant="ghost" onClick={onExpand}>
-          <ChevronUpIcon />
-        </IconButton>
-      </Flex>
-    </Box>
+      <PlayListPopover currentTrack={currentTrack} isPlaying={isPlaying} />
+      <IconButton size="1" variant="ghost" color="gray" onClick={onOpenDetail}>
+        <ChevronUpIcon />
+      </IconButton>
+    </div>
   );
 };
+
+export { RATES };

@@ -1,10 +1,12 @@
-import { Avatar, Button, Heading } from "@radix-ui/themes";
-import { Podcast } from "@/helpers/podcastDB";
-import { wraperWithRadix } from "../ContentRender";
 import { ArticleResItem } from "@/db";
 import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
-import dayjs from "dayjs";
+import { useAudioPlayer } from "@/components/LPodcast/useAudioPlayer";
+import { formatTime } from "@/components/LPodcast/utils";
+import { wraperWithRadix } from "../ContentRender";
+import { Podcast } from "@/helpers/podcastDB";
+import { useTranslation } from "react-i18next";
+import { RATES } from "@/components/LPodcast/MiniPlayer";
 
 export interface PodcastAdapter {
   article: ArticleResItem;
@@ -12,23 +14,40 @@ export interface PodcastAdapter {
   medias: any;
 }
 
+/** 播客单集详情：112px 封面 + 大播放控件 + show notes（fusion 契约；章节 feed 不提供，跳过） */
 export function PodcastAdapter(props: PodcastAdapter) {
   const { article, content, medias } = props;
+  const { t } = useTranslation();
   const { addToPlayListAndPlay } = useBearStore(
     useShallow((state) => ({
       addToPlayListAndPlay: state.addToPlayListAndPlay,
     })),
   );
 
-  function handleAddToPlayListAndPlay(media: any) {
-    const { description, content, thumbnails } = media;
+  const {
+    currentTrack,
+    isPlaying,
+    progress,
+    duration,
+    playbackRate,
+    togglePlay,
+    skip,
+    setPlaybackRate,
+  } = useAudioPlayer();
 
-    if (!content || content.length === 0) return;
+  const isCurrent = currentTrack?.uuid === article.uuid;
+  const playing = isCurrent && isPlaying;
+  const pct = isCurrent && duration > 0 ? Math.round((progress / duration) * 100) : 0;
 
-    const mediaURL = content[0].url;
-    const mediaType = content[0].content_type;
-    const thumbnail = thumbnails[0]?.image?.uri || article.feed_logo;
-    const text = description?.content || article.description;
+  function handlePlay() {
+    if (isCurrent) {
+      togglePlay();
+      return;
+    }
+    const media = medias?.[0];
+    if (!media) return;
+    const { description, content: mediaContent, thumbnails } = media;
+    if (!mediaContent || mediaContent.length === 0) return;
 
     const record = {
       uuid: article.uuid,
@@ -42,72 +61,82 @@ export function PodcastAdapter(props: PodcastAdapter) {
       pub_date: article.pub_date,
       create_date: article.create_date,
       starred: article.starred,
-      mediaURL,
-      mediaType,
-      thumbnail,
-      description: text,
+      mediaURL: mediaContent[0].url,
+      mediaType: mediaContent[0].content_type,
+      thumbnail: thumbnails[0]?.image?.uri || article.feed_logo,
+      description: description?.content || article.description,
       add_date: new Date().getTime(),
     } as Podcast;
 
-    // 直接使用 store 的方法，它会处理数据库操作和状态更新
     addToPlayListAndPlay(record);
   }
 
-  function renderMediaBox(media: any) {
-    const { description, content, thumbnails } = media;
-
-    function renderContent() {
-      return content.map((c: any) => {
-        if (c.url && c.content_type.indexOf("audio/") === 0) {
-          return (
-            <figure className="my-3 relative">
-              <Button onClick={() => handleAddToPlayListAndPlay(media)}>Play</Button>
-            </figure>
-          );
-        }
-      });
-    }
-
-    return (
-      <div>
-        <div>{renderContent()}</div>
-        <div>{wraperWithRadix(description?.content || "")}</div>
-      </div>
-    );
+  function cycleRate() {
+    const idx = RATES.indexOf(playbackRate);
+    setPlaybackRate(RATES[(idx + 1) % RATES.length] ?? 1);
   }
 
-  function createPodcastPageHeader() {
-    const { thumbnails } = medias[0];
-    const t = thumbnails[0];
+  const thumbnail = medias?.[0]?.thumbnails?.[0]?.image?.uri || article.feed_logo;
 
-    return (
-      <div className="flex gap-4 flex-col items-center mb-4">
-        {t && (
-          <div className="w-[130px] rounded-lg overflow-hidden">
-            <img src={t.image.uri} alt={t.image.uri} className="object-cover" />
+  return (
+    <div className="mx-auto w-full max-w-[640px] py-2">
+      {/* ep-head */}
+      <div className="flex gap-5 mb-6">
+        <div className="fusion-cover">
+          {thumbnail ? (
+            <img src={thumbnail} alt="" className="w-full h-full object-cover rounded-[18px]" />
+          ) : (
+            <svg width="40" height="40" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+              <path d="M4 7.5v5M7.3 5v10M10.6 8v4M14 6v8M17.3 7.5v5" />
+            </svg>
+          )}
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="fusion-dkind">{t("podcast.kind")}</div>
+          <h1 className="text-[21px] font-bold leading-snug text-[var(--fusion-ink)]">
+            {article.title}
+          </h1>
+          <div className="fusion-dmeta">
+            <span>{article.feed_title}</span>
+            <span>·</span>
+            <span>{isCurrent && duration > 0 ? formatTime(duration) : t("podcast.episode")}</span>
+            {isCurrent && duration > 0 && (
+              <>
+                <span>·</span>
+                <span>{t("podcast.played_pct", { pct })}</span>
+              </>
+            )}
           </div>
-        )}
-        <Heading size="7">{article.title}</Heading>
-        <div>
-          <div className="flex gap-3 items-center">
-            <Avatar radius="medium" size="1" src={article.feed_logo} fallback={article.feed_title?.slice(0, 1)} />
-            <span className="font-semibold text-[var(--accent-12)]">
-              {article.feed_title} {article.author}
-            </span>
-            <span className="text-sm text-[var(--gray-12)]">{dayjs(article.pub_date).format("YYYY-MM-DD HH:mm")}</span>
+          <div className="fusion-epctrl">
+            <button type="button" className="fusion-bigplay" onClick={handlePlay}>
+              {playing ? (
+                <svg width="13" height="13" viewBox="0 0 12 12" fill="#fff">
+                  <rect x="1.5" y="1" width="3" height="10" rx="1" />
+                  <rect x="7.5" y="1" width="3" height="10" rx="1" />
+                </svg>
+              ) : (
+                <svg width="13" height="13" viewBox="0 0 12 12" fill="#fff">
+                  <path d="M2.5 1.2v9.6l8-4.8z" />
+                </svg>
+              )}
+            </button>
+            <button type="button" className="fusion-skipbtn" onClick={() => skip(-30)}>
+              −30s
+            </button>
+            <button type="button" className="fusion-skipbtn" onClick={() => skip(30)}>
+              +30s
+            </button>
+            <button type="button" className="fusion-chip" onClick={cycleRate}>
+              {playbackRate}×
+            </button>
           </div>
         </div>
       </div>
-    );
-  }
 
-  return (
-    <div className="w-[500px] m-auto py-20">
-      {medias[0] && createPodcastPageHeader()}
-      <div className="flex items-center justify-between mb-4">
-        {medias && medias.length > 0 && <div>{renderMediaBox(medias[0])}</div>}
+      {/* show notes */}
+      <div className="text-[13.5px] leading-[1.85] text-[#4A4D52]">
+        {wraperWithRadix(content)}
       </div>
-      <div className="mb-4 relative">{wraperWithRadix(content)}</div>
     </div>
   );
 }

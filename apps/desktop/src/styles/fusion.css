@@ -358,3 +358,211 @@
   border-radius: 14px;
   box-shadow: 0 20px 44px -16px rgba(29, 30, 32, 0.26);
 }
+
+/* ── 播放卡控件 ── */
+.fusion-pc {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: var(--fusion-accent);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  border: 0;
+  cursor: pointer;
+  box-shadow: 0 4px 10px -2px rgba(94, 109, 210, 0.5);
+  transition: transform 0.15s ease;
+}
+
+.fusion-pc:hover {
+  transform: scale(1.06);
+}
+
+.fusion-pskip {
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--fusion-sub);
+  border: 0;
+  background: none;
+  cursor: pointer;
+  flex: none;
+}
+
+.fusion-pskip:hover {
+  background: rgba(29, 30, 32, 0.06);
+  color: var(--fusion-ink);
+}
+
+.fusion-pmeta {
+  flex: none;
+  width: 240px;
+  text-align: left;
+  cursor: pointer;
+  border: 0;
+  background: none;
+  padding: 0;
+}
+
+.fusion-pmeta .ep {
+  font-size: 11px;
+  color: var(--fusion-sub);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fusion-pmeta .nm {
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 1px;
+  color: var(--fusion-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fusion-ptrack {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.fusion-ptrack .pt {
+  font-size: 11px;
+  color: var(--fusion-sub);
+  font-variant-numeric: tabular-nums;
+  flex: none;
+}
+
+.fusion-pbar {
+  flex: 1;
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(29, 30, 32, 0.1);
+  position: relative;
+  cursor: pointer;
+}
+
+.fusion-pbar b {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  border-radius: 999px;
+  background: var(--fusion-accent);
+}
+
+.fusion-pbar i {
+  position: absolute;
+  top: 50%;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--fusion-accent);
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.9);
+  pointer-events: none;
+}
+
+.fusion-chip {
+  font-size: 11px;
+  color: var(--fusion-sub);
+  background: rgba(29, 30, 32, 0.06);
+  border-radius: 6px;
+  padding: 2.5px 8px;
+  flex: none;
+  border: 0;
+  cursor: pointer;
+  font-variant-numeric: tabular-nums;
+}
+
+.fusion-chip:hover {
+  color: var(--fusion-ink);
+}
+
+/* ── 播客单集详情 ── */
+.fusion-dkind {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--fusion-accent);
+  margin-bottom: 10px;
+}
+
+.fusion-dmeta {
+  font-size: 12px;
+  color: var(--fusion-ter);
+  margin: 10px 0 14px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-variant-numeric: tabular-nums;
+  flex-wrap: wrap;
+}
+
+.fusion-cover {
+  width: 112px;
+  height: 112px;
+  border-radius: 18px;
+  background: var(--fusion-accent-soft);
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--fusion-accent);
+  box-shadow: 0 12px 28px -10px rgba(94, 109, 210, 0.35);
+  overflow: hidden;
+}
+
+.fusion-epctrl {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.fusion-bigplay {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  background: var(--fusion-accent);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  cursor: pointer;
+  box-shadow: 0 6px 14px -3px rgba(94, 109, 210, 0.5);
+  transition: transform 0.15s ease;
+}
+
+.fusion-bigplay:hover {
+  transform: scale(1.05);
+}
+
+.fusion-skipbtn {
+  width: 34px;
+  height: 30px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--fusion-sub);
+  border: 1px solid var(--fusion-hair2);
+  background: none;
+  cursor: pointer;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.fusion-skipbtn:hover {
+  color: var(--fusion-ink);
+  border-color: var(--fusion-sub);
+}

@@ -13,6 +13,10 @@ export const useAudioPlayer = () => {
   });
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [playbackRate, setPlaybackRate] = useState(() => {
+    const saved = localStorage.getItem(STORAGE_KEYS.PLAYBACK_RATE);
+    return saved ? parseFloat(saved) : 1;
+  });
 
   const store = useBearStore((state) => ({
     currentTrack: state.currentTrack,
@@ -138,6 +142,14 @@ export const useAudioPlayer = () => {
     }
   }, [volume]);
 
+  // 倍速：持久化并应用到音频元素
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.PLAYBACK_RATE, String(playbackRate));
+    if (audioRef.current) {
+      audioRef.current.playbackRate = playbackRate;
+    }
+  }, [playbackRate]);
+
   const togglePlay = () => {
     store.updatePodcastPlayingStatus(!store.podcastPlayingStatus);
   };
@@ -154,6 +166,16 @@ export const useAudioPlayer = () => {
         });
       }
     }
+  };
+
+  // ±30s 跳转
+  const skip = (delta: number) => {
+    if (!audioRef.current) return;
+    const next = Math.max(
+      0,
+      Math.min(audioRef.current.currentTime + delta, duration || Infinity),
+    );
+    seek(next);
   };
 
   const playTrack = (track: AudioTrack) => {
@@ -177,9 +199,12 @@ export const useAudioPlayer = () => {
     volume,
     progress,
     duration,
+    playbackRate,
+    setPlaybackRate,
     togglePlay,
     setVolume,
     seek,
+    skip,
     playTrack,
     setProgress,
     playPrevious: store.playPrev,

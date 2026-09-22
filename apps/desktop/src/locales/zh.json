@@ -497,6 +497,19 @@
       "next": "下一篇"
     }
   },
+  "Play": "播放",
+  "Pause": "暂停",
+  "podcast": {
+    "kind": "播客 · 单集",
+    "episode": "单集",
+    "no_track": "未选择单集",
+    "played_pct": "已播放 {{pct}}%",
+    "ctl": {
+      "back30": "后退 30 秒",
+      "fwd30": "前进 30 秒",
+      "open_detail": "展开单集详情"
+    }
+  },
   "fusion": {
     "nav": {
       "unread": "未读",

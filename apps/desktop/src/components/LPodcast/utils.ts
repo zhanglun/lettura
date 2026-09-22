@@ -8,4 +8,5 @@ export const STORAGE_KEYS = {
   VOLUME: "lpodcast_volume",
   PROGRESS: "lpodcast_progress",
   CURRENT_TRACK: "lpodcast_current_track",
+  PLAYBACK_RATE: "lpodcast_playback_rate",
 } as const;
