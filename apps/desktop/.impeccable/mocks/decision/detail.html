@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>静密 × 聚光 · 文章详情 · Lettura 0.2.0</title>
+<style>
+  @page{size:1440px 900px;margin:0;}
+  :root{
+    --ground:#F4F4F1;
+    --ink:#1D1E20; --sub:#6A6C6E; --ter:#9EA0A2;
+    --glass:rgba(255,255,255,.78);
+    --hair:rgba(29,30,32,.08); --hair2:rgba(29,30,32,.13);
+    --accent:#5E6AD2; --accent-soft:rgba(94,109,210,.1); --accent-line:rgba(94,109,210,.35);
+    --amber:#E5A50A;
+    --read-size:15.5px; --read-lh:2.0;   /* 由设置「校准台」写入 */
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{width:1180px;height:738px;overflow:hidden;}
+  .stage{width:1440px;height:900px;transform:scale(0.8194);transform-origin:top left;position:relative;}
+  body{
+    background:var(--ground);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Helvetica Neue",sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--accent-soft);}
+  button{font:inherit;border:0;background:none;cursor:pointer;color:inherit;}
+  kbd{font-family:inherit;font-size:10.5px;color:var(--sub);border:1px solid var(--hair2);border-radius:4px;padding:0 4.5px;line-height:15px;background:rgba(255,255,255,.7);}
+  *:focus-visible{outline:2px solid var(--accent);outline-offset:1px;border-radius:4px;}
+
+  .stage::before{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:
+      radial-gradient(560px 380px at 10% -8%,rgba(232,80,96,.05),transparent 70%),
+      radial-gradient(640px 420px at 90% -12%,rgba(94,109,210,.055),transparent 70%);
+  }
+
+  /* ── 玻璃主面板 ── */
+  .panel{
+    position:absolute;inset:22px 22px 106px;
+    background:var(--glass);backdrop-filter:blur(22px) saturate(1.5);
+    border:1px solid var(--hair2);border-radius:16px;
+    box-shadow:0 1px 0 rgba(255,255,255,.7) inset,0 32px 64px -20px rgba(29,30,32,.28);
+    display:flex;flex-direction:column;overflow:hidden;
+  }
+  .top{height:54px;display:flex;align-items:center;padding:0 20px;gap:10px;border-bottom:1px solid var(--hair);flex:none;}
+  .logo{width:20px;height:20px;border-radius:7px;background:var(--ink);display:flex;align-items:center;justify-content:center;flex:none;}
+  .logo i{width:5px;height:5px;border-radius:50%;background:#fff;}
+  .sec{font-size:13px;font-weight:600;}
+  .cnt{font-size:11px;color:var(--sub);background:rgba(29,30,32,.06);border-radius:999px;padding:1.5px 8px;font-variant-numeric:tabular-nums;}
+  .nav{display:flex;gap:4px;margin-left:14px;}
+  .nav a{font-size:12.5px;color:var(--sub);text-decoration:none;padding:4px 10px;border-radius:7px;cursor:pointer;}
+  .nav a.on{color:var(--ink);font-weight:600;background:rgba(29,30,32,.06);}
+  .spring{flex:1;}
+  .cmdbtn{display:flex;align-items:center;gap:8px;height:30px;padding:0 10px;border:1px solid var(--hair2);border-radius:9px;font-size:12px;color:var(--sub);background:rgba(255,255,255,.55);}
+
+  /* ── 阅读面 ── */
+  .detail{flex:1;overflow:hidden;display:flex;flex-direction:column;}
+  .d-top{height:50px;display:flex;align-items:center;gap:8px;padding:0 20px;border-bottom:1px solid var(--hair);flex:none;position:relative;}
+  .back{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--sub);padding:5px 10px;border-radius:7px;}
+  .back:hover{background:rgba(29,30,32,.05);color:var(--ink);}
+  .d-src{font-size:11.5px;color:var(--ter);margin-left:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .d-actions{display:flex;gap:2px;margin-left:auto;}
+  .qa{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--sub);}
+  .qa:hover{background:rgba(29,30,32,.06);color:var(--ink);}
+  .qa.on{color:var(--amber);}
+
+  /* 阅读进度发丝线：沿顶栏下缘 */
+  .prog{position:absolute;left:0;bottom:-1px;height:1.5px;width:0;background:var(--accent);border-radius:999px;z-index:2;}
+
+  .d-body{flex:1;overflow-y:auto;overflow-x:hidden;padding:44px 96px 64px;scrollbar-width:thin;scrollbar-color:rgba(29,30,32,.18) transparent;}
+  .d-body::-webkit-scrollbar{width:8px;}
+  .d-body::-webkit-scrollbar-thumb{background:rgba(29,30,32,.15);border-radius:999px;border:2px solid transparent;background-clip:content-box;}
+  .d-inner{max-width:640px;margin:0 auto;}
+
+  .d-kind{font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--accent);margin-bottom:12px;}
+  .d-inner h1{font-size:24px;font-weight:700;line-height:1.4;letter-spacing:.005em;}
+  .d-meta{font-size:12px;color:var(--ter);margin:12px 0 30px;display:flex;gap:10px;align-items:center;font-variant-numeric:tabular-nums;}
+  .d-meta .sep{color:var(--hair2);}
+
+  .d-inner p{font-family:"Songti SC","STSong","Noto Serif SC",serif;font-size:var(--read-size);line-height:var(--read-lh);color:#33363B;margin-bottom:22px;}
+  .d-inner p.note{font-family:inherit;font-size:13.5px;line-height:1.85;color:#4A4D52;}
+
+  blockquote{
+    margin:26px 0;padding:2px 0 2px 20px;border-left:1px solid var(--hair2);
+    font-family:"Songti SC","STSong","Noto Serif SC",serif;
+    font-size:calc(var(--read-size) - 1px);line-height:var(--read-lh);color:var(--sub);
+  }
+
+  .d-inner a{color:var(--accent);text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--accent-line);}
+  .d-inner a:hover{text-decoration-color:var(--accent);}
+
+  code.inline{font-family:"SF Mono",Menlo,monospace;font-size:.82em;color:var(--ink);background:rgba(29,30,32,.05);border:1px solid var(--hair);border-radius:5px;padding:1.5px 5px;}
+
+  pre.code{
+    margin:26px 0;border:1px solid var(--hair);border-radius:12px;background:rgba(255,255,255,.55);
+    padding:16px 18px;overflow-x:auto;position:relative;
+  }
+  pre.code .lang{position:absolute;top:10px;right:12px;font-family:inherit;font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--ter);}
+  pre.code code{font-family:"SF Mono",Menlo,monospace;font-size:12.5px;line-height:1.75;color:#33363B;}
+  pre.code .cm{color:var(--ter);} pre.code .kw{color:var(--accent);} pre.code .st{color:#8A6D3B;}
+
+  .fin{display:flex;align-items:center;gap:12px;margin:38px 0 0;color:var(--ter);font-size:11px;letter-spacing:.2em;}
+  .fin::before,.fin::after{content:"";flex:1;height:1px;background:var(--hair);}
+
+  .next{margin-top:26px;border:1px solid var(--hair);border-radius:12px;background:rgba(255,255,255,.5);overflow:hidden;}
+  .next-h{font-size:10.5px;font-weight:700;letter-spacing:.1em;color:var(--ter);padding:12px 16px 0;}
+  .next-row{display:grid;grid-template-columns:24px 20px 1fr 130px 56px;align-items:center;height:52px;padding-right:16px;cursor:pointer;}
+  .next-row:hover{background:rgba(29,30,32,.035);}
+  .next-row .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);justify-self:center;}
+  .badge{width:20px;height:20px;border-radius:6px;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+  .b-art{background:rgba(29,30,32,.06);color:var(--sub);}
+  .nt{font-size:13.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 10px;}
+  .ns{font-size:11.5px;color:var(--ter);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .nd{font-size:11.5px;color:var(--ter);text-align:right;font-variant-numeric:tabular-nums;}
+  .end-acts{display:flex;justify-content:center;margin-top:22px;}
+  .btn-gh{display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 14px;border:1px solid var(--hair2);border-radius:9px;font-size:12.5px;color:var(--sub);background:rgba(255,255,255,.55);}
+  .btn-gh:hover{color:var(--ink);border-color:var(--sub);}
+
+  /* 播放卡 */
+  .player{
+    position:absolute;left:22px;right:22px;bottom:22px;height:68px;z-index:30;
+    background:var(--glass);backdrop-filter:blur(22px) saturate(1.5);
+    border:1px solid var(--hair2);border-radius:14px;
+    box-shadow:0 20px 44px -16px rgba(29,30,32,.26);
+    display:flex;align-items:center;gap:14px;padding:0 18px;
+  }
+  .pc{width:32px;height:32px;border-radius:999px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;flex:none;box-shadow:0 4px 10px -2px rgba(94,109,210,.5);}
+  .pmeta{flex:none;width:240px;}
+  .pmeta .ep{font-size:11px;color:var(--sub);}
+  .pmeta .nm{font-size:13px;font-weight:600;margin-top:1px;}
+  .ptrack{flex:1;display:flex;align-items:center;gap:12px;}
+  .pt{font-size:11px;color:var(--sub);font-variant-numeric:tabular-nums;flex:none;}
+  .pbar{flex:1;height:3px;border-radius:999px;background:rgba(29,30,32,.1);position:relative;}
+  .pbar b{position:absolute;left:0;top:0;bottom:0;width:26%;border-radius:999px;background:var(--accent);}
+  .pbar i{position:absolute;left:26%;top:50%;width:9px;height:9px;border-radius:50%;background:var(--accent);transform:translate(-50%,-50%);box-shadow:0 0 0 3px rgba(255,255,255,.9);}
+  .chip{font-size:11px;color:var(--sub);background:rgba(29,30,32,.06);border-radius:6px;padding:2.5px 8px;flex:none;}
+
+  .synthetic{position:absolute;right:36px;bottom:100px;font-size:10px;color:var(--ter);letter-spacing:.1em;z-index:5;}
+  .hintbar{position:absolute;left:36px;bottom:100px;font-size:10.5px;color:var(--ter);z-index:5;letter-spacing:.03em;}
+  .hintbar b{color:var(--sub);font-weight:600;}
+</style>
+</head>
+<body>
+<!--
+  SURFACE CONTRACT · 文章详情（阅读面） · Lettura 0.2.0 「静密 × 聚光」核心面
+  THESIS: 阅读面是仪器上唯一的「纸」——640px 宋体单栏，外壳全部退去：顶栏下缘一条 1.5px 阅读进度发丝线是唯一的仪表读数；排版要素（引文/行内码/代码块/链接）全部用发丝线与灰阶表达，颜色只有强调蓝一种；文末「· 完 ·」之后给出下一篇（j/k 直达），读完就走有出口。
+  OWN-WORLD: 继承 fusion 详情外壳（d-top/640 版心/24px 题/宋体正文），新增：进度发丝线、引文（1px 发丝左线）、代码块（白玻璃 + hair 边 + SF Mono + 语言标）、行内码、链接（accent 下划线 offset 3px）、完读记号与下一篇卡（列表行语法）。
+  STORY: 列表 ⏎ 进入；滚动即读，进度线在顶栏下缘无声走完；文末「· 完 ·」分隔，下一篇卡 + 「已读并返回 m」；字号/行高由设置校准台写入 --read-size/--read-lh（本稿 ?size=&lh= 可试）。
+  FIRST VIEWPORT: 玻璃面板：顶栏（返回 esc + 源 + 星标/外跳/已读钮）→ 阅读面居中 640px：类型字 → 24px 标题 → 元信息行 → 宋体正文；底部播放卡在场。
+  FORM: fusion 核心面的独立定稿（从列表稿中拆出，用户 2026-02 要求补齐）。
+  FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance.
+-->
+<div class="stage">
+
+  <section class="panel">
+    <header class="top">
+      <span class="logo"><i></i></span>
+      <span class="sec">未读</span>
+      <span class="cnt">247</span>
+      <nav class="nav"><a class="on">未读</a><a>星标</a><a>历史</a><a>订阅</a></nav>
+      <span class="spring"></span>
+      <button class="cmdbtn">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#6A6C6E" stroke-width="1.7"><circle cx="7" cy="7" r="4.8"/><path d="m11.2 11.2 3 3"/></svg>
+        搜索或输入命令<span class="spring"></span><kbd>⌘K</kbd>
+      </button>
+    </header>
+
+    <section class="detail">
+      <div class="d-top">
+        <button class="back" id="backBtn">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M10 3 5 8l5 5"/></svg>
+          返回 <kbd>esc</kbd>
+        </button>
+        <span class="d-src" id="dSrc">overreacted.io · 08:52</span>
+        <span class="d-actions">
+          <button class="qa" id="dStar" title="星标 f">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1.8l1.85 3.9 4.3.55-3.2 2.9.85 4.2L8 11.3l-3.8 2.05.85-4.2-3.2-2.9 4.3-.55z"/></svg>
+          </button>
+          <button class="qa" title="浏览器打开原文 v">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M6.5 3H3v10h10V9.5M9 3h4v4M12.8 3.2 7.5 8.5"/></svg>
+          </button>
+          <button class="qa" title="已读并下移 m">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="m3 8.5 3.2 3L13 5"/></svg>
+          </button>
+        </span>
+        <span class="prog" id="prog"></span>
+      </div>
+
+      <div class="d-body" id="dBody">
+        <article class="d-inner" id="art0">
+          <div class="d-kind">文章</div>
+          <h1>为什么我把全部阅读搬回了 RSS</h1>
+          <div class="d-meta"><span>overreacted.io</span><span class="sep">·</span><span>08:52</span><span class="sep">·</span><span>约 8 分钟</span></div>
+          <p>五年里我换过四个稍后读应用、三个聚合器、两套笔记系统。每一件都 promising 地开始，都以同一个症状结束：收藏的东西越来越多，读完的越来越少。</p>
+          <p>问题不在工具，在形态。稍后读是一个承诺——「以后读」——而「以后」是一个永远不会到来的时间点。RSS 不承诺任何东西，它只是把今天到了的东西放在门口，你拿走多少算多少。</p>
+          <blockquote>未读 247 不是债务，只是今天的天气。</blockquote>
+          <p>于是我退回了最老的协议。它无聊、它老、它没有算法推荐，但它有三个现代产品都没有的性质：顺序是时间、终点是今天、数据是我的。相关的一个实践是把过滤交给 <code class="inline">sqlite3</code> 而不是云端：</p>
+          <pre class="code"><span class="lang">SQL</span><code><span class="cm">-- 每天要读的，就是这一句</span>
+<span class="kw">SELECT</span> title, link <span class="kw">FROM</span> articles
+<span class="kw">WHERE</span> read_at <span class="kw">IS NULL</span>
+<span class="kw">ORDER BY</span> published_at <span class="kw">DESC</span>;</code></pre>
+          <p>如果你也在找一个「打开即队列，处理完即关」的阅读器，欢迎试试 <a href="#">Lettura</a>。它不猜你想读什么，它只把门口的东西排好队。</p>
+          <p class="note">本文亦发表于作者的 newsletter，每周一封。</p>
+          <div class="fin">· 完 ·</div>
+          <div class="next">
+            <div class="next-h">下一篇 · J/K 切换</div>
+            <div class="next-row" onclick="nextArt(1)">
+              <span class="dot"></span>
+              <span class="badge b-art">文</span>
+              <span class="nt">Rust 1.90 发布：编译器并行化进入第二阶段</span>
+              <span class="ns">rust-lang.org</span>
+              <span class="nd">09:41</span>
+            </div>
+          </div>
+          <div class="end-acts">
+            <button class="btn-gh" id="markBack">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="m3 8.5 3.2 3L13 5"/></svg>
+              已读并返回列表 <kbd>m</kbd>
+            </button>
+          </div>
+        </article>
+      </div>
+    </section>
+  </section>
+
+  <span class="hintbar"><b>esc</b> 返回列表 · <b>j/k</b> 下一篇 · <b>f</b> 星标 · <b>v</b> 原文</span>
+  <span class="synthetic">演示内容为合成数据</span>
+
+  <footer class="player">
+    <button class="pc"><svg width="11" height="11" viewBox="0 0 12 12" fill="#fff"><rect x="1.5" y="1" width="3" height="10" rx="1"/><rect x="7.5" y="1" width="3" height="10" rx="1"/></svg></button>
+    <span class="pmeta"><div class="ep">内核恐慌 · EP.87</div><div class="nm">与 guevaria 聊本地优先软件</div></span>
+    <span class="ptrack"><span class="pt">18:30</span><span class="pbar"><b></b><i></i></span><span class="pt">72:00</span></span>
+    <span class="chip">1.5×</span>
+  </footer>
+</div>
+
+<script>
+/* 校准台参数：?size=17&lh=2.2 直达不同排版 */
+const q=new URLSearchParams(location.search);
+if(q.get("size"))document.documentElement.style.setProperty("--read-size",q.get("size")+"px");
+if(q.get("lh"))document.documentElement.style.setProperty("--read-lh",q.get("lh"));
+
+/* 阅读进度发丝线 */
+const dBody=document.getElementById("dBody"),prog=document.getElementById("prog");
+dBody.addEventListener("scroll",()=>{
+  const max=dBody.scrollHeight-dBody.clientHeight;
+  prog.style.width=(max>0?Math.min(100,dBody.scrollTop/max*100):0)+"%";
+},{passive:true});
+
+/* 星标 */
+document.getElementById("dStar").addEventListener("click",()=>document.getElementById("dStar").classList.toggle("on"));
+
+/* 下一篇（j/k 循环演示） */
+let idx=0;
+const ARTS=[
+ {src:"overreacted.io · 08:52"},
+ {src:"rust-lang.org · 09:41"},
+];
+function nextArt(d){idx=(idx+d+ARTS.length)%ARTS.length;document.getElementById("dSrc").textContent=ARTS[idx].src;dBody.scrollTop=0;}
+document.getElementById("markBack").addEventListener("click",()=>nextArt(1));
+document.addEventListener("keydown",e=>{
+  if(e.key==="j")nextArt(1);
+  if(e.key==="k")nextArt(-1);
+  if(e.key==="f")document.getElementById("dStar").classList.toggle("on");
+});
+</script>
+</body>
+</html>

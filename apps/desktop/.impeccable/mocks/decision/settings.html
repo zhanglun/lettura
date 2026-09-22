@@ -78,19 +78,32 @@
   .tab .c{font-variant-numeric:tabular-nums;margin-left:3px;color:var(--ter);font-weight:500;}
   .strip .meta{margin-left:auto;font-size:11px;color:var(--ter);font-variant-numeric:tabular-nums;}
 
-  /* ── 设置视图：面板内第三态 ── */
+  /* ── 设置视图：面板内第三态，左锚点导航 + 内容区 ── */
   .set{flex:1;overflow:hidden;display:none;flex-direction:column;}
   .d-top{height:50px;display:flex;align-items:center;gap:8px;padding:0 20px;border-bottom:1px solid var(--hair);flex:none;}
   .back{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--sub);padding:5px 10px;border-radius:7px;}
   .back:hover{background:rgba(29,30,32,.05);color:var(--ink);}
   .d-src{font-size:11.5px;color:var(--ter);margin-left:6px;}
 
+  .set-shell{flex:1;display:flex;overflow:hidden;}
+  .set-nav{
+    width:176px;flex:none;border-right:1px solid var(--hair);
+    padding:18px 12px;display:flex;flex-direction:column;gap:2px;
+  }
+  .snav{
+    display:flex;align-items:center;gap:8px;height:34px;padding:0 12px;
+    border-radius:8px;font-size:12.5px;color:var(--sub);text-align:left;
+  }
+  .snav:hover{background:rgba(29,30,32,.05);color:var(--ink);}
+  .snav.on{color:var(--ink);font-weight:600;background:rgba(29,30,32,.045);box-shadow:inset 2px 0 0 var(--accent);}
+  .snav .out{margin-left:auto;color:var(--ter);display:flex;}
+  .snav:hover .out{color:var(--ink);}
+
   .set-body{flex:1;overflow-y:auto;overflow-x:hidden;padding:40px 96px 56px;scrollbar-width:thin;scrollbar-color:rgba(29,30,32,.18) transparent;}
   .set-body::-webkit-scrollbar{width:8px;}
   .set-body::-webkit-scrollbar-thumb{background:rgba(29,30,32,.15);border-radius:999px;border:2px solid transparent;background-clip:content-box;}
-  .set-inner{max-width:680px;margin:0 auto;}
-
-  .set-h{font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--ter);margin:34px 0 4px;}
+  .set-inner{max-width:620px;margin:0 auto;}
+  .set-h{font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--ter);margin:34px 0 4px;scroll-margin-top:20px;}
   .set-h:first-child{margin-top:0;}
   .set-desc{font-size:11.5px;color:var(--ter);margin:6px 0 4px;}
 
@@ -321,10 +334,19 @@
         <span class="spring"></span>
         <span style="font-size:11px;color:var(--ter);">更改即时生效并写入本地配置</span>
       </div>
-      <div class="set-body" id="setBody">
+      <div class="set-shell">
+        <nav class="set-nav">
+          <button class="snav on" data-sec="sec-appearance">外观与阅读</button>
+          <button class="snav" data-sec="sec-sync">同步与来源</button>
+          <button class="snav" data-sec="sec-system">行为与数据</button>
+          <button class="snav" id="navSubs" style="margin-top:10px;">订阅管理
+            <span class="out"><svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="m6 3 5 5-5 5"/></svg></span>
+          </button>
+        </nav>
+        <div class="set-body" id="setBody">
         <div class="set-inner">
 
-          <div class="set-h">外观与阅读 APPEARANCE</div>
+          <div class="set-h" id="sec-appearance">外观与阅读 APPEARANCE</div>
           <div class="srow">
             <div><div class="lb">主题模式</div><div class="hp">深色为命名候「夜读本」，非简单反色</div></div>
             <div class="ctl">
@@ -392,7 +414,7 @@
             <p class="serif" id="prevSerif" style="font-size:15.5px;line-height:2;">五年里我换过四个稍后读应用、三个聚合器、两套笔记系统。每一件都 promising 地开始，都以同一个症状结束：收藏的东西越来越多，读完的越来越少。问题不在工具，在形态——未读不是债务，只是今天的天气。</p>
           </div>
 
-          <div class="set-h">同步与来源 SYNC</div>
+          <div class="set-h" id="sec-sync">同步与来源 SYNC</div>
           <div class="srow">
             <div><div class="lb">同步频率</div><div class="hp">后台调度器按此间隔拉取全部来源</div></div>
             <div class="ctl">
@@ -450,7 +472,7 @@
             </div>
           </div>
 
-          <div class="set-h">行为与数据 SYSTEM</div>
+          <div class="set-h" id="sec-system">行为与数据 SYSTEM</div>
           <div class="srow">
             <div><div class="lb">开机启动</div><div class="hp">随系统启动，不显示窗口</div></div>
             <div class="ctl"><button class="sw" id="swLaunch" aria-label="开机启动"></button></div>
@@ -526,6 +548,7 @@
             </div>
           </div>
 
+        </div>
         </div>
       </div>
     </section>
@@ -756,8 +779,32 @@ function go(v){
 document.getElementById("backFromSettings").addEventListener("click",()=>go("list"));
 document.getElementById("backFromSubs").addEventListener("click",()=>go("settings"));
 document.getElementById("goSubs").addEventListener("click",()=>go("subs"));
+document.getElementById("navSubs").addEventListener("click",()=>go("subs"));
 document.getElementById("navUnread").addEventListener("click",()=>go("list"));
 go("settings");
+
+/* ── 左锄点导航：点击滚动 + 滚动侦测 ── */
+const setBody=document.getElementById("setBody");
+const navBtns=[...document.querySelectorAll(".set-nav .snav[data-sec]")];
+navBtns.forEach(b=>b.addEventListener("click",()=>{
+  const el=document.getElementById(b.dataset.sec);
+  el&&el.scrollIntoView({behavior:"smooth",block:"start"});
+}));
+let spyTick=false;
+setBody.addEventListener("scroll",()=>{
+  if(spyTick)return;spyTick=true;
+  requestAnimationFrame(()=>{
+    spyTick=false;
+    const sbTop=setBody.getBoundingClientRect().top;
+    let cur=0;
+    navBtns.forEach((b,i)=>{
+      const s=document.getElementById(b.dataset.sec);
+      if(s&&s.getBoundingClientRect().top-sbTop<=90)cur=i;
+    });
+    if(setBody.scrollTop+setBody.clientHeight>=setBody.scrollHeight-8)cur=navBtns.length-1;
+    navBtns.forEach((b,i)=>b.classList.toggle("on",i===cur));
+  });
+},{passive:true});
 
 /* ── 控件：分段 ── */
 document.querySelectorAll(".seg").forEach(seg=>{
