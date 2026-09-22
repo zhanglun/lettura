@@ -1,35 +1,64 @@
-import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 import { ArticleDetail } from "@/components/ArticleView/Detail";
 import {
   ScrollBox,
   ScrollBoxRefObject,
 } from "@/components/ArticleView/ScrollBox";
-import { useRef } from "react";
 import { ReaderControls } from "@/components/ReaderControls";
 import { IconButton } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
+import { formatDistanceToNow } from "date-fns";
 import { ArticleResItem } from "@/db";
 import { ChevronLeft, X } from "lucide-react";
 import { useBearStore } from "@/stores";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArticleNavFooter } from "@/components/ArticleNavFooter";
+import { KindBadge } from "@/components/KindBadge";
 
 export interface ArticleViewProps {
   article: ArticleResItem | null;
-  goNext?: () => void;
-  goPrev?: () => void;
+  /** 下一篇（完读区卡片，j/k 直达） */
+  nextArticle?: ArticleResItem | null;
+  onOpenNext?: () => void;
+  /** 已读并返回列表 */
+  onMarkBack?: () => void;
   closable?: boolean;
   onClose?: () => void;
   onArticleUpdate?: (updated: ArticleResItem) => void;
 }
 
-export function View({ article, goNext, goPrev, closable, onClose, onArticleUpdate }: ArticleViewProps) {
+/** 阅读面：640px 宋体单栏，顶栏下缘进度发丝线是唯一的仪表读数（detail.html 契约） */
+export function View({
+  article,
+  nextArticle,
+  onOpenNext,
+  onMarkBack,
+  closable,
+  onClose,
+  onArticleUpdate,
+}: ArticleViewProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const params = useParams<{ uuid?: string }>();
   const setArticle = useBearStore((state) => state.setArticle);
-  const hasMorePrev = useBearStore((state) => state.hasMorePrev);
-  const hasMoreNext = useBearStore((state) => state.hasMoreNext);
+  const [progress, setProgress] = useState(0);
+  const scrollBoxRef = useRef<ScrollBoxRefObject>(null);
+
+  // 切换文章回滚顶部，进度线归零
+  useEffect(() => {
+    scrollBoxRef.current?.scrollToTop();
+    setProgress(0);
+  }, [article?.uuid]);
+
+  const handleBack = () => {
+    if (closable) {
+      onClose?.();
+      return;
+    }
+    setArticle(null);
+    if (params.uuid) {
+      navigate(`/local/feeds/${params.uuid}`);
+    }
+  };
 
   const renderPlaceholder = () => {
     return (
@@ -60,85 +89,125 @@ export function View({ article, goNext, goPrev, closable, onClose, onArticleUpda
     );
   };
 
-  const scrollBoxRef = useRef<ScrollBoxRefObject>(null);
-
-  const handleBack = () => {
-    if (closable) {
-      onClose?.();
-      return;
-    }
-    setArticle(null);
-    if (params.uuid) {
-      navigate(`/local/feeds/${params.uuid}`);
-    }
-  };
-
   return (
-    <div className="flex h-full min-h-0 flex-1 min-w-0 flex-col bg-[var(--color-panel-solid)]">
-      <AnimatePresence>
-        <motion.article
-          key={article?.uuid || "view"}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.16 }}
-          className="flex min-h-0 flex-1 overflow-hidden"
-        >
-          <ScrollBox
-            className="min-h-0 w-full"
-            ref={scrollBoxRef}
+    <div className="relative flex h-full min-h-0 flex-1 min-w-0 flex-col">
+      {/* 固定顶栏 */}
+      <div className="fusion-dtop">
+        <button type="button" className="fusion-back" onClick={handleBack}>
+          <ChevronLeft size={12} />
+          {t("article.view.back")}
+          <kbd className="fusion-kbd">esc</kbd>
+        </button>
+        {article && (
+          <span className="d-src">
+            {article.feed_title} ·{" "}
+            {formatDistanceToNow(
+              new Date(article.pub_date || article.create_date),
+              { addSuffix: true },
+            )}
+          </span>
+        )}
+        <span className="fusion-spring" />
+        {article && (
+          <ReaderControls
+            article={article}
+            showBrowser
+            onStarChange={onArticleUpdate}
+            onReadChange={onArticleUpdate}
+          />
+        )}
+        {closable && (
+          <IconButton
+            size="2"
+            variant="ghost"
+            color="gray"
+            className="text-[var(--gray-11)]"
+            onClick={onClose}
           >
-            <div className="mx-auto flex min-h-full w-full max-w-[640px] flex-col px-10 py-11 font-[var(--reading-font-body)]">
-              <div className="mb-6 flex items-center gap-2 border-b border-[var(--gray-5)] pb-4">
+            <X size={16} />
+          </IconButton>
+        )}
+      </div>
+
+      {/* 阅读进度发丝线 */}
+      <div className="fusion-prog" style={{ width: `${progress}%` }} />
+
+      {/* 正文 */}
+      <ScrollBox
+        className="min-h-0 w-full flex-1"
+        ref={scrollBoxRef}
+        onProgress={setProgress}
+      >
+        <div className="mx-auto w-full max-w-[640px] px-10 py-11 font-[var(--reading-font-body)]">
+          {article ? (
+            <>
+              <ArticleDetail article={article} />
+
+              {/* 完读区 */}
+              <div className="fusion-fin">· 完 ·</div>
+              {nextArticle ? (
+                <div>
+                  <div className="fusion-next-h">
+                    {t("article.view.next_up")} · J/K
+                  </div>
+                  <div
+                    className="fusion-row"
+                    role="button"
+                    tabIndex={0}
+                    onClick={onOpenNext}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") onOpenNext?.();
+                    }}
+                  >
+                    <span className="fusion-st">
+                      <span className="fusion-dot" />
+                    </span>
+                    <KindBadge
+                      link={nextArticle.link}
+                      feed_url={nextArticle.feed_url}
+                      media_object={nextArticle.media_object}
+                    />
+                    <span className="fusion-title">{nextArticle.title}</span>
+                    <span className="fusion-src">{nextArticle.feed_title}</span>
+                    <span className="fusion-date">
+                      {formatDistanceToNow(
+                        new Date(nextArticle.pub_date || nextArticle.create_date),
+                        { addSuffix: true },
+                      )}
+                    </span>
+                    <span />
+                  </div>
+                </div>
+              ) : (
+                <div className="fusion-next-h">{t("article.view.no_next")}</div>
+              )}
+              <div className="fusion-endacts">
                 <button
                   type="button"
-                  onClick={handleBack}
-                  className="inline-flex h-8 items-center gap-1 rounded-md px-2 text-[11px] text-[var(--gray-10)] transition hover:bg-[var(--gray-a3)] hover:text-[var(--gray-12)]"
+                  className="fusion-btn-gh"
+                  onClick={onMarkBack}
                 >
-                  <ChevronLeft size={14} />
-                  {t("article.view.back")}
-                </button>
-                <div className="flex-1" />
-                {article && (
-                  <ReaderControls
-                    article={article}
-                    showBrowser
-                    showReadLater
-                    onStarChange={onArticleUpdate}
-                    onReadChange={onArticleUpdate}
-                  />
-                )}
-                {closable && (
-                  <IconButton
-                    size="2"
-                    variant="ghost"
-                    color="gray"
-                    className="text-[var(--gray-11)]"
-                    onClick={onClose}
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
                   >
-                    <X size={16} />
-                  </IconButton>
-                )}
+                    <path d="m3 8.5 3.2 3L13 5" />
+                  </svg>
+                  {t("article.view.mark_back")}
+                  <kbd className="fusion-kbd">m</kbd>
+                </button>
               </div>
-              {article ? (
-                <ArticleDetail article={article} />
-              ) : (
-                <div className="flex flex-1 items-center justify-center">
-                  {renderPlaceholder()}
-                </div>
-              )}
-            </div>
-          </ScrollBox>
-        </motion.article>
-      </AnimatePresence>
-      <ArticleNavFooter
-        canPrev={hasMorePrev}
-        canNext={hasMoreNext}
-        onPrev={goPrev}
-        onNext={goNext}
-        prevLabel={t("article.view.prev")}
-        nextLabel={t("article.view.next")}
-      />
+            </>
+          ) : (
+            renderPlaceholder()
+          )}
+        </div>
+      </ScrollBox>
     </div>
   );
 }

@@ -146,11 +146,6 @@ export function ArticleView() {
         ? store.article
         : null;
 
-  useEffect(() => {
-    store.setHasMorePrev(expandedIdx > 0);
-    store.setHasMoreNext(expandedIdx >= 0 && expandedIdx < visibleArticles.length - 1);
-  }, [expandedIdx, visibleArticles.length]);
-
   const openArticle = useCallback(
     (a: ArticleResItem) => {
       if (a.read_status === ArticleReadStatus.UNREAD) {
@@ -254,10 +249,12 @@ export function ArticleView() {
           article={detailArticle}
           closable
           onClose={closeDetail}
-          goPrev={expandedIdx > 0 ? () => moveFocus(-1) : undefined}
-          goNext={
-            expandedIdx < visibleArticles.length - 1 ? () => moveFocus(1) : undefined
-          }
+          nextArticle={visibleArticles[expandedIdx + 1] ?? null}
+          onOpenNext={() => moveFocus(1)}
+          onMarkBack={() => {
+            markFocusedRead();
+            closeDetail();
+          }}
           onArticleUpdate={handleArticleUpdate}
         />
         <ArticleDialogView

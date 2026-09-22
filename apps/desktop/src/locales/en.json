@@ -478,7 +478,10 @@
     "view": {
       "back": "Back",
       "prev": "Prev",
-      "next": "Next"
+      "next": "Next",
+      "next_up": "Next up",
+      "no_next": "End of queue",
+      "mark_back": "Mark read and back to list"
     }
   },
   "Play": "Play",

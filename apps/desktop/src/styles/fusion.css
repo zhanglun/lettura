@@ -725,3 +725,148 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* ── 详情阅读面（detail.html 契约） ── */
+:root {
+  --read-size: 15.5px;
+  --read-lh: 2;
+}
+
+.fusion-article-body {
+  font-family: "Songti SC", "STSong", "Noto Serif SC", serif;
+  font-size: var(--read-size);
+  line-height: var(--read-lh);
+  color: #33363b;
+}
+
+/* 排版要素：发丝线与灰阶，颜色只有强调蓝 */
+.fusion-article-body a {
+  color: var(--fusion-accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+
+.fusion-article-body blockquote {
+  border-left: 1px solid var(--fusion-hair2);
+  padding-left: 16px;
+  margin: 18px 0;
+  color: var(--fusion-sub);
+}
+
+.fusion-article-body pre {
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid var(--fusion-hair);
+  border-radius: 10px;
+  padding: 14px 16px;
+  font-family: "SF Mono", Menlo, monospace;
+  font-size: 12.5px;
+  line-height: 1.7;
+  overflow-x: auto;
+  margin: 18px 0;
+}
+
+.fusion-article-body code {
+  font-family: "SF Mono", Menlo, monospace;
+  font-size: 0.85em;
+  background: rgba(29, 30, 32, 0.05);
+  border-radius: 5px;
+  padding: 1px 6px;
+}
+
+.fusion-article-body pre code {
+  background: none;
+  padding: 0;
+}
+
+/* 固定顶栏 + 阅读进度发丝线（唯一的仪表读数） */
+.fusion-dtop {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--fusion-hair);
+  flex: none;
+}
+
+.fusion-dtop .d-src {
+  font-size: 11.5px;
+  color: var(--fusion-ter);
+  margin-left: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fusion-prog {
+  position: absolute;
+  top: 50px;
+  left: 0;
+  height: 1.5px;
+  background: var(--fusion-accent);
+  z-index: 5;
+  transition: width 0.1s linear;
+  pointer-events: none;
+}
+
+.fusion-back {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: var(--fusion-sub);
+  padding: 5px 10px;
+  border-radius: 7px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  flex: none;
+}
+
+.fusion-back:hover {
+  background: rgba(29, 30, 32, 0.05);
+  color: var(--fusion-ink);
+}
+
+/* 完读区：· 完 · + 下一篇卡 + 已读并返回 */
+.fusion-fin {
+  text-align: center;
+  color: var(--fusion-ter);
+  font-size: 12px;
+  letter-spacing: 0.4em;
+  margin: 34px 0 6px;
+}
+
+.fusion-next-h {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--fusion-ter);
+  margin: 22px 0 2px;
+}
+
+.fusion-endacts {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0 8px;
+}
+
+.fusion-btn-gh {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 32px;
+  padding: 0 14px;
+  border: 1px solid var(--fusion-hair2);
+  border-radius: 9px;
+  font-size: 12.5px;
+  color: var(--fusion-sub);
+  background: rgba(255, 255, 255, 0.55);
+  cursor: pointer;
+}
+
+.fusion-btn-gh:hover {
+  color: var(--fusion-ink);
+  border-color: var(--fusion-sub);
+}
