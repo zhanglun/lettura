@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useHotkeys } from "react-hotkeys-hook";
 import { Search } from "lucide-react";
-import { Dialog, Text } from "@radix-ui/themes";
 import { useShallow } from "zustand/react/shallow";
 import { useTranslation } from "react-i18next";
 import { RouteConfig } from "@/config";
@@ -11,6 +10,7 @@ import { busChannel } from "@/helpers/busChannel";
 import { LPodcast } from "@/components/LPodcast";
 import { AddFeedChannel } from "@/components/AddFeed";
 import { CommandPalette } from "./CommandPalette";
+import { HelpOverlay } from "./HelpOverlay";
 
 const FILTER_UNREAD = { id: 1, title: "Unread" };
 const FILTER_READ = { id: 2, title: "Read" };
@@ -109,7 +109,13 @@ export const AppLayout = React.memo(function () {
     e.preventDefault();
     setPaletteOpen(true);
   });
-  useHotkeys("shift+/", () => setHelpOpen((v) => !v));
+  useHotkeys("shift+/", () => {
+    setHelpOpen((v) => !v);
+    setPaletteOpen(false);
+  });
+  useHotkeys("meta+comma, ctrl+comma", () => {
+    navigate(RouteConfig.SETTINGS);
+  });
   useHotkeys("shift+r", () => store.syncAllArticles());
   useHotkeys("space", (e) => {
     if (!store.tracks?.length) return;
@@ -162,35 +168,7 @@ export const AppLayout = React.memo(function () {
       </section>
 
       <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
-      <Dialog.Root open={helpOpen} onOpenChange={setHelpOpen}>
-        <Dialog.Content maxWidth="440px">
-          <Dialog.Title>{t("fusion.help.title")}</Dialog.Title>
-          <Dialog.Description size="2" color="gray">
-            {t("fusion.help.desc")}
-          </Dialog.Description>
-          <div className="mt-4 grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-[13px]">
-            {[
-              ["j / k", t("fusion.help.jk")],
-              ["⏎ / o", t("fusion.help.open")],
-              ["esc", t("fusion.help.esc")],
-              ["m", t("fusion.help.m")],
-              ["M", t("fusion.help.M")],
-              ["f", t("fusion.help.f")],
-              ["v", t("fusion.help.v")],
-              ["space", t("fusion.help.space")],
-              ["R", t("fusion.help.R")],
-              ["c", t("fusion.help.c")],
-              ["⌘K / /", t("fusion.help.palette")],
-              ["?", t("fusion.help.help")],
-            ].map(([key, desc]) => (
-              <React.Fragment key={key}>
-                <kbd className="fusion-kbd">{key}</kbd>
-                <Text size="2" color="gray">{desc}</Text>
-              </React.Fragment>
-            ))}
-          </div>
-        </Dialog.Content>
-      </Dialog.Root>
+      <HelpOverlay open={helpOpen} onClose={() => setHelpOpen(false)} />
       <LPodcast visible={playerVisible} />
       <AddFeedChannel
         open={store.addFeedModalOpen}

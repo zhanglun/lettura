@@ -213,12 +213,11 @@ export function ArticleView() {
     markFocusedRead();
     moveFocus(1);
   }, [markFocusedRead, moveFocus]);
+  // M：已读并上移（DESIGN 键盘模型契约）
   useHotkeys("shift+m", () => {
-    if (focused && focused.read_status === ArticleReadStatus.READ) {
-      store.updateArticleStatus(focused, ArticleReadStatus.UNREAD);
-      handleArticleUpdate({ ...focused, read_status: ArticleReadStatus.UNREAD });
-    }
-  }, [focused, store, handleArticleUpdate]);
+    markFocusedRead();
+    moveFocus(-1);
+  }, [markFocusedRead, moveFocus]);
   useHotkeys("f", () => toggleStar(focused), [focused, toggleStar]);
   useHotkeys("v", () => {
     if (focused?.link) open(focused.link);

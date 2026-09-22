@@ -617,3 +617,111 @@
   line-height: 2;
   color: #33363b;
 }
+
+/* ── 浮层通用语法（⌘K / 帮助 / 添加订阅共用） ── */
+.fusion-veil {
+  position: absolute;
+  inset: 0;
+  background: rgba(29, 30, 32, 0.14);
+  z-index: 40;
+}
+
+.fusion-float {
+  position: absolute;
+  left: 50%;
+  top: 84px;
+  transform: translateX(-50%);
+  z-index: 50;
+  border-radius: 14px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(28px) saturate(1.6);
+  border: 1px solid rgba(29, 30, 32, 0.1);
+  box-shadow:
+    0 4px 10px rgba(29, 30, 32, 0.06),
+    0 36px 80px -16px rgba(29, 30, 32, 0.4);
+}
+
+.fusion-float-foot {
+  height: 34px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 16px;
+  border-top: 1px solid var(--fusion-hair);
+  font-size: 10.5px;
+  color: var(--fusion-ter);
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* ── 帮助面板：双列键位卡 ── */
+.fusion-help {
+  width: 720px;
+}
+
+.fusion-help-in {
+  height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--fusion-hair);
+}
+
+.fusion-help-in .tt {
+  font-size: 14px;
+  font-weight: 700;
+  flex: 1;
+  color: var(--fusion-ink);
+}
+
+.fusion-help-in .sub {
+  font-size: 11px;
+  color: var(--fusion-ter);
+}
+
+.fusion-help-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 8px 6px 12px;
+}
+
+.fusion-help-grp {
+  padding: 6px 12px;
+}
+
+.fusion-help-gh {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--fusion-ter);
+  margin: 10px 0 4px;
+}
+
+.fusion-krow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 33px;
+  border-bottom: 1px solid var(--fusion-hair);
+}
+
+.fusion-krow:last-child {
+  border-bottom: 0;
+}
+
+.fusion-krow .keys {
+  display: flex;
+  gap: 4px;
+  flex: none;
+  width: 104px;
+  justify-content: flex-end;
+}
+
+.fusion-krow .desc {
+  font-size: 12.5px;
+  color: var(--fusion-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
