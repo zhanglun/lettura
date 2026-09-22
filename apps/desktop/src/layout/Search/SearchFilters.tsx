@@ -3,7 +3,6 @@ import {
   Bookmark,
   Filter,
   Search,
-  Sparkles,
   Star,
   X,
 } from "lucide-react";
@@ -17,10 +16,8 @@ interface SearchFiltersProps {
   onSearch: () => void;
   onSaveSearch: () => void;
   isStarred: boolean;
-  highSignal: boolean;
   onResetFilters: () => void;
   onToggleStarred: () => void;
-  onToggleHighSignal: () => void;
   startDate: string;
   endDate: string;
   feedUuid: string;
@@ -40,10 +37,8 @@ export function SearchFilters({
   onSearch,
   onSaveSearch,
   isStarred,
-  highSignal,
   onResetFilters,
   onToggleStarred,
-  onToggleHighSignal,
   startDate,
   endDate,
   feedUuid,
@@ -121,19 +116,10 @@ export function SearchFilters({
       </div>
       <div className="search-filter-row">
         <SearchChip
-          active={!isStarred && !highSignal}
+          active={!isStarred}
           onClick={onResetFilters}
         >
           {t("search.filter.all")}
-        </SearchChip>
-        <SearchChip>
-          {t("search.filter.articles")}
-        </SearchChip>
-        <SearchChip>
-          {t("search.filter.signals")}
-        </SearchChip>
-        <SearchChip>
-          {t("search.filter.topics")}
         </SearchChip>
         <SearchChip
           active={isStarred}
@@ -141,13 +127,6 @@ export function SearchFilters({
         >
           <Bookmark size={12} />
           {t("search.filter.starred")}
-        </SearchChip>
-        <SearchChip
-          active={highSignal}
-          onClick={onToggleHighSignal}
-        >
-          <Sparkles size={12} />
-          {t("search.filter.high_signal")}
         </SearchChip>
         <SearchChip active={hasActiveFilters}>
           <Filter size={12} />

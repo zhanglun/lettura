@@ -7,20 +7,14 @@ import {
 import { Toaster } from "sonner";
 import { invoke } from "@tauri-apps/api/core";
 
-import reportWebVitals from "./reportWebVitals";
 import App from "./App";
 import ErrorPage from "./ErrorPage";
 import { RouteConfig } from "./config";
 import { ArticleContainer } from "./layout/Article";
-import { TodayPage } from "./layout/Intelligence/TodayPage";
 import { SearchPage } from "./layout/Search";
 import { StarredPage } from "./layout/Starred";
-import { FreshRSSPage } from "./layout/FreshRSS";
-import { TopicWorkspace } from "./layout/Intelligence/Topics/TopicWorkspace";
-import { ChatPage } from "./layout/Intelligence/ChatPage";
 import { SettingPage } from "./layout/Setting";
 import { FeedsPage } from "./layout/Feeds";
-import { ComponentsGallery } from "./layout/Components";
 
 import "./index.css";
 import "./i18n";
@@ -38,15 +32,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <Navigate to={RouteConfig.LOCAL_TODAY} />,
-      },
-      // {
-      //   path: RouteConfig.LOCAL,
-      //   element: <LocalPage />,
-      //   children: [
-      {
-        path: RouteConfig.LOCAL_TODAY,
-        element: <TodayPage />,
+        element: <Navigate to={RouteConfig.LOCAL_ALL} />,
       },
       {
         path: RouteConfig.LOCAL_ALL,
@@ -67,28 +53,6 @@ const router = createBrowserRouter([
       {
         path: RouteConfig.LOCAL_ARTICLE,
         element: <ArticleContainer />,
-      },
-      {
-        path: RouteConfig.LOCAL_TOPICS,
-        element: <TopicWorkspace />,
-      },
-      {
-        path: RouteConfig.LOCAL_TOPIC_DETAIL,
-        element: <TopicWorkspace />,
-      },
-      {
-        path: RouteConfig.LOCAL_CHAT,
-        element: <ChatPage />,
-      },
-      {
-        path: RouteConfig.LOCAL_COMPONENTS,
-        element: <ComponentsGallery />,
-      },
-      //   ],
-      // },
-      {
-        path: RouteConfig.SERVICE_FRESHRSS,
-        element: <FreshRSSPage />,
       },
       {
         path: RouteConfig.SEARCH,
@@ -114,7 +78,3 @@ if (typeof (window as any).__TAURI_INTERNALS__ !== "undefined") {
   root.render(<RouterProvider router={router} />);
 }
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();

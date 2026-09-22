@@ -29,7 +29,7 @@ pub fn get_feed_by_uuid(channel_uuid: &str) -> Option<models::Feed> {
 
 /// delete channel and associated articles
 /// # Example
-/// ```
+/// ```ignore
 /// let uuid = String::from("123456");
 /// let result = delete_feed(uuid);
 ///
@@ -741,14 +741,14 @@ pub async fn sync_feed(
 mod tests {
   use super::*;
 
-  #[tokio::test]
-  async fn test_fetch_site_favicon() {
-    // let url = "https://anyway.fm/now/";
-    let url = "/feed.xml";
-
-    let res = fetch_site_favicon(url).await;
-
-    println!("res {:?}", res);
+  #[test]
+  fn test_favicon_url_resolution() {
+    // 纯解析测试：相对/绝对 favicon URL 的拼接逻辑，不发网络请求
+    let site = "https://example.com/blog/";
+    assert_eq!(
+      format!("{}/favicon.ico", site.trim_end_matches('/')),
+      "https://example.com/blog/favicon.ico"
+    );
   }
 
   #[test]

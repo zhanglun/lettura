@@ -25,7 +25,7 @@ Lettura 是一个本地优先（Tauri + SQLite）的开源订阅阅读器。它�
 
 - 桌面 app（Tauri v2，macOS 为主）：React/Vite/TS 前端 + Rust 后端 + SQLite(Diesel)
 - 订阅：RSS/Atom、OPML 导入导出、平台源（B站/知乎/微博/Newsletter）
-- 键盘优先（j/k、Enter、m/M、A、f、v、space、`g` 前缀、`?` 帮助）
+- 键盘优先（j/k、Enter/o、m/M、f、v、space、R、`/` 或 ⌘K、`?` 帮助）
 - 中英双语界面（i18n，zh/en locale）
 - 后台定时同步已有（scheduler）；正文只渲染 feed 自带内容，不自动抓全文
 
@@ -37,8 +37,8 @@ Lettura 是一个本地优先（Tauri + SQLite）的开源订阅阅读器。它�
 - 未读列表（跨源、时间倒序、纯文本行）
 - 单栏阅读（渲染 feed 全文；`v` 打开原文）
 - 星标、已读历史
-- 播客播放（保留：enclosure 检测 → 行内 ▶ → 底部播放条）
-- 搜索（`/` 聚焦，不占导航位）
+- 播客播放（保留：enclosure 检测 → 列表「播」徽章 + 全局浮动播放卡 + 单集详情）
+- 搜索（⌘K 命令面板统一入口：文章/来源/命令混合）
 - 一页极简设置（外观/同步/OPML/数据位置）
 
 明确的非目标（0.2.0 不做）：

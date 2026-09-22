@@ -3047,13 +3047,13 @@ checksum = "09edd9e8b54e49e587e4f6295a7d29c3ea94d469cb40ab8ca70b288248a81db2"
 
 [[package]]
 name = "lettura"
-version = "0.1.22"
+version = "0.2.0"
 dependencies = [
  "actix-cors",
  "actix-web",
  "async-openai",
  "async-trait",
- "base64 0.22.1",
+ "base64 0.21.7",
  "chrono",
  "diesel",
  "diesel_migrations",

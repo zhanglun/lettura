@@ -3,35 +3,26 @@ import { FileSearch } from "lucide-react";
 import { Button } from "@radix-ui/themes";
 import { ArticleResItem, FeedResItem } from "@/db";
 import { RouteConfig } from "@/config";
-import type { SignalSearchResult, TopicSearchResult } from "./types";
 import { SearchResultCard, HighlightText } from "./utils";
 
 interface SearchResultsProps {
   resultList: ArticleResItem[];
-  signalResults: SignalSearchResult[];
-  topicResults: TopicSearchResult[];
   isFetching: boolean;
   hasMore: boolean;
   query: string;
   selectedFeed: FeedResItem | undefined;
   onLoadMore: () => void;
   onOpenArticle: (article: ArticleResItem) => void;
-  onNavigateToToday: () => void;
-  onNavigateToTopic: (uuid: string) => void;
 }
 
 export function SearchResults({
   resultList,
-  signalResults,
-  topicResults,
   isFetching,
   hasMore,
   query,
   selectedFeed,
   onLoadMore,
   onOpenArticle,
-  onNavigateToToday,
-  onNavigateToTopic,
 }: SearchResultsProps) {
   const { t } = useTranslation();
 
@@ -47,81 +38,6 @@ export function SearchResults({
         </span>
         {selectedFeed && <span>{t("search.source_label", { title: selectedFeed.title })}</span>}
       </div>
-
-      {signalResults.length > 0 && (
-        <div className="search-result-section">
-          <div className="search-result-section-title">
-            {t("search.section.signals")}
-          </div>
-          <div className="search-result-stack">
-            {signalResults.map((signal, i) => (
-              <div
-                key={i}
-                className="search-result-card search-result-card--signal"
-                onClick={onNavigateToToday}
-              >
-                <div className="search-result-meta">
-                  <span className="search-result-type">
-                    {t("search.result_type.signal")}
-                  </span>
-                  {signal.topic_title && (
-                    <span className="search-result-tag search-result-tag--topic">
-                      {signal.topic_title}
-                    </span>
-                  )}
-                  <span className="search-result-time">
-                    {t("search.result_meta", {
-                      articles: signal.article_count,
-                      sources: signal.source_count,
-                    })}
-                  </span>
-                </div>
-                <div className="search-result-title">{signal.signal_title}</div>
-                {signal.summary && (
-                  <p className="search-result-snippet">
-                    <HighlightText text={signal.summary} query={query} />
-                  </p>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {topicResults.length > 0 && (
-        <div className="search-result-section">
-          <div className="search-result-section-title">
-            {t("search.section.topics")}
-          </div>
-          <div className="search-result-stack">
-            {topicResults.map((topic) => (
-              <div
-                key={topic.uuid}
-                className="search-result-card search-result-card--topic"
-                onClick={() => onNavigateToTopic(topic.uuid)}
-              >
-                <div className="search-result-meta">
-                  <span className="search-result-type">
-                    {t("search.result_type.topic")}
-                  </span>
-                  <span className="search-result-time">
-                    {t("search.result_meta", {
-                      articles: topic.article_count,
-                      sources: topic.source_count,
-                    })}
-                  </span>
-                </div>
-                <div className="search-result-title">{topic.title}</div>
-                {topic.description && (
-                  <p className="search-result-snippet">
-                    <HighlightText text={topic.description} query={query} />
-                  </p>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
 
       {resultList.length === 0 && isFetching ? (
         <div className="search-result-stack">

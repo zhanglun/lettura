@@ -1,16 +1,15 @@
-import { useEffect, useCallback, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import { emit, listen } from "@tauri-apps/api/event";
 import { useBearStore } from "@/stores";
-import { LocalPage } from "./layout/Local";
 import { Theme } from "@radix-ui/themes";
 import { DialogAboutApp } from "./components/About";
-import { OnboardingDialog } from "./components/Onboarding";
 import { useShallow } from "zustand/react/shallow";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { showErrorToast } from "@/helpers/errorHandler";
 import { useNavigate } from "react-router-dom";
 import { RouteConfig } from "./config";
+import { AppLayout } from "./components/layout/AppLayout";
 
 function App() {
   const navigate = useNavigate();
@@ -20,10 +19,6 @@ function App() {
       getUserConfig: state.getUserConfig,
       updateAboutDialogStatus: state.updateAboutDialogStatus,
       updateAppMetadata: state.updateAppMetadata,
-      setOnboardingOpen: state.setOnboardingOpen,
-      setPipelineStatus: state.setPipelineStatus,
-      setPipelineProgress: state.setPipelineProgress,
-      setPipelineError: state.setPipelineError,
     })),
   );
 
@@ -68,51 +63,6 @@ function App() {
     store.updateAppMetadata,
     navigate,
   ]);
-
-  useEffect(() => {
-    if (!(window as any).__TAURI_INTERNALS__) return;
-
-    const unsubs: (() => void)[] = [];
-    let cancelled = false;
-
-    import("@tauri-apps/api/event").then(async ({ listen }) => {
-      if (cancelled) return;
-
-      unsubs.push(
-        await listen("pipeline:started", () => {
-          store.setPipelineStatus("running");
-        }),
-      );
-      unsubs.push(
-        await listen("pipeline:progress", (e: any) => {
-          const { stage, current, total } = e.payload;
-          store.setPipelineProgress(stage, current, total);
-        }),
-      );
-      unsubs.push(
-        await listen("pipeline:completed", () => {
-          store.setPipelineStatus("done");
-        }),
-      );
-      unsubs.push(
-        await listen("pipeline:failed", (e: any) => {
-          const msg = e.payload?.error_message || "Unknown error";
-          store.setPipelineError(msg);
-        }),
-      );
-
-      const { invoke } = await import("@tauri-apps/api/core");
-      const running = await invoke<boolean>("is_pipeline_running");
-      if (!cancelled && running) {
-        store.setPipelineStatus("running");
-      }
-    });
-
-    return () => {
-      cancelled = true;
-      unsubs.forEach((unsub) => unsub());
-    };
-  }, [store.setPipelineStatus, store.setPipelineProgress, store.setPipelineError]);
 
   useEffect(() => {
     const minBtn = document.getElementById("titlebar-minimize");
@@ -166,11 +116,6 @@ function App() {
             );
           }
         }
-
-        const appConfig = (cfg as any).app as { onboarding_completed?: boolean } | undefined;
-        if (appConfig && !appConfig.onboarding_completed) {
-          store.setOnboardingOpen(true);
-        }
       });
     }
   }, []);
@@ -183,10 +128,9 @@ function App() {
     >
       <ErrorBoundary>
         <div className="h-full max-h-full ">
-          <LocalPage />
+          <AppLayout />
         </div>
         <DialogAboutApp />
-        <OnboardingDialog />
       </ErrorBoundary>
     </Theme>
   );

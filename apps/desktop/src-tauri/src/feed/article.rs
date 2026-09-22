@@ -751,9 +751,9 @@ mod tests {
             .expect("Failed to update article attrs");
     }
 
-    fn make_filter() -> ArticleFilter {
+    fn make_filter(feed_uuid: &str) -> ArticleFilter {
         ArticleFilter {
-            feed_uuid: None,
+            feed_uuid: Some(feed_uuid.to_string()),
             folder_uuid: None,
             item_type: None,
             is_today: None,
@@ -834,7 +834,7 @@ mod tests {
         // When/Then: is_starred=1 returns A, B, D
         let result = Article::get_article(ArticleFilter {
             is_starred: Some(1),
-            ..make_filter()
+            ..make_filter(&feed_uuid)
         });
         let uuids: Vec<String> = result.list.iter().map(|a| a.uuid.clone()).collect();
         assert_eq!(uuids.len(), 3, "Starred filter should return 3 articles (A, B, D)");
@@ -845,7 +845,7 @@ mod tests {
         // When/Then: is_archived=1 returns only B
         let result = Article::get_article(ArticleFilter {
             is_archived: Some(1),
-            ..make_filter()
+            ..make_filter(&feed_uuid)
         });
         let uuids: Vec<String> = result.list.iter().map(|a| a.uuid.clone()).collect();
         assert_eq!(uuids.len(), 1, "Archived filter should return 1 article (B)");
@@ -854,7 +854,7 @@ mod tests {
         // When/Then: is_read_later=1 returns B, C
         let result = Article::get_article(ArticleFilter {
             is_read_later: Some(1),
-            ..make_filter()
+            ..make_filter(&feed_uuid)
         });
         let uuids: Vec<String> = result.list.iter().map(|a| a.uuid.clone()).collect();
         assert_eq!(uuids.len(), 2, "Read later filter should return 2 articles (B, C)");
@@ -864,7 +864,7 @@ mod tests {
         // When/Then: collection_uuid returns only A
         let result = Article::get_article(ArticleFilter {
             collection_uuid: Some(coll_uuid),
-            ..make_filter()
+            ..make_filter(&feed_uuid)
         });
         let uuids: Vec<String> = result.list.iter().map(|a| a.uuid.clone()).collect();
         assert_eq!(uuids.len(), 1, "Collection filter should return 1 article (A)");
@@ -873,7 +873,7 @@ mod tests {
         // When/Then: tag_uuid returns only D
         let result = Article::get_article(ArticleFilter {
             tag_uuid: Some(tag_uuid),
-            ..make_filter()
+            ..make_filter(&feed_uuid)
         });
         let uuids: Vec<String> = result.list.iter().map(|a| a.uuid.clone()).collect();
         assert_eq!(uuids.len(), 1, "Tag filter should return 1 article (D)");
@@ -882,7 +882,7 @@ mod tests {
         // When/Then: has_notes=1 returns only A
         let result = Article::get_article(ArticleFilter {
             has_notes: Some(1),
-            ..make_filter()
+            ..make_filter(&feed_uuid)
         });
         let uuids: Vec<String> = result.list.iter().map(|a| a.uuid.clone()).collect();
         assert_eq!(uuids.len(), 1, "Has notes filter should return 1 article (A)");

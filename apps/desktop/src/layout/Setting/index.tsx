@@ -1,5 +1,4 @@
 import { Appearance } from "./Appearance";
-import { AIConfigPanel } from "./AIConfig";
 import { Sources } from "./Sources";
 import { Subscriptions } from "./Subscriptions";
 import { Behavior } from "./Behavior";
@@ -12,7 +11,6 @@ import { RouteConfig } from "@/config";
 import "./index.css";
 
 const TABS: { key: SettingTabKey; labelKey: string }[] = [
-  { key: SettingTabKey.AI,            labelKey: "settings.tab.ai_title" },
   { key: SettingTabKey.SUBSCRIPTIONS, labelKey: "settings.tab.subscriptions_title" },
   { key: SettingTabKey.SOURCES,       labelKey: "settings.tab.sources_title" },
   { key: SettingTabKey.APPEARANCE,    labelKey: "settings.tab.appearance_title" },
@@ -29,7 +27,7 @@ export function SettingPage() {
     : tabParam === "sources"     ? SettingTabKey.SOURCES
     : tabParam === "appearance"  ? SettingTabKey.APPEARANCE
     : tabParam === "behavior"    ? SettingTabKey.BEHAVIOR
-    : SettingTabKey.AI;
+    : SettingTabKey.SUBSCRIPTIONS;
 
   const handleTabChange = (key: SettingTabKey) => {
     navigate(`${RouteConfig.SETTINGS}?tab=${key}`, { replace: true });
@@ -71,7 +69,6 @@ export function SettingPage() {
       {/* Scrollable content */}
       <div className="flex-1 overflow-auto px-8 py-7">
         <div className="max-w-[960px]">
-          {effectiveTab === SettingTabKey.AI            && <AIConfigPanel />}
           {effectiveTab === SettingTabKey.SUBSCRIPTIONS && <Subscriptions />}
           {effectiveTab === SettingTabKey.SOURCES       && <Sources />}
           {effectiveTab === SettingTabKey.APPEARANCE    && <Appearance />}

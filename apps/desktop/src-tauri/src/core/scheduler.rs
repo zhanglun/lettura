@@ -154,7 +154,6 @@ impl Scheduler {
 
             info!("Sync cycle completed");
 
-            crate::ai::pipeline::spawn_pipeline_if_configured(None);
           }
           Err(e) => {
             error!("Failed to get feeds: {}", e);

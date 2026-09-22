@@ -10,13 +10,11 @@ extern crate dotenv;
 
 use actix_web::dev::ServerHandle;
 use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
-use log::LevelFilter;
 use std::{env, sync::Mutex};
 use tauri::{Emitter, Manager};
 use tauri_plugin_log::{Target, TargetKind};
 use tauri_plugin_autostart::MacosLauncher;
 
-mod ai;
 mod cmd;
 mod core;
 mod db;
@@ -107,7 +105,6 @@ pub fn run() {
       feed::article::Article::purge_articles();
       feed::article::Article::purge_by_data_retention();
 
-      ai::pipeline::start_pipeline_timer(app.handle().clone());
 
       tauri::async_runtime::spawn(async {
         crate::core::scheduler::start_scheduler().await;
@@ -146,26 +143,6 @@ pub fn run() {
       cmd::preview_pack,
       cmd::install_pack,
       cmd::import_opml_as_source,
-      cmd::get_today_signals,
-      cmd::get_signal_detail,
-      cmd::get_today_overview,
-      cmd::get_dedup_stats,
-      cmd::get_ai_config,
-      cmd::save_ai_config,
-      cmd::validate_ai_config,
-      cmd::trigger_pipeline,
-      cmd::is_pipeline_running,
-      cmd::submit_feedback,
-      cmd::get_feedback_history,
-      cmd::get_topics,
-      cmd::get_topic_detail,
-      cmd::follow_topic,
-      cmd::unfollow_topic,
-      cmd::mute_topic,
-      cmd::unmute_topic,
-      cmd::search_signals,
-      cmd::search_topics,
-      cmd::chat_with_agent,
       core::scheduler::start_scheduler,
       core::scheduler::stop_scheduler,
       core::scheduler::is_scheduler_running,

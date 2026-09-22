@@ -15,8 +15,6 @@ function getInitialCollapsed(): boolean {
 }
 
 function getSidebarContext(pathname: string): SidebarContext {
-  if (pathname.startsWith("/local/today")) return "today";
-  if (pathname.startsWith("/local/topics")) return "hidden";
   if (pathname.startsWith("/local/starred")) return "hidden";
   if (pathname.startsWith("/settings")) return "hidden";
   if (pathname.startsWith("/search")) return "hidden";
@@ -53,7 +51,7 @@ export const AppLayout = React.memo(function () {
   }, []);
 
   const effectiveSidebarCollapsed =
-    sidebarContext === "today" || sidebarContext === "feeds" || sidebarContext === "feeds-manage"
+    sidebarContext === "feeds" || sidebarContext === "feeds-manage"
       ? false
       : sidebarCollapsed;
   const showSidebar = !effectiveSidebarCollapsed && sidebarContext !== "hidden";

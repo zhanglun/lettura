@@ -1,16 +1,7 @@
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import {
-  Sparkles,
-  Layers,
-  Rss,
-  Search,
-  Star,
-  LayoutGrid,
-  Settings,
-  MessageCircle,
-} from "lucide-react";
+import { Rss, Search, Star, Settings } from "lucide-react";
 import { RouteConfig } from "@/config";
 import clsx from "clsx";
 
@@ -28,24 +19,6 @@ export const Rail = React.memo(function () {
   const navigate = useNavigate();
 
   const items: RailItem[] = [
-    {
-      icon: <Sparkles size={18} />,
-      labelKey: t("layout.rail.today"),
-      route: RouteConfig.LOCAL_TODAY,
-      matchPaths: [RouteConfig.LOCAL_TODAY],
-    },
-    {
-      icon: <Layers size={18} />,
-      labelKey: t("layout.rail.topics"),
-      route: RouteConfig.LOCAL_TOPICS,
-      matchPaths: [RouteConfig.LOCAL_TOPICS],
-    },
-    {
-      icon: <MessageCircle size={18} />,
-      labelKey: t("layout.rail.chat"),
-      route: RouteConfig.LOCAL_CHAT,
-      matchPaths: [RouteConfig.LOCAL_CHAT],
-    },
     {
       icon: <Rss size={18} />,
       labelKey: t("layout.rail.feeds"),
@@ -69,13 +42,6 @@ export const Rail = React.memo(function () {
       matchPaths: [RouteConfig.LOCAL_STARRED],
     },
   ];
-
-  const componentsItem: RailItem = {
-    icon: <LayoutGrid size={18} />,
-    labelKey: t("layout.rail.components"),
-    route: RouteConfig.LOCAL_COMPONENTS,
-    matchPaths: [RouteConfig.LOCAL_COMPONENTS],
-  };
 
   const settingsItem: RailItem = {
     icon: <Settings size={18} />,
@@ -133,7 +99,6 @@ export const Rail = React.memo(function () {
     <div className="flex h-full w-[52px] shrink-0 select-none flex-col items-center gap-1 border-r border-[var(--gray-5)] bg-[var(--gray-3)] py-3">
       {items.map(renderItem)}
       <div className="flex-1" />
-      {renderItem(componentsItem)}
       {renderItem(settingsItem)}
     </div>
   );

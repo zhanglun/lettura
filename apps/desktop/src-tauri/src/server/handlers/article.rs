@@ -104,7 +104,6 @@ pub async fn handle_sync_feed(
 
   feed::article::Article::purge_articles();
   feed::article::Article::purge_by_data_retention();
-  crate::ai::pipeline::spawn_pipeline_if_configured(None);
 
   Ok(web::Json(res))
 }

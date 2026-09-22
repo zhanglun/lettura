@@ -9,11 +9,6 @@ import {
 import { request } from "@/helpers/request";
 import { AxiosRequestConfig, AxiosResponse } from "axios";
 import type {
-  SignalSource,
-  Signal,
-  AIConfigPublic,
-  ValidateAIConfigResult,
-  PipelineResult,
 } from "@/typing";
 
 export const getChannels = async (
@@ -294,76 +289,4 @@ export const importOpmlAsSource = async (
   opmlContent: string,
 ): Promise<OpmlImportResult> => {
   return invoke("import_opml_as_source", { opmlContent });
-};
-
-export const getTodaySignals = async (limit?: number): Promise<Signal[]> => {
-  return invoke("get_today_signals", { limit });
-};
-
-export const getAIConfig = async (): Promise<AIConfigPublic> => {
-  return invoke("get_ai_config");
-};
-
-export const saveAIConfig = async (config: {
-  apiKey: string;
-  model: string;
-  embeddingModel: string;
-  baseUrl: string;
-  pipelineIntervalHours?: number;
-  enableEmbedding?: boolean;
-  enableAutoPipeline?: boolean;
-}): Promise<void> => {
-  return invoke("save_ai_config", {
-    apiKey: config.apiKey,
-    model: config.model,
-    embeddingModel: config.embeddingModel,
-    baseUrl: config.baseUrl,
-    pipelineIntervalHours: config.pipelineIntervalHours,
-    enableEmbedding: config.enableEmbedding,
-    enableAutoPipeline: config.enableAutoPipeline,
-  });
-};
-
-export const validateAIConfig = async (): Promise<ValidateAIConfigResult> => {
-  return invoke("validate_ai_config");
-};
-
-export const triggerPipeline = async (
-  runType?: string,
-): Promise<PipelineResult> => {
-  return invoke("trigger_pipeline", { runType });
-};
-
-export interface SignalDetail {
-  signal: Signal;
-  all_sources: SignalSource[];
-}
-
-export const getSignalDetail = async (
-  signalId: number,
-): Promise<SignalDetail> => {
-  return invoke("get_signal_detail", { signalId });
-};
-
-export interface TodayOverview {
-  summary: string;
-  signal_count: number;
-  article_count: number;
-  generated_at: string;
-  is_stale: boolean;
-}
-
-export interface DedupStats {
-  total_analyzed: number;
-  duplicates_found: number;
-  duplicate_groups: number;
-  avg_information_density: number;
-}
-
-export const getDedupStats = async (): Promise<DedupStats> => {
-  return invoke("get_dedup_stats");
-};
-
-export const getTodayOverview = async (): Promise<TodayOverview> => {
-  return invoke("get_today_overview");
 };

@@ -1,6 +1,6 @@
 {
   "name": "@lettura/desktop",
-  "version": "0.1.22",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
     "dev": "vite",
@@ -94,7 +94,6 @@
     "typescript": "^5.8.3",
     "vite": "4.5.14",
     "vite-plugin-checker": "^0.6.4",
-    "vite-plugin-pwa": "^0.16.7",
     "vitest": "1.6.0",
     "workbox-precaching": "^7.0.0"
   }

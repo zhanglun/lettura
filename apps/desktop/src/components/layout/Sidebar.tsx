@@ -1,17 +1,17 @@
 import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import { useShallow } from "zustand/react/shallow";
 import { useBearStore } from "@/stores";
-import { SidebarToday } from "./SidebarToday";
-import { SidebarTopics } from "./SidebarTopics";
 import { SidebarFeeds } from "./SidebarFeeds";
 import { FeedsSidebar } from "@/layout/Feeds/FeedsSidebar";
 import { FeedResItem } from "@/db";
-import { RouteConfig } from "@/config";
 
-export type SidebarContext = "today" | "topics" | "feeds" | "feeds-manage" | "default" | "hidden";
+export type SidebarContext =
+  | "feeds"
+  | "feeds-manage"
+  | "default"
+  | "hidden";
 
 interface SidebarProps {
   collapsed: boolean;
@@ -24,12 +24,9 @@ export const Sidebar = React.memo(function ({
   context = "default",
 }: SidebarProps) {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const store = useBearStore(
     useShallow((state) => ({
       subscribes: state.subscribes,
-      topics: state.topics,
-      followingTopicIds: state.followingTopicIds,
     })),
   );
 
@@ -62,15 +59,6 @@ export const Sidebar = React.memo(function ({
     };
   }, [store.subscribes]);
 
-  const trackedTopics = useMemo(() => {
-    const followed = store.topics.filter((tp) => store.followingTopicIds.has(tp.id));
-    return followed.slice(0, 5);
-  }, [store.topics, store.followingTopicIds]);
-
-  const hasMoreTopics = useMemo(() => {
-    return store.topics.filter((tp) => store.followingTopicIds.has(tp.id)).length > 5;
-  }, [store.topics, store.followingTopicIds]);
-
   if (collapsed) {
     return null;
   }
@@ -81,30 +69,18 @@ export const Sidebar = React.memo(function ({
 
   const renderContextContent = () => {
     switch (context) {
-      case "today":
-        return <SidebarToday />;
-      case "topics":
-        return <SidebarTopics />;
       case "feeds":
         return <SidebarFeeds />;
       case "feeds-manage":
         return <FeedsSidebar />;
       default:
-        return <SidebarToday />;
+        return <SidebarFeeds />;
     }
   };
 
   const headerCopy = {
-    today: {
-      title: t("layout.sidebar.brand"),
-      desc: t("layout.sidebar.today_desc"),
-    },
-    topics: {
-      title: t(`layout.sidebar.context_${context}`),
-      desc: t("layout.sidebar.topics_desc"),
-    },
     feeds: {
-      title: t(`layout.sidebar.context_${context}`),
+      title: t("layout.sidebar.brand"),
       desc: t("layout.sidebar.feeds_desc"),
     },
     "feeds-manage": {
@@ -112,7 +88,7 @@ export const Sidebar = React.memo(function ({
       desc: "",
     },
     default: {
-      title: t(`layout.sidebar.context_${context}`),
+      title: t("layout.sidebar.brand"),
       desc: "",
     },
     hidden: {
@@ -139,50 +115,6 @@ export const Sidebar = React.memo(function ({
       <div className="flex-1 overflow-auto scrollbar-gutter">
         {renderContextContent()}
       </div>
-
-      {(context === "today" || context === "topics") && trackedTopics.length > 0 && (
-        <div className="border-t border-[var(--gray-5)] shrink-0">
-          <div className="px-3 pt-2.5 pb-1">
-            <span className="text-xs font-medium text-[var(--gray-11)]">
-              {t("layout.sidebar.tracked_topics")}
-            </span>
-          </div>
-          {trackedTopics.length > 0 ? (
-            <div className="px-3 pb-2 flex flex-col gap-0.5">
-              {trackedTopics.map((topic) => (
-                <button
-                  key={topic.id}
-                  onClick={() => navigate(`/local/topics/${topic.uuid}`)}
-                  className="sidebar-item text-left"
-                >
-                  <span className="text-xs text-[var(--gray-12)] truncate flex-1">
-                    {topic.title}
-                  </span>
-                  {topic.article_count > 0 && (
-                    <span className="text-[10px] text-[var(--gray-9)] tabular-nums bg-[var(--gray-3)] rounded px-1.5 py-0.5">
-                      {topic.article_count} new
-                    </span>
-                  )}
-                </button>
-              ))}
-              {hasMoreTopics && (
-                <button
-                  onClick={() => navigate(RouteConfig.LOCAL_TOPICS)}
-                  className="sidebar-item text-left"
-                >
-                  <span className="text-[11px] text-[var(--accent-11)]">
-                    {t("layout.sidebar.view_all_topics")}
-                  </span>
-                </button>
-              )}
-            </div>
-          ) : (
-            <div className="px-5 pb-2.5 text-[11px] text-[var(--gray-9)]">
-              {t("layout.sidebar.no_tracked_topics")}
-            </div>
-          )}
-        </div>
-      )}
 
       {(context === "feeds" || context === "feeds-manage") && (
         <div className="border-t border-[var(--gray-5)] bg-[var(--gray-2)] px-4 py-3 text-[10px] leading-4 text-[var(--gray-9)]">

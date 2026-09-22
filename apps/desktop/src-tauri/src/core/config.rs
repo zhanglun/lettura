@@ -8,7 +8,6 @@ use std::{
 };
 use toml;
 
-use crate::ai::config::AiConfig;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub enum ColorScheme {
@@ -87,8 +86,6 @@ pub struct UserConfig {
   pub port: u16,
   #[serde(default)]
   pub app: AppConfig,
-  #[serde(default)]
-  pub ai: Option<AiConfig>,
 
   #[serde(default)]
   pub launch_at_login: bool,
@@ -150,7 +147,6 @@ impl Default for UserConfig {
       purge_unread_articles: true,
       port: 3456,
       app: AppConfig::default(),
-      ai: None,
       launch_at_login: false,
       background_sync: true,
       notification_enabled: false,
