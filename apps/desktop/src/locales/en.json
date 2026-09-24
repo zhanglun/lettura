@@ -223,7 +223,7 @@
       "kpi_unread": "Unread Articles",
       "kpi_broken": "Broken Feeds",
       "ungrouped": "Ungrouped",
-      "folder_meta": "{{sources}} feeds · {{unread}} unread",
+      "folder_meta": "{{sources}} sources · {{unread}} unread",
       "context_hint": "Right-click a feed to view articles, sync, mark all read, edit, move, disable, or delete.",
       "view_detail": "View Details",
       "move_title": "Move Feed",
@@ -256,7 +256,7 @@
       "col_source": "Source",
       "col_health": "Health",
       "col_last_sync": "Last Sync",
-      "health_broken": "Error",
+      "health_broken": "Sync failed",
       "health_ok": "Healthy",
       "action_retry": "Retry",
       "action_sync": "Sync",
@@ -318,7 +318,14 @@
     "opml_help": "Full import/export of your list; data belongs to you",
     "Off": "Off",
     "Keep forever": "Keep forever",
-    "days": "days"
+    "days": "days",
+    "accent": {
+      "indigo": "Indigo",
+      "moss": "Moss",
+      "ochre": "Ochre",
+      "brick": "Brick",
+      "vine": "Vine"
+    }
   },
   "layout": {
     "topics": {},
@@ -520,19 +527,42 @@
     "ctl": {
       "back30": "Back 30s",
       "fwd30": "Forward 30s",
-      "open_detail": "Open episode detail"
+      "open_detail": "Open episode detail",
+      "toggle": "play/pause"
     },
     "podcast": {
       "empty": "Nothing playing",
       "empty_hint": "Add a podcast to start listening"
-    }
+    },
+    "collapse": "Collapse",
+    "collapse_bar": "Collapse (mini pill, keeps playing)",
+    "expand": "Expand (full player)",
+    "expand_bar": "Expand player bar",
+    "now_playing": "Now playing",
+    "up_next": "Up next"
   },
   "fusion": {
     "nav": {
       "unread": "Unread",
       "starred": "Starred",
       "history": "History",
-      "subscriptions": "Subscriptions"
+      "subscriptions": "Subscriptions",
+      "settings": "Settings"
+    },
+    "browse": {
+      "sync_failed": "Sync failed",
+      "folder_sources": "{{count}} sources",
+      "folder_unread": "{{count}} unread",
+      "empty_title": "No subscriptions yet",
+      "empty_lede": "Paste an address to subscribe. Manage in Settings, read here."
+    },
+    "queue": {
+      "last_sync": "Last sync {{time}}",
+      "manage": "Manage in Settings"
+    },
+    "subs": {
+      "meta": "{{sources}} sources · {{folders}} folders",
+      "retry": "Retry"
     },
     "search": {
       "placeholder": "Search or type a command"
@@ -689,5 +719,9 @@
   "Export completed": "Export completed",
   "Export": "Export",
   "days": "days",
-  "Off": "Off"
+  "Off": "Off",
+  "1 hour": "Every hour",
+  "6 hours": "Every 6 hours",
+  "12 hours": "Every 12 hours",
+  "24 hours": "Every 24 hours"
 }

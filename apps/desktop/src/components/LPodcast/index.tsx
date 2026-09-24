@@ -1,12 +1,12 @@
 import React, { useEffect, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAudioPlayer } from "./useAudioPlayer";
+import { useAudioPlayer, stopSharedAudio } from "./useAudioPlayer";
 import { MiniPlayer, RATES } from "./MiniPlayer";
+import { FullPlayer } from "./FullPlayer";
+import { MiniPill } from "./MiniPill";
 import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
 import { useLiveQuery } from "dexie-react-hooks";
 import { db } from "@/helpers/podcastDB";
-import { RouteConfig } from "@/config";
 
 export interface AudioTrack {
   uuid: string;
@@ -24,14 +24,26 @@ interface LPodcastProps {
   visible?: boolean;
 }
 
-/** 全局浮动玻璃播放卡（有音频才出现）；单集信息/展开箭头 → 单集详情 */
+/**
+ * 播放器三态（podcast.html 契约）：bar 底部玻璃条 / full 沉浸页 / min 收起圆钮。
+ * useAudioPlayer 挂在本体顶层，三态切换不卸载组件——音频永不中断。
+ */
 export const LPodcast: React.FC<LPodcastProps> = ({ visible = true }) => {
-  const navigate = useNavigate();
-  const { currentTrack, setCurrentTrack, setTracks } = useBearStore(
+  const {
+    currentTrack,
+    setCurrentTrack,
+    setTracks,
+    tracks: storeTracks,
+    playerMode,
+    setPlayerMode,
+  } = useBearStore(
     useShallow((state) => ({
       currentTrack: state.currentTrack,
       setCurrentTrack: state.setCurrentTrack,
       setTracks: state.setTracks,
+      tracks: state.tracks,
+      playerMode: state.playerMode,
+      setPlayerMode: state.setPlayerMode,
     })),
   );
 
@@ -79,24 +91,60 @@ export const LPodcast: React.FC<LPodcastProps> = ({ visible = true }) => {
     setPlaybackRate,
   } = useAudioPlayer();
 
+  // 无曲目/不可见时停掉共享音频——单例元素没有消费者执行 pause，会残响
+  const hasTracks = !!(tracks?.length || currentTrack);
+  useEffect(() => {
+    if (!(visible && hasTracks)) {
+      stopSharedAudio();
+      if (useBearStore.getState().podcastPlayingStatus) {
+        useBearStore.getState().updatePodcastPlayingStatus(false);
+      }
+    }
+  }, [visible, hasTracks]);
+
   const cycleRate = () => {
     const idx = RATES.indexOf(playbackRate);
     setPlaybackRate(RATES[(idx + 1) % RATES.length] ?? 1);
-  };
-
-  // 打开单集详情（uuid 即文章 uuid，深链走 detail 端点）
-  const openDetail = () => {
-    if (!currentTrack) return;
-    const base = currentTrack.feed_uuid
-      ? RouteConfig.LOCAL_FEED.replace(/:uuid/, currentTrack.feed_uuid)
-      : RouteConfig.LOCAL_ALL;
-    navigate(`${base}/articles/${currentTrack.uuid}`);
   };
 
   if (!(visible && (tracks?.length || currentTrack))) {
     return null;
   }
 
+  // min：右下角圆钮（环形进度 + 播放芯）
+  if (playerMode === "min") {
+    return (
+      <MiniPill
+        currentTrack={currentTrack}
+        isPlaying={isPlaying}
+        progress={progress}
+        duration={duration}
+        togglePlay={togglePlay}
+        onExpand={() => setPlayerMode("bar")}
+      />
+    );
+  }
+
+  // full：沉浸页浮层（自带全部控制，bar 隐藏）
+  if (playerMode === "full") {
+    return (
+      <FullPlayer
+        currentTrack={currentTrack}
+        tracks={storeTracks}
+        isPlaying={isPlaying}
+        progress={progress}
+        duration={duration}
+        playbackRate={playbackRate}
+        togglePlay={togglePlay}
+        seek={seek}
+        skip={skip}
+        cycleRate={cycleRate}
+        onCollapse={() => setPlayerMode("bar")}
+      />
+    );
+  }
+
+  // bar：底部玻璃条
   return (
     <div className="fusion-player-slot">
       <MiniPlayer
@@ -109,7 +157,8 @@ export const LPodcast: React.FC<LPodcastProps> = ({ visible = true }) => {
         seek={seek}
         skip={skip}
         cycleRate={cycleRate}
-        onOpenDetail={openDetail}
+        onExpand={() => setPlayerMode("full")}
+        onCollapse={() => setPlayerMode("min")}
       />
     </div>
   );

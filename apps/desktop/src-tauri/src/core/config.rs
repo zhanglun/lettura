@@ -103,6 +103,8 @@ pub struct UserConfig {
   pub reader_preset: String,
   #[serde(default = "default_card_density")]
   pub card_density: String,
+  #[serde(default = "default_accent_color")]
+  pub accent_color: String,
 }
 
 fn default_true() -> bool {
@@ -127,6 +129,10 @@ fn default_reader_preset() -> String {
 
 fn default_card_density() -> String {
   "comfortable".to_string()
+}
+
+fn default_accent_color() -> String {
+  "indigo".to_string()
 }
 
 impl Default for UserConfig {
@@ -155,6 +161,7 @@ impl Default for UserConfig {
       data_retention_days: default_data_retention_days(),
       reader_preset: default_reader_preset(),
       card_density: default_card_density(),
+      accent_color: default_accent_color(),
     }
   }
 }

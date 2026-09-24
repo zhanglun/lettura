@@ -78,4 +78,6 @@ declare interface UserConfig {
   data_retention_days?: number;
   reader_preset?: string;
   card_density?: string;
+  /** 强调色（indigo/moss/ochre/brick/vine），令牌层 color-mix 派生 */
+  accent_color?: string;
 }

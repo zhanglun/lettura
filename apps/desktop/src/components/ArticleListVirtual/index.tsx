@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { ArticleItem } from "../ArticleItem";
 import { Skeleton } from "@radix-ui/themes";
 import type { ArticleResItem } from "@/db";
@@ -40,18 +40,20 @@ export const ArticleListVirtual = React.memo(function ArticleListVirtual(
   } = props;
   const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
-  const [isScrolled, setIsScrolled] = useState(false);
   const isLoadingMoreRef = useRef(false);
 
   // 键盘焦点行滚动到可视区
   useEffect(() => {
-    if (!focusedUuid || !containerRef.current) return;
+    if (!(focusedUuid && containerRef.current)) return;
     const el = containerRef.current.querySelector(
       `[data-item-uuid="${focusedUuid}"]`,
     ) as HTMLElement | null;
     el?.scrollIntoView({ block: "nearest" });
   }, [focusedUuid]);
 
+  // 触底加载：冷却 + isLoading 门闩防抖。
+  // 不做 isScrolled 状态机——拖滚动条一次跳到底时没有「途经非底区」的
+  // scroll 事件可用来重置标志，会把下一页卡死。
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -60,23 +62,18 @@ export const ArticleListVirtual = React.memo(function ArticleListVirtual(
       const { scrollTop, scrollHeight, clientHeight } = container;
       const atBottom = (scrollTop + clientHeight) / scrollHeight > 0.9;
 
-      if (atBottom && !isScrolled) {
-        setIsScrolled(true);
-        if (!(isReachingEnd || isLoading || isLoadingMoreRef.current)) {
-          isLoadingMoreRef.current = true;
-          setSize(size + 1);
-          setTimeout(() => {
-            isLoadingMoreRef.current = false;
-          }, 1000);
-        }
-      } else if (!atBottom && isScrolled) {
-        setIsScrolled(false);
+      if (atBottom && !(isReachingEnd || isLoading || isLoadingMoreRef.current)) {
+        isLoadingMoreRef.current = true;
+        setSize(size + 1);
+        setTimeout(() => {
+          isLoadingMoreRef.current = false;
+        }, 1000);
       }
     };
 
     container.addEventListener("scroll", handleScroll, { passive: true });
     return () => container.removeEventListener("scroll", handleScroll);
-  }, [isScrolled, isReachingEnd, isLoading, size, setSize]);
+  }, [isReachingEnd, isLoading, size, setSize]);
 
   return (
     <div

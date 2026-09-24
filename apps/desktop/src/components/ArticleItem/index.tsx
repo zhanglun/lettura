@@ -1,4 +1,4 @@
-import React, { ForwardedRef, useEffect, useState } from "react";
+import React, { ForwardedRef, useEffect, useMemo, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { useBearStore } from "@/stores";
@@ -10,7 +10,45 @@ import { RouteConfig } from "@/config";
 import { Star, CheckCheck } from "lucide-react";
 import * as dataAgent from "@/helpers/dataAgent";
 import { useTranslation } from "react-i18next";
-import { KindBadge } from "@/components/KindBadge";
+import { getArticleKind } from "@/helpers/articleKind";
+import { pickThumbUrl } from "@/helpers/articleContent";
+
+/** 行首缩略图：内容首图（feed 自带）> feed 图标 > 安静类型色块（无字符） */
+export function RowThumb({ article }: { article: ArticleResItem }) {
+  const [imgError, setImgError] = useState(false);
+  const thumbUrl = useMemo(() => pickThumbUrl(article), [article]);
+  const kind = getArticleKind(article);
+  const tint = kind === "podcast" ? "pod" : kind === "platform" ? "bil" : "";
+
+  if (thumbUrl && !imgError) {
+    return (
+      <span className={clsx("fusion-thumb", tint)}>
+        <img
+          src={thumbUrl}
+          alt=""
+          loading="lazy"
+          onError={() => setImgError(true)}
+        />
+      </span>
+    );
+  }
+
+  if (article.feed_logo) {
+    return (
+      <span className="fusion-thumb">
+        <img
+          className="fl"
+          src={article.feed_logo}
+          alt=""
+          loading="lazy"
+          onError={() => setImgError(true)}
+        />
+      </span>
+    );
+  }
+
+  return <span className={clsx("fusion-thumb", tint)} />;
+}
 
 export const ArticleItem = React.forwardRef(
   (
@@ -105,13 +143,14 @@ export const ArticleItem = React.forwardRef(
         <span className="fusion-st">
           <span className="fusion-dot" />
         </span>
-        <KindBadge
-          link={article.link}
-          feed_url={article.feed_url}
-          media_object={article.media_object}
-        />
+        <RowThumb article={article} />
         <span className="fusion-title">{article.title}</span>
-        <span className="fusion-src">{article.feed_title}</span>
+        <span className="fusion-src">
+          {article.feed_logo && (
+            <img className="fusion-ficon" src={article.feed_logo} alt="" loading="lazy" />
+          )}
+          <span className="fn">{article.feed_title}</span>
+        </span>
         <span className="fusion-date">{timeLabel}</span>
         <span className="fusion-acts">
           <button

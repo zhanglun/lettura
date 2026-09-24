@@ -1,11 +1,14 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useNavigate, useParams, useMatch } from "react-router-dom";
-import { CheckCheck, RefreshCw } from "lucide-react";
+import { CheckCheck, ChevronLeft, RefreshCw, Settings } from "lucide-react";
 import dayjs from "dayjs";
 import { ArticleListVirtual } from "@/components/ArticleListVirtual";
 import { ArticleDialogView } from "@/components/ArticleView/DialogView";
 import { View } from "@/layout/Article/View";
+import { RouteConfig } from "@/config";
+import { FeedIcon } from "@/components/FeedIcon";
+import { getHostLabel, formatFeedTime } from "@/helpers/feedMeta";
 import { open } from "@tauri-apps/plugin-shell";
 import { useQuery } from "@/helpers/parseXML";
 import { useBearStore } from "@/stores";
@@ -43,16 +46,25 @@ export function ArticleView() {
       setExpandedArticleUuid: state.setExpandedArticleUuid,
       currentFilter: state.currentFilter,
       updateArticleStatus: state.updateArticleStatus,
+      setViewMeta: state.setViewMeta,
       globalSyncStatus: state.globalSyncStatus,
       syncAllArticles: state.syncAllArticles,
+      syncArticles: state.syncArticles,
+      getSubscribes: state.getSubscribes,
+      updateCollectionMeta: state.updateCollectionMeta,
       markArticleListAsRead: state.markArticleListAsRead,
       subscribes: state.subscribes,
       userConfig: state.userConfig,
     })),
   );
 
+  // 源队列帧的过滤态（未读/全部，脱离全局 currentFilter）
+  const [queueFilter, setQueueFilter] = useState<"unread" | "all">("unread");
+  const [queueSyncing, setQueueSyncing] = useState(false);
+
   const {
     articles,
+    total,
     isLoading,
     size,
     setSize,
@@ -62,7 +74,16 @@ export function ArticleView() {
     isToday,
     isAll,
     isStarred,
-  } = useArticle({ feedUuid, type });
+  } = useArticle({
+    feedUuid,
+    type,
+    // 源队列帧：过滤条未读/全部，脱离全局 currentFilter（feeds.html 契约）
+    readStatus: feedUuid
+      ? queueFilter === "unread"
+        ? 1
+        : null
+      : undefined,
+  });
 
   // 类型过滤（客户端，不与 read_status/currentFilter 混用）
   const [kindFilter, setKindFilter] = useState<KindFilter>("all");
@@ -217,8 +238,46 @@ export function ArticleView() {
     if (focused?.link) open(focused.link);
   }, [focused]);
   useHotkeys("escape", () => {
-    if (store.expandedArticleUuid) closeDetail();
-  }, [store, closeDetail]);
+    if (useBearStore.getState().playerMode === "full") return; // 沉浸页优先收回条
+    if (store.expandedArticleUuid) {
+      closeDetail();
+    } else if (feedUuid) {
+      // 源队列帧 → 订阅浏览帧（位置保留）
+      navigate(RouteConfig.LOCAL_FEEDS);
+    }
+  }, [store, closeDetail, feedUuid, navigate]);
+
+  // ── 源队列帧（feeds.html 契约）：源头栏 + 未读/全部过滤 ──
+  const isQueueMode = !!feedUuid;
+  const queueFeed = useMemo(() => {
+    if (!feedUuid) return null;
+    for (const item of store.subscribes || []) {
+      if (item.uuid === feedUuid) return item;
+      const child = item.children?.find((c) => c.uuid === feedUuid);
+      if (child) return child;
+    }
+    return null;
+  }, [store.subscribes, feedUuid]);
+
+  const markQueueAllRead = useCallback(async () => {
+    if (!feedUuid) return;
+    const before = store.viewMeta?.unread ?? queueFeed?.unread ?? 0;
+    await dataAgent.markAllRead({ uuid: feedUuid });
+    if (before > 0) store.updateCollectionMeta(0, -before);
+    store.setViewMeta({ ...store.viewMeta, unread: 0 });
+    await Promise.all([store.getSubscribes?.(), mutate()]);
+  }, [feedUuid, store, queueFeed, mutate]);
+
+  const syncQueueFeed = useCallback(async () => {
+    if (!queueFeed || queueSyncing) return;
+    setQueueSyncing(true);
+    try {
+      await store.syncArticles(queueFeed);
+      await Promise.all([store.getSubscribes?.(), mutate()]);
+    } finally {
+      setQueueSyncing(false);
+    }
+  }, [queueFeed, queueSyncing, store, mutate]);
 
   const markAllRead = async () => {
     await store.markArticleListAsRead(isToday, isAll);
@@ -227,18 +286,13 @@ export function ArticleView() {
 
   const title = store.viewMeta?.title ?? "";
   const unreadCount = (feedUuid
-      ? store.viewMeta?.unread
-      : isToday
-        ? store.collectionMeta.today.unread
-        : isAll
-          ? store.collectionMeta.total.unread
-          : store.viewMeta?.unread)
+    ? store.viewMeta?.unread
+    : isToday
+      ? store.collectionMeta.today.unread
+      : isAll
+        ? store.collectionMeta.total.unread
+        : store.viewMeta?.unread)
     ?? 0;
-  const activeFilterTitle = t(store.currentFilter.title);
-  const sectionLabel = t("article.section_label", {
-    filter: activeFilterTitle,
-    count: visibleArticles.length,
-  });
 
   // 面板内替换：详情视图
   if (detailArticle) {
@@ -300,64 +354,144 @@ export function ArticleView() {
 
   return (
     <div className="flex h-full w-full flex-col overflow-hidden">
-      {/* 视图头：标题 + 计数 + 动作 */}
-      <div className="flex items-center justify-between gap-2 px-5 h-11 border-b border-[var(--gray-4)] flex-shrink-0">
-        <div className="flex items-center gap-1.5 text-[11px] text-[var(--gray-9)] min-w-0">
-          <span className="text-[13px] font-semibold text-[var(--gray-12)] truncate">
-            {title}
-          </span>
-          {unreadCount > 0 && (
-            <span>{t("article.list_unread_count", { count: unreadCount })}</span>
-          )}
-          <span>{t("article.list_loaded_count", { count: visibleArticles.length })}</span>
-          <span className="text-[var(--gray-7)]">·</span>
-          <span>{t("article.current_filter")}</span>
-          <span className="text-[var(--gray-11)]">{activeFilterTitle}</span>
-        </div>
-        <div className="flex items-center gap-1.5 flex-shrink-0">
-          <button
-            type="button"
-            onClick={() => store.syncAllArticles()}
-            disabled={store.globalSyncStatus}
-            className="flex items-center justify-center w-7 h-7 text-[var(--gray-9)] hover:text-[var(--gray-12)] hover:bg-[var(--gray-a3)] rounded-md transition-colors disabled:opacity-50"
-            title={t("Sync All")}
-            aria-label={t("Sync All")}
-          >
-            <RefreshCw
-              size={13}
-              className={store.globalSyncStatus ? "animate-spin" : ""}
-            />
-          </button>
-          {!isStarred && (
+      {isQueueMode ? (
+        <>
+          {/* 源头栏：返回浏览 + 源名 + 动作（feeds.html 契约） */}
+          <div className="fusion-fv-top">
             <button
               type="button"
-              onClick={markAllRead}
-              className="flex items-center gap-1 px-2 py-1 text-[11px] text-[var(--gray-9)] hover:text-[var(--gray-12)] hover:bg-[var(--gray-a3)] rounded-md transition-colors"
+              className="fusion-back"
+              onClick={() => navigate(RouteConfig.LOCAL_FEEDS)}
             >
-              <CheckCheck size={12} />
-              {t("Mark all as read")}
+              <ChevronLeft size={12} />
+              {t("fusion.nav.subscriptions")}
+              <kbd className="fusion-kbd">esc</kbd>
             </button>
-          )}
-        </div>
-      </div>
+            <span className="fusion-fv-src">
+              {queueFeed && <FeedIcon feed={queueFeed} />}
+              <span className="fusion-fv-name">
+                {queueFeed?.title ?? title}
+              </span>
+              {queueFeed && (
+                <span className="fusion-fv-meta">{getHostLabel(queueFeed)}</span>
+              )}
+            </span>
+            <span className="fusion-fv-acts">
+              <button
+                type="button"
+                className="fusion-qa"
+                title={t("feeds.ctx.mark_all_read")}
+                aria-label={t("feeds.ctx.mark_all_read")}
+                onClick={markQueueAllRead}
+              >
+                <CheckCheck size={14} />
+              </button>
+              <button
+                type="button"
+                className="fusion-qa"
+                title={t("feeds.ctx.sync")}
+                aria-label={t("feeds.ctx.sync")}
+                onClick={syncQueueFeed}
+                disabled={queueSyncing}
+              >
+                <RefreshCw
+                  size={14}
+                  className={queueSyncing ? "animate-spin" : ""}
+                />
+              </button>
+              <button
+                type="button"
+                className="fusion-qa"
+                title={t("fusion.queue.manage")}
+                aria-label={t("fusion.queue.manage")}
+                onClick={() =>
+                  navigate(`${RouteConfig.SETTINGS}?tab=subscriptions`)
+                }
+              >
+                <Settings size={14} />
+              </button>
+            </span>
+          </div>
 
-      {/* 类型过滤条 */}
-      <div className="fusion-strip">
-        {kindTabs.map((tab) => (
-          <button
-            key={tab.key}
-            type="button"
-            className={`fusion-tab ${kindFilter === tab.key ? "on" : ""}`}
-            onClick={() => setKindFilter(tab.key)}
-          >
-            {tab.label}
-            <span className="c">{kindCounts[tab.key]}</span>
-          </button>
-        ))}
-        <span className="fusion-strip-meta">
-          {t("fusion.strip.meta", { sources: sourceCount, time: lastSync })}
-        </span>
-      </div>
+          {/* 过滤条：未读/全部（全部 = 服务端同条件总数） */}
+          <div className="fusion-strip">
+            <button
+              type="button"
+              className={`fusion-tab ${queueFilter === "unread" ? "on" : ""}`}
+              onClick={() => setQueueFilter("unread")}
+            >
+              {t("fusion.nav.unread")}
+              <span className="c">{unreadCount}</span>
+            </button>
+            <button
+              type="button"
+              className={`fusion-tab ${queueFilter === "all" ? "on" : ""}`}
+              onClick={() => setQueueFilter("all")}
+            >
+              {t("fusion.filter.all")}
+              <span className="c">{total}</span>
+            </button>
+            {queueFeed && (
+              <span className="fusion-strip-meta">
+                {t("fusion.queue.last_sync", {
+                  time: formatFeedTime(queueFeed.last_sync_date) || "—",
+                })}
+                {(queueFeed.health_status ?? 0) > 0
+                  ? ` · ${t("settings.sources.health_broken")}`
+                  : ` · ${t("settings.sources.health_ok")}`}
+              </span>
+            )}
+          </div>
+        </>
+      ) : (
+        <>
+          {/* 类型过滤条：全部 = 服务端真实总数；类型计数基于已加载页（客户端启发式）；右侧同步/全部已读 */}
+          <div className="fusion-strip">
+            {kindTabs.map((tab) => (
+              <button
+                key={tab.key}
+                type="button"
+                className={`fusion-tab ${kindFilter === tab.key ? "on" : ""}`}
+                onClick={() => setKindFilter(tab.key)}
+              >
+                {tab.label}
+                <span className="c">
+                  {tab.key === "all" ? total : kindCounts[tab.key]}
+                </span>
+              </button>
+            ))}
+            <span className="fusion-strip-meta">
+              {t("fusion.strip.meta", { sources: sourceCount, time: lastSync })}
+            </span>
+            <span className="fusion-strip-acts">
+              <button
+                type="button"
+                className="fusion-qa"
+                onClick={() => store.syncAllArticles()}
+                disabled={store.globalSyncStatus}
+                title={t("Sync All")}
+                aria-label={t("Sync All")}
+              >
+                <RefreshCw
+                  size={14}
+                  className={store.globalSyncStatus ? "animate-spin" : ""}
+                />
+              </button>
+              {!isStarred && (
+                <button
+                  type="button"
+                  className="fusion-qa"
+                  onClick={markAllRead}
+                  title={t("Mark all as read")}
+                  aria-label={t("Mark all as read")}
+                >
+                  <CheckCheck size={14} />
+                </button>
+              )}
+            </span>
+          </div>
+        </>
+      )}
 
       {/* ponytail: 类型过滤在客户端做，过滤后过短时无限滚动可能不触发，必要时改服务端过滤 */}
       <ArticleListVirtual
@@ -374,7 +508,6 @@ export function ArticleView() {
         onArticleUpdate={handleArticleUpdate}
         focusedUuid={focused?.uuid}
         onExpandArticle={openArticle}
-        sectionLabel={sectionLabel}
       />
       <ArticleDialogView
         article={store.article}

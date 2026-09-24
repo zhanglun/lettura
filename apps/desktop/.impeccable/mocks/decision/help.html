@@ -52,14 +52,24 @@
   .spring{flex:1;}
   .cmdbtn{display:flex;align-items:center;gap:8px;height:30px;padding:0 10px;border:1px solid var(--hair2);border-radius:9px;font-size:12px;color:var(--sub);background:rgba(255,255,255,.55);}
 
-  .row{display:grid;grid-template-columns:56px 20px 1fr 210px 92px 44px;align-items:center;height:54px;padding-right:20px;border-bottom:1px solid var(--hair);}
+  .row{display:grid;grid-template-columns:20px 56px minmax(0,1fr) 170px 92px 56px;align-items:center;height:54px;padding-right:20px;border-bottom:1px solid var(--hair);}
   .st{display:flex;justify-content:center;}
+
+  /* 行首缩略图（banner/预览图，演示用类型色块代替实图）+ 源图标 + 常显行尾动作 */
+  .thumb{width:56px;height:34px;border-radius:7px;border:1px solid var(--hair);background:rgba(29,30,32,.04);overflow:hidden;flex:none;}
+  .thumb.pod{background:var(--accent-soft);}
+  .thumb.bil{background:var(--pink-soft);}
+  .thumb.img{background:linear-gradient(135deg,#DDE0E3,#C9CDD2);} /* 有图演示：中性照片渐变 */
+  .ficon{width:14px;height:14px;border-radius:4px;background:rgba(29,30,32,.08);font-size:8px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none;color:var(--sub);}
+  .act{opacity:.6;transition:opacity .12s ease;color:var(--sub);display:flex;flex:none;}
+  .row:hover .act{opacity:1;}
+  .act.star.on{color:var(--amber);opacity:1;}
   .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);}
   .badge{width:20px;height:20px;border-radius:6px;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;}
   .b-art{background:rgba(29,30,32,.06);color:var(--sub);}
   .t{font-size:13.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 10px;}
-  .s{font-size:11.5px;color:var(--ter);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .d{font-size:11.5px;color:var(--ter);text-align:right;font-variant-numeric:tabular-nums;}
+  .s{font-size:11.5px;color:var(--ter);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:6px;}
+  .d{font-size:11.5px;color:var(--ter);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;padding-right:12px;}
 
   /* ── 帮助面板：⌘K 同语法，双列 ── */
   .veil{position:absolute;inset:0;background:rgba(29,30,32,.14);z-index:40;display:block;}
@@ -104,18 +114,18 @@
 
   <section class="panel">
     <header class="top">
-      <span class="logo"><i></i></span>
-      <span class="sec">未读</span>
+      <span class="logo" id="logoBtn" title="Mock 总入口" style="cursor:pointer;"><i></i></span>
+      <span class="sec">Lettura</span>
       <span class="cnt">247</span>
-      <nav class="nav"><a class="on">未读</a><a>星标</a><a>历史</a><a>订阅</a></nav>
+      <nav class="nav"><a class="on" href="fusion.html">未读</a><a href="fusion.html?view=starred">星标</a><a href="fusion.html?view=history">历史</a><a href="feeds.html">订阅</a></nav>
       <span class="spring"></span>
       <button class="cmdbtn">
         <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#6A6C6E" stroke-width="1.7"><circle cx="7" cy="7" r="4.8"/><path d="m11.2 11.2 3 3"/></svg>
         搜索或输入命令<span class="spring"></span><kbd>⌘K</kbd>
       </button>
     </header>
-    <div class="row"><span class="st"><span class="dot"></span></span><span class="badge b-art">文</span><span class="t">Rust 1.90 发布：编译器并行化进入第二阶段</span><span class="s">rust-lang.org</span><span class="d">09:41</span><span></span></div>
-    <div class="row"><span class="st"><span class="dot"></span></span><span class="badge b-art">文</span><span class="t">为什么我把全部阅读搬回了 RSS</span><span class="s">overreacted.io</span><span class="d">08:52</span><span></span></div>
+    <div class="row"><span class="st"><span class="dot"></span></span><span class="thumb img"></span><span class="t">Rust 1.90 发布：编译器并行化进入第二阶段</span><span class="s"><span class="ficon">R</span>rust-lang.org</span><span class="d">09:41</span><span class="acts"><svg class="act star" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 1.8l1.85 3.9 4.3.55-3.2 2.9.85 4.2L8 11.3l-3.8 2.05.85-4.2-3.2-2.9 4.3-.55z"/></svg><svg class="act" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="m3 8.5 3.2 3L13 5"/></svg></span></div>
+    <div class="row"><span class="st"><span class="dot"></span></span><span class="thumb img"></span><span class="t">为什么我把全部阅读搬回了 RSS</span><span class="s"><span class="ficon">O</span>overreacted.io</span><span class="d">08:52</span><span class="acts"><svg class="act star" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 1.8l1.85 3.9 4.3.55-3.2 2.9.85 4.2L8 11.3l-3.8 2.05.85-4.2-3.2-2.9 4.3-.55z"/></svg><svg class="act" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="m3 8.5 3.2 3L13 5"/></svg></span></div>
   </section>
 
   <!-- 帮助浮层 -->
@@ -157,6 +167,7 @@
 
 <script>
 const veil=document.getElementById("veil");
+document.getElementById("logoBtn").addEventListener("click",()=>{location.href="index.html";});
 veil.addEventListener("click",()=>veil.style.display="none");
 document.addEventListener("keydown",e=>{
   if(e.key==="Escape"){veil.style.display="none";e.preventDefault();}

@@ -2,11 +2,36 @@ import { useEffect, useRef, useState } from "react";
 import { AudioTrack } from "./index";
 import { STORAGE_KEYS } from "./utils";
 import { useBearStore } from "@/stores";
+import { useShallow } from "zustand/react/shallow";
 import { db } from "@/helpers/podcastDB";
 import { showErrorToast } from "@/helpers/errorHandler";
 
+/**
+ * 音频元素是模块级单例：LPodcast（壳层）与 PodcastAdapter（详情页）
+ * 会同时消费本 hook，若各自 new Audio() 会产生多实例同时播放同一曲目
+ * （第二实例的 play() 打断第一实例 → AbortError → 误报 Failed to play）。
+ */
+let sharedAudio: HTMLAudioElement | null = null;
+function getAudio(): HTMLAudioElement {
+  if (!sharedAudio) {
+    sharedAudio = new Audio();
+  }
+  return sharedAudio;
+}
+
+/** 停掉共享音频（消费者全部卸载/曲目清空时调用，否则声音会残响） */
+export function stopSharedAudio() {
+  if (sharedAudio) {
+    sharedAudio.pause();
+  }
+}
+
+/** 进度写库节流（timeupdate 高频触发，且可能有多个消费者监听） */
+const PROGRESS_FLUSH_MS = 5000;
+
 export const useAudioPlayer = () => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const lastFlushRef = useRef(0);
   const [volume, setVolume] = useState(() => {
     const savedVolume = localStorage.getItem(STORAGE_KEYS.VOLUME);
     return savedVolume ? parseFloat(savedVolume) : 1;
@@ -18,22 +43,25 @@ export const useAudioPlayer = () => {
     return saved ? parseFloat(saved) : 1;
   });
 
-  const store = useBearStore((state) => ({
-    currentTrack: state.currentTrack,
-    tracks: state.tracks,
-    podcastPlayingStatus: state.podcastPlayingStatus,
-    updatePodcastPlayingStatus: state.updatePodcastPlayingStatus,
-    setCurrentTrack: state.setCurrentTrack,
-    playNext: state.playNext,
-    playPrev: state.playPrev,
-  }));
+  const store = useBearStore(
+    useShallow((state) => ({
+      currentTrack: state.currentTrack,
+      tracks: state.tracks,
+      podcastPlayingStatus: state.podcastPlayingStatus,
+      updatePodcastPlayingStatus: state.updatePodcastPlayingStatus,
+      setCurrentTrack: state.setCurrentTrack,
+      playNext: state.playNext,
+      playPrev: state.playPrev,
+    })),
+  );
 
-  // Initialize audio element
+  // 接入单例元素；卸载只落盘进度，不销毁元素（其他消费者仍在用）
   useEffect(() => {
-    audioRef.current = new Audio();
-    audioRef.current.volume = volume;
+    const audio = getAudio();
+    audioRef.current = audio;
+    audio.volume = volume;
+    audio.playbackRate = playbackRate;
 
-    // Load saved progress from database
     if (store.currentTrack?.uuid) {
       db.podcasts
         .where("uuid")
@@ -48,19 +76,15 @@ export const useAudioPlayer = () => {
     }
 
     return () => {
-      if (audioRef.current) {
-        // Save progress before unmounting
-        const currentTime = audioRef.current.currentTime;
-        if (store.currentTrack?.uuid && currentTime > 0) {
-          db.podcasts.where("uuid").equals(store.currentTrack.uuid).modify({
-            progress: currentTime,
-          });
-        }
-        audioRef.current.pause();
-        audioRef.current = null;
+      if (audioRef.current && store.currentTrack?.uuid && audioRef.current.currentTime > 0) {
+        db.podcasts.where("uuid").equals(store.currentTrack.uuid).modify({
+          progress: audioRef.current.currentTime,
+        });
       }
+      audioRef.current = null;
     };
-  }, [store.currentTrack?.uuid, volume]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [store.currentTrack?.uuid]);
 
   // Handle track changes and set up audio event listeners
   useEffect(() => {
@@ -88,6 +112,8 @@ export const useAudioPlayer = () => {
       const playPromise = audio.play();
       if (playPromise !== undefined) {
         playPromise.catch((error) => {
+          // AbortError = 播放请求被后续操作打断（切曲/暂停竞态），是正常现象
+          if (error?.name === "AbortError") return;
           showErrorToast(error, "Failed to play audio");
           store.updatePodcastPlayingStatus(false);
         });
@@ -101,8 +127,12 @@ export const useAudioPlayer = () => {
       const currentTime = audio.currentTime;
       setProgress(currentTime);
 
-      // 每当播放进度更新时，保存到数据库
-      if (store.currentTrack?.uuid) {
+      const now = Date.now();
+      if (
+        store.currentTrack?.uuid &&
+        now - lastFlushRef.current > PROGRESS_FLUSH_MS
+      ) {
+        lastFlushRef.current = now;
         db.podcasts.where("uuid").equals(store.currentTrack.uuid).modify({
           progress: currentTime,
         });

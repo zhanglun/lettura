@@ -12,7 +12,7 @@ import { ArticleResItem } from "@/db";
 import { ChevronLeft, X } from "lucide-react";
 import { useBearStore } from "@/stores";
 import { useNavigate, useParams } from "react-router-dom";
-import { KindBadge } from "@/components/KindBadge";
+import { RowThumb } from "@/components/ArticleItem";
 
 export interface ArticleViewProps {
   article: ArticleResItem | null;
@@ -129,8 +129,11 @@ export function View({
         )}
       </div>
 
-      {/* 阅读进度发丝线 */}
-      <div className="fusion-prog" style={{ width: `${progress}%` }} />
+      {/* 阅读进度发丝线（scaleX，避免 width 布局动画） */}
+      <div
+        className="fusion-prog"
+        style={{ transform: `scaleX(${progress / 100})` }}
+      />
 
       {/* 正文 */}
       <ScrollBox
@@ -162,13 +165,19 @@ export function View({
                     <span className="fusion-st">
                       <span className="fusion-dot" />
                     </span>
-                    <KindBadge
-                      link={nextArticle.link}
-                      feed_url={nextArticle.feed_url}
-                      media_object={nextArticle.media_object}
-                    />
+                    <RowThumb article={nextArticle} />
                     <span className="fusion-title">{nextArticle.title}</span>
-                    <span className="fusion-src">{nextArticle.feed_title}</span>
+                    <span className="fusion-src">
+                      {nextArticle.feed_logo && (
+                        <img
+                          className="fusion-ficon"
+                          src={nextArticle.feed_logo}
+                          alt=""
+                          loading="lazy"
+                        />
+                      )}
+                      <span className="fn">{nextArticle.feed_title}</span>
+                    </span>
                     <span className="fusion-date">
                       {formatDistanceToNow(
                         new Date(nextArticle.pub_date || nextArticle.create_date),

@@ -30,12 +30,15 @@ export const AppLayout = React.memo(function () {
       setFilter: state.setFilter,
       getSubscribes: state.getSubscribes,
       initCollectionMetas: state.initCollectionMetas,
+      subscribes: state.subscribes,
       tracks: state.tracks,
       podcastPlayingStatus: state.podcastPlayingStatus,
       updatePodcastPlayingStatus: state.updatePodcastPlayingStatus,
       syncAllArticles: state.syncAllArticles,
       addFeedModalOpen: state.addFeedModalOpen,
       setAddFeedModalOpen: state.setAddFeedModalOpen,
+      playerMode: state.playerMode,
+      setPlayerMode: state.setPlayerMode,
     })),
   );
 
@@ -51,7 +54,8 @@ export const AppLayout = React.memo(function () {
 
   const isAll = location.pathname === RouteConfig.LOCAL_ALL;
   const isStarred = location.pathname.startsWith("/local/starred");
-  const isSettings = location.pathname.startsWith("/settings");
+  const isFeeds = location.pathname.startsWith("/local/feeds");
+  const isFeedsBrowse = location.pathname === RouteConfig.LOCAL_FEEDS;
   const isUnreadActive = isAll && store.currentFilter.id === 1;
   const isHistoryActive = isAll && store.currentFilter.id === 2;
 
@@ -83,22 +87,20 @@ export const AppLayout = React.memo(function () {
     {
       key: "subscriptions",
       label: t("fusion.nav.subscriptions"),
-      active: isSettings,
-      onClick: () => navigate(`${RouteConfig.SETTINGS}?tab=subscriptions`),
+      active: isFeeds,
+      onClick: () => navigate(RouteConfig.LOCAL_FEEDS),
     },
   ];
 
-  const sectionTitle = isUnreadActive
-    ? t("fusion.nav.unread")
-    : isHistoryActive
-      ? t("fusion.nav.history")
-      : isStarred
-        ? t("fusion.nav.starred")
-        : isSettings
-          ? t("fusion.nav.subscriptions")
-          : "";
+  const sourceCount = (store.subscribes || []).reduce<number>(
+    (sum, item) =>
+      sum + (item.item_type === "folder" ? item.children?.length ?? 0 : 1),
+    0,
+  );
 
   const unreadCount = store.collectionMeta.total.unread;
+  // 顶栏药丸：浏览帧 = 源数，其余 = 全局未读（产品级徽章，常驻）
+  const pillCount = isFeedsBrowse ? sourceCount : unreadCount;
   const playerVisible = store.tracks?.length > 0 || store.podcastPlayingStatus;
 
   useHotkeys("meta+k, ctrl+k", (e) => {
@@ -117,6 +119,12 @@ export const AppLayout = React.memo(function () {
     navigate(RouteConfig.SETTINGS);
   });
   useHotkeys("shift+r", () => store.syncAllArticles());
+  // esc 逐级退回：沉浸页优先收回条（其余视图的 esc 由各自 gate 处理）
+  useHotkeys("escape", () => {
+    if (store.playerMode === "full") {
+      store.setPlayerMode("bar");
+    }
+  }, [store]);
   useHotkeys("space", (e) => {
     if (!store.tracks?.length) return;
     e.preventDefault();
@@ -130,10 +138,9 @@ export const AppLayout = React.memo(function () {
           <span className="fusion-logo" aria-hidden="true">
             <i />
           </span>
-          <span className="fusion-sec">{sectionTitle}</span>
-          {isUnreadActive && unreadCount > 0 && (
-            <span className="fusion-cnt">{unreadCount}</span>
-          )}
+          {/* 产品名常驻左上；当前位置由导航高亮表达 */}
+          <span className="fusion-sec">Lettura</span>
+          {pillCount > 0 && <span className="fusion-cnt">{pillCount}</span>}
           <nav className="fusion-nav">
             {navItems.map((item) => (
               <button
@@ -158,10 +165,14 @@ export const AppLayout = React.memo(function () {
             <kbd>⌘K</kbd>
           </button>
         </header>
-        {/* 播放卡浮在内容上，有音频时底部留出被遮的高度 */}
+        {/* 播放卡浮在内容上；仅 bar 态需要底部留白（min 圆钮/full 沉浸层不占位） */}
         <div
           className="flex min-h-0 flex-1 flex-col"
-          style={playerVisible ? { paddingBottom: 90 } : undefined}
+          style={
+            playerVisible && store.playerMode === "bar"
+              ? { paddingBottom: 90 }
+              : undefined
+          }
         >
           <Outlet />
         </div>

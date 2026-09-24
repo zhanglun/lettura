@@ -4,7 +4,12 @@ import { Podcast, db } from "@/helpers/podcastDB";
 import { toast } from "sonner";
 import { showErrorToast } from "@/helpers/errorHandler";
 
+export type PlayerMode = "bar" | "full" | "min";
+
 export interface PodcastSlice {
+  /** 播放器形态：bar 底部条 / full 沉浸页 / min 收起圆钮（podcast.html 契约） */
+  playerMode: PlayerMode;
+  setPlayerMode: (mode: PlayerMode) => void;
   podcastPanelStatus: boolean;
   updatePodcastPanelStatus: (status: boolean) => void;
   podcastPlayingStatus: boolean;
@@ -27,6 +32,13 @@ export const createPodcastSlice: StateCreator<
   [],
   PodcastSlice
 > = (set, get) => ({
+  playerMode: "bar",
+  setPlayerMode: (mode: PlayerMode) => {
+    set(() => ({
+      playerMode: mode,
+    }));
+  },
+
   podcastPanelStatus: false,
   updatePodcastPanelStatus: (status: boolean) => {
     set(() => ({

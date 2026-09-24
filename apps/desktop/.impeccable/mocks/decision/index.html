@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>静密 × 聚光 · Mock 总入口 · Lettura 0.2.0</title>
+<style>
+  :root{
+    --ground:#F4F4F1;
+    --ink:#1D1E20; --sub:#6A6C6E; --ter:#9EA0A2;
+    --glass:rgba(255,255,255,.78);
+    --hair:rgba(29,30,32,.08); --hair2:rgba(29,30,32,.13);
+    --accent:#5E6AD2; --accent-soft:rgba(94,109,210,.1); --accent-line:rgba(94,109,210,.35);
+    --amber:#E5A50A; --warn:#C4564A;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    min-height:100vh;
+    background:var(--ground);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Helvetica Neue",sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--accent-soft);}
+  a{color:inherit;text-decoration:none;}
+  button{font:inherit;border:0;background:none;cursor:pointer;color:inherit;}
+
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+    background:
+      radial-gradient(560px 380px at 10% -8%,rgba(232,80,96,.05),transparent 70%),
+      radial-gradient(640px 420px at 90% -12%,rgba(94,109,210,.055),transparent 70%);
+  }
+
+  .wrap{position:relative;z-index:1;max-width:1060px;margin:0 auto;padding:56px 32px 72px;}
+
+  /* ── 页头 ── */
+  .mast{display:flex;align-items:center;gap:14px;}
+  .mark{width:44px;height:44px;border-radius:14px;background:var(--ink);display:flex;align-items:center;justify-content:center;box-shadow:0 14px 30px -10px rgba(29,30,32,.35);flex:none;}
+  .mark i{width:11px;height:11px;border-radius:50%;background:#fff;}
+  .mast h1{font-size:24px;font-weight:700;letter-spacing:.005em;}
+  .mast .sub{font-size:12.5px;color:var(--sub);margin-top:3px;}
+  .chain{margin-left:auto;text-align:right;font-size:11px;color:var(--ter);line-height:1.7;}
+  .chain b{color:var(--sub);font-weight:600;}
+  .chain a{border-bottom:1px solid var(--hair2);padding-bottom:1px;}
+  .chain a:hover{color:var(--ink);border-color:var(--ink);}
+
+  /* ── 章节字 ── */
+  .sec-h{font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--ter);margin:44px 0 14px;}
+
+  /* ── 动线卡 ── */
+  .flow{
+    border:1px solid var(--hair2);border-radius:16px;background:var(--glass);
+    backdrop-filter:blur(22px) saturate(1.5);
+    box-shadow:0 1px 0 rgba(255,255,255,.7) inset,0 32px 64px -20px rgba(29,30,32,.28);
+    padding:22px 26px;
+  }
+  .flow .steps{display:flex;flex-wrap:wrap;align-items:center;gap:8px 6px;}
+  .step{
+    display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 13px;
+    border:1px solid var(--hair2);border-radius:9px;background:rgba(255,255,255,.55);
+    font-size:12.5px;color:var(--ink);white-space:nowrap;
+  }
+  .step:hover{border-color:var(--accent);color:var(--accent);}
+  .step .k{font-size:10.5px;color:var(--sub);border:1px solid var(--hair2);border-radius:4px;padding:0 5px;line-height:15px;background:rgba(255,255,255,.7);}
+  .step.ink{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .step.ink:hover{background:#000;}
+  .step.ink .k{color:rgba(255,255,255,.75);border-color:rgba(255,255,255,.25);background:none;}
+  .arr{color:var(--ter);font-size:12px;flex:none;}
+  .flow .note{margin-top:14px;font-size:11.5px;color:var(--sub);line-height:1.7;}
+
+  /* ── 面卡网格 ── */
+  .faces{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+  @media (max-width:860px){.faces{grid-template-columns:1fr;}}
+  .face{
+    border:1px solid var(--hair);border-radius:14px;background:rgba(255,255,255,.6);
+    padding:18px 20px 16px;display:flex;flex-direction:column;gap:10px;
+    transition:transform .15s ease,border-color .15s ease;
+  }
+  .face:hover{transform:translateY(-1px);border-color:var(--hair2);}
+  .f-head{display:flex;align-items:center;gap:9px;}
+  .f-name{font-size:15px;font-weight:700;}
+  .f-file{font-family:"SF Mono",Menlo,monospace;font-size:10.5px;color:var(--ter);}
+  .badge{margin-left:auto;font-size:10px;font-weight:700;letter-spacing:.05em;border-radius:999px;padding:3px 9px;white-space:nowrap;}
+  .b-ok{background:rgba(94,109,210,.1);color:var(--accent);}
+  .b-part{background:rgba(229,165,10,.12);color:#8a6d0b;}
+  .b-no{background:rgba(196,86,74,.1);color:var(--warn);}
+  .f-desc{font-size:12px;color:var(--sub);line-height:1.65;}
+  .f-chips{display:flex;flex-wrap:wrap;gap:5px;}
+  .chip{
+    display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 10px;
+    border:1px solid var(--hair2);border-radius:999px;background:rgba(255,255,255,.55);
+    font-size:11px;color:var(--sub);
+  }
+  .chip:hover{color:var(--ink);border-color:var(--accent);background:var(--accent-soft);}
+  .chip b{font-weight:600;color:inherit;}
+  .f-keys{font-size:10.5px;color:var(--ter);letter-spacing:.02em;}
+  .f-keys b{color:var(--sub);font-weight:600;}
+
+  /* ── 世界规则 ── */
+  .rules{
+    border:1px solid var(--hair);border-radius:14px;background:rgba(255,255,255,.5);
+    padding:6px 22px;
+  }
+  .rule{display:flex;gap:14px;align-items:baseline;padding:13px 0;border-bottom:1px solid var(--hair);}
+  .rule:last-child{border-bottom:0;}
+  .rule .no{font-family:"SF Mono",Menlo,monospace;font-size:11px;color:var(--accent);flex:none;}
+  .rule .tx{font-size:13px;color:var(--ink);line-height:1.6;}
+  .rule .tx b{font-weight:600;}
+  .rule .tx span{color:var(--sub);}
+
+  .foot{margin-top:40px;font-size:11px;color:var(--ter);text-align:center;letter-spacing:.03em;}
+  .foot b{color:var(--sub);font-weight:600;}
+</style>
+</head>
+<body>
+<!--
+  MOCK INDEX · Lettura 0.2.0 「静密 × 聚光」设计稿总入口
+  作用：一份可点击的完整体验目录——8 张面 + 交互态直达 + 一条动线走完产品。
+  互链约定（全部 mock 一致）：
+    logo → index.html ｜ 未读 → fusion.html ｜ 星标 → fusion.html?view=starred
+    历史 → fusion.html?view=history ｜ 订阅 → feeds.html
+    队列表行 ⏎/点击 → detail.html ｜ detail 返回按来路退回（feeds 队列或 fusion 列表）
+  Ground truth 链：mock（可执行规格）> DESIGN.md（语法记录）> HANDOFF.md（落地地图）
+-->
+<div class="wrap">
+
+  <header class="mast">
+    <span class="mark"><i></i></span>
+    <div>
+      <h1>静密 × 聚光</h1>
+      <div class="sub">Lettura 0.2.0 · 8 张设计稿的总入口——每张都是独立可交互的 HTML，浏览器直接打开</div>
+    </div>
+    <div class="chain">
+      <div><b>Ground truth 链</b></div>
+      <div>mock &gt; <a href="../../../DESIGN.md">DESIGN.md</a> &gt; <a href="../../../HANDOFF.md">HANDOFF.md</a></div>
+    </div>
+  </header>
+
+  <div class="sec-h">一条动线 · 走完整个产品</div>
+  <section class="flow">
+    <div class="steps">
+      <a class="step ink" href="fusion.html">未读列表 <span class="k">j/k</span></a>
+      <span class="arr">→</span>
+      <a class="step" href="detail.html">阅读面 <span class="k">⏎</span></a>
+      <span class="arr">→</span>
+      <span class="step">完读 · 下一篇 <span class="k">J/K</span></span>
+      <span class="arr">→</span>
+      <span class="step">已读并返回 <span class="k">m</span></span>
+      <span class="arr">·</span>
+      <a class="step" href="feeds.html">订阅浏览</a>
+      <span class="arr">→</span>
+      <span class="step">源队列 <span class="k">⏎</span></span>
+      <span class="arr">→</span>
+      <span class="step">阅读面 <span class="k">⏎</span></span>
+      <span class="arr">·</span>
+      <a class="step" href="add.html">⌘K 添加订阅</a>
+      <a class="step" href="settings.html">⌘K 打开设置</a>
+      <a class="step" href="help.html">? 帮助</a>
+      <a class="step" href="empty.html">空状态</a>
+      <a class="step" href="dark.html">夜读本</a>
+    </div>
+    <p class="note">esc 是回家的路：任何浮层/子视图逐级退回，列表位置永远保留。8 份 mock 已互链——从任意一页的顶栏导航或 logo（回本入口）都能继续走。</p>
+  </section>
+
+  <div class="sec-h">面 · 直达</div>
+  <section class="faces">
+
+    <div class="face">
+      <div class="f-head"><span class="f-name">未读列表</span><span class="f-file">fusion.html</span><span class="badge b-ok">✓ 已落地</span></div>
+      <p class="f-desc">核心面：玻璃面板 + 过滤条 + 发丝行列表 + 类型感知详情（文章宋体 / 播客章节 / 平台外跳）+ ⌘K 命令面板 + 播放卡。</p>
+      <div class="f-chips">
+        <a class="chip" href="fusion.html"><b>未读</b></a>
+        <a class="chip" href="fusion.html?view=starred"><b>星标</b>（列表变体）</a>
+        <a class="chip" href="fusion.html?view=history"><b>历史</b>（列表变体）</a>
+      </div>
+      <div class="f-keys"><b>j/k</b> 移动 · <b>⏎</b> 打开 · <b>m</b> 已读 · <b>f</b> 星标 · <b>space</b> 播放 · <b>⌘K</b> 命令 · <b>?</b> 帮助</div>
+    </div>
+
+    <div class="face">
+      <div class="f-head"><span class="f-name">阅读面</span><span class="f-file">detail.html</span><span class="badge b-ok">✓ 已落地</span></div>
+      <p class="f-desc">640px 宋体单栏：进度发丝线、引文、代码块（右上语言标）、行内码、链接、文末「· 完 ·」→ 下一篇卡 + 已读并返回。</p>
+      <div class="f-chips">
+        <a class="chip" href="detail.html">默认 15.5px / 2.0</a>
+        <a class="chip" href="detail.html?size=17&amp;lh=2.2"><b>校准台</b> 17px / 2.2</a>
+        <a class="chip" href="detail.html?size=14&amp;lh=1.8">紧凑 14px / 1.8</a>
+      </div>
+      <div class="f-keys"><b>esc</b> 返回（按来路） · <b>j/k</b> 下一篇 · <b>f</b> 星标 · <b>v</b> 原文</div>
+    </div>
+
+    <div class="face">
+      <div class="f-head"><span class="f-name">订阅浏览 + 源队列</span><span class="f-file">feeds.html</span><span class="badge b-ok">✓ 已落地</span></div>
+      <p class="f-desc">导航「订阅」的目的地：分组源列表（未读数右对齐靓蓝，零未读转灰退出键盘队列）→ 点源进 fusion 列表语法的源限定队列。</p>
+      <div class="f-chips">
+        <a class="chip" href="feeds.html?state=browse"><b>浏览帧</b></a>
+        <a class="chip" href="feeds.html?state=feed"><b>源队列帧</b></a>
+      </div>
+      <div class="f-keys"><b>j/k</b> 跳过零未读 · <b>⏎</b> 进队列 / 进阅读面 · <b>esc</b> 逐级退回</div>
+    </div>
+
+    <div class="face">
+      <div class="f-head"><span class="f-name">设置 + 订阅管理</span><span class="f-file">settings.html</span><span class="badge b-ok">✓ 已落地</span></div>
+      <p class="f-desc">面板内第三视图：左锚点导航三段（外观/同步/行为）+ 校准台实时预览 + 订阅管理子视图（拖拽排序、右键菜单、健康态）。</p>
+      <div class="f-chips">
+        <a class="chip" href="settings.html">设置主页</a>
+        <a class="chip" href="settings.html?view=subs"><b>订阅管理</b></a>
+        <a class="chip" href="settings.html?focus=sync">锚点=同步</a>
+        <a class="chip" href="settings.html?focus=prev">锚点=校准台</a>
+      </div>
+      <div class="f-keys"><b>esc</b> 逐级返回：订阅 → 设置 → 未读 · 更改即时生效</div>
+    </div>
+
+    <div class="face">
+      <div class="f-head"><span class="f-name">添加订阅</span><span class="f-file">add.html</span><span class="badge b-ok">✓ 已落地</span></div>
+      <p class="f-desc">渐进式面板：一个输入框粘任何地址（RSS / B站 / 知乎 / 微博 / Newsletter），行内探测 → 预览卡 grow → 分组下拉 → 订阅。</p>
+      <div class="f-chips">
+        <a class="chip" href="add.html">打开面板</a>
+      </div>
+      <div class="f-keys"><b>⏎</b> 订阅 · <b>esc</b> 关闭 · 试试 chips：RSS / B站 / 知乎 / 失败重试</div>
+    </div>
+
+    <div class="face">
+      <div class="f-head"><span class="f-name">空状态即引导</span><span class="f-file">empty.html</span><span class="badge b-ok">✓ 已落地</span></div>
+      <p class="f-desc">零订阅＝首启引导（starter pack 勾选即订阅）；零未读＝安静收尾（历史/星标/添加出口）。无独立 onboarding。</p>
+      <div class="f-chips">
+        <a class="chip" href="empty.html"><b>首启</b>（零订阅）</a>
+        <a class="chip" href="empty.html?s=clear"><b>读完</b>（零未读）</a>
+      </div>
+      <div class="f-keys">勾选 starter pack → 「订阅 N 源」点亮 · 无庆祝动画</div>
+    </div>
+
+    <div class="face">
+      <div class="f-head"><span class="f-name">播放器三态</span><span class="f-file">podcast.html</span><span class="badge b-ok">✓ 本轮落地</span></div>
+      <p class="f-desc">播客播放器三形态：底部玻璃条（仪表）→ 盖满面板的沉浸页（168px 封面 + 大时间轴 + UP NEXT 队列）→ 右下角环形进度圆钮（收起不失联）。space 全局播放。</p>
+      <div class="f-chips">
+        <a class="chip" href="podcast.html?state=bar"><b>条</b></a>
+        <a class="chip" href="podcast.html?state=full"><b>沉浸页</b></a>
+        <a class="chip" href="podcast.html?state=min"><b>收起圆钮</b></a>
+      </div>
+      <div class="f-keys"><b>space</b> 播放/暂停 · <b>esc</b> 沉浸页收回到条 · 点圆钮回条</div>
+    </div>
+
+    <div class="face">
+      <div class="f-head"><span class="f-name">帮助浮层</span><span class="f-file">help.html</span><span class="badge b-ok">✓ 已落地</span></div>
+      <p class="f-desc">? 键弹出：720px 双列键位卡，组题用章节字，veil 点击或 esc 关闭。在 fusion.html 里按 <b>?</b> 可原地体验。</p>
+      <div class="f-chips">
+        <a class="chip" href="help.html">独立稿</a>
+        <a class="chip" href="fusion.html">fusion 内按 <b>?</b></a>
+      </div>
+      <div class="f-keys"><b>?</b> 开 · <b>esc</b> 关 · 不离开列表位置</div>
+    </div>
+
+    <div class="face">
+      <div class="f-head"><span class="f-name">夜读本（深色）</span><span class="f-file">dark.html</span><span class="badge b-ok">✓ 已落地</span></div>
+      <p class="f-desc">同一台仪器的夜间样子：暖黑画布 #17171A、更深更透的玻璃、accent 提亮 #848CE8、暗纸宋体。结构与组件零改动，仅令牌层。</p>
+      <div class="f-chips">
+        <a class="chip" href="dark.html?state=list"><b>列表</b></a>
+        <a class="chip" href="dark.html?state=detail"><b>阅读面</b></a>
+        <a class="chip" href="dark.html?state=cmd"><b>⌘K</b></a>
+      </div>
+      <div class="f-keys">实测对比度优于昼读（sub 7.2 / 暗纸宋体 10.2）</div>
+    </div>
+
+  </section>
+
+  <div class="sec-h">世界规则 · 硬约束</div>
+  <section class="rules">
+    <div class="rule"><span class="no">01</span><p class="tx"><b>一个玻璃仪器</b><span>——主面板 inset 22 / radius 16 / blur 22；⌘K、添加、帮助、播放卡都是同材质浮层，不出现新容器类型。</span></p></div>
+    <div class="rule"><span class="no">02</span><p class="tx"><b>单强调色</b><span>——accent 是唯一的彩色；warn / amber / pink 只用于既定语义（失败 / 星标 / B站），不做装饰。</span></p></div>
+    <div class="rule"><span class="no">03</span><p class="tx"><b>发丝线做分隔</b><span>——永远 1px；禁止彩色粗边框、渐变文字。</span></p></div>
+    <div class="rule"><span class="no">04</span><p class="tx"><b>esc 是回家的路</b><span>——任何浮层/子视图逐级退回，列表位置永远保留。</span></p></div>
+    <div class="rule"><span class="no">05</span><p class="tx"><b>无保存钮</b><span>——设置即改即生效；动效只允许 150–220ms 状态反馈，禁止入场动画全家桶。</span></p></div>
+  </section>
+
+  <footer class="foot">
+    <b>mock 是规格 · DESIGN.md 是语法 · HANDOFF.md 是地图</b>——三者不一致时，改到一致为止。<br>
+    演示内容为合成数据 · Lettura 0.2.0 · 生成于设计定稿轮
+  </footer>
+
+</div>
+</body>
+</html>

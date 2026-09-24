@@ -104,8 +104,14 @@
 
   .next{margin-top:26px;border:1px solid var(--hair);border-radius:12px;background:rgba(255,255,255,.5);overflow:hidden;}
   .next-h{font-size:10.5px;font-weight:700;letter-spacing:.1em;color:var(--ter);padding:12px 16px 0;}
-  .next-row{display:grid;grid-template-columns:24px 20px 1fr 130px 56px;align-items:center;height:52px;padding-right:16px;cursor:pointer;}
+  .next-row{display:grid;grid-template-columns:16px 56px minmax(0,1fr) 110px 40px;align-items:center;height:52px;padding-right:16px;cursor:pointer;}
   .next-row:hover{background:rgba(29,30,32,.035);}
+  .next-row .thumb{width:56px;height:34px;border-radius:7px;border:1px solid var(--hair);background:rgba(29,30,32,.04);overflow:hidden;flex:none;}
+  .next-row .thumb.pod{background:var(--accent-soft);}
+  .next-row .thumb.img{background:linear-gradient(135deg,#DDE0E3,#C9CDD2);}
+  .ns{display:flex;align-items:center;gap:6px;}
+  .ns .ficon{width:14px;height:14px;border-radius:4px;background:rgba(29,30,32,.08);font-size:8px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none;color:var(--sub);}
+  .nd{white-space:nowrap;}
   .next-row .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);justify-self:center;}
   .badge{width:20px;height:20px;border-radius:6px;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;}
   .b-art{background:rgba(29,30,32,.06);color:var(--sub);}
@@ -154,10 +160,10 @@
 
   <section class="panel">
     <header class="top">
-      <span class="logo"><i></i></span>
-      <span class="sec">未读</span>
+      <span class="logo" id="logoBtn" title="Mock 总入口" style="cursor:pointer;"><i></i></span>
+      <span class="sec">Lettura</span>
       <span class="cnt">247</span>
-      <nav class="nav"><a class="on">未读</a><a>星标</a><a>历史</a><a>订阅</a></nav>
+      <nav class="nav"><a href="fusion.html">未读</a><a href="fusion.html?view=starred">星标</a><a href="fusion.html?view=history">历史</a><a href="feeds.html">订阅</a></nav>
       <span class="spring"></span>
       <button class="cmdbtn">
         <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#6A6C6E" stroke-width="1.7"><circle cx="7" cy="7" r="4.8"/><path d="m11.2 11.2 3 3"/></svg>
@@ -206,9 +212,9 @@
             <div class="next-h">下一篇 · J/K 切换</div>
             <div class="next-row" onclick="nextArt(1)">
               <span class="dot"></span>
-              <span class="badge b-art">文</span>
+              <span class="thumb img"></span>
               <span class="nt">Rust 1.90 发布：编译器并行化进入第二阶段</span>
-              <span class="ns">rust-lang.org</span>
+              <span class="ns"><span class="ficon">R</span>rust-lang.org</span>
               <span class="nd">09:41</span>
             </div>
           </div>
@@ -240,6 +246,14 @@ const q=new URLSearchParams(location.search);
 if(q.get("size"))document.documentElement.style.setProperty("--read-size",q.get("size")+"px");
 if(q.get("lh"))document.documentElement.style.setProperty("--read-lh",q.get("lh"));
 
+/* 返回按来路退回：来自源队列则回队列帧，否则回未读列表（esc 逐级退回契约） */
+function smartBack(){
+  const ref=document.referrer||"";
+  location.href=ref.indexOf("feeds.html")>=0?"feeds.html?state=feed":"fusion.html";
+}
+document.getElementById("backBtn").addEventListener("click",smartBack);
+document.getElementById("logoBtn").addEventListener("click",()=>{location.href="index.html";});
+
 /* 阅读进度发丝线 */
 const dBody=document.getElementById("dBody"),prog=document.getElementById("prog");
 dBody.addEventListener("scroll",()=>{
@@ -262,6 +276,7 @@ document.addEventListener("keydown",e=>{
   if(e.key==="j")nextArt(1);
   if(e.key==="k")nextArt(-1);
   if(e.key==="f")document.getElementById("dStar").classList.toggle("on");
+  if(e.key==="Escape")smartBack();
 });
 </script>
 </body>

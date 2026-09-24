@@ -60,6 +60,7 @@ Lettura 是一个本地优先（Tauri + SQLite）的开源订阅阅读器。它�
 
 - 既有代码：apps/desktop（feed 同步/OPML/调度器/迁移已就绪，复用不重写）
 - 设置面参考实现：`.impeccable/mocks/decision/settings.html`（可交互：esc 逐级返回 · 实时校准台 · 订阅分组/右键菜单 · ?view=subs 直链）
+- 其余面参考实现：detail.html（阅读面，?size=&lh= 直达排版）、feeds.html（订阅浏览，?state=browse|feed）、add.html（渐进式订阅面板）、empty.html（空状态即引导，starter pack 取自 ai.json）、help.html（? 键帮助）、dark.html（夜读本，?state=list|detail|cmd）
 - 播放器组件已存在：components/LPodcast、components/PodcastPlayer、podcastDB(Dexie)
 - starter pack 数据：src-tauri/src/sources/packs/ai.json
 - i18n locale：src/locales/{en,zh}.json

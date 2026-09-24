@@ -57,18 +57,19 @@ vi.mock("react-router-dom", async () => {
 });
 
 describe("AppLayout (fusion shell)", () => {
-  it("renders top nav and command entry inside the glass panel", () => {
+  it("renders the product wordmark, top nav and command entry", () => {
     render(
       <MemoryRouter initialEntries={["/local/all"]}>
         <AppLayout />
       </MemoryRouter>,
     );
 
+    // 顶栏左上是产品名（不是当前页名）；当前位置由导航高亮表达
+    expect(screen.getByText("Lettura")).toBeInTheDocument();
     expect(screen.getByText("fusion.nav.starred")).toBeInTheDocument();
     expect(screen.getByText("fusion.nav.history")).toBeInTheDocument();
     expect(screen.getByText("fusion.nav.subscriptions")).toBeInTheDocument();
-    // 未读文案同时出现在章节标题和导航项里
-    expect(screen.getAllByText("fusion.nav.unread").length).toBeGreaterThan(0);
+    expect(screen.getByText("fusion.nav.unread")).toBeInTheDocument();
     expect(screen.getByText("fusion.search.placeholder")).toBeInTheDocument();
     expect(screen.getByText("247")).toBeInTheDocument();
     expect(screen.getByTestId("outlet")).toBeInTheDocument();

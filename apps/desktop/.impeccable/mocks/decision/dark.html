@@ -70,10 +70,20 @@
   /* ── 列表 ── */
   .list{flex:1;overflow:hidden;}
   .row{
-    display:grid;grid-template-columns:56px 20px 1fr 210px 92px 44px;
+    display:grid;grid-template-columns:20px 56px minmax(0,1fr) 170px 92px 56px;
     align-items:center;height:54px;padding-right:20px;border-bottom:1px solid var(--hair);cursor:pointer;
   }
   .row:hover{background:rgba(233,233,230,.035);}
+
+  /* 行首缩略图（banner/预览图，演示用类型色块代替实图）+ 源图标 + 常显行尾动作 */
+  .thumb{width:56px;height:34px;border-radius:7px;border:1px solid var(--hair);background:rgba(233,233,230,.06);overflow:hidden;flex:none;}
+  .thumb.pod{background:var(--accent-soft);}
+  .thumb.bil{background:var(--pink-soft);}
+  .thumb.img{background:linear-gradient(135deg,#2E2F33,#3A3B40);} /* 有图演示：中性照片渐变 */
+  .ficon{width:14px;height:14px;border-radius:4px;background:rgba(233,233,230,.1);font-size:8px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none;color:var(--sub);}
+  .act{opacity:.6;transition:opacity .12s ease;color:var(--sub);display:flex;flex:none;}
+  .row:hover .act{opacity:1;}
+  .act.star.on{color:var(--amber);opacity:1;}
   .st{display:flex;justify-content:center;}
   .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);}
   .read .dot{background:#4E5055;}
@@ -83,19 +93,21 @@
   .b-bil{background:var(--pink-soft);color:var(--pink);}
   .t{font-size:13.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 10px;}
   .read .t{color:var(--ter);font-weight:400;}
-  .s{font-size:11.5px;color:var(--ter);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .s{font-size:11.5px;color:var(--ter);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:6px;}
   .s .fail{color:var(--warn);}
   .s .live{color:var(--accent);}
-  .d{font-size:11.5px;color:var(--ter);text-align:right;font-variant-numeric:tabular-nums;}
+  .d{font-size:11.5px;color:var(--ter);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;padding-right:12px;}
   .acts{display:flex;justify-content:center;align-items:center;gap:6px;}
   .star{color:var(--amber);}
-  .focus{background:rgba(233,233,230,.05)!important;box-shadow:inset 2px 0 0 var(--accent);}
-  .focus .dot{outline:3px solid var(--accent-soft);outline-offset:1.5px;}
+  .focus{background:rgba(233,233,230,.06)!important;}
+  .focus .dot{outline:3px solid var(--accent-line);outline-offset:1.5px;}
 
   /* ── 详情：暗纸阅读面 ── */
   .detail{flex:1;overflow:hidden;display:none;flex-direction:column;}
   .d-top{height:50px;display:flex;align-items:center;gap:8px;padding:0 20px;border-bottom:1px solid var(--hair);flex:none;}
   .back{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--sub);padding:5px 10px;border-radius:7px;}
+  .qa{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--sub);border:0;background:none;cursor:pointer;flex:none;}
+  .qa:hover{background:rgba(233,233,230,.06);color:var(--ink);}
   .back:hover{background:rgba(233,233,230,.05);color:var(--ink);}
   .d-src{font-size:11.5px;color:var(--ter);margin-left:6px;}
   .d-body{flex:1;overflow:hidden;padding:44px 96px;}
@@ -175,10 +187,10 @@
 
   <section class="panel">
     <header class="top">
-      <span class="logo"><i></i></span>
-      <span class="sec">未读</span>
+      <span class="logo" id="logoBtn" title="Mock 总入口" style="cursor:pointer;"><i></i></span>
+      <span class="sec">Lettura</span>
       <span class="cnt">247</span>
-      <nav class="nav"><a class="on">未读</a><a>星标</a><a>历史</a><a>订阅</a></nav>
+      <nav class="nav"><a class="on" href="dark.html?state=list">未读</a><a href="fusion.html?view=starred">星标</a><a href="fusion.html?view=history">历史</a><a href="feeds.html">订阅</a></nav>
       <span class="spring"></span>
       <button class="cmdbtn" id="openPalette">
         <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#A2A4A8" stroke-width="1.7"><circle cx="7" cy="7" r="4.8"/><path d="m11.2 11.2 3 3"/></svg>
@@ -192,6 +204,10 @@
       <button class="tab">播客 <span class="c">3</span></button>
       <button class="tab">平台 <span class="c">15</span></button>
       <span class="meta">34 个来源 · 最近同步 09:41</span>
+      <span style="display:flex;gap:2px;margin-left:10px;">
+        <button class="qa" title="刷新全部来源"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#A2A4A8" stroke-width="1.6" stroke-linecap="round"><path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9M13.5 2.5V5h-2.5"/></svg></button>
+        <button class="qa" title="全部标记为已读"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#A2A4A8" stroke-width="1.6" stroke-linecap="round"><path d="m3 8.5 3.2 3L13 5"/><path d="m3 3.8 3.2 3M8 4l1 1" opacity=".45"/></svg></button>
+      </span>
     </div>
 
     <main class="list" id="viewList"></main>
@@ -241,10 +257,10 @@
 
 <script>
 const ROWS=[
- {k:"art",t:"Rust 1.90 发布：编译器并行化进入第二阶段",s:"rust-lang.org",d:"09:41",read:false,star:false},
+ {k:"art",img:1,t:"Rust 1.90 发布：编译器并行化进入第二阶段",s:"rust-lang.org",d:"09:41",read:false,star:false},
  {k:"art",t:"为什么我把全部阅读搬回了 RSS",s:"overreacted.io",d:"08:52",read:false,star:false},
  {k:"pod",t:"EP.87 与 guevaria 聊本地优先软件",s:'内核恐慌 · <span class="live">播放中</span>',d:"72:00",read:false,star:false},
- {k:"bil",t:"【B站】2026 年的本地模型到底能干什么",s:"科技 UP 主 · 经 RSSHub",d:"昨日 23:07",read:false,star:false},
+ {k:"bil",img:1,t:"【B站】2026 年的本地模型到底能干什么",s:"科技 UP 主 · 经 RSSHub",d:"昨日 23:07",read:false,star:false},
  {k:"art",t:"SQLite 在 2026：一个文件如何扛住一切",s:"fly.io",d:"昨日 21:33",read:false,star:true},
  {k:"art",t:"关于本地优先的三条反直觉",s:'<span class="fail">arcadia.dev · 同步失败</span>',d:"周一",read:false,star:false},
  {k:"art",t:"从 NetNewsWire 学减法",s:"随笔",d:"周一",read:true,star:false},
@@ -256,11 +272,11 @@ function renderList(){
   vl.innerHTML=ROWS.map((r,i)=>`
    <div class="row ${r.read?"read":""} ${i===focusIdx?"focus":""}" data-i="${i}">
      <span class="st"><span class="dot"></span></span>
-     <span class="badge ${KLABEL[r.k][1]}">${KLABEL[r.k][0]}</span>
+     <span class="thumb ${r.img?"img":r.k==="pod"?"pod":r.k==="bil"?"bil":""}"></span>
      <span class="t">${r.t}</span>
-     <span class="s">${r.s}</span>
+     <span class="s"><span class="ficon">${r.s.replace(/<[^>]+>/g,"").charAt(0).toUpperCase()}</span>${r.s}</span>
      <span class="d">${r.d}</span>
-     <span class="acts">${r.star?'<svg class="star" width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1.8l1.85 3.9 4.3.55-3.2 2.9.85 4.2L8 11.3l-3.8 2.05.85-4.2-3.2-2.9 4.3-.55z"/></svg>':""}</span>
+     <span class="acts"><svg class="act star ${r.star?"on":""}" width="12" height="12" viewBox="0 0 16 16" fill="${r.star?"currentColor":"none"}" stroke="currentColor" stroke-width="1.4"><path d="M8 1.8l1.85 3.9 4.3.55-3.2 2.9.85 4.2L8 11.3l-3.8 2.05.85-4.2-3.2-2.9 4.3-.55z"/></svg><svg class="act" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="m3 8.5 3.2 3L13 5"/></svg></span>
    </div>`).join("");
 }
 
@@ -302,6 +318,7 @@ document.querySelectorAll(".dtab").forEach(t=>t.addEventListener("click",()=>{
   document.querySelectorAll(".dtab").forEach(x=>x.classList.remove("on"));t.classList.add("on");frame(t.dataset.s);
 }));
 document.getElementById("backBtn").addEventListener("click",()=>{document.querySelector('[data-s="list"]').click();});
+document.getElementById("logoBtn").addEventListener("click",()=>{location.href="index.html";});
 document.addEventListener("keydown",e=>{
   if(pOpen&&e.key==="Escape"){document.querySelector('[data-s="list"]').click();e.preventDefault();return;}
   if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==="k"){document.querySelector('[data-s="cmd"]').click();e.preventDefault();return;}

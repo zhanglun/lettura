@@ -28,6 +28,11 @@ export interface UseArticleProps {
   isArchived?: number | boolean;
   isReadLater?: number | boolean;
   hasNotes?: boolean;
+  /**
+   * read_status 覆盖：undefined = 跟随全局 currentFilter；
+   * null = 不过滤（全部）；1/2 = 未读/已读。源队列帧的过滤条用它。
+   */
+  readStatus?: number | null;
 }
 
 export function useArticle(props: UseArticleProps) {
@@ -40,6 +45,7 @@ export function useArticle(props: UseArticleProps) {
     isArchived,
     isReadLater,
     hasNotes,
+    readStatus,
   } = props;
   const isToday = useMatch(RouteConfig.LOCAL_TODAY);
   const isAll = useMatch(RouteConfig.LOCAL_ALL);
@@ -66,7 +72,12 @@ export function useArticle(props: UseArticleProps) {
           ? 1
           : undefined;
     return omitUndefined({
-      read_status: isStarred ? undefined : store.currentFilter.id,
+      read_status:
+        readStatus !== undefined
+          ? (readStatus ?? undefined)
+          : isStarred
+            ? undefined
+            : store.currentFilter.id,
       limit: PAGE_SIZE,
       feed_uuid: feedUuid,
       item_type: type,
@@ -92,6 +103,7 @@ export function useArticle(props: UseArticleProps) {
     isArchived,
     isReadLater,
     hasNotes,
+    readStatus,
   ]);
 
   const getKey = useCallback(
@@ -129,9 +141,12 @@ export function useArticle(props: UseArticleProps) {
   const isEmpty = !isLoading && list.length === 0;
   const isReachingEnd =
     isEmpty || (data && data[data.length - 1]?.list?.length < PAGE_SIZE);
+  // 服务端同条件总数（不衰减分页）
+  const total = data?.[data.length - 1]?.total ?? 0;
 
   return {
     articles,
+    total,
     isLoading,
     mutate,
     size,

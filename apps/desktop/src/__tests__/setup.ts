@@ -52,3 +52,8 @@ vi.mock("@tauri-apps/plugin-dialog", () => ({
 
 // Mock fetch globally
 global.fetch = vi.fn() as any;
+
+// jsdom lacks scrollIntoView; focus rows call it (list, feeds browse)
+if (typeof Element !== "undefined" && !Element.prototype.scrollIntoView) {
+  Element.prototype.scrollIntoView = () => {};
+}

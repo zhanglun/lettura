@@ -6,6 +6,7 @@ import { DialogAboutApp } from "./components/About";
 import { useShallow } from "zustand/react/shallow";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { showErrorToast } from "@/helpers/errorHandler";
+import { applyAccent } from "@/helpers/accent";
 import { useNavigate } from "react-router-dom";
 import { RouteConfig } from "./config";
 import { AppLayout } from "./components/layout/AppLayout";
@@ -85,21 +86,8 @@ function App() {
         document.body.classList.toggle("dark-theme", mode === "dark");
         setIsDark(mode === "dark");
 
-        // 强调色 / 列表密度（localStorage）
-        const accent = localStorage.getItem("fusion_accent");
-        if (accent) {
-          const hex = {
-            indigo: "#5E6AD2",
-            moss: "#3E8E6D",
-            ochre: "#B06A3B",
-            brick: "#C4564A",
-            vine: "#8A6BB8",
-          }[accent];
-          if (hex) {
-            document.documentElement.style.setProperty("--fusion-accent", hex);
-            document.documentElement.style.setProperty("--fusion-accent-soft", `${hex}1a`);
-          }
-        }
+        // 强调色（userConfig 单源；令牌层 color-mix 派生）/ 列表密度
+        applyAccent(cfg.accent_color);
         document.documentElement.style.setProperty(
           "--row-h",
           cfg.card_density === "compact" ? "44px" : "54px",

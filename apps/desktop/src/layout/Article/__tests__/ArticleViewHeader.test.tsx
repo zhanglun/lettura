@@ -116,7 +116,7 @@ describe("ArticleView header", () => {
     vi.clearAllMocks();
   });
 
-  it("shows the selected category unread count instead of the loaded article count", () => {
+  it("shows the source queue header with the feed name and unread count", () => {
     render(
       <MemoryRouter
         initialEntries={["/local/feeds/feed-1?feedUuid=feed-1&type=channel"]}
@@ -128,12 +128,15 @@ describe("ArticleView header", () => {
       </MemoryRouter>,
     );
 
+    // 源头栏：返回浏览 + 源名；过滤条：未读 tab 带 viewMeta 未读数
     expect(screen.getByText("Feed One")).toBeInTheDocument();
-    expect(screen.getByText("article.list_unread_count:42")).toBeInTheDocument();
-    expect(screen.queryByText("article.list_unread_count:2")).not.toBeInTheDocument();
+    expect(screen.getByText("fusion.nav.subscriptions")).toBeInTheDocument();
+    expect(screen.getByText("fusion.nav.unread")).toBeInTheDocument();
+    expect(screen.getByText("42")).toBeInTheDocument();
+    expect(screen.queryByText("article.list_unread_count:42")).not.toBeInTheDocument();
   });
 
-  it("shows loaded article and active filter metadata in the unified header", () => {
+  it("shows queue actions and the unread/all filter strip", () => {
     render(
       <MemoryRouter
         initialEntries={["/local/feeds/feed-1?feedUuid=feed-1&type=channel"]}
@@ -145,24 +148,11 @@ describe("ArticleView header", () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByText("article.list_loaded_count:2")).toBeInTheDocument();
-    expect(screen.getByText("article.current_filter")).toBeInTheDocument();
-    expect(screen.getAllByText("Unread").length).toBeGreaterThan(0);
-  });
-
-  it("passes a sticky section label reflecting the active filter to the list", () => {
-    render(
-      <MemoryRouter
-        initialEntries={["/local/feeds/feed-1?feedUuid=feed-1&type=channel"]}
-        future={{ v7_relativeSplatPath: true, v7_startTransition: true }}
-      >
-        <Routes>
-          <Route path="/local/feeds/:uuid" element={<ArticleView />} />
-        </Routes>
-      </MemoryRouter>,
-    );
-
-    const list = screen.getByTestId("article-list");
-    expect(list.getAttribute("data-section-label")).toBe("article.section_label:2");
+    expect(screen.getByText("fusion.filter.all")).toBeInTheDocument();
+    expect(
+      screen.getByLabelText("feeds.ctx.mark_all_read"),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("feeds.ctx.sync")).toBeInTheDocument();
+    expect(screen.getByLabelText("fusion.queue.manage")).toBeInTheDocument();
   });
 });

@@ -1,11 +1,11 @@
 {
   "Ready to Read": "准备阅读",
   "Select an article from your subscribe to start reading": "从您的订阅中选择一篇文章开始阅读",
-  "Add folder": "添加文件夹",
-  "Edit folder": "编辑文件夹",
+  "Add folder": "添加分组",
+  "Edit folder": "编辑分组",
   "Organize your subscribes": "组织你的订阅",
-  "Update your folder": "更新你的文件夹",
-  "Delete folder": "删除文件夹",
+  "Update your folder": "更新你的分组",
+  "Delete folder": "删除分组",
   "Update": "更新",
   "Search": "搜索",
   "Search content": "搜索内容",
@@ -120,7 +120,7 @@
   "Not synced yet": "尚未同步",
   "Synced {{time}}": "{{time}}同步",
   "Successfully imported {count} feeds": "成功导入 {{count}} 个订阅",
-  "Successfully created {count} folders": "成功创建 {{count}} 个文件夹",
+  "Successfully created {count} folders": "成功创建 {{count}} 个分组",
   "Failed to import {count} feeds": "导入 {{count}} 个订阅失败",
   "Failed to import OPML file": "导入 OPML 文件失败",
   "Failed to export OPML file": "导出 OPML 文件失败",
@@ -137,24 +137,24 @@
   "feeds": {
     "select_article": "选择一篇文章开始阅读",
     "manage_title": "管理你的信息源",
-    "folders": "文件夹",
+    "folders": "分组",
     "all_sources": "全部源",
     "ungrouped": "未分组",
     "health_overview": "健康概览",
     "search_placeholder": "搜索订阅源...",
     "add_feed": "添加订阅",
-    "add_folder": "新建文件夹",
+    "add_folder": "新建分组",
     "back": "返回",
     "sources_count": "{{count}} 个源",
     "sidebar": {
-      "folders": "文件夹"
+      "folders": "分组"
     },
     "ctx": {
       "view_articles": "查看文章",
       "sync": "同步",
       "mark_all_read": "全部标为已读",
       "edit": "编辑",
-      "move_to_folder": "移至文件夹",
+      "move_to_folder": "移至分组",
       "disable": "停用",
       "delete": "删除"
     }
@@ -236,23 +236,23 @@
       "filter_broken": "异常",
       "filter_ungrouped": "未分组",
       "kpi_feeds": "订阅源",
-      "kpi_folders": "文件夹",
+      "kpi_folders": "分组",
       "kpi_unread": "未读文章",
       "kpi_broken": "异常源",
       "ungrouped": "未分组",
-      "folder_meta": "{{sources}} 源 · {{unread}} 未读",
+      "folder_meta": "{{sources}} 个来源 · {{unread}} 未读",
       "context_hint": "右键订阅源可查看文章、同步、全部已读、编辑、移动、停用或删除。",
       "view_detail": "查看详情",
       "move_title": "移动订阅源",
       "moved": "订阅源已移动",
       "move_failed": "移动订阅源失败",
       "detail_empty_title": "选择一个订阅源",
-      "detail_empty_help": "从列表中选择订阅源，查看 URL、同步状态、所属文件夹和管理操作。",
+      "detail_empty_help": "从列表中选择订阅源，查看 URL、同步状态、所属分组和管理操作。",
       "detail_title": "来源详情",
       "home_url": "主页",
       "feed_url": "源地址",
       "last_sync": "上次同步",
-      "folder": "文件夹",
+      "folder": "分组",
       "failure_reason": "失败原因",
       "management_actions": "管理操作"
     },
@@ -273,8 +273,8 @@
       "col_source": "来源",
       "col_health": "健康",
       "col_last_sync": "上次同步",
-      "health_broken": "异常",
-      "health_ok": "正常",
+      "health_broken": "同步失败",
+      "health_ok": "健康正常",
       "action_retry": "重试",
       "action_sync": "同步",
       "sync_strategy_title": "同步策略",
@@ -327,7 +327,7 @@
     "preview_live": "实时反映上方设置",
     "prev_row1": "为什么我把全部阅读搬回了 RSS",
     "prev_row2": "EP.87 与 guevaria 聊本地优先软件",
-    "prev_serif": "五年里我换过四个稍后读应用、三个聚合器、两套笔记系统。问题不在工具，在形态——未读不是债务，只是今天的天气。",
+    "prev_serif": "五年里我换过四个稍后读应用、三个聚合器、两套笔记系统。每一件都 promising 地开始，都以同一个症状结束：收藏的东西越来越多，读完的越来越少。问题不在工具，在形态——未读不是债务，只是今天的天气。",
     "subs_manage": "订阅管理",
     "subs_manage_help": "添加、分组、移动与退订来源",
     "subs_manage_btn": "管理订阅",
@@ -335,7 +335,14 @@
     "opml_help": "订阅列表完全进出，数据属于用户",
     "Off": "关闭",
     "Keep forever": "永久保留",
-    "days": "天"
+    "days": "天",
+    "accent": {
+      "indigo": "靛蓝",
+      "moss": "苔绿",
+      "ochre": "赭石",
+      "brick": "砖红",
+      "vine": "藤紫"
+    }
   },
   "layout": {
     "topics": {},
@@ -537,19 +544,42 @@
     "ctl": {
       "back30": "后退 30 秒",
       "fwd30": "前进 30 秒",
-      "open_detail": "展开单集详情"
+      "open_detail": "展开单集详情",
+      "toggle": "播放/暂停"
     },
     "podcast": {
       "empty": "暂无播放内容",
       "empty_hint": "添加一些播客开始收听吧"
-    }
+    },
+    "collapse": "收起",
+    "collapse_bar": "收起（右下角圆钮，播放不停）",
+    "expand": "放大（沉浸页）",
+    "expand_bar": "展开播放条",
+    "now_playing": "正在播放",
+    "up_next": "接着播"
   },
   "fusion": {
     "nav": {
       "unread": "未读",
       "starred": "星标",
       "history": "历史",
-      "subscriptions": "订阅"
+      "subscriptions": "订阅",
+      "settings": "设置"
+    },
+    "browse": {
+      "sync_failed": "同步失败",
+      "folder_sources": "{{count}} 源",
+      "folder_unread": "{{count}} 未读",
+      "empty_title": "还没有订阅",
+      "empty_lede": "粘贴一个地址开始订阅；管理与浏览分工——设置里管订阅，这里读订阅。"
+    },
+    "queue": {
+      "last_sync": "最近同步 {{time}}",
+      "manage": "在设置中管理"
+    },
+    "subs": {
+      "meta": "{{sources}} 个来源 · {{folders}} 个分组",
+      "retry": "重试"
     },
     "search": {
       "placeholder": "搜索或输入命令"
@@ -705,5 +735,9 @@
   "Export completed": "导出完成",
   "Export": "导出",
   "days": "天",
-  "Off": "关闭"
+  "Off": "关闭",
+  "1 hour": "每小时",
+  "6 hours": "每 6 小时",
+  "12 hours": "每 12 小时",
+  "24 hours": "每 24 小时"
 }

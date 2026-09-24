@@ -182,10 +182,10 @@
 
   <section class="panel">
     <header class="top">
-      <span class="logo"><i></i></span>
-      <span class="sec">未读</span>
+      <span class="logo" id="logoBtn" title="Mock 总入口" style="cursor:pointer;"><i></i></span>
+      <span class="sec">Lettura</span>
       <span class="cnt">247</span>
-      <nav class="nav"><a class="on">未读</a><a>星标</a><a>历史</a><a>订阅</a></nav>
+      <nav class="nav"><a class="on" href="fusion.html">未读</a><a href="fusion.html?view=starred">星标</a><a href="fusion.html?view=history">历史</a><a href="feeds.html">订阅</a></nav>
       <span class="spring"></span>
       <button class="cmdbtn" id="openAdd">
         <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#6A6C6E" stroke-width="1.7"><circle cx="7" cy="7" r="4.8"/><path d="m11.2 11.2 3 3"/></svg>
@@ -260,6 +260,7 @@ let open=false,timer=null;
 function openPanel(){open=true;veil.style.display="block";panel.style.display="block";tryRow.style.display="flex";input.value="";reset();input.focus();}
 function closePanel(){open=false;veil.style.display="none";panel.style.display="none";}
 document.getElementById("openAdd").addEventListener("click",openPanel);
+document.getElementById("logoBtn").addEventListener("click",()=>{location.href="index.html";});
 veil.addEventListener("click",closePanel);
 
 /* ── 平台分段 ── */

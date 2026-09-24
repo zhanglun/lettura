@@ -13,15 +13,7 @@ import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
 import { RouteConfig } from "@/config";
 import { Subscriptions } from "./Subscriptions";
-import { KindBadge } from "@/components/KindBadge";
-
-const ACCENTS: { key: string; hex: string }[] = [
-  { key: "indigo", hex: "#5E6AD2" },
-  { key: "moss", hex: "#3E8E6D" },
-  { key: "ochre", hex: "#B06A3B" },
-  { key: "brick", hex: "#C4564A" },
-  { key: "vine", hex: "#8A6BB8" },
-];
+import { ACCENTS, applyAccent } from "@/helpers/accent";
 
 const INTERVALS = [
   { value: 0, labelKey: "Manual" },
@@ -99,6 +91,7 @@ export function SettingPage() {
 
   // esc 一路退回未读列表
   useHotkeys("escape", () => {
+    if (useBearStore.getState().playerMode === "full") return; // 沉浸页优先收回条
     if (!isSubscriptions) navigate(RouteConfig.LOCAL_ALL);
   });
 
@@ -109,6 +102,32 @@ export function SettingPage() {
       ?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  // 滚动侦测反向点亮锚点导航；末段在触底时兜底选中（settings.html 契约）
+  useEffect(() => {
+    const el = bodyRef.current;
+    if (!el) return;
+    const sections = ["appearance", "sync", "system"];
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        ticking = false;
+        const box = el.getBoundingClientRect();
+        const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 8;
+        const current = sections
+          .map((id) => el.querySelector(`#${id}`) as HTMLElement | null)
+          .filter((n): n is HTMLElement => !!n)
+          .reduce<string | null>((acc, node) => {
+            return node.getBoundingClientRect().top - box.top <= 72 ? node.id : acc;
+          }, null);
+        setActiveSec(atBottom ? sections[sections.length - 1] : current ?? sections[0]);
+      });
+    };
+    el.addEventListener("scroll", onScroll, { passive: true });
+    return () => el.removeEventListener("scroll", onScroll);
+  }, []);
+
   // 校准台参数写入令牌
   useEffect(() => {
     const size = cfg?.customize_style?.font_size ?? 15.5;
@@ -118,11 +137,7 @@ export function SettingPage() {
   }, [cfg?.customize_style?.font_size, cfg?.customize_style?.line_height]);
 
   if (isSubscriptions) {
-    return (
-      <div className="flex-1 h-full overflow-auto px-8 py-7">
-        <Subscriptions />
-      </div>
-    );
+    return <Subscriptions />;
   }
 
   const applyScheme = (v: string) => {
@@ -201,14 +216,16 @@ export function SettingPage() {
           style={read ? { background: "#CFD1D3" } : undefined}
         />
       </span>
-      <KindBadge link={badge.link} feed_url={badge.feed_url} />
+      <span className={`fusion-thumb ${badge.link ? "pod" : ""}`} />
       <span
         className="fusion-title"
         style={read ? { color: "var(--fusion-ter)", fontWeight: 400 } : undefined}
       >
         {title}
       </span>
-      <span className="fusion-src">{src}</span>
+      <span className="fusion-src">
+        <span className="fn">{src}</span>
+      </span>
       <span />
     </div>
   );
@@ -253,7 +270,18 @@ export function SettingPage() {
             onClick={() => navigate(`${RouteConfig.SETTINGS}?tab=subscriptions`)}
           >
             {t("settings.tab.subscriptions_title")}
-            <span style={{ marginLeft: "auto", color: "var(--fusion-ter)" }}>›</span>
+            <svg
+              width="11"
+              height="11"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.7"
+              strokeLinecap="round"
+              style={{ marginLeft: "auto", color: "var(--fusion-ter)", flex: "none" }}
+            >
+              <path d="m6 3 5 5-5 5" />
+            </svg>
           </button>
         </nav>
 
@@ -261,7 +289,7 @@ export function SettingPage() {
           <div className="fusion-set-inner">
             {/* 外观与阅读 */}
             <div className="fusion-set-h" id="appearance">
-              {t("settings.sec.appearance")} APPEARANCE
+              {t("settings.sec.appearance")}
             </div>
             <SRow label={t("Theme mode")} help={t("settings.theme_help")}>
               <Seg
@@ -280,18 +308,16 @@ export function SettingPage() {
                   <button
                     key={a.key}
                     type="button"
-                    title={a.key}
+                    title={t(`settings.accent.${a.key}`)}
+                    aria-label={t(`settings.accent.${a.key}`)}
+                    aria-pressed={(cfg?.accent_color ?? "indigo") === a.key}
                     className={`fusion-swatch ${
-                      (localStorage.getItem("fusion_accent") ?? "indigo") === a.key ? "on" : ""
+                      (cfg?.accent_color ?? "indigo") === a.key ? "on" : ""
                     }`}
                     style={{ background: a.hex }}
                     onClick={() => {
-                      localStorage.setItem("fusion_accent", a.key);
-                      document.documentElement.style.setProperty("--fusion-accent", a.hex);
-                      document.documentElement.style.setProperty(
-                        "--fusion-accent-soft",
-                        `${a.hex}1a`,
-                      );
+                      store.updateUserConfig({ ...cfg, accent_color: a.key });
+                      applyAccent(a.key);
                     }}
                   />
                 ))}
@@ -347,7 +373,7 @@ export function SettingPage() {
             {/* 校准台 */}
             <div className="fusion-prev">
               <div className="cap">
-                <span>{t("settings.preview")} PREVIEW</span>
+                <span>{t("settings.preview")}</span>
                 <span className="live">{t("settings.preview_live")}</span>
               </div>
               {previewRow(
@@ -367,7 +393,7 @@ export function SettingPage() {
 
             {/* 同步与来源 */}
             <div className="fusion-set-h" id="sync">
-              {t("settings.sec.sync")} SYNC
+              {t("settings.sec.sync")}
             </div>
             <SRow label={t("Update Interval")} help={t("set the update interval")}>
               <select
@@ -417,7 +443,7 @@ export function SettingPage() {
 
             {/* 行为与数据 */}
             <div className="fusion-set-h" id="system">
-              {t("settings.sec.system")} SYSTEM
+              {t("settings.sec.system")}
             </div>
             <SRow label={t("Launch at Login")} help={t("Start with system, but do not show window")}>
               <button

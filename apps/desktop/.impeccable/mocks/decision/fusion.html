@@ -66,10 +66,20 @@
   /* ── 列表视图 ── */
   .list{flex:1;overflow:hidden;}
   .row{
-    display:grid;grid-template-columns:56px 20px 1fr 210px 92px 44px;
+    display:grid;grid-template-columns:20px 56px minmax(0,1fr) 170px 92px 56px;
     align-items:center;height:54px;padding-right:20px;border-bottom:1px solid var(--hair);cursor:pointer;
   }
   .row:hover{background:rgba(29,30,32,.035);}
+
+  /* 行首缩略图（banner/预览图，演示用类型色块代替实图）+ 源图标 + 常显行尾动作 */
+  .thumb{width:56px;height:34px;border-radius:7px;border:1px solid var(--hair);background:rgba(29,30,32,.04);overflow:hidden;flex:none;}
+  .thumb.pod{background:var(--accent-soft);}
+  .thumb.bil{background:var(--pink-soft);}
+  .thumb.img{background:linear-gradient(135deg,#DDE0E3,#C9CDD2);} /* 有图演示：中性照片渐变 */
+  .ficon{width:14px;height:14px;border-radius:4px;background:rgba(29,30,32,.08);font-size:8px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none;color:var(--sub);}
+  .act{opacity:.6;transition:opacity .12s ease;color:var(--sub);display:flex;flex:none;}
+  .row:hover .act{opacity:1;}
+  .act.star.on{color:var(--amber);opacity:1;}
   .st{display:flex;justify-content:center;}
   .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);}
   .read .dot{background:#CFD1D3;}
@@ -83,14 +93,14 @@
   .b-dou{background:rgba(29,30,32,.08);color:var(--ink);}
   .t{font-size:13.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 10px;}
   .read .t{color:var(--ter);font-weight:400;}
-  .s{font-size:11.5px;color:var(--ter);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .s{font-size:11.5px;color:var(--ter);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:6px;}
   .s .fail{color:var(--warn);}
   .s .live{color:var(--accent);}
-  .d{font-size:11.5px;color:var(--ter);text-align:right;font-variant-numeric:tabular-nums;}
+  .d{font-size:11.5px;color:var(--ter);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;padding-right:12px;}
   .acts{display:flex;justify-content:center;align-items:center;gap:6px;}
   .star{color:var(--amber);}
-  .focus{background:rgba(29,30,32,.045)!important;box-shadow:inset 2px 0 0 var(--accent);}
-  .focus .dot{outline:3px solid var(--accent-soft);outline-offset:1.5px;}
+  .focus{background:rgba(29,30,32,.055)!important;}
+  .focus .dot{outline:3px solid var(--accent-line);outline-offset:1.5px;}
 
   /* ── 详情视图 ── */
   .detail{flex:1;overflow:hidden;display:none;flex-direction:column;}
@@ -189,6 +199,27 @@
   .expand{width:24px;height:24px;border-radius:7px;display:flex;align-items:center;justify-content:center;color:var(--ter);}
   .expand:hover{background:rgba(29,30,32,.06);color:var(--ink);}
 
+  /* ── 帮助浮层（help.html 契约内联：? 键弹出） ── */
+  .help{
+    position:absolute;left:50%;top:84px;transform:translateX(-50%);width:720px;z-index:50;
+    border-radius:14px;overflow:hidden;display:none;
+    background:rgba(255,255,255,.94);backdrop-filter:blur(28px) saturate(1.6);
+    border:1px solid rgba(29,30,32,.1);
+    box-shadow:0 4px 10px rgba(29,30,32,.06),0 36px 80px -16px rgba(29,30,32,.4);
+  }
+  .h-in{height:52px;display:flex;align-items:center;gap:10px;padding:0 16px;border-bottom:1px solid var(--hair);}
+  .h-in .tt{font-size:14px;font-weight:700;flex:1;}
+  .h-in .sub{font-size:11px;color:var(--ter);}
+  .h-cols{display:grid;grid-template-columns:1fr 1fr;padding:8px 6px 12px;}
+  .h-grp{padding:6px 12px;}
+  .h-g-h{font-size:10.5px;font-weight:700;letter-spacing:.1em;color:var(--ter);margin:10px 0 4px;}
+  .k-row{display:flex;align-items:center;gap:12px;height:33px;border-bottom:1px solid var(--hair);}
+  .k-row:last-child{border-bottom:0;}
+  .k-keys{display:flex;gap:4px;flex:none;width:104px;justify-content:flex-end;}
+  .k-desc{font-size:12.5px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .k-desc .q{color:var(--ter);}
+  .h-foot{height:34px;display:flex;align-items:center;gap:14px;padding:0 16px;border-top:1px solid var(--hair);font-size:10.5px;color:var(--ter);background:rgba(255,255,255,.5);}
+
   .synthetic{position:absolute;right:36px;bottom:100px;font-size:10px;color:var(--ter);letter-spacing:.1em;z-index:5;}
   .hintbar{position:absolute;left:36px;bottom:100px;font-size:10.5px;color:var(--ter);z-index:5;letter-spacing:.03em;}
   .hintbar b{color:var(--sub);font-weight:600;}
@@ -208,11 +239,11 @@
 
   <section class="panel">
     <header class="top">
-      <span class="logo"><i></i></span>
-      <span class="sec">未读</span>
-      <span class="cnt">247</span>
+      <span class="logo" id="logoBtn" title="Mock 总入口" style="cursor:pointer;"><i></i></span>
+      <span class="sec">Lettura</span>
+      <span class="cnt" id="secCnt">247</span>
       <nav class="nav">
-        <a class="on">未读</a><a>星标</a><a>历史</a><a>订阅</a>
+        <a class="on" id="navUnread" href="fusion.html">未读</a><a id="navStar" href="fusion.html?view=starred">星标</a><a id="navHistory" href="fusion.html?view=history">历史</a><a id="navSubs" href="feeds.html">订阅</a>
       </nav>
       <span class="spring"></span>
       <button class="cmdbtn" id="openPalette">
@@ -228,6 +259,10 @@
       <button class="tab">播客 <span class="c">3</span></button>
       <button class="tab">平台 <span class="c">15</span></button>
       <span class="meta">34 个来源 · 最近同步 09:41</span>
+      <span style="display:flex;gap:2px;margin-left:10px;">
+        <button class="qa" title="刷新全部来源"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#6A6C6E" stroke-width="1.6" stroke-linecap="round"><path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9M13.5 2.5V5h-2.5"/></svg></button>
+        <button class="qa" title="全部标记为已读"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#6A6C6E" stroke-width="1.6" stroke-linecap="round"><path d="m3 8.5 3.2 3L13 5"/><path d="m3 3.8 3.2 3M8 4l1 1" opacity=".45"/></svg></button>
+      </span>
     </div>
 
     <main class="list" id="viewList"></main>
@@ -268,7 +303,39 @@
     <div class="p-foot"><span>↑↓ 选择</span><span>⏎ 打开</span><span class="spring"></span><span id="pCount"></span></div>
   </section>
 
-  <span class="hintbar" id="hintbar"><b>j/k</b> 移动 · <b>⏎</b> 打开 · <b>m</b> 已读 · <b>f</b> 星标 · <b>space</b> 播放 · <b>⌘K</b> 命令</span>
+  <!-- 帮助浮层（? 键） -->
+  <section class="help" id="helpPanel">
+    <div class="h-in">
+      <span class="tt">快捷键</span>
+      <span class="sub">键盘优先 · 列表与详情内全局生效</span>
+      <kbd>esc</kbd>
+    </div>
+    <div class="h-cols">
+      <div class="h-grp">
+        <div class="h-g-h">导航 NAVIGATE</div>
+        <div class="k-row"><span class="k-keys"><kbd>j</kbd><kbd>k</kbd></span><span class="k-desc">下移 / 上移焦点</span></div>
+        <div class="k-row"><span class="k-keys"><kbd>⏎</kbd><kbd>o</kbd></span><span class="k-desc">打开焦点行</span></div>
+        <div class="k-row"><span class="k-keys"><kbd>esc</kbd></span><span class="k-desc">返回列表 / 逐级关闭 <span class="q">（订阅→设置→未读）</span></span></div>
+        <div class="k-row"><span class="k-keys"><kbd>⌘K</kbd><kbd>/</kbd></span><span class="k-desc">命令面板 <span class="q">（文章 / 来源 / 命令）</span></span></div>
+        <div class="h-g-h">标记 MARK</div>
+        <div class="k-row"><span class="k-keys"><kbd>m</kbd></span><span class="k-desc">已读并下移</span></div>
+        <div class="k-row"><span class="k-keys"><kbd>M</kbd></span><span class="k-desc">已读并上移</span></div>
+        <div class="k-row"><span class="k-keys"><kbd>f</kbd></span><span class="k-desc">星标 / 取消星标</span></div>
+      </div>
+      <div class="h-grp">
+        <div class="h-g-h">阅读 READ</div>
+        <div class="k-row"><span class="k-keys"><kbd>v</kbd></span><span class="k-desc">浏览器打开原文</span></div>
+        <div class="k-row"><span class="k-keys"><kbd>space</kbd></span><span class="k-desc">全局播放 / 暂停</span></div>
+        <div class="h-g-h">全局 GLOBAL</div>
+        <div class="k-row"><span class="k-keys"><kbd>R</kbd></span><span class="k-desc">刷新全部来源</span></div>
+        <div class="k-row"><span class="k-keys"><kbd>?</kbd></span><span class="k-desc">本帮助</span></div>
+        <div class="k-row"><span class="k-keys"><kbd>⌘,</kbd></span><span class="k-desc">打开设置 <span class="q">（同 ⌘K「打开设置」）</span></span></div>
+      </div>
+    </div>
+    <div class="h-foot"><span>esc 关闭</span><span class="spring"></span><span>键盘优先，鼠标永远可用</span></div>
+  </section>
+
+  <span class="hintbar" id="hintbar"><b>j/k</b> 移动 · <b>⏎</b> 打开 · <b>m</b> 已读 · <b>f</b> 星标 · <b>space</b> 播放 · <b>⌘K</b> 命令 · <b>?</b> 帮助</span>
   <span class="synthetic">演示内容为合成数据</span>
 
   <!-- 播放器 -->
@@ -286,18 +353,21 @@
       <span class="pt">72:00</span>
     </span>
     <span class="chip">1.5×</span>
-    <button class="expand" id="expandBtn" title="展开详情">
+    <button class="expand" onclick="location.href='podcast.html?state=full'" title="放大（沉浸页）">
       <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 6l5-5 5 5M3 10l5 5 5-5"/></svg>
+    </button>
+    <button class="expand" onclick="location.href='podcast.html?state=min'" title="收起（右下角圆钮）">
+      <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 10l5 5 5-5M3 6l5-5 5 5"/></svg>
     </button>
   </footer>
 </div>
 
 <script>
 const ROWS=[
- {k:"art",t:"Rust 1.90 发布：编译器并行化进入第二阶段",s:"rust-lang.org",d:"09:41",read:false,star:false},
+ {k:"art",img:1,t:"Rust 1.90 发布：编译器并行化进入第二阶段",s:"rust-lang.org",d:"09:41",read:false,star:false},
  {k:"art",t:"为什么我把全部阅读搬回了 RSS",s:"overreacted.io",d:"08:52",read:false,star:false},
  {k:"pod",t:"EP.87 与 guevaria 聊本地优先软件",s:'内核恐慌 · <span class="live">播放中</span>',d:"72:00",read:false,star:false},
- {k:"bil",t:"【B站】2026 年的本地模型到底能干什么",s:"科技 UP 主 · 经 RSSHub",d:"昨日 23:07",read:false,star:false},
+ {k:"bil",img:1,t:"【B站】2026 年的本地模型到底能干什么",s:"科技 UP 主 · 经 RSSHub",d:"昨日 23:07",read:false,star:false},
  {k:"dou",t:"【抖音】三分钟看懂编译器并行化",s:"抖音 · 经 RSSHub",d:"昨日 22:40",read:false,star:false},
  {k:"art",t:"SQLite 在 2026：一个文件如何扛住一切",s:"fly.io",d:"昨日 21:33",read:false,star:true},
  {k:"art",t:"Weekly #212：工具的形状",s:"newsletter",d:"昨日 19:20",read:true,star:false},
@@ -314,11 +384,11 @@ function renderList(){
   vl.innerHTML=ROWS.map((r,i)=>`
    <div class="row ${r.read?"read":""} ${i===focusIdx?"focus":""}" data-i="${i}">
      <span class="st"><span class="dot"></span></span>
-     <span class="badge ${KLABEL[r.k][1]}">${KLABEL[r.k][0]}</span>
+     <span class="thumb ${r.img?"img":r.k==="pod"?"pod":r.k==="bil"?"bil":""}"></span>
      <span class="t">${r.t}</span>
-     <span class="s">${r.s}</span>
+     <span class="s"><span class="ficon">${r.s.replace(/<[^>]+>/g,"").charAt(0).toUpperCase()}</span>${r.s}</span>
      <span class="d">${r.d}</span>
-     <span class="acts">${r.star?'<svg class="star" width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1.8l1.85 3.9 4.3.55-3.2 2.9.85 4.2L8 11.3l-3.8 2.05.85-4.2-3.2-2.9 4.3-.55z"/></svg>':""}</span>
+     <span class="acts"><svg class="act star ${r.star?"on":""}" width="12" height="12" viewBox="0 0 16 16" fill="${r.star?"currentColor":"none"}" stroke="currentColor" stroke-width="1.4"><path d="M8 1.8l1.85 3.9 4.3.55-3.2 2.9.85 4.2L8 11.3l-3.8 2.05.85-4.2-3.2-2.9 4.3-.55z"/></svg><svg class="act" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="m3 8.5 3.2 3L13 5"/></svg></span>
    </div>`).join("");
   vl.querySelectorAll(".row").forEach(el=>el.addEventListener("click",()=>{focusIdx=+el.dataset.i;openDetail(focusIdx);}));
 }
@@ -401,26 +471,29 @@ document.getElementById("playBtn").addEventListener("click",togglePlay);
 /* 命令面板 */
 const veil=document.getElementById("veil"),pal=document.getElementById("palette"),pin=document.getElementById("pInput"),pres=document.getElementById("pRes");
 const CMDS=[
- {ic:"文",cls:"b-art",l:"Rust 1.90 发布：编译器并行化进入第二阶段",h:"rust-lang.org · 09:41",i:0},
- {ic:"文",cls:"b-art",l:"为什么我把全部阅读搬回了 RSS",h:"overreacted.io · 08:52",i:1},
- {ic:"播",cls:"b-pod",l:"EP.87 与 guevaria 聊本地优先软件",h:"内核恐慌 · 72:00",i:2},
- {ic:"B",cls:"b-bil",l:"【B站】2026 年的本地模型到底能干什么",h:"科技 UP 主 · 昨日",i:3},
- {ic:"抖",cls:"b-dou",l:"【抖音】三分钟看懂编译器并行化",h:"抖音 · 昨日",i:4},
- {ic:"＋",cls:"b-art",l:"添加订阅（含 B站 / 抖音 / Newsletter 平台源）",h:"命令",i:-1},
- {ic:"↻",cls:"b-art",l:"刷新全部来源",h:"命令 · R",i:-1},
+ {ic:"文",cls:"b-art",l:"Rust 1.90 发布：编译器并行化进入第二阶段",h:"rust-lang.org · 09:41",act:()=>openDetail(0)},
+ {ic:"文",cls:"b-art",l:"为什么我把全部阅读搬回了 RSS",h:"overreacted.io · 08:52",act:()=>openDetail(1)},
+ {ic:"播",cls:"b-pod",l:"EP.87 与 guevaria 聊本地优先软件",h:"内核恐慌 · 72:00",act:()=>openDetail(2)},
+ {ic:"B",cls:"b-bil",l:"【B站】2026 年的本地模型到底能干什么",h:"科技 UP 主 · 昨日",act:()=>openDetail(3)},
+ {ic:"抖",cls:"b-dou",l:"【抖音】三分钟看懂编译器并行化",h:"抖音 · 昨日",act:()=>openDetail(4)},
+ {ic:"＋",cls:"b-art",l:"添加订阅（含 B站 / 抖音 / Newsletter 平台源）",h:"命令",act:()=>{location.href="add.html";}},
+ {ic:"⚙",cls:"b-art",l:"打开设置",h:"命令 · ⌘,",act:()=>{location.href="settings.html";}},
+ {ic:"▤",cls:"b-art",l:"订阅浏览（按源补读）",h:"命令",act:()=>{location.href="feeds.html";}},
+ {ic:"?",cls:"b-art",l:"快捷键帮助",h:"命令",act:()=>toggleHelp()},
+ {ic:"↻",cls:"b-art",l:"刷新全部来源",h:"命令 · R",act:()=>{}},
 ];
 let pOpen=false;
 function renderPal(q=""){
   const ql=q.toLowerCase();
   const hits=CMDS.filter(c=>c.l.toLowerCase().includes(ql));
   pres.innerHTML=hits.map((c,idx)=>`
-   <div class="r ${idx===0?"sel":""}" data-i="${c.i}">
+   <div class="r ${idx===0?"sel":""}" data-i="${CMDS.indexOf(c)}">
      <span class="ic ${c.cls}">${c.ic}</span>
      <span class="lbl">${c.l}</span><span class="hint">${c.h}</span><kbd>⏎</kbd>
    </div>`).join("")||`<div style="padding:18px 16px;font-size:13px;color:var(--ter);">没有匹配</div>`;
   document.getElementById("pCount").textContent=`共 ${hits.length} 项`;
   pres.querySelectorAll(".r").forEach(el=>el.addEventListener("click",()=>{
-    closePal(); if(+el.dataset.i>=0) openDetail(+el.dataset.i);
+    closePal(); CMDS[+el.dataset.i].act();
   }));
 }
 function openPal(){pOpen=true;veil.style.display="block";pal.style.display="block";pin.value="";renderPal();pin.focus();}
@@ -429,17 +502,39 @@ document.getElementById("openPalette").addEventListener("click",openPal);
 veil.addEventListener("click",closePal);
 pin.addEventListener("input",e=>renderPal(e.target.value));
 
+/* 帮助浮层（? 键，help.html 契约） */
+const helpPanel=document.getElementById("helpPanel");
+function toggleHelp(){helpPanel.style.display=helpPanel.style.display==="block"?"none":"block";}
+helpPanel.addEventListener("click",e=>{if(e.target===helpPanel)toggleHelp();});
+
+/* logo 回 mock 总入口 */
+document.getElementById("logoBtn").addEventListener("click",()=>{location.href="index.html";});
+
+/* 列表变体：?view=starred|history（星标/历史导航项＝列表变体，DESIGN 契约） */
+(()=>{
+  const v=new URLSearchParams(location.search).get("view")||"unread";
+  if(v==="unread")return;
+  document.querySelectorAll(".nav a").forEach(a=>a.classList.remove("on"));
+  (v==="starred"?document.getElementById("navStar"):document.getElementById("navHistory")).classList.add("on");
+  if(v==="starred")ROWS.forEach(r=>{r.star=true;});
+  else ROWS.forEach(r=>{r.read=true;});
+  renderList();
+})();
+
 document.addEventListener("keydown",e=>{
   if(pOpen){
     if(e.key==="Escape"){closePal();e.preventDefault();}
     if(e.key==="Enter"){
       const first=pres.querySelector(".r");
-      if(first){closePal(); if(+first.dataset.i>=0) openDetail(+first.dataset.i);}
+      if(first){closePal(); CMDS[+first.dataset.i].act();}
       e.preventDefault();
     }
     return;
   }
   if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==="k"){openPal();e.preventDefault();return;}
+  if((e.metaKey||e.ctrlKey)&&e.key===","){location.href="settings.html";e.preventDefault();return;}
+  if(e.key==="?"){toggleHelp();e.preventDefault();return;}
+  if(e.key==="Escape"&&helpPanel.style.display==="block"){toggleHelp();e.preventDefault();return;}
   if(view==="list"){
     if(e.key==="j"||e.key==="ArrowDown"){setFocus(focusIdx+1);e.preventDefault();}
     if(e.key==="k"||e.key==="ArrowUp"){setFocus(focusIdx-1);e.preventDefault();}

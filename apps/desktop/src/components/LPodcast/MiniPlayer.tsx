@@ -1,9 +1,6 @@
 import React from "react";
-import { IconButton } from "@radix-ui/themes";
-import { PlayIcon, PauseIcon, ChevronUpIcon } from "@radix-ui/react-icons";
 import { AudioTrack } from "./index";
 import { formatTime } from "./utils";
-import { PlayListPopover } from "./PlayListPopover";
 import { useTranslation } from "react-i18next";
 
 const RATES = [1, 1.25, 1.5, 2];
@@ -18,10 +15,14 @@ interface MiniPlayerProps {
   seek: (time: number) => void;
   skip: (delta: number) => void;
   cycleRate: () => void;
-  onOpenDetail: () => void;
+  onExpand: () => void;
+  onCollapse: () => void;
 }
 
-/** fusion 播放卡：播放/暂停 · ±30s · 单集信息(点击展开详情) · 进度条带旋钮 · 倍速 chip · 展开箭头 */
+/**
+ * fusion 播放条（podcast.html 契约）：左传输簇（播放 + ±30s）· 单集信息（点击放大）
+ * · 时间轴 · 右簇（倍速 chip + 放大 + 收起）。队列入口＝放大进沉浸页的 UP NEXT。
+ */
 export const MiniPlayer: React.FC<MiniPlayerProps> = ({
   currentTrack,
   isPlaying,
@@ -32,7 +33,8 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({
   seek,
   skip,
   cycleRate,
-  onOpenDetail,
+  onExpand,
+  onCollapse,
 }) => {
   const { t } = useTranslation();
   const pct = duration > 0 ? Math.min(100, (progress / duration) * 100) : 0;
@@ -44,52 +46,58 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({
   };
 
   return (
-    <div className="fusion-player flex items-center gap-3.5 px-4.5 h-[68px]">
-      <button
-        type="button"
-        className="fusion-pc"
-        onClick={togglePlay}
-        aria-label={isPlaying ? t("Pause") : t("Play")}
-      >
-        {isPlaying ? (
-          <svg width="11" height="11" viewBox="0 0 12 12" fill="#fff">
-            <rect x="1.5" y="1" width="3" height="10" rx="1" />
-            <rect x="7.5" y="1" width="3" height="10" rx="1" />
+    <div className="fusion-player">
+      {/* 传输簇：播放 + ±30s */}
+      <div className="fusion-pcluster">
+        <button
+          type="button"
+          className="fusion-pc"
+          onClick={togglePlay}
+          aria-label={isPlaying ? t("Pause") : t("Play")}
+        >
+          {isPlaying ? (
+            <svg width="11" height="11" viewBox="0 0 12 12" fill="#fff">
+              <rect x="1.5" y="1" width="3" height="10" rx="1" />
+              <rect x="7.5" y="1" width="3" height="10" rx="1" />
+            </svg>
+          ) : (
+            <svg width="11" height="11" viewBox="0 0 12 12" fill="#fff">
+              <path d="M2.5 1.2v9.6l8-4.8z" />
+            </svg>
+          )}
+        </button>
+        <button
+          type="button"
+          className="fusion-pskip"
+          title={t("podcast.ctl.back30")}
+          onClick={() => skip(-30)}
+        >
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="var(--fusion-sub)">
+            <path d="M13.5 3.5v9l-7-4.5zM3.2 3.5H5v9H3.2z" />
           </svg>
-        ) : (
-          <svg width="11" height="11" viewBox="0 0 12 12" fill="#fff">
-            <path d="M2.5 1.2v9.6l8-4.8z" />
+        </button>
+        <button
+          type="button"
+          className="fusion-pskip"
+          title={t("podcast.ctl.fwd30")}
+          onClick={() => skip(30)}
+        >
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="var(--fusion-sub)">
+            <path d="M2.5 3.5v9l7-4.5zM11 3.5h1.8v9H11z" />
           </svg>
-        )}
-      </button>
-      <button
-        type="button"
-        className="fusion-pskip"
-        title={t("podcast.ctl.back30")}
-        onClick={() => skip(-30)}
-      >
-        <svg width="13" height="13" viewBox="0 0 16 16" fill="var(--fusion-sub)">
-          <path d="M13.5 3.5v9l-7-4.5zM3.2 3.5H5v9H3.2z" />
-        </svg>
-      </button>
-      <button
-        type="button"
-        className="fusion-pskip"
-        title={t("podcast.ctl.fwd30")}
-        onClick={() => skip(30)}
-      >
-        <svg width="13" height="13" viewBox="0 0 16 16" fill="var(--fusion-sub)">
-          <path d="M2.5 3.5v9l7-4.5zM11 3.5h1.8v9H11z" />
-        </svg>
-      </button>
+        </button>
+      </div>
 
+      {/* 单集信息：点击放大到沉浸页 */}
       <button
         type="button"
         className="fusion-pmeta"
-        onClick={onOpenDetail}
-        title={t("podcast.ctl.open_detail")}
+        onClick={onExpand}
+        title={t("podcast.expand")}
       >
-        <div className="ep">{currentTrack?.feed_title || currentTrack?.author || ""}</div>
+        <div className="ep">
+          {currentTrack?.feed_title || currentTrack?.author || ""}
+        </div>
         <div className="nm">{currentTrack?.title || t("podcast.no_track")}</div>
       </button>
 
@@ -102,14 +110,34 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({
         <span className="pt">{formatTime(duration)}</span>
       </div>
 
-      <button type="button" className="fusion-chip" onClick={cycleRate}>
-        {playbackRate}×
-      </button>
-
-      <PlayListPopover currentTrack={currentTrack} isPlaying={isPlaying} />
-      <IconButton size="1" variant="ghost" color="gray" onClick={onOpenDetail}>
-        <ChevronUpIcon />
-      </IconButton>
+      {/* 右簇：倍速 + 放大 + 收起 */}
+      <div className="fusion-pcluster">
+        <button type="button" className="fusion-chip" onClick={cycleRate}>
+          {playbackRate}×
+        </button>
+        <button
+          type="button"
+          className="fusion-pctl"
+          onClick={onExpand}
+          title={t("podcast.expand")}
+          aria-label={t("podcast.expand")}
+        >
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+            <path d="M3 9.5 8 5l5 4.5" />
+          </svg>
+        </button>
+        <button
+          type="button"
+          className="fusion-pctl"
+          onClick={onCollapse}
+          title={t("podcast.collapse_bar")}
+          aria-label={t("podcast.collapse_bar")}
+        >
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+            <path d="M3 6.5 8 11l5-4.5" />
+          </svg>
+        </button>
+      </div>
     </div>
   );
 };

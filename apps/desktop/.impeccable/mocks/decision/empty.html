@@ -25,6 +25,7 @@
   }
   ::selection{background:var(--accent-soft);}
   button{font:inherit;border:0;background:none;cursor:pointer;color:inherit;}
+  a.btn-ink,a.btn-gh{text-decoration:none;cursor:pointer;}
   kbd{font-family:inherit;font-size:10.5px;color:var(--sub);border:1px solid var(--hair2);border-radius:4px;padding:0 4.5px;line-height:15px;background:rgba(255,255,255,.7);}
   *:focus-visible{outline:2px solid var(--accent);outline-offset:1px;border-radius:4px;}
 
@@ -130,10 +131,10 @@
 
   <section class="panel">
     <header class="top">
-      <span class="logo"><i></i></span>
-      <span class="sec" id="secName">未读</span>
+      <span class="logo" id="logoBtn" title="Mock 总入口" style="cursor:pointer;"><i></i></span>
+      <span class="sec">Lettura</span>
       <span class="cnt" id="secCnt">0</span>
-      <nav class="nav"><a class="on" id="navUnread">未读</a><a>星标</a><a>历史</a><a>订阅</a></nav>
+      <nav class="nav"><a class="on" id="navUnread" href="fusion.html">未读</a><a href="fusion.html?view=starred">星标</a><a href="fusion.html?view=history">历史</a><a href="feeds.html">订阅</a></nav>
       <span class="spring"></span>
       <button class="cmdbtn">
         <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#6A6C6E" stroke-width="1.7"><circle cx="7" cy="7" r="4.8"/><path d="m11.2 11.2 3 3"/></svg>
@@ -147,10 +148,10 @@
       <h1>订阅你想读的</h1>
       <p class="lede">RSS、B站、知乎、微博、Newsletter——粘贴一个地址，其余交给 Lettura。数据在本机，读完就走。</p>
       <div class="cta">
-        <button class="btn-ink">
+        <a class="btn-ink" href="add.html">
           <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"><path d="M8 3v10M3 8h10"/></svg>
           添加订阅
-        </button>
+        </a>
         <button class="btn-gh">
           <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M8 11V2.5M5 5.5 8 2.5l3 3M3 11v2.5h10V11"/></svg>
           导入 OPML
@@ -180,7 +181,7 @@
       <h1>今天的队列清空了</h1>
       <p class="lede">读完就走。明天同一时间，新的未读会在这里等你。</p>
       <div class="quietline">
-        <a>查看历史</a><a>星标</a><a>添加订阅</a>
+        <a href="fusion.html?view=history">查看历史</a><a href="fusion.html?view=starred">星标</a><a href="add.html">添加订阅</a>
       </div>
     </main>
   </section>
@@ -229,6 +230,13 @@ document.querySelectorAll(".dtab").forEach(t=>t.addEventListener("click",()=>{
   document.getElementById("faceFirst").style.display=first?"flex":"none";
   document.getElementById("faceClear").style.display=first?"none":"flex";
 }));
+document.getElementById("logoBtn").addEventListener("click",()=>{location.href="index.html";});
+
+/* URL 直达：?s=first|clear */
+(()=>{
+  const s=new URLSearchParams(location.search).get("s");
+  if(s)document.querySelector(`.dtab[data-s="${s}"]`)?.click();
+})();
 sync();
 </script>
 </body>

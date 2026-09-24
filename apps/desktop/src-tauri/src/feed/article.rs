@@ -131,6 +131,15 @@ pub struct ArticleQueryItem {
 #[derive(Debug, Serialize)]
 pub struct ArticleQueryResult {
   list: Vec<ArticleQueryItem>,
+  /// 同条件总数（不衰减分页），过滤条「全部」的真实计数
+  total: i64,
+}
+
+/// COUNT(1) 查询的结果承载
+#[derive(Debug, QueryableByName)]
+struct TotalCountRow {
+  #[diesel(sql_type = diesel::sql_types::BigInt)]
+  total: i64,
 }
 
 #[derive(Debug, Clone, Queryable, Serialize, QueryableByName)]
@@ -391,10 +400,31 @@ impl Article {
     //   }
     // }
 
-    for param in params {
-      query = query.bind::<Text, _>(param);
+    for param in &params {
+      query = query.bind::<Text, _>(param.clone());
     }
     query = query.sql(" ORDER BY COALESCE(NULLIF(A.pub_date, ''), A.create_date) DESC ");
+
+    // 同条件 COUNT（不含 limit/offset），供过滤条展示真实总数
+    let mut count_query = diesel::sql_query(
+      "
+    SELECT COUNT(1) AS total
+    FROM articles as A
+    LEFT JOIN feeds as C ON C.uuid = A.feed_uuid",
+    )
+    .into_boxed();
+    if conditions.len() > 0 {
+      count_query = count_query.sql(format!(" WHERE {}", conditions.join(" AND ")));
+    }
+    for param in &params {
+      count_query = count_query.bind::<Text, _>(param.clone());
+    }
+    let total = count_query
+      .load::<TotalCountRow>(&mut connection)
+      .expect("Expect counting articles")
+      .first()
+      .map(|r| r.total)
+      .unwrap_or(0);
 
     if let Some(l) = filter.limit {
       query = query.sql(" limit ?").bind::<Integer, _>(l);
@@ -411,7 +441,7 @@ impl Article {
       .load::<ArticleQueryItem>(&mut connection)
       .expect("Expect loading articles");
 
-    ArticleQueryResult { list: result }
+    ArticleQueryResult { list: result, total }
   }
 
   pub fn get_collection_metas() -> Option<CollectionMeta> {
