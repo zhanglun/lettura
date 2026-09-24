@@ -136,6 +136,14 @@ export function SettingPage() {
     document.documentElement.style.setProperty("--read-lh", String(lh));
   }, [cfg?.customize_style?.font_size, cfg?.customize_style?.line_height]);
 
+  // 列表密度令牌跟随配置（配置是唯一事实源；校准台预览行同吃这个令牌）
+  useEffect(() => {
+    document.documentElement.style.setProperty(
+      "--row-h",
+      (cfg?.card_density ?? "comfortable") === "compact" ? "44px" : "54px",
+    );
+  }, [cfg?.card_density]);
+
   if (isSubscriptions) {
     return <Subscriptions />;
   }
@@ -360,13 +368,7 @@ export function SettingPage() {
                   { value: "comfortable", label: t("Comfortable") },
                   { value: "compact", label: t("Compact") },
                 ]}
-                onChange={(v) => {
-                  store.updateUserConfig({ ...cfg, card_density: v });
-                  document.documentElement.style.setProperty(
-                    "--row-h",
-                    v === "compact" ? "44px" : "54px",
-                  );
-                }}
+                onChange={(v) => store.updateUserConfig({ ...cfg, card_density: v })}
               />
             </SRow>
 
@@ -472,18 +474,6 @@ export function SettingPage() {
                 aria-label={t("Background Sync")}
                 onClick={() =>
                   store.updateUserConfig({ ...cfg, background_sync: !cfg?.background_sync })
-                }
-              />
-            </SRow>
-            <SRow label={t("Notifications")} help={t("Only notify on high-signal changes")}>
-              <Seg
-                value={(cfg?.notification_enabled ? "high" : "off") as string}
-                options={[
-                  { value: "off", label: t("Off") },
-                  { value: "high", label: t("High-signal only") },
-                ]}
-                onChange={(v) =>
-                  store.updateUserConfig({ ...cfg, notification_enabled: v === "high" })
                 }
               />
             </SRow>

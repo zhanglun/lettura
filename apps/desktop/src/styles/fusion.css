@@ -1442,13 +1442,25 @@
   font: inherit;
   text-align: left;
   cursor: pointer;
+  position: relative;
+  z-index: 0;
 }
 
-.fusion-b-row:hover {
+.fusion-b-row::after {
+  content: "";
+  position: absolute;
+  inset: 3px 8px;
+  border-radius: 9px;
+  background: transparent;
+  pointer-events: none;
+  transition: background 0.12s ease;
+}
+
+.fusion-b-row:hover::after {
   background: rgba(29, 30, 32, 0.035);
 }
 
-.fusion-b-row.is-focused {
+.fusion-b-row.is-focused::after {
   background: rgba(29, 30, 32, 0.055);
 }
 
@@ -1721,9 +1733,21 @@
   height: 44px;
   border-bottom: 1px solid var(--fusion-hair);
   cursor: pointer;
+  position: relative;
+  z-index: 0;
 }
 
-.fusion-subs-row:hover {
+.fusion-subs-row::after {
+  content: "";
+  position: absolute;
+  inset: 3px 8px;
+  border-radius: 9px;
+  background: transparent;
+  pointer-events: none;
+  transition: background 0.12s ease;
+}
+
+.fusion-subs-row:hover::after {
   background: rgba(29, 30, 32, 0.035);
 }
 
@@ -2364,6 +2388,153 @@
   flex: none;
 }
 
+/* ── ⌘K 命令面板（Raycast 式层次：图标槽 + 分组计数 + 尾注；浮层语法同 add 面板） ── */
+.fusion-cmd {
+  width: 640px;
+}
+
+.fusion-cmd-root {
+  display: flex;
+  flex-direction: column;
+}
+
+.fusion-cmd-in {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid var(--fusion-hair);
+}
+
+.fusion-cmd-in input {
+  flex: 1;
+  border: 0;
+  outline: 0;
+  background: none;
+  font: inherit;
+  font-size: 14.5px;
+  color: var(--fusion-ink);
+}
+
+.fusion-cmd-in input::placeholder {
+  color: var(--fusion-ter);
+}
+
+.fusion-cmd-list {
+  max-height: min(420px, 56vh);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 6px;
+}
+
+.fusion-cmd [cmdk-group-heading] {
+  display: flex;
+  align-items: center;
+  padding: 8px 10px 5px;
+}
+
+.fusion-cmd .gh {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.fusion-cmd .gh-t {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--fusion-ter);
+}
+
+.fusion-cmd .gh-n {
+  margin-left: auto;
+  font-size: 10.5px;
+  color: var(--fusion-ter);
+  font-variant-numeric: tabular-nums;
+  background: rgba(29, 30, 32, 0.05);
+  border-radius: 999px;
+  padding: 1px 7px;
+}
+
+/* 三列行：图标槽 | 标题 | 尾部元信息；选中 = 圆角洗色 */
+.fusion-cmd [cmdk-item] {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr) auto;
+  gap: 11px;
+  align-items: center;
+  height: 44px;
+  padding: 0 10px;
+  border-radius: 9px;
+  cursor: pointer;
+  color: var(--fusion-ink);
+}
+
+.fusion-cmd [cmdk-item][data-selected="true"],
+.fusion-cmd [cmdk-item][aria-selected="true"] {
+  background: rgba(29, 30, 32, 0.05);
+}
+
+.fusion-cmd [cmdk-item] .ic {
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  background: rgba(29, 30, 32, 0.06);
+  color: var(--fusion-sub);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex: none;
+}
+
+/* 来源/文章图标槽放大到 26px，与命令的 .ic 同格 */
+.fusion-cmd [cmdk-item] .fusion-b-ic,
+.fusion-cmd [cmdk-item] .fusion-badge {
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  font-size: 10px;
+  flex: none;
+}
+
+.fusion-cmd [cmdk-item] .t {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--fusion-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fusion-cmd [cmdk-item] .m {
+  font-size: 11px;
+  color: var(--fusion-ter);
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.fusion-cmd [cmdk-item] .m kbd {
+  font-family: inherit;
+  font-size: 10px;
+  color: var(--fusion-sub);
+  border: 1px solid var(--fusion-hair2);
+  border-radius: 4px;
+  padding: 0 5px;
+  line-height: 15px;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.fusion-cmd [cmdk-empty] {
+  padding: 28px 0;
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--fusion-ter);
+}
+
 /* ── 设置第三视图（settings.html 契约）：左锚点导航 + 设置行 ── */
 .fusion-set {
   flex: 1;
@@ -2426,6 +2597,11 @@
   margin: 0 auto;
 }
 
+/* 订阅管理是列表型视图：比设置页的表单列宽一档 */
+.fusion-set-inner.wide {
+  max-width: 780px;
+}
+
 .fusion-set-h {
   font-size: 11px;
   font-weight: 700;
@@ -2446,10 +2622,23 @@
   min-height: 52px;
   border-bottom: 1px solid var(--fusion-hair);
   padding: 6px 0;
+  position: relative;
+  z-index: 0;
 }
 
-.fusion-srow:hover {
-  background: rgba(29, 30, 32, 0.02);
+/* hover 洗色：行内圆角浮层，不贴发丝线边（与列表 hover 同语法） */
+.fusion-srow::after {
+  content: "";
+  position: absolute;
+  inset: 4px 10px;
+  border-radius: 9px;
+  background: transparent;
+  pointer-events: none;
+  transition: background 0.12s ease;
+}
+
+.fusion-srow:hover::after {
+  background: rgba(29, 30, 32, 0.03);
 }
 
 .fusion-srow .lb {
@@ -2592,7 +2781,8 @@
   display: grid;
   grid-template-columns: 16px 56px 20px minmax(0, 1fr) 120px 56px;
   align-items: center;
-  height: 44px;
+  /* 跟随密度令牌：校准台预览即真实行高 */
+  height: var(--row-h, 54px);
   border-bottom: 1px solid var(--fusion-hair);
 }
 
@@ -2667,9 +2857,12 @@ body.dark-theme .fusion-card .gen code {
   color: var(--fusion-sub);
 }
 
-body.dark-theme .fusion-row:hover,
-body.dark-theme .fusion-srow:hover {
+body.dark-theme .fusion-row:hover {
   background: rgba(233, 233, 230, 0.035);
+}
+
+body.dark-theme .fusion-srow:hover::after {
+  background: rgba(233, 233, 230, 0.045);
 }
 
 body.dark-theme .fusion-row.is-focused,
@@ -2743,8 +2936,14 @@ body.dark-theme .fusion-article-body pre code {
 }
 
 /* 浏览帧/源头栏：灰阶投影转浅 */
-body.dark-theme .fusion-b-row:hover,
-body.dark-theme .fusion-b-row.is-focused,
+body.dark-theme .fusion-b-row:hover::after {
+  background: rgba(233, 233, 230, 0.05);
+}
+
+body.dark-theme .fusion-b-row.is-focused::after {
+  background: rgba(233, 233, 230, 0.045);
+}
+
 body.dark-theme .fusion-qa:hover {
   background: rgba(233, 233, 230, 0.05);
 }
@@ -2771,7 +2970,10 @@ body.dark-theme .fusion-ctx .mi {
   color: var(--fusion-ink);
 }
 
-body.dark-theme .fusion-subs-row:hover,
+body.dark-theme .fusion-subs-row:hover::after {
+  background: rgba(233, 233, 230, 0.05);
+}
+
 body.dark-theme .fusion-qa2:hover,
 body.dark-theme .fusion-qa3:hover,
 body.dark-theme .fusion-ctx .mi:hover {
@@ -2839,4 +3041,22 @@ body.dark-theme .fusion-fbar i {
 
 body.dark-theme .fusion-mark.quiet {
   box-shadow: 0 0 0 6px color-mix(in srgb, var(--fusion-accent) 8%, transparent);
+}
+
+/* ⌘K 面板：暗色（浅投影 + 深洗色） */
+body.dark-theme .fusion-cmd [cmdk-item][data-selected="true"],
+body.dark-theme .fusion-cmd [cmdk-item][aria-selected="true"] {
+  background: rgba(233, 233, 230, 0.06);
+}
+
+body.dark-theme .fusion-cmd [cmdk-item] .ic {
+  background: rgba(233, 233, 230, 0.07);
+}
+
+body.dark-theme .fusion-cmd .gh-n {
+  background: rgba(233, 233, 230, 0.07);
+}
+
+body.dark-theme .fusion-cmd [cmdk-item] .m kbd {
+  background: rgba(233, 233, 230, 0.06);
 }

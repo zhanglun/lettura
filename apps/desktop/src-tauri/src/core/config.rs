@@ -91,10 +91,6 @@ pub struct UserConfig {
   pub launch_at_login: bool,
   #[serde(default = "default_true")]
   pub background_sync: bool,
-  #[serde(default)]
-  pub notification_enabled: bool,
-  #[serde(default = "default_notification_level")]
-  pub notification_level: String,
   #[serde(default = "default_cache_retention_days")]
   pub cache_retention_days: u64,
   #[serde(default = "default_data_retention_days")]
@@ -109,10 +105,6 @@ pub struct UserConfig {
 
 fn default_true() -> bool {
   true
-}
-
-fn default_notification_level() -> String {
-  "off".to_string()
 }
 
 fn default_cache_retention_days() -> u64 {
@@ -155,8 +147,6 @@ impl Default for UserConfig {
       app: AppConfig::default(),
       launch_at_login: false,
       background_sync: true,
-      notification_enabled: false,
-      notification_level: default_notification_level(),
       cache_retention_days: default_cache_retention_days(),
       data_retention_days: default_data_retention_days(),
       reader_preset: default_reader_preset(),

@@ -5,6 +5,7 @@ use diesel::sql_types::*;
 use serde::{Deserialize, Serialize};
 
 use crate::db::establish_connection;
+use diesel::sqlite::SqliteConnection;
 use crate::models;
 use crate::schema;
 
@@ -29,8 +30,131 @@ pub struct ArticleFilter {
   pub is_archived: Option<i32>,
   pub is_read_later: Option<i32>,
   pub has_notes: Option<i32>,
+  pub kind: Option<String>,
   pub cursor: Option<i32>,
   pub limit: Option<i32>,
+}
+
+/// fusion 类型判定的 SQL 镜像（与 src/helpers/articleKind.ts 同一标准）：
+/// B站/抖音/YouTube URL → platform；audio enclosure → podcast；否则 article。
+/// LIKE 对 ASCII 不分大小写，与 JS 正则的 /i 行为一致。
+const ARTICLE_KIND_SQL: &str = "CASE
+    WHEN (A.link || ' ' || COALESCE(A.feed_url, '')) LIKE '%bilibili.com%'
+      OR (A.link || ' ' || COALESCE(A.feed_url, '')) LIKE '%b23.tv%'
+      OR (A.link || ' ' || COALESCE(A.feed_url, '')) LIKE '%/bilibili/%'
+      OR (A.link || ' ' || COALESCE(A.feed_url, '')) LIKE '%douyin.com%'
+      OR (A.link || ' ' || COALESCE(A.feed_url, '')) LIKE '%/douyin/%'
+      OR (A.link || ' ' || COALESCE(A.feed_url, '')) LIKE '%youtube.com%'
+      OR (A.link || ' ' || COALESCE(A.feed_url, '')) LIKE '%youtu.be%' THEN 'platform'
+    WHEN json_valid(COALESCE(A.media_object, '[]')) AND EXISTS (
+      SELECT 1
+      FROM json_each(COALESCE(A.media_object, '[]')) m, json_each(m.value, '$.content') c
+      WHERE json_extract(c.value, '$.content_type') LIKE 'audio%'
+    ) THEN 'podcast'
+    ELSE 'article'
+  END";
+
+/// 类型过滤条件拼装（get_article 与 get_kind_counts 共用）：
+/// 返回 (SQL 片段, 绑定参数)，两者顺序一一对应
+fn article_filter_conditions(
+  filter: &ArticleFilter,
+  connection: &mut SqliteConnection,
+) -> (Vec<String>, Vec<String>) {
+  let mut conditions = vec![];
+  let mut params = vec![];
+
+  if let Some(channel_uuid) = &filter.feed_uuid {
+    let mut relations = vec![];
+
+    if let Some(item_type) = &filter.item_type {
+      if item_type == "folder" {
+        relations = schema::feed_metas::dsl::feed_metas
+          .filter(schema::feed_metas::folder_uuid.eq(channel_uuid))
+          .load::<models::FeedMeta>(connection)
+          .expect("Expect find channel");
+      } else {
+        relations = schema::feed_metas::dsl::feed_metas
+          .filter(schema::feed_metas::uuid.eq(channel_uuid))
+          .load::<models::FeedMeta>(connection)
+          .expect("Expect find channel");
+      }
+    }
+
+    let mut channel_uuids: Vec<String> = vec![];
+
+    log::debug!("relations {:?}", relations);
+
+    if relations.len() > 0 {
+      for relation in relations {
+        channel_uuids.push(String::from(relation.uuid));
+      }
+    } else {
+      channel_uuids.push(channel_uuid.clone());
+    }
+
+    let in_params = format!("?{}", ", ?".repeat(channel_uuids.len() - 1));
+    conditions.push(format!("C.uuid in ({}) AND A.uuid IS NOT NULL", in_params));
+    for uuid in channel_uuids {
+      params.push(uuid);
+    }
+  }
+
+  if let Some(_is_today) = filter.is_today {
+    conditions.push("DATE(A.create_date) = DATE('now')".to_string());
+  }
+
+  if let Some(is_starred) = filter.is_starred {
+    conditions.push("A.starred = ?".to_string());
+    params.push(is_starred.to_string());
+  }
+
+  if let Some(read_status) = filter.read_status {
+    if read_status > 0 {
+      conditions.push("A.read_status = ?".to_string());
+      params.push(read_status.to_string());
+    }
+  }
+
+  if let Some(_collection_uuid) = &filter.collection_uuid {
+    conditions.push(
+      "A.id IN (SELECT AC.article_id FROM article_collections AC JOIN collections COL ON COL.id = AC.collection_id WHERE COL.uuid = ?)"
+        .to_string(),
+    );
+    params.push(_collection_uuid.clone());
+  }
+
+  if let Some(_tag_uuid) = &filter.tag_uuid {
+    conditions.push(
+      "A.id IN (SELECT AT.article_id FROM article_tags AT JOIN tags T ON T.id = AT.tag_id WHERE T.uuid = ?)"
+        .to_string(),
+    );
+    params.push(_tag_uuid.clone());
+  }
+
+  if let Some(is_archived) = filter.is_archived {
+    conditions.push("A.is_archived = ?".to_string());
+    params.push(is_archived.to_string());
+  }
+
+  if let Some(is_read_later) = filter.is_read_later {
+    conditions.push("A.is_read_later = ?".to_string());
+    params.push(is_read_later.to_string());
+  }
+
+  if let Some(_has_notes) = filter.has_notes {
+    if _has_notes > 0 {
+      conditions.push("TRIM(A.notes) != ''".to_string());
+    }
+  }
+
+  if let Some(kind) = &filter.kind {
+    if kind == "article" || kind == "podcast" || kind == "platform" {
+      conditions.push(format!("({}) = ?", ARTICLE_KIND_SQL));
+      params.push(kind.clone());
+    }
+  }
+
+  (conditions, params)
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -135,6 +259,17 @@ pub struct ArticleQueryResult {
   total: i64,
 }
 
+/// 类型过滤条计数：文章 / 播客 / 平台（服务端全量）
+#[derive(Debug, Serialize, QueryableByName)]
+pub struct ArticleKindCounts {
+  #[diesel(sql_type = diesel::sql_types::BigInt)]
+  pub article: i64,
+  #[diesel(sql_type = diesel::sql_types::BigInt)]
+  pub podcast: i64,
+  #[diesel(sql_type = diesel::sql_types::BigInt)]
+  pub platform: i64,
+}
+
 /// COUNT(1) 查询的结果承载
 #[derive(Debug, QueryableByName)]
 struct TotalCountRow {
@@ -188,217 +323,11 @@ impl Article {
     )
     .into_boxed();
     let mut limit = 12;
-    let mut conditions = vec![];
-    let mut params = vec![];
-
-    if let Some(channel_uuid) = filter.feed_uuid {
-      let mut relations = vec![];
-
-      if let Some(item_type) = filter.item_type {
-        if item_type == String::from("folder") {
-          relations = schema::feed_metas::dsl::feed_metas
-            .filter(schema::feed_metas::folder_uuid.eq(&channel_uuid))
-            .load::<models::FeedMeta>(&mut connection)
-            .expect("Expect find channel");
-        } else {
-          relations = schema::feed_metas::dsl::feed_metas
-            .filter(schema::feed_metas::uuid.eq(&channel_uuid))
-            .load::<models::FeedMeta>(&mut connection)
-            .expect("Expect find channel");
-        }
-      }
-
-      let mut channel_uuids: Vec<String> = vec![];
-
-      log::debug!("relations {:?}", relations);
-
-      if relations.len() > 0 {
-        for relation in relations {
-          let uuid = String::from(relation.uuid);
-
-          channel_uuids.push(uuid.clone());
-        }
-      } else {
-        channel_uuids.push(channel_uuid.clone());
-      }
-
-      let in_params = format!("?{}", ", ?".repeat(channel_uuids.len() - 1));
-      conditions.push(format!("C.uuid in ({}) AND A.uuid IS NOT NULL", in_params));
-      // query = query.sql(format!(
-      //   "
-      //       SELECT
-      //         A.id, A.uuid,
-      //         A.feed_uuid,
-      //         C.title as feed_title,
-      //         C.link as feed_url,
-      //         C.logo as feed_logo,
-      //         A.link,
-      //         A.title,
-      //         A.feed_url,
-      //         A.description as description,
-      //         A.author,
-      //         A.pub_date,
-      //         A.create_date,
-      //         A.read_status,
-      //         A.starred
-      //       FROM
-      //         articles as A
-      //       LEFT JOIN
-      //         feeds as C
-      //       ON C.uuid = A.feed_uuid
-      //       WHERE C.uuid in ({}) AND A.uuid IS NOT NULL",
-      //   params
-      // ));
-
-      // for uuid in channel_uuids {
-      //   query = query.bind::<Text, _>(uuid);
-      // }
-
-      for uuid in channel_uuids {
-        params.push(uuid);
-      }
-    }
-
-    if let Some(_is_today) = filter.is_today {
-      conditions.push("DATE(A.create_date) = DATE('now')".to_string());
-    }
-
-    if let Some(is_starred) = filter.is_starred {
-      conditions.push("A.starred = ?".to_string());
-      params.push(is_starred.to_string());
-    }
-
-    if let Some(read_status) = filter.read_status {
-      if read_status > 0 {
-        conditions.push("A.read_status = ?".to_string());
-        params.push(read_status.to_string());
-      }
-    }
-
-    if let Some(_collection_uuid) = filter.collection_uuid {
-      conditions.push(
-        "A.id IN (SELECT AC.article_id FROM article_collections AC JOIN collections COL ON COL.id = AC.collection_id WHERE COL.uuid = ?)".to_string(),
-      );
-      params.push(_collection_uuid);
-    }
-
-    if let Some(_tag_uuid) = filter.tag_uuid {
-      conditions.push(
-        "A.id IN (SELECT AT.article_id FROM article_tags AT JOIN tags T ON T.id = AT.tag_id WHERE T.uuid = ?)".to_string(),
-      );
-      params.push(_tag_uuid);
-    }
-
-    if let Some(is_archived) = filter.is_archived {
-      conditions.push("A.is_archived = ?".to_string());
-      params.push(is_archived.to_string());
-    }
-
-    if let Some(is_read_later) = filter.is_read_later {
-      conditions.push("A.is_read_later = ?".to_string());
-      params.push(is_read_later.to_string());
-    }
-
-    if let Some(_has_notes) = filter.has_notes {
-      if _has_notes > 0 {
-        conditions.push("TRIM(A.notes) != ''".to_string());
-      }
-    }
+    let (conditions, params) = article_filter_conditions(&filter, &mut connection);
 
     if conditions.len() > 0 {
       query = query.sql(format!(" WHERE {}", conditions.join(" AND ")));
     }
-
-    // else if let Some(_is_today) = filter.is_today {
-    //   query = query.sql(
-    //     "
-    //     SELECT
-    //       A.id, A.uuid,
-    //       A.feed_uuid,
-    //       C.title as feed_title,
-    //       C.link as feed_url,
-    //       C.logo as feed_logo,
-    //       A.link,
-    //       A.title,
-    //       A.feed_url,
-    //       A.description as description,
-    //       A.author,
-    //       A.pub_date,
-    //       A.create_date,
-    //       A.read_status,
-    //       A.starred
-    //     FROM
-    //       articles as A
-    //     LEFT JOIN
-    //       feeds as C
-    //     ON C.uuid = A.feed_uuid
-    //     WHERE DATE(A.create_date) = DATE('now')",
-    //   );
-    // } else if let Some(_is_starred) = filter.is_starred {
-    //   query = query.sql(
-    //     "
-    //     SELECT
-    //       A.id, A.uuid,
-    //       A.feed_uuid,
-    //       C.title as feed_title,
-    //       C.link as feed_url,
-    //       C.logo as feed_logo,
-    //       A.link,
-    //       A.title,
-    //       A.feed_url,
-    //       A.description as description,
-    //       A.author,
-    //       A.pub_date,
-    //       A.create_date,
-    //       A.read_status,
-    //       A.starred
-    //     FROM
-    //       articles as A
-    //     LEFT JOIN
-    //       feeds as C
-    //     ON C.uuid = A.feed_uuid
-    //     WHERE A.starred = 1
-    //     ",
-    //   );
-    // } else {
-    //   query = query.sql(
-    //     "
-    //       SELECT
-    //         A.id, A.uuid,
-    //         A.feed_uuid,
-    //         C.title as feed_title,
-    //         C.link as feed_url,
-    //         C.logo as feed_logo,
-    //         A.link,
-    //         A.title,
-    //         A.feed_url,
-    //         A.description as description,
-    //         A.author,
-    //         A.pub_date,
-    //         A.create_date,
-    //         A.read_status,
-    //         A.starred
-    //       FROM
-    //         articles as A
-    //       LEFT JOIN
-    //         feeds as C
-    //       ON C.uuid = A.feed_uuid ",
-    //   );
-    // }
-
-    // match filter.read_status {
-    //   Some(0) => {
-    //     1;
-    //   }
-    //   Some(status) => {
-    //     query = query
-    //       .sql(" WHERE A.read_status = ?")
-    //       .bind::<Integer, _>(status);
-    //   }
-    //   None => {
-    //     1;
-    //   }
-    // }
 
     for param in &params {
       query = query.bind::<Text, _>(param.clone());
@@ -442,6 +371,47 @@ impl Article {
       .expect("Expect loading articles");
 
     ArticleQueryResult { list: result, total }
+  }
+
+  /// 类型过滤条的真实计数（服务端全量，不随分页衰减）：
+  /// 与 get_article 同一套过滤条件，只是不分页、按类型分组
+  pub fn get_kind_counts(filter: ArticleFilter) -> ArticleKindCounts {
+    let mut connection = establish_connection();
+    let (conditions, params) = article_filter_conditions(&filter, &mut connection);
+
+    let mut query = diesel::sql_query(format!(
+      "SELECT
+      COALESCE(SUM(CASE WHEN ({kind_sql}) = 'article' THEN 1 ELSE 0 END), 0) AS article,
+      COALESCE(SUM(CASE WHEN ({kind_sql}) = 'podcast' THEN 1 ELSE 0 END), 0) AS podcast,
+      COALESCE(SUM(CASE WHEN ({kind_sql}) = 'platform' THEN 1 ELSE 0 END), 0) AS platform
+    FROM
+      articles as A
+    LEFT JOIN
+      feeds as C
+    ON C.uuid = A.feed_uuid{where_clause}",
+      kind_sql = ARTICLE_KIND_SQL,
+      where_clause = if conditions.len() > 0 {
+        format!(" WHERE {}", conditions.join(" AND "))
+      } else {
+        String::new()
+      },
+    ))
+    .into_boxed();
+
+    for param in &params {
+      query = query.bind::<Text, _>(param.clone());
+    }
+
+    query
+      .load::<ArticleKindCounts>(&mut connection)
+      .expect("Expect counting article kinds")
+      .into_iter()
+      .next()
+      .unwrap_or(ArticleKindCounts {
+        article: 0,
+        podcast: 0,
+        platform: 0,
+      })
   }
 
   pub fn get_collection_metas() -> Option<CollectionMeta> {
@@ -686,11 +656,16 @@ impl Article {
       .filter(schema::articles::starred.eq(0))
       .filter(schema::articles::is_archived.eq(0));
 
-    let result = query.execute(&mut connection).expect("purge failed!");
-
-    log::info!("{:?} articles purged", result);
-
-    return result;
+    match query.execute(&mut connection) {
+      Ok(r) => {
+        log::info!("{:?} articles purged", r);
+        r
+      }
+      Err(e) => {
+        log::error!("purge failed: {}", e);
+        0
+      }
+    }
   }
 
   pub fn purge_by_data_retention() -> usize {
@@ -703,17 +678,22 @@ impl Article {
     let cutoff = Utc::now().naive_utc() - Duration::days(cfg.data_retention_days as i64);
     let mut connection = establish_connection();
 
-    let result = diesel::delete(schema::articles::dsl::articles)
+    match diesel::delete(schema::articles::dsl::articles)
       .filter(schema::articles::read_status.eq(2))
       .filter(schema::articles::create_date.lt(cutoff))
       .filter(schema::articles::starred.eq(0))
       .filter(schema::articles::is_archived.eq(0))
       .execute(&mut connection)
-      .expect("data retention purge failed!");
-
-    log::info!("{:?} read articles purged by data retention", result);
-
-    result
+    {
+      Ok(r) => {
+        log::info!("{:?} read articles purged by data retention", r);
+        r
+      }
+      Err(e) => {
+        log::error!("data retention purge failed: {}", e);
+        0
+      }
+    }
   }
 }
 
@@ -797,6 +777,7 @@ mod tests {
             is_archived: None,
             is_read_later: None,
             has_notes: None,
+            kind: None,
             cursor: None,
             limit: None,
         }
@@ -920,6 +901,50 @@ mod tests {
         let uuids: Vec<String> = result.list.iter().map(|a| a.uuid.clone()).collect();
         assert_eq!(uuids.len(), 1, "Has notes filter should return 1 article (A)");
         assert!(uuids.contains(&uuid_a), "Has notes should contain A");
+    }
+
+    #[test]
+    fn test_kind_filter_and_counts() {
+        let mut conn = db::establish_connection();
+        let feed_uuid = insert_test_feed(&mut conn);
+
+        // Given: plain article + podcast(audio enclosure) + platform(bilibili link)
+        let _plain = insert_test_article(&mut conn, &feed_uuid);
+
+        let (id_pod, uuid_pod) = insert_test_article(&mut conn, &feed_uuid);
+        diesel::update(schema::articles::table.filter(schema::articles::id.eq(id_pod)))
+            .set(
+                schema::articles::media_object.eq(r#"[{"content":[{"url":"https://example.com/a.mp3","content_type":"audio/mpeg"}]}]"#),
+            )
+            .execute(&mut conn)
+            .expect("Failed to set media_object");
+
+        let (id_plat, uuid_plat) = insert_test_article(&mut conn, &feed_uuid);
+        diesel::update(schema::articles::table.filter(schema::articles::id.eq(id_plat)))
+            .set(schema::articles::link.eq("https://www.bilibili.com/video/BV1test"))
+            .execute(&mut conn)
+            .expect("Failed to set link");
+
+        // Then: counts classify 1/1/1
+        let counts = Article::get_kind_counts(make_filter(&feed_uuid));
+        assert_eq!(counts.article, 1, "Kind counts: article");
+        assert_eq!(counts.podcast, 1, "Kind counts: podcast");
+        assert_eq!(counts.platform, 1, "Kind counts: platform");
+
+        // Then: kind filter returns the matching article only
+        let result = Article::get_article(ArticleFilter {
+            kind: Some("podcast".to_string()),
+            ..make_filter(&feed_uuid)
+        });
+        assert_eq!(result.list.len(), 1, "Podcast filter returns 1");
+        assert_eq!(result.list[0].uuid, uuid_pod, "Podcast filter returns the enclosure article");
+
+        let result = Article::get_article(ArticleFilter {
+            kind: Some("platform".to_string()),
+            ..make_filter(&feed_uuid)
+        });
+        assert_eq!(result.list.len(), 1, "Platform filter returns 1");
+        assert_eq!(result.list[0].uuid, uuid_plat, "Platform filter returns the bilibili article");
     }
 
     #[test]

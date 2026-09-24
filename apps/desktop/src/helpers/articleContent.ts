@@ -4,7 +4,8 @@ interface ProcessOptions {
 
 /**
  * 列表行缩略图取图（客户端，零 schema）：feed 的 description 里第一张图 >
- * media_object 里的图片附件 > 无（退 feed 图标/预设色块）。图片不入库，
+ * media_object 里的图片附件 > media_object 的 thumbnails（播客单集封面，
+ * 与详情大图同源）> 无（退 feed 图标/预设色块）。图片不入库，
  * og:image 实时代理只用于详情，列表不走网络。
  */
 export function pickThumbUrl(a: {
@@ -26,6 +27,10 @@ export function pickThumbUrl(a: {
             c.content_type.indexOf("image") === 0,
         )?.url;
         if (url) return url as string;
+      }
+      for (const m of medias) {
+        const uri = m?.thumbnails?.[0]?.image?.uri;
+        if (typeof uri === "string" && uri) return uri;
       }
     }
   } catch {

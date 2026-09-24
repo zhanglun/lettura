@@ -530,7 +530,7 @@ export const Subscriptions = () => {
       </div>
 
       <div className="fusion-set-body">
-        <div className="fusion-set-inner">
+        <div className="fusion-set-inner wide">
           <div className="fusion-subs-bar">
             <span className="fusion-subs-search">
               <Search size={12} />

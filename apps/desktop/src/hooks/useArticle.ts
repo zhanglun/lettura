@@ -1,3 +1,4 @@
+import useSWR from "swr";
 import useSWRInfinite from "swr/infinite";
 import { useBearStore } from "@/stores";
 import { request } from "@/helpers/request";
@@ -19,6 +20,12 @@ function omitUndefined<T extends Record<string, unknown>>(obj: T): Partial<T> {
   return result as Partial<T>;
 }
 
+export interface ArticleKindCounts {
+  article: number;
+  podcast: number;
+  platform: number;
+}
+
 export interface UseArticleProps {
   feedUuid?: string;
   type?: string;
@@ -28,6 +35,8 @@ export interface UseArticleProps {
   isArchived?: number | boolean;
   isReadLater?: number | boolean;
   hasNotes?: boolean;
+  /** 类型过滤（article/podcast/platform）：服务端过滤，不随分页截断 */
+  kind?: string;
   /**
    * read_status 覆盖：undefined = 跟随全局 currentFilter；
    * null = 不过滤（全部）；1/2 = 未读/已读。源队列帧的过滤条用它。
@@ -45,6 +54,7 @@ export function useArticle(props: UseArticleProps) {
     isArchived,
     isReadLater,
     hasNotes,
+    kind,
     readStatus,
   } = props;
   const isToday = useMatch(RouteConfig.LOCAL_TODAY);
@@ -89,6 +99,7 @@ export function useArticle(props: UseArticleProps) {
       is_archived: isArchived !== undefined ? (isArchived ? 1 : 0) : undefined,
       is_read_later: isReadLater !== undefined ? (isReadLater ? 1 : 0) : undefined,
       has_notes: hasNotes ? 1 : undefined,
+      kind,
     });
   }, [
     feedUuid,
@@ -103,6 +114,7 @@ export function useArticle(props: UseArticleProps) {
     isArchived,
     isReadLater,
     hasNotes,
+    kind,
     readStatus,
   ]);
 
@@ -134,6 +146,29 @@ export function useArticle(props: UseArticleProps) {
     },
   );
 
+  // 类型过滤条计数：服务端同条件全量（不随分页衰减）。源队列帧无类型条，不取。
+  // key 不含 kind——三个类型 tab 共用同一份计数缓存。
+  const countsParams = useMemo(() => {
+    const { kind: _kind, limit: _limit, ...rest } = query as Record<string, unknown>;
+    return rest;
+  }, [query]);
+  const { data: kindCountsData, mutate: mutateKindCounts } = useSWR(
+    feedUuid ? null : ["/articles/kind-counts", countsParams],
+    ([url, params]: [string, Record<string, unknown>]) =>
+      request.get(url, { params }).then((res) => res.data as ArticleKindCounts),
+    {
+      revalidateIfStale: false,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      dedupingInterval: 1000,
+    },
+  );
+  const kindCounts: ArticleKindCounts = kindCountsData ?? {
+    article: 0,
+    podcast: 0,
+    platform: 0,
+  };
+
   const list = data
     ? data.reduce((acu, cur) => acu.concat(cur.list || []), [])
     : [];
@@ -147,6 +182,8 @@ export function useArticle(props: UseArticleProps) {
   return {
     articles,
     total,
+    kindCounts,
+    refreshKindCounts: () => mutateKindCounts(),
     isLoading,
     mutate,
     size,

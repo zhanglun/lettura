@@ -604,7 +604,10 @@
       "articles": "文章",
       "feeds": "来源",
       "add_feed": "添加订阅",
-      "sync_all": "刷新全部来源"
+      "sync_all": "刷新全部来源",
+      "hint_open": "打开",
+      "hint_close": "关闭",
+      "results": "{{count}} 个结果"
     },
     "platform": {
       "bilibili": "Bilibili",

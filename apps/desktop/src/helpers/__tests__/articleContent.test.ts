@@ -35,6 +35,26 @@ describe("pickThumbUrl", () => {
     expect(pickThumbUrl({ description: "", media_object: "{bad" })).toBe("");
     expect(pickThumbUrl({})).toBe("");
   });
+
+  it("falls back to media thumbnails (podcast episode cover, same source as detail view)", () => {
+    expect(
+      pickThumbUrl({
+        description: "",
+        media_object:
+          '[{"content":[{"url":"https://a.dev/a.m4a","content_type":"audio/x-m4a"}],"thumbnails":[{"image":{"uri":"https://a.dev/ep-cover.jpeg"}}]}]',
+      }),
+    ).toBe("https://a.dev/ep-cover.jpeg");
+  });
+
+  it("prefers image attachments over thumbnails", () => {
+    expect(
+      pickThumbUrl({
+        description: "",
+        media_object:
+          '[{"content":[{"url":"https://a.dev/cover.jpg","content_type":"image/jpeg"}],"thumbnails":[{"image":{"uri":"https://a.dev/thumb.jpeg"}}]}]',
+      }),
+    ).toBe("https://a.dev/cover.jpg");
+  });
 });
 
 describe("pickArticleContent", () => {

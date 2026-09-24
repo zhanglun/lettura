@@ -587,7 +587,10 @@
       "articles": "Articles",
       "feeds": "Feeds",
       "add_feed": "Add subscription",
-      "sync_all": "Refresh all feeds"
+      "sync_all": "Refresh all feeds",
+      "hint_open": "Open",
+      "hint_close": "Close",
+      "results": "{{count}} results"
     },
     "platform": {
       "bilibili": "Bilibili",

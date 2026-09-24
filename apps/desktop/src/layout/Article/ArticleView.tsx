@@ -16,7 +16,6 @@ import { useShallow } from "zustand/react/shallow";
 import { request } from "@/helpers/request";
 import { useArticle } from "@/hooks/useArticle";
 import { retainArticleAfterRead } from "@/helpers/articleHelpers";
-import { getArticleKind } from "@/helpers/articleKind";
 import { EmptyFace } from "./EmptyFace";
 import * as dataAgent from "@/helpers/dataAgent";
 import { ArticleReadStatus, ArticleStarStatus } from "@/typing";
@@ -62,9 +61,15 @@ export function ArticleView() {
   const [queueFilter, setQueueFilter] = useState<"unread" | "all">("unread");
   const [queueSyncing, setQueueSyncing] = useState(false);
 
+  // 类型过滤（服务端过滤与计数，不与 read_status/currentFilter 混用）
+  const [kindFilter, setKindFilter] = useState<KindFilter>("all");
+  const [focusIdx, setFocusIdx] = useState(0);
+
   const {
     articles,
     total,
+    kindCounts,
+    refreshKindCounts,
     isLoading,
     size,
     setSize,
@@ -77,6 +82,8 @@ export function ArticleView() {
   } = useArticle({
     feedUuid,
     type,
+    // 类型过滤条（全部/文章/播客/平台）：服务端过滤，不随分页截断
+    kind: feedUuid ? undefined : kindFilter,
     // 源队列帧：过滤条未读/全部，脱离全局 currentFilter（feeds.html 契约）
     readStatus: feedUuid
       ? queueFilter === "unread"
@@ -85,23 +92,8 @@ export function ArticleView() {
       : undefined,
   });
 
-  // 类型过滤（客户端，不与 read_status/currentFilter 混用）
-  const [kindFilter, setKindFilter] = useState<KindFilter>("all");
-  const [focusIdx, setFocusIdx] = useState(0);
-
-  const visibleArticles = useMemo(
-    () =>
-      kindFilter === "all"
-        ? articles
-        : articles.filter((a) => getArticleKind(a) === kindFilter),
-    [articles, kindFilter],
-  );
-
-  const kindCounts = useMemo(() => {
-    const counts = { all: articles.length, article: 0, podcast: 0, platform: 0 };
-    for (const a of articles) counts[getArticleKind(a)] += 1;
-    return counts;
-  }, [articles]);
+  // 服务端已按 kind 过滤，这里只透传
+  const visibleArticles = articles;
 
   useEffect(() => {
     setFocusIdx((i) => Math.min(i, Math.max(0, visibleArticles.length - 1)));
@@ -281,7 +273,7 @@ export function ArticleView() {
 
   const markAllRead = async () => {
     await store.markArticleListAsRead(isToday, isAll);
-    await mutate();
+    await Promise.all([mutate(), refreshKindCounts()]);
   };
 
   const title = store.viewMeta?.title ?? "";
@@ -456,7 +448,9 @@ export function ArticleView() {
               >
                 {tab.label}
                 <span className="c">
-                  {tab.key === "all" ? total : kindCounts[tab.key]}
+                  {tab.key === "all"
+                    ? kindCounts.article + kindCounts.podcast + kindCounts.platform
+                    : kindCounts[tab.key]}
                 </span>
               </button>
             ))}
@@ -467,7 +461,12 @@ export function ArticleView() {
               <button
                 type="button"
                 className="fusion-qa"
-                onClick={() => store.syncAllArticles()}
+                onClick={() => {
+                  store.syncAllArticles().finally(() => {
+                    refreshKindCounts();
+                    mutate();
+                  });
+                }}
                 disabled={store.globalSyncStatus}
                 title={t("Sync All")}
                 aria-label={t("Sync All")}
@@ -493,7 +492,7 @@ export function ArticleView() {
         </>
       )}
 
-      {/* ponytail: 类型过滤在客户端做，过滤后过短时无限滚动可能不触发，必要时改服务端过滤 */}
+      {/* 类型过滤已移服务端（kind 参数），列表与计数都是全量口径 */}
       <ArticleListVirtual
         articles={visibleArticles}
         title={title}

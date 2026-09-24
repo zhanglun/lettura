@@ -72,8 +72,6 @@ declare interface UserConfig {
 
   launch_at_login?: boolean;
   background_sync?: boolean;
-  notification_enabled?: boolean;
-  notification_level?: string;
   cache_retention_days?: number;
   data_retention_days?: number;
   reader_preset?: string;
