@@ -11,8 +11,5 @@
     "test": "pnpm --filter @lettura/desktop test",
     "preview": "pnpm --filter @lettura/desktop preview",
     "create-json": "pnpm --filter @lettura/desktop create-json"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": ["sharp", "esbuild", "@parcel/watcher"]
   }
 }

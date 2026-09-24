@@ -7,4 +7,5 @@ allowBuilds:
   rome: true
   sharp: true
 
-onlyBuiltDependencies: sharp
+onlyBuiltDependencies:
+  - sharp
