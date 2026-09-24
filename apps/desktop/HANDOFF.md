@@ -34,7 +34,8 @@
 | `add.html` | 渐进式订阅面板 | 首屏即面板；试试 chips 驱动各态 | ✅ 已落地 | `components/AddFeed/index.tsx`（370 行，含平台 URL 识别） |
 | `empty.html` | 空状态即引导 / 读完收尾 | `?s=first\|clear` | ✅ 已落地 | `layout/Article/EmptyFace.tsx`（`mode: "first" \| "clear"`） |
 | `help.html` | ? 键帮助浮层 | — | ✅ 已落地 | `components/layout/HelpOverlay.tsx` |
-| `dark.html` | 夜读本（深色令牌层） | `?state=list\|detail\|cmd` | ✅ 已落地 | `styles/fusion.css:1643`（`body.dark-theme` 覆写全部 `--fusion-*`）；切换在 `App.tsx:78`（跟随配置或系统） |
+| `dark.html` | 夜读本（深色令牌层） | `?state=list\|detail\|cmd` | ✅ 已落地 | `styles/fusion.css`（`body.dark-theme` 覆写全部 `--fusion-*`）；切换在 `App.tsx`（跟随配置或系统） |
+| `podcast.html` | 播放器三态（条/沉浸页/收起圆钮） | `?state=bar\|full\|min` | ✅ 已落地 | `stores/createPodcastSlice.ts`（`playerMode`）；条 `LPodcast/MiniPlayer` · 沉浸页 `LPodcast/FullPlayer`（UP NEXT 队列）· 圆钮 `LPodcast/MiniPill`；audio 模块级单例 `LPodcast/useAudioPlayer.ts` |
 
 截图证据：`apps/desktop/.impeccable/review/*.png`（每帧一图）。
 
@@ -88,10 +89,10 @@
 5. ✅ 验证：浏览器实测真实音频播放（进度推进、无 toast）、bar/full 截图核对、布局度量（传输簇/右簇坐标）；167 测试 + build + tsc + Rome 全绿
 6. 遗留：用户库暂无真实播客源（articles 无 audio enclosure）——测试用种子已清理；PlayListPopover/PlayList 不再被 bar 引用（队列在沉浸页），待 P2 死码清理
 
-**P2 — 清理与对齐**
-4. 删设置死目录：`layout/Setting/{General,ImportAndExport,Proxy,ShortCut,Subscribe}`（确认无引用后）；`Content/` 仅 dialogs 被 Subscriptions 引用，余下（DataTable 等）删
-5. 通知控件对齐：mock 把 enabled+level 捏成单一分段（关闭/仅高信号），实现需映射回 `userConfig.notification_enabled` + `notification_level` 两字段
-6. 星标/历史导航项＝列表变体（已读行/星标行）：mock 侧已有 `fusion.html?view=starred|history` 演示；实现侧确认 ArticleView 过滤即可，无新面
+**P2 — 清理与对齐（部分完成）**
+4. ⏸ 删设置死目录：`layout/Setting/{General,ImportAndExport,Proxy,ShortCut,Subscribe}`（确认无引用后）；`Content/` 仅 dialogs 被 Subscriptions 引用，余下（DataTable 等）删；另 `LPodcast/PlayList{,Popover}` 与 `PlayList.css` 已不被播放条引用（队列在沉浸页），一并清理
+5. ⏸ 通知控件对齐：mock 把 enabled+level 捏成单一分段（关闭/仅高信号），实现需映射回 `userConfig.notification_enabled` + `notification_level` 两字段
+6. ✅ 星标/历史导航项＝列表变体：mock `fusion.html?view=starred|history` 演示 + 实现 `/local/starred` 与 currentFilter 过滤覆盖，无新面
 
 **P3 — 后续轮**
 7. 销毁确认对话框（退订…/删除分组）与订阅源详情面：**未设计**，做前先补 mock

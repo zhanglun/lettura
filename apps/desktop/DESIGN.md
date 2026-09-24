@@ -1,7 +1,7 @@
 # Design — Lettura 0.2.0「静密 × 聚光」
 
 > 从已构建的参考实现记录（ground truth over intention）。
-> 参考实现：`.impeccable/mocks/decision/`——**index.html（总入口：8 面目录+动线，mock 间已互链）**、fusion.html（列表/详情/⌘K，j/k · Enter · esc · m · f · space · ⌘K，`?view=starred|history` 列表变体）、detail.html（阅读面）、feeds.html（订阅浏览/源队列）、settings.html（设置+订阅）、add.html（添加订阅）、empty.html（空状态）、help.html（帮助）、dark.html（夜读本）
+> 参考实现：`.impeccable/mocks/decision/`——**index.html（总入口：9 面目录+动线，mock 间已互链）**、fusion.html（列表/详情/⌘K，j/k · Enter · esc · m · f · space · ⌘K，`?view=starred|history` 列表变体）、detail.html（阅读面）、feeds.html（订阅浏览/源队列）、settings.html（设置+订阅）、add.html（添加订阅）、empty.html（空状态）、help.html（帮助）、dark.html（夜读本）、podcast.html（播放器三态：`?state=bar|full|min`）
 
 ## 世界一句话
 
