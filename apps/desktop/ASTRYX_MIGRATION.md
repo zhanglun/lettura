@@ -33,7 +33,7 @@
 | 现有面（路径） | 可复用的 Astryx 组件 / 模板 | 替换思路 |
 |---|---|---|
 | About 弹窗 `components/About` | `Button` | **已完成** 两个按钮替换，Dialog 待换 |
-| 命令面板 `components/layout/CommandPalette.tsx`（cmdk） | `CommandPalette` / `Typeahead` / `PowerSearch` | Astryx 有原生命令面板，可替换 cmdk 实现 |
+| 命令面板 `components/layout/CommandPalette.tsx` | **已换 Astryx `CommandPalette`**，cmdk 已移除 | 自定义异步 SearchSource（命令/来源本地 + 文章后端），auxiliaryData.group 自动分组 |
 | 添加订阅 `components/AddFeed` | 自研浮动面板（非 Radix）；待内容批次 | 主输入行与 badge/kbd/foot 网格强耦合，不单独换控件 |
 | 添加分组 `components/AddFolder` | `Dialog`+`Field`+`TextInput` | 小弹窗 |
 | Feed 右键菜单 `components/FeedCtxMenu` | `ContextMenu` | 统一右键交互 |
@@ -43,7 +43,7 @@
 | 文章视图/正文 `components/ArticleView`（ContentRender/DialogView/ReadingOptions） | `Heading`/`Text`/`Blockquote`/`Code`/`CodeBlock`/`Divider`；正文容器 token | ContentRender 标签映射逐项换；阅读样式用 token |
 | 设置页 `layout/Setting` | **控件已换**：Switch/Selector/Slider/TextInput/TextArea（均 sm、label 隐藏） | 布局 SRow/Seg/色板保留；暗色 thumb 待 mode 打通 |
 | 播客 `components/LPodcast`（FullPlayer 等） | `Button`/`IconButton`+`Slider`+`ProgressBar`+`Thumbnail`+`Badge` | Framer Motion 保留，控件替换；IndexedDB 不动 |
-| 顶栏/侧栏 `components/layout`（AppLayout 等） | `AppShell`+`TopNav`+`SideNav`+`NavMenu`+`NavIcon` | 外壳规范化 |
+| 顶栏 `components/layout/AppLayout.tsx` | 保留自研 fusion 顶栏 | AppShell 强制侧栏/重排，与「玻璃面板+顶栏无侧栏」设计冲突，属重设计非迁移 |
 | Toast（sonner，11 处） | `Toast` | 可统一替换；先保留，后期收口 |
 
 ## 三、建议替换顺序（由低风险到整面）
@@ -51,7 +51,7 @@
 1. **原语批次**：~~Button~~ → ~~IconButton~~ → ~~Tooltip~~ → ~~Divider~~ → ~~Text/Heading~~ ✅ 完成
 2. **浮层批次** ✅：About Dialog → AddFolder(Dialog+TextInput) → AlertDialog/退订 Dialog → DropdownMenu(SleepControl) → Popover(PlayList) → Skeleton。FeedCtxMenu 右键菜单待外壳/内容批次换 ContextMenu
 3. **表单批次** ✅（设置页部分）：设置页原生控件全换 Astryx——`Switch`(2)、`Selector`(3)、`Slider`(3)、`TextInput`(RSSHub)、`TextArea`(路由)；布局/自研 Seg 保留。AddFeed 为自研浮动面板、无 Radix 原语，推迟到内容批次整面重梳
-4. **外壳批次**：AppShell/TopNav/SideNav 重排导航；命令面板换 Astryx CommandPalette
+4. **外壳批次** ✅：命令面板换 Astryx CommandPalette（删 cmdk）；AppShell 不采用（会改变 fusion 视觉世界）
 5. **内容批次**：订阅管理页 → FeedProfile 卡片化 → 文章列表行控件 → ContentRender 正文映射
 6. **收口**：播客控件、Toast 统一替换 sonner，删除 Radix Themes 与冗余自定义 CSS
 

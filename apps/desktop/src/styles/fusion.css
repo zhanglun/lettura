@@ -3006,96 +3006,10 @@ body.dark-theme .fusion-in-sm {
   flex: none;
 }
 
-/* ── ⌘K 命令面板（Raycast 式层次：图标槽 + 分组计数 + 尾注；浮层语法同 add 面板） ── */
-.fusion-cmd {
-  width: 640px;
-}
-
-.fusion-cmd-root {
-  display: flex;
-  flex-direction: column;
-}
-
-.fusion-cmd-in {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 14px 16px 10px;
-  border-bottom: 1px solid var(--fusion-hair);
-}
-
-.fusion-cmd-in input {
-  flex: 1;
-  border: 0;
-  outline: 0;
-  background: none;
-  font: inherit;
-  font-size: 14.5px;
-  color: var(--fusion-ink);
-}
-
-.fusion-cmd-in input::placeholder {
-  color: var(--fusion-ter);
-}
-
-.fusion-cmd-list {
-  max-height: min(420px, 56vh);
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding: 6px;
-}
-
-.fusion-cmd [cmdk-group-heading] {
-  display: flex;
-  align-items: center;
-  padding: 8px 10px 5px;
-}
-
-.fusion-cmd .gh {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-}
-
-.fusion-cmd .gh-t {
-  font-size: 10.5px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: var(--fusion-ter);
-}
-
-.fusion-cmd .gh-n {
-  margin-left: auto;
-  font-size: 10.5px;
-  color: var(--fusion-ter);
-  font-variant-numeric: tabular-nums;
-  background: rgba(29, 30, 32, 0.05);
-  border-radius: 999px;
-  padding: 1px 7px;
-}
-
-/* 三列行：图标槽 | 标题 | 尾部元信息；选中 = 圆角洗色 */
-.fusion-cmd [cmdk-item] {
-  display: grid;
-  grid-template-columns: 26px minmax(0, 1fr) auto;
-  gap: 11px;
-  align-items: center;
-  height: 44px;
-  padding: 0 10px;
-  border-radius: 9px;
-  cursor: pointer;
-  color: var(--fusion-ink);
-}
-
-.fusion-cmd [cmdk-item][data-selected="true"],
-.fusion-cmd [cmdk-item][aria-selected="true"] {
-  background: rgba(29, 30, 32, 0.05);
-}
-
-.fusion-cmd [cmdk-item] .ic {
-  width: 26px;
-  height: 26px;
+/* ── ⌘K 命令面板（Astryx CommandPalette）：内部三列 图标槽 | 标题 | 尾注 ── */
+.astryx-command-palette-item .ic {
+  width: 24px;
+  height: 24px;
   border-radius: 7px;
   background: rgba(29, 30, 32, 0.06);
   color: var(--fusion-sub);
@@ -3106,17 +3020,16 @@ body.dark-theme .fusion-in-sm {
   flex: none;
 }
 
-/* 来源/文章图标槽放大到 26px，与命令的 .ic 同格 */
-.fusion-cmd [cmdk-item] .fusion-b-ic,
-.fusion-cmd [cmdk-item] .fusion-badge {
-  width: 26px;
-  height: 26px;
+.astryx-command-palette-item .ic .fusion-badge {
+  width: 24px;
+  height: 24px;
   border-radius: 7px;
   font-size: 10px;
-  flex: none;
 }
 
-.fusion-cmd [cmdk-item] .t {
+.astryx-command-palette-item .t {
+  flex: 1;
+  min-width: 0;
   font-size: 13px;
   font-weight: 500;
   color: var(--fusion-ink);
@@ -3125,14 +3038,13 @@ body.dark-theme .fusion-in-sm {
   text-overflow: ellipsis;
 }
 
-.fusion-cmd [cmdk-item] .m {
+.astryx-command-palette-item .m {
   font-size: 11px;
   color: var(--fusion-ter);
-  text-align: right;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 200px;
+  max-width: 220px;
 }
 
 .fusion-cmd [cmdk-item] .m kbd {
