@@ -120,7 +120,7 @@ export const AppLayout = React.memo(function () {
     navigate(RouteConfig.SETTINGS);
   });
   useHotkeys("shift+r", () => store.syncAllArticles());
-  // esc 逐级退回：悬浮层优先（Radix / 帮助在捕获阶段已 preventDefault 的那次 esc 不再收回播放器）
+  // esc 逐级退回：悬浮层优先（浮层 / 帮助在捕获阶段已 preventDefault 的那次 esc 不再收回播放器）
   useHotkeys(
     "escape",
     (e) => {

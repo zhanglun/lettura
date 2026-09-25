@@ -87,7 +87,7 @@ export const DialogUnsubscribeFeed = React.memo((props: DialogProps) => {
             />
           </RadioList>
           {deleteMode === "delete" && (
-            <div className="rounded-md border border-[var(--amber-5)] bg-[var(--amber-a2)] px-3 py-2">
+            <div className="rounded-md border border-[var(--color-border-orange)] bg-[var(--color-background-orange)] px-3 py-2">
               <Text size="xsm" color="secondary">
                 {t("layout.feeds.delete.warning")}
               </Text>

@@ -129,7 +129,6 @@ pub fn run() {
       cmd::add_feed,
       cmd::update_user_config,
       cmd::update_threads,
-      cmd::update_theme,
       cmd::create_folder,
       cmd::delete_folder,
       cmd::update_folder,

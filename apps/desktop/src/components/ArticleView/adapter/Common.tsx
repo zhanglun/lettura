@@ -56,12 +56,12 @@ export const CommonAdapter = ({
         {content ? (
           <div>{renderArticleContent(content)}</div>
         ) : (
-          <div className="flex flex-col items-center justify-center py-16 gap-2 text-[var(--gray-9)]">
+          <div className="flex flex-col items-center justify-center py-16 gap-2 text-[var(--fusion-ter)]">
             <p className="text-sm">{t("article.detail.no_content", "No content available")}</p>
             {article.link && (
               <a
                 href="#"
-                className="text-[11px] text-[var(--accent-9)] hover:underline"
+                className="text-[11px] text-[var(--fusion-accent)] hover:underline"
                 onClick={(e) => {
                   e.preventDefault();
                   import("@tauri-apps/plugin-shell").then(({ open }) =>

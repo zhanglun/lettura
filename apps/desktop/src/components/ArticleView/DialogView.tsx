@@ -57,7 +57,7 @@ export const ArticleDialogView = (
         <ScrollBox className="h-[94vh]" ref={scrollBoxRef}>
           <>
             <div className="sticky left-0 right-0 top-0 z-[3]">
-              <div className="flex items-center justify-between px-4 py-1.5 rounded-tl-lg rounded-tr-lg bg-[var(--gray-1)] border-b border-[var(--gray-4)]">
+              <div className="flex items-center justify-between px-4 py-1.5 rounded-tl-lg rounded-tr-lg bg-[var(--color-background-muted)] border-b border-[var(--color-border)]">
                 <div className="flex items-center gap-0.5">
                   {article && (
                     <ReaderControls article={article} showBrowser showReadLater />

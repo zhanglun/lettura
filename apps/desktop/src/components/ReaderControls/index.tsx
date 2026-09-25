@@ -35,8 +35,8 @@ export function ReaderControlBtn({
         "inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] transition-all",
         "disabled:opacity-40 disabled:cursor-default",
         active
-          ? (activeClass ?? "text-[var(--accent-9)] bg-[var(--accent-a3)]")
-          : "text-[var(--gray-9)] hover:bg-[var(--gray-3)] hover:text-[var(--gray-12)]",
+          ? (activeClass ?? "text-[var(--fusion-accent)] bg-[var(--fusion-accent-soft)]")
+          : "text-[var(--fusion-ter)] hover:bg-[var(--fusion-hair)] hover:text-[var(--fusion-ink)]",
         className,
       )}
     >

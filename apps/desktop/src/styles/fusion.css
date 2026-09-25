@@ -9,9 +9,6 @@
   --fusion-glass: rgba(255, 255, 255, 0.78);
   --fusion-hair: rgba(29, 30, 32, 0.08);
   --fusion-hair2: rgba(29, 30, 32, 0.13);
-  --fusion-accent: var(--fusion-accent-hex, #5e6ad2);
-  --fusion-accent-soft: color-mix(in srgb, var(--fusion-accent) 10%, transparent);
-  --fusion-accent-line: color-mix(in srgb, var(--fusion-accent) 35%, transparent);
   --fusion-warn: #c4564a;
   --fusion-pink: #e86a92;
   --fusion-pink-soft: rgba(232, 106, 146, 0.1);
@@ -33,7 +30,7 @@
   pointer-events: none;
   background:
     radial-gradient(560px 380px at 10% -8%, rgba(232, 80, 96, 0.05), transparent 70%),
-    radial-gradient(640px 420px at 90% -12%, color-mix(in srgb, var(--fusion-accent) 5.5%, transparent), transparent 70%);
+    radial-gradient(640px 420px at 90% -12%, color-mix(in srgb, var(--color-accent) 5.5%, transparent), transparent 70%);
 }
 
 /* ── 玻璃主面板（铺满窗口：无外框/圆角，fusion 内容即 app 主体） ── */
@@ -140,7 +137,7 @@
 }
 
 .fusion-cmdbtn:hover {
-  border-color: var(--fusion-accent);
+  border-color: var(--color-accent);
   color: var(--fusion-ink);
 }
 
@@ -223,7 +220,7 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--fusion-accent);
+  background: var(--color-accent);
 }
 
 .fusion-row.is-read .fusion-dot {
@@ -259,7 +256,7 @@
 }
 
 .fusion-thumb.pod {
-  background: var(--fusion-accent-soft);
+  background: var(--color-accent-muted);
 }
 
 .fusion-thumb.bil {
@@ -283,8 +280,8 @@
 }
 
 .fusion-badge.b-pod {
-  background: var(--fusion-accent-soft);
-  color: var(--fusion-accent);
+  background: var(--color-accent-muted);
+  color: var(--color-accent);
 }
 
 .fusion-badge.b-bil {
@@ -364,7 +361,7 @@
 }
 
 .fusion-row.is-focused .fusion-dot {
-  outline: 3px solid var(--fusion-accent-line);
+  outline: 3px solid color-mix(in srgb, var(--color-accent) 35%, transparent);
   outline-offset: 1.5px;
 }
 
@@ -439,7 +436,7 @@
   width: 32px;
   height: 32px;
   border-radius: 999px;
-  background: var(--fusion-accent);
+  background: var(--color-accent);
   color: #fff;
   display: flex;
   align-items: center;
@@ -447,7 +444,7 @@
   flex: none;
   border: 0;
   cursor: pointer;
-  box-shadow: 0 4px 10px -2px color-mix(in srgb, var(--fusion-accent) 50%, transparent);
+  box-shadow: 0 4px 10px -2px color-mix(in srgb, var(--color-accent) 50%, transparent);
   transition: transform 0.15s ease;
 }
 
@@ -532,7 +529,7 @@
   top: 0;
   bottom: 0;
   border-radius: 999px;
-  background: var(--fusion-accent);
+  background: var(--color-accent);
 }
 
 .fusion-pbar i {
@@ -541,7 +538,7 @@
   width: 9px;
   height: 9px;
   border-radius: 50%;
-  background: var(--fusion-accent);
+  background: var(--color-accent);
   transform: translate(-50%, -50%);
   box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.9);
   pointer-events: none;
@@ -563,8 +560,8 @@
 }
 
 .fusion-chip.on {
-  color: var(--fusion-accent);
-  background: var(--fusion-accent-soft);
+  color: var(--color-accent);
+  background: var(--color-accent-muted);
   font-weight: 600;
 }
 
@@ -665,13 +662,13 @@
   width: 26px;
   height: 26px;
   border-radius: 999px;
-  background: var(--fusion-accent);
+  background: var(--color-accent);
   display: flex;
   align-items: center;
   justify-content: center;
   color: #fff;
   box-shadow: 0 3px 8px -1px
-    color-mix(in srgb, var(--fusion-accent) 50%, transparent);
+    color-mix(in srgb, var(--color-accent) 50%, transparent);
   cursor: pointer;
 }
 
@@ -729,14 +726,14 @@
   width: 168px;
   height: 168px;
   border-radius: 26px;
-  background: var(--fusion-accent-soft);
+  background: var(--color-accent-muted);
   flex: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--fusion-accent);
+  color: var(--color-accent);
   box-shadow: 0 24px 52px -14px
-    color-mix(in srgb, var(--fusion-accent) 40%, transparent);
+    color-mix(in srgb, var(--color-accent) 40%, transparent);
   overflow: hidden;
 }
 
@@ -750,7 +747,7 @@
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.1em;
-  color: var(--fusion-accent);
+  color: var(--color-accent);
   margin: 26px 0 10px;
 }
 
@@ -807,7 +804,7 @@
   top: 0;
   bottom: 0;
   border-radius: 999px;
-  background: var(--fusion-accent);
+  background: var(--color-accent);
 }
 
 .fusion-fbar i {
@@ -816,7 +813,7 @@
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: var(--fusion-accent);
+  background: var(--color-accent);
   transform: translate(-50%, -50%);
   box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.9);
 }
@@ -862,7 +859,7 @@
 }
 
 .fusion-queue .q-row.now {
-  background: var(--fusion-accent-soft);
+  background: var(--color-accent-muted);
 }
 
 .fusion-queue .q-thumb {
@@ -1014,7 +1011,7 @@
 }
 
 .fusion-playlist .q-s .live {
-  color: var(--fusion-accent);
+  color: var(--color-accent);
 }
 
 .fusion-playlist .pl-empty {
@@ -1059,7 +1056,7 @@
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.1em;
-  color: var(--fusion-accent);
+  color: var(--color-accent);
   margin-bottom: 10px;
 }
 
@@ -1078,13 +1075,13 @@
   width: 112px;
   height: 112px;
   border-radius: 18px;
-  background: var(--fusion-accent-soft);
+  background: var(--color-accent-muted);
   flex: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--fusion-accent);
-  box-shadow: 0 12px 28px -10px color-mix(in srgb, var(--fusion-accent) 35%, transparent);
+  color: var(--color-accent);
+  box-shadow: 0 12px 28px -10px color-mix(in srgb, var(--color-accent) 35%, transparent);
   overflow: hidden;
 }
 
@@ -1098,14 +1095,14 @@
   width: 40px;
   height: 40px;
   border-radius: 999px;
-  background: var(--fusion-accent);
+  background: var(--color-accent);
   color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
   border: 0;
   cursor: pointer;
-  box-shadow: 0 6px 14px -3px color-mix(in srgb, var(--fusion-accent) 50%, transparent);
+  box-shadow: 0 6px 14px -3px color-mix(in srgb, var(--color-accent) 50%, transparent);
   transition: transform 0.15s ease;
 }
 
@@ -1164,7 +1161,7 @@
   height: 200px;
   border-radius: 14px;
   overflow: hidden;
-  background: linear-gradient(135deg, rgba(232, 106, 146, 0.14), color-mix(in srgb, var(--fusion-accent) 12%, transparent));
+  background: linear-gradient(135deg, rgba(232, 106, 146, 0.14), color-mix(in srgb, var(--color-accent) 12%, transparent));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1336,15 +1333,15 @@
 }
 
 .fusion-article-body a {
-  color: var(--fusion-accent);
+  color: var(--color-accent);
   text-decoration: underline;
   text-underline-offset: 3px;
   text-decoration-thickness: 1px;
-  text-decoration-color: var(--fusion-accent-line);
+  text-decoration-color: color-mix(in srgb, var(--color-accent) 35%, transparent);
 }
 
 .fusion-article-body a:hover {
-  text-decoration-color: var(--fusion-accent);
+  text-decoration-color: var(--color-accent);
 }
 
 .fusion-article-body blockquote {
@@ -1455,7 +1452,7 @@
   left: 0;
   width: 100%;
   height: 1.5px;
-  background: var(--fusion-accent);
+  background: var(--color-accent);
   z-index: 5;
   transform-origin: left;
   transform: scaleX(0);
@@ -1638,8 +1635,8 @@
 }
 
 .fusion-b-ic.b-pod {
-  background: var(--fusion-accent-soft);
-  color: var(--fusion-accent);
+  background: var(--color-accent-muted);
+  color: var(--color-accent);
 }
 
 .fusion-b-ic.b-bil {
@@ -1689,7 +1686,7 @@
 .fusion-b-unread {
   font-size: 12px;
   font-weight: 600;
-  color: var(--fusion-accent);
+  color: var(--color-accent);
   font-variant-numeric: tabular-nums;
   text-align: right;
   white-space: nowrap;
@@ -1771,7 +1768,7 @@
 .fusion-fp-bar-unread {
   margin-left: auto;
   font-size: 11.5px;
-  color: var(--fusion-accent);
+  color: var(--color-accent);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
@@ -1878,7 +1875,7 @@
 .fusion-fp-more {
   margin-left: 6px;
   font-size: 11.5px;
-  color: var(--fusion-accent);
+  color: var(--color-accent);
   background: none;
   border: 0;
   padding: 0;
@@ -1919,7 +1916,7 @@
 }
 
 .fusion-fp-stat b.is-accent {
-  color: var(--fusion-accent);
+  color: var(--color-accent);
 }
 
 .fusion-fp-stat i {
@@ -2021,7 +2018,7 @@
 }
 
 .fusion-subs-search:focus-within {
-  border-color: var(--fusion-accent);
+  border-color: var(--color-accent);
 }
 
 .fusion-subs-search input {
@@ -2217,12 +2214,12 @@
 }
 
 .fusion-mark.quiet {
-  background: var(--fusion-accent-soft);
-  box-shadow: 0 0 0 6px color-mix(in srgb, var(--fusion-accent) 6%, transparent);
+  background: var(--color-accent-muted);
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--color-accent) 6%, transparent);
 }
 
 .fusion-mark.quiet i {
-  background: var(--fusion-accent);
+  background: var(--color-accent);
 }
 
 .fusion-face h1 {
@@ -2348,8 +2345,8 @@
 }
 
 .fusion-pack .pk-row.on .cb {
-  background: var(--fusion-accent);
-  border-color: var(--fusion-accent);
+  background: var(--color-accent);
+  border-color: var(--color-accent);
 }
 
 .fusion-pack .cb svg {
@@ -2391,7 +2388,7 @@
 
 .fusion-pack .pk-all {
   font-size: 12px;
-  color: var(--fusion-accent);
+  color: var(--color-accent);
   padding: 4px 10px;
   border-radius: 7px;
   border: 0;
@@ -2400,7 +2397,7 @@
 }
 
 .fusion-pack .pk-all:hover {
-  background: var(--fusion-accent-soft);
+  background: var(--color-accent-muted);
 }
 
 .fusion-pack .pk-sub {
@@ -2412,11 +2409,11 @@
   padding: 0 12px;
   border: 0;
   border-radius: 8px;
-  background: var(--fusion-accent);
+  background: var(--color-accent);
   color: #fff;
   font-size: 12px;
   font-weight: 600;
-  box-shadow: 0 4px 10px -3px color-mix(in srgb, var(--fusion-accent) 50%, transparent);
+  box-shadow: 0 4px 10px -3px color-mix(in srgb, var(--color-accent) 50%, transparent);
   opacity: 0.35;
   pointer-events: none;
   transition: opacity 0.15s ease;
@@ -2484,7 +2481,7 @@
   height: 13px;
   border-radius: 50%;
   border: 2px solid var(--fusion-hair2);
-  border-top-color: var(--fusion-accent);
+  border-top-color: var(--color-accent);
   animation: fusion-spin 0.7s linear infinite;
   flex: none;
 }
@@ -2506,7 +2503,7 @@
 
 .fusion-aerr button {
   font-size: 12px;
-  color: var(--fusion-accent);
+  color: var(--color-accent);
   padding: 3px 9px;
   border-radius: 7px;
   border: 0;
@@ -2515,7 +2512,7 @@
 }
 
 .fusion-aerr button:hover {
-  background: var(--fusion-accent-soft);
+  background: var(--color-accent-muted);
 }
 
 .fusion-card {
@@ -2544,8 +2541,8 @@
   width: 34px;
   height: 34px;
   border-radius: 9px;
-  background: var(--fusion-accent-soft);
-  color: var(--fusion-accent);
+  background: var(--color-accent-muted);
+  color: var(--color-accent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2669,8 +2666,8 @@
 }
 
 .fusion-cands button.on {
-  color: var(--fusion-accent);
-  background: var(--fusion-accent-soft);
+  color: var(--color-accent);
+  background: var(--color-accent-muted);
   font-weight: 600;
 }
 
@@ -2704,7 +2701,7 @@
 }
 
 .fusion-gen input:focus {
-  border-color: var(--fusion-accent);
+  border-color: var(--color-accent);
 }
 
 .fusion-gen button {
@@ -2748,7 +2745,7 @@
 }
 
 .fusion-set-ta:focus {
-  border-color: var(--fusion-accent);
+  border-color: var(--color-accent);
 }
 
 body.dark-theme .fusion-set-ta,
@@ -2771,7 +2768,7 @@ body.dark-theme .fusion-in-sm {
 }
 
 .fusion-in-sm:focus {
-  border-color: var(--fusion-accent);
+  border-color: var(--color-accent);
 }
 
 .fusion-aerr .fusion-aerr-msg {
@@ -2799,7 +2796,7 @@ body.dark-theme .fusion-in-sm {
 }
 
 .fusion-sel:hover {
-  border-color: var(--fusion-accent);
+  border-color: var(--color-accent);
 }
 
 
@@ -2816,8 +2813,8 @@ body.dark-theme .fusion-in-sm {
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: var(--fusion-accent-soft);
-  color: var(--fusion-accent);
+  background: var(--color-accent-muted);
+  color: var(--color-accent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3017,25 +3014,6 @@ body.dark-theme .fusion-in-sm {
   font-weight: 600;
 }
 
-.fusion-swatches {
-  display: flex;
-  gap: 8px;
-}
-
-.fusion-swatch {
-  width: 18px;
-  height: 18px;
-  border-radius: 999px;
-  border: 1px solid var(--fusion-hair);
-  cursor: pointer;
-  padding: 0;
-}
-
-/* 选中环用 accent-line（强调语义），非墨色（settings.html 契约） */
-.fusion-swatch.on {
-  outline: 2px solid var(--fusion-accent-line);
-  outline-offset: 2.5px;
-}
 
 .fusion-sld {
   display: flex;
@@ -3045,7 +3023,7 @@ body.dark-theme .fusion-in-sm {
 
 .fusion-sld input[type="range"] {
   width: 140px;
-  accent-color: var(--fusion-accent);
+  accent-color: var(--color-accent);
 }
 
 /* 校准台（预览块） */
@@ -3071,7 +3049,7 @@ body.dark-theme .fusion-in-sm {
   margin-left: auto;
   font-weight: 400;
   letter-spacing: 0;
-  color: var(--fusion-accent);
+  color: var(--color-accent);
 }
 
 .fusion-prev .prow {
@@ -3104,9 +3082,6 @@ body.dark-theme {
   --fusion-glass: rgba(22, 22, 25, 0.72);
   --fusion-hair: rgba(233, 233, 230, 0.08);
   --fusion-hair2: rgba(233, 233, 230, 0.13);
-  --fusion-accent: var(--fusion-accent-dark-hex, #848ce8);
-  --fusion-accent-soft: color-mix(in srgb, var(--fusion-accent) 14%, transparent);
-  --fusion-accent-line: color-mix(in srgb, var(--fusion-accent) 45%, transparent);
   --fusion-pink: #ee8bab;
   --fusion-pink-soft: rgba(238, 139, 171, 0.12);
   --fusion-amber: #edb433;
@@ -3116,7 +3091,7 @@ body.dark-theme {
 body.dark-theme .fusion-root::before {
   background:
     radial-gradient(620px 420px at 8% -10%, rgba(232, 80, 96, 0.03), transparent 70%),
-    radial-gradient(700px 460px at 92% -14%, color-mix(in srgb, var(--fusion-accent) 4.5%, transparent), transparent 70%);
+    radial-gradient(700px 460px at 92% -14%, color-mix(in srgb, var(--color-accent) 4.5%, transparent), transparent 70%);
 }
 
 body.dark-theme .fusion-article-body {
@@ -3199,8 +3174,8 @@ body.dark-theme .fusion-float-foot {
 }
 
 body.dark-theme .fusion-chip.on {
-  color: var(--fusion-accent);
-  background: var(--fusion-accent-soft);
+  color: var(--color-accent);
+  background: var(--color-accent-muted);
 }
 
 body.dark-theme .fusion-playlist {
@@ -3348,7 +3323,7 @@ body.dark-theme .fusion-fbar i {
 }
 
 body.dark-theme .fusion-mark.quiet {
-  box-shadow: 0 0 0 6px color-mix(in srgb, var(--fusion-accent) 8%, transparent);
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--color-accent) 8%, transparent);
 }
 
 /* 源头卡：暗色（暖黑玻璃，结构不变） */
@@ -3384,4 +3359,19 @@ body.dark-theme .fusion-fp-btn {
 body.dark-theme .fusion-fp-btn:hover {
   background: rgba(233, 233, 230, 0.1);
   border-color: rgba(233, 233, 230, 0.18);
+}
+
+/* 虚拟列表分组标签（原 custom-components.css，随死 CSS 清理迁入） */
+.art-section-label {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 4px 16px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--fusion-ter);
+  background: color-mix(in srgb, var(--fusion-ink) 3%, transparent);
+  border-bottom: 1px solid var(--fusion-hair);
 }

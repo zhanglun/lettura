@@ -80,7 +80,6 @@
   "Light": "亮色",
   "Dark": "暗色",
   "Auto": "自动",
-  "Accent color": "强调色",
   "default": "默认",
   "brown": "棕色",
   "ruby": "宝石红",
@@ -323,7 +322,6 @@
     "theme_help": "深色为命名候「夜读本」，非简单反色",
     "astryx_theme": "组件主题",
     "astryx_theme_help": "按钮、菜单、弹层等界面控件的主题（Astryx）",
-    "accent_help": "焦点线、圆点、播放与选中共用一色",
     "font_help": "文章阅读的宋体字号",
     "lh_help": "行间距倍数",
     "density_help": "未读列表行的紧凑程度",
@@ -340,14 +338,7 @@
     "opml_help": "订阅列表完全进出，数据属于用户",
     "Off": "关闭",
     "Keep forever": "永久保留",
-    "days": "天",
-    "accent": {
-      "indigo": "靛蓝",
-      "moss": "苔绿",
-      "ochre": "赭石",
-      "brick": "砖红",
-      "vine": "藤紫"
-    }
+    "days": "天"
   },
   "layout": {
     "topics": {},
@@ -717,7 +708,6 @@
   "Adjust the reading font size.": "调整阅读字号。",
   "Line height": "行高",
   "Adjust the reading line height.": "调整阅读行高。",
-  "Pick an accent color for the interface.": "选择界面强调色。",
   "Reader preference": "阅读器偏好",
   "Compact": "紧凑",
   "More content in less space.": "更少空间显示更多内容。",

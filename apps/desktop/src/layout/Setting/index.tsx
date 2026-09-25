@@ -13,7 +13,6 @@ import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
 import { RouteConfig } from "@/config";
 import { Subscriptions } from "./Subscriptions";
-import { ACCENTS, applyAccent } from "@/helpers/accent";
 import { ASTRYX_THEMES } from "@/themes";
 import { Button } from "@astryxdesign/core/Button";
 import { ChevronRight, Download, Upload } from "lucide-react";
@@ -333,27 +332,6 @@ export function SettingPage() {
                   })
                 }
               />
-            </SRow>
-            <SRow label={t("Accent color")} help={t("settings.accent_help")}>
-              <div className="fusion-swatches">
-                {ACCENTS.map((a) => (
-                  <button
-                    key={a.key}
-                    type="button"
-                    title={t(`settings.accent.${a.key}`)}
-                    aria-label={t(`settings.accent.${a.key}`)}
-                    aria-pressed={(cfg?.accent_color ?? "indigo") === a.key}
-                    className={`fusion-swatch ${
-                      (cfg?.accent_color ?? "indigo") === a.key ? "on" : ""
-                    }`}
-                    style={{ background: a.hex }}
-                    onClick={() => {
-                      store.updateUserConfig({ ...cfg, accent_color: a.key });
-                      applyAccent(a.key);
-                    }}
-                  />
-                ))}
-              </div>
             </SRow>
             <SRow label={t("Font size")} help={t("settings.font_help")}>
               <div className="fusion-sld">

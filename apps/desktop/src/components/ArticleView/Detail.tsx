@@ -68,13 +68,13 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
 
     if (loadError) {
       return (
-        <div className="flex flex-col items-center justify-center py-20 gap-2 text-[var(--gray-9)]">
+        <div className="flex flex-col items-center justify-center py-20 gap-2 text-[var(--fusion-ter)]">
           <p className="text-sm">{t("article.detail.load_error", "Failed to load article content")}</p>
           {article.link && (
             <button
               type="button"
               onClick={() => open(article.link)}
-              className="text-[11px] text-[var(--accent-9)] hover:underline"
+              className="text-[11px] text-[var(--fusion-accent)] hover:underline"
             >
               {t("Open in browser")}
             </button>

@@ -77,7 +77,6 @@ declare interface UserConfig {
   reader_preset?: string;
   card_density?: string;
   /** 强调色（indigo/moss/ochre/brick/vine），令牌层 color-mix 派生 */
-  accent_color?: string;
   /** Astryx 组件主题 slug（默认 neutral） */
   astryx_theme?: string;
 

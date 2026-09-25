@@ -91,7 +91,7 @@ export const ArticleListVirtual = React.memo(function ArticleListVirtual(
       }`}
     >
       {isEmpty ? (
-        <div className="flex flex-col justify-center items-center gap-1 text-muted-foreground min-h-full py-20">
+        <div className="flex flex-col justify-center items-center gap-1 text-[var(--fusion-ter)] min-h-full py-20">
           <Snail size={34} strokeWidth={1} />
           <p>{t("Yay, no matching items.")}</p>
         </div>

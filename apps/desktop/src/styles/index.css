@@ -12,15 +12,11 @@
 @import "@astryxdesign/theme-butter/theme.css" layer(astryx-theme);
 @import "@astryxdesign/theme-y2k/theme.css" layer(astryx-theme);
 
-@import "./custom-theme.css";
 @import "./fusion.css";
-@import "./custom-components.css";
-@import "./reading-style.css";
 
 @layer tw-preflight {
   @tailwind base;
 }
-@tailwind components;
 @tailwind utilities;
 
 

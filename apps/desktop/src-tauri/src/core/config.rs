@@ -71,7 +71,6 @@ macro_rules! generate_set_property {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UserConfig {
   pub threads: i32,
-  pub theme: String,
   pub color_scheme: ColorScheme,
 
   pub update_interval: u64,
@@ -99,8 +98,6 @@ pub struct UserConfig {
   pub reader_preset: String,
   #[serde(default = "default_card_density")]
   pub card_density: String,
-  #[serde(default = "default_accent_color")]
-  pub accent_color: String,
   /// Astryx 组件主题（neutral/matcha/stone/gothic/chocolate/butter/y2k）
   #[serde(default = "default_astryx_theme")]
   pub astryx_theme: String,
@@ -133,10 +130,6 @@ fn default_card_density() -> String {
   "comfortable".to_string()
 }
 
-fn default_accent_color() -> String {
-  "indigo".to_string()
-}
-
 fn default_astryx_theme() -> String {
   "neutral".to_string()
 }
@@ -149,7 +142,6 @@ impl Default for UserConfig {
   fn default() -> Self {
     Self {
       threads: 1,
-      theme: String::from("default"),
       color_scheme: ColorScheme::System,
       update_interval: 1800,
       last_sync_time: Utc
@@ -169,7 +161,6 @@ impl Default for UserConfig {
       data_retention_days: default_data_retention_days(),
       reader_preset: default_reader_preset(),
       card_density: default_card_density(),
-      accent_color: default_accent_color(),
       astryx_theme: default_astryx_theme(),
       rsshub_instance: default_rsshub_instance(),
       generator_routes: vec![],
@@ -179,7 +170,6 @@ impl Default for UserConfig {
 
 impl UserConfig {
   generate_set_property!(self, set_threads, threads, i32);
-  generate_set_property!(self, set_theme, theme, String);
   generate_set_property!(self, set_port, port, u16);
   generate_set_property!(self, set_update_interval, update_interval, u64);
   generate_set_property!(self, set_purge_on_days, purge_on_days, u64);
@@ -417,22 +407,6 @@ pub fn update_threads(threads: i32) -> usize {
   return 1;
 }
 
-pub fn update_theme(theme: String) -> usize {
-  let data = get_user_config();
-  let user_config_path = get_user_config_path();
-
-  println!("data {:?}", data);
-
-  let a = data.set_theme(theme);
-
-  let content = toml::to_string_pretty(&a).unwrap();
-
-  println!("content {:?}", content);
-
-  fs::write(user_config_path, content).expect("update theme error");
-
-  return 1;
-}
 
 pub fn update_port(port: u16) -> usize {
   let data = get_user_config();

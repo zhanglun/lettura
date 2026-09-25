@@ -3,7 +3,7 @@ import { Popover } from "@astryxdesign/core/Popover";
 import { PlayList } from "./PlayList";
 import { useTranslation } from "react-i18next";
 
-/** 底条上的播放列表入口：列表钮拉出队列面板（Radix 管外点关闭 / esc / 焦点归还） */
+/** 底条上的播放列表入口：列表钮拉出队列面板（浮层管外点关闭 / esc / 焦点归还） */
 export const PlayListPopover: React.FC = () => {
   const { t } = useTranslation();
 

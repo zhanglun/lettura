@@ -75,16 +75,16 @@ export function View({
             strokeWidth="1"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="text-[var(--gray-6)]"
+            className="text-[var(--fusion-ter)]"
           >
             <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
             <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
           </svg>
         </div>
-        <h2 className="text-2xl font-medium text-[var(--gray-12)] mb-2">
+        <h2 className="text-2xl font-medium text-[var(--fusion-ink)] mb-2">
           {t("Ready to Read")}
         </h2>
-        <p className="text-[var(--gray-11)] text-base">
+        <p className="text-[var(--fusion-sub)] text-base">
           {t("Select an article from your subscribe to start reading")}
         </p>
       </div>

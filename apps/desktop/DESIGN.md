@@ -14,12 +14,11 @@
 | `--ground` | `#F4F4F1` | 画布 |
 | `--glass` | `rgba(255,255,255,.78)` + `backdrop-filter: blur(22px) saturate(1.5)` | 主面板 / 播放卡 / 命令面板 |
 | 浮层面板 | `rgba(255,255,255,.94)` + `blur(28px) saturate(1.6)` · radius 14 · 投影 `0 4px 10px .06` + `0 36px 80px -16px .4` | ⌘K / 添加 / 帮助 / 播放列表 / 睡眠菜单——**全套浮层共用一套材质**，不出现新容器类型（夜读本 `rgba(30,30,34,.92)` + 黑基投影） |
-| 环境光 | 红 `rgba(232,80,96,.05)` 左上（固定暖意）+ 靛侧右上 radial（随 `--accent` 派生，默认 ≈5.5%） | 画布氛围，极淡 |
+| 环境光 | 红 `rgba(232,80,96,.05)` 左上（固定暖意）+ 靛侧右上 radial（`color-mix` 从 `--color-accent` 派生 ≈5.5%） | 画布氛围，极淡 |
 | `--ink` / `--sub` / `--ter` | `#1D1E20` / `#6A6C6E` / `#9EA0A2` | 文字三级 |
 | `--hair` / `--hair2` | `rgba(29,30,32,.08)` / `.13` | 发丝线 / 边框 |
-| `--accent` | 默认 `#5E6AD2`（靛蓝）；设置色板五选：靛蓝/苔绿 `#3E8E6D`/赭石 `#B06A3B`/砖红 `#C4564A`/藤紫 `#8A6BB8`，持久化于 `userConfig.accent_color` | 唯一强调色：焦点线、圆点、播放、选中——**soft/line/阴影/环境光靛侧全部由 `color-mix` 从 `--accent` 单源派生**，JS 只写种子变量 `--fusion-accent-hex`（indigo = 不设，回落契约缺省） |
-| `--accent-soft` / `--accent-line` | `color-mix(in srgb, var(--accent) 10% / 35%, transparent)` | 选中底、圆点光环 / 链接装饰线——派生令牌，不再手写 |
-| `--accent-dark` | 夜读本：默认提亮 `#848CE8`；自定义色按「与白 28% 混合」派生（种子 `--fusion-accent-dark-hex`，由 `lightenHex` 计算） | 暗色令牌层同规则单源 |
+| `--color-accent` | **Astryx 主题 accent，直接消费、无任何 fusion 间接层**（2026-10 契约）：主题即调色板身份，五色板已删；gothic 为永久深色主题，选中即强制深色 | 唯一强调色：焦点线、圆点、播放、选中、正文链接 |
+| `--color-accent-muted` | Astryx 自带 accent 淡底令牌（各主题自带设计值） | 选中底、淡色洗 |
 | `--pink` | `#E86A92` | 仅 B站徽章 |
 | `--warn` | `#C4564A` | 同步失败 |
 | `--amber` | `#E5A50A` | 仅星标 |
@@ -47,7 +46,7 @@
 
 **列表行**（54px，发丝线分隔，grid：状态点 / 56×34 缩略图 / 徽章 / 题 / 源(带 14px 源图标) / 时间 / 动作）：
 
-- 缩略图：内容 banner/预览图 `object-fit:cover`；无图落类型预设（播客 `--accent-soft`、平台 `--pink-soft`、文章灰底 + 字符）
+- 缩略图：内容 banner/预览图 `object-fit:cover`；无图落类型预设（播客 `--color-accent-muted`、平台 `--pink-soft`、文章灰底 + 字符）
 - 源列：feed 图标（14px，`feed_logo`）+ 源名；时间列 `nowrap` 不换行
 - 行尾动作常显（`.62` 透明度），行 hover 全显——星标（琥珀）+ 已读
 
@@ -55,7 +54,7 @@
 |---|---|
 | 未读 | 6px 靛蓝圆点 |
 | 已读 | 圆点转灰，题转灰 400 |
-| 键盘焦点 | 浅底 `.055` + 圆点 3px 光环（`--accent-line`）——两种安静信号，**无彩色竖侧线**（侧线＝side-tab slop，全线禁用；硬状态，禁 hover 洗色边界） |
+| 键盘焦点 | 浅底 `.055` + 圆点 3px 光环（`color-mix(--color-accent 35%)`）——两种安静信号，**无彩色竖侧线**（侧线＝side-tab slop，全线禁用；硬状态，禁 hover 洗色边界） |
 | 播放中 | 源列「播放中」靛蓝字 |
 | 星标 | 行尾琥珀星 |
 | 同步失败 | 源列 `#C4564A` + 重试 |
@@ -88,10 +87,10 @@
 | 阅读进度 | 顶栏下缘 1.5px 靓蓝发丝线，随滚动无声走完，唯一的仪表读数 |
 | 引文 | 1px 发丝左线 + 宋体 + `--sub`，字号减 1px |
 | 行内码 / 代码块 | 行内：mono + `.05` 底 + hair 边；块：白玻璃 + hair 边 + SF Mono 12.5 + 右上语言标 |
-| 链接 | `--accent` 下划线，offset 3px，装饰线 `--accent-line` |
+| 链接 | `--color-accent` 下划线，offset 3px，装饰线同源 35% mix |
 | 完读 | 「· 完 ·」发丝线分隔 → 下一篇卡（列表行语法，j/k 直达）+ 「已读并返回 m」幽灵钮 |
 
-**命令面板**：输入即时过滤（文章 / 来源 / 命令混合），首项选中（`--accent-soft` 底 + 1px 内线），kbd 提示，底部快捷键栏；「打开设置」命令进设置视图。
+**命令面板**：输入即时过滤（文章 / 来源 / 命令混合），首项选中（`--color-accent-muted` 底 + 1px 内线），kbd 提示，底部快捷键栏；「打开设置」命令进设置视图。
 
 **播放器三态**（`.impeccable/mocks/decision/podcast.html`，`?state=bar|full|min` 直达）：播客是仪器上唯一的时间媒体，三种形态同一材质同一 accent，收起永不失联。
 

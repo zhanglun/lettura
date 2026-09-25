@@ -1,18 +1,3 @@
-const { fontFamily } = require("tailwindcss/defaultTheme");
-const {
-  blackA,
-  whiteA,
-  violet,
-  mauve,
-  mauveDark,
-  red,
-  gray,
-  grayA,
-  green,
-  indigo,
-  indigoDark,
-} = require("@radix-ui/colors");
-
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ["class", '[data-color-scheme="dark"]'],
@@ -25,82 +10,7 @@ module.exports = {
         "2xl": "1400px",
       },
     },
-    colors: ({ colors }) => ({
-      ...colors,
-    }),
     extend: {
-      colors: {
-        ...blackA,
-        ...violet,
-        ...mauve,
-        ...mauveDark,
-        ...whiteA,
-        ...red,
-        ...gray,
-        ...grayA,
-        ...green,
-        ...indigo,
-        ...indigoDark,
-        // border: "hsl(var(--border))",
-        border: "var(--borderLine)",
-        input: "var(--borderLine)",
-        ring: "var(--accent)",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
-        primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
-        },
-        secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
-        },
-        destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
-        },
-        muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
-        },
-        accent: {
-          foreground: "hsl(var(--accent-foreground))",
-          DEFAULT: "var(--accent-12))",
-          1: "var(--accent-1)",
-          2: "var(--accent-2)",
-          3: "var(--accent-3)",
-          4: "var(--accent-4)",
-          5: "var(--accent-5)",
-          6: "var(--accent-6)",
-          7: "var(--accent-7)",
-          8: "var(--accent-8)",
-          9: "var(--accent-9)",
-          10: "var(--accent-10)",
-          11: "var(--accent-11)",
-          12: "var(--accent-12)",
-        },
-        popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
-        },
-        card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
-        },
-        canvas: {
-          DEFAULT: "var(--gray-3)",
-          foreground: "var(--gray-11)",
-        },
-        panel: {
-          DEFAULT: "var(--gray-1)",
-          foreground: "var(--gray-11)",
-        },
-        sidebar: {
-          DEFAULT: "var(--gray-11)",
-          active: "var(--gray-1)",
-          hover: "var(--gray-6)",
-        },
-      },
       borderWidth: {
         DEFAULT: "0.5px",
         1: "1px",
@@ -109,19 +19,10 @@ module.exports = {
         4: "4px",
       },
       borderColor: {
-        DEFAULT: "var(--gray-6)"
-      },
-      fontFamily: {
-        sans: ["var(--font-sans)", ...fontFamily.sans],
+        DEFAULT: "var(--color-border)",
       },
       animation: {},
-      boxShadow: {
-        "level-0": "var(--shadow-0)",
-        "level-1": "var(--shadow-1)",
-        "level-2": "var(--shadow-2)",
-        "level-2-left": "var(--shadow-2-left)",
-      },
     },
   },
-  plugins: [require("@tailwindcss/typography")],
+  plugins: [],
 };

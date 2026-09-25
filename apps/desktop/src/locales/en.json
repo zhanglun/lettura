@@ -306,7 +306,6 @@
     "theme_help": "Dark is the named variant “Night Reader”, not a simple invert",
     "astryx_theme": "Component theme",
     "astryx_theme_help": "Theme for buttons, menus, dialogs and other UI controls (Astryx)",
-    "accent_help": "Focus line, dots, playback and selection share one color",
     "font_help": "Serif size for article reading",
     "lh_help": "Line-height multiplier",
     "density_help": "Compactness of unread list rows",
@@ -323,14 +322,7 @@
     "opml_help": "Full import/export of your list; data belongs to you",
     "Off": "Off",
     "Keep forever": "Keep forever",
-    "days": "days",
-    "accent": {
-      "indigo": "Indigo",
-      "moss": "Moss",
-      "ochre": "Ochre",
-      "brick": "Brick",
-      "vine": "Vine"
-    }
+    "days": "days"
   },
   "layout": {
     "topics": {},
@@ -700,8 +692,6 @@
   "Adjust the reading font size.": "Adjust the reading font size.",
   "Line height": "Line height",
   "Adjust the reading line height.": "Adjust the reading line height.",
-  "Accent color": "Accent color",
-  "Pick an accent color for the interface.": "Pick an accent color for the interface.",
   "Reader preference": "Reader preference",
   "Compact": "Compact",
   "More content in less space.": "More content in less space.",
