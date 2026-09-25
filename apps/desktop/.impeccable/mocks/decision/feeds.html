@@ -169,6 +169,19 @@
   .synthetic{position:absolute;right:36px;bottom:100px;font-size:10px;color:var(--ter);letter-spacing:.1em;z-index:5;}
   .hintbar{position:absolute;left:36px;bottom:100px;font-size:10.5px;color:var(--ter);z-index:5;letter-spacing:.03em;}
   .hintbar b{color:var(--sub);font-weight:600;}
+
+  /* ── 源右键菜单（与 settings.html ?view=subs 共用语法；含「移至分组」悬停子菜单） ── */
+  .ctx{position:fixed;z-index:60;min-width:186px;background:rgba(255,255,255,.94);backdrop-filter:blur(28px) saturate(1.6);border:1px solid rgba(29,30,32,.1);border-radius:10px;padding:5px;box-shadow:0 4px 10px rgba(29,30,32,.06),0 18px 40px -12px rgba(29,30,32,.3);}
+  .ctx .mi{display:flex;align-items:center;gap:9px;width:100%;height:31px;padding:0 10px;border-radius:7px;font-size:12.5px;color:var(--ink);border:0;background:none;cursor:pointer;text-align:left;}
+  .ctx .mi svg{color:var(--sub);flex:none;}
+  .ctx .mi:hover{background:rgba(29,30,32,.05);}
+  .ctx .mi.danger{color:var(--warn);}
+  .ctx .mi.danger svg{color:var(--warn);}
+  .ctx hr{border:0;border-top:1px solid var(--hair);margin:4px 8px;}
+  .ctx .mi.has-sub{position:relative;}
+  .ctx .mi.has-sub>.caret{margin-left:auto;color:var(--ter);flex:none;}
+  .ctx .mi.has-sub .sub{position:absolute;left:calc(100% - 6px);top:-6px;min-width:150px;background:rgba(255,255,255,.94);backdrop-filter:blur(28px) saturate(1.6);border:1px solid rgba(29,30,32,.1);border-radius:10px;padding:5px;box-shadow:0 4px 10px rgba(29,30,32,.06),0 18px 40px -12px rgba(29,30,32,.3);opacity:0;pointer-events:none;transform:translateX(-4px);transition:.12s ease;}
+  .ctx .mi.has-sub:hover .sub{opacity:1;pointer-events:auto;transform:none;}
 </style>
 </head>
 <body>
@@ -318,6 +331,24 @@
   </footer>
 </div>
 
+<!-- 源右键菜单（feeds 契约：源行/分组头右键呼出） -->
+<div class="ctx" id="ctxMenu" hidden>
+  <button class="mi">📖 查看文章</button>
+  <button class="mi">↻ 同步此源</button>
+  <button class="mi">✓ 全部标为已读</button>
+  <button class="mi has-sub">🗂 移至分组 <svg class="caret" width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><path d="m6 3 5 5-5 5"/></svg>
+    <div class="sub">
+      <button class="mi">未分组</button>
+      <button class="mi">技术</button>
+      <button class="mi">播客</button>
+    </div>
+  </button>
+  <hr>
+  <button class="mi">↗ 打开主页</button>
+  <button class="mi">⧉ 复制 Feed 地址</button>
+  <hr>
+  <button class="mi danger">🗑 退订…</button>
+</div>
 <script>
 const FEEDROWS=[
  {k:"art",img:1,t:"Rust 1.90 发布：编译器并行化进入第二阶段",s:"blog.rust-lang.org",d:"09:41",read:false,star:false},
@@ -371,7 +402,18 @@ function go(v){
     ?"<b>⏎</b> 进源队列 · <b>j/k</b> 移动 · <b>esc</b> 回未读 · <b>⌘K</b> 命令"
     :"<b>esc</b> 退回浏览 · <b>j/k</b> 移动 · <b>⏎</b> 阅读 · <b>m</b> 已读 · <b>f</b> 星标";
   if(v==="feed"){renderFeed();focusIdx=0;}
-  else renderSrcFocus();
+  else // 右键菜单（契约演示：贴边回收）
+const ctxMenu=document.getElementById("ctxMenu");
+const openCtx=(x,y)=>{ctxMenu.hidden=false;const r=ctxMenu.getBoundingClientRect();ctxMenu.style.left=Math.min(x,innerWidth-r.width-8)+"px";ctxMenu.style.top=Math.min(y,innerHeight-r.height-8)+"px";};
+document.addEventListener("contextmenu",e=>{
+  const row=e.target.closest(".src,.f-h");
+  if(!row)return;
+  e.preventDefault();openCtx(e.clientX,e.clientY);
+});
+ctxMenu.addEventListener("click",()=>{ctxMenu.hidden=true;});
+document.addEventListener("click",e=>{if(!e.target.closest("#ctxMenu"))ctxMenu.hidden=true;});
+
+renderSrcFocus();
 }
 document.querySelectorAll(".dtab").forEach(t=>t.addEventListener("click",()=>{
   document.querySelectorAll(".dtab").forEach(x=>x.classList.remove("on"));t.classList.add("on");go(t.dataset.s);

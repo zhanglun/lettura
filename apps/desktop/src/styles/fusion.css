@@ -2306,6 +2306,49 @@
   margin: 4px 8px;
 }
 
+/* 「移至分组」悬停子菜单：同款玻璃浮层，右向展开 */
+.fusion-ctx .mi.has-sub {
+  position: relative;
+}
+
+.fusion-ctx .mi.has-sub > .caret {
+  margin-left: auto;
+  color: var(--fusion-ter);
+  flex: none;
+}
+
+.fusion-ctx .mi.has-sub .sub {
+  position: absolute;
+  left: calc(100% - 6px);
+  top: -6px;
+  min-width: 172px;
+  max-height: 260px;
+  overflow-y: auto;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(28px) saturate(1.6);
+  border: 1px solid rgba(29, 30, 32, 0.1);
+  border-radius: 10px;
+  padding: 5px;
+  box-shadow:
+    0 4px 10px rgba(29, 30, 32, 0.06),
+    0 18px 40px -12px rgba(29, 30, 32, 0.3);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-4px);
+  transition: opacity 0.12s ease, transform 0.12s ease;
+}
+
+.fusion-ctx .mi.has-sub:hover .sub {
+  opacity: 1;
+  pointer-events: auto;
+  transform: none;
+}
+
+body.dark-theme .fusion-ctx .mi.has-sub .sub {
+  background: rgba(30, 30, 34, 0.92);
+  border-color: rgba(233, 233, 230, 0.12);
+}
+
 /* ── 空状态即引导（empty.html 契约） ── */
 .fusion-face {
   flex: 1;

@@ -6,29 +6,21 @@ import { useHotkeys } from "react-hotkeys-hook";
 import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
 import * as dataAgent from "@/helpers/dataAgent";
-import { busChannel } from "@/helpers/busChannel";
-import { toast } from "sonner";
-import { showErrorToast } from "@/helpers/errorHandler";
 import { RouteConfig } from "@/config";
 import type { FeedResItem, FolderResItem } from "@/db";
 import { DialogUnsubscribeFeed } from "@/layout/Setting/Content/DialogUnsubscribeFeed";
 import { DialogDeleteFolder } from "@/layout/Setting/Content/DialogDeleteFolder";
 import { AddFolder } from "@/components/AddFolder";
 import { FeedIcon } from "@/components/FeedIcon";
+import { FeedCtxMenu } from "@/components/FeedCtxMenu";
 import { getHostLabel, formatFeedTime } from "@/helpers/feedMeta";
-import { copyText } from "@/helpers/copyText";
-import { open as openExternal } from "@tauri-apps/plugin-shell";
 import {
-  BookOpen,
   CheckCheck,
   ChevronDown,
-  Clipboard,
-  ExternalLink,
-  FolderInput,
+  FolderPlus,
   Pencil,
   Plus,
   RefreshCw,
-  FolderPlus,
   Search,
   Trash2,
 } from "lucide-react";
@@ -222,156 +214,9 @@ function SubsGroup({
   );
 }
 
-interface CtxMenuProps {
+interface CtxMenuState {
   target: FeedResItem | null;
   position: { x: number; y: number } | null;
-  onClose: () => void;
-  onOpen: (feed: FeedResItem) => void;
-  onSync: (feed: FeedResItem) => void;
-  onMarkAllRead: (feed: FeedResItem) => void;
-  onMove: (feed: FeedResItem) => void;
-  onOpenHome: (feed: FeedResItem) => void;
-  onCopyFeedUrl: (feed: FeedResItem) => void;
-  onDelete: (feed: FeedResItem) => void;
-  onEditFolder: (folder: FeedResItem) => void;
-  onDeleteFolder: (folder: FeedResItem) => void;
-}
-
-/** 右键菜单＝命令面板浮层语法（settings.html 契约） */
-function CtxMenu({
-  target,
-  position,
-  onClose,
-  onOpen,
-  onSync,
-  onMarkAllRead,
-  onMove,
-  onOpenHome,
-  onCopyFeedUrl,
-  onDelete,
-  onEditFolder,
-  onDeleteFolder,
-}: CtxMenuProps) {
-  const { t } = useTranslation();
-  if (!(target && position)) return null;
-
-  const item = (
-    key: string,
-    icon: React.ReactNode,
-    label: string,
-    action: () => void,
-    danger = false,
-  ) => (
-    <button
-      key={key}
-      type="button"
-      className={`mi ${danger ? "danger" : ""}`}
-      onClick={() => {
-        action();
-        onClose();
-      }}
-    >
-      {icon}
-      {label}
-    </button>
-  );
-
-  const isFolder = target.item_type === "folder";
-
-  return (
-    <div
-      className="fusion-ctx"
-      style={{ left: position.x, top: position.y }}
-      onClick={(e) => e.stopPropagation()}
-    >
-      <div
-        style={{ position: "fixed", inset: 0, zIndex: -1 }}
-        onClick={onClose}
-      />
-      {isFolder ? (
-        <>
-          {item("sync", <RefreshCw size={13} />, t("feeds.ctx.sync"), () => onSync(target))}
-          {item("read", <CheckCheck size={13} />, t("feeds.ctx.mark_all_read"), () => onMarkAllRead(target))}
-          {item("edit", <Pencil size={13} />, t("Edit folder"), () => onEditFolder(target))}
-          <hr />
-          {item("delete", <Trash2 size={13} />, t("Delete folder"), () => onDeleteFolder(target), true)}
-        </>
-      ) : (
-        <>
-          {item("open", <BookOpen size={13} />, t("feeds.ctx.view_articles"), () => onOpen(target))}
-          {item("sync", <RefreshCw size={13} />, t("feeds.ctx.sync"), () => onSync(target))}
-          {item("read", <CheckCheck size={13} />, t("feeds.ctx.mark_all_read"), () => onMarkAllRead(target))}
-          {item("move", <FolderInput size={13} />, t("feeds.ctx.move_to_folder"), () => onMove(target))}
-          <hr />
-          {item("home", <ExternalLink size={13} />, t("Open home page"), () => onOpenHome(target))}
-          {item("copy", <Clipboard size={13} />, t("Copy feed URL"), () => onCopyFeedUrl(target))}
-          <hr />
-          {item("delete", <Trash2 size={13} />, t("feeds.ctx.delete"), () => onDelete(target), true)}
-        </>
-      )}
-    </div>
-  );
-}
-
-interface MoveDialogProps {
-  feed: FeedResItem | null;
-  folders: FeedResItem[];
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onMove: (feed: FeedResItem, folderUuid: string) => void;
-}
-
-function MoveDialog({ feed, folders, open, onOpenChange, onMove }: MoveDialogProps) {
-  const { t } = useTranslation();
-  const [folderUuid, setFolderUuid] = useState("");
-
-  useEffect(() => {
-    if (open) setFolderUuid(feed?.folder_uuid ?? "");
-  }, [open, feed?.folder_uuid]);
-
-  if (!(open && feed)) return null;
-
-  return (
-    <div className="fusion-veil" onClick={() => onOpenChange(false)}>
-      <div
-        className="fusion-float fusion-add"
-        style={{ top: 160 }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="fusion-abody">
-          <div className="fusion-next-h">{t("settings.subscriptions.move_title")}</div>
-          <div className="fusion-subs-ft" style={{ padding: "8px 0 4px" }}>
-            <span className="nm">{feed.title}</span>
-          </div>
-          <select
-            className="fusion-sel"
-            style={{ width: "100%", maxWidth: "none", marginTop: 10 }}
-            value={folderUuid}
-            onChange={(e) => setFolderUuid(e.target.value)}
-          >
-            <option value="">{t("settings.subscriptions.ungrouped")}</option>
-            {folders.map((folder) => (
-              <option key={folder.uuid} value={folder.uuid}>
-                {folder.title}
-              </option>
-            ))}
-          </select>
-          <div className="mt-5 flex justify-end gap-2">
-            <button type="button" className="fusion-btn-gh" onClick={() => onOpenChange(false)}>
-              {t("Cancel")}
-            </button>
-            <button
-              type="button"
-              className="fusion-btn-ink-sm"
-              onClick={() => onMove(feed, folderUuid)}
-            >
-              {t("Save")}
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
 }
 
 /** 订阅管理：分组折叠 + 44px 订阅行 + 右键菜单（settings.html ?view=subs 契约） */
@@ -405,8 +250,6 @@ export const Subscriptions = () => {
   const [folderDialog, setFolderDialog] = useState<"add" | "edit" | null>(null);
   const [deleteFolderDialog, setDeleteFolderDialog] = useState(false);
   const [deleteFeedDialog, setDeleteFeedDialog] = useState(false);
-  const [moveDialog, setMoveDialog] = useState(false);
-  const [moveFeed, setMoveFeed] = useState<FeedResItem | null>(null);
   const [deleteFeed, setDeleteFeed] = useState<FeedResItem | null>(null);
   const [folderTarget, setFolderTarget] = useState<FeedResItem | null>(null);
   const [ctxTarget, setCtxTarget] = useState<FeedResItem | null>(null);
@@ -478,35 +321,6 @@ export const Subscriptions = () => {
 
   const handleMarkAllRead = (f: FeedResItem) =>
     dataAgent.markAllRead({ uuid: f.uuid }).then(() => store.getSubscribes());
-
-  const handleMove = (feed: FeedResItem) => {
-    setMoveFeed(feed);
-    setMoveDialog(true);
-  };
-
-  const handleMoveConfirm = (feed: FeedResItem, folderUuid: string) => {
-    dataAgent
-      .moveChannelIntoFolder(feed.uuid, folderUuid, feed.sort ?? 0)
-      .then(() => {
-        toast.success(t("settings.subscriptions.moved"));
-        setMoveDialog(false);
-        setMoveFeed(null);
-        store.getSubscribes();
-        busChannel.emit("getChannels");
-      })
-      .catch((error) => showErrorToast(error, t("settings.subscriptions.move_failed")));
-  };
-
-  const handleOpenHome = (feed: FeedResItem) => {
-    if (feed.link) openExternal(feed.link);
-  };
-
-  const handleCopyFeedUrl = (feed: FeedResItem) => {
-    if (!feed.feed_url) return;
-    copyText(feed.feed_url).then(() =>
-      toast.message(t("Current URL copied to clipboard")),
-    );
-  };
 
   return (
     <div className="fusion-set">
@@ -598,20 +412,10 @@ export const Subscriptions = () => {
         </div>
       </div>
 
-      <CtxMenu
+      <FeedCtxMenu
         target={ctxTarget}
         position={ctxPos}
         onClose={closeCtx}
-        onOpen={handleOpen}
-        onSync={handleSync}
-        onMarkAllRead={handleMarkAllRead}
-        onMove={handleMove}
-        onOpenHome={handleOpenHome}
-        onCopyFeedUrl={handleCopyFeedUrl}
-        onDelete={(f) => {
-          setDeleteFeed(f);
-          setDeleteFeedDialog(true);
-        }}
         onEditFolder={(f) => {
           setFolderTarget(f);
           setFolderDialog("edit");
@@ -622,13 +426,6 @@ export const Subscriptions = () => {
         }}
       />
 
-      <MoveDialog
-        feed={moveFeed}
-        folders={folderItems}
-        open={moveDialog}
-        onOpenChange={setMoveDialog}
-        onMove={handleMoveConfirm}
-      />
       <DialogUnsubscribeFeed
         feed={deleteFeed}
         dialogStatus={deleteFeedDialog}
