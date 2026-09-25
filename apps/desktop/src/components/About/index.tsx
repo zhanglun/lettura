@@ -1,17 +1,7 @@
 import React from "react";
 import { open } from "@tauri-apps/plugin-shell";
-import { FeedResItem } from "@/db";
-import * as dataAgent from "@/helpers/dataAgent";
-import { busChannel } from "@/helpers/busChannel";
-import { toast } from "sonner";
-import Dayjs from "dayjs";
-import {
-  Separator,
-  Dialog,
-  Heading,
-  IconButton,
-  Button,
-} from "@radix-ui/themes";
+import { Dialog } from "@radix-ui/themes";
+import { Button } from "@astryxdesign/core/Button";
 import { Link2, Shell } from "lucide-react";
 import { useBearStore } from "@/stores";
 import logo from "@/logo.svg";
@@ -41,19 +31,19 @@ export const DialogAboutApp = React.memo(() => {
         </div>
         <div className="flex gap-5 justify-center text-sm">
           <Button
-            size="2"
+            size="sm"
             variant="ghost"
+            icon={<Shell size={14} />}
+            label="Home"
             onClick={() => open("https://zhanglun.github.io/lettura/")}
-          >
-            <Shell size={14} /> Home
-          </Button>
+          />
           <Button
-            size="2"
+            size="sm"
             variant="ghost"
+            icon={<Link2 size={14} />}
+            label="GitHub"
             onClick={() => open("https://github.com/zhanglun/lettura")}
-          >
-            <Link2 size={14} /> GitHub
-          </Button>
+          />
         </div>
       </Dialog.Content>
     </Dialog.Root>
