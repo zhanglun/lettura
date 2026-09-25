@@ -1,56 +1,41 @@
 import React from "react";
-import { IconButton, Popover } from "@radix-ui/themes";
-import { ListBulletIcon } from "@radix-ui/react-icons";
-import { AudioTrack } from "./index";
+import { Popover } from "@radix-ui/themes";
 import { PlayList } from "./PlayList";
-import { useBearStore } from "@/stores";
-import { useShallow } from "zustand/react/shallow";
+import { useTranslation } from "react-i18next";
 
-interface PlayListPopoverProps {
-  currentTrack: AudioTrack | null;
-  isPlaying: boolean;
-}
-
-export const PlayListPopover: React.FC<PlayListPopoverProps> = ({
-  currentTrack,
-  isPlaying,
-}) => {
-  const { setCurrentTrack, updatePodcastPlayingStatus } = useBearStore(
-    useShallow((state) => ({
-      setCurrentTrack: state.setCurrentTrack,
-      updatePodcastPlayingStatus: state.updatePodcastPlayingStatus,
-    })),
-  );
-
-  const handleTrackSelect = (track: AudioTrack) => {
-    if (track.uuid !== currentTrack?.uuid) {
-      // 只更新 store 中的状态，让 useAudioPlayer 的 effect 来处理播放
-      setCurrentTrack(track);
-      updatePodcastPlayingStatus(true);
-    } else {
-      updatePodcastPlayingStatus(!isPlaying);
-    }
-  };
+/** 底条上的播放列表入口：列表钮拉出队列面板（Radix 管外点关闭 / esc / 焦点归还） */
+export const PlayListPopover: React.FC = () => {
+  const { t } = useTranslation();
 
   return (
     <Popover.Root>
       <Popover.Trigger>
-        <IconButton size="2" variant="ghost">
-          <ListBulletIcon />
-        </IconButton>
+        <button
+          type="button"
+          className="fusion-pctl"
+          title={t("podcast.playlist")}
+          aria-label={t("podcast.playlist")}
+        >
+          <svg
+            width="13"
+            height="13"
+            viewBox="0 0 16 16"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+          >
+            <path d="M3 4h10M3 8h7M3 12h10" />
+          </svg>
+        </button>
       </Popover.Trigger>
       <Popover.Content
-        className="p-0 slide-popover shadow-sm border"
+        className="fusion-playlist-pop"
+        side="top"
         align="end"
-        alignOffset={-30}
-        sideOffset={20}
+        sideOffset={12}
       >
-        <PlayList
-          onTrackSelect={handleTrackSelect}
-          onClose={() => {}}
-          currentTrack={currentTrack}
-          isPlaying={isPlaying}
-        />
+        <PlayList />
       </Popover.Content>
     </Popover.Root>
   );

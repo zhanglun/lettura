@@ -1,5 +1,7 @@
 import React from "react";
+import { motion } from "framer-motion";
 import { AudioTrack } from "./index";
+import { PLAYER_MOTION } from "./utils";
 import { useTranslation } from "react-i18next";
 
 interface MiniPillProps {
@@ -27,7 +29,7 @@ export const MiniPill: React.FC<MiniPillProps> = ({
   const pct = duration > 0 ? Math.min(1, progress / duration) : 0;
 
   return (
-    <div className="fusion-minipill">
+    <motion.div className="fusion-minipill" {...PLAYER_MOTION.min}>
       <span className="bubble">
         <span>
           {currentTrack?.feed_title || currentTrack?.author || ""}
@@ -83,6 +85,6 @@ export const MiniPill: React.FC<MiniPillProps> = ({
           )}
         </span>
       </button>
-    </div>
+    </motion.div>
   );
 };

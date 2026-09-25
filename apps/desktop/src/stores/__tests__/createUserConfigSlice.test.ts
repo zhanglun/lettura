@@ -33,8 +33,6 @@ describe("createUserConfigSlice", () => {
       expect(state.userConfig).toEqual({} as UserConfig);
       expect(state.viewOrigin).toBe(false);
       expect(state.viewOriginLoading).toBe(false);
-      expect(state.podcastPanelStatus).toBe(false);
-      expect(state.podcastPlayingStatus).toBe(false);
       expect(state.settingDialogStatus).toBe(false);
       expect(state.aboutDialogStatus).toBe(false);
       expect(state.appMetadata).toEqual({});
@@ -70,38 +68,6 @@ describe("createUserConfigSlice", () => {
 
       store.getState().updateViewOriginLoading(false);
       expect(store.getState().viewOriginLoading).toBe(false);
-    });
-  });
-
-  describe("updatePodcastPanelStatus", () => {
-    it("should set podcastPanelStatus to true", () => {
-      store.getState().updatePodcastPanelStatus(true);
-
-      expect(store.getState().podcastPanelStatus).toBe(true);
-    });
-
-    it("should set podcastPanelStatus to false", () => {
-      store.getState().updatePodcastPanelStatus(true);
-      expect(store.getState().podcastPanelStatus).toBe(true);
-
-      store.getState().updatePodcastPanelStatus(false);
-      expect(store.getState().podcastPanelStatus).toBe(false);
-    });
-  });
-
-  describe("updatePodcastPlayingStatus", () => {
-    it("should set podcastPlayingStatus to true", () => {
-      store.getState().updatePodcastPlayingStatus(true);
-
-      expect(store.getState().podcastPlayingStatus).toBe(true);
-    });
-
-    it("should set podcastPlayingStatus to false", () => {
-      store.getState().updatePodcastPlayingStatus(true);
-      expect(store.getState().podcastPlayingStatus).toBe(true);
-
-      store.getState().updatePodcastPlayingStatus(false);
-      expect(store.getState().podcastPlayingStatus).toBe(false);
     });
   });
 

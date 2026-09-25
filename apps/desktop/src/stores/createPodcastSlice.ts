@@ -1,30 +1,42 @@
 import { StateCreator } from "zustand";
 import { AudioTrack } from "@/components/LPodcast";
 import { Podcast, db } from "@/helpers/podcastDB";
-import { toast } from "sonner";
 import { showErrorToast } from "@/helpers/errorHandler";
 
 export type PlayerMode = "bar" | "full" | "min";
+
+/** 睡眠定时：minutes 供 UI 显示，endsAt 供剩余时间计算 */
+export interface SleepTimer {
+  minutes: number;
+  endsAt: number;
+}
+
+export const SLEEP_STEPS = [15, 30, 60] as const;
 
 export interface PodcastSlice {
   /** 播放器形态：bar 底部条 / full 沉浸页 / min 收起圆钮（podcast.html 契约） */
   playerMode: PlayerMode;
   setPlayerMode: (mode: PlayerMode) => void;
-  podcastPanelStatus: boolean;
-  updatePodcastPanelStatus: (status: boolean) => void;
   podcastPlayingStatus: boolean;
   updatePodcastPlayingStatus: (status: boolean) => void;
   currentTrack: AudioTrack | null;
   setCurrentTrack: (track: AudioTrack | null) => void;
   tracks: AudioTrack[];
   setTracks: (tracks: AudioTrack[]) => void;
-  currentPlayingIndex: number;
-  setCurrentPlayingIndex: (index: number) => void;
+  /** 上一集/下一集：索引由 currentTrack 推导，队列点击不会失同步 */
   playNext: () => void;
   playPrev: () => void;
+  /** 点行即切：队列与播放列表共用（点当前集 = 播放/暂停） */
+  playTrack: (track: AudioTrack) => void;
   addToPlayListAndPlay: (record: Podcast) => Promise<void>;
   removeTrack: (track: AudioTrack) => void;
+  /** 睡眠定时（到点暂停）；null = 关闭 */
+  sleepTimer: SleepTimer | null;
+  setSleepTimer: (minutes: number | null) => void;
 }
+
+/** 睡眠定时句柄挂在模块级：slice 重载/多次设置时旧定时器必须作废 */
+let sleepTimerHandle: ReturnType<typeof setTimeout> | null = null;
 
 export const createPodcastSlice: StateCreator<
   PodcastSlice,
@@ -36,13 +48,6 @@ export const createPodcastSlice: StateCreator<
   setPlayerMode: (mode: PlayerMode) => {
     set(() => ({
       playerMode: mode,
-    }));
-  },
-
-  podcastPanelStatus: false,
-  updatePodcastPanelStatus: (status: boolean) => {
-    set(() => ({
-      podcastPanelStatus: status,
     }));
   },
 
@@ -67,52 +72,42 @@ export const createPodcastSlice: StateCreator<
     }));
   },
 
-  currentPlayingIndex: -1,
-  setCurrentPlayingIndex: (index: number) => {
-    set(() => ({
-      currentPlayingIndex: index,
-    }));
-  },
-
   playNext: () => {
-    const {
-      tracks,
-      currentPlayingIndex,
-      setCurrentTrack,
-      setCurrentPlayingIndex,
-    } = get();
+    const { tracks, currentTrack, setCurrentTrack } = get();
     if (tracks.length === 0) return;
-
-    const nextIndex =
-      currentPlayingIndex + 1 >= tracks.length ? 0 : currentPlayingIndex + 1;
-    setCurrentPlayingIndex(nextIndex);
-    setCurrentTrack(tracks[nextIndex]);
+    const idx = tracks.findIndex((t) => t.uuid === currentTrack?.uuid);
+    const next = tracks[(idx + 1) % tracks.length];
+    setCurrentTrack(next);
+    get().updatePodcastPlayingStatus(true);
   },
 
   playPrev: () => {
-    const {
-      tracks,
-      currentPlayingIndex,
-      setCurrentTrack,
-      setCurrentPlayingIndex,
-    } = get();
+    const { tracks, currentTrack, setCurrentTrack } = get();
     if (tracks.length === 0) return;
+    const idx = tracks.findIndex((t) => t.uuid === currentTrack?.uuid);
+    const prev = tracks[(idx - 1 + tracks.length) % tracks.length];
+    setCurrentTrack(prev);
+    get().updatePodcastPlayingStatus(true);
+  },
 
-    const prevIndex =
-      currentPlayingIndex - 1 < 0 ? tracks.length - 1 : currentPlayingIndex - 1;
-    setCurrentPlayingIndex(prevIndex);
-    setCurrentTrack(tracks[prevIndex]);
+  playTrack: (track: AudioTrack) => {
+    const { currentTrack, setCurrentTrack, podcastPlayingStatus } = get();
+    if (track.uuid === currentTrack?.uuid) {
+      get().updatePodcastPlayingStatus(!podcastPlayingStatus);
+      return;
+    }
+    setCurrentTrack(track);
+    get().updatePodcastPlayingStatus(true);
   },
 
   addToPlayListAndPlay: async (record: Podcast) => {
     try {
-      // 尝试添加到数据库
+      // 尝试添加到数据库（已存在时 ConstraintError 忽略，继续播放）
       await db.podcasts.add(record);
     } catch (error: any) {
       if (error.name !== "ConstraintError") {
         throw error;
       }
-      // 如果已经在列表中，继续播放
     }
 
     // 转换为 AudioTrack 格式
@@ -122,39 +117,18 @@ export const createPodcastSlice: StateCreator<
       url: record.mediaURL,
       thumbnail: record.thumbnail,
       author: record.author,
-      // duration: record.duration,
+      duration: record.duration,
       feed_title: record.feed_title,
       feed_logo: record.feed_logo,
     };
 
-    // 更新状态
-    const {
-      tracks,
-      setTracks,
-      setCurrentTrack,
-      updatePodcastPanelStatus,
-      updatePodcastPlayingStatus,
-      setCurrentPlayingIndex,
-    } = get();
+    const { tracks, setTracks, setCurrentTrack, updatePodcastPlayingStatus } =
+      get();
 
-    // 检查是否已经在列表中
-    const existingTrackIndex = tracks.findIndex(
-      (track) => track.uuid === newTrack.uuid,
-    );
-    if (existingTrackIndex === -1) {
-      // 如果不在列表中，添加到列表末尾并播放
+    if (!tracks.some((track) => track.uuid === newTrack.uuid)) {
       setTracks([...tracks, newTrack]);
-      setCurrentPlayingIndex(tracks.length); // 新曲目的索引
-    } else {
-      // 如果已在列表中，直接播放该曲目
-      setCurrentPlayingIndex(existingTrackIndex);
     }
-
-    // 设置为当前播放的曲目
     setCurrentTrack(newTrack);
-    // 显示播放器面板
-    updatePodcastPanelStatus(true);
-    // 开始播放
     updatePodcastPlayingStatus(true);
   },
 
@@ -165,10 +139,9 @@ export const createPodcastSlice: StateCreator<
       currentTrack,
       setCurrentTrack,
       updatePodcastPlayingStatus,
-      setCurrentPlayingIndex,
     } = get();
 
-    // 从列表中移除
+    const removedIndex = tracks.findIndex((t) => t.uuid === track.uuid);
     const newTracks = tracks.filter((t) => t.uuid !== track.uuid);
     setTracks(newTracks);
 
@@ -180,20 +153,38 @@ export const createPodcastSlice: StateCreator<
       return;
     }
 
-    // 如果删除的是当前播放的音频，重置播放状态
+    // 删除的是当前曲目：接替者顶上（标准队列行为），清空才停播
     if (currentTrack?.uuid === track.uuid) {
-      setCurrentTrack(null);
-      updatePodcastPlayingStatus(false);
-      setCurrentPlayingIndex(-1);
-    } else {
-      // 如果删除的音频在当前播放音频之前，需要更新当前播放索引
-      const currentIndex = tracks.findIndex(
-        (t) => t.uuid === currentTrack?.uuid,
-      );
-      const removedIndex = tracks.findIndex((t) => t.uuid === track.uuid);
-      if (removedIndex < currentIndex) {
-        setCurrentPlayingIndex(currentIndex - 1);
+      const successor =
+        newTracks.length > 0
+          ? newTracks[Math.min(removedIndex, newTracks.length - 1)]
+          : null;
+      setCurrentTrack(successor);
+      if (!successor) {
+        updatePodcastPlayingStatus(false);
       }
     }
+  },
+
+  sleepTimer: null,
+  setSleepTimer: (minutes: number | null) => {
+    if (sleepTimerHandle) {
+      clearTimeout(sleepTimerHandle);
+      sleepTimerHandle = null;
+    }
+    if (!minutes) {
+      set(() => ({ sleepTimer: null }));
+      return;
+    }
+    const timer: SleepTimer = {
+      minutes,
+      endsAt: Date.now() + minutes * 60_000,
+    };
+    set(() => ({ sleepTimer: timer }));
+    sleepTimerHandle = setTimeout(() => {
+      sleepTimerHandle = null;
+      set(() => ({ sleepTimer: null }));
+      get().updatePodcastPlayingStatus(false);
+    }, minutes * 60_000);
   },
 });

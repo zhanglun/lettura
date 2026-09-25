@@ -1,6 +1,9 @@
 import React from "react";
+import { motion } from "framer-motion";
 import { AudioTrack } from "./index";
-import { formatTime } from "./utils";
+import { formatTime, PLAYER_MOTION } from "./utils";
+import { SleepControl } from "./SleepControl";
+import { QueueRow } from "./QueueRow";
 import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
 import { useTranslation } from "react-i18next";
@@ -34,14 +37,12 @@ export const FullPlayer: React.FC<FullPlayerProps> = ({
   onCollapse,
 }) => {
   const { t } = useTranslation();
-  const { setCurrentTrack, updatePodcastPlayingStatus, removeTrack } =
-    useBearStore(
-      useShallow((state) => ({
-        setCurrentTrack: state.setCurrentTrack,
-        updatePodcastPlayingStatus: state.updatePodcastPlayingStatus,
-        removeTrack: state.removeTrack,
-      })),
-    );
+  const { playTrack, removeTrack } = useBearStore(
+    useShallow((state) => ({
+      playTrack: state.playTrack,
+      removeTrack: state.removeTrack,
+    })),
+  );
 
   const pct = duration > 0 ? Math.min(100, (progress / duration) * 100) : 0;
 
@@ -51,18 +52,11 @@ export const FullPlayer: React.FC<FullPlayerProps> = ({
     seek(((e.clientX - rect.left) / rect.width) * duration);
   };
 
-  const selectTrack = (track: AudioTrack) => {
-    if (track.uuid !== currentTrack?.uuid) {
-      setCurrentTrack(track);
-      updatePodcastPlayingStatus(true);
-    }
-  };
-
   const cover = currentTrack?.thumbnail || currentTrack?.feed_logo;
   const upNext = tracks.filter((tr) => tr.uuid !== currentTrack?.uuid);
 
   return (
-    <section className="fusion-fullplayer">
+    <motion.section className="fusion-fullplayer" {...PLAYER_MOTION.full}>
       <div className="f-top">
         <button type="button" className="fusion-back" onClick={onCollapse}>
           <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
@@ -151,45 +145,19 @@ export const FullPlayer: React.FC<FullPlayerProps> = ({
             <button type="button" className="fusion-chip" onClick={cycleRate}>
               {playbackRate}×
             </button>
+            <SleepControl />
           </div>
 
           {upNext.length > 0 && (
             <div className="fusion-queue">
               <div className="q-h">{t("podcast.up_next")}</div>
               {upNext.map((track) => (
-                <div
+                <QueueRow
                   key={track.uuid}
-                  className="q-row"
-                  onClick={() => selectTrack(track)}
-                >
-                  <span className="q-thumb">
-                    {track.thumbnail || track.feed_logo ? (
-                      <img src={track.thumbnail || track.feed_logo} alt="" />
-                    ) : (
-                      <svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
-                        <path d="M4 7.5v5M7.3 5v10M10.6 8v4M14 6v8M17.3 7.5v5" />
-                      </svg>
-                    )}
-                  </span>
-                  <span className="q-t">{track.title}</span>
-                  <span className="q-s">{track.feed_title || track.author || ""}</span>
-                  <span className="q-d">
-                    {track.duration ? formatTime(track.duration) : ""}
-                  </span>
-                  <button
-                    type="button"
-                    className="q-x"
-                    title={t("Delete")}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      removeTrack(track);
-                    }}
-                  >
-                    <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round">
-                      <path d="M3 3l10 10M13 3 3 13" />
-                    </svg>
-                  </button>
-                </div>
+                  track={track}
+                  onSelect={() => playTrack(track)}
+                  onRemove={() => removeTrack(track)}
+                />
               ))}
             </div>
           )}
@@ -203,6 +171,6 @@ export const FullPlayer: React.FC<FullPlayerProps> = ({
         <span>·</span>
         <span>esc {t("podcast.collapse")}</span>
       </div>
-    </section>
+    </motion.section>
   );
 };

@@ -19,7 +19,8 @@ export interface Podcast {
   mediaType: string;
   thumbnail: string;
   add_date: number;
-  progress?: number; // 添加播放进度字段，单位为秒
+  progress?: number; // 播放进度，单位为秒
+  duration?: number; // 单集时长（秒），首次加载元数据后回填
 }
 
 export class MySubClassedDexie extends Dexie {

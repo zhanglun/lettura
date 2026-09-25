@@ -191,7 +191,7 @@ export function FeedsBrowse() {
   }
 
   return (
-    <div className="fusion-browse" ref={scrollRef}>
+    <div className="fusion-browse fusion-inset-tail" ref={scrollRef}>
       {groups.map((group) => {
         const isCollapsed = collapsed.has(group.uuid);
         const unread = group.feeds.reduce((sum, f) => sum + (f.unread ?? 0), 0);

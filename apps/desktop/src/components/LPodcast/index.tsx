@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
+import { AnimatePresence } from "framer-motion";
 import { useAudioPlayer, stopSharedAudio } from "./useAudioPlayer";
 import { MiniPlayer, RATES } from "./MiniPlayer";
 import { FullPlayer } from "./FullPlayer";
@@ -62,6 +63,7 @@ export const LPodcast: React.FC<LPodcastProps> = ({ visible = true }) => {
             url: podcast.mediaURL,
             thumbnail: podcast.thumbnail,
             author: podcast.author,
+            duration: podcast.duration,
             feed_title: podcast.feed_title,
             feed_logo: podcast.feed_logo,
             feed_uuid: podcast.feed_uuid,
@@ -70,12 +72,21 @@ export const LPodcast: React.FC<LPodcastProps> = ({ visible = true }) => {
     [podcasts],
   );
 
-  // 当 tracks 变化时更新 store
+  // 库→store 投影镜像：库是队列的唯一真相（currentTrack 必须是队列成员），
+  // 且只在投影真变了时写入——数组身份抖动不该引起 store 写入 → 重渲染 → 再写入
+  const projectedRef = useRef("");
   useEffect(() => {
-    if (tracks) {
-      setTracks(tracks);
-      if (!currentTrack && tracks.length > 0) {
-        setCurrentTrack(tracks[0]);
+    const key = JSON.stringify(tracks);
+    if (key === projectedRef.current) return;
+    projectedRef.current = key;
+
+    const { currentTrack: now, setCurrentTrack: setNow, updatePodcastPlayingStatus } =
+      useBearStore.getState();
+    setTracks(tracks);
+    if (!tracks.some((t) => t.uuid === now?.uuid)) {
+      setNow(tracks[0] ?? null);
+      if (tracks.length === 0) {
+        updatePodcastPlayingStatus(false);
       }
     }
   }, [tracks]);
@@ -111,55 +122,53 @@ export const LPodcast: React.FC<LPodcastProps> = ({ visible = true }) => {
     return null;
   }
 
-  // min：右下角圆钮（环形进度 + 播放芯）
-  if (playerMode === "min") {
-    return (
-      <MiniPill
-        currentTrack={currentTrack}
-        isPlaying={isPlaying}
-        progress={progress}
-        duration={duration}
-        togglePlay={togglePlay}
-        onExpand={() => setPlayerMode("bar")}
-      />
-    );
-  }
-
-  // full：沉浸页浮层（自带全部控制，bar 隐藏）
-  if (playerMode === "full") {
-    return (
-      <FullPlayer
-        currentTrack={currentTrack}
-        tracks={storeTracks}
-        isPlaying={isPlaying}
-        progress={progress}
-        duration={duration}
-        playbackRate={playbackRate}
-        togglePlay={togglePlay}
-        seek={seek}
-        skip={skip}
-        cycleRate={cycleRate}
-        onCollapse={() => setPlayerMode("bar")}
-      />
-    );
-  }
-
-  // bar：底部玻璃条
+  // 三态互斥；AnimatePresence 保退出帧——放大/收起/缩钮都是 150–200ms 缓出，音频不受影响
   return (
-    <div className="fusion-player-slot">
-      <MiniPlayer
-        currentTrack={currentTrack}
-        isPlaying={isPlaying}
-        progress={progress}
-        duration={duration}
-        playbackRate={playbackRate}
-        togglePlay={togglePlay}
-        seek={seek}
-        skip={skip}
-        cycleRate={cycleRate}
-        onExpand={() => setPlayerMode("full")}
-        onCollapse={() => setPlayerMode("min")}
-      />
-    </div>
+    <AnimatePresence initial={false}>
+      {playerMode === "min" ? (
+        // min：右下角圆钮（环形进度 + 播放芯）
+        <MiniPill
+          key="min"
+          currentTrack={currentTrack}
+          isPlaying={isPlaying}
+          progress={progress}
+          duration={duration}
+          togglePlay={togglePlay}
+          onExpand={() => setPlayerMode("bar")}
+        />
+      ) : playerMode === "full" ? (
+        // full：沉浸页浮层（自带全部控制，bar 隐藏）
+        <FullPlayer
+          key="full"
+          currentTrack={currentTrack}
+          tracks={storeTracks}
+          isPlaying={isPlaying}
+          progress={progress}
+          duration={duration}
+          playbackRate={playbackRate}
+          togglePlay={togglePlay}
+          seek={seek}
+          skip={skip}
+          cycleRate={cycleRate}
+          onCollapse={() => setPlayerMode("bar")}
+        />
+      ) : (
+        // bar：底部玻璃条
+        <MiniPlayer
+          key="bar"
+          currentTrack={currentTrack}
+          isPlaying={isPlaying}
+          progress={progress}
+          duration={duration}
+          playbackRate={playbackRate}
+          togglePlay={togglePlay}
+          seek={seek}
+          skip={skip}
+          cycleRate={cycleRate}
+          onExpand={() => setPlayerMode("full")}
+          onCollapse={() => setPlayerMode("min")}
+        />
+      )}
+    </AnimatePresence>
   );
 };

@@ -13,12 +13,6 @@ export interface UserConfigSlice {
   viewOriginLoading: boolean;
   updateViewOriginLoading: (status: boolean) => void;
 
-  podcastPanelStatus: boolean;
-  updatePodcastPanelStatus: (status: boolean) => void;
-
-  podcastPlayingStatus: boolean;
-  updatePodcastPlayingStatus: (status: boolean) => void;
-
   settingDialogStatus: boolean;
   updateSettingDialogStatus: (status: boolean) => void;
 
@@ -74,20 +68,6 @@ export const createUserConfigSlice: StateCreator<UserConfigSlice> = (
   updateViewOriginLoading: (status: boolean) => {
     set(() => ({
       viewOriginLoading: status,
-    }));
-  },
-
-  podcastPanelStatus: false,
-  updatePodcastPanelStatus: (status: boolean) => {
-    set(() => ({
-      podcastPanelStatus: status,
-    }));
-  },
-
-  podcastPlayingStatus: false,
-  updatePodcastPlayingStatus: (status: boolean) => {
-    set(() => ({
-      podcastPlayingStatus: status,
     }));
   },
 

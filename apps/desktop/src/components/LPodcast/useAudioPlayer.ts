@@ -1,6 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { AudioTrack } from "./index";
-import { STORAGE_KEYS } from "./utils";
 import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
 import { db } from "@/helpers/podcastDB";
@@ -29,29 +27,28 @@ export function stopSharedAudio() {
 /** 进度写库节流（timeupdate 高频触发，且可能有多个消费者监听） */
 const PROGRESS_FLUSH_MS = 5000;
 
+/** ended 每个消费者各收一次（壳层 + 详情页各挂一份监听），只放行一次 */
+let lastEndedAt = 0;
+
+/** 倍速持久化（音量交给系统，不设应用内控件） */
+const PLAYBACK_RATE_KEY = "lpodcast_playback_rate";
+
 export const useAudioPlayer = () => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const lastFlushRef = useRef(0);
-  const [volume, setVolume] = useState(() => {
-    const savedVolume = localStorage.getItem(STORAGE_KEYS.VOLUME);
-    return savedVolume ? parseFloat(savedVolume) : 1;
-  });
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
   const [playbackRate, setPlaybackRate] = useState(() => {
-    const saved = localStorage.getItem(STORAGE_KEYS.PLAYBACK_RATE);
+    const saved = localStorage.getItem(PLAYBACK_RATE_KEY);
     return saved ? parseFloat(saved) : 1;
   });
 
   const store = useBearStore(
     useShallow((state) => ({
       currentTrack: state.currentTrack,
-      tracks: state.tracks,
       podcastPlayingStatus: state.podcastPlayingStatus,
       updatePodcastPlayingStatus: state.updatePodcastPlayingStatus,
-      setCurrentTrack: state.setCurrentTrack,
       playNext: state.playNext,
-      playPrev: state.playPrev,
     })),
   );
 
@@ -59,7 +56,6 @@ export const useAudioPlayer = () => {
   useEffect(() => {
     const audio = getAudio();
     audioRef.current = audio;
-    audio.volume = volume;
     audio.playbackRate = playbackRate;
 
     if (store.currentTrack?.uuid) {
@@ -141,9 +137,20 @@ export const useAudioPlayer = () => {
 
     const handleLoadedMetadata = () => {
       setDuration(audio.duration);
+      // 回填单集时长：队列行的时长靠它（首播后永久可用）
+      if (store.currentTrack?.uuid && Number.isFinite(audio.duration)) {
+        db.podcasts.where("uuid").equals(store.currentTrack.uuid).modify({
+          duration: audio.duration,
+        });
+      }
     };
 
     const handleEnded = () => {
+      // ponytail: 1s 去重窗口；若将来出现更多消费者或同集连播，改成单引擎持有监听
+      const now = Date.now();
+      if (now - lastEndedAt < 1000) return;
+      lastEndedAt = now;
+
       // 播放结束时清除进度
       if (store.currentTrack?.uuid) {
         db.podcasts.where("uuid").equals(store.currentTrack.uuid).modify({
@@ -164,17 +171,9 @@ export const useAudioPlayer = () => {
     };
   }, [store.currentTrack, store.podcastPlayingStatus]);
 
-  // Save volume to localStorage
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.VOLUME, volume.toString());
-    if (audioRef.current) {
-      audioRef.current.volume = volume;
-    }
-  }, [volume]);
-
   // 倍速：持久化并应用到音频元素
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.PLAYBACK_RATE, String(playbackRate));
+    localStorage.setItem(PLAYBACK_RATE_KEY, String(playbackRate));
     if (audioRef.current) {
       audioRef.current.playbackRate = playbackRate;
     }
@@ -208,36 +207,56 @@ export const useAudioPlayer = () => {
     seek(next);
   };
 
-  const playTrack = (track: AudioTrack) => {
-    if (track.uuid !== store.currentTrack?.uuid) {
-      // 先暂停当前播放
-      store.updatePodcastPlayingStatus(false);
-      // 设置新的曲目
-      store.setCurrentTrack(track);
-      // 延迟一帧后开始播放
-      requestAnimationFrame(() => {
-        store.updatePodcastPlayingStatus(true);
+  // 系统媒体键 / 锁屏控件：桌面端的标准播客行为（WebView 不支持时整段跳过）
+  useEffect(() => {
+    if (!("mediaSession" in navigator)) return;
+    const ms = navigator.mediaSession;
+    const state = () => useBearStore.getState();
+
+    if (store.currentTrack) {
+      ms.metadata = new MediaMetadata({
+        title: store.currentTrack.title,
+        artist: store.currentTrack.author ?? "",
+        album: store.currentTrack.feed_title,
+        artwork: store.currentTrack.thumbnail
+          ? [{ src: store.currentTrack.thumbnail }]
+          : undefined,
       });
-    } else {
-      store.updatePodcastPlayingStatus(!store.podcastPlayingStatus);
     }
-  };
+
+    const handle = (action: MediaSessionAction, fn: () => void) => {
+      try {
+        ms.setActionHandler(action, fn);
+      } catch {
+        // 该动作在当前平台不支持：忽略
+      }
+    };
+    // 跳转只改 currentTime：timeupdate 会把进度同步到 UI 与库
+    const nudge = (delta: number) => {
+      const audio = getAudio();
+      audio.currentTime = Math.max(
+        0,
+        Math.min(audio.duration || Infinity, audio.currentTime + delta),
+      );
+    };
+    handle("play", () => state().updatePodcastPlayingStatus(true));
+    handle("pause", () => state().updatePodcastPlayingStatus(false));
+    handle("seekbackward", () => nudge(-30));
+    handle("seekforward", () => nudge(30));
+    handle("previoustrack", () => state().playPrev());
+    handle("nexttrack", () => state().playNext());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [store.currentTrack?.uuid]);
 
   return {
     currentTrack: store.currentTrack,
     isPlaying: store.podcastPlayingStatus,
-    volume,
     progress,
     duration,
     playbackRate,
     setPlaybackRate,
     togglePlay,
-    setVolume,
     seek,
     skip,
-    playTrack,
-    setProgress,
-    playPrevious: store.playPrev,
-    playNext: store.playNext,
   };
 };
