@@ -562,6 +562,7 @@
     },
     "browse": {
       "sync_failed": "Sync failed",
+      "via_route": "via RSSHub",
       "folder_sources": "{{count}} sources",
       "folder_unread": "{{count}} unread",
       "empty_title": "No subscriptions yet",

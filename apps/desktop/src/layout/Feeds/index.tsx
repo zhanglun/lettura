@@ -10,6 +10,7 @@ import { RouteConfig } from "@/config";
 import { useBearStore } from "@/stores";
 import { FeedIcon } from "@/components/FeedIcon";
 import { getHostLabel, formatFeedTime } from "@/helpers/feedMeta";
+import { originRoute } from "@/helpers/mediaType";
 import type { FeedResItem } from "@/db";
 
 const FILTER_UNREAD = { id: 1, title: "Unread" };
@@ -46,9 +47,10 @@ function SourceRow({
       onClick={() => onOpen(feed)}
     >
       <FeedIcon feed={feed} />
-      <span className="fusion-b-name">{feed.title}</span>
-      <span className={clsx("fusion-b-host", broken && "is-fail")}>
+      <span className="fusion-b-name" title={feed.title}>{feed.title}</span>
+      <span className={clsx("fusion-b-host", broken && "is-fail")} title={feed.link || getHostLabel(feed)}>
         {getHostLabel(feed)}
+        {originRoute(feed.origin) ? ` · ${t("fusion.browse.via_route")}` : ""}
         {broken ? ` · ${t("fusion.browse.sync_failed")}` : ""}
       </span>
       <span className={clsx("fusion-b-unread", unread === 0 && "is-zero")}>

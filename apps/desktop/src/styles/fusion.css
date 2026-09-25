@@ -1645,7 +1645,7 @@
 /* 源行：阅读语境的订阅行——46px，未读数右对齐靓蓝 */
 .fusion-b-row {
   display: grid;
-  grid-template-columns: 22px 1fr 150px 64px 92px;
+  grid-template-columns: 22px minmax(0, 1fr) minmax(150px, 210px) 56px 108px;
   align-items: center;
   height: 46px;
   border: 0;
@@ -1749,6 +1749,8 @@
   text-align: right;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .fusion-b-unread {
