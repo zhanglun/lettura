@@ -40,7 +40,8 @@ export const ArticleListVirtual = React.memo(function ArticleListVirtual(
   } = props;
   const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
-  const isLoadingMoreRef = useRef(false);
+  /** 已据此 size 请求过下一页：代替 1s 时间冷却（时间冷却会把“停住不动”的续加载卡成必须再动一下） */
+  const requestedSizeRef = useRef(-1);
 
   // 键盘焦点行滚动到可视区
   useEffect(() => {
@@ -51,23 +52,30 @@ export const ArticleListVirtual = React.memo(function ArticleListVirtual(
     el?.scrollIntoView({ block: "nearest" });
   }, [focusedUuid]);
 
-  // 触底加载：冷却 + isLoading 门闩防抖。
-  // 不做 isScrolled 状态机——拖滚动条一次跳到底时没有「途经非底区」的
-  // scroll 事件可用来重置标志，会把下一页卡死。
+  // 触底加载：判定基于**内容**高度（扣掉给悬浮条留的 `--fusion-player-inset` 让位空白），
+  // 否则空白会被算进 scrollHeight，阈值就落到空白里——看到最后一行时还不加载。
+  // 防抖用 size 门闩（不用时间冷却）：时间冷却会把“滚到底停住”的续加载卡成必须再动一下。
+  // 不做 isScrolled 状态机——拖滚动条一次跳到底时没有「途经非底区」的 scroll 事件可用。
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
+    const inset =
+      parseFloat(
+        getComputedStyle(container).getPropertyValue("--fusion-player-inset"),
+      ) || 0;
+
     const handleScroll = () => {
       const { scrollTop, scrollHeight, clientHeight } = container;
-      const atBottom = (scrollTop + clientHeight) / scrollHeight > 0.9;
+      const contentHeight = Math.max(1, scrollHeight - inset);
+      const atBottom = (scrollTop + clientHeight) / contentHeight > 0.9;
 
-      if (atBottom && !(isReachingEnd || isLoading || isLoadingMoreRef.current)) {
-        isLoadingMoreRef.current = true;
+      if (
+        atBottom &&
+        !(isReachingEnd || isLoading || requestedSizeRef.current === size)
+      ) {
+        requestedSizeRef.current = size;
         setSize(size + 1);
-        setTimeout(() => {
-          isLoadingMoreRef.current = false;
-        }, 1000);
       }
     };
 
@@ -78,7 +86,9 @@ export const ArticleListVirtual = React.memo(function ArticleListVirtual(
   return (
     <div
       ref={containerRef}
-      className="w-full flex-1 min-h-0 overflow-y-auto scrollbar-gutter"
+      className={`w-full flex-1 min-h-0 overflow-y-auto scrollbar-gutter${
+        isEmpty ? "" : " fusion-inset-tail"
+      }`}
     >
       {isEmpty ? (
         <div className="flex flex-col justify-center items-center gap-1 text-muted-foreground min-h-full py-20">

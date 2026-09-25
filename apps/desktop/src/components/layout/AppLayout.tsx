@@ -119,12 +119,17 @@ export const AppLayout = React.memo(function () {
     navigate(RouteConfig.SETTINGS);
   });
   useHotkeys("shift+r", () => store.syncAllArticles());
-  // esc 逐级退回：沉浸页优先收回条（其余视图的 esc 由各自 gate 处理）
-  useHotkeys("escape", () => {
-    if (store.playerMode === "full") {
-      store.setPlayerMode("bar");
-    }
-  }, [store]);
+  // esc 逐级退回：悬浮层优先（Radix / 帮助在捕获阶段已 preventDefault 的那次 esc 不再收回播放器）
+  useHotkeys(
+    "escape",
+    (e) => {
+      if (e.defaultPrevented) return;
+      if (store.playerMode === "full") {
+        store.setPlayerMode("bar");
+      }
+    },
+    [store],
+  );
   useHotkeys("space", (e) => {
     if (!store.tracks?.length) return;
     e.preventDefault();
@@ -165,13 +170,13 @@ export const AppLayout = React.memo(function () {
             <kbd>⌘K</kbd>
           </button>
         </header>
-        {/* 播放卡浮在内容上；仅 bar 态需要底部留白（min 圆钮/full 沉浸层不占位） */}
+        {/* 播放卡浮在内容上：内容区不占位，只把「让位空白」的高度交给内层滚动容器（--fusion-player-inset） */}
         <div
           className="flex min-h-0 flex-1 flex-col"
           style={
-            playerVisible && store.playerMode === "bar"
-              ? { paddingBottom: 90 }
-              : undefined
+            {
+              "--fusion-player-inset": playerVisible && store.playerMode === "bar" ? "102px" : "0px",
+            } as React.CSSProperties
           }
         >
           <Outlet />

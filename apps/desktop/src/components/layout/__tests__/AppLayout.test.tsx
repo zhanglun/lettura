@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { useHotkeys } from "react-hotkeys-hook";
 import { AppLayout } from "../AppLayout";
 
 vi.mock("react-hotkeys-hook", () => ({
@@ -23,21 +24,13 @@ vi.mock("../CommandPalette", () => ({
   CommandPalette: () => null,
 }));
 
+const shellState = vi.hoisted(() => ({
+  value: {} as Record<string, unknown>,
+}));
+
 vi.mock("@/stores", () => ({
   useBearStore: (selector: (state: Record<string, unknown>) => unknown) =>
-    selector({
-      collectionMeta: { total: { unread: 247 }, today: { unread: 0 } },
-      currentFilter: { id: 1, title: "Unread" },
-      setFilter: vi.fn(),
-      getSubscribes: vi.fn(),
-      initCollectionMetas: vi.fn(),
-      tracks: [],
-      podcastPlayingStatus: false,
-      updatePodcastPlayingStatus: vi.fn(),
-      syncAllArticles: vi.fn(),
-      addFeedModalOpen: false,
-      setAddFeedModalOpen: vi.fn(),
-    }),
+    selector(shellState.value),
 }));
 
 vi.mock("zustand/react/shallow", () => ({
@@ -57,6 +50,25 @@ vi.mock("react-router-dom", async () => {
 });
 
 describe("AppLayout (fusion shell)", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    shellState.value = {
+      collectionMeta: { total: { unread: 247 }, today: { unread: 0 } },
+      currentFilter: { id: 1, title: "Unread" },
+      setFilter: vi.fn(),
+      getSubscribes: vi.fn(),
+      initCollectionMetas: vi.fn(),
+      tracks: [],
+      podcastPlayingStatus: false,
+      updatePodcastPlayingStatus: vi.fn(),
+      syncAllArticles: vi.fn(),
+      addFeedModalOpen: false,
+      setAddFeedModalOpen: vi.fn(),
+      playerMode: "bar",
+      setPlayerMode: vi.fn(),
+    };
+  });
+
   it("renders the product wordmark, top nav and command entry", () => {
     render(
       <MemoryRouter initialEntries={["/local/all"]}>
@@ -84,5 +96,39 @@ describe("AppLayout (fusion shell)", () => {
 
     const active = document.querySelector(".fusion-nav button.on");
     expect(active?.textContent).toBe("fusion.nav.unread");
+  });
+
+  describe("esc 逐级退回", () => {
+    const escapeHandler = () => {
+      const call = (useHotkeys as unknown as { mock: { calls: unknown[][] } }).mock.calls.find(
+        ([keys]) => keys === "escape",
+      );
+      return call?.[1] as (e: { defaultPrevented: boolean }) => void;
+    };
+
+    const renderShell = () =>
+      render(
+        <MemoryRouter initialEntries={["/local/all"]}>
+          <AppLayout />
+        </MemoryRouter>,
+      );
+
+    it("沉浸页裸按 esc：收回底条", () => {
+      shellState.value.playerMode = "full";
+      renderShell();
+
+      escapeHandler()({ defaultPrevented: false });
+
+      expect(shellState.value.setPlayerMode).toHaveBeenCalledWith("bar");
+    });
+
+    it("浮层已处理的 esc（defaultPrevented）：不抢着收条", () => {
+      shellState.value.playerMode = "full";
+      renderShell();
+
+      escapeHandler()({ defaultPrevented: true });
+
+      expect(shellState.value.setPlayerMode).not.toHaveBeenCalled();
+    });
   });
 });

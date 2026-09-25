@@ -38,7 +38,7 @@ export const ScrollBox = React.forwardRef((props: ScrollBoxProps, ref: any) => {
 
   return (
     <div
-      className={clsx("min-h-0 overflow-y-auto", className)}
+      className={clsx("min-h-0 overflow-y-auto fusion-inset-tail", className)}
       ref={scrollRef}
       onScroll={handleScroll}
     >
