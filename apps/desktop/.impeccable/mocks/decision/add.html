@@ -37,11 +37,13 @@
 
   /* ── 玻璃主面板（在场底座）── */
   .panel{
-    position:absolute;inset:22px 22px 106px;
+    position:absolute;inset:22px;
     background:var(--glass);backdrop-filter:blur(22px) saturate(1.5);
     border:1px solid var(--hair2);border-radius:16px;
     box-shadow:0 1px 0 rgba(255,255,255,.7) inset,0 32px 64px -20px rgba(29,30,32,.28);
     display:flex;flex-direction:column;overflow:hidden;
+    /* 列表/内容末尾的让位空白（= 条 68 + 底距 22 + 呼吸 12）：浮动条下最后一行仍可完全翻出 */
+    padding-bottom:102px;
   }
   .top{height:54px;display:flex;align-items:center;padding:0 20px;gap:10px;border-bottom:1px solid var(--hair);flex:none;}
   .logo{width:20px;height:20px;border-radius:7px;background:var(--ink);display:flex;align-items:center;justify-content:center;flex:none;}
@@ -136,6 +138,19 @@
   .done{display:flex;align-items:center;gap:10px;padding:6px 2px;font-size:13px;color:var(--ink);}
   .done .ok{width:22px;height:22px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;flex:none;}
 
+  /* 多个候选 feed：小 chips 让用户换（发现层的成果） */
+  .cands{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:10px 0 2px;}
+  .cands .lb{font-size:11px;color:var(--ter);}
+  .cands button{font-size:11px;color:var(--sub);background:rgba(29,30,32,.06);border:0;border-radius:6px;padding:2.5px 8px;cursor:pointer;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .cands button.on{color:var(--accent);background:var(--accent-soft);font-weight:600;}
+  /* 生成器回退行：发现不了时手填路由（用户输入不可控的出口） */
+  .genrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:2px 0;}
+  .genrow .lb{font-size:11px;color:var(--ter);flex:none;}
+  .genrow input{flex:1;min-width:160px;height:30px;padding:0 9px;border:1px solid var(--hair2);border-radius:8px;background:rgba(255,255,255,.55);color:var(--ink);font-family:"SF Mono",Menlo,monospace;font-size:11.5px;outline:none;}
+  .genrow input:focus{border-color:var(--accent);}
+  .genrow button{height:30px;padding:0 12px;border:1px solid var(--hair2);border-radius:8px;background:rgba(255,255,255,.55);color:var(--sub);font-size:12px;cursor:pointer;flex:none;}
+  .genrow .hp{flex-basis:100%;font-size:11px;color:var(--ter);}
+  .done .jump{margin-left:auto;font-size:11px;color:var(--accent);}
   .try{display:flex;gap:7px;flex-wrap:wrap;padding:0 16px 14px;}
   .try span{font-size:10.5px;color:var(--ter);align-self:center;letter-spacing:.06em;}
   .tchip{font-size:11px;color:var(--sub);border:1px solid var(--hair2);border-radius:999px;padding:3px 10px;background:rgba(255,255,255,.5);}
@@ -196,7 +211,7 @@
       <button class="tab on">全部 <span class="c">247</span></button>
       <button class="tab">文章 <span class="c">229</span></button>
       <button class="tab">播客 <span class="c">3</span></button>
-      <button class="tab">平台 <span class="c">15</span></button>
+      <button class="tab">视频 <span class="c">7</span></button>
       <span class="meta">34 个来源 · 最近同步 09:41</span>
     </div>
     <main class="list" id="viewList"></main>
@@ -211,22 +226,15 @@
       <span class="det" id="det"></span>
       <kbd>esc</kbd>
     </div>
-    <div class="a-seg" id="platSeg">
-      <button class="aseg on" data-p="auto">自动检测</button>
-      <button class="aseg" data-p="rss">RSS / Atom</button>
-      <button class="aseg" data-p="bil">B站</button>
-      <button class="aseg" data-p="zh">知乎</button>
-      <button class="aseg" data-p="wb">微博</button>
-      <button class="aseg" data-p="nl">Newsletter</button>
-    </div>
     <div class="a-body" id="aBody"></div>
     <div class="try" id="tryRow" style="display:none;">
       <span>试试</span>
       <button class="tchip" data-url="https://openai.com/news/rss.xml">openai.com/news/rss.xml</button>
-      <button class="tchip" data-url="https://space.bilibili.com/2207410">space.bilibili.com/2207410</button>
-      <button class="tchip bad" data-url="https://example.com/no-feed">example.com/no-feed（失败态）</button>
+      <button class="tchip" data-url="https://sspai.com">sspai.com（首页 → 自动发现 feed）</button>
+      <button class="tchip" data-url="https://space.bilibili.com/2207410">space.bilibili.com/2207410（经生成器）</button>
+      <button class="tchip bad" data-url="https://example.com/no-feed">example.com/no-feed（失败 → 手填路由）</button>
     </div>
-    <div class="a-foot"><span>⏎ 订阅</span><span>esc 关闭</span><span class="spring"></span><span>平台源经 RSSHub 生成，无需自建</span></div>
+    <div class="a-foot"><span>⏎ 订阅</span><span>esc 关闭</span><span class="spring"></span><span>平台源经设置里的 RSSHub 实例生成</span></div>
   </section>
 
   <span class="hintbar"><b>⌘K</b> 命令 · <b>space</b> 播放 · <b>?</b> 帮助</span>
@@ -263,22 +271,9 @@ document.getElementById("openAdd").addEventListener("click",openPanel);
 document.getElementById("logoBtn").addEventListener("click",()=>{location.href="index.html";});
 veil.addEventListener("click",closePanel);
 
-/* ── 平台分段 ── */
-let plat="auto";
-document.querySelectorAll("#platSeg .aseg").forEach(b=>b.addEventListener("click",()=>{
-  document.querySelectorAll("#platSeg .aseg").forEach(x=>x.classList.remove("on"));b.classList.add("on");
-  plat=b.dataset.p;
-  input.placeholder=plat==="auto"?"粘贴 RSS 地址，或 B站 / 知乎 / 微博 / Newsletter 主页链接…"
-    :plat==="rss"?"粘贴 RSS / Atom 地址…"
-    :plat==="bil"?"粘贴 UP 主主页链接（space.bilibili.com/…）"
-    :plat==="zh"?"粘贴知乎用户主页或专栏链接…"
-    :plat==="wb"?"粘贴微博用户主页（weibo.com/u/…）…"
-    :"粘贴 Newsletter 订阅页（Substack / Buttondown / Kill the Newsletter）…";
-  if(input.value)detect(input.value);
-}));
-
 /* ── 检测 ── */
 const KINDS={
+ home:{tag:"RSS",cls:"b-art",title:"少数派",desc:"首页未声明 feed · 由常见路径发现",host:"sspai.com",items:[["派评 | 近期值得关注的 App","昨日"],["本周看什么","3 天前"],["会员通讯：写作的复利","上周"]]},
  rss:{tag:"RSS",cls:"b-art",title:"OpenAI Blog",desc:"Research updates and product news from OpenAI",host:"openai.com",items:[["Sora 2 开放 API 并下调定价","昨日"],["GPT-5.1 系统卡与安全评估","3 天前"],["o 系列推理模型的成本曲线","上周"]]},
  bil:{tag:"B",cls:"b-pod bil",title:"科技 UP 主",desc:"B站 · 经 RSSHub 生成，视频投稿即文章",host:"space.bilibili.com/2207410",items:[["【B站】2026 年的本地模型到底能干什么","昨日 23:07"],["【B站】把 Tauri 塞进 5MB 的三种办法","上周"],["【B站】三分钟看懂编译器并行化","两周前"]]},
  zh:{tag:"知",cls:"b-art",title:"知乎 · 技术专栏",desc:"知乎 · 经 RSSHub 生成",host:"zhihu.com/people/writer",items:[["回答：2026 年还值得写博客吗","2 天前"],["文章：我的极简阅读栈","上周"]]},
@@ -291,6 +286,7 @@ function classify(url){
   if(/weibo\.com/.test(url))return "wb";
   if(/substack|buttondown|beehiiv|kill-the-newsletter|newsletter/i.test(url))return "nl";
   if(/\.(xml|rss)(\?|$)|\/feed\/?$|\/rss\/?$|feeds?\./i.test(url))return "rss";
+ if(/^https?:\/\/[^\/]+\/?$/i.test(url))return "home"; /* 站点首页 → 走后端发现层 */
   if(/openai\.com/.test(url))return "rss";
   return null;
 }
@@ -303,10 +299,14 @@ function detect(url){
   aBody.innerHTML='<div class="trying"><span class="spin"></span>正在探测地址…</div>';
   timer=setTimeout(()=>{
     let k=classify(url);
-    if(plat!=="auto"&&k!==plat)k=plat; /* 手动指定优先 */
-    if(!k){
-      aBody.innerHTML='<div class="err"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="8" cy="8" r="6.2"/><path d="M8 4.8v3.6M8 10.8v.4"/></svg>没找到 feed——试试 RSS 地址（.xml / /feed）或平台主页链接<button class="re">重试</button></div>';
+      if(!k){
+      aBody.innerHTML='<div class="err"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="8" cy="8" r="6.2"/><path d="M8 4.8v3.6M8 10.8v.4"/></svg>没找到 feed——网页里没有声明 feed，常见路径也没探到<button class="re">重试</button></div>';
       aBody.querySelector(".re").addEventListener("click",()=>detect(url));
+      const genrow=document.createElement("div");
+      genrow.className="genrow";
+      genrow.innerHTML='<span class="lb">生成器</span><input placeholder="填 RSSHub 路由，例如 bilibili/user/123456"><button>转换并预览</button><span class="hp">实例 rsshub.app（设置里可换成自建）</span>';
+      aBody.appendChild(genrow);
+      genrow.querySelector("button").addEventListener("click",()=>{const r=genrow.querySelector("input").value.trim();if(r)detect("https://rsshub.app/"+r.replace(/^\/+/,""));});
       return;
     }
     curKind=k;
@@ -320,7 +320,8 @@ function detect(url){
        </div>
        <div class="c-h">最近条目 RECENT</div>
        ${K.items.map(it=>`<div class="c-row"><span class="rt">${it[0]}</span><span class="rd">${it[1]}</span></div>`).join("")}
-       ${k!=="rss"?`<div class="gen"><svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9M13.5 2.5V5h-2.5"/></svg>生成地址 <code>rsshub.app/${k}/…</code><span>由 Lettura 生成并托管订阅，无需自建</span></div>`:""}
+       <div class="cands"><span class="lb">发现 2 个 feed</span><button class="on">${K.host}/feed</button><button>${K.host}/atom.xml</button></div>
+       ${["bil","zh","wb","nl"].includes(k)?`<div class="gen"><svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9M13.5 2.5V5h-2.5"/></svg>生成地址 <code>rsshub.app/${k}/…</code><span>实例 rsshub.app（设置里可换成自建/镜像）</span></div>`:""}
        <div class="c-foot">
          <div class="sel"><button class="sel-btn"><span class="cv">技术</span><svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="#6A6C6E" stroke-width="1.8" stroke-linecap="round"><path d="m3.5 10 4.5-4.5L12.5 10"/></svg></button>
            <div class="menu">
@@ -347,8 +348,8 @@ function detect(url){
 function doAdd(){
   const K=KINDS[curKind];
   const folder=(document.querySelector("#addPanel .cv")||{}).textContent||"技术";
-  aBody.innerHTML=`<div class="done"><span class="ok"><svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m3.5 8.5 3 3 6-6.5"/></svg></span>已订阅「${K.title}」· 分组「${folder}」</div>`;
-  setTimeout(closePanel,900);
+  /* 2026-09-25 重梳理：不再停在面板上——直接跳到该订阅的源队列（mock 停在完成态供截图核对） */
+  aBody.innerHTML=`<div class="done"><span class="ok"><svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m3.5 8.5 3 3 6-6.5"/></svg></span>已订阅「${K.title}」· 已同步 12 篇 · 分组「${folder}」<span class="jump">→ 跳到该订阅的源队列</span></div>`;
 }
 input.addEventListener("input",e=>detect(e.target.value));
 document.querySelectorAll(".tchip").forEach(c=>c.addEventListener("click",()=>{input.value=c.dataset.url;input.focus();detect(c.dataset.url);}));
@@ -359,6 +360,8 @@ document.addEventListener("keydown",e=>{
   if(e.key==="Enter"&&curKind){doAdd();e.preventDefault();}
 });
 openPanel();
+/* URL 直达：?q=<url> 预填并探测（截图/文档用） */
+(()=>{const q=new URLSearchParams(location.search).get("q");if(q){input.value=q;detect(q);}})();
 </script>
 </body>
 </html>

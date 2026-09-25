@@ -1,7 +1,7 @@
 # Design — Lettura 0.2.0「静密 × 聚光」
 
 > 从已构建的参考实现记录（ground truth over intention）。
-> 参考实现：`.impeccable/mocks/decision/`——**index.html（总入口：9 面目录+动线，mock 间已互链）**、fusion.html（列表/详情/⌘K，j/k · Enter · esc · m · f · space · ⌘K，`?view=starred|history` 列表变体）、detail.html（阅读面）、feeds.html（订阅浏览/源队列）、settings.html（设置+订阅）、add.html（添加订阅）、empty.html（空状态）、help.html（帮助）、dark.html（夜读本）、podcast.html（播放器三态：`?state=bar|full|min`）
+> 参考实现：`.impeccable/mocks/decision/`——**index.html（总入口：9 面目录+动线，mock 间已互链）**、fusion.html（列表/详情/⌘K，j/k · Enter · esc · m · f · space · ⌘K，`?view=starred|history` 列表变体）、detail.html（阅读面）、feeds.html（订阅浏览/源队列）、settings.html（设置+订阅）、add.html（添加订阅）、empty.html（空状态）、help.html（帮助）、dark.html（夜读本）、podcast.html（播放器三态：`?state=bar|full|min`，面板态 `&panel=playlist|sleep` 直达）
 
 ## 世界一句话
 
@@ -13,6 +13,7 @@
 |---|---|---|
 | `--ground` | `#F4F4F1` | 画布 |
 | `--glass` | `rgba(255,255,255,.78)` + `backdrop-filter: blur(22px) saturate(1.5)` | 主面板 / 播放卡 / 命令面板 |
+| 浮层面板 | `rgba(255,255,255,.94)` + `blur(28px) saturate(1.6)` · radius 14 · 投影 `0 4px 10px .06` + `0 36px 80px -16px .4` | ⌘K / 添加 / 帮助 / 播放列表 / 睡眠菜单——**全套浮层共用一套材质**，不出现新容器类型（夜读本 `rgba(30,30,34,.92)` + 黑基投影） |
 | 环境光 | 红 `rgba(232,80,96,.05)` 左上（固定暖意）+ 靛侧右上 radial（随 `--accent` 派生，默认 ≈5.5%） | 画布氛围，极淡 |
 | `--ink` / `--sub` / `--ter` | `#1D1E20` / `#6A6C6E` / `#9EA0A2` | 文字三级 |
 | `--hair` / `--hair2` | `rgba(29,30,32,.08)` / `.13` | 发丝线 / 边框 |
@@ -34,11 +35,11 @@
 
 ```
 画布（ground + 双色 ambient）
-└─ 玻璃主面板  inset:22px 22px 106px · radius 16 · 内高光 1px
+└─ 玻璃主面板  inset:22px · radius 16 · 内高光 1px（铺到窗口下缘）
    ├─ 顶栏 54px：logo 点 + 产品名「Lettura」+ 计数药丸（全局未读常驻；订阅浏览帧显示源数） + 导航(未读/星标/历史/订阅) + ⌘K 搜索钮——当前位置由导航高亮表达，顶栏不放视图名
-   ├─ 过滤条 42px：全部/文章/播客/平台（全部=服务端同条件真实总数；类型计数基于已加载页） + 右侧同步元信息 + 同步/全部已读图标钮
-   └─ 视图区（列表 ⇄ 详情 ⇄ 设置，面板内替换，位置保留）
-└─ 全局浮动玻璃播放卡  inset:22px bottom:22px · h68 · radius 14（有音频时才在）
+   ├─ 过滤条 42px：全部/文章/播客/视频（+邮件，仅在真有邮件内容时出现）——**按载体分档**；全部与各档计数均为**服务端同条件真实总数**（`/api/articles/carrier-counts`，不随分页截断） + 右侧同步元信息 + 同步/全部已读图标钮
+   ├─ 视图区（列表 ⇄ 详情 ⇄ 设置，面板内替换，位置保留）——**滚动内容末尾留 102px 让位空白**（`--fusion-player-inset`：条 68 + 底距 22 + 呼吸 12），最后一行能完全翻到条外；空白加在**内容末尾**（`.fusion-inset-tail::after`），不在外层容器占位——列表从条下穿过（悬浮，非占位）
+   └─ 悬浮玻璃播放卡  绝对定位 left/right 22 · bottom:22 · h68 · radius 14（仅 bar 态；min 圆钮/full 沉浸层不占位）
 └─ ⌘K 命令面板  580px · top 84 · 浮层 + 压暗 veil
 ```
 
@@ -59,7 +60,18 @@
 | 星标 | 行尾琥珀星 |
 | 同步失败 | 源列 `#C4564A` + 重试 |
 
-**类型徽章**（20px，radius 6，10px 粗字）：文＝中性灰 · 播＝靛 · B＝粉 · 抖＝深灰。
+**媒体两轴**（2026-09-25 起：**入库时判定一次，读路径零推导**；取代旧「文章/播客/平台」三桶）：
+
+| 轴 | 列 | 取值 | 谁定 |
+|---|---|---|---|
+| **载体**（怎么消费） | `articles.carrier`（有索引）；源级提示 `feeds.carrier` | `text` / `audio` / `video` / `email` | Rust 入库时 `cmd.rs`：`classify_entry`（audio enclosure → audio；否则用来源声明的载体）＋ `feed_carrier_hint` |
+| **来源**（从哪来） | `feeds.origin` | `native` / `generator:<route>` | 订阅时 `resolve_origin`（客户端已知的生成器路由优先，否则 native） |
+
+语义由两轴**推导**，不再有逐个平台的特例：`canPlayInApp = carrier==="audio"`（进站内播放器）· `opensExternally = carrier==="video"`（0.2.0 不做站内视频 → 外跳）· `text/email` → 阅读面。新增平台/新载体只改数据，不改分支。
+
+迁移：`2026-09-25-000000_add_article_kind`（落库）→ `2026-09-25-010000_carrier_origin`（重标签为两轴 + `feeds.carrier`；与旧判定逐行对账 0 差异）。筛选/计数＝可索引等值查询；列表接口直接回 `carrier`/`origin`/`feed_carrier`；前端只做「两轴 → 徽章/平台名」映射（`helpers/mediaType.ts`）。
+
+**媒体徽章**（20px，radius 6，10px 粗字）＝**载体定字形 ＋ 品牌字优先**：文＝中性灰 · 播＝靛（audio）· 邮＝靛（email）· 视＝粉（video，未知路由）· **B**＝粉（`generator:bilibili`）· **抖**＝深灰（`generator:douyin`）。品牌字只在视频载体上生效（文本载体的 B站源不会借用品牌字）。
 
 **详情视图**（类型感知，同一外壳；阅读面定稿 `.impeccable/mocks/decision/detail.html`）：
 
@@ -85,11 +97,16 @@
 
 | 形态 | 语法 |
 |---|---|
-| 条 bar（默认） | 底部 68px 玻璃卡：左传输簇（32px accent 播放钮 + ±30s 紧凑 2px 簇距）· 单集信息 240px（点击放大）· 弹性时间轴（时间码 mono + 3px 轨 + 白环旋钮）· 右簇（倍速 chip + 放大 ↑ + 收起 ↓）；队列入口＝放大（不再有独立队列弹层） |
-| 沉浸页 full | 盖满面板的玻璃浮层（inset 22 · blur 28 · z40）：顶栏（收起 esc + 源名·题）→ 版心 560px 居中：168px 大封面（accent-soft 预设/实图）→「正在播放」章节字 → 21px 题 → meta（源·时长·已播%）→ 大时间轴（4px 轨 + 12px 旋钮）→ 传输行（−30s / 48px 大播放 / +30s / 倍速）→ UP NEXT 队列（发丝行 52px，当前行 accent-soft 洗色 + 播放中，悬停删除钮）→ 足注（space/esc） |
+| 条 bar（默认） | 底部 68px 玻璃卡（绝对定位 left/right 22 · bottom 22）：左传输簇（32px accent 播放钮 + ±30s 紧凑 2px 簇距）· 单集信息 240px（点击放大）· 弹性时间轴（时间码 mono + 3px 轨 + 白环旋钮）· 右簇（倍速 chip + 睡眠定时 + 播放列表 + 放大 ↑ + 收起 ↓）；**条浮在内容之上——列表从条下穿过，不给条留容器占位，只在滚动内容末尾留 102px 让位空白** |
+| 沉浸页 full | 盖满面板的玻璃浮层（inset 22 · blur 28 · z40）：顶栏（收起 esc + 源名·题）→ 版心 560px 居中：168px 大封面（accent-soft 预设/实图）→「正在播放」章节字 → 21px 题 → meta（源·时长·已播%）→ 大时间轴（4px 轨 + 12px 旋钮）→ 传输行（−30s / 48px 大播放 / +30s / 倍速 / 睡眠定时）→ UP NEXT 队列（发丝行 52px，当前行 accent-soft 洗色 + 播放中，悬停删除钮）→ 足注（space/esc） |
+| 睡眠定时 | 月亮钮/chip（两态共用）：静默态＝发丝圆钮，拉出菜单浮层（⌘K 浮层语法：`.94` 白 + 模糊，关闭 / 15 / 30 / 60 分钟，当前项 accent 字重）；激活态＝accent-soft 洗色 chip，走剩余 `mm:ss`（每秒递减），到点自动暂停并清空定时；重设或关闭作废旧定时 |
+| 播放列表 | 底条列表钮拉出 380px 浮层（面板语法同 ⌘K，自下缘 grow 200ms 缓出）：头行「播放列表 + N 集」+ 发丝行 52px 整队（题/源叠两行、时长右对齐、悬停删除钮）；当前行＝accent-soft 洗色 + 「播放中」；点行即切（点当前集 = 播放/暂停）；未入队时走引导态。队列入口＝列表钮（整队）+ 沉浸页 UP NEXT（除当前集） |
+| 三态动效 | bar ⇄ full ⇄ min 互切：150–200ms 缓出、位移 ≤10px（条/沉浸页自下缘长起，圆钮自右下弹入），退出帧由 AnimatePresence 保留；无回弹、无交叉位移 |
 | 收起 min | 右下 40px 圆形玻璃钮：SVG 环形进度 + 26px accent 播放芯；hover 显影「源 · 题」气泡；点击回条。音频不停（useAudioPlayer 挂壳层顶层 + 模块级单例 audio，三态切换零卸载） |
 
-键盘：`space` 全局播放/暂停（任何形态）；`esc` 沉浸页 → 条（优先于一切视图 esc）；收起后入口 = 右下圆钮（永在）。音频实现：模块级单例 `Audio`（多消费者共享，杜绝多实例同播与 AbortError 误报）。
+键盘：`space` 全局播放/暂停（任何形态）；`esc` 逐级退回——浮层（睡眠菜单 / 播放列表 / ⌘K / 帮助）先关，裸按才把沉浸页收回到条（优先于一切视图 esc）；收起后入口 = 右下圆钮（永在）。
+
+播放状态是库里的持久事实（Dexie `podcasts`）：`progress` 续播（5s 节流落盘，播完归零）、`duration` 首播回填（队列行时长靠它）；队列索引由 `currentTrack` 推导（点击/删除/播完都同步），删除当前集由接替者顶上。音频实现：模块级单例 `Audio`（多消费者共享，杜绝多实例同播与 AbortError 误报）；系统媒体键与锁屏控件走 MediaSession（play/pause、±30s、上一集/下一集），平台不支持时整段跳过。
 
 **设置视图**（面板内第三态，参考实现 `.impeccable/mocks/decision/settings.html`）：
 
@@ -104,10 +121,17 @@
 | 控件词汇 | 分段＝过滤条 tab 语法（胶囊容器）；下拉＝⌘K 钮语法 + 菜单浮层（`.94` 白 + 模糊）；开关＝36×21、on＝`--accent`；滑杆＝进度条语法（3px 轨 + 白环旋钮）+ 数值 chip；主钮＝墨底、幽灵钮＝发丝边 |
 | 校准台 | 外观段尾预览块：列表行样本 + 宋体段落，实时反映字号/行高/密度/强调色；拖动即显影，无过渡 |
 | 订阅行 | 列表行收紧至 44px：类型徽章/题/未读药丸/域名/时间/悬停动作；分组头部 32px 可折叠，动作用悬停显隐；右键菜单＝命令面板浮层语法，退订为 `--warn` |
+| 生成器行 | 「RSSHub 实例」＝单行文本输入（`.94` 白 + hair 边，聚焦 accent 边）；「自定义生成路由」＝mono 多行输入（一行一条 `匹配 => 路由`）。文本类设置**失焦提交**（其余控件即改即写，逐字符写 TOML 太重） |
 
 状态反馈即时生效（无保存钮），写入本地配置；同步失败在健康行与订阅行以 `--warn` 呈现并附重试。
 
-**添加订阅（渐进式面板，参考实现 `.impeccable/mocks/decision/add.html`）**：⌘K 同位同材质的 640px 浮层。一个输入框粘贴任何地址（RSS / B站 / 知乎 / 微博 / Newsletter 主页），自动检测在输入框内显影为类型徽章；探测中是行内 spinner，失败是行内 `--warn` + 重试（永不用弹窗）。检测成功后面板向下长出预览卡（唯一动效：grow 220ms 缓出）：源信息 + 最近条目（列表行收紧至 34px）+ 平台源生成地址（mono 小字，标注「经 RSSHub，无需自建」）+ 分组下拉 + 订阅钮（`--accent` 底）。⏎ 订阅 / esc 关闭；平台分段可手动覆盖自动检测。
+**添加订阅（渐进式面板，参考实现 `.impeccable/mocks/decision/add.html`；2026-09-25 重梳理）**：⌘K 同位同材质的 640px 浮层。一个输入框粘贴**任何**地址——顺序是**发现优先**：后端先直接解析，失败则当网页处理（读 `<link rel="alternate">` 声明的 feed、再试 `/feed` `/rss` `/atom.xml` `/index.xml` `/feed.xml` `/rss.xml`），把命中的地址作为**生效地址**；发现不了才退回平台生成器。输入框内显影类型徽章（RSS / 播 / 视）；探测中是行内 spinner，失败是行内 `--warn` + 重试（永不用弹窗）。
+
+预览卡（唯一动效：grow 220ms 缓出）：源信息 + **最近条目**（列表行收紧至 34px，订阅前就能看到会得到什么）+ 多个候选时列出 chips 让用户换 + **生效地址**（平台源显示路由与所用实例）+ 分组下拉（含「新建分组…」）+ 订阅钮（`--accent` 底）。⏎ 订阅 / esc 关闭。
+
+**不写死平台清单**（用户输入不可控）：内置表只是"便利匹配"（B站/知乎/微博/YouTube/Newsletter）；用户可在设置里加自定义路由（`匹配 => 路由`，右侧以 http 开头即直接当 feed 地址）；发现失败时面板里还能**手填路由**现生成现预览。生成器用的实例是设置项。
+
+**完成即走**：订阅成功后 toast 报「已订阅「X」· 已同步 N 篇」，面板关闭并**跳转到该订阅的源队列**（`/local/feeds/:uuid?feedUuid=…`，默认未读过滤）——不停在面板上，也没有"再加一个"循环（用户 2026-09-25 决策）。
 
 **空状态（即引导，参考实现 `.impeccable/mocks/decision/empty.html`）**：零订阅时列表位置直接换成引导面：墨色方标 → 26px 主张「订阅你想读的」→ 副文 → [添加订阅][导入 OPML] → 520px starter pack 卡（勾选即点亮「订阅 N 源」，无庆祝动画）。零未读是安静的收尾：「今天的队列清空了」+ 历史/星标/添加出口，读完就走。无独立 onboarding 路由。
 

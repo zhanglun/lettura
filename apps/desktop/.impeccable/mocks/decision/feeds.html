@@ -37,11 +37,13 @@
 
   /* ── 玻璃主面板 ── */
   .panel{
-    position:absolute;inset:22px 22px 106px;
+    position:absolute;inset:22px;
     background:var(--glass);backdrop-filter:blur(22px) saturate(1.5);
     border:1px solid var(--hair2);border-radius:16px;
     box-shadow:0 1px 0 rgba(255,255,255,.7) inset,0 32px 64px -20px rgba(29,30,32,.28);
     display:flex;flex-direction:column;overflow:hidden;
+    /* 列表/内容末尾的让位空白（= 条 68 + 底距 22 + 呼吸 12）：浮动条下最后一行仍可完全翻出 */
+    padding-bottom:102px;
   }
   .top{height:54px;display:flex;align-items:center;padding:0 20px;gap:10px;border-bottom:1px solid var(--hair);flex:none;}
   .logo{width:20px;height:20px;border-radius:7px;background:var(--ink);display:flex;align-items:center;justify-content:center;flex:none;}

@@ -39,9 +39,9 @@
       radial-gradient(700px 460px at 92% -14%,rgba(94,109,210,.045),transparent 70%);
   }
 
-  /* ── 深色玻璃主面板：内高光改上缘冷光 ── */
+  /* ── 深色玻璃主面板：内高光改上缘冷光（铺到窗口下缘，浮动播放条悬在它上面） ── */
   .panel{
-    position:absolute;inset:22px 22px 106px;
+    position:absolute;inset:22px;
     background:var(--glass);backdrop-filter:blur(22px) saturate(1.3);
     border:1px solid var(--hair2);border-radius:16px;
     box-shadow:0 1px 0 rgba(233,233,230,.09) inset,0 32px 64px -18px rgba(0,0,0,.6);
@@ -68,7 +68,7 @@
   .strip .meta{margin-left:auto;font-size:11px;color:var(--ter);font-variant-numeric:tabular-nums;}
 
   /* ── 列表 ── */
-  .list{flex:1;overflow:hidden;}
+  .list{flex:1;overflow:hidden;padding-bottom:102px;}
   .row{
     display:grid;grid-template-columns:20px 56px minmax(0,1fr) 170px 92px 56px;
     align-items:center;height:54px;padding-right:20px;border-bottom:1px solid var(--hair);cursor:pointer;
@@ -148,6 +148,10 @@
   }
   .pc{width:32px;height:32px;border-radius:999px;background:var(--accent);color:#14141A;display:flex;align-items:center;justify-content:center;flex:none;box-shadow:0 4px 10px -2px rgba(132,140,232,.4);}
   .pmeta{flex:none;width:240px;}
+  .pskip{width:24px;height:24px;border-radius:999px;display:flex;align-items:center;justify-content:center;color:var(--sub);}
+  .pskip:hover{background:rgba(233,233,230,.06);color:var(--ink);}
+  .expand{width:24px;height:24px;border-radius:7px;display:flex;align-items:center;justify-content:center;color:var(--ter);}
+  .expand:hover{background:rgba(233,233,230,.06);color:var(--ink);}
   .pmeta .ep{font-size:11px;color:var(--sub);}
   .pmeta .nm{font-size:13px;font-weight:600;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink);}
   .ptrack{flex:1;display:flex;align-items:center;gap:12px;}
@@ -202,7 +206,7 @@
       <button class="tab on">全部 <span class="c">247</span></button>
       <button class="tab">文章 <span class="c">229</span></button>
       <button class="tab">播客 <span class="c">3</span></button>
-      <button class="tab">平台 <span class="c">15</span></button>
+      <button class="tab">视频 <span class="c">7</span></button>
       <span class="meta">34 个来源 · 最近同步 09:41</span>
       <span style="display:flex;gap:2px;margin-left:10px;">
         <button class="qa" title="刷新全部来源"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#A2A4A8" stroke-width="1.6" stroke-linecap="round"><path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9M13.5 2.5V5h-2.5"/></svg></button>
@@ -249,9 +253,19 @@
 
   <footer class="player">
     <button class="pc"><svg width="11" height="11" viewBox="0 0 12 12" fill="#14141A"><rect x="1.5" y="1" width="3" height="10" rx="1"/><rect x="7.5" y="1" width="3" height="10" rx="1"/></svg></button>
+    <button class="pskip" title="后退 30 秒"><svg width="13" height="13" viewBox="0 0 16 16" fill="#A2A4A8"><path d="M13.5 3.5v9l-7-4.5zM3.2 3.5H5v9H3.2z"/></svg></button>
+    <button class="pskip" title="前进 30 秒"><svg width="13" height="13" viewBox="0 0 16 16" fill="#A2A4A8"><path d="M2.5 3.5v9l7-4.5zM11 3.5h1.8v9H11z"/></svg></button>
     <span class="pmeta"><div class="ep">内核恐慌 · EP.87</div><div class="nm">与 guevaria 聊本地优先软件</div></span>
     <span class="ptrack"><span class="pt">18:30</span><span class="pbar"><b></b><i></i></span><span class="pt">72:00</span></span>
     <span class="chip">1.5×</span>
+    <button class="expand" title="睡眠定时（15/30/60，激活走剩余时间；规格见 podcast.html）">
+      <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M13.4 9.6A5.6 5.6 0 0 1 6.4 2.6a5.6 5.6 0 1 0 7 7z"/></svg>
+    </button>
+    <button class="expand" title="播放列表（整队含当前集；规格见 podcast.html）">
+      <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4h10M3 8h7M3 12h10"/></svg>
+    </button>
+    <button class="expand" title="放大（沉浸页）"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 6l5-5 5 5M3 10l5 5 5-5"/></svg></button>
+    <button class="expand" title="收起（右下角圆钮）"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 10l5 5 5-5M3 6l5-5 5 5"/></svg></button>
   </footer>
 </div>
 
@@ -264,6 +278,9 @@ const ROWS=[
  {k:"art",t:"SQLite 在 2026：一个文件如何扛住一切",s:"fly.io",d:"昨日 21:33",read:false,star:true},
  {k:"art",t:"关于本地优先的三条反直觉",s:'<span class="fail">arcadia.dev · 同步失败</span>',d:"周一",read:false,star:false},
  {k:"art",t:"从 NetNewsWire 学减法",s:"随笔",d:"周一",read:true,star:false},
+ {k:"pod",t:"Vol.42 声音界面漫谈",s:"声波栈",d:"周一",read:false,star:false},
+ {k:"art",t:"SQLite 的 WAL 到底在写什么",s:"fly.io",d:"周一",read:false,star:false},
+ {k:"art",t:"给键盘党的七条快捷键",s:"随笔",d:"周日",read:false,star:false},
 ];
 const KLABEL={art:["文","b-art"],pod:["播","b-pod"],bil:["B","b-bil"]};
 let focusIdx=1;

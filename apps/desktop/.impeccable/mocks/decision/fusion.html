@@ -34,9 +34,9 @@
       radial-gradient(640px 420px at 90% -12%,rgba(94,109,210,.055),transparent 70%);
   }
 
-  /* ── 玻璃主面板 ── */
+  /* ── 玻璃主面板（铺到窗口下缘：浮动播放条悬在它上面，列表从条下穿过） ── */
   .panel{
-    position:absolute;inset:22px 22px 106px;
+    position:absolute;inset:22px;
     background:var(--glass);backdrop-filter:blur(22px) saturate(1.5);
     border:1px solid var(--hair2);border-radius:16px;
     box-shadow:0 1px 0 rgba(255,255,255,.7) inset,0 32px 64px -20px rgba(29,30,32,.28);
@@ -64,7 +64,7 @@
   .strip .meta{margin-left:auto;font-size:11px;color:var(--ter);font-variant-numeric:tabular-nums;}
 
   /* ── 列表视图 ── */
-  .list{flex:1;overflow:hidden;}
+  .list{flex:1;overflow:hidden;padding-bottom:102px;}
   .row{
     display:grid;grid-template-columns:20px 56px minmax(0,1fr) 170px 92px 56px;
     align-items:center;height:54px;padding-right:20px;border-bottom:1px solid var(--hair);cursor:pointer;
@@ -257,7 +257,7 @@
       <button class="tab on">全部 <span class="c">247</span></button>
       <button class="tab">文章 <span class="c">229</span></button>
       <button class="tab">播客 <span class="c">3</span></button>
-      <button class="tab">平台 <span class="c">15</span></button>
+      <button class="tab">视频 <span class="c">7</span></button>
       <span class="meta">34 个来源 · 最近同步 09:41</span>
       <span style="display:flex;gap:2px;margin-left:10px;">
         <button class="qa" title="刷新全部来源"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#6A6C6E" stroke-width="1.6" stroke-linecap="round"><path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9M13.5 2.5V5h-2.5"/></svg></button>
@@ -353,6 +353,12 @@
       <span class="pt">72:00</span>
     </span>
     <span class="chip">1.5×</span>
+    <button class="expand" onclick="location.href='podcast.html?state=bar'" title="睡眠定时（规格见 podcast.html）">
+      <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M13.4 9.6A5.6 5.6 0 0 1 6.4 2.6a5.6 5.6 0 1 0 7 7z"/></svg>
+    </button>
+    <button class="expand" onclick="location.href='podcast.html?state=bar'" title="播放列表（规格见 podcast.html）">
+      <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4h10M3 8h7M3 12h10"/></svg>
+    </button>
     <button class="expand" onclick="location.href='podcast.html?state=full'" title="放大（沉浸页）">
       <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 6l5-5 5 5M3 10l5 5 5-5"/></svg>
     </button>
@@ -374,6 +380,9 @@ const ROWS=[
  {k:"art",t:"TypeScript 7.0 原生移植的半年进展",s:"devblogs.microsoft.com",d:"昨日 17:02",read:false,star:false},
  {k:"art",t:"关于本地优先的三条反直觉",s:'<span class="fail">arcadia.dev · 同步失败</span>',d:"周一",read:false,star:false},
  {k:"art",t:"从 NetNewsWire 学减法",s:"随笔",d:"周一",read:true,star:false},
+ {k:"pod",t:"Vol.42 声音界面漫谈",s:"声波栈",d:"周一",read:false,star:false},
+ {k:"art",t:"SQLite 的 WAL 到底在写什么",s:"fly.io",d:"周一",read:false,star:false},
+ {k:"art",t:"给键盘党的七条快捷键",s:"随笔",d:"周日",read:false,star:false},
 ];
 const KLABEL={art:["文","b-art"],pod:["播","b-pod"],bil:["B","b-bil"],dou:["抖","b-dou"]};
 const KINDNAME={art:"文章",pod:"播客 · 单集",bil:"Bilibili",dou:"抖音"};
@@ -458,7 +467,7 @@ function backToList(){
 }
 document.getElementById("backBtn").addEventListener("click",backToList);
 document.getElementById("pmetaClick").addEventListener("click",()=>openDetail(2));
-document.getElementById("expandBtn").addEventListener("click",()=>openDetail(2));
+// （原 `expandBtn` 单钮在播放器三态落地时拆成 放大/收起 两钮，改为内联跳 podcast.html）
 
 function togglePlay(){
   playing=!playing;

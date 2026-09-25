@@ -33,13 +33,15 @@
       radial-gradient(640px 420px at 90% -12%,rgba(94,109,210,.055),transparent 70%);
   }
 
-  /* ── 玻璃主面板（列表压在沉浸层下面） ── */
+  /* ── 玻璃主面板（铺到窗口下缘：浮动播放条悬在它上面，列表从条下穿过） ── */
   .panel{
-    position:absolute;inset:22px 22px 106px;
+    position:absolute;inset:22px;
     background:var(--glass);backdrop-filter:blur(22px) saturate(1.5);
     border:1px solid var(--hair2);border-radius:16px;
     box-shadow:0 1px 0 rgba(255,255,255,.7) inset,0 32px 64px -20px rgba(29,30,32,.28);
     display:flex;flex-direction:column;overflow:hidden;
+    /* 列表内容末尾的让位空白（= 条 68 + 底距 22 + 呼吸 12）：最后一行能完全翻到条外 */
+    padding-bottom:102px;
   }
   .top{height:54px;display:flex;align-items:center;padding:0 20px;gap:10px;border-bottom:1px solid var(--hair);flex:none;}
   .logo{width:20px;height:20px;border-radius:7px;background:var(--ink);display:flex;align-items:center;justify-content:center;flex:none;cursor:pointer;}
@@ -86,7 +88,47 @@
   .pbar{flex:1;height:3px;border-radius:999px;background:rgba(29,30,32,.1);position:relative;cursor:pointer;}
   .pbar b{position:absolute;left:0;top:0;bottom:0;width:26%;border-radius:999px;background:var(--accent);}
   .pbar i{position:absolute;left:26%;top:50%;width:9px;height:9px;border-radius:50%;background:var(--accent);transform:translate(-50%,-50%);box-shadow:0 0 0 3px rgba(255,255,255,.9);}
-  .chip{font-size:11px;color:var(--sub);background:rgba(29,30,32,.06);border-radius:6px;padding:2.5px 8px;flex:none;}
+  .chip{font-size:11px;color:var(--sub);background:rgba(29,30,32,.06);border-radius:6px;padding:2.5px 8px;flex:none;display:inline-flex;align-items:center;gap:5px;font-variant-numeric:tabular-nums;}
+  .chip.on{color:var(--accent);background:var(--accent-soft);font-weight:600;}
+
+  /* 睡眠定时菜单：与 ⌘K 同语法（.94 白 + 模糊 + 大投影），当前项 = accent 字重 */
+  .sleepmenu{position:absolute;right:96px;bottom:98px;z-index:80;min-width:150px;padding:6px;border-radius:14px;
+    background:rgba(255,255,255,.94);backdrop-filter:blur(28px) saturate(1.6);border:1px solid rgba(29,30,32,.1);
+    box-shadow:0 4px 10px rgba(29,30,32,.06),0 36px 80px -16px rgba(29,30,32,.4);}
+  .smi{position:relative;display:block;width:100%;height:32px;padding:0 10px 0 26px;border-radius:9px;text-align:left;font-size:12.5px;color:var(--sub);font-variant-numeric:tabular-nums;}
+  .smi:hover{background:rgba(29,30,32,.05);color:var(--ink);}
+  .smi.on{color:var(--accent);font-weight:600;}
+  .smi.on::before{content:"✓";position:absolute;left:9px;font-size:10.5px;}
+  .sleepmenu[hidden]{display:none;}
+
+  /* 三态切换动效：150–200ms 缓出，位移 ≤10px（条/沉浸页自下缘长起，圆钮自右下弹入） */
+  @keyframes m-in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  @keyframes m-in-scale{from{opacity:0;transform:translateY(12px) scale(.99)}to{opacity:1;transform:none}}
+  @keyframes m-in-min{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:none}}
+  #viewBar.enter{animation:m-in .18s cubic-bezier(.2,0,0,1);}
+  #viewFull.enter{animation:m-in-scale .2s cubic-bezier(.2,0,0,1);}
+  #viewMin.enter{animation:m-in-min .16s cubic-bezier(.2,0,0,1);}
+
+  /* 播放列表浮层：整条队列，行语法同 UP NEXT，从底条列表钮拉出 */
+  .plpanel{position:absolute;right:96px;bottom:98px;z-index:80;width:380px;max-height:52vh;display:flex;flex-direction:column;overflow:hidden;
+    border-radius:14px;background:rgba(255,255,255,.94);backdrop-filter:blur(28px) saturate(1.6);border:1px solid rgba(29,30,32,.1);
+    box-shadow:0 4px 10px rgba(29,30,32,.06),0 36px 80px -16px rgba(29,30,32,.4);}
+  .plpanel[hidden]{display:none;}
+  .plhead{flex:none;height:40px;display:flex;align-items:center;gap:8px;padding:0 14px;border-bottom:1px solid var(--hair);}
+  .pltitle{font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--ter);}
+  .plcount{font-size:11px;color:var(--sub);background:rgba(29,30,32,.06);border-radius:999px;padding:1px 8px;font-variant-numeric:tabular-nums;}
+  .plbody{padding:0 6px 6px;overflow-y:auto;}
+  .plrow{display:grid;grid-template-columns:28px minmax(0,1fr) 48px 26px;grid-template-rows:auto auto;align-items:center;height:52px;border-bottom:1px solid var(--hair);border-radius:9px;padding:0 4px;cursor:pointer;}
+  .plrow:hover{background:rgba(29,30,32,.035);}
+  .plrow.now{background:var(--accent-soft);}
+  .plrow .q-thumb{grid-column:1;grid-row:1/span 2;margin:0 auto;}
+  .plrow .plt{grid-column:2;grid-row:1;align-self:end;font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 10px;min-width:0;}
+  .plrow .pls{grid-column:2;grid-row:2;align-self:start;font-size:11.5px;color:var(--ter);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 10px;}
+  .plrow .pls .live{color:var(--accent);}
+  .plrow .pld{grid-column:3;grid-row:1/span 2;font-size:11.5px;color:var(--ter);text-align:right;font-variant-numeric:tabular-nums;}
+  .plrow .plx{grid-column:4;grid-row:1/span 2;width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--ter);opacity:0;}
+  .plrow:hover .plx{opacity:1;}
+  .plrow .plx:hover{background:rgba(29,30,32,.06);color:var(--ink);}
   .pctl{width:24px;height:24px;border-radius:7px;display:flex;align-items:center;justify-content:center;color:var(--sub);}
   .pctl:hover{background:rgba(29,30,32,.06);color:var(--ink);}
 
@@ -181,9 +223,9 @@
 <!--
   SURFACE CONTRACT · 播放器三态（bar / full / min） · Lettura 0.2.0 「静密 × 聚光」
   THESIS: 播客是这台阅读仪器上唯一的时间媒体——底部玻璃条是它的常驻仪表，放大是一张盖满面板的沉浸页（封面 + 大时间轴 + UP NEXT 队列），收起是右下角一枚带环形进度的圆钮。三种形态同一材质同一 accent，收起永不失联。
-  OWN-WORLD: 继承 fusion 全部令牌（玻璃/发丝/靛蓝/tab 选中语法）；新增：沉浸页大封面 168px + 4px 时间轴白环旋钮 + 48px 大播放钮；队列行＝发丝行语法收紧 52px（当前行 = accent-soft 洗色 + 「播放中」，无侧线）；min 圆钮 = 40px 玻璃环 + 26px accent 芯 + 环形进度，hover 显影源·题。
-  STORY: 列表里 ▶ 或详情页大播放钮起播 → 底条出现（esc 不关它，它是仪器的一部分）→ 点封面/放大钮进沉浸页精听、拖时间轴、翻 UP NEXT → esc 逐级收回底条 → 底条收起钮收进右下圆钮（音频不停）→ 点圆钮回到底条。space 全局播放/暂停任何形态不变。
-  FIRST VIEWPORT: bar 态＝列表 + 底部 68px 玻璃条（播放/±30/单集/时间轴/倍速/队列/放大/收起）；full 态＝玻璃浮层盖满面板：顶栏（收起 esc + 源名）→ 居中 168px 封面 → 21px 题 → 大时间轴 → 传输行 → UP NEXT；min 态＝右下 40px 圆钮，环形进度在走。
+  OWN-WORLD: 继承 fusion 全部令牌（玻璃/发丝/靛蓝/tab 选中语法）；新增：沉浸页大封面 168px + 4px 时间轴白环旋钮 + 48px 大播放钮；队列行＝发丝行语法收紧 52px（当前行 = accent-soft 洗色 + 「播放中」，无侧线）；min 圆钮 = 40px 玻璃环 + 26px accent 芯 + 环形进度，hover 显影源·题；睡眠定时 = 月亮钮/chip（激活时走剩余 mm:ss）+ 菜单浮层（关闭/15/30/60，同 ⌘K 浮层语法）；播放列表 = 380px 浮层（整条队列含当前集，行语法同 UP NEXT，头行「播放列表 + N 集」）；三态切换动效 = 150–200ms 缓出、位移 ≤10px（条/沉浸页自下缘长起，圆钮自右下弹入）。
+  STORY: 列表里 ▶ 或详情页大播放钮起播 → 底条出现（esc 不关它，它是仪器的一部分）→ 点封面/放大钮进沉浸页精听、拖时间轴、翻 UP NEXT → 月亮钮设睡眠定时（到点暂停并清空）→ 列表钮拉出播放列表整队切集 → esc 逐级收回底条 → 底条收起钮收进右下圆钮（音频不停）→ 点圆钮回到底条。space 全局播放/暂停任何形态不变。
+  FIRST VIEWPORT: bar 态＝列表 + 底部 68px 玻璃条（播放/±30/单集/时间轴/倍速/睡眠定时/播放列表/放大/收起）；full 态＝玻璃浮层盖满面板：顶栏（收起 esc + 源名）→ 居中 168px 封面 → 21px 题 → 大时间轴 → 传输行 → UP NEXT；min 态＝右下 40px 圆钮，环形进度在走。
   FORM: fusion 世界的直接扩展（用户 2026-09 指定「可收起、可放大、收起后有入口」，podcast app 范式）。演示 tab 切 bar / full / min。
   FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance.
 -->
@@ -214,7 +256,7 @@
       <button class="tab on">全部 <span class="c">247</span></button>
       <button class="tab">文章 <span class="c">229</span></button>
       <button class="tab">播客 <span class="c">3</span></button>
-      <button class="tab">平台 <span class="c">15</span></button>
+      <button class="tab">视频 <span class="c">7</span></button>
       <span class="spring"></span>
       <span style="font-size:11px;color:var(--ter);">34 个来源 · 最近同步 09:41</span>
     </div>
@@ -241,6 +283,12 @@
       <span class="pt">72:00</span>
     </span>
     <button class="chip">1.5×</button>
+    <button class="pctl" onclick="toggleSleep()" title="睡眠定时" aria-label="睡眠定时">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M13.4 9.6A5.6 5.6 0 0 1 6.4 2.6a5.6 5.6 0 1 0 7 7z"/></svg>
+    </button>
+    <button class="pctl" onclick="togglePlaylist()" title="播放列表 · 3 集" aria-label="播放列表">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4h10M3 8h7M3 12h10"/></svg>
+    </button>
     <button class="pctl" onclick="go('full')" title="放大（沉浸页 · 含播放队列）">
       <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 9.5 8 5l5 4.5"/></svg>
     </button>
@@ -301,6 +349,10 @@
           </button>
           <button class="skipbtn">+30s</button>
           <button class="chip">1.5×</button>
+          <button class="chip on" onclick="toggleSleep()" title="睡眠定时 · 还剩 15:00">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M13.4 9.6A5.6 5.6 0 0 1 6.4 2.6a5.6 5.6 0 1 0 7 7z"/></svg>
+            15:00
+          </button>
         </div>
 
         <div class="queue">
@@ -329,8 +381,44 @@
         </div>
       </div>
     </div>
-    <div class="f-foot"><span><b>space</b> 播放/暂停</span><span>·</span><span>esc 收起到条</span><span class="spring"></span><span>队列条目点按即切</span></div>
+    <div class="f-foot"><span><b>space</b> 播放/暂停</span><span>·</span><span>esc 收起到条</span><span class="spring"></span><span>队列条目点按即切</span><span>·</span><span>睡眠定时到点暂停，chip 走剩余时间</span></div>
   </section>
+
+  <!-- 睡眠定时菜单（悬浮于条与沉浸页之上，语法同 ⌘K 浮层） -->
+  <div class="sleepmenu" id="sleepMenu" hidden>
+    <button class="smi">关闭</button>
+    <button class="smi on">15 分钟</button>
+    <button class="smi">30 分钟</button>
+    <button class="smi">60 分钟</button>
+  </div>
+
+  <!-- 播放列表浮层（整条队列含当前集；行语法同 UP NEXT） -->
+  <div class="plpanel" id="playlistPanel" hidden>
+    <div class="plhead"><span class="pltitle">播放列表</span><span class="plcount">3 集</span></div>
+    <div class="plbody">
+      <div class="plrow now">
+        <span class="q-thumb"><svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 7.5v5M7.3 5v10M10.6 8v4M14 6v8M17.3 7.5v5"/></svg></span>
+        <span class="plt">与 guevaria 聊本地优先软件</span>
+        <span class="pls">内核恐慌 · <span class="live">播放中</span></span>
+        <span class="pld">72:00</span>
+        <span></span>
+      </div>
+      <div class="plrow">
+        <span class="q-thumb"><svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 7.5v5M7.3 5v10M10.6 8v4M14 6v8M17.3 7.5v5"/></svg></span>
+        <span class="plt">EP.86 硬盘里的十年</span>
+        <span class="pls">内核恐慌</span>
+        <span class="pld">58:12</span>
+        <span class="plx"><svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M3 3l10 10M13 3 3 13"/></svg></span>
+      </div>
+      <div class="plrow">
+        <span class="q-thumb"><svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 7.5v5M7.3 5v10M10.6 8v4M14 6v8M17.3 7.5v5"/></svg></span>
+        <span class="plt">Vol.42 声音界面漫谈</span>
+        <span class="pls">声波栈</span>
+        <span class="pld">41:05</span>
+        <span class="plx"><svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M3 3l10 10M13 3 3 13"/></svg></span>
+      </div>
+    </div>
+  </div>
 
   <span class="hintbar" id="hintbar"><b>space</b> 播放 · <b>⏎</b> 打开 · <b>m</b> 已读 · <b>f</b> 星标 · <b>⌘K</b> 命令</span>
   <span class="synthetic">演示内容为合成数据</span>
@@ -340,18 +428,32 @@
 const PLAY_SVG='<svg width="9" height="9" viewBox="0 0 12 12" fill="#fff"><path d="M2.5 1.2v9.6l8-4.8z"/></svg>';
 const PAUSE_SVG='<svg width="9" height="9" viewBox="0 0 12 12" fill="#fff"><rect x="1.5" y="1" width="3" height="10" rx="1"/><rect x="7.5" y="1" width="3" height="10" rx="1"/></svg>';
 const HINTS={
-  bar:'<b>space</b> 播放 · 点单集信息或右上箭头放大（沉浸页含队列） · 右下箭头收起',
-  full:'<b>esc</b> 收起到条 · <b>space</b> 播放/暂停 · 队列条目点按即切',
+  bar:'<b>space</b> 播放 · 点单集信息或右上箭头放大（沉浸页含队列） · 月亮钮设睡眠定时 · 列表钮看播放列表',
+  full:'<b>esc</b> 收起到条 · <b>space</b> 播放/暂停 · 队列条目点按即切 · 睡眠定时 chip 在走',
   min:'已收起——点右下圆钮回来 · <b>space</b> 播放/暂停 · 环形进度在走'
 };
 let state="bar",playing=true;
+function closePanels(){
+  document.getElementById("sleepMenu").setAttribute("hidden","");
+  document.getElementById("playlistPanel").setAttribute("hidden","");
+}
+function openPanel(name){
+  closePanels();
+  if(name==="sleep")document.getElementById("sleepMenu").removeAttribute("hidden");
+  if(name==="playlist")document.getElementById("playlistPanel").removeAttribute("hidden");
+}
+function toggleSleep(){const m=document.getElementById("sleepMenu"),was=m.hasAttribute("hidden");closePanels();if(was)m.removeAttribute("hidden");}
+function togglePlaylist(){const p=document.getElementById("playlistPanel"),was=p.hasAttribute("hidden");closePanels();if(was)p.removeAttribute("hidden");}
 function go(v){
   state=v;
+  const el=v==="bar"?document.getElementById("viewBar"):v==="full"?document.getElementById("viewFull"):document.getElementById("viewMin");
+  closePanels();
   document.getElementById("viewBar").style.display=v==="bar"?"flex":"none";
   document.getElementById("viewFull").style.display=v==="full"?"flex":"none";
   document.getElementById("viewMin").style.display=v==="min"?"flex":"none";
   document.querySelectorAll(".dtab").forEach(x=>x.classList.toggle("on",x.dataset.s===v));
   document.getElementById("hintbar").innerHTML=HINTS[v];
+  el.classList.remove("enter");void el.offsetWidth;el.classList.add("enter");
 }
 function togglePlay(){
   playing=!playing;
@@ -369,6 +471,8 @@ document.addEventListener("keydown",e=>{
 });
 const q=new URLSearchParams(location.search).get("state");
 if(q)go(q);
+const p=new URLSearchParams(location.search).get("panel");
+if(p)openPanel(p);
 </script>
 </body>
 </html>

@@ -37,11 +37,13 @@
 
   /* ── 玻璃主面板 ── */
   .panel{
-    position:absolute;inset:22px 22px 106px;
+    position:absolute;inset:22px;
     background:var(--glass);backdrop-filter:blur(22px) saturate(1.5);
     border:1px solid var(--hair2);border-radius:16px;
     box-shadow:0 1px 0 rgba(255,255,255,.7) inset,0 32px 64px -20px rgba(29,30,32,.28);
     display:flex;flex-direction:column;overflow:hidden;
+    /* 列表/内容末尾的让位空白（= 条 68 + 底距 22 + 呼吸 12）：浮动条下最后一行仍可完全翻出 */
+    padding-bottom:102px;
   }
 
   .top{height:54px;display:flex;align-items:center;padding:0 20px;gap:10px;border-bottom:1px solid var(--hair);flex:none;}
@@ -150,6 +152,10 @@
   .sw.on::after{left:17px;}
 
   /* 滑杆（字号/行高/并发）*/
+  .sin{height:32px;min-width:190px;padding:0 10px;border:1px solid var(--hair2);border-radius:9px;background:rgba(255,255,255,.55);color:var(--ink);font-size:12.5px;outline:none;font-family:inherit;}
+  .sin:focus{border-color:var(--accent);}
+  .sta{width:300px;min-height:62px;padding:7px 9px;border:1px solid var(--hair2);border-radius:9px;background:rgba(255,255,255,.55);color:var(--ink);font-family:"SF Mono",Menlo,monospace;font-size:11px;line-height:1.6;resize:vertical;outline:none;}
+  .sta:focus{border-color:var(--accent);}
   .sld{display:flex;align-items:center;gap:12px;}
   .track{width:150px;height:3px;border-radius:999px;background:rgba(29,30,32,.1);position:relative;cursor:pointer;}
   .track .fill{position:absolute;left:0;top:0;bottom:0;border-radius:999px;background:var(--accent);}
@@ -323,7 +329,7 @@
       <button class="tab on">全部 <span class="c">247</span></button>
       <button class="tab">文章 <span class="c">229</span></button>
       <button class="tab">播客 <span class="c">3</span></button>
-      <button class="tab">平台 <span class="c">15</span></button>
+      <button class="tab">视频 <span class="c">7</span></button>
       <span class="meta">34 个来源 · 最近同步 09:41</span>
     </div>
     <main class="list" id="viewList"></main>
@@ -467,6 +473,14 @@
               <span class="hl-fail">arcadia.dev · 同步失败</span>
               <button class="retry">重试</button>
             </div>
+          </div>
+          <div class="srow">
+            <div><div class="lb">RSSHub 实例</div><div class="hp">平台源（B站/知乎/微博/YouTube 等）用它生成 feed 地址；可填自建或镜像</div></div>
+            <div class="ctl"><input class="sin" value="https://rsshub.app" spellcheck="false"></div>
+          </div>
+          <div class="srow">
+            <div><div class="lb">自定义生成路由</div><div class="hp">一行一条：`匹配 =&gt; 路由`；右侧以 http 开头则直接当 feed 地址</div></div>
+            <div class="ctl"><textarea class="sta" rows="3" spellcheck="false">xiaohongshu.com/user/profile/(\w+) => xiaohongshu/user/$1</textarea></div>
           </div>
           <div class="srow">
             <div><div class="lb">订阅管理</div><div class="hp">添加、分组、移动与退订来源</div></div>
