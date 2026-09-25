@@ -2,17 +2,19 @@
    Ground truth: apps/desktop/.impeccable/mocks/decision/fusion.html（静密 × 聚光） */
 
 :root {
-  --fusion-ground: #f4f4f1;
-  --fusion-ink: #1d1e20;
-  --fusion-sub: #6a6c6e;
-  --fusion-ter: #9ea0a2;
-  --fusion-glass: rgba(255, 255, 255, 0.78);
-  --fusion-hair: rgba(29, 30, 32, 0.08);
-  --fusion-hair2: rgba(29, 30, 32, 0.13);
-  --fusion-warn: #c4564a;
+  --fusion-ground: var(--color-background-body);
+  --fusion-ink: var(--color-text-primary);
+  --fusion-sub: var(--color-text-secondary);
+  --fusion-ter: color-mix(in srgb, var(--color-text-primary) 48%, transparent);
+  --fusion-glass: color-mix(in srgb, var(--color-background-card) 80%, transparent);
+  --fusion-hair: var(--color-border);
+  --fusion-hair2: color-mix(in srgb, var(--color-text-primary) 13%, transparent);
+  --fusion-warn: var(--color-error);
   --fusion-pink: #e86a92;
   --fusion-pink-soft: rgba(232, 106, 146, 0.1);
   --fusion-amber: #e5a50a;
+  /* 中性色全部接 Astryx 主题令牌（2026-10 契约）：明暗由 light-dark() 驱动，
+     切主题即整面变色；pink/amber 为固定状态色，夜读暖墨 serif-ink 见 dark 块 */
 }
 
 .fusion-root {
@@ -83,7 +85,7 @@
 .fusion-cnt {
   font-size: 11px;
   color: var(--fusion-sub);
-  background: rgba(29, 30, 32, 0.06);
+  background: color-mix(in srgb, var(--color-text-primary) 6%, transparent);
   border-radius: 999px;
   padding: 1.5px 8px;
   font-variant-numeric: tabular-nums;
@@ -108,13 +110,13 @@
 }
 
 .fusion-nav button:hover {
-  background: rgba(29, 30, 32, 0.05);
+  background: color-mix(in srgb, var(--color-text-primary) 5%, transparent);
 }
 
 .fusion-nav button.on {
   color: var(--fusion-ink);
   font-weight: 600;
-  background: rgba(29, 30, 32, 0.06);
+  background: color-mix(in srgb, var(--color-text-primary) 6%, transparent);
 }
 
 .fusion-spring {
@@ -143,11 +145,11 @@
 }
 
 .fusion-tab:hover {
-  background: rgba(29, 30, 32, 0.05);
+  background: color-mix(in srgb, var(--color-text-primary) 5%, transparent);
 }
 
 .fusion-tab.on {
-  background: rgba(29, 30, 32, 0.07);
+  background: color-mix(in srgb, var(--color-text-primary) 7%, transparent);
   color: var(--fusion-ink);
   font-weight: 600;
 }
@@ -187,7 +189,7 @@
 }
 
 .fusion-row:hover {
-  background: rgba(29, 30, 32, 0.035);
+  background: color-mix(in srgb, var(--color-text-primary) 3.5%, transparent);
 }
 
 .fusion-st {
@@ -212,7 +214,7 @@
   height: 34px;
   border-radius: 7px;
   border: 1px solid var(--fusion-hair);
-  background: rgba(29, 30, 32, 0.04);
+  background: color-mix(in srgb, var(--color-text-primary) 4%, transparent);
   overflow: hidden;
   flex: none;
   display: flex;
@@ -254,7 +256,7 @@
 }
 
 .fusion-badge.b-art {
-  background: rgba(29, 30, 32, 0.06);
+  background: color-mix(in srgb, var(--color-text-primary) 6%, transparent);
   color: var(--fusion-sub);
 }
 
@@ -269,7 +271,7 @@
 }
 
 .fusion-badge.b-dou {
-  background: rgba(29, 30, 32, 0.08);
+  background: color-mix(in srgb, var(--color-text-primary) 8%, transparent);
   color: var(--fusion-ink);
 }
 
@@ -305,7 +307,7 @@
   flex: none;
   object-fit: cover;
   border: 1px solid var(--fusion-hair);
-  background: rgba(29, 30, 32, 0.04);
+  background: color-mix(in srgb, var(--color-text-primary) 4%, transparent);
 }
 
 .fusion-src .fn {
@@ -336,7 +338,7 @@
 
 /* 键盘焦点：洗色 + 圆点光环两种安静信号，无彩色侧线（竖侧线＝side-tab slop，禁用） */
 .fusion-row.is-focused {
-  background: rgba(29, 30, 32, 0.055) !important;
+  background: color-mix(in srgb, var(--color-text-primary) 5.5%, transparent) !important;
 }
 
 .fusion-row.is-focused .fusion-dot {
@@ -369,7 +371,7 @@
   backdrop-filter: blur(22px) saturate(1.5);
   border: 1px solid var(--fusion-hair2);
   border-radius: 14px;
-  box-shadow: 0 20px 44px -16px rgba(29, 30, 32, 0.26);
+  box-shadow: 0 20px 44px -16px color-mix(in srgb, var(--color-text-primary) 26%, transparent);
   display: flex;
   align-items: center;
   gap: 14px;
@@ -453,7 +455,7 @@
   flex: 1;
   height: 3px;
   border-radius: 999px;
-  background: rgba(29, 30, 32, 0.1);
+  background: color-mix(in srgb, var(--color-text-primary) 10%, transparent);
   position: relative;
   cursor: pointer;
 }
@@ -475,7 +477,7 @@
   border-radius: 50%;
   background: var(--color-accent);
   transform: translate(-50%, -50%);
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-background-card) 90%, transparent);
   pointer-events: none;
 }
 
@@ -485,7 +487,7 @@
   gap: 5px;
   font-size: 11px;
   color: var(--fusion-sub);
-  background: rgba(29, 30, 32, 0.06);
+  background: color-mix(in srgb, var(--color-text-primary) 6%, transparent);
   border-radius: 6px;
   padding: 2.5px 8px;
   flex: none;
@@ -560,7 +562,7 @@
   background: var(--fusion-glass);
   backdrop-filter: blur(22px) saturate(1.5);
   border: 1px solid var(--fusion-hair2);
-  box-shadow: 0 10px 24px -10px rgba(29, 30, 32, 0.3);
+  box-shadow: 0 10px 24px -10px color-mix(in srgb, var(--color-text-primary) 30%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -598,8 +600,8 @@
   backdrop-filter: blur(28px) saturate(1.6);
   border: 1px solid var(--fusion-hair2);
   border-radius: 16px;
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.7) inset,
-    0 40px 90px -20px rgba(29, 30, 32, 0.4);
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--color-background-card) 70%, transparent) inset,
+    0 40px 90px -20px color-mix(in srgb, var(--color-text-primary) 40%, transparent);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -710,7 +712,7 @@
   flex: 1;
   height: 4px;
   border-radius: 999px;
-  background: rgba(29, 30, 32, 0.1);
+  background: color-mix(in srgb, var(--color-text-primary) 10%, transparent);
   position: relative;
   cursor: pointer;
 }
@@ -732,7 +734,7 @@
   border-radius: 50%;
   background: var(--color-accent);
   transform: translate(-50%, -50%);
-  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-background-card) 90%, transparent);
 }
 
 .fusion-fullplayer .f-ctrl {
@@ -767,7 +769,7 @@
 }
 
 .fusion-queue .q-row:hover {
-  background: rgba(29, 30, 32, 0.035);
+  background: color-mix(in srgb, var(--color-text-primary) 3.5%, transparent);
 }
 
 .fusion-queue .q-row.now {
@@ -778,7 +780,7 @@
   width: 28px;
   height: 28px;
   border-radius: 8px;
-  background: rgba(29, 30, 32, 0.06);
+  background: color-mix(in srgb, var(--color-text-primary) 6%, transparent);
   overflow: hidden;
   justify-self: center;
   display: flex;
@@ -826,12 +828,12 @@
   flex-direction: column;
   overflow: hidden;
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.94);
+  background: color-mix(in srgb, var(--color-background-card) 94%, transparent);
   backdrop-filter: blur(28px) saturate(1.6);
-  border: 1px solid rgba(29, 30, 32, 0.1);
+  border: 1px solid color-mix(in srgb, var(--color-text-primary) 10%, transparent);
   box-shadow:
-    0 4px 10px rgba(29, 30, 32, 0.06),
-    0 36px 80px -16px rgba(29, 30, 32, 0.4);
+    0 4px 10px color-mix(in srgb, var(--color-text-primary) 6%, transparent),
+    0 36px 80px -16px color-mix(in srgb, var(--color-text-primary) 40%, transparent);
 }
 
 .fusion-playlist .pl-head {
@@ -854,7 +856,7 @@
 .fusion-playlist .pl-count {
   font-size: 11px;
   color: var(--fusion-sub);
-  background: rgba(29, 30, 32, 0.06);
+  background: color-mix(in srgb, var(--color-text-primary) 6%, transparent);
   border-radius: 999px;
   padding: 1px 8px;
   font-variant-numeric: tabular-nums;
@@ -925,7 +927,7 @@
   border-top: 1px solid var(--fusion-hair);
   font-size: 10.5px;
   color: var(--fusion-ter);
-  background: rgba(255, 255, 255, 0.5);
+  background: color-mix(in srgb, var(--color-background-card) 50%, transparent);
   flex: none;
   justify-content: center;
 }
@@ -1004,7 +1006,7 @@
 .fusion-veil {
   position: absolute;
   inset: 0;
-  background: rgba(29, 30, 32, 0.14);
+  background: color-mix(in srgb, var(--color-text-primary) 14%, transparent);
   z-index: 40;
 }
 
@@ -1016,12 +1018,12 @@
   z-index: 50;
   border-radius: 14px;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.94);
+  background: color-mix(in srgb, var(--color-background-card) 94%, transparent);
   backdrop-filter: blur(28px) saturate(1.6);
-  border: 1px solid rgba(29, 30, 32, 0.1);
+  border: 1px solid color-mix(in srgb, var(--color-text-primary) 10%, transparent);
   box-shadow:
-    0 4px 10px rgba(29, 30, 32, 0.06),
-    0 36px 80px -16px rgba(29, 30, 32, 0.4);
+    0 4px 10px color-mix(in srgb, var(--color-text-primary) 6%, transparent),
+    0 36px 80px -16px color-mix(in srgb, var(--color-text-primary) 40%, transparent);
 }
 
 .fusion-float-foot {
@@ -1033,7 +1035,7 @@
   border-top: 1px solid var(--fusion-hair);
   font-size: 10.5px;
   color: var(--fusion-ter);
-  background: rgba(255, 255, 255, 0.5);
+  background: color-mix(in srgb, var(--color-background-card) 50%, transparent);
 }
 
 /* ── 帮助面板：双列键位卡 ── */
@@ -1183,7 +1185,7 @@
   margin: 26px 0;
   border: 1px solid var(--fusion-hair);
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.55);
+  background: color-mix(in srgb, var(--color-background-card) 55%, transparent);
   padding: 16px 18px;
   overflow-x: auto;
   position: relative;
@@ -1213,7 +1215,7 @@
   font-family: "SF Mono", Menlo, monospace;
   font-size: 0.82em;
   color: var(--fusion-ink);
-  background: rgba(29, 30, 32, 0.05);
+  background: color-mix(in srgb, var(--color-text-primary) 5%, transparent);
   border: 1px solid var(--fusion-hair);
   border-radius: 5px;
   padding: 1.5px 5px;
@@ -1383,11 +1385,11 @@
 }
 
 .fusion-b-row:hover::after {
-  background: rgba(29, 30, 32, 0.035);
+  background: color-mix(in srgb, var(--color-text-primary) 3.5%, transparent);
 }
 
 .fusion-b-row.is-focused::after {
-  background: rgba(29, 30, 32, 0.055);
+  background: color-mix(in srgb, var(--color-text-primary) 5.5%, transparent);
 }
 
 .fusion-b-row.is-focused .fusion-b-name {
@@ -1398,7 +1400,7 @@
   width: 18px;
   height: 18px;
   border-radius: 5px;
-  background: rgba(29, 30, 32, 0.06);
+  background: color-mix(in srgb, var(--color-text-primary) 6%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1502,7 +1504,7 @@
   margin: 14px 20px 16px;
   border: 1px solid var(--fusion-hair);
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.5);
+  background: color-mix(in srgb, var(--color-background-card) 50%, transparent);
   flex: none;
   overflow: hidden;
 }
@@ -1536,7 +1538,7 @@
 .fusion-fp-pill {
   font-size: 10.5px;
   color: var(--fusion-sub);
-  background: rgba(29, 30, 32, 0.05);
+  background: color-mix(in srgb, var(--color-text-primary) 5%, transparent);
   border-radius: 999px;
   padding: 2px 9px;
   white-space: nowrap;
@@ -1598,7 +1600,7 @@
   gap: 4px;
   font-size: 11px;
   color: var(--fusion-sub);
-  background: rgba(29, 30, 32, 0.045);
+  background: color-mix(in srgb, var(--color-text-primary) 4.5%, transparent);
   border-radius: 6px;
   padding: 2.5px 8px;
   white-space: nowrap;
@@ -1635,7 +1637,7 @@
   margin-top: 14px;
   border: 1px solid var(--fusion-hair);
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.45);
+  background: color-mix(in srgb, var(--color-background-card) 45%, transparent);
   overflow: hidden;
 }
 
@@ -1749,7 +1751,7 @@
 }
 
 .fusion-subs-row:hover::after {
-  background: rgba(29, 30, 32, 0.035);
+  background: color-mix(in srgb, var(--color-text-primary) 3.5%, transparent);
 }
 
 .fusion-subs-ft {
@@ -1772,7 +1774,7 @@
 .fusion-subs-ft .uc {
   font-size: 11px;
   color: var(--fusion-sub);
-  background: rgba(29, 30, 32, 0.06);
+  background: color-mix(in srgb, var(--color-text-primary) 6%, transparent);
   border-radius: 999px;
   padding: 1px 7px;
   font-variant-numeric: tabular-nums;
@@ -1827,7 +1829,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 14px 30px -10px rgba(29, 30, 32, 0.35);
+  box-shadow: 0 14px 30px -10px color-mix(in srgb, var(--color-text-primary) 35%, transparent);
   flex: none;
 }
 
@@ -1902,7 +1904,7 @@
   max-width: 520px;
   border: 1px solid var(--fusion-hair);
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.5);
+  background: color-mix(in srgb, var(--color-background-card) 50%, transparent);
   padding: 18px 22px 20px;
 }
 
@@ -1961,7 +1963,7 @@
   height: 16px;
   border-radius: 5px;
   border: 1px solid var(--fusion-hair2);
-  background: rgba(255, 255, 255, 0.7);
+  background: color-mix(in srgb, var(--color-background-card) 70%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2210,7 +2212,7 @@
   font-family: "SF Mono", Menlo, monospace;
   font-size: 10.5px;
   color: var(--fusion-sub);
-  background: rgba(29, 30, 32, 0.05);
+  background: color-mix(in srgb, var(--color-text-primary) 5%, transparent);
   border-radius: 6px;
   padding: 2.5px 8px;
 }
@@ -2268,26 +2270,6 @@
   color: var(--fusion-ter);
 }
 
-.fusion-cands button {
-  font-size: 11px;
-  color: var(--fusion-sub);
-  background: rgba(29, 30, 32, 0.06);
-  border: 0;
-  border-radius: 6px;
-  padding: 2.5px 8px;
-  cursor: pointer;
-  max-width: 240px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.fusion-cands button.on {
-  color: var(--color-accent);
-  background: var(--color-accent-muted);
-  font-weight: 600;
-}
-
 /* 生成器回退行：发现不了时手填路由（用户输入不可控的出口） */
 .fusion-gen {
   display: flex;
@@ -2310,7 +2292,7 @@
   padding: 0 9px;
   border: 1px solid var(--fusion-hair2);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.55);
+  background: color-mix(in srgb, var(--color-background-card) 55%, transparent);
   color: var(--fusion-ink);
   font-family: "SF Mono", Menlo, monospace;
   font-size: 11.5px;
@@ -2326,7 +2308,7 @@
   padding: 0 12px;
   border: 1px solid var(--fusion-hair2);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.55);
+  background: color-mix(in srgb, var(--color-background-card) 55%, transparent);
   color: var(--fusion-sub);
   font-size: 12px;
   cursor: pointer;
@@ -2352,7 +2334,7 @@
   padding: 7px 9px;
   border: 1px solid var(--fusion-hair2);
   border-radius: 9px;
-  background: rgba(255, 255, 255, 0.55);
+  background: color-mix(in srgb, var(--color-background-card) 55%, transparent);
   color: var(--fusion-ink);
   font-family: "SF Mono", Menlo, monospace;
   font-size: 11px;
@@ -2408,7 +2390,7 @@ body.dark-theme .fusion-gen input,
   width: 24px;
   height: 24px;
   border-radius: 7px;
-  background: rgba(29, 30, 32, 0.06);
+  background: color-mix(in srgb, var(--color-text-primary) 6%, transparent);
   color: var(--fusion-sub);
   display: flex;
   align-items: center;
@@ -2484,7 +2466,7 @@ body.dark-theme .fusion-gen input,
 }
 
 .fusion-snav:hover {
-  background: rgba(29, 30, 32, 0.05);
+  background: color-mix(in srgb, var(--color-text-primary) 5%, transparent);
   color: var(--fusion-ink);
 }
 
@@ -2492,7 +2474,7 @@ body.dark-theme .fusion-gen input,
 .fusion-snav.on {
   color: var(--fusion-ink);
   font-weight: 600;
-  background: rgba(29, 30, 32, 0.07);
+  background: color-mix(in srgb, var(--color-text-primary) 7%, transparent);
 }
 
 .fusion-set-body {
@@ -2547,7 +2529,7 @@ body.dark-theme .fusion-gen input,
 }
 
 .fusion-srow:hover::after {
-  background: rgba(29, 30, 32, 0.03);
+  background: color-mix(in srgb, var(--color-text-primary) 3%, transparent);
 }
 
 .fusion-srow .lb {
@@ -2587,7 +2569,7 @@ body.dark-theme .fusion-gen input,
   margin: 18px 0 8px;
   border: 1px solid var(--fusion-hair);
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.5);
+  background: color-mix(in srgb, var(--color-background-card) 50%, transparent);
   padding: 14px 18px 16px;
 }
 
@@ -2631,13 +2613,6 @@ body.dark-theme .fusion-gen input,
 
 /* ── 夜读本（dark.html 契约）：暖黑画布 + 深色玻璃，非反色 ── */
 body.dark-theme {
-  --fusion-ground: #17171a;
-  --fusion-ink: #e9e9e6;
-  --fusion-sub: #a2a4a8;
-  --fusion-ter: #6b6d73;
-  --fusion-glass: rgba(22, 22, 25, 0.72);
-  --fusion-hair: rgba(233, 233, 230, 0.08);
-  --fusion-hair2: rgba(233, 233, 230, 0.13);
   --fusion-pink: #ee8bab;
   --fusion-pink-soft: rgba(238, 139, 171, 0.12);
   --fusion-amber: #edb433;
@@ -2673,25 +2648,25 @@ body.dark-theme .fusion-cnt,
 body.dark-theme .fusion-chip,
 body.dark-theme .fusion-article-body code,
 body.dark-theme .fusion-card .gen code {
-  background: rgba(233, 233, 230, 0.07);
+  background: color-mix(in srgb, var(--color-text-primary) 7%, transparent);
   color: var(--fusion-sub);
 }
 
 body.dark-theme .fusion-row:hover {
-  background: rgba(233, 233, 230, 0.035);
+  background: color-mix(in srgb, var(--color-text-primary) 3.5%, transparent);
 }
 
 body.dark-theme .fusion-srow:hover::after {
-  background: rgba(233, 233, 230, 0.045);
+  background: color-mix(in srgb, var(--color-text-primary) 4.5%, transparent);
 }
 
 body.dark-theme .fusion-row.is-focused,
 body.dark-theme .fusion-b-row.is-focused {
-  background: rgba(233, 233, 230, 0.045);
+  background: color-mix(in srgb, var(--color-text-primary) 4.5%, transparent);
 }
 
 body.dark-theme .fusion-snav.on {
-  background: rgba(233, 233, 230, 0.07);
+  background: color-mix(in srgb, var(--color-text-primary) 7%, transparent);
 }
 
 body.dark-theme .fusion-row.is-read .fusion-dot {
@@ -2699,11 +2674,11 @@ body.dark-theme .fusion-row.is-read .fusion-dot {
 }
 
 body.dark-theme .fusion-badge.b-art {
-  background: rgba(233, 233, 230, 0.08);
+  background: color-mix(in srgb, var(--color-text-primary) 8%, transparent);
 }
 
 body.dark-theme .fusion-badge.b-dou {
-  background: rgba(233, 233, 230, 0.1);
+  background: color-mix(in srgb, var(--color-text-primary) 10%, transparent);
 }
 
 /* 浮层：深色面板 */
@@ -2712,15 +2687,15 @@ body.dark-theme .fusion-veil {
 }
 
 body.dark-theme .fusion-float {
-  background: rgba(30, 30, 34, 0.92);
-  border-color: rgba(233, 233, 230, 0.12);
+  background: color-mix(in srgb, var(--color-background-card) 92%, transparent);
+  border-color: color-mix(in srgb, var(--color-text-primary) 12%, transparent);
   box-shadow:
     0 4px 10px rgba(0, 0, 0, 0.25),
     0 36px 80px -16px rgba(0, 0, 0, 0.65);
 }
 
 body.dark-theme .fusion-float-foot {
-  background: rgba(233, 233, 230, 0.04);
+  background: color-mix(in srgb, var(--color-text-primary) 4%, transparent);
 }
 
 body.dark-theme .fusion-chip.on {
@@ -2729,15 +2704,15 @@ body.dark-theme .fusion-chip.on {
 }
 
 body.dark-theme .fusion-playlist {
-  background: rgba(30, 30, 34, 0.92);
-  border-color: rgba(233, 233, 230, 0.12);
+  background: color-mix(in srgb, var(--color-background-card) 92%, transparent);
+  border-color: color-mix(in srgb, var(--color-text-primary) 12%, transparent);
   box-shadow:
     0 4px 10px rgba(0, 0, 0, 0.25),
     0 36px 80px -16px rgba(0, 0, 0, 0.65);
 }
 
 body.dark-theme .fusion-playlist .pl-count {
-  background: rgba(233, 233, 230, 0.07);
+  background: color-mix(in srgb, var(--color-text-primary) 7%, transparent);
 }
 
 body.dark-theme .fusion-add-in input,
@@ -2751,7 +2726,7 @@ body.dark-theme .fusion-sel,
 body.dark-theme .fusion-seg,
 
 body.dark-theme .fusion-article-body pre {
-  background: rgba(233, 233, 230, 0.05);
+  background: color-mix(in srgb, var(--color-text-primary) 5%, transparent);
   border-color: var(--fusion-hair2);
 }
 
@@ -2761,27 +2736,27 @@ body.dark-theme .fusion-article-body pre code {
 
 /* 浏览帧/源头栏：灰阶投影转浅 */
 body.dark-theme .fusion-b-row:hover::after {
-  background: rgba(233, 233, 230, 0.05);
+  background: color-mix(in srgb, var(--color-text-primary) 5%, transparent);
 }
 
 body.dark-theme .fusion-b-row.is-focused::after {
-  background: rgba(233, 233, 230, 0.045);
+  background: color-mix(in srgb, var(--color-text-primary) 4.5%, transparent);
 }
 
 body.dark-theme .fusion-b-ic {
-  background: rgba(233, 233, 230, 0.07);
+  background: color-mix(in srgb, var(--color-text-primary) 7%, transparent);
 }
 
 body.dark-theme .fusion-thumb,
 body.dark-theme .fusion-ficon {
-  background: rgba(233, 233, 230, 0.06);
+  background: color-mix(in srgb, var(--color-text-primary) 6%, transparent);
 }
 
 /* 订阅管理：深色浮层与灰阶 */
 body.dark-theme .fusion-subs-search,
 body.dark-theme .fusion-ctx {
-  background: rgba(30, 30, 34, 0.92);
-  border-color: rgba(233, 233, 230, 0.12);
+  background: color-mix(in srgb, var(--color-background-card) 92%, transparent);
+  border-color: color-mix(in srgb, var(--color-text-primary) 12%, transparent);
   color: var(--fusion-sub);
 }
 
@@ -2791,17 +2766,17 @@ body.dark-theme .fusion-ctx .mi {
 }
 
 body.dark-theme .fusion-subs-row:hover::after {
-  background: rgba(233, 233, 230, 0.05);
+  background: color-mix(in srgb, var(--color-text-primary) 5%, transparent);
 }
 
 body.dark-theme .fusion-qa2:hover,
 body.dark-theme .fusion-qa3:hover,
 body.dark-theme .fusion-ctx .mi:hover {
-  background: rgba(233, 233, 230, 0.05);
+  background: color-mix(in srgb, var(--color-text-primary) 5%, transparent);
 }
 
 body.dark-theme .fusion-subs-ft .uc {
-  background: rgba(233, 233, 230, 0.07);
+  background: color-mix(in srgb, var(--color-text-primary) 7%, transparent);
 }
 
 body.dark-theme .fusion-b-head:hover .fusion-b-title {
@@ -2810,16 +2785,16 @@ body.dark-theme .fusion-b-head:hover .fusion-b-title {
 
 body.dark-theme .fusion-pack,
 body.dark-theme .fusion-prev {
-  background: rgba(233, 233, 230, 0.04);
+  background: color-mix(in srgb, var(--color-text-primary) 4%, transparent);
 }
 
 body.dark-theme .fusion-pack .cb {
-  background: rgba(233, 233, 230, 0.06);
+  background: color-mix(in srgb, var(--color-text-primary) 6%, transparent);
 }
 
 body.dark-theme .fusion-ptrack .pt,
 body.dark-theme .fusion-pbar {
-  background: rgba(233, 233, 230, 0.12);
+  background: color-mix(in srgb, var(--color-text-primary) 12%, transparent);
 }
 
 /* 播放器三态：暗色 */
@@ -2828,32 +2803,32 @@ body.dark-theme .fusion-queue .q-row:hover,
 
 body.dark-theme .fusion-minipill .bubble,
 body.dark-theme .fusion-minipill .ring {
-  background: rgba(30, 30, 34, 0.92);
-  border-color: rgba(233, 233, 230, 0.12);
+  background: color-mix(in srgb, var(--color-background-card) 92%, transparent);
+  border-color: color-mix(in srgb, var(--color-text-primary) 12%, transparent);
 }
 
 body.dark-theme .fusion-minipill .ring > svg circle:first-child {
-  stroke: rgba(233, 233, 230, 0.12);
+  stroke: color-mix(in srgb, var(--color-text-primary) 12%, transparent);
 }
 
 body.dark-theme .fusion-fullplayer {
-  background: rgba(30, 30, 34, 0.92);
-  border-color: rgba(233, 233, 230, 0.12);
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset,
+  background: color-mix(in srgb, var(--color-background-card) 92%, transparent);
+  border-color: color-mix(in srgb, var(--color-text-primary) 12%, transparent);
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--color-background-card) 4%, transparent) inset,
     0 40px 90px -20px rgba(0, 0, 0, 0.6);
 }
 
 body.dark-theme .fusion-fullplayer .f-foot {
-  background: rgba(233, 233, 230, 0.04);
+  background: color-mix(in srgb, var(--color-text-primary) 4%, transparent);
 }
 
 body.dark-theme .fusion-fbar,
 body.dark-theme .fusion-queue .q-thumb {
-  background: rgba(233, 233, 230, 0.12);
+  background: color-mix(in srgb, var(--color-text-primary) 12%, transparent);
 }
 
 body.dark-theme .fusion-fbar i {
-  box-shadow: 0 0 0 4px rgba(30, 30, 34, 0.9);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-background-card) 90%, transparent);
 }
 
 body.dark-theme .fusion-mark.quiet {
@@ -2862,22 +2837,22 @@ body.dark-theme .fusion-mark.quiet {
 
 /* 源头卡：暗色（暖黑玻璃，结构不变） */
 body.dark-theme .fusion-fp {
-  background: rgba(233, 233, 230, 0.035);
-  border-color: rgba(233, 233, 230, 0.1);
+  background: color-mix(in srgb, var(--color-text-primary) 3.5%, transparent);
+  border-color: color-mix(in srgb, var(--color-text-primary) 10%, transparent);
 }
 
 body.dark-theme .fusion-fp-pill,
 body.dark-theme .fusion-fp-tag {
-  background: rgba(233, 233, 230, 0.07);
+  background: color-mix(in srgb, var(--color-text-primary) 7%, transparent);
 }
 
 body.dark-theme .fusion-fp-stats {
   background: rgba(0, 0, 0, 0.18);
-  border-color: rgba(233, 233, 230, 0.08);
+  border-color: color-mix(in srgb, var(--color-text-primary) 8%, transparent);
 }
 
 body.dark-theme .fusion-fp-stat {
-  border-color: rgba(233, 233, 230, 0.08);
+  border-color: color-mix(in srgb, var(--color-text-primary) 8%, transparent);
 }
 
 /* 虚拟列表分组标签（原 custom-components.css，随死 CSS 清理迁入） */

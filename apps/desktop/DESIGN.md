@@ -17,6 +17,7 @@
 | 环境光 | 红 `rgba(232,80,96,.05)` 左上（固定暖意）+ 靛侧右上 radial（`color-mix` 从 `--color-accent` 派生 ≈5.5%） | 画布氛围，极淡 |
 | `--ink` / `--sub` / `--ter` | `#1D1E20` / `#6A6C6E` / `#9EA0A2` | 文字三级 |
 | `--hair` / `--hair2` | `rgba(29,30,32,.08)` / `.13` | 发丝线 / 边框 |
+| fusion 中性阶 | **全部接 Astryx 主题令牌**（2026-10 契约）：ground=`background-body`、glass=`card 80% 混`、ink/sub=`text-primary/secondary`、ter=48% 混、hair=`border`、warn=`error`；行/悬停/浮层的中性 rgba 一律 `color-mix` 令牌派生——切主题即整面变色；pink/amber/serif-ink 为固定状态色（夜读暖墨除外） |
 | `--color-accent` | **Astryx 主题 accent，直接消费、无任何 fusion 间接层**（2026-10 契约）：主题即调色板身份，五色板已删；gothic 为永久深色主题，选中即强制深色 | 唯一强调色：焦点线、圆点、播放、选中、正文链接 |
 | `--color-accent-muted` | Astryx 自带 accent 淡底令牌（各主题自带设计值） | 选中底、淡色洗 |
 | `--pink` | `#E86A92` | 仅 B站徽章 |

@@ -132,8 +132,8 @@ describe("AddFeedChannel（2026-09-25 重梳理后的流程）", () => {
 
     const chips = Array.from(document.querySelectorAll(".fusion-cands button"));
     expect(chips).toHaveLength(2);
-    expect(chips[0].className).toContain("on");
-    expect(chips[0].textContent).toBe("sspai.com/feed");
+    expect(chips[0].getAttribute("aria-pressed")).toBe("true");
+    expect(chips[0].getAttribute("aria-label")).toContain("sspai.com/feed");
   });
 
   it("已知平台主页走生成器快通道：只发一次请求（跳过整轮发现）并标 generator:<route>", async () => {

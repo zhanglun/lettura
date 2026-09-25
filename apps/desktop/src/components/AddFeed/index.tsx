@@ -3,6 +3,7 @@ import { Kbd } from "@astryxdesign/core/Kbd";
 import { Button } from "@astryxdesign/core/Button";
 import { Selector } from "@astryxdesign/core/Selector";
 import { TextInput } from "@astryxdesign/core/TextInput";
+import { ToggleButton } from "@astryxdesign/core/ToggleButton";
 import { Plus, Search } from "lucide-react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useNavigate } from "react-router-dom";
@@ -481,15 +482,13 @@ export const AddFeedChannel = (props: any) => {
                       {t("fusion.add.candidates", { count: preview.candidates.length })}
                     </span>
                     {preview.candidates.slice(0, 6).map((candidate) => (
-                      <button
-                        type="button"
+                      <ToggleButton
                         key={candidate}
-                        className={candidate === preview.resolvedUrl ? "on" : ""}
-                        onClick={() => previewUrl(candidate)}
-                        title={candidate}
-                      >
-                        {candidate.replace(/^https?:\/\//, "").slice(0, 34)}
-                      </button>
+                        size="sm"
+                        label={candidate.replace(/^https?:\/\//, "").slice(0, 34)}
+                        isPressed={candidate === preview.resolvedUrl}
+                        onPressedChange={() => previewUrl(candidate)}
+                      />
                     ))}
                   </div>
                 )}
