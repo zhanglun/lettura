@@ -10,15 +10,15 @@ import { RouteConfig } from "@/config";
 import { Star, CheckCheck } from "lucide-react";
 import * as dataAgent from "@/helpers/dataAgent";
 import { useTranslation } from "react-i18next";
-import { getArticleKind } from "@/helpers/articleKind";
+import { getCarrier } from "@/helpers/mediaType";
 import { pickThumbUrl } from "@/helpers/articleContent";
 
 /** 行首缩略图：内容首图（feed 自带）> feed 图标 > 安静类型色块（无字符） */
 export function RowThumb({ article }: { article: ArticleResItem }) {
   const [imgError, setImgError] = useState(false);
   const thumbUrl = useMemo(() => pickThumbUrl(article), [article]);
-  const kind = getArticleKind(article);
-  const tint = kind === "podcast" ? "pod" : kind === "platform" ? "bil" : "";
+  const carrier = getCarrier(article);
+  const tint = carrier === "audio" ? "pod" : carrier === "video" ? "bil" : "";
 
   if (thumbUrl && !imgError) {
     return (

@@ -53,7 +53,6 @@
   "Next article": "下一篇",
   "Open in browser": "在浏览器中打开",
   "Copy link": "复制链接",
-  "Playlist": "播放列表",
   "General": "通用",
   "Update Interval": "更新间隔",
   "set the update interval": "设置自动更新的间隔时间",
@@ -213,6 +212,10 @@
     }
   },
   "settings": {
+    "rsshub_instance": "RSSHub 实例",
+    "rsshub_instance_help": "平台源（B站/知乎/微博/YouTube 等）用它生成 feed 地址；默认公共 rsshub.app，可填自建或镜像",
+    "generator_routes": "自定义生成路由",
+    "generator_routes_help": "一行一条：`匹配 => 路由`。左侧按正则用（域名也行），右侧以 http 开头则直接当 feed 地址",
     "subtitle": "同步、外观、OPML 与数据，都在这一页。",
     "status_secure": "本地配置安全",
     "status_sources": "42 个源活跃",
@@ -544,18 +547,24 @@
     "ctl": {
       "back30": "后退 30 秒",
       "fwd30": "前进 30 秒",
-      "open_detail": "展开单集详情",
       "toggle": "播放/暂停"
     },
-    "podcast": {
-      "empty": "暂无播放内容",
-      "empty_hint": "添加一些播客开始收听吧"
+    "sleep": {
+      "title": "睡眠定时",
+      "off": "关闭",
+      "minutes": "{{n}} 分钟",
+      "remaining": "睡眠定时 · 还剩 {{time}}"
     },
     "collapse": "收起",
     "collapse_bar": "收起（右下角圆钮，播放不停）",
     "expand": "放大（沉浸页）",
     "expand_bar": "展开播放条",
     "now_playing": "正在播放",
+    "playing": "播放中",
+    "playlist": "播放列表",
+    "playlist_count": "{{count}} 集",
+    "empty": "队列为空",
+    "empty_hint": "在单集详情点播放，即加入队列",
     "up_next": "接着播"
   },
   "fusion": {
@@ -588,15 +597,14 @@
       "all": "全部",
       "article": "文章",
       "podcast": "播客",
-      "platform": "平台"
+      "video": "视频", "email": "邮件"
     },
     "strip": {
       "meta": "{{sources}} 个来源 · 最近同步 {{time}}"
     },
-    "badge": {
+    "badge": {"email": "邮", "video": "视", 
       "article": "文",
       "podcast": "播",
-      "platform": "视",
       "douyin": "抖"
     },
     "cmd": {
@@ -654,23 +662,21 @@
       "subscribed": "已订阅 {{count}} 个来源"
     },
     "add": {
-      "ph_auto": "粘贴 RSS 地址，或 B站 / 知乎 / 微博 / Newsletter 主页链接…",
-      "ph_rss": "粘贴 RSS / Atom 地址…",
-      "ph_bil": "粘贴 UP 主主页链接（space.bilibili.com/…）",
-      "ph_zh": "粘贴知乎用户主页或专栏链接…",
-      "ph_wb": "粘贴微博用户主页（weibo.com/u/…）…",
-      "ph_nl": "粘贴 Newsletter 订阅页（Substack / Buttondown / Kill the Newsletter）…",
-      "seg_auto": "自动检测",
-      "seg_rss": "RSS / Atom",
-      "seg_bil": "B站",
-      "seg_zh": "知乎",
-      "seg_wb": "微博",
-      "seg_nl": "Newsletter",
+    "ph_any": "粘贴任意地址：RSS、站点主页、B站/知乎/微博、Newsletter…",
+    "recent": "最近条目 RECENT",
+    "candidates": "发现 {{count}} 个 feed",
+    "gen_local": "生成器",
+    "gen_route_ph": "填 RSSHub 路由，例如 bilibili/user/123456",
+    "gen_apply": "转换并预览",
+    "gen_instance": "实例 {{instance}}",
+    "new_folder": "新建分组…",
+    "new_folder_ph": "分组名称",
+    "create": "创建",
+    "done_toast": "已订阅「{{title}}」· 已同步 {{count}} 篇{{folder}}",
+    "foot_hint": "平台源经设置里的 RSSHub 实例生成（当前 {{instance}}）",
       "detecting": "正在探测地址…",
       "err_no_feed": "没找到 feed——试试 RSS 地址（.xml / /feed）或平台主页链接",
       "ungrouped": "未分组",
-      "done": "已订阅「{{title}}」· 分组「{{folder}}」",
-      "gen_hint": "由 RSSHub 生成，无需自建",
       "foot_rsshub": "平台源经 RSSHub 生成，无需自建"
     }
   },

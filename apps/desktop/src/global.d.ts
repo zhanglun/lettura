@@ -78,4 +78,9 @@ declare interface UserConfig {
   card_density?: string;
   /** 强调色（indigo/moss/ochre/brick/vine），令牌层 color-mix 派生 */
   accent_color?: string;
+
+  /** 平台源生成器用的 RSSHub 实例（默认公共 rsshub.app，可填自建/镜像） */
+  rsshub_instance?: string;
+  /** 自定义生成路由，一行一条：`匹配 => 路由`（详见 settings 帮助文字） */
+  generator_routes?: string[];
 }

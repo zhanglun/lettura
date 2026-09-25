@@ -89,14 +89,26 @@ export const getArticleList = async (filter: any) => {
   return req;
 };
 
-export const fetchFeed = async (url: string): Promise<[any, string]> => {
-  return invoke("fetch_feed", { url });
+export const fetchFeed = async (
+  url: string,
+  origin?: string,
+  carrier?: string,
+): Promise<{
+  feed: any;
+  resolved_url: string;
+  candidates: string[];
+  entries: any[];
+  message: string;
+}> => {
+  return invoke("fetch_feed", { url, origin, carrier });
 };
 
 export const subscribeFeed = async (
   url: string,
+  origin?: string,
+  carrier?: string,
 ): Promise<[FeedResItem, number, string]> => {
-  return invoke("add_feed", { url });
+  return invoke("add_feed", { url, origin, carrier });
 };
 
 export const syncFeed = async (

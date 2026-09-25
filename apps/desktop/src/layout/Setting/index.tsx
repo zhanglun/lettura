@@ -71,6 +71,9 @@ function Seg<T extends string | number>({
 /** 设置第三视图：面板内校准台，左锚点导航 + 三段一页（settings.html 契约） */
 export function SettingPage() {
   const { t, i18n } = useTranslation();
+  // 文本类设置用草稿 + 失焦提交（其余控件即改即写；逐字符写 TOML 太重）
+  const [rsshubDraft, setRsshubDraft] = useState<string | null>(null);
+  const [routesDraft, setRoutesDraft] = useState<string | null>(null);
   const navigate = useNavigate();
   const search = useLocation().search;
   const isSubscriptions =
@@ -293,7 +296,7 @@ export function SettingPage() {
           </button>
         </nav>
 
-        <div className="fusion-set-body" ref={bodyRef}>
+        <div className="fusion-set-body fusion-inset-tail" ref={bodyRef}>
           <div className="fusion-set-inner">
             {/* 外观与阅读 */}
             <div className="fusion-set-h" id="appearance">
@@ -429,6 +432,47 @@ export function SettingPage() {
                 />
                 <span className="fusion-chip">{cfg?.threads ?? 3} / 5</span>
               </div>
+            </SRow>
+            <SRow
+              label={t("settings.rsshub_instance")}
+              help={t("settings.rsshub_instance_help")}
+            >
+              <input
+                className="fusion-in-sm"
+                value={rsshubDraft ?? cfg?.rsshub_instance ?? ""}
+                placeholder="https://rsshub.app"
+                spellCheck={false}
+                onChange={(e) => setRsshubDraft(e.target.value)}
+                onBlur={() => {
+                  if (rsshubDraft === null) return;
+                  store.updateUserConfig({ ...cfg, rsshub_instance: rsshubDraft.trim() });
+                  setRsshubDraft(null);
+                }}
+              />
+            </SRow>
+            <SRow
+              label={t("settings.generator_routes")}
+              help={t("settings.generator_routes_help")}
+            >
+              <textarea
+                className="fusion-set-ta"
+                rows={3}
+                spellCheck={false}
+                placeholder="xiaohongshu.com/user/profile/(\\w+) => xiaohongshu/user/$1"
+                value={routesDraft ?? (cfg?.generator_routes ?? []).join("\n")}
+                onChange={(e) => setRoutesDraft(e.target.value)}
+                onBlur={() => {
+                  if (routesDraft === null) return;
+                  store.updateUserConfig({
+                    ...cfg,
+                    generator_routes: routesDraft
+                      .split("\n")
+                      .map((line) => line.trim())
+                      .filter(Boolean),
+                  });
+                  setRoutesDraft(null);
+                }}
+              />
             </SRow>
             <SRow label={t("settings.subs_manage")} help={t("settings.subs_manage_help")}>
               <button

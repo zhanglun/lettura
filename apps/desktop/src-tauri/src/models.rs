@@ -21,7 +21,7 @@ pub struct Feed {
   pub feed_url: String,
 
   #[diesel(sql_type = Text)]
-  pub feed_type: String,
+  pub origin: String,
 
   #[diesel(sql_type = Text)]
   pub description: String,
@@ -58,13 +58,17 @@ pub struct Feed {
 
   #[diesel(sql_type = Nullable<Integer>)]
   pub source_id: Option<i32>,
+
+  #[diesel(sql_type = Text)]
+  pub carrier: String,
 }
 
 #[derive(Debug, Clone, Serialize, Insertable)]
 #[diesel(table_name = feeds)]
 pub struct NewFeed {
   pub uuid: String,
-  pub feed_type: String,
+  /// 来源：native | generator:<route>
+  pub origin: String,
   pub title: String,
   pub link: String,
   pub logo: String,
@@ -73,6 +77,8 @@ pub struct NewFeed {
   pub pub_date: String,
   pub updated: String,
   pub sort: i32,
+  /// 源级载体提示（源列表图标用）：text | audio | video | email
+  pub carrier: String,
 }
 
 #[derive(Debug, Queryable, Serialize, QueryableByName, Selectable)]
@@ -159,6 +165,9 @@ pub struct Article {
 
   #[diesel(sql_type = Text)]
   pub notes: String,
+
+  #[diesel(sql_type = Text)]
+  pub carrier: String,
 }
 
 #[derive(Debug, Insertable, Clone)]
@@ -174,6 +183,8 @@ pub struct NewArticle {
   pub author: String,
   pub pub_date: String,
   pub media_object: String,
+  /// 载体：text | audio | video | email（入库判定一次；"能不能站内播/要不要外跳"由它决定）
+  pub carrier: String,
 }
 
 #[derive(Debug, Queryable, QueryableByName, Clone, Serialize)]

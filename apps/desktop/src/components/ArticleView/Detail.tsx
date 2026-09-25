@@ -5,16 +5,17 @@ import { ArticleResItem } from "@/db";
 import { PodcastAdapter } from "./adapter/Podcast";
 import { PlatformAdapter } from "./adapter/Platform";
 import { CommonAdapter } from "./adapter/Common";
-import { getArticleKind } from "@/helpers/articleKind";
+import { canPlayInApp, getCarrier, opensExternally } from "@/helpers/mediaType";
 import { pickArticleContent, processArticleHtml } from "@/helpers/articleContent";
 import { useTranslation } from "react-i18next";
 
 function validateFeed(article: ArticleResItem, medias: any) {
-  // 分类收敛：URL 平台优先于播客（平台条目也可能带 media）
-  if (getArticleKind(article) === "platform") {
+  // 载体定消费方式：audio → 站内播放器；video → 外跳；text/email → 阅读面
+  const carrier = getCarrier(article);
+  if (opensExternally(carrier)) {
     return { isCommon: false, isPlatform: true, isPodcast: false };
   }
-  if (medias?.length > 0) {
+  if (canPlayInApp(carrier) && medias?.length > 0) {
     return { isCommon: false, isPlatform: false, isPodcast: true };
   }
   return { isCommon: true, isPlatform: false, isPodcast: false };

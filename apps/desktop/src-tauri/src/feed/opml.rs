@@ -223,7 +223,8 @@ fn import_feed(title: &str, feed_url: &str, folder_uuid: Option<String>) -> Resu
   let uuid = Uuid::new_v4().hyphenated().to_string();
   let feed = models::NewFeed {
     uuid: uuid.clone(),
-    feed_type: "rss".to_string(),
+    origin: "native".to_string(),
+    carrier: "text".to_string(),
     title: title.to_string(),
     link: feed_url.to_string(),
     logo: String::new(),

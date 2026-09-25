@@ -209,6 +209,8 @@ pub struct ChildItem {
   pub link: Option<String>,
   pub logo: String,
   pub feed_url: String,
+  pub origin: String,
+  pub carrier: String,
   pub description: String,
   pub create_date: String,
   pub last_sync_date: String,
@@ -226,6 +228,8 @@ pub struct SubscribeItem {
   pub link: Option<String>,
   pub logo: String,
   pub feed_url: String,
+  pub origin: String,
+  pub carrier: String,
   pub description: String,
   pub create_date: String,
   pub last_sync_date: String,
@@ -249,6 +253,10 @@ pub struct FeedJoinRecord {
   pub logo: String,
   #[diesel(sql_type = diesel::sql_types::Text)]
   pub feed_url: String,
+  #[diesel(sql_type = diesel::sql_types::Text)]
+  pub origin: String,
+  #[diesel(sql_type = diesel::sql_types::Text)]
+  pub carrier: String,
   #[diesel(sql_type = diesel::sql_types::Text)]
   pub description: String,
   #[diesel(sql_type = diesel::sql_types::Text)]
@@ -275,6 +283,8 @@ pub fn get_feeds() -> Vec<SubscribeItem> {
       C.last_sync_date,
       C.health_status,
       C.failure_reason,
+      C.origin as origin,
+      C.carrier as carrier,
       F.folder_uuid as folder_uuid
     FROM feeds as C
     LEFT JOIN feed_metas AS F
@@ -307,6 +317,8 @@ pub fn get_feeds() -> Vec<SubscribeItem> {
       link: Some(channel.link),
       logo: channel.logo,
       feed_url: channel.feed_url,
+      origin: channel.origin,
+      carrier: channel.carrier,
       description: channel.description,
       create_date: channel.create_date,
       last_sync_date: channel.last_sync_date,
@@ -331,6 +343,8 @@ pub fn get_feeds() -> Vec<SubscribeItem> {
       logo: String::from(""),
       children: Some(c_uuids.to_vec()),
       feed_url: "".to_string(),
+      origin: "".to_string(),
+      carrier: "".to_string(),
       description: "".to_string(),
       create_date: folder.create_date,
       last_sync_date: "".to_string(),
@@ -355,6 +369,8 @@ pub fn get_feeds() -> Vec<SubscribeItem> {
       link: Some(feed.link),
       logo: feed.logo,
       feed_url: feed.feed_url,
+      origin: feed.origin.clone(),
+      carrier: feed.carrier.clone(),
       description: feed.description,
       create_date: feed.create_date,
       children: Some(Vec::new()),
@@ -696,7 +712,13 @@ pub async fn sync_articles(uuid: String) -> HashMap<String, (String, usize, Stri
     }
   };
 
-  let articles = create_article_models(&channel.uuid, &channel.feed_url, &res);
+  let articles = create_article_models(
+    &channel.uuid,
+    &channel.feed_url,
+    &res,
+    &channel.origin,
+    &channel.carrier,
+  );
   let record = feed::article::Article::add_articles(channel.uuid, articles);
 
   result.insert(uuid, (channel.title, record, "".to_string()));

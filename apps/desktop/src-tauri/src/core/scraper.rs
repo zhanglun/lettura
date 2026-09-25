@@ -158,7 +158,8 @@ mod tests {
     match res {
       Ok(res) => {
         let channel_uuid = Uuid::new_v4().hyphenated().to_string();
-        let articles = cmd::create_article_models(&channel_uuid, &url.to_string(), &res);
+        let articles =
+          cmd::create_article_models(&channel_uuid, &url.to_string(), &res, "native", "");
 
         println!("articles: {:?}", articles);
 

@@ -22,7 +22,7 @@ import { ArticleReadStatus, ArticleStarStatus } from "@/typing";
 import type { ArticleResItem } from "@/db";
 import { useTranslation } from "react-i18next";
 
-type KindFilter = "all" | "article" | "podcast" | "platform";
+type CarrierFilter = "all" | "text" | "audio" | "video" | "email";
 
 export function ArticleView() {
   const { t } = useTranslation();
@@ -62,14 +62,14 @@ export function ArticleView() {
   const [queueSyncing, setQueueSyncing] = useState(false);
 
   // 类型过滤（服务端过滤与计数，不与 read_status/currentFilter 混用）
-  const [kindFilter, setKindFilter] = useState<KindFilter>("all");
+  const [carrierFilter, setCarrierFilter] = useState<CarrierFilter>("all");
   const [focusIdx, setFocusIdx] = useState(0);
 
   const {
     articles,
     total,
-    kindCounts,
-    refreshKindCounts,
+    carrierCounts,
+    refreshCarrierCounts,
     isLoading,
     size,
     setSize,
@@ -82,8 +82,8 @@ export function ArticleView() {
   } = useArticle({
     feedUuid,
     type,
-    // 类型过滤条（全部/文章/播客/平台）：服务端过滤，不随分页截断
-    kind: feedUuid ? undefined : kindFilter,
+    // 载体过滤条（全部/文章/播客/视频[+邮件]）：服务端过滤，不随分页截断
+    carrier: feedUuid ? undefined : carrierFilter,
     // 源队列帧：过滤条未读/全部，脱离全局 currentFilter（feeds.html 契约）
     readStatus: feedUuid
       ? queueFilter === "unread"
@@ -273,7 +273,7 @@ export function ArticleView() {
 
   const markAllRead = async () => {
     await store.markArticleListAsRead(isToday, isAll);
-    await Promise.all([mutate(), refreshKindCounts()]);
+    await Promise.all([mutate(), refreshCarrierCounts()]);
   };
 
   const title = store.viewMeta?.title ?? "";
@@ -323,11 +323,15 @@ export function ArticleView() {
     ? dayjs(new Date(store.userConfig.last_sync_time as any)).format("HH:mm")
     : "";
 
-  const kindTabs: { key: KindFilter; label: string }[] = [
+  // 载体 tab：三档固定 + 邮件仅在真有邮件内容时出现（避免常驻一个永远为 0 的档）
+  const carrierTabs: { key: CarrierFilter; label: string }[] = [
     { key: "all", label: t("fusion.filter.all") },
-    { key: "article", label: t("fusion.filter.article") },
-    { key: "podcast", label: t("fusion.filter.podcast") },
-    { key: "platform", label: t("fusion.filter.platform") },
+    { key: "text", label: t("fusion.filter.article") },
+    { key: "audio", label: t("fusion.filter.podcast") },
+    { key: "video", label: t("fusion.filter.video") },
+    ...(carrierCounts.email > 0
+      ? [{ key: "email" as CarrierFilter, label: t("fusion.filter.email") }]
+      : []),
   ];
 
   const isFirstRun = (store.subscribes?.length ?? 0) === 0;
@@ -335,7 +339,7 @@ export function ArticleView() {
     !isFirstRun &&
     isAll &&
     store.currentFilter.id === 1 &&
-    kindFilter === "all" &&
+    carrierFilter === "all" &&
     isEmpty;
 
   if (isFirstRun || isClearQuiet) {
@@ -437,20 +441,20 @@ export function ArticleView() {
         </>
       ) : (
         <>
-          {/* 类型过滤条：全部 = 服务端真实总数；类型计数基于已加载页（客户端启发式）；右侧同步/全部已读 */}
+          {/* 载体过滤条：全部 = 服务端真实总数；各档计数同为服务端（不随分页截断） */}
           <div className="fusion-strip">
-            {kindTabs.map((tab) => (
+            {carrierTabs.map((tab) => (
               <button
                 key={tab.key}
                 type="button"
-                className={`fusion-tab ${kindFilter === tab.key ? "on" : ""}`}
-                onClick={() => setKindFilter(tab.key)}
+                className={`fusion-tab ${carrierFilter === tab.key ? "on" : ""}`}
+                onClick={() => setCarrierFilter(tab.key)}
               >
                 {tab.label}
                 <span className="c">
                   {tab.key === "all"
-                    ? kindCounts.article + kindCounts.podcast + kindCounts.platform
-                    : kindCounts[tab.key]}
+                    ? carrierCounts.text + carrierCounts.audio + carrierCounts.video + carrierCounts.email
+                    : carrierCounts[tab.key]}
                 </span>
               </button>
             ))}
@@ -463,7 +467,7 @@ export function ArticleView() {
                 className="fusion-qa"
                 onClick={() => {
                   store.syncAllArticles().finally(() => {
-                    refreshKindCounts();
+                    refreshCarrierCounts();
                     mutate();
                   });
                 }}

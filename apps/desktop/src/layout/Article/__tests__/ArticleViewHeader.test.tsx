@@ -49,6 +49,8 @@ vi.mock("@/hooks/useArticle", () => ({
     mutate: mocks.mutate,
     isToday: false,
     isAll: false,
+    carrierCounts: { text: 3, audio: 1, video: 0, email: 0 },
+    refreshCarrierCounts: vi.fn(),
   }),
 }));
 

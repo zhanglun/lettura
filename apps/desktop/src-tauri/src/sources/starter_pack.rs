@@ -33,6 +33,30 @@ fn pack_json(id: &str) -> Result<&'static str, String> {
 }
 
 /// Parse a single StarterPack from JSON
+/// starter pack 里带的 rsshub.app 源按用户配置的实例改写
+/// （否则"设置里配了自建实例"对它们无效——这是设置项与数据的一致性要求）
+pub fn rewrite_rsshub_instance(feed_url: &str) -> String {
+  let instance = crate::core::config::get_user_config().rsshub_instance;
+  rewrite_rsshub_with(feed_url, &instance)
+}
+
+/// 纯函数：把 rsshub.app 前缀换成给定实例（便于测试）
+fn rewrite_rsshub_with(feed_url: &str, instance: &str) -> String {
+  let instance = instance.trim().trim_end_matches('/');
+
+  if instance.is_empty() {
+    return feed_url.to_string();
+  }
+
+  for prefix in ["https://rsshub.app", "http://rsshub.app"] {
+    if let Some(rest) = feed_url.strip_prefix(prefix) {
+      return format!("{}{}", instance, rest);
+    }
+  }
+
+  feed_url.to_string()
+}
+
 pub fn load_pack(pack_id: &str) -> Result<StarterPack, String> {
   let json_str = pack_json(pack_id)?;
   let pack: StarterPack =
@@ -112,8 +136,10 @@ pub fn install_packs_core(pack_ids: &[String]) -> Result<InstallStats, String> {
   let mut sort_counter = last_sort + 1;
 
   for (pack_id, source) in &all_sources {
+    let pack_feed_url = rewrite_rsshub_instance(&source.feed_url);
+
     let source_result = source_service::create_source(
-      &source.feed_url,
+      &pack_feed_url,
       Some(&source.title),
       Some(&source.site_url),
       "starter_pack",
@@ -140,11 +166,12 @@ pub fn install_packs_core(pack_ids: &[String]) -> Result<InstallStats, String> {
     let feed_uuid = Uuid::new_v4().hyphenated().to_string();
     let new_feed = NewFeed {
       uuid: feed_uuid.clone(),
-      feed_type: "rss".to_string(),
+      origin: "native".to_string(),
+      carrier: "text".to_string(),
       title: source.title.clone().unwrap_or_default(),
       link: source.site_url.clone().unwrap_or_default(),
       logo: String::new(),
-      feed_url: source.feed_url.clone(),
+      feed_url: pack_feed_url.clone(),
       description: String::new(),
       pub_date: String::new(),
       updated: String::new(),
@@ -176,6 +203,28 @@ pub fn install_packs_core(pack_ids: &[String]) -> Result<InstallStats, String> {
 
 #[cfg(test)]
 mod tests {
+  #[test]
+  fn test_rewrite_rsshub_with_instance() {
+    assert_eq!(
+      rewrite_rsshub_with("https://rsshub.app/ai/blog", "https://rsshub.mine.dev/"),
+      "https://rsshub.mine.dev/ai/blog"
+    );
+    assert_eq!(
+      rewrite_rsshub_with("https://rsshub.app/stabilityai/blog", "https://rsshub.mine.dev"),
+      "https://rsshub.mine.dev/stabilityai/blog"
+    );
+    // 非 rsshub 源不动
+    assert_eq!(
+      rewrite_rsshub_with("https://techcrunch.com/feed", "https://rsshub.mine.dev"),
+      "https://techcrunch.com/feed"
+    );
+    // 实例为空 → 原样（不把用户引到一个空地址）
+    assert_eq!(
+      rewrite_rsshub_with("https://rsshub.app/ai/blog", "  "),
+      "https://rsshub.app/ai/blog"
+    );
+  }
+
   use super::*;
 
   #[test]

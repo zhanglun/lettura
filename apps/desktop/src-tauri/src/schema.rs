@@ -42,6 +42,7 @@ diesel::table! {
         is_archived -> Integer,
         is_read_later -> Integer,
         notes -> Text,
+        carrier -> Text,
     }
 }
 
@@ -63,7 +64,7 @@ diesel::table! {
         title -> Text,
         link -> Text,
         feed_url -> Text,
-        feed_type -> Text,
+        origin -> Text,
         description -> Text,
         pub_date -> Timestamp,
         updated -> Timestamp,
@@ -76,6 +77,7 @@ diesel::table! {
         create_date -> Timestamp,
         update_date -> Timestamp,
         source_id -> Nullable<Integer>,
+        carrier -> Text,
     }
 }
 

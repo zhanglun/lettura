@@ -104,7 +104,8 @@ mod tests {
         diesel::insert_into(schema::feeds::table)
             .values(models::NewFeed {
                 uuid: feed_uuid.clone(),
-                feed_type: "rss".to_string(),
+                origin: "native".to_string(),
+                carrier: "text".to_string(),
                 title: "Test Feed".to_string(),
                 link: format!("https://{}.example.com", &feed_uuid[..8]),
                 logo: "".to_string(),
@@ -133,6 +134,7 @@ mod tests {
                 author: "Author".to_string(),
                 pub_date: "2024-01-01 00:00:00".to_string(),
                 media_object: "".to_string(),
+                carrier: "text".to_string(),
             })
             .returning(schema::articles::id)
             .get_result(conn)

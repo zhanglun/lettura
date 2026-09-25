@@ -9,6 +9,7 @@ export interface Channel {
   folder_name?: string;
   folder?: string;
   logo?: string;
+  feed_type?: string;
   description: string;
   pub_date?: Date;
   health_status: number;
@@ -32,6 +33,10 @@ export interface FeedResItem {
   folder_name?: string;
   folder?: string;
   logo?: string;
+  /** 来源：native | generator:<route> */
+  origin?: string;
+  /** 源级载体提示：text | audio | video | email */
+  carrier?: string;
   description: string;
   pub_date?: Date;
   health_status: number;
@@ -78,6 +83,12 @@ export interface ArticleResItem {
   read_status: number;
   starred: number;
   media_object: string;
+  /** 载体（入库判定）：text | audio | video | email */
+  carrier?: string;
+  /** 来源：native | generator:<route> */
+  origin?: string;
+  /** 源级载体提示（源图标用） */
+  feed_carrier?: string;
   is_duplicate?: number;
   starred_at?: string;
   is_archived?: number;

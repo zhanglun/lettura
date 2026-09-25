@@ -30,31 +30,13 @@ pub struct ArticleFilter {
   pub is_archived: Option<i32>,
   pub is_read_later: Option<i32>,
   pub has_notes: Option<i32>,
-  pub kind: Option<String>,
+  /// 载体过滤：text | audio | video | email
+  pub carrier: Option<String>,
   pub cursor: Option<i32>,
   pub limit: Option<i32>,
 }
 
-/// fusion 类型判定的 SQL 镜像（与 src/helpers/articleKind.ts 同一标准）：
-/// B站/抖音/YouTube URL → platform；audio enclosure → podcast；否则 article。
-/// LIKE 对 ASCII 不分大小写，与 JS 正则的 /i 行为一致。
-const ARTICLE_KIND_SQL: &str = "CASE
-    WHEN (A.link || ' ' || COALESCE(A.feed_url, '')) LIKE '%bilibili.com%'
-      OR (A.link || ' ' || COALESCE(A.feed_url, '')) LIKE '%b23.tv%'
-      OR (A.link || ' ' || COALESCE(A.feed_url, '')) LIKE '%/bilibili/%'
-      OR (A.link || ' ' || COALESCE(A.feed_url, '')) LIKE '%douyin.com%'
-      OR (A.link || ' ' || COALESCE(A.feed_url, '')) LIKE '%/douyin/%'
-      OR (A.link || ' ' || COALESCE(A.feed_url, '')) LIKE '%youtube.com%'
-      OR (A.link || ' ' || COALESCE(A.feed_url, '')) LIKE '%youtu.be%' THEN 'platform'
-    WHEN json_valid(COALESCE(A.media_object, '[]')) AND EXISTS (
-      SELECT 1
-      FROM json_each(COALESCE(A.media_object, '[]')) m, json_each(m.value, '$.content') c
-      WHERE json_extract(c.value, '$.content_type') LIKE 'audio%'
-    ) THEN 'podcast'
-    ELSE 'article'
-  END";
-
-/// 类型过滤条件拼装（get_article 与 get_kind_counts 共用）：
+/// 过滤条件拼装（get_article 与 get_carrier_counts 共用）：
 /// 返回 (SQL 片段, 绑定参数)，两者顺序一一对应
 fn article_filter_conditions(
   filter: &ArticleFilter,
@@ -147,10 +129,11 @@ fn article_filter_conditions(
     }
   }
 
-  if let Some(kind) = &filter.kind {
-    if kind == "article" || kind == "podcast" || kind == "platform" {
-      conditions.push(format!("({}) = ?", ARTICLE_KIND_SQL));
-      params.push(kind.clone());
+  if let Some(carrier) = &filter.carrier {
+    if ["text", "audio", "video", "email"].contains(&carrier.as_str()) {
+      // 入库时判定一次（articles.carrier），这里只是可索引的等值过滤
+      conditions.push("A.carrier = ?".to_string());
+      params.push(carrier.clone());
     }
   }
 
@@ -206,6 +189,12 @@ pub struct ArticleDetailResult {
   pub is_read_later: Option<i32>,
   #[diesel(sql_type = Nullable<Text>)]
   pub notes: Option<String>,
+  #[diesel(sql_type = Text)]
+  pub carrier: String,
+  #[diesel(sql_type = Text)]
+  pub origin: String,
+  #[diesel(sql_type = Text)]
+  pub feed_carrier: String,
 }
 
 #[derive(Debug, Queryable, Serialize, QueryableByName)]
@@ -238,6 +227,14 @@ pub struct ArticleQueryItem {
   pub read_status: i32,
   #[diesel(sql_type = Text)]
   pub media_object: String,
+  /// 载体：text | audio | video | email
+  #[diesel(sql_type = Text)]
+  pub carrier: String,
+  /// 来源：native | generator:<route>
+  #[diesel(sql_type = Text)]
+  pub origin: String,
+  #[diesel(sql_type = Text)]
+  pub feed_carrier: String,
   #[diesel(sql_type = Integer)]
   pub starred: i32,
   #[diesel(sql_type = Integer)]
@@ -261,13 +258,15 @@ pub struct ArticleQueryResult {
 
 /// 类型过滤条计数：文章 / 播客 / 平台（服务端全量）
 #[derive(Debug, Serialize, QueryableByName)]
-pub struct ArticleKindCounts {
+pub struct CarrierCounts {
   #[diesel(sql_type = diesel::sql_types::BigInt)]
-  pub article: i64,
+  pub text: i64,
   #[diesel(sql_type = diesel::sql_types::BigInt)]
-  pub podcast: i64,
+  pub audio: i64,
   #[diesel(sql_type = diesel::sql_types::BigInt)]
-  pub platform: i64,
+  pub video: i64,
+  #[diesel(sql_type = diesel::sql_types::BigInt)]
+  pub email: i64,
 }
 
 /// COUNT(1) 查询的结果承载
@@ -307,6 +306,9 @@ impl Article {
       A.read_status,
       A.starred,
       COALESCE(A.media_object, '') as media_object,
+      A.carrier as carrier,
+      COALESCE(C.origin, 'native') as origin,
+      COALESCE(C.carrier, 'text') as feed_carrier,
       COALESCE(AAA.is_duplicate, 0) as is_duplicate,
       A.starred_at,
       A.is_archived,
@@ -375,21 +377,21 @@ impl Article {
 
   /// 类型过滤条的真实计数（服务端全量，不随分页衰减）：
   /// 与 get_article 同一套过滤条件，只是不分页、按类型分组
-  pub fn get_kind_counts(filter: ArticleFilter) -> ArticleKindCounts {
+  pub fn get_carrier_counts(filter: ArticleFilter) -> CarrierCounts {
     let mut connection = establish_connection();
     let (conditions, params) = article_filter_conditions(&filter, &mut connection);
 
     let mut query = diesel::sql_query(format!(
       "SELECT
-      COALESCE(SUM(CASE WHEN ({kind_sql}) = 'article' THEN 1 ELSE 0 END), 0) AS article,
-      COALESCE(SUM(CASE WHEN ({kind_sql}) = 'podcast' THEN 1 ELSE 0 END), 0) AS podcast,
-      COALESCE(SUM(CASE WHEN ({kind_sql}) = 'platform' THEN 1 ELSE 0 END), 0) AS platform
+      COALESCE(SUM(CASE WHEN A.carrier = 'text' THEN 1 ELSE 0 END), 0) AS text,
+      COALESCE(SUM(CASE WHEN A.carrier = 'audio' THEN 1 ELSE 0 END), 0) AS audio,
+      COALESCE(SUM(CASE WHEN A.carrier = 'video' THEN 1 ELSE 0 END), 0) AS video,
+      COALESCE(SUM(CASE WHEN A.carrier = 'email' THEN 1 ELSE 0 END), 0) AS email
     FROM
       articles as A
     LEFT JOIN
       feeds as C
     ON C.uuid = A.feed_uuid{where_clause}",
-      kind_sql = ARTICLE_KIND_SQL,
       where_clause = if conditions.len() > 0 {
         format!(" WHERE {}", conditions.join(" AND "))
       } else {
@@ -403,14 +405,15 @@ impl Article {
     }
 
     query
-      .load::<ArticleKindCounts>(&mut connection)
+      .load::<CarrierCounts>(&mut connection)
       .expect("Expect counting article kinds")
       .into_iter()
       .next()
-      .unwrap_or(ArticleKindCounts {
-        article: 0,
-        podcast: 0,
-        platform: 0,
+      .unwrap_or(CarrierCounts {
+        text: 0,
+        audio: 0,
+        video: 0,
+        email: 0,
       })
   }
 
@@ -458,6 +461,9 @@ impl Article {
               A.create_date,
               A.read_status,
                COALESCE(A.media_object, '') as media_object,
+               A.carrier as carrier,
+               COALESCE(C.origin, 'native') as origin,
+               COALESCE(C.carrier, 'text') as feed_carrier,
                A.starred,
                A.starred_at,
                A.is_archived,
@@ -709,7 +715,8 @@ mod tests {
         diesel::insert_into(schema::feeds::table)
             .values(models::NewFeed {
                 uuid: feed_uuid.clone(),
-                feed_type: "rss".to_string(),
+                origin: "native".to_string(),
+                carrier: "text".to_string(),
                 title: "Test Feed".to_string(),
                 link: format!("https://{}.example.com", &feed_uuid[..8]),
                 logo: "".to_string(),
@@ -738,6 +745,7 @@ mod tests {
                 author: "Author".to_string(),
                 pub_date: "2024-01-01 00:00:00".to_string(),
                 media_object: "".to_string(),
+                carrier: "text".to_string(),
             })
             .returning(schema::articles::id)
             .get_result(conn)
@@ -777,7 +785,7 @@ mod tests {
             is_archived: None,
             is_read_later: None,
             has_notes: None,
-            kind: None,
+            carrier: None,
             cursor: None,
             limit: None,
         }
@@ -904,47 +912,97 @@ mod tests {
     }
 
     #[test]
-    fn test_kind_filter_and_counts() {
+    fn test_carrier_filter_and_counts() {
         let mut conn = db::establish_connection();
         let feed_uuid = insert_test_feed(&mut conn);
 
-        // Given: plain article + podcast(audio enclosure) + platform(bilibili link)
+        // Given: text + audio + video（载体是**入库时写入的列**，测试直接给列赋值）
         let _plain = insert_test_article(&mut conn, &feed_uuid);
 
-        let (id_pod, uuid_pod) = insert_test_article(&mut conn, &feed_uuid);
-        diesel::update(schema::articles::table.filter(schema::articles::id.eq(id_pod)))
-            .set(
-                schema::articles::media_object.eq(r#"[{"content":[{"url":"https://example.com/a.mp3","content_type":"audio/mpeg"}]}]"#),
-            )
+        let (_id_audio, uuid_audio) = insert_test_article(&mut conn, &feed_uuid);
+        diesel::update(schema::articles::table.filter(schema::articles::uuid.eq(&uuid_audio)))
+            .set(schema::articles::carrier.eq("audio"))
             .execute(&mut conn)
-            .expect("Failed to set media_object");
+            .expect("Failed to set carrier");
 
-        let (id_plat, uuid_plat) = insert_test_article(&mut conn, &feed_uuid);
-        diesel::update(schema::articles::table.filter(schema::articles::id.eq(id_plat)))
-            .set(schema::articles::link.eq("https://www.bilibili.com/video/BV1test"))
+        let (_id_video, uuid_video) = insert_test_article(&mut conn, &feed_uuid);
+        diesel::update(schema::articles::table.filter(schema::articles::uuid.eq(&uuid_video)))
+            .set(schema::articles::carrier.eq("video"))
             .execute(&mut conn)
-            .expect("Failed to set link");
+            .expect("Failed to set carrier");
 
-        // Then: counts classify 1/1/1
-        let counts = Article::get_kind_counts(make_filter(&feed_uuid));
-        assert_eq!(counts.article, 1, "Kind counts: article");
-        assert_eq!(counts.podcast, 1, "Kind counts: podcast");
-        assert_eq!(counts.platform, 1, "Kind counts: platform");
+        // Then: counts 1 text / 1 audio / 1 video / 0 email
+        let counts = Article::get_carrier_counts(make_filter(&feed_uuid));
+        assert_eq!(counts.text, 1, "Carrier counts: text");
+        assert_eq!(counts.audio, 1, "Carrier counts: audio");
+        assert_eq!(counts.video, 1, "Carrier counts: video");
+        assert_eq!(counts.email, 0, "Carrier counts: email");
 
-        // Then: kind filter returns the matching article only
+        // Then: carrier filter returns the matching article only
         let result = Article::get_article(ArticleFilter {
-            kind: Some("podcast".to_string()),
+            carrier: Some("audio".to_string()),
             ..make_filter(&feed_uuid)
         });
-        assert_eq!(result.list.len(), 1, "Podcast filter returns 1");
-        assert_eq!(result.list[0].uuid, uuid_pod, "Podcast filter returns the enclosure article");
+        assert_eq!(result.list.len(), 1, "Audio filter returns 1");
+        assert_eq!(result.list[0].uuid, uuid_audio, "Audio filter returns the audio row");
+        assert_eq!(result.list[0].carrier, "audio", "Row carries the stored carrier");
 
         let result = Article::get_article(ArticleFilter {
-            kind: Some("platform".to_string()),
+            carrier: Some("video".to_string()),
             ..make_filter(&feed_uuid)
         });
-        assert_eq!(result.list.len(), 1, "Platform filter returns 1");
-        assert_eq!(result.list[0].uuid, uuid_plat, "Platform filter returns the bilibili article");
+        assert_eq!(result.list.len(), 1, "Video filter returns 1");
+        assert_eq!(result.list[0].uuid, uuid_video, "Video filter returns the video row");
+    }
+
+    /// 入库判定：audio enclosure → audio；来源声明 video/email 则照用；其余 text
+    #[test]
+    fn test_classify_entry_from_parsed_feed() {
+        use crate::cmd::{classify_entry, feed_carrier_hint, resolve_origin};
+
+        let xml = r#"<?xml version="1.0" encoding="UTF-8"?>
+          <rss version="2.0"><channel>
+            <title>测试源</title><link>https://example.com</link><description>d</description>
+            <item>
+              <title>EP.1 音频单集</title>
+              <link>https://example.com/ep1</link>
+              <enclosure url="https://example.com/ep1.mp3" type="audio/mpeg" length="1"/>
+            </item>
+            <item>
+              <title>文字公告</title>
+              <link>https://example.com/post</link>
+              <description>纯文字</description>
+            </item>
+          </channel></rss>"#;
+
+        let feed = feed_rs::parser::parse(xml.as_bytes()).expect("parse test feed");
+        let audio_entry = &feed.entries[0];
+        let text_entry = &feed.entries[1];
+
+        // 条目载体（决定"能不能站内播"）
+        assert_eq!(classify_entry("", &audio_entry.media), "audio");
+        assert_eq!(classify_entry("", &text_entry.media), "text");
+        assert_eq!(classify_entry("video", &audio_entry.media), "audio", "有音频就是音频（先问能不能播）");
+        assert_eq!(classify_entry("video", &text_entry.media), "video");
+        assert_eq!(classify_entry("email", &text_entry.media), "email");
+
+        // 来源（决定"从哪来"）
+        assert_eq!(resolve_origin(None, &feed), "native");
+        assert_eq!(resolve_origin(Some("generator:bilibili"), &feed), "generator:bilibili");
+
+        // 源级载体提示（源列表图标）
+        assert_eq!(feed_carrier_hint("", &feed), "audio", "有音频条目的源 → audio");
+        assert_eq!(feed_carrier_hint("video", &feed), "video", "生成器声明的载体优先");
+        assert_eq!(feed_carrier_hint("", &text_only_feed()), "text");
+    }
+
+    /// 无音频 enclosure 的源
+    fn text_only_feed() -> feed_rs::model::Feed {
+        let xml = r#"<?xml version="1.0"?><rss version="2.0"><channel>
+            <title>纯文字源</title><link>https://example.com</link><description>d</description>
+            <item><title>a</title><link>https://example.com/a</link></item>
+          </channel></rss>"#;
+        feed_rs::parser::parse(xml.as_bytes()).expect("parse")
     }
 
     #[test]

@@ -53,7 +53,6 @@
   "Next article": "Next article",
   "Open in browser": "Open in browser",
   "Copy link": "Copy link",
-  "Playlist": "Playlist",
   "General": "General",
   "Update Interval": "Update Interval",
   "set the update interval": "set the update interval",
@@ -196,6 +195,10 @@
     }
   },
   "settings": {
+    "rsshub_instance": "RSSHub instance",
+    "rsshub_instance_help": "Used to generate platform feeds (Bilibili/Zhihu/Weibo/YouTube…). Default is the public rsshub.app; point it at your own instance or a mirror",
+    "generator_routes": "Custom generator routes",
+    "generator_routes_help": "One per line: `match => route`. The left side is treated as a regex (a bare domain works), and a route starting with http is used as the feed URL directly",
     "subtitle": "Sync, appearance, OPML and data — all on one page.",
     "status_secure": "Local config secure",
     "status_sources": "42 sources active",
@@ -527,18 +530,24 @@
     "ctl": {
       "back30": "Back 30s",
       "fwd30": "Forward 30s",
-      "open_detail": "Open episode detail",
       "toggle": "play/pause"
     },
-    "podcast": {
-      "empty": "Nothing playing",
-      "empty_hint": "Add a podcast to start listening"
+    "sleep": {
+      "title": "Sleep timer",
+      "off": "Off",
+      "minutes": "{{n}} min",
+      "remaining": "Sleep timer · {{time}} left"
     },
     "collapse": "Collapse",
     "collapse_bar": "Collapse (mini pill, keeps playing)",
     "expand": "Expand (full player)",
     "expand_bar": "Expand player bar",
     "now_playing": "Now playing",
+    "playing": "Playing",
+    "playlist": "Playlist",
+    "playlist_count": "{{count}} episodes",
+    "empty": "Nothing queued",
+    "empty_hint": "Press play on an episode to queue it",
     "up_next": "Up next"
   },
   "fusion": {
@@ -571,15 +580,14 @@
       "all": "All",
       "article": "Articles",
       "podcast": "Podcasts",
-      "platform": "Platforms"
+      "video": "Videos", "email": "Emails"
     },
     "strip": {
       "meta": "{{sources}} sources · synced {{time}}"
     },
-    "badge": {
+    "badge": {"email": "M", "video": "V", 
       "article": "A",
       "podcast": "P",
-      "platform": "V",
       "douyin": "D"
     },
     "cmd": {
@@ -637,23 +645,21 @@
       "subscribed": "Subscribed to {{count}} feeds"
     },
     "add": {
-      "ph_auto": "Paste an RSS address, or a Bilibili / Zhihu / Weibo / newsletter homepage link…",
-      "ph_rss": "Paste an RSS / Atom address…",
-      "ph_bil": "Paste an uploader homepage (space.bilibili.com/…)",
-      "ph_zh": "Paste a Zhihu profile or column link…",
-      "ph_wb": "Paste a Weibo profile (weibo.com/u/…)…",
-      "ph_nl": "Paste a newsletter page (Substack / Buttondown / Kill the Newsletter)…",
-      "seg_auto": "Auto",
-      "seg_rss": "RSS / Atom",
-      "seg_bil": "Bilibili",
-      "seg_zh": "Zhihu",
-      "seg_wb": "Weibo",
-      "seg_nl": "Newsletter",
+    "ph_any": "Paste any address: RSS, a site homepage, Bilibili/Zhihu/Weibo, a newsletter…",
+    "recent": "RECENT",
+    "candidates": "{{count}} feeds found",
+    "gen_local": "Generator",
+    "gen_route_ph": "RSSHub route, e.g. bilibili/user/123456",
+    "gen_apply": "Convert & preview",
+    "gen_instance": "instance {{instance}}",
+    "new_folder": "New group…",
+    "new_folder_ph": "Group name",
+    "create": "Create",
+    "done_toast": "Subscribed to “{{title}}” · {{count}} articles synced{{folder}}",
+    "foot_hint": "Platform feeds use the RSSHub instance from Settings (now {{instance}})",
       "detecting": "Detecting address…",
       "err_no_feed": "No feed found — try an RSS address (.xml / /feed) or a platform homepage link",
       "ungrouped": "Ungrouped",
-      "done": "Subscribed to “{{title}}” · folder “{{folder}}”",
-      "gen_hint": "Generated via RSSHub, no self-hosting",
       "foot_rsshub": "Platform feeds generated via RSSHub, no self-hosting"
     }
   },

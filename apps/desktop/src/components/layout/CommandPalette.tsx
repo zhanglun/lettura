@@ -8,7 +8,7 @@ import { request } from "@/helpers/request";
 import { useBearStore } from "@/stores";
 import { RouteConfig } from "@/config";
 import { FeedResItem } from "@/db";
-import { getArticleKind, getPlatformBadge } from "@/helpers/articleKind";
+import { getCarrier, mediaBadge } from "@/helpers/mediaType";
 import { getHostLabel } from "@/helpers/feedMeta";
 import { FeedIcon } from "@/components/FeedIcon";
 import i18n from "@/i18n";
@@ -28,17 +28,12 @@ function flattenFeeds(items: FeedResItem[]): FeedResItem[] {
 }
 
 function articleBadge(a: any, t: (k: string) => string) {
-  const kind = getArticleKind(a);
-  if (kind === "podcast") {
-    return { char: t("fusion.badge.podcast"), cls: "b-pod" };
-  }
-  if (kind === "platform") {
-    return getPlatformBadge(a, {
-      platform: t("fusion.badge.platform"),
-      douyin: t("fusion.badge.douyin"),
-    });
-  }
-  return { char: t("fusion.badge.article"), cls: "b-art" };
+  return mediaBadge(getCarrier(a), a.origin, {
+    text: t("fusion.badge.article"),
+    audio: t("fusion.badge.podcast"),
+    video: t("fusion.badge.video"),
+    email: t("fusion.badge.email"),
+  });
 }
 
 /** 命令的中英文关键词：无论当前界面语言，两种语言都能搜到同一条命令 */

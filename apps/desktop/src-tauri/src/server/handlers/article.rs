@@ -137,7 +137,7 @@ pub async fn handle_articles(
     is_archived: query.is_archived.clone(),
     is_read_later: query.is_read_later.clone(),
     has_notes: query.has_notes.clone(),
-    kind: query.kind.clone(),
+    carrier: query.carrier.clone(),
     cursor: query.cursor.clone(),
     limit: query.limit.clone(),
   };
@@ -147,9 +147,9 @@ pub async fn handle_articles(
   Ok(web::Json(res))
 }
 
-/// 类型过滤条计数（须注册在 /api/articles/{uuid} 之前，否则会被动态段吞掉）
-#[get("/api/articles/kind-counts")]
-pub async fn handle_article_kind_counts(
+/// 载体过滤条计数（须注册在 /api/articles/{uuid} 之前，否则会被动态段吞掉）
+#[get("/api/articles/carrier-counts")]
+pub async fn handle_article_carrier_counts(
   query: web::Query<feed::article::ArticleFilter>,
 ) -> Result<impl Responder> {
   let filter = feed::article::ArticleFilter {
@@ -164,19 +164,19 @@ pub async fn handle_article_kind_counts(
     is_archived: query.is_archived.clone(),
     is_read_later: query.is_read_later.clone(),
     has_notes: query.has_notes.clone(),
-    kind: None,
+    carrier: None,
     cursor: None,
     limit: None,
   };
 
-  let res = feed::article::Article::get_kind_counts(filter);
+  let res = feed::article::Article::get_carrier_counts(filter);
 
   Ok(web::Json(res))
 }
 
 pub fn config(cfg: &mut web::ServiceConfig) {
   cfg
-    .service(handle_article_kind_counts)
+    .service(handle_article_carrier_counts)
     .service(handle_get_article_best_image)
     .service(handle_get_article_detail)
     .service(handle_get_article_source)

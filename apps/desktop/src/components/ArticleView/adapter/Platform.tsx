@@ -2,7 +2,7 @@ import { ArticleResItem } from "@/db";
 import { open } from "@tauri-apps/plugin-shell";
 import { useTranslation } from "react-i18next";
 import dayjs from "dayjs";
-import { getPlatformName } from "@/helpers/articleKind";
+import { platformName } from "@/helpers/mediaType";
 import { wraperWithRadix } from "../ContentRender";
 
 export interface PlatformAdapterProps {
@@ -13,11 +13,11 @@ export interface PlatformAdapterProps {
 /** 平台详情（B站/抖音/YouTube）：封面块 + feed 简介 + 黑色外跳钮（0.2.0 不做站内播放） */
 export function PlatformAdapter({ article, content }: PlatformAdapterProps) {
   const { t } = useTranslation();
-  const platform = getPlatformName(article, {
+  const platform = platformName(article.origin, {
     bilibili: t("fusion.platform.bilibili"),
     douyin: t("fusion.platform.douyin"),
     youtube: t("fusion.platform.youtube"),
-    generic: t("fusion.filter.platform"),
+    generic: t("fusion.filter.video"),
   });
   const summary = content || article.description;
 

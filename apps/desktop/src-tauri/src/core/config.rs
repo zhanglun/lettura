@@ -101,6 +101,13 @@ pub struct UserConfig {
   pub card_density: String,
   #[serde(default = "default_accent_color")]
   pub accent_color: String,
+
+  /// 平台源生成器用的 RSSHub 实例（默认公共；可填自建/镜像）
+  #[serde(default = "default_rsshub_instance")]
+  pub rsshub_instance: String,
+  /// 自定义生成路由，一行一条：`匹配 => 路由`
+  #[serde(default)]
+  pub generator_routes: Vec<String>,
 }
 
 fn default_true() -> bool {
@@ -125,6 +132,10 @@ fn default_card_density() -> String {
 
 fn default_accent_color() -> String {
   "indigo".to_string()
+}
+
+fn default_rsshub_instance() -> String {
+  "https://rsshub.app".to_string()
 }
 
 impl Default for UserConfig {
@@ -152,6 +163,8 @@ impl Default for UserConfig {
       reader_preset: default_reader_preset(),
       card_density: default_card_density(),
       accent_color: default_accent_color(),
+      rsshub_instance: default_rsshub_instance(),
+      generator_routes: vec![],
     }
   }
 }
