@@ -1,8 +1,8 @@
 ---
 version: 1
 slug: "apps-desktop-src-components-lpodcast-index-tsx"
-primary_target: "apps/desktop/src/components/LPodcast"
-related_targets: ["apps/desktop/.impeccable/mocks/decision/podcast.html", "apps/desktop/src/stores/createPodcastSlice.ts", "apps/desktop/src/helpers/podcastDB.ts"]
+primary_target: "src/components/LPodcast"
+related_targets: [".impeccable/mocks/decision/podcast.html", "src/stores/createPodcastSlice.ts", "src/helpers/podcastDB.ts"]
 ---
 
 # Surface Brief · 播放器三态（条 / 沉浸页 / 收起圆钮）

@@ -1,8 +1,8 @@
 ---
 version: 1
 slug: "apps-desktop-src-layout-setting-index-tsx"
-primary_target: "apps/desktop/src/layout/Setting/index.tsx"
-related_targets: ["apps/desktop/.impeccable/mocks/decision/settings.html"]
+primary_target: "src/layout/Setting/index.tsx"
+related_targets: [".impeccable/mocks/decision/settings.html"]
 ---
 
 # Surface Brief · 设置 + 订阅管理

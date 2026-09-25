@@ -1,8 +1,8 @@
 ---
 version: 1
 slug: "apps-desktop-src-components-addfeed"
-primary_target: "apps/desktop/src/components/AddFeed"
-related_targets: ["apps/desktop/.impeccable/mocks/decision/add.html"]
+primary_target: "src/components/AddFeed"
+related_targets: [".impeccable/mocks/decision/add.html"]
 ---
 
 # Surface Brief · 添加订阅（渐进式面板）
