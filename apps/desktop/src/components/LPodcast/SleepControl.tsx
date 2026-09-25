@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { DropdownMenu } from "@radix-ui/themes";
+import { DropdownMenu } from "@astryxdesign/core/DropdownMenu";
+import { Check } from "lucide-react";
 import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
 import { useTranslation } from "react-i18next";
@@ -52,45 +53,43 @@ export const SleepControl: React.FC = () => {
       ? t("podcast.sleep.remaining", { time: formatTime(remaining) })
       : t("podcast.sleep.title");
 
+  const current = sleepTimer ? String(sleepTimer.minutes) : OFF;
+  const menuItems = [
+    {
+      id: OFF,
+      label: t("podcast.sleep.off"),
+      icon: current === OFF ? <Check size={14} /> : null,
+      onClick: () => setSleepTimer(null),
+    },
+    ...SLEEP_STEPS.map((minutes) => ({
+      id: String(minutes),
+      label: t("podcast.sleep.minutes", { n: minutes }),
+      icon: current === String(minutes) ? <Check size={14} /> : null,
+      onClick: () => setSleepTimer(minutes),
+    })),
+  ];
+
   return (
-    <DropdownMenu.Root>
-      <DropdownMenu.Trigger>
-        <button
-          type="button"
-          className={remaining !== null ? "fusion-chip on" : "fusion-pctl"}
-          title={title}
-          aria-label={t("podcast.sleep.title")}
-        >
-          <MoonIcon />
-          {remaining !== null && formatTime(remaining)}
-        </button>
-      </DropdownMenu.Trigger>
-      <DropdownMenu.Content
-        className="fusion-sleep-menu"
-        side="top"
-        align="end"
-        sideOffset={10}
-      >
-        <DropdownMenu.RadioGroup
-          value={sleepTimer ? String(sleepTimer.minutes) : OFF}
-          onValueChange={(value) =>
-            setSleepTimer(value === OFF ? null : Number(value))
-          }
-        >
-          <DropdownMenu.RadioItem value={OFF} className="fusion-sleep-item">
-            {t("podcast.sleep.off")}
-          </DropdownMenu.RadioItem>
-          {SLEEP_STEPS.map((minutes) => (
-            <DropdownMenu.RadioItem
-              key={minutes}
-              value={String(minutes)}
-              className="fusion-sleep-item"
-            >
-              {t("podcast.sleep.minutes", { n: minutes })}
-            </DropdownMenu.RadioItem>
-          ))}
-        </DropdownMenu.RadioGroup>
-      </DropdownMenu.Content>
-    </DropdownMenu.Root>
+    <DropdownMenu
+      items={menuItems}
+      placement="above"
+      alignment="end"
+      menuWidth={160}
+      hasChevron={false}
+      button={{
+        variant: "ghost",
+        isIconOnly: true,
+        icon: (
+          <>
+            <MoonIcon />
+            {remaining !== null && (
+              <span className="fusion-chip-txt">{formatTime(remaining)}</span>
+            )}
+          </>
+        ),
+        label: title,
+        className: remaining !== null ? "fusion-chip on" : "fusion-pctl",
+      }}
+    />
   );
 };

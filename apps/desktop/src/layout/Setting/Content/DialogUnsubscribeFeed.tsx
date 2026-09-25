@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { AlertDialog, Flex, RadioGroup } from "@radix-ui/themes";
+import { Dialog, DialogHeader } from "@astryxdesign/core/Dialog";
 import { Button } from "@astryxdesign/core/Button";
+import { RadioList, RadioListItem } from "@astryxdesign/core/RadioList";
 import { Text } from "@astryxdesign/core/Text";
 import { FeedResItem } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
@@ -24,7 +25,6 @@ export const DialogUnsubscribeFeed = React.memo((props: DialogProps) => {
     dialogStatus,
     setDialogStatus,
     afterConfirm,
-    afterCancel,
     trigger,
   } = props;
   const [loading, setLoading] = useState(false);
@@ -58,58 +58,59 @@ export const DialogUnsubscribeFeed = React.memo((props: DialogProps) => {
     }
   };
 
-  const handleCancel = () => {
-    afterCancel();
-  };
-
   return (
-    <AlertDialog.Root open={dialogStatus} onOpenChange={setDialogStatus}>
-      {trigger && <AlertDialog.Trigger>{trigger}</AlertDialog.Trigger>}
-      <AlertDialog.Content>
-        <AlertDialog.Title>{t("Are you absolutely sure?")}</AlertDialog.Title>
-        <AlertDialog.Description>
+    <>
+      {trigger}
+      <Dialog
+        isOpen={dialogStatus}
+        onOpenChange={setDialogStatus}
+        width={440}
+      >
+        <DialogHeader title={t("Are you absolutely sure?")} />
+        <div className="flex flex-col gap-4 py-2">
           <Text size="sm" color="secondary">
-            {t("This action cannot be undone. This will permanently delete the data relates with", { title: feed?.title })}
+            {t(
+              "This action cannot be undone. This will permanently delete the data relates with",
+              { title: feed?.title },
+            )}
           </Text>
-          <div className="mt-4">
-            <RadioGroup.Root value={deleteMode} onValueChange={(v) => setDeleteMode(v as "keep" | "delete")}>
-              <Flex direction="column" gap="2">
-                <label className="flex items-center gap-2 text-sm">
-                  <RadioGroup.Item value="keep" />
-                  <Text>{t("layout.feeds.delete.keep_articles")}</Text>
-                </label>
-                <label className="flex items-center gap-2 text-sm">
-                  <RadioGroup.Item value="delete" />
-                  <Text>{t("layout.feeds.delete.delete_articles")}</Text>
-                </label>
-              </Flex>
-            </RadioGroup.Root>
-          </div>
+          <RadioList
+            label={t("Article handling")}
+            isLabelHidden
+            value={deleteMode}
+            onChange={(v) => setDeleteMode(v as "keep" | "delete")}
+          >
+            <RadioListItem
+              value="keep"
+              label={t("layout.feeds.delete.keep_articles")}
+            />
+            <RadioListItem
+              value="delete"
+              label={t("layout.feeds.delete.delete_articles")}
+            />
+          </RadioList>
           {deleteMode === "delete" && (
-            <div className="mt-3 rounded-md border border-[var(--amber-5)] bg-[var(--amber-a2)] px-3 py-2">
+            <div className="rounded-md border border-[var(--amber-5)] bg-[var(--amber-a2)] px-3 py-2">
               <Text size="xsm" color="secondary">
                 {t("layout.feeds.delete.warning")}
               </Text>
             </div>
           )}
-        </AlertDialog.Description>
-        <Flex gap="3" mt="4" justify="end">
-          <Button
-            variant="secondary"
-            label={t("Cancel")}
-            onClick={() => {
-              handleCancel();
-              setDialogStatus(false);
-            }}
-          />
-          <Button
-            variant="destructive"
-            onClick={() => confirmUnsubscribe()}
-            isLoading={loading}
-            label={t("Unsubscribe")}
-          />
-        </Flex>
-      </AlertDialog.Content>
-    </AlertDialog.Root>
+          <div className="flex justify-end gap-3">
+            <Button
+              variant="secondary"
+              label={t("Cancel")}
+              onClick={() => setDialogStatus(false)}
+            />
+            <Button
+              variant="destructive"
+              onClick={confirmUnsubscribe}
+              isLoading={loading}
+              label={t("Unsubscribe")}
+            />
+          </div>
+        </div>
+      </Dialog>
+    </>
   );
 });

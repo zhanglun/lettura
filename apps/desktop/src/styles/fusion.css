@@ -603,43 +603,6 @@
   color: var(--fusion-ink);
 }
 
-/* 睡眠定时菜单浮层（与 ⌘K/播放列表同材质：.94 白 + blur 28 + radius 14 + 同一投影） */
-.fusion-sleep-menu {
-  z-index: 60;
-  min-width: 150px;
-  padding: 6px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.94);
-  backdrop-filter: blur(28px) saturate(1.6);
-  border: 1px solid rgba(29, 30, 32, 0.1);
-  box-shadow:
-    0 4px 10px rgba(29, 30, 32, 0.06),
-    0 36px 80px -16px rgba(29, 30, 32, 0.4);
-}
-
-.fusion-sleep-item {
-  position: relative;
-  --base-menu-item-padding-left: 26px;
-  height: 32px;
-  padding: 0 10px 0 26px;
-  border-radius: 9px;
-  font-size: 12.5px;
-  color: var(--fusion-sub);
-  cursor: pointer;
-  outline: none;
-  font-variant-numeric: tabular-nums;
-}
-
-.fusion-sleep-item[data-highlighted] {
-  background: rgba(29, 30, 32, 0.05);
-  color: var(--fusion-ink);
-}
-
-.fusion-sleep-item[data-state="checked"] {
-  color: var(--fusion-accent);
-  font-weight: 600;
-}
-
 /* min 收起态：右下角玻璃圆钮 + 环形进度 */
 .fusion-minipill {
   position: absolute;
@@ -978,36 +941,6 @@
 .fusion-queue .q-x:hover {
   background: rgba(29, 30, 32, 0.06);
   color: var(--fusion-ink);
-}
-
-/* ── 播放列表浮层（底条列表钮拉出；面板语法同 ⌘K 浮层） ── */
-.fusion-playlist-pop {
-  min-width: 0;
-  padding: 0;
-  background: transparent;
-  box-shadow: none;
-  border-radius: 0;
-  overflow: visible;
-}
-
-/* 生长动效与添加预览卡同一套（`fusion-grow`），不新增 keyframes */
-.fusion-playlist-pop[data-state="open"] {
-  animation: fusion-grow 0.2s cubic-bezier(0.2, 0.9, 0.3, 1);
-}
-
-.fusion-playlist-pop[data-state="closed"] {
-  animation: fusion-pop-out 0.15s ease-in forwards;
-}
-
-@keyframes fusion-pop-out {
-  from {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(8px) scale(0.99);
-  }
 }
 
 .fusion-playlist {
@@ -3589,18 +3522,6 @@ body.dark-theme .fusion-float-foot {
 body.dark-theme .fusion-chip.on {
   color: var(--fusion-accent);
   background: var(--fusion-accent-soft);
-}
-
-body.dark-theme .fusion-sleep-menu {
-  background: rgba(30, 30, 34, 0.92);
-  border-color: rgba(233, 233, 230, 0.12);
-  box-shadow:
-    0 4px 10px rgba(0, 0, 0, 0.25),
-    0 36px 80px -16px rgba(0, 0, 0, 0.65);
-}
-
-body.dark-theme .fusion-sleep-item[data-highlighted] {
-  background: rgba(233, 233, 230, 0.07);
 }
 
 body.dark-theme .fusion-playlist {

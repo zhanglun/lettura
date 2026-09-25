@@ -3,14 +3,14 @@ import React, {
   useRef,
   useState,
   useMemo,
-  ChangeEvent,
 } from "react";
 import * as dataAgent from "../../helpers/dataAgent";
 import { FolderResItem } from "@/db";
 import { useBearStore } from "@/stores";
-import { Dialog, TextField } from "@radix-ui/themes";
+import { Dialog, DialogHeader } from "@astryxdesign/core/Dialog";
 import { Button } from "@astryxdesign/core/Button";
 import { Tooltip } from "@astryxdesign/core/Tooltip";
+import { TextInput } from "@astryxdesign/core/TextInput";
 import { useShallow } from "zustand/react/shallow";
 import { useTranslation } from "react-i18next";
 
@@ -79,21 +79,13 @@ export const AddFolder = React.memo((props: AddFolderProps) => {
   };
 
   const title = useMemo(() => {
-    if (action === "add") {
-      return t("Add folder");
-    }
-    if (action === "edit") {
-      return t("Edit folder");
-    }
+    return action === "edit" ? t("Edit folder") : t("Add folder");
   }, [action, t]);
 
   const content = useMemo(() => {
-    if (action === "add") {
-      return t("Organize your subscribes");
-    }
-    if (action === "edit") {
-      return t("Update your folder");
-    }
+    return action === "edit"
+      ? t("Update your folder")
+      : t("Organize your subscribes");
   }, [action, t]);
 
   useEffect(() => {
@@ -107,25 +99,24 @@ export const AddFolder = React.memo((props: AddFolderProps) => {
   }, [dialogStatus, action, folder]);
 
   return (
-    <Dialog.Root open={dialogStatus} onOpenChange={setDialogStatus}>
+    <>
       {trigger && (
         <Tooltip content={title} placement="above">
-          <Dialog.Trigger>{trigger}</Dialog.Trigger>
+          {trigger}
         </Tooltip>
       )}
-      <Dialog.Content className="sm:max-w-[425px]">
-        <Dialog.Title className="lex items-center" size="6" mt="2" mb="1">
-          {title}
-        </Dialog.Title>
-        <Dialog.Description size="2" mb="4" color="gray">
-          {content}
-        </Dialog.Description>
+      <Dialog
+        isOpen={dialogStatus}
+        onOpenChange={setDialogStatus}
+        width={425}
+      >
+        <DialogHeader title={title} subtitle={content} />
         <div className="py-3">
-          <TextField.Root
+          <TextInput
+            label={title}
+            isLabelHidden
             value={name}
-            onChange={(e: ChangeEvent<HTMLInputElement>) =>
-              handleNameChange(e.target.value)
-            }
+            onChange={(v) => handleNameChange(v)}
             ref={inputRef}
           />
           <div className="flex justify-end gap-3 mt-4">
@@ -143,7 +134,7 @@ export const AddFolder = React.memo((props: AddFolderProps) => {
             />
           </div>
         </div>
-      </Dialog.Content>
-    </Dialog.Root>
+      </Dialog>
+    </>
   );
 });

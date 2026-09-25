@@ -11,15 +11,15 @@
 |---|---|---|
 | ~~`Button` (5)~~ ✅ | `Button` | Radix 用 children 放文案/图标；Astryx 用 `label` + `icon`，`variant` 为 primary/secondary/ghost/destructive，`size` sm/md/lg |
 | ~~`IconButton` (3)~~ ✅ | `IconButton` | Astryx 独立组件（非 Button 的 iconOnly 态）；图标钮仍须提供无障碍 label；tooltip 内置 |
-| `Dialog` (3) | `Dialog` | Radix 用 `Dialog.Root/Content/Title` 复合式；Astryx 看具体 props（多为 `open/onOpenChange/title`） |
-| `AlertDialog` (2) | `AlertDialog` | 破坏性确认；destructive 动作需确认步骤 |
+| ~~`Dialog` (3)~~ ✅ | `Dialog` | Astryx 用 `isOpen/onOpenChange`；标题用 `DialogHeader`，宽/padding 用 props |
+| ~~`AlertDialog` (2)~~ ✅ | `AlertDialog` | 简单破坏性确认直接用 AlertDialog；带自定义选项（退订保留/删除文章）用普通 Dialog + RadioList |
 | ~~`Tooltip` (2)~~ ✅ | `Tooltip` | content + placement；按钮优先用内置 `tooltip` prop |
-| `Popover` (1) | `Popover` | |
-| `DropdownMenu` (1) | `DropdownMenu` | 右键菜单另有 `ContextMenu`（FeedCtxMenu 可评估） |
-| `TextField` (1) | `TextInput`（+ `InputGroup`/`Field`） | 表单场景优先 `Field` 包 label/校验 |
-| `RadioGroup` (1) | `RadioList` | 语义对应 |
+| ~~`Popover` (1)~~ ✅ | `Popover` | children 放触发钮，`content` 放面板 |
+| ~~`DropdownMenu` (1)~~ ✅ | `DropdownMenu` | 数据驱动 `items`；无 radio 项，选中态用前置 check 图标 |
+| ~~`TextField` (1)~~ ✅ | `TextInput` | label 必填（隐藏用 `isLabelHidden`）；onChange 收 value |
+| ~~`RadioGroup` (1)~~ ✅ | `RadioList` | 项用 `RadioListItem` 的 `label`/`value`（非 children） |
 | ~~`Separator` (1)~~ ✅ | `Divider` | `orientation='vertical'`，尺寸用 style |
-| `Skeleton` (1) | `Skeleton` | |
+| ~~`Skeleton` (1)~~ ✅ | `Skeleton` | 宽高用 `width`/`height` props |
 | ~~`Heading`~~ ✅（ContentRender） | 原生语义标签 | 正文标题用原生 h1-h3（fusion CSS 契约） |
 | ~~`Text` (2)~~ ✅ | `Text` | `type`/`size`/`color`；label 用原生 label |
 | `Link` (2) | `Button href` 或 `Text` 内嵌链接 | Astryx 无独立 Link 原语；导航用 `Button href` |
@@ -49,7 +49,7 @@
 ## 三、建议替换顺序（由低风险到整面）
 
 1. **原语批次**：~~Button~~ → ~~IconButton~~ → ~~Tooltip~~ → ~~Divider~~ → ~~Text/Heading~~ ✅ 完成
-2. **浮层批次**：About 完整 Dialog → AddFolder → AlertDialog → DropdownMenu/ContextMenu → Popover
+2. **浮层批次** ✅：About Dialog → AddFolder(Dialog+TextInput) → AlertDialog/退订 Dialog → DropdownMenu(SleepControl) → Popover(PlayList) → Skeleton。FeedCtxMenu 右键菜单待外壳/内容批次换 ContextMenu
 3. **表单批次**：Field/TextInput/TextArea → RadioList/Selector/Switch → 设置页 → AddFeed
 4. **外壳批次**：AppShell/TopNav/SideNav 重排导航；命令面板换 Astryx CommandPalette
 5. **内容批次**：订阅管理页 → FeedProfile 卡片化 → 文章列表行控件 → ContentRender 正文映射

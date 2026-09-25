@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { X } from "lucide-react";
-import { Dialog } from "@radix-ui/themes";
+import { Dialog } from "@astryxdesign/core/Dialog";
 import { IconButton } from "@astryxdesign/core/IconButton";
 import { Divider } from "@astryxdesign/core/Divider";
 import { ReadingOptions } from "@/layout/Article/ReadingOptions";
@@ -45,9 +45,15 @@ export const ArticleDialogView = (
   }, [article]);
 
   return (
-    <Dialog.Root open={dialogStatus} onOpenChange={handleDialogChange}>
-      {trigger && <Dialog.Trigger>{trigger}</Dialog.Trigger>}
-      <Dialog.Content className="p-0 min-w-[960px] is-scroll">
+    <>
+      {trigger}
+      <Dialog
+        isOpen={dialogStatus}
+        onOpenChange={handleDialogChange}
+        width={960}
+        padding={0}
+        maxHeight="94vh"
+      >
         <ScrollBox className="h-[94vh]" ref={scrollBoxRef}>
           <>
             <div className="sticky left-0 right-0 top-0 z-[3]">
@@ -76,10 +82,9 @@ export const ArticleDialogView = (
             <div className="relative px-20 py-10">
               {article ? <ArticleDetail article={article} /> : ""}
             </div>
-            {/* </div> */}
           </>
         </ScrollBox>
-      </Dialog.Content>
-    </Dialog.Root>
+      </Dialog>
+    </>
   );
 };

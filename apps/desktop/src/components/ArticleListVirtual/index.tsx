@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { ArticleItem } from "../ArticleItem";
-import { Skeleton } from "@radix-ui/themes";
+import { Skeleton } from "@astryxdesign/core/Skeleton";
 import type { ArticleResItem } from "@/db";
 import { Snail } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -117,16 +117,16 @@ export const ArticleListVirtual = React.memo(function ArticleListVirtual(
       )}
       {isLoading && (
         <div className="p-2 pl-6 grid gap-1 relative shrink-0">
-          <Skeleton className="h-5 w-full" />
+          <Skeleton height={20} />
           <div>
-            <Skeleton className="h-3 w-full" />
+            <Skeleton height={12} />
           </div>
           <div>
-            <Skeleton className="h-3 w-full" />
+            <Skeleton height={12} />
           </div>
           <div className="flex justify-between">
-            <Skeleton className="h-3 w-32" />
-            <Skeleton className="h-3 w-16" />
+            <Skeleton height={12} width={128} />
+            <Skeleton height={12} width={64} />
           </div>
         </div>
       )}

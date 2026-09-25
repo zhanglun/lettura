@@ -1,11 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import { toast } from "sonner";
-import { AlertDialog, Flex } from "@radix-ui/themes";
-import { Button } from "@astryxdesign/core/Button";
+import { AlertDialog } from "@astryxdesign/core/AlertDialog";
 import { FolderResItem } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
 import { busChannel } from "@/helpers/busChannel";
-import { useTranslation, Trans } from "react-i18next";
+import { useTranslation } from "react-i18next";
 
 export interface DialogProps {
   folder?: FolderResItem | null;
@@ -23,7 +22,6 @@ export const DialogDeleteFolder = React.memo((props: DialogProps) => {
     dialogStatus,
     setDialogStatus,
     afterConfirm,
-    afterCancel,
     trigger,
   } = props;
 
@@ -45,42 +43,20 @@ export const DialogDeleteFolder = React.memo((props: DialogProps) => {
     }
   };
 
-  const handleCancel = () => {
-    afterCancel();
-  };
-
   return (
-    <AlertDialog.Root open={dialogStatus} onOpenChange={setDialogStatus}>
-      {trigger && <AlertDialog.Trigger>{trigger}</AlertDialog.Trigger>}
-      <AlertDialog.Content>
-        <AlertDialog.Title>{t("Are you absolutely sure?")}</AlertDialog.Title>
-        <AlertDialog.Description>
-          <Trans
-            i18nKey={
-              "This action cannot be undone. This will permanently delete the data relates with"
-            }
-            components={{ bold: <strong /> }}
-            values={{
-              title: folder?.title,
-            }}
-          />
-        </AlertDialog.Description>
-        <Flex gap="3" mt="4" justify="end">
-          <Button
-            variant="secondary"
-            label={t("Cancel")}
-            onClick={() => {
-              handleCancel();
-              setDialogStatus(false);
-            }}
-          />
-          <Button
-            variant="destructive"
-            onClick={() => confirmDelete()}
-            label={t("Delete folder")}
-          />
-        </Flex>
-      </AlertDialog.Content>
-    </AlertDialog.Root>
+    <>
+      {trigger}
+      <AlertDialog
+        isOpen={dialogStatus}
+        onOpenChange={setDialogStatus}
+        title={t("Are you absolutely sure?")}
+        description={t(
+          "This action cannot be undone. This will permanently delete the data relates with",
+          { title: folder?.title },
+        )}
+        actionLabel={t("Delete folder")}
+        onAction={confirmDelete}
+      />
+    </>
   );
 });
