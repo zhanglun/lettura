@@ -1,9 +1,18 @@
+/* 增量迁移：显式层序，astryx 置于独立层；现有 utility 保持最优先 */
+@layer reset, tw-preflight, astryx-base, astryx-theme;
+
+@import "@astryxdesign/core/reset.css" layer(reset);
+@import "@astryxdesign/core/astryx.css" layer(astryx-base);
+@import "@astryxdesign/theme-neutral/theme.css" layer(astryx-theme);
+
 @import "./custom-theme.css";
 @import "./fusion.css";
 @import "./custom-components.css";
 @import "./reading-style.css";
 
-@tailwind base;
+@layer tw-preflight {
+  @tailwind base;
+}
 @tailwind components;
 @tailwind utilities;
 

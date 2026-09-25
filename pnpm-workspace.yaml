@@ -2,6 +2,8 @@ packages:
   - apps/*
 
 allowBuilds:
+  '@astryxdesign/cli': false
+  '@astryxdesign/core': false
   '@parcel/watcher': true
   esbuild: true
   rome: true

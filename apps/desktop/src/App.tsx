@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { emit, listen } from "@tauri-apps/api/event";
 import { useBearStore } from "@/stores";
 import { Theme } from "@radix-ui/themes";
+import { Theme as AstryxTheme } from "@astryxdesign/core/theme";
+import { neutralTheme } from "@astryxdesign/theme-neutral/built";
 import { DialogAboutApp } from "./components/About";
 import { useShallow } from "zustand/react/shallow";
 import { ErrorBoundary } from "./components/ErrorBoundary";
@@ -119,19 +121,21 @@ function App() {
   }, [store.userConfig.color_scheme]);
 
   return (
-    <Theme
-      className="w-[100vw] h-[100vh] "
-      accentColor={accentColor}
-      appearance={isDark ? "dark" : "light"}
-      panelBackground="translucent"
-    >
-      <ErrorBoundary>
-        <div className="h-full max-h-full ">
-          <AppLayout />
-        </div>
-        <DialogAboutApp />
-      </ErrorBoundary>
-    </Theme>
+    <AstryxTheme theme={neutralTheme} mode={isDark ? "dark" : "light"}>
+      <Theme
+        className="w-[100vw] h-[100vh] "
+        accentColor={accentColor}
+        appearance={isDark ? "dark" : "light"}
+        panelBackground="translucent"
+      >
+        <ErrorBoundary>
+          <div className="h-full max-h-full ">
+            <AppLayout />
+          </div>
+          <DialogAboutApp />
+        </ErrorBoundary>
+      </Theme>
+    </AstryxTheme>
   );
 }
 
