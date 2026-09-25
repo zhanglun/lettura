@@ -183,13 +183,26 @@
   align-items: center;
   height: var(--row-h, 54px);
   padding-right: 20px;
-  border-bottom: 1px solid var(--fusion-hair);
+  border: 0;
   cursor: pointer;
   user-select: none;
+  position: relative;
+  z-index: 0;
 }
 
-.fusion-row:hover {
-  background: color-mix(in srgb, var(--color-text-primary) 3.5%, transparent);
+/* 列表行词汇对齐 Astryx（2026-10）：圆角内衬洗色（同菜单项 8px）、无发丝分隔线、选中 = accent-muted */
+.fusion-row::after {
+  content: "";
+  position: absolute;
+  inset: 3px 6px 3px 4px;
+  border-radius: 8px;
+  background: transparent;
+  pointer-events: none;
+  transition: background 0.12s ease;
+}
+
+.fusion-row:hover::after {
+  background: color-mix(in srgb, var(--color-text-primary) 4%, transparent);
 }
 
 .fusion-st {
@@ -337,8 +350,8 @@
 }
 
 /* 键盘焦点：洗色 + 圆点光环两种安静信号，无彩色侧线（竖侧线＝side-tab slop，禁用） */
-.fusion-row.is-focused {
-  background: color-mix(in srgb, var(--color-text-primary) 5.5%, transparent) !important;
+.fusion-row.is-focused::after {
+  background: var(--color-accent-muted);
 }
 
 .fusion-row.is-focused .fusion-dot {
@@ -1363,7 +1376,6 @@
   align-items: center;
   height: 46px;
   border: 0;
-  border-bottom: 1px solid var(--fusion-hair);
   background: none;
   width: 100%;
   padding: 0;
@@ -1378,7 +1390,7 @@
   content: "";
   position: absolute;
   inset: 3px 8px;
-  border-radius: 9px;
+  border-radius: 8px;
   background: transparent;
   pointer-events: none;
   transition: background 0.12s ease;
@@ -1389,7 +1401,7 @@
 }
 
 .fusion-b-row.is-focused::after {
-  background: color-mix(in srgb, var(--color-text-primary) 5.5%, transparent);
+  background: var(--color-accent-muted);
 }
 
 .fusion-b-row.is-focused .fusion-b-name {
@@ -1734,7 +1746,7 @@
   grid-template-columns: 22px minmax(0, 1fr) 150px 96px 48px;
   align-items: center;
   height: 44px;
-  border-bottom: 1px solid var(--fusion-hair);
+  border: 0;
   cursor: pointer;
   position: relative;
   z-index: 0;
@@ -1744,7 +1756,7 @@
   content: "";
   position: absolute;
   inset: 3px 8px;
-  border-radius: 9px;
+  border-radius: 8px;
   background: transparent;
   pointer-events: none;
   transition: background 0.12s ease;
@@ -2652,16 +2664,11 @@ body.dark-theme .fusion-card .gen code {
   color: var(--fusion-sub);
 }
 
-body.dark-theme .fusion-row:hover {
-  background: color-mix(in srgb, var(--color-text-primary) 3.5%, transparent);
+body.dark-theme .fusion-row:hover::after {
+  background: color-mix(in srgb, var(--color-text-primary) 4%, transparent);
 }
 
 body.dark-theme .fusion-srow:hover::after {
-  background: color-mix(in srgb, var(--color-text-primary) 4.5%, transparent);
-}
-
-body.dark-theme .fusion-row.is-focused,
-body.dark-theme .fusion-b-row.is-focused {
   background: color-mix(in srgb, var(--color-text-primary) 4.5%, transparent);
 }
 
@@ -2737,10 +2744,6 @@ body.dark-theme .fusion-article-body pre code {
 /* 浏览帧/源头栏：灰阶投影转浅 */
 body.dark-theme .fusion-b-row:hover::after {
   background: color-mix(in srgb, var(--color-text-primary) 5%, transparent);
-}
-
-body.dark-theme .fusion-b-row.is-focused::after {
-  background: color-mix(in srgb, var(--color-text-primary) 4.5%, transparent);
 }
 
 body.dark-theme .fusion-b-ic {
