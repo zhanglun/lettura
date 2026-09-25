@@ -14,6 +14,11 @@ import { useShallow } from "zustand/react/shallow";
 import { RouteConfig } from "@/config";
 import { Subscriptions } from "./Subscriptions";
 import { ACCENTS, applyAccent } from "@/helpers/accent";
+import { Switch } from "@astryxdesign/core/Switch";
+import { Selector } from "@astryxdesign/core/Selector";
+import { Slider } from "@astryxdesign/core/Slider";
+import { TextArea } from "@astryxdesign/core/TextArea";
+import { TextInput } from "@astryxdesign/core/TextInput";
 
 const INTERVALS = [
   { value: 0, labelKey: "Manual" },
@@ -336,13 +341,16 @@ export function SettingPage() {
             </SRow>
             <SRow label={t("Font size")} help={t("settings.font_help")}>
               <div className="fusion-sld">
-                <input
-                  type="range"
+                <Slider
+                  label={t("Font size")}
+                  isLabelHidden
                   min={14}
                   max={19}
                   step={0.5}
                   value={cfg?.customize_style?.font_size ?? 15.5}
-                  onChange={(e) => updateStyle({ font_size: parseFloat(e.target.value) })}
+                  valueDisplay="none"
+                  width={140}
+                  onChange={(v: number) => updateStyle({ font_size: v })}
                 />
                 <span className="fusion-chip">
                   {(cfg?.customize_style?.font_size ?? 15.5).toFixed(1)}px
@@ -351,13 +359,16 @@ export function SettingPage() {
             </SRow>
             <SRow label={t("Line height")} help={t("settings.lh_help")}>
               <div className="fusion-sld">
-                <input
-                  type="range"
+                <Slider
+                  label={t("Line height")}
+                  isLabelHidden
                   min={1.6}
                   max={2.4}
                   step={0.1}
                   value={cfg?.customize_style?.line_height ?? 2}
-                  onChange={(e) => updateStyle({ line_height: parseFloat(e.target.value) })}
+                  valueDisplay="none"
+                  width={140}
+                  onChange={(v: number) => updateStyle({ line_height: v })}
                 />
                 <span className="fusion-chip">
                   {(cfg?.customize_style?.line_height ?? 2).toFixed(1)}
@@ -401,33 +412,36 @@ export function SettingPage() {
               {t("settings.sec.sync")}
             </div>
             <SRow label={t("Update Interval")} help={t("set the update interval")}>
-              <select
-                className="fusion-sel"
+              <Selector
+                label={t("Update Interval")}
+                isLabelHidden
+                size="sm"
                 value={String(cfg?.update_interval ?? 0)}
-                onChange={(e) =>
+                options={INTERVALS.map((i) => ({
+                  value: String(i.value),
+                  label: t(i.labelKey),
+                }))}
+                onChange={(v) =>
                   store.updateUserConfig({
                     ...cfg,
-                    update_interval: parseInt(e.target.value, 10),
+                    update_interval: parseInt(v, 10),
                   })
                 }
-              >
-                {INTERVALS.map((i) => (
-                  <option key={i.value} value={i.value}>
-                    {t(i.labelKey)}
-                  </option>
-                ))}
-              </select>
+              />
             </SRow>
             <SRow label={t("Thread")} help={t("set the concurrent number of requests (from 1 to 5)")}>
               <div className="fusion-sld">
-                <input
-                  type="range"
+                <Slider
+                  label={t("Thread")}
+                  isLabelHidden
                   min={1}
                   max={5}
                   step={1}
                   value={cfg?.threads ?? 3}
-                  onChange={(e) =>
-                    store.updateUserConfig({ ...cfg, threads: parseInt(e.target.value, 10) })
+                  valueDisplay="none"
+                  width={140}
+                  onChange={(v: number) =>
+                    store.updateUserConfig({ ...cfg, threads: v })
                   }
                 />
                 <span className="fusion-chip">{cfg?.threads ?? 3} / 5</span>
@@ -437,12 +451,12 @@ export function SettingPage() {
               label={t("settings.rsshub_instance")}
               help={t("settings.rsshub_instance_help")}
             >
-              <input
-                className="fusion-in-sm"
+              <TextInput
+                label={t("settings.rsshub_instance")}
+                isLabelHidden
                 value={rsshubDraft ?? cfg?.rsshub_instance ?? ""}
-                placeholder="https://rsshub.app"
-                spellCheck={false}
-                onChange={(e) => setRsshubDraft(e.target.value)}
+                size="sm"
+                onChange={(v) => setRsshubDraft(v)}
                 onBlur={() => {
                   if (rsshubDraft === null) return;
                   store.updateUserConfig({ ...cfg, rsshub_instance: rsshubDraft.trim() });
@@ -454,13 +468,11 @@ export function SettingPage() {
               label={t("settings.generator_routes")}
               help={t("settings.generator_routes_help")}
             >
-              <textarea
-                className="fusion-set-ta"
-                rows={3}
-                spellCheck={false}
-                placeholder="xiaohongshu.com/user/profile/(\\w+) => xiaohongshu/user/$1"
+              <TextArea
+                label={t("settings.generator_routes")}
+                isLabelHidden
                 value={routesDraft ?? (cfg?.generator_routes ?? []).join("\n")}
-                onChange={(e) => setRoutesDraft(e.target.value)}
+                onChange={(v) => setRoutesDraft(v)}
                 onBlur={() => {
                   if (routesDraft === null) return;
                   store.updateUserConfig({
@@ -492,12 +504,12 @@ export function SettingPage() {
               {t("settings.sec.system")}
             </div>
             <SRow label={t("Launch at Login")} help={t("Start with system, but do not show window")}>
-              <button
-                type="button"
-                className={`fusion-sw ${cfg?.launch_at_login ? "on" : ""}`}
-                aria-label={t("Launch at Login")}
-                onClick={async () => {
-                  const val = !cfg?.launch_at_login;
+              <Switch
+                size="sm"
+                isLabelHidden
+                label={t("Launch at Login")}
+                value={!!cfg?.launch_at_login}
+                onChange={async (val) => {
                   store.updateUserConfig({ ...cfg, launch_at_login: val });
                   try {
                     if (val) {
@@ -512,40 +524,47 @@ export function SettingPage() {
               />
             </SRow>
             <SRow label={t("Background Sync")} help={t("Continue syncing via tray after window is closed")}>
-              <button
-                type="button"
-                className={`fusion-sw ${cfg?.background_sync !== false ? "on" : ""}`}
-                aria-label={t("Background Sync")}
-                onClick={() =>
-                  store.updateUserConfig({ ...cfg, background_sync: !cfg?.background_sync })
+              <Switch
+                size="sm"
+                isLabelHidden
+                label={t("Background Sync")}
+                value={cfg?.background_sync !== false}
+                onChange={(val) =>
+                  store.updateUserConfig({ ...cfg, background_sync: val })
                 }
               />
             </SRow>
             <SRow label={t("Language")} help={t("settings.lang_help")}>
-              <select
-                className="fusion-sel"
+              <Selector
+                label={t("Language")}
+                isLabelHidden
+                size="sm"
                 value={i18n.language?.startsWith("zh") ? "zh" : "en"}
-                onChange={(e) => {
-                  i18n.changeLanguage(e.target.value);
-                  window.localStorage.setItem("lang", e.target.value);
+                options={[
+                  { value: "zh", label: "中文" },
+                  { value: "en", label: "English" },
+                ]}
+                onChange={(v) => {
+                  i18n.changeLanguage(v);
+                  window.localStorage.setItem("lang", v);
                 }}
-              >
-                <option value="zh">中文</option>
-                <option value="en">English</option>
-              </select>
+              />
             </SRow>
             <SRow label={t("Data Retention")} help={t("Read articles and analysis metadata")}>
-              <select
-                className="fusion-sel"
+              <Selector
+                label={t("Data Retention")}
+                isLabelHidden
+                size="sm"
                 value={String(cfg?.purge_on_days ?? 90)}
-                onChange={(e) =>
-                  store.updateUserConfig({ ...cfg, purge_on_days: parseInt(e.target.value, 10) })
+                options={[
+                  { value: "30", label: `30 ${t("days")}` },
+                  { value: "90", label: `90 ${t("days")}` },
+                  { value: "0", label: t("Keep forever") },
+                ]}
+                onChange={(v) =>
+                  store.updateUserConfig({ ...cfg, purge_on_days: parseInt(v, 10) })
                 }
-              >
-                <option value="30">30 {t("days")}</option>
-                <option value="90">90 {t("days")}</option>
-                <option value="0">{t("Keep forever")}</option>
-              </select>
+              />
             </SRow>
             <SRow label={t("OPML")} help={t("settings.opml_help")}>
               <button type="button" className="fusion-btn-gh" onClick={handleExport}>

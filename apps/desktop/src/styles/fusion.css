@@ -3336,39 +3336,6 @@ body.dark-theme .fusion-in-sm {
   accent-color: var(--fusion-accent);
 }
 
-.fusion-sw {
-  width: 36px;
-  height: 21px;
-  border-radius: 999px;
-  border: 0;
-  background: rgba(29, 30, 32, 0.15);
-  position: relative;
-  cursor: pointer;
-  transition: background 0.15s ease;
-  padding: 0;
-}
-
-.fusion-sw::after {
-  content: "";
-  position: absolute;
-  top: 2.5px;
-  left: 2.5px;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: #fff;
-  transition: left 0.15s ease;
-  box-shadow: 0 1px 3px rgba(29, 30, 32, 0.25);
-}
-
-.fusion-sw.on {
-  background: var(--fusion-accent);
-}
-
-.fusion-sw.on::after {
-  left: 17.5px;
-}
-
 /* 校准台（预览块） */
 .fusion-prev {
   margin: 18px 0 8px;

@@ -34,14 +34,14 @@
 |---|---|---|
 | About 弹窗 `components/About` | `Button` | **已完成** 两个按钮替换，Dialog 待换 |
 | 命令面板 `components/layout/CommandPalette.tsx`（cmdk） | `CommandPalette` / `Typeahead` / `PowerSearch` | Astryx 有原生命令面板，可替换 cmdk 实现 |
-| 添加订阅 `components/AddFeed` | `TextInput`+`Field`+`Button`+`Card`+`Badge`；模板见 `.impeccable` | 表单重写；探测/候选用 List 类 |
+| 添加订阅 `components/AddFeed` | 自研浮动面板（非 Radix）；待内容批次 | 主输入行与 badge/kbd/foot 网格强耦合，不单独换控件 |
 | 添加分组 `components/AddFolder` | `Dialog`+`Field`+`TextInput` | 小弹窗 |
 | Feed 右键菜单 `components/FeedCtxMenu` | `ContextMenu` | 统一右键交互 |
 | FeedProfile 源头卡 `components/FeedProfile` | `Card`+`HStack/VStack`+`Badge`+`Button`+`StatusDot`+`IconButton` | 卡片化重写，健康用 StatusDot |
 | 订阅管理页 `layout/Feeds` | `Table` 或列表 + `Button`/`IconButton`+`ContextMenu`+`Timestamp`+`Badge` | 行布局可用 Table 规范化 |
 | 文章列表 `components/ArticleListVirtual`、`ArticleItem` | 列表项 + `CheckboxInput`+`Badge`+`Timestamp`+`IconButton` | 虚拟滚动保留自研，行内控件替换 |
 | 文章视图/正文 `components/ArticleView`（ContentRender/DialogView/ReadingOptions） | `Heading`/`Text`/`Blockquote`/`Code`/`CodeBlock`/`Divider`；正文容器 token | ContentRender 标签映射逐项换；阅读样式用 token |
-| 设置页 `layout/Setting` | `FormLayout`+`Field`+`Switch`+`RadioList`/`Selector`+`Button` | 表单体系重写 |
+| 设置页 `layout/Setting` | **控件已换**：Switch/Selector/Slider/TextInput/TextArea（均 sm、label 隐藏） | 布局 SRow/Seg/色板保留；暗色 thumb 待 mode 打通 |
 | 播客 `components/LPodcast`（FullPlayer 等） | `Button`/`IconButton`+`Slider`+`ProgressBar`+`Thumbnail`+`Badge` | Framer Motion 保留，控件替换；IndexedDB 不动 |
 | 顶栏/侧栏 `components/layout`（AppLayout 等） | `AppShell`+`TopNav`+`SideNav`+`NavMenu`+`NavIcon` | 外壳规范化 |
 | Toast（sonner，11 处） | `Toast` | 可统一替换；先保留，后期收口 |
@@ -50,7 +50,7 @@
 
 1. **原语批次**：~~Button~~ → ~~IconButton~~ → ~~Tooltip~~ → ~~Divider~~ → ~~Text/Heading~~ ✅ 完成
 2. **浮层批次** ✅：About Dialog → AddFolder(Dialog+TextInput) → AlertDialog/退订 Dialog → DropdownMenu(SleepControl) → Popover(PlayList) → Skeleton。FeedCtxMenu 右键菜单待外壳/内容批次换 ContextMenu
-3. **表单批次**：Field/TextInput/TextArea → RadioList/Selector/Switch → 设置页 → AddFeed
+3. **表单批次** ✅（设置页部分）：设置页原生控件全换 Astryx——`Switch`(2)、`Selector`(3)、`Slider`(3)、`TextInput`(RSSHub)、`TextArea`(路由)；布局/自研 Seg 保留。AddFeed 为自研浮动面板、无 Radix 原语，推迟到内容批次整面重梳
 4. **外壳批次**：AppShell/TopNav/SideNav 重排导航；命令面板换 Astryx CommandPalette
 5. **内容批次**：订阅管理页 → FeedProfile 卡片化 → 文章列表行控件 → ContentRender 正文映射
 6. **收口**：播客控件、Toast 统一替换 sonner，删除 Radix Themes 与冗余自定义 CSS
