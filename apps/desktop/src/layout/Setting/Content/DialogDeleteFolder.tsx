@@ -1,5 +1,5 @@
 import React from "react";
-import { toast } from "sonner";
+import { toast } from "@/helpers/toast";
 import { AlertDialog } from "@astryxdesign/core/AlertDialog";
 import { FolderResItem } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
@@ -35,10 +35,7 @@ export const DialogDeleteFolder = React.memo((props: DialogProps) => {
           setDialogStatus(false);
         })
         .catch((err) => {
-          toast.error(t("Ops! Something wrong~"), {
-            description: t(err.message),
-            duration: 2000,
-          });
+          toast.error(t(err.message) || t("Ops! Something wrong~"));
         });
     }
   };

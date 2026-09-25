@@ -1,9 +1,8 @@
-import { useEffect, useState } from "react";
 import type React from "react";
 import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
+import { toast } from "@/helpers/toast";
 import {
   BookOpen,
   CheckCheck,
@@ -14,44 +13,46 @@ import {
   RefreshCw,
   Settings,
   Trash2,
-} from "lucide-react";import { RouteConfig } from "@/config";
+} from "lucide-react";
+import { RouteConfig } from "@/config";
 import { useBearStore } from "@/stores";
 import * as dataAgent from "@/helpers/dataAgent";
 import { busChannel } from "@/helpers/busChannel";
 import { copyText } from "@/helpers/copyText";
 import { showErrorToast } from "@/helpers/errorHandler";
 import { open as openExternal } from "@tauri-apps/plugin-shell";
-import { DialogUnsubscribeFeed } from "@/layout/Setting/Content/DialogUnsubscribeFeed";
+import { ContextMenu } from "@astryxdesign/core/ContextMenu";
+import type { ContextMenuOption } from "@astryxdesign/core/ContextMenu";
 import type { FeedResItem } from "@/db";
 
 export interface FeedCtxMenuProps {
-  target: FeedResItem | null;
-  position: { x: number; y: number } | null;
-  onClose: () => void;
-  /** 动作完成后的额外回调（默认已刷新订阅列表） */
+  /** 右键目标（源或分组） */
+  feed: FeedResItem;
+  children: React.ReactNode;
+  /** 动作完成后回调（默认已刷新订阅列表） */
   onAfterAction?: () => void;
   /** 分组编辑/删除（订阅管理页提供；浏览帧不提供则显示「去管理」入口） */
   onEditFolder?: (folder: FeedResItem) => void;
   onDeleteFolder?: (folder: FeedResItem) => void;
+  /** 退订源（订阅管理页提供确认弹窗） */
+  onUnsubscribe?: (feed: FeedResItem) => void;
 }
 
 /**
- * 源右键菜单（feeds.html / settings.html 契约共用）：
+ * 源/分组右键菜单（Astryx ContextMenu，声明式包裹目标行）：
  * 源 = 查看/同步/已读/移动分组（悬停子菜单）/主页/复制/退订；
- * 分组 = 同步/已读 +（管理页：编辑/删除｜浏览帧：去管理页）。退订确认内置。
+ * 分组 = 同步/已读 +（管理页：编辑/删除｜浏览帧：去管理页）。
  */
 export function FeedCtxMenu({
-  target,
-  position,
-  onClose,
+  feed,
+  children,
   onAfterAction,
   onEditFolder,
   onDeleteFolder,
+  onUnsubscribe,
 }: FeedCtxMenuProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [unsubscribeOpen, setUnsubscribeOpen] = useState(false);
-  const [targetUuid, setTargetUuid] = useState<string | null>(null);
 
   const store = useBearStore(
     useShallow((state) => ({
@@ -62,27 +63,12 @@ export function FeedCtxMenu({
     })),
   );
 
-  useEffect(() => {
-    if (target) setTargetUuid(target.uuid);
-  }, [target]);
-
-  // 菜单关闭（target 置空）后退订确认仍需持有目标，用 subscribes 兜底找回
-  const dialogFeed =
-    target ?? (store.subscribes || []).find((i) => i.uuid === targetUuid) ?? null;
-
-  if (!dialogFeed) return null;
-
-  const showMenu = !!(target && position);
-  const isFolder = dialogFeed.item_type === "folder";
-  const folders = (store.subscribes || []).filter((i) => i.item_type === "folder");
-
   const refresh = () => {
     store.getSubscribes();
     onAfterAction?.();
   };
 
   const openQueue = (f: FeedResItem) => {
-    onClose();
     store.setFeed(f);
     navigate(
       `${RouteConfig.LOCAL_FEED.replace(/:uuid/, f.uuid)}?feedUuid=${f.uuid}&feedUrl=${encodeURIComponent(f.feed_url)}&type=${f.item_type}`,
@@ -90,7 +76,6 @@ export function FeedCtxMenu({
   };
 
   const sync = (f: FeedResItem) => {
-    onClose();
     store
       .syncArticles(f)
       .then(() => {
@@ -101,7 +86,6 @@ export function FeedCtxMenu({
   };
 
   const markAllRead = (f: FeedResItem) => {
-    onClose();
     dataAgent.markAllRead({ uuid: f.uuid }).then(() => {
       busChannel.emit("getChannels");
       refresh();
@@ -109,7 +93,6 @@ export function FeedCtxMenu({
   };
 
   const move = (f: FeedResItem, folderUuid: string) => {
-    onClose();
     dataAgent
       .moveChannelIntoFolder(f.uuid, folderUuid, f.sort ?? 0)
       .then(() => {
@@ -117,157 +100,137 @@ export function FeedCtxMenu({
         busChannel.emit("getChannels");
         refresh();
       })
-      .catch((error) => showErrorToast(error, t("settings.subscriptions.move_failed")));
+      .catch((error) =>
+        showErrorToast(error, t("settings.subscriptions.move_failed")),
+      );
   };
 
   const openHome = (f: FeedResItem) => {
-    onClose();
     if (f.link) openExternal(f.link);
   };
 
   const copyUrl = (f: FeedResItem) => {
-    onClose();
     if (!f.feed_url) return;
-    copyText(f.feed_url).then(() => toast.message(t("Current URL copied to clipboard")));
+    copyText(f.feed_url).then(() =>
+      toast.message(t("Current URL copied to clipboard")),
+    );
   };
 
-  const item = (
-    key: string,
-    icon: React.ReactNode,
-    label: string,
-    action: () => void,
-    danger = false,
-  ) => (
-    <button
-      key={key}
-      type="button"
-      className={`mi ${danger ? "danger" : ""}`}
-      onClick={() => {
-        action();
-      }}
-    >
-      {icon}
-      {label}
-    </button>
+  const isFolder = feed.item_type === "folder";
+  const folders = (store.subscribes || []).filter(
+    (i) => i.item_type === "folder",
   );
 
-  // 贴边回收：菜单不溢出窗口右缘/下缘
-  const left = position ? Math.min(position.x, window.innerWidth - 200) : 0;
-  const top = position
-    ? Math.min(position.y, window.innerHeight - (isFolder ? 150 : 260))
-    : 0;
+  let items: ContextMenuOption[];
 
-  const menuTarget = dialogFeed;
+  if (isFolder) {
+    items = [
+      {
+        id: "sync",
+        label: t("feeds.ctx.sync"),
+        icon: <RefreshCw size={13} />,
+        onClick: () => sync(feed),
+      },
+      {
+        id: "read",
+        label: t("feeds.ctx.mark_all_read"),
+        icon: <CheckCheck size={13} />,
+        onClick: () => markAllRead(feed),
+      },
+    ];
+    if (onEditFolder && onDeleteFolder) {
+      items.push(
+        { type: "divider" },
+        {
+          id: "edit",
+          label: t("Edit folder"),
+          icon: <Pencil size={13} />,
+          onClick: () => onEditFolder(feed),
+        },
+        {
+          id: "delete",
+          label: t("Delete folder"),
+          icon: <Trash2 size={13} />,
+          variant: "destructive",
+          onClick: () => onDeleteFolder(feed),
+        },
+      );
+    } else {
+      items.push(
+        { type: "divider" },
+        {
+          id: "manage",
+          label: t("fusion.queue.manage"),
+          icon: <Settings size={13} />,
+          onClick: () =>
+            navigate(`${RouteConfig.SETTINGS}?tab=subscriptions`),
+        },
+      );
+    }
+  } else {
+    items = [
+      {
+        id: "open",
+        label: t("feeds.ctx.view_articles"),
+        icon: <BookOpen size={13} />,
+        onClick: () => openQueue(feed),
+      },
+      {
+        id: "sync",
+        label: t("feeds.ctx.sync"),
+        icon: <RefreshCw size={13} />,
+        onClick: () => sync(feed),
+      },
+      {
+        id: "read",
+        label: t("feeds.ctx.mark_all_read"),
+        icon: <CheckCheck size={13} />,
+        onClick: () => markAllRead(feed),
+      },
+      {
+        id: "move",
+        label: t("feeds.ctx.move_to_folder"),
+        icon: <FolderInput size={13} />,
+        items: [
+          {
+            id: "ungrouped",
+            label: t("settings.subscriptions.ungrouped"),
+            onClick: () => move(feed, ""),
+          },
+          ...folders.map((folder) => ({
+            id: folder.uuid,
+            label: folder.title,
+            onClick: () => move(feed, folder.uuid),
+          })),
+        ],
+      },
+      { type: "divider" },
+      {
+        id: "home",
+        label: t("Open home page"),
+        icon: <ExternalLink size={13} />,
+        onClick: () => openHome(feed),
+      },
+      {
+        id: "copy",
+        label: t("Copy feed URL"),
+        icon: <Clipboard size={13} />,
+        onClick: () => copyUrl(feed),
+      },
+      { type: "divider" },
+      {
+        id: "unsubscribe",
+        label: t("Unsubscribe"),
+        icon: <Trash2 size={13} />,
+        variant: "destructive",
+        onClick: () => (onUnsubscribe ? onUnsubscribe(feed) : undefined),
+      },
+    ];
+  }
 
   return (
-    <>
-      {showMenu && (
-        <div
-          className="fusion-ctx"
-          style={{ left, top }}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div
-            style={{ position: "fixed", inset: 0, zIndex: -1 }}
-            onClick={onClose}
-          />
-          {isFolder ? (
-            <>
-              {item("sync", <RefreshCw size={13} />, t("feeds.ctx.sync"), () => sync(menuTarget))}
-              {item("read", <CheckCheck size={13} />, t("feeds.ctx.mark_all_read"), () => markAllRead(menuTarget))}
-              {onEditFolder && (
-                <hr />
-              )}
-              {onEditFolder &&
-                item("edit", <Pencil size={13} />, t("Edit folder"), () => {
-                  onEditFolder(menuTarget);
-                  onClose();
-                })}
-              {onDeleteFolder &&
-                item("delete", <Trash2 size={13} />, t("Delete folder"), () => {
-                  onDeleteFolder(menuTarget);
-                  onClose();
-                }, true)}
-              {!onEditFolder && (
-                <>
-                  <hr />
-                  {item("manage", <Settings size={13} />, t("fusion.queue.manage"), () => {
-                    onClose();
-                    navigate(`${RouteConfig.SETTINGS}?tab=subscriptions`);
-                  })}
-                </>
-              )}
-            </>
-          ) : (
-            <>
-              {item("open", <BookOpen size={13} />, t("feeds.ctx.view_articles"), () => openQueue(menuTarget))}
-              {item("sync", <RefreshCw size={13} />, t("feeds.ctx.sync"), () => sync(menuTarget))}
-              {item("read", <CheckCheck size={13} />, t("feeds.ctx.mark_all_read"), () => markAllRead(menuTarget))}
-              <div className="mi has-sub">
-                <FolderInput size={13} />
-                {t("feeds.ctx.move_to_folder")}
-                <svg
-                  className="caret"
-                  width="11"
-                  height="11"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.7"
-                  strokeLinecap="round"
-                >
-                  <path d="m6 3 5 5-5 5" />
-                </svg>
-                <div className="sub" onClick={(e) => e.stopPropagation()}>
-                  <button
-                    type="button"
-                    className="mi"
-                    onClick={() => move(menuTarget, "")}
-                  >
-                    {t("settings.subscriptions.ungrouped")}
-                  </button>
-                  {folders.map((folder) => (
-                    <button
-                      key={folder.uuid}
-                      type="button"
-                      className="mi"
-                      onClick={() => move(menuTarget, folder.uuid)}
-                    >
-                      {folder.title}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <hr />
-              {item("home", <ExternalLink size={13} />, t("Open home page"), () => openHome(menuTarget))}
-              {item("copy", <Clipboard size={13} />, t("Copy feed URL"), () => copyUrl(menuTarget))}
-              <hr />
-              {item(
-                "delete",
-                <Trash2 size={13} />,
-                t("Unsubscribe"),
-                () => {
-                  onClose();
-                  setUnsubscribeOpen(true);
-                },
-                true,
-              )}
-            </>
-          )}
-        </div>
-      )}
-
-      <DialogUnsubscribeFeed
-        feed={dialogFeed}
-        dialogStatus={unsubscribeOpen}
-        setDialogStatus={setUnsubscribeOpen}
-        afterConfirm={() => {
-          refresh();
-        }}
-        afterCancel={() => {
-          setUnsubscribeOpen(false);
-        }}
-      />
-    </>
+    <ContextMenu items={items} size="sm" menuWidth={200}>
+      {children}
+    </ContextMenu>
   );
 }

@@ -1,4 +1,4 @@
-import { toast } from "sonner";
+import { toast } from "./toast";
 import { t } from "i18next";
 import { AxiosError } from "axios";
 
@@ -69,14 +69,13 @@ export const showErrorToast = (
 
   const message = fallbackMessage || getUserFriendlyMessage(error);
 
-  toast.error(message, {
-    duration: 4000,
-  });
+  toast.error(message);
 };
 
 export const showSuccessToast = (message: string): void => {
   toast.success(message);
 };
+
 
 export const withErrorToast = async <T>(
   promise: Promise<T>,

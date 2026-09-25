@@ -4,7 +4,6 @@ import {
   Navigate,
   RouterProvider,
 } from "react-router-dom";
-import { Toaster } from "sonner";
 import { invoke } from "@tauri-apps/api/core";
 
 import App from "./App";
@@ -20,12 +19,7 @@ import "./i18n";
 const router = createBrowserRouter([
   {
     path: "/",
-    element: (
-      <>
-        <App />
-        <Toaster />
-      </>
-    ),
+    element: <App />,
     errorElement: <ErrorPage />,
     children: [
       {

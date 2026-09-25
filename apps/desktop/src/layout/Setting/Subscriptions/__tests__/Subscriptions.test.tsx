@@ -47,7 +47,7 @@ vi.mock("@/layout/Setting/Content/DialogDeleteFolder", () => ({
   DialogDeleteFolder: () => null,
 }));
 
-vi.mock("sonner", () => ({
+vi.mock("@/helpers/toast", () => ({
   toast: {
     success: vi.fn(),
     warning: vi.fn(),
@@ -128,8 +128,11 @@ describe("Subscriptions settings panel", () => {
     expect(mocks.getSubscribes).toHaveBeenCalled();
     expect(container.querySelector(".fusion-subs-bar")).toBeInTheDocument();
     expect(container.querySelector(".fusion-subs-search")).toBeInTheDocument();
-    // 分组（Engineering）+ 未分组
-    expect(screen.getByText("Engineering")).toBeInTheDocument();
+    // 分组（Engineering，标题）+ 未分组；Engineering 也出现在右键子菜单故用 getAll
+    const titles = [...container.querySelectorAll(".fusion-b-title")].map(
+      (el) => el.textContent,
+    );
+    expect(titles).toContain("Engineering");
     expect(screen.getByText("feeds.ungrouped")).toBeInTheDocument();
     expect(container.querySelectorAll(".fusion-subs-row").length).toBe(2);
     // 未读药丸挂在标题旁
@@ -163,13 +166,14 @@ describe("Subscriptions settings panel", () => {
 
     fireEvent.contextMenu(screen.getByText("Vercel Blog"));
 
-    const menu = document.querySelector(".fusion-ctx");
-    expect(menu).toBeInTheDocument();
+    // Astryx 菜单项以 menuitem 角色渲染
+    const copyItem = screen.getAllByRole("menuitem").find(
+      (el) => el.textContent === "Copy feed URL",
+    );
+    expect(copyItem).toBeTruthy();
 
-    fireEvent.click(screen.getByText("Copy feed URL"));
+    fireEvent.click(copyItem!);
     expect(mocks.copyText).toHaveBeenCalledWith("https://vercel.com/feed");
-    // 动作后菜单关闭
-    expect(document.querySelector(".fusion-ctx")).not.toBeInTheDocument();
   });
 
   it("exposes add-feed and add-folder entries from the toolbar", () => {

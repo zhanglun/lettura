@@ -30,10 +30,11 @@ vi.mock("react-router-dom", () => ({
 
 vi.mock("react-hotkeys-hook", () => ({ useHotkeys: vi.fn() }));
 
-vi.mock("sonner", () => ({
+vi.mock("@/helpers/toast", () => ({
   toast: {
     success: (...args: unknown[]) => toastSuccess(...args),
     error: (...args: unknown[]) => toastError(...args),
+    message: vi.fn(),
   },
 }));
 

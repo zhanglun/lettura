@@ -52,8 +52,8 @@
 2. **浮层批次** ✅：About Dialog → AddFolder(Dialog+TextInput) → AlertDialog/退订 Dialog → DropdownMenu(SleepControl) → Popover(PlayList) → Skeleton。FeedCtxMenu 右键菜单待外壳/内容批次换 ContextMenu
 3. **表单批次** ✅（设置页部分）：设置页原生控件全换 Astryx——`Switch`(2)、`Selector`(3)、`Slider`(3)、`TextInput`(RSSHub)、`TextArea`(路由)；布局/自研 Seg 保留。AddFeed 为自研浮动面板、无 Radix 原语，推迟到内容批次整面重梳
 4. **外壳批次** ✅：命令面板换 Astryx CommandPalette（删 cmdk）；AppShell 不采用（会改变 fusion 视觉世界）
-5. **内容批次**：订阅管理页 → FeedProfile 卡片化 → 文章列表行控件 → ContentRender 正文映射
-6. **收口**：播客控件、Toast 统一替换 sonner，删除 Radix Themes 与冗余自定义 CSS
+5. **内容批次** ✅：FeedCtxMenu → Astryx `ContextMenu`（声明式包裹、嵌套子菜单）；sonner → Astryx `Toast`（helpers/toast 命令式 + useToast）；删除失效 fusion-ctx CSS。FeedProfile/文章行/订阅行本就是自研 fusion、无 Radix；ContentRender 已在原语批次完成
+6. **收口**：删除 Radix Themes 与冗余自定义 CSS（播客用 framer-motion 但无 Radix，保留）
 
 每批次完成标准：tsc 0 错、215 测试（按需更新）全绿、生产构建通过、关键态视觉确认；
 同步更新 `DESIGN.md` 与本文件勾选。

@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import * as dataAgent from "@/helpers/dataAgent";
 import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
-import { toast } from "sonner";
+import { toast } from "@/helpers/toast";
 import { useTranslation } from "react-i18next";
 import { showErrorToast } from "@/helpers/errorHandler";
 import { FeedResItem } from "@/db";
@@ -314,7 +314,7 @@ export const AddFeedChannel = (props: any) => {
       .subscribeFeed(preview.resolvedUrl, preview.origin, preview.carrierHint)
       .then(async (res: any) => {
         if (res[2] !== "") {
-          toast.error(t("Unable to subscribe"), { description: res[2], duration: 3000 });
+          toast.error(`${t("Unable to subscribe")}：${res[2]}`);
           setPhase({ s: "error", message: res[2], route: preview.route || "" });
           return;
         }
@@ -341,7 +341,6 @@ export const AddFeedChannel = (props: any) => {
         // 完成即走：不再停在面板上（用户 2026-09-25：不要"再加一个"循环，直接去读）
         toast.success(
           t("fusion.add.done_toast", { title: feed.title, count, folder: folderTitle }),
-          { duration: 3200 },
         );
         setOpen(false);
         navigate(

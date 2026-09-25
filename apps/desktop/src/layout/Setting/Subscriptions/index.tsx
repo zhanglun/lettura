@@ -46,60 +46,71 @@ function toFolderResItem(folder: FeedResItem | null): FolderResItem | null {
 interface SubsRowProps {
   feed: FeedResItem;
   onOpen: (feed: FeedResItem) => void;
-  onContextMenu: (e: React.MouseEvent, feed: FeedResItem) => void;
   onSync: (feed: FeedResItem) => void;
   onDelete: (feed: FeedResItem) => void;
+  onEditFolder: (folder: FeedResItem) => void;
+  onDeleteFolder: (folder: FeedResItem) => void;
 }
 
 /** 订阅行：44px，题 + 未读药丸 + 域名 + 时间 + 悬停动作（settings.html 契约） */
-function SubsRow({ feed, onOpen, onContextMenu, onSync, onDelete }: SubsRowProps) {
+function SubsRow({
+  feed,
+  onOpen,
+  onSync,
+  onDelete,
+  onEditFolder,
+  onDeleteFolder,
+}: SubsRowProps) {
   const { t } = useTranslation();
   const unread = feed.unread ?? 0;
   const broken = (feed.health_status ?? 0) > 0;
 
   return (
-    <div
-      className="fusion-subs-row"
-      onClick={() => onOpen(feed)}
-      onContextMenu={(e) => onContextMenu(e, feed)}
+    <FeedCtxMenu
+      feed={feed}
+      onUnsubscribe={onDelete}
+      onEditFolder={onEditFolder}
+      onDeleteFolder={onDeleteFolder}
     >
-      <FeedIcon feed={feed} />
-      <span className="fusion-subs-ft">
-        <span className="nm">{feed.title}</span>
-        {unread > 0 && <span className="uc">{unread}</span>}
-      </span>
-      <span className={`fusion-subs-fh2 ${broken ? "is-fail" : ""}`}>
-        {getHostLabel(feed)}
-        {broken ? ` · ${t("settings.sources.health_broken")}` : ""}
-      </span>
-      <span className="fusion-subs-fd">
-        {formatFeedTime(feed.last_sync_date) || "—"}
-      </span>
-      <span className="fusion-subs-fa">
-        <button
-          type="button"
-          className="fusion-qa3"
-          title={broken ? t("fusion.subs.retry") : t("feeds.ctx.sync")}
-          onClick={(e) => {
-            e.stopPropagation();
-            onSync(feed);
-          }}
-        >
-          <RefreshCw size={12} />
-        </button>
-        <button
-          type="button"
-          className="fusion-qa3 danger"
-          title={t("Unsubscribe")}
-          onClick={(e) => {
-            e.stopPropagation();
-            onDelete(feed);
-          }}
-        >
-          <Trash2 size={12} />
-        </button>
-      </span>
-    </div>
+      <div className="fusion-subs-row" onClick={() => onOpen(feed)}>
+        <FeedIcon feed={feed} />
+        <span className="fusion-subs-ft">
+          <span className="nm">{feed.title}</span>
+          {unread > 0 && <span className="uc">{unread}</span>}
+        </span>
+        <span className={`fusion-subs-fh2 ${broken ? "is-fail" : ""}`}>
+          {getHostLabel(feed)}
+          {broken ? ` · ${t("settings.sources.health_broken")}` : ""}
+        </span>
+        <span className="fusion-subs-fd">
+          {formatFeedTime(feed.last_sync_date) || "—"}
+        </span>
+        <span className="fusion-subs-fa">
+          <button
+            type="button"
+            className="fusion-qa3"
+            title={broken ? t("fusion.subs.retry") : t("feeds.ctx.sync")}
+            onClick={(e) => {
+              e.stopPropagation();
+              onSync(feed);
+            }}
+          >
+            <RefreshCw size={12} />
+          </button>
+          <button
+            type="button"
+            className="fusion-qa3 danger"
+            title={t("Unsubscribe")}
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(feed);
+            }}
+          >
+            <Trash2 size={12} />
+          </button>
+        </span>
+      </div>
+    </FeedCtxMenu>
   );
 }
 
@@ -110,13 +121,11 @@ interface SubsGroupProps {
   folder?: FeedResItem | null;
   collapsed: boolean;
   onToggle: () => void;
-  onFolderContextMenu?: (e: React.MouseEvent, folder: FeedResItem) => void;
   onFolderSync?: (folder: FeedResItem) => void;
   onFolderMarkAllRead?: (folder: FeedResItem) => void;
   onFolderEdit?: (folder: FeedResItem) => void;
   onFolderDelete?: (folder: FeedResItem) => void;
   onOpen: (feed: FeedResItem) => void;
-  onFeedContextMenu: (e: React.MouseEvent, feed: FeedResItem) => void;
   onFeedSync: (feed: FeedResItem) => void;
   onFeedDelete: (feed: FeedResItem) => void;
 }
@@ -128,74 +137,80 @@ function SubsGroup({
   folder,
   collapsed,
   onToggle,
-  onFolderContextMenu,
   onFolderSync,
   onFolderMarkAllRead,
   onFolderEdit,
   onFolderDelete,
   onOpen,
-  onFeedContextMenu,
   onFeedSync,
   onFeedDelete,
 }: SubsGroupProps) {
   const { t } = useTranslation();
   const unread = feeds.reduce((sum, f) => sum + (f.unread ?? 0), 0);
 
+  const header = (
+    <div className="fusion-subs-fh">
+      <button type="button" className="fusion-b-head" onClick={onToggle}>
+        <span className="fusion-b-chev">
+          <ChevronDown size={12} />
+        </span>
+        <span className="fusion-b-title">{title}</span>
+        <span className="fusion-b-count">
+          · {t("settings.subscriptions.folder_meta", { sources: feeds.length, unread })}
+        </span>
+      </button>
+      {folder && (
+        <span className="fusion-subs-fa">
+          <button
+            type="button"
+            className="fusion-qa2"
+            title={t("feeds.ctx.sync")}
+            onClick={() => onFolderSync?.(folder)}
+          >
+            <RefreshCw size={13} />
+          </button>
+          <button
+            type="button"
+            className="fusion-qa2"
+            title={t("feeds.ctx.mark_all_read")}
+            onClick={() => onFolderMarkAllRead?.(folder)}
+          >
+            <CheckCheck size={13} />
+          </button>
+          <button
+            type="button"
+            className="fusion-qa2"
+            title={t("Edit folder")}
+            onClick={() => onFolderEdit?.(folder)}
+          >
+            <Pencil size={13} />
+          </button>
+          <button
+            type="button"
+            className="fusion-qa2 danger"
+            title={t("Delete folder")}
+            onClick={() => onFolderDelete?.(folder)}
+          >
+            <Trash2 size={13} />
+          </button>
+        </span>
+      )}
+    </div>
+  );
+
   return (
     <div className={`fusion-b-folder ${collapsed ? "closed" : ""}`}>
-      <div
-        className="fusion-subs-fh"
-        onContextMenu={(e) => {
-          if (!(folder && onFolderContextMenu)) return;
-          onFolderContextMenu(e, folder);
-        }}
-      >
-        <button type="button" className="fusion-b-head" onClick={onToggle}>
-          <span className="fusion-b-chev">
-            <ChevronDown size={12} />
-          </span>
-          <span className="fusion-b-title">{title}</span>
-          <span className="fusion-b-count">
-            · {t("settings.subscriptions.folder_meta", { sources: feeds.length, unread })}
-          </span>
-        </button>
-        {folder && (
-          <span className="fusion-subs-fa">
-            <button
-              type="button"
-              className="fusion-qa2"
-              title={t("feeds.ctx.sync")}
-              onClick={() => onFolderSync?.(folder)}
-            >
-              <RefreshCw size={13} />
-            </button>
-            <button
-              type="button"
-              className="fusion-qa2"
-              title={t("feeds.ctx.mark_all_read")}
-              onClick={() => onFolderMarkAllRead?.(folder)}
-            >
-              <CheckCheck size={13} />
-            </button>
-            <button
-              type="button"
-              className="fusion-qa2"
-              title={t("Edit folder")}
-              onClick={() => onFolderEdit?.(folder)}
-            >
-              <Pencil size={13} />
-            </button>
-            <button
-              type="button"
-              className="fusion-qa2 danger"
-              title={t("Delete folder")}
-              onClick={() => onFolderDelete?.(folder)}
-            >
-              <Trash2 size={13} />
-            </button>
-          </span>
-        )}
-      </div>
+      {folder ? (
+        <FeedCtxMenu
+          feed={folder}
+          onEditFolder={onFolderEdit}
+          onDeleteFolder={onFolderDelete}
+        >
+          {header}
+        </FeedCtxMenu>
+      ) : (
+        header
+      )}
       {!collapsed && (
         <div className="fusion-b-feeds">
           {feeds.map((feed) => (
@@ -203,20 +218,16 @@ function SubsGroup({
               key={feed.uuid}
               feed={feed}
               onOpen={onOpen}
-              onContextMenu={onFeedContextMenu}
               onSync={onFeedSync}
               onDelete={onFeedDelete}
+              onEditFolder={onFolderEdit!}
+              onDeleteFolder={onFolderDelete!}
             />
           ))}
         </div>
       )}
     </div>
   );
-}
-
-interface CtxMenuState {
-  target: FeedResItem | null;
-  position: { x: number; y: number } | null;
 }
 
 /** 订阅管理：分组折叠 + 44px 订阅行 + 右键菜单（settings.html ?view=subs 契约） */
@@ -252,8 +263,6 @@ export const Subscriptions = () => {
   const [deleteFeedDialog, setDeleteFeedDialog] = useState(false);
   const [deleteFeed, setDeleteFeed] = useState<FeedResItem | null>(null);
   const [folderTarget, setFolderTarget] = useState<FeedResItem | null>(null);
-  const [ctxTarget, setCtxTarget] = useState<FeedResItem | null>(null);
-  const [ctxPos, setCtxPos] = useState<{ x: number; y: number } | null>(null);
 
   const sourceItems = store.subscribes;
   const folderItems = sourceItems.filter((i) => i.item_type === "folder");
@@ -286,11 +295,6 @@ export const Subscriptions = () => {
 
   const totalFeeds = groups.reduce((sum, g) => sum + g.feeds.length, 0);
 
-  const closeCtx = () => {
-    setCtxPos(null);
-    setCtxTarget(null);
-  };
-
   const handleToggle = (uuid: string) => {
     setCollapsed((prev) => {
       const next = new Set(prev);
@@ -308,12 +312,6 @@ export const Subscriptions = () => {
     navigate(
       `${RouteConfig.LOCAL_FEED.replace(/:uuid/, f.uuid)}?feedUuid=${f.uuid}&feedUrl=${encodeURIComponent(f.feed_url)}&type=${f.item_type}`,
     );
-  };
-
-  const handleCtx = (e: React.MouseEvent, f: FeedResItem) => {
-    e.preventDefault();
-    setCtxTarget(f);
-    setCtxPos({ x: e.clientX, y: e.clientY });
   };
 
   const handleSync = (f: FeedResItem) =>
@@ -381,7 +379,6 @@ export const Subscriptions = () => {
               folder={group.folder}
               collapsed={collapsed.has(group.uuid)}
               onToggle={() => handleToggle(group.uuid)}
-              onFolderContextMenu={handleCtx}
               onFolderSync={handleSync}
               onFolderMarkAllRead={handleMarkAllRead}
               onFolderEdit={(f) => {
@@ -393,7 +390,6 @@ export const Subscriptions = () => {
                 setDeleteFolderDialog(true);
               }}
               onOpen={handleOpen}
-              onFeedContextMenu={handleCtx}
               onFeedSync={handleSync}
               onFeedDelete={(f) => {
                 setDeleteFeed(f);
@@ -411,20 +407,6 @@ export const Subscriptions = () => {
           )}
         </div>
       </div>
-
-      <FeedCtxMenu
-        target={ctxTarget}
-        position={ctxPos}
-        onClose={closeCtx}
-        onEditFolder={(f) => {
-          setFolderTarget(f);
-          setFolderDialog("edit");
-        }}
-        onDeleteFolder={(f) => {
-          setFolderTarget(f);
-          setDeleteFolderDialog(true);
-        }}
-      />
 
       <DialogUnsubscribeFeed
         feed={deleteFeed}

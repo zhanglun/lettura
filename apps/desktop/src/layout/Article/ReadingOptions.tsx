@@ -1,7 +1,7 @@
 import { ExternalLink, Link } from "lucide-react";
 import { Article, ArticleResItem } from "@/db";
 import { open } from "@tauri-apps/plugin-shell";
-import { toast } from "sonner";
+import { toast } from "@/helpers/toast";
 import { IconButton } from "@astryxdesign/core/IconButton";
 import { useTranslation } from "react-i18next";
 import { showErrorToast } from "@/helpers/errorHandler";
@@ -18,7 +18,7 @@ export const ReadingOptions = ({ article }: { article: ArticleResItem }) => {
 
     navigator.clipboard.writeText(link).then(
       function () {
-        toast(t("Copied"));
+        toast.message(t("Copied"));
       },
       function (err) {
         showErrorToast(err, t("Failed to copy link"));

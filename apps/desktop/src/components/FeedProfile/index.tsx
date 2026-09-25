@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
+import { toast } from "@/helpers/toast";
 import clsx from "clsx";
 import {
   CheckCheck,

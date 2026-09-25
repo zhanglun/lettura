@@ -6,7 +6,7 @@ import { Text } from "@astryxdesign/core/Text";
 import { FeedResItem } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
 import { busChannel } from "@/helpers/busChannel";
-import { toast } from "sonner";
+import { toast } from "@/helpers/toast";
 import { useTranslation } from "react-i18next";
 
 export interface DialogProps {
@@ -47,10 +47,7 @@ export const DialogUnsubscribeFeed = React.memo((props: DialogProps) => {
           setDialogStatus(false);
         })
         .catch((err) => {
-          toast.error(t("Ops! Something wrong~"), {
-            description: t(err.message),
-            duration: 2000,
-          });
+          toast.error(t(err.message) || t("Ops! Something wrong~"));
         })
         .finally(() => {
           setLoading(false);
