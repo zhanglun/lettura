@@ -1411,6 +1411,14 @@
   color: #33363b;
 }
 
+/* Tailwind preflight 的 * {font-family} 会截断继承，强制后代回归正文设定 */
+.fusion-article-body * {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+}
+
 /* 排版要素：发丝线与灰阶，颜色只有强调蓝（detail.html 契约） */
 .fusion-article-body p {
   margin-block: 22px;
@@ -1437,6 +1445,30 @@
   color: var(--fusion-sub);
 }
 
+.fusion-article-body h1,
+.fusion-article-body h2,
+.fusion-article-body h3 {
+  font-family: inherit;
+  color: inherit;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.fusion-article-body h1 {
+  font-size: calc(var(--read-size) * 1.45);
+  margin-block: 34px 22px;
+}
+
+.fusion-article-body h2 {
+  font-size: calc(var(--read-size) * 1.25);
+  margin-block: 30px 18px;
+}
+
+.fusion-article-body h3 {
+  font-size: calc(var(--read-size) * 1.12);
+  margin-block: 26px 14px;
+}
+
 .fusion-article-body pre {
   margin: 26px 0;
   border: 1px solid var(--fusion-hair);
@@ -1445,6 +1477,14 @@
   padding: 16px 18px;
   overflow-x: auto;
   position: relative;
+}
+
+.fusion-article-body pre,
+.fusion-article-body code,
+.fusion-article-body pre code {
+  font-family: "SF Mono", Menlo, Consolas, monospace;
+  font-size: calc(var(--read-size) - 2px);
+  line-height: 1.7;
 }
 
 /* 代码块右上语言标（articleContent 注入 .code-lang） */

@@ -3,7 +3,7 @@ import { open } from "@tauri-apps/plugin-shell";
 import { useTranslation } from "react-i18next";
 import dayjs from "dayjs";
 import { platformName } from "@/helpers/mediaType";
-import { wraperWithRadix } from "../ContentRender";
+import { renderArticleContent } from "../ContentRender";
 
 export interface PlatformAdapterProps {
   article: ArticleResItem;
@@ -48,7 +48,7 @@ export function PlatformAdapter({ article, content }: PlatformAdapterProps) {
 
       {summary && (
         <div className="text-[13.5px] leading-[1.85] text-[#4A4D52] mb-5">
-          {wraperWithRadix(summary)}
+          {renderArticleContent(summary)}
         </div>
       )}
 

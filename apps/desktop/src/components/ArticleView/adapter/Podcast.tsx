@@ -3,7 +3,7 @@ import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
 import { useAudioPlayer } from "@/components/LPodcast/useAudioPlayer";
 import { formatTime } from "@/components/LPodcast/utils";
-import { wraperWithRadix } from "../ContentRender";
+import { renderArticleContent } from "../ContentRender";
 import { Podcast } from "@/helpers/podcastDB";
 import { useTranslation } from "react-i18next";
 import { RATES } from "@/components/LPodcast/MiniPlayer";
@@ -135,7 +135,7 @@ export function PodcastAdapter(props: PodcastAdapter) {
 
       {/* show notes */}
       <div className="text-[13.5px] leading-[1.85] text-[#4A4D52]">
-        {wraperWithRadix(content)}
+        {renderArticleContent(content)}
       </div>
     </div>
   );

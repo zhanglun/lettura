@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { X } from "lucide-react";
-import { Separator, Dialog } from "@radix-ui/themes";
+import { Dialog } from "@radix-ui/themes";
 import { IconButton } from "@astryxdesign/core/IconButton";
+import { Divider } from "@astryxdesign/core/Divider";
 import { ReadingOptions } from "@/layout/Article/ReadingOptions";
 import { ReaderControls } from "@/components/ReaderControls";
 import { ArticleDetail } from "@/components/ArticleView/Detail";
@@ -58,7 +59,10 @@ export const ArticleDialogView = (
                 </div>
                 <div className="flex items-center gap-0.5">
                   <ReadingOptions article={article} />
-                  <Separator orientation="vertical" className="h-4 mx-1" />
+                  <Divider
+                    orientation="vertical"
+                    style={{ height: 16, marginInline: 4 }}
+                  />
                   <IconButton
                     size="sm"
                     variant="ghost"

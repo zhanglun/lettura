@@ -13,19 +13,19 @@
 | ~~`IconButton` (3)~~ ✅ | `IconButton` | Astryx 独立组件（非 Button 的 iconOnly 态）；图标钮仍须提供无障碍 label；tooltip 内置 |
 | `Dialog` (3) | `Dialog` | Radix 用 `Dialog.Root/Content/Title` 复合式；Astryx 看具体 props（多为 `open/onOpenChange/title`） |
 | `AlertDialog` (2) | `AlertDialog` | 破坏性确认；destructive 动作需确认步骤 |
-| `Tooltip` (2) | `Tooltip` | Astryx Button 自带 `tooltip` prop；独立场景用 Tooltip |
+| ~~`Tooltip` (2)~~ ✅ | `Tooltip` | content + placement；按钮优先用内置 `tooltip` prop |
 | `Popover` (1) | `Popover` | |
 | `DropdownMenu` (1) | `DropdownMenu` | 右键菜单另有 `ContextMenu`（FeedCtxMenu 可评估） |
 | `TextField` (1) | `TextInput`（+ `InputGroup`/`Field`） | 表单场景优先 `Field` 包 label/校验 |
 | `RadioGroup` (1) | `RadioList` | 语义对应 |
-| `Separator` (1) | `Divider` | |
+| ~~`Separator` (1)~~ ✅ | `Divider` | `orientation='vertical'`，尺寸用 style |
 | `Skeleton` (1) | `Skeleton` | |
-| `Heading` (1) | `Heading` | |
-| `Text` (2) | `Text` | |
+| ~~`Heading`~~ ✅（ContentRender） | 原生语义标签 | 正文标题用原生 h1-h3（fusion CSS 契约） |
+| ~~`Text` (2)~~ ✅ | `Text` | `type`/`size`/`color`；label 用原生 label |
 | `Link` (2) | `Button href` 或 `Text` 内嵌链接 | Astryx 无独立 Link 原语；导航用 `Button href` |
 | `Flex` (2) | `HStack` / `VStack`（通用 `Stack`） | 禁止 div 布局，方向用语义 Stack |
-| `Blockquote` (1) | `Blockquote` | |
-| `Quote` (1) | 行内引用，见 `Citation`/`Text` | ContentRender 中映射 |
+| ~~`Blockquote`~~ ✅（ContentRender） | 原生 blockquote | fusion CSS 针对原生标签排版 |
+| ~~`Quote`~~ ✅（ContentRender） | 原生 q | 同上 |
 | `Theme` (8) | 全局 `AstryxTheme` 已在 App.tsx | 各嵌套 Theme 多为局部 appearance，迁移时删除（mode 由全局控制） |
 
 ## 二、自研组件/页面 → Astryx 组装
@@ -48,7 +48,7 @@
 
 ## 三、建议替换顺序（由低风险到整面）
 
-1. **原语批次**：~~Button~~ → ~~IconButton~~ → Tooltip → Divider → Text/Heading
+1. **原语批次**：~~Button~~ → ~~IconButton~~ → ~~Tooltip~~ → ~~Divider~~ → ~~Text/Heading~~ ✅ 完成
 2. **浮层批次**：About 完整 Dialog → AddFolder → AlertDialog → DropdownMenu/ContextMenu → Popover
 3. **表单批次**：Field/TextInput/TextArea → RadioList/Selector/Switch → 设置页 → AddFeed
 4. **外壳批次**：AppShell/TopNav/SideNav 重排导航；命令面板换 Astryx CommandPalette
@@ -63,5 +63,7 @@
 - [x] 地基：AstryxTheme + CSS 层序 + Vite 5
 - [x] Button（About + ErrorBoundary/AddFolder/DeleteFolder/Unsubscribe 全部）
 - [x] IconButton（DialogView/View/ReadingOptions）
+- [x] Tooltip / Divider / Text
+- [x] ContentRender 回归原生语义标签 + 正文排版修复
 - [ ] About Dialog 容器
 - [ ] 其余按上表推进

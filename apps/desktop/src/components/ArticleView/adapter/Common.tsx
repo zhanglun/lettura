@@ -1,4 +1,4 @@
-import { wraperWithRadix } from "../ContentRender";
+import { renderArticleContent } from "../ContentRender";
 import { ArticleResItem } from "@/db";
 import Dayjs from "dayjs";
 import { useTranslation } from "react-i18next";
@@ -54,7 +54,7 @@ export const CommonAdapter = ({
           </div>
         )}
         {content ? (
-          <div>{wraperWithRadix(content)}</div>
+          <div>{renderArticleContent(content)}</div>
         ) : (
           <div className="flex flex-col items-center justify-center py-16 gap-2 text-[var(--gray-9)]">
             <p className="text-sm">{t("article.detail.no_content", "No content available")}</p>

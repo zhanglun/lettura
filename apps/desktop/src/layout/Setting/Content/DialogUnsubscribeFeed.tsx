@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { AlertDialog, Flex, RadioGroup, Text } from "@radix-ui/themes";
+import { AlertDialog, Flex, RadioGroup } from "@radix-ui/themes";
 import { Button } from "@astryxdesign/core/Button";
+import { Text } from "@astryxdesign/core/Text";
 import { FeedResItem } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
 import { busChannel } from "@/helpers/busChannel";
@@ -67,30 +68,26 @@ export const DialogUnsubscribeFeed = React.memo((props: DialogProps) => {
       <AlertDialog.Content>
         <AlertDialog.Title>{t("Are you absolutely sure?")}</AlertDialog.Title>
         <AlertDialog.Description>
-          <Text size="2" className="text-[var(--gray-11)]">
+          <Text size="sm" color="secondary">
             {t("This action cannot be undone. This will permanently delete the data relates with", { title: feed?.title })}
           </Text>
           <div className="mt-4">
             <RadioGroup.Root value={deleteMode} onValueChange={(v) => setDeleteMode(v as "keep" | "delete")}>
               <Flex direction="column" gap="2">
-                <Text as="label" size="2">
-                  <Flex gap="2" align="center">
-                    <RadioGroup.Item value="keep" />
-                    <Text>{t("layout.feeds.delete.keep_articles")}</Text>
-                  </Flex>
-                </Text>
-                <Text as="label" size="2">
-                  <Flex gap="2" align="center">
-                    <RadioGroup.Item value="delete" />
-                    <Text>{t("layout.feeds.delete.delete_articles")}</Text>
-                  </Flex>
-                </Text>
+                <label className="flex items-center gap-2 text-sm">
+                  <RadioGroup.Item value="keep" />
+                  <Text>{t("layout.feeds.delete.keep_articles")}</Text>
+                </label>
+                <label className="flex items-center gap-2 text-sm">
+                  <RadioGroup.Item value="delete" />
+                  <Text>{t("layout.feeds.delete.delete_articles")}</Text>
+                </label>
               </Flex>
             </RadioGroup.Root>
           </div>
           {deleteMode === "delete" && (
             <div className="mt-3 rounded-md border border-[var(--amber-5)] bg-[var(--amber-a2)] px-3 py-2">
-              <Text size="1" className="text-[var(--amber-11)]">
+              <Text size="xsm" color="secondary">
                 {t("layout.feeds.delete.warning")}
               </Text>
             </div>

@@ -8,8 +8,9 @@ import React, {
 import * as dataAgent from "../../helpers/dataAgent";
 import { FolderResItem } from "@/db";
 import { useBearStore } from "@/stores";
-import { Dialog, TextField, Tooltip } from "@radix-ui/themes";
+import { Dialog, TextField } from "@radix-ui/themes";
 import { Button } from "@astryxdesign/core/Button";
+import { Tooltip } from "@astryxdesign/core/Tooltip";
 import { useShallow } from "zustand/react/shallow";
 import { useTranslation } from "react-i18next";
 
@@ -108,7 +109,7 @@ export const AddFolder = React.memo((props: AddFolderProps) => {
   return (
     <Dialog.Root open={dialogStatus} onOpenChange={setDialogStatus}>
       {trigger && (
-        <Tooltip content={title}>
+        <Tooltip content={title} placement="above">
           <Dialog.Trigger>{trigger}</Dialog.Trigger>
         </Tooltip>
       )}

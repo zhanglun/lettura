@@ -1,4 +1,3 @@
-import { Text, Link, Heading, Blockquote, Quote } from "@radix-ui/themes";
 import DOMPurify from "dompurify";
 import HTMLReactParser, {
   domToReact,
@@ -8,73 +7,19 @@ import HTMLReactParser, {
 } from "html-react-parser";
 import { ImageLazyLoad } from "@/components/ImageLazyLoad/index";
 
-// 自定义转换函数，用于替换标签
 const options: HTMLReactParserOptions = {
   replace: (node: DOMNode) => {
-    //  return node;
-
     if (node.type === "tag") {
       if (node.name === "body") {
         return <div>{domToReact(node.children as DOMNode[], options)}</div>;
       }
 
-      if (node.name === "p") {
+      if (["p", "blockquote", "q", "h1", "h2", "h3", "a"].includes(node.name)) {
+        const Tag = node.name;
         return (
-          <Text
-            as="p"
-            size="3"
-            my="4"
-            style={{ letterSpacing: "0.5px" }}
-            {...attributesToProps(node.attribs)}
-          >
+          <Tag {...attributesToProps(node.attribs)}>
             {domToReact(node.children as DOMNode[], options)}
-          </Text>
-        );
-      }
-
-      if (node.name === "blockquote") {
-        return (
-          <Blockquote {...attributesToProps(node.attribs)}>
-            {domToReact(node.children as DOMNode[], options)}
-          </Blockquote>
-        );
-      }
-
-      if (node.name === "quote") {
-        return (
-          <Quote {...attributesToProps(node.attribs)}>
-            {domToReact(node.children as DOMNode[], options)}
-          </Quote>
-        );
-      }
-
-      if (node.name === "h1") {
-        return (
-          <Heading {...attributesToProps(node.attribs)} size="8" mb="6">
-            {domToReact(node.children as DOMNode[], options)}
-          </Heading>
-        );
-      }
-      if (node.name === "h2") {
-        return (
-          <Heading {...attributesToProps(node.attribs)} size="7" mb="5">
-            {domToReact(node.children as DOMNode[], options)}
-          </Heading>
-        );
-      }
-      if (node.name === "h3") {
-        return (
-          <Heading {...attributesToProps(node.attribs)} size="6" mb="4">
-            {domToReact(node.children as DOMNode[], options)}
-          </Heading>
-        );
-      }
-
-      if (node.name === "a") {
-        return (
-          <Link {...attributesToProps(node.attribs)}>
-            {domToReact(node.children as DOMNode[], options)}
-          </Link>
+          </Tag>
         );
       }
 
@@ -96,6 +41,6 @@ const options: HTMLReactParserOptions = {
   },
 };
 
-export const wraperWithRadix = (content: string) => {
+export const renderArticleContent = (content: string) => {
   return HTMLReactParser(DOMPurify.sanitize(content), options);
 };
