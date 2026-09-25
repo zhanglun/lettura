@@ -1,4 +1,5 @@
 import React from "react";
+import { Kbd } from "@astryxdesign/core/Kbd";
 import { motion } from "framer-motion";
 import { AudioTrack } from "./index";
 import { formatTime, PLAYER_MOTION } from "./utils";
@@ -65,7 +66,7 @@ export const FullPlayer: React.FC<FullPlayerProps> = ({
             <path d="M10 3 5 8l5 5" />
           </svg>
           {t("podcast.collapse")}
-          <kbd className="fusion-kbd">esc</kbd>
+          <Kbd keys="esc" />
         </button>
         <span className="f-src">
           {currentTrack?.feed_title || currentTrack?.author || ""}

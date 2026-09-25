@@ -321,6 +321,8 @@
     "dsrc": "Lettura · 偏好",
     "instant": "更改即时生效并写入本地配置",
     "theme_help": "深色为命名候「夜读本」，非简单反色",
+    "astryx_theme": "组件主题",
+    "astryx_theme_help": "按钮、菜单、弹层等界面控件的主题（Astryx）",
     "accent_help": "焦点线、圆点、播放与选中共用一色",
     "font_help": "文章阅读的宋体字号",
     "lh_help": "行间距倍数",

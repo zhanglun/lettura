@@ -78,6 +78,8 @@ declare interface UserConfig {
   card_density?: string;
   /** 强调色（indigo/moss/ochre/brick/vine），令牌层 color-mix 派生 */
   accent_color?: string;
+  /** Astryx 组件主题 slug（默认 neutral） */
+  astryx_theme?: string;
 
   /** 平台源生成器用的 RSSHub 实例（默认公共 rsshub.app，可填自建/镜像） */
   rsshub_instance?: string;

@@ -13,7 +13,13 @@
   "dependencies": {
     "@astryxdesign/cli": "^0.6.3",
     "@astryxdesign/core": "^0.6.3",
+    "@astryxdesign/theme-butter": "^0.6.3",
+    "@astryxdesign/theme-chocolate": "^0.6.3",
+    "@astryxdesign/theme-gothic": "^0.6.3",
+    "@astryxdesign/theme-matcha": "^0.6.3",
     "@astryxdesign/theme-neutral": "^0.6.3",
+    "@astryxdesign/theme-stone": "^0.6.3",
+    "@astryxdesign/theme-y2k": "^0.6.3",
     "@radix-ui/colors": "^3.0.0",
     "@stylexjs/stylex": "^0.19.1",
     "@tailwindcss/typography": "^0.5.10",

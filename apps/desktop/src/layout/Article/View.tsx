@@ -6,10 +6,12 @@ import {
 } from "@/components/ArticleView/ScrollBox";
 import { ReaderControls } from "@/components/ReaderControls";
 import { IconButton } from "@astryxdesign/core/IconButton";
+import { Kbd } from "@astryxdesign/core/Kbd";
 import { useTranslation } from "react-i18next";
 import { formatDistanceToNow } from "date-fns";
 import { ArticleResItem } from "@/db";
-import { ChevronLeft, X } from "lucide-react";
+import { Check, ChevronLeft, X } from "lucide-react";
+import { Button } from "@astryxdesign/core/Button";
 import { useBearStore } from "@/stores";
 import { useNavigate, useParams } from "react-router-dom";
 import { RowThumb } from "@/components/ArticleItem";
@@ -96,7 +98,7 @@ export function View({
         <button type="button" className="fusion-back" onClick={handleBack}>
           <ChevronLeft size={12} />
           {t("article.view.back")}
-          <kbd className="fusion-kbd">esc</kbd>
+          <Kbd keys="esc" />
         </button>
         {article && (
           <span className="d-src">
@@ -189,25 +191,14 @@ export function View({
                 <div className="fusion-next-h">{t("article.view.no_next")}</div>
               )}
               <div className="fusion-endacts">
-                <button
-                  type="button"
-                  className="fusion-btn-gh"
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  icon={<Check size={12} />}
+                  label={t("article.view.mark_back")}
+                  endContent={<Kbd keys="m" />}
                   onClick={onMarkBack}
-                >
-                  <svg
-                    width="12"
-                    height="12"
-                    viewBox="0 0 16 16"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.6"
-                    strokeLinecap="round"
-                  >
-                    <path d="m3 8.5 3.2 3L13 5" />
-                  </svg>
-                  {t("article.view.mark_back")}
-                  <kbd className="fusion-kbd">m</kbd>
-                </button>
+                />
               </div>
             </>
           ) : (

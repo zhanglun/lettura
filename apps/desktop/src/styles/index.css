@@ -3,7 +3,14 @@
 
 @import "@astryxdesign/core/reset.css" layer(reset);
 @import "@astryxdesign/core/astryx.css" layer(astryx-base);
+/* 全部主题的 token CSS：各自 @scope([data-astryx-theme="…"]) 隔离，互不冲突，切换只换 Theme 的 theme prop */
 @import "@astryxdesign/theme-neutral/theme.css" layer(astryx-theme);
+@import "@astryxdesign/theme-matcha/theme.css" layer(astryx-theme);
+@import "@astryxdesign/theme-stone/theme.css" layer(astryx-theme);
+@import "@astryxdesign/theme-gothic/theme.css" layer(astryx-theme);
+@import "@astryxdesign/theme-chocolate/theme.css" layer(astryx-theme);
+@import "@astryxdesign/theme-butter/theme.css" layer(astryx-theme);
+@import "@astryxdesign/theme-y2k/theme.css" layer(astryx-theme);
 
 @import "./custom-theme.css";
 @import "./fusion.css";

@@ -144,16 +144,6 @@
   color: var(--fusion-ink);
 }
 
-.fusion-cmdbtn kbd {
-  font-family: inherit;
-  font-size: 10.5px;
-  color: var(--fusion-sub);
-  border: 1px solid var(--fusion-hair2);
-  border-radius: 4px;
-  padding: 0 4.5px;
-  line-height: 15px;
-  background: rgba(255, 255, 255, 0.7);
-}
 
 /* ── 过滤条（全部/文章/播客/平台） ── */
 .fusion-strip {
@@ -1203,18 +1193,6 @@
   background: #000;
 }
 
-.fusion-kbd {
-  font-family: inherit;
-  font-size: 10.5px;
-  color: var(--fusion-sub);
-  border: 1px solid var(--fusion-hair2);
-  border-radius: 4px;
-  padding: 1px 6px;
-  background: rgba(255, 255, 255, 0.7);
-  white-space: nowrap;
-  justify-self: start;
-}
-
 /* ── 文章正文（外壳精密，内容读书） ── */
 .fusion-article-body {
   font-family: "Songti SC", "STSong", "Noto Serif SC", serif;
@@ -1527,24 +1505,6 @@
   margin: 20px 0 8px;
 }
 
-.fusion-btn-gh {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  height: 32px;
-  padding: 0 14px;
-  border: 1px solid var(--fusion-hair2);
-  border-radius: 9px;
-  font-size: 12.5px;
-  color: var(--fusion-sub);
-  background: rgba(255, 255, 255, 0.55);
-  cursor: pointer;
-}
-
-.fusion-btn-gh:hover {
-  color: var(--fusion-ink);
-  border-color: var(--fusion-sub);
-}
 
 /* ── 订阅浏览帧（feeds.html 契约）：分组源列表，未读数是主角 ── */
 .fusion-browse {
@@ -2289,27 +2249,6 @@
   margin-top: 26px;
 }
 
-.fusion-btn-ink {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  height: 36px;
-  padding: 0 18px;
-  border: 0;
-  border-radius: 10px;
-  background: var(--fusion-accent);
-  color: #fff;
-  font-size: 13px;
-  font-weight: 600;
-  box-shadow: 0 6px 14px -3px color-mix(in srgb, var(--fusion-accent) 50%, transparent);
-  transition: transform 0.15s ease;
-  cursor: pointer;
-}
-
-.fusion-btn-ink:hover {
-  transform: scale(1.04);
-}
-
 .fusion-quietline {
   font-size: 12.5px;
   color: var(--fusion-ter);
@@ -2863,31 +2802,6 @@ body.dark-theme .fusion-in-sm {
   border-color: var(--fusion-accent);
 }
 
-.fusion-btn-ink-sm {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  height: 32px;
-  padding: 0 15px;
-  border: 0;
-  border-radius: 9px;
-  background: var(--fusion-accent);
-  color: #fff;
-  font-size: 12.5px;
-  font-weight: 600;
-  box-shadow: 0 4px 10px -3px color-mix(in srgb, var(--fusion-accent) 50%, transparent);
-  cursor: pointer;
-  flex: none;
-}
-
-.fusion-btn-ink-sm:hover {
-  transform: scale(1.04);
-}
-
-.fusion-btn-ink-sm:disabled {
-  opacity: 0.5;
-  transform: none;
-}
 
 .fusion-adone {
   display: flex;
@@ -3308,11 +3222,7 @@ body.dark-theme .fusion-help-in .tt {
   color: var(--fusion-ink);
 }
 
-body.dark-theme .fusion-kbd {
-  background: rgba(233, 233, 230, 0.06);
-}
 
-body.dark-theme .fusion-btn-gh,
 body.dark-theme .fusion-sel,
 body.dark-theme .fusion-seg,
 body.dark-theme .fusion-cmdbtn {

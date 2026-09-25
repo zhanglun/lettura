@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { Kbd } from "@astryxdesign/core/Kbd";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useNavigate, useParams, useMatch } from "react-router-dom";
 import { CheckCheck, ChevronLeft, RefreshCw } from "lucide-react";
@@ -359,7 +360,7 @@ export function ArticleView() {
             >
               <ChevronLeft size={12} />
               {t("fusion.nav.subscriptions")}
-              <kbd className="fusion-kbd">esc</kbd>
+              <Kbd keys="esc" />
             </button>
             <span className="fusion-fv-backcount">
               {unreadCount} {t("fusion.nav.unread")}

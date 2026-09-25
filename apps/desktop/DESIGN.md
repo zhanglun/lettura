@@ -118,7 +118,7 @@
 |---|---|
 | 版心 | 居中 620px，段题用章节字（11px/700/.1em/`--ter`，scroll-margin 顶留白） |
 | 设置行 | 标签左（13.5px/500 + 帮助文字 11.5px/`--sub`）、控件右、发丝线分隔，min-h 52，hover `.02` |
-| 控件词汇 | 分段＝过滤条 tab 语法（胶囊容器，自研 Seg）；下拉＝Astryx `Selector`(sm)；开关＝Astryx `Switch`(sm)；滑杆＝Astryx `Slider`（固定 140 宽 + neutral 黑旋钮）+ 数值 chip；文本＝Astryx `TextInput`/`TextArea`(sm)；主钮＝墨底、幽灵钮＝发丝边 |
+| 控件词汇 | 分段＝过滤条 tab 语法（胶囊容器，自研 Seg）；下拉＝Astryx `Selector`(sm)；开关＝Astryx `Switch`(sm)；滑杆＝Astryx `Slider`（固定 140 宽）+ 数值 chip；文本＝Astryx `TextInput`/`TextArea`(sm)；主钮＝Astryx `Button` primary(sm)、幽灵钮＝`ghost`(sm)；键帽＝Astryx `Kbd`（esc/m/⌘K，平台感知）；组件主题＝Astryx 主题选择器（neutral 默认，7 选 1，`userConfig.astryx_theme` 持久化，CSS 由 `@scope([data-astryx-theme])` 隔离） |
 | 校准台 | 外观段尾预览块：列表行样本 + 宋体段落，实时反映字号/行高/密度/强调色；拖动即显影，无过渡 |
 | 订阅行 | 列表行收紧至 44px：类型徽章/题/未读药丸/域名/时间/悬停动作；分组头部 32px 可折叠，动作用悬停显隐；右键菜单＝Astryx `ContextMenu`（sm、声明式包裹行，移动分组为悬停子菜单），退订为 destructive 红色 |
 | 生成器行 | 「RSSHub 实例」＝Astryx `TextInput`(sm)；「自定义生成路由」＝Astryx `TextArea`(sm)，mono 内容（一行一条 `匹配 => 路由`）。文本类设置**失焦提交**（其余控件即改即写，逐字符写 TOML 太重） |

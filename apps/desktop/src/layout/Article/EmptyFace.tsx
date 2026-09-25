@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { Plus, Upload } from "lucide-react";
+import { Button } from "@astryxdesign/core/Button";
 import { toast } from "@/helpers/toast";
 import { open as openDialog } from "@tauri-apps/plugin-dialog";
 import { readTextFile } from "@tauri-apps/plugin-fs";
@@ -142,18 +144,20 @@ function FirstRunFace({
       <h1>{t("fusion.empty.first_title")}</h1>
       <p className="lede">{t("fusion.empty.first_lede")}</p>
       <div className="fusion-cta">
-        <button type="button" className="fusion-btn-ink" onClick={onAddClick}>
-          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="#fff" strokeWidth="1.8" strokeLinecap="round">
-            <path d="M8 3v10M3 8h10" />
-          </svg>
-          {t("fusion.cmd.add_feed")}
-        </button>
-        <button type="button" className="fusion-btn-gh" onClick={handleImportOpml}>
-          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
-            <path d="M8 11V2.5M5 5.5 8 2.5l3 3M3 11v2.5h10V11" />
-          </svg>
-          {t("fusion.empty.import_opml")}
-        </button>
+        <Button
+          variant="primary"
+          size="sm"
+          icon={<Plus size={13} />}
+          label={t("fusion.cmd.add_feed")}
+          onClick={onAddClick}
+        />
+        <Button
+          variant="ghost"
+          size="sm"
+          icon={<Upload size={13} />}
+          label={t("fusion.empty.import_opml")}
+          onClick={handleImportOpml}
+        />
       </div>
 
       {sources.length > 0 && (

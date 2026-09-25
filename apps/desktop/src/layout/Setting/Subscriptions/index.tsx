@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Kbd } from "@astryxdesign/core/Kbd";
 import type React from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -24,6 +25,7 @@ import {
   Search,
   Trash2,
 } from "lucide-react";
+import { Button } from "@astryxdesign/core/Button";
 
 function toFolderResItem(folder: FeedResItem | null): FolderResItem | null {
   if (!folder) return null;
@@ -332,7 +334,7 @@ export const Subscriptions = () => {
             <path d="M10 3 5 8l5 5" />
           </svg>
           {t("fusion.nav.settings")}
-          <kbd className="fusion-kbd">esc</kbd>
+          <Kbd keys="esc" />
         </button>
         <span className="d-src">{t("settings.tab.subscriptions_title")}</span>
         <span className="fusion-spring" />
@@ -352,22 +354,20 @@ export const Subscriptions = () => {
                 onChange={(e) => store.setFeedsSearchQuery(e.target.value)}
               />
             </span>
-            <button
-              type="button"
-              className="fusion-btn-gh"
+            <Button
+              variant="ghost"
+              size="sm"
+              icon={<FolderPlus size={12} />}
+              label={t("feeds.add_folder")}
               onClick={() => setFolderDialog("add")}
-            >
-              <FolderPlus size={12} />
-              {t("feeds.add_folder")}
-            </button>
-            <button
-              type="button"
-              className="fusion-btn-ink-sm"
+            />
+            <Button
+              variant="primary"
+              size="sm"
+              icon={<Plus size={12} />}
+              label={t("feeds.add_feed")}
               onClick={() => store.setAddFeedModalOpen(true)}
-            >
-              <Plus size={12} />
-              {t("feeds.add_feed")}
-            </button>
+            />
           </div>
 
           {groups.map((group) => (

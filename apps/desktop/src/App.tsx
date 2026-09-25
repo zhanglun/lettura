@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { emit, listen } from "@tauri-apps/api/event";
 import { useBearStore } from "@/stores";
 import { Theme as AstryxTheme } from "@astryxdesign/core/theme";
-import { neutralTheme } from "@astryxdesign/theme-neutral/built";
+import { getAstryxTheme } from "@/themes";
 import { DialogAboutApp } from "./components/About";
 import { useShallow } from "zustand/react/shallow";
 import { ErrorBoundary } from "./components/ErrorBoundary";
@@ -109,7 +109,10 @@ function App() {
   }, []);
 
   return (
-    <AstryxTheme theme={neutralTheme} mode={isDark ? "dark" : "light"}>
+    <AstryxTheme
+      theme={getAstryxTheme(store.userConfig.astryx_theme)}
+      mode={isDark ? "dark" : "light"}
+    >
       <div className="w-[100vw] h-[100vh]">
         <ErrorBoundary>
           <div className="h-full max-h-full ">

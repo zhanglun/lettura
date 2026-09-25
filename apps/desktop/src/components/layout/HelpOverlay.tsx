@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { Kbd } from "@astryxdesign/core/Kbd";
 import { useTranslation } from "react-i18next";
 
 interface HelpOverlayProps {
@@ -72,7 +73,7 @@ export function HelpOverlay({ open, onClose }: HelpOverlayProps) {
             <div className="fusion-krow" key={r.keys.join()}>
               <span className="keys">
                 {r.keys.map((k) => (
-                  <kbd key={k} className="fusion-kbd">{k}</kbd>
+                  <Kbd key={k} keys={k} />
                 ))}
               </span>
               <span className="desc">{r.desc}</span>
@@ -90,7 +91,7 @@ export function HelpOverlay({ open, onClose }: HelpOverlayProps) {
         <div className="fusion-help-in">
           <span className="tt">{t("fusion.help.title")}</span>
           <span className="sub">{t("fusion.help.desc")}</span>
-          <kbd className="fusion-kbd">esc</kbd>
+          <Kbd keys="esc" />
         </div>
         <div className="fusion-help-cols">
           {renderCol(col1)}

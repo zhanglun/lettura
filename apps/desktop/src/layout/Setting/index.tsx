@@ -14,7 +14,11 @@ import { useShallow } from "zustand/react/shallow";
 import { RouteConfig } from "@/config";
 import { Subscriptions } from "./Subscriptions";
 import { ACCENTS, applyAccent } from "@/helpers/accent";
+import { ASTRYX_THEMES } from "@/themes";
+import { Button } from "@astryxdesign/core/Button";
+import { ChevronRight, Download, Upload } from "lucide-react";
 import { Switch } from "@astryxdesign/core/Switch";
+import { Kbd } from "@astryxdesign/core/Kbd";
 import { Selector } from "@astryxdesign/core/Selector";
 import { Slider } from "@astryxdesign/core/Slider";
 import { TextArea } from "@astryxdesign/core/TextArea";
@@ -252,7 +256,7 @@ export function SettingPage() {
             <path d="M10 3 5 8l5 5" />
           </svg>
           {t("article.view.back")}
-          <kbd className="fusion-kbd">esc</kbd>
+          <Kbd keys="esc" />
         </button>
         <span className="d-src">{t("settings.dsrc")}</span>
         <span className="fusion-spring" />
@@ -310,6 +314,24 @@ export function SettingPage() {
                   { value: "dark", label: t("Dark") },
                 ]}
                 onChange={applyScheme}
+              />
+            </SRow>
+            <SRow label={t("settings.astryx_theme")} help={t("settings.astryx_theme_help")}>
+              <Selector
+                label={t("settings.astryx_theme")}
+                isLabelHidden
+                size="sm"
+                value={cfg?.astryx_theme ?? "neutral"}
+                options={ASTRYX_THEMES.map((t) => ({
+                  value: t.value,
+                  label: t.label,
+                }))}
+                onChange={(v) =>
+                  store.updateUserConfig({
+                    ...cfg,
+                    astryx_theme: v,
+                  })
+                }
               />
             </SRow>
             <SRow label={t("Accent color")} help={t("settings.accent_help")}>
@@ -481,16 +503,13 @@ export function SettingPage() {
               />
             </SRow>
             <SRow label={t("settings.subs_manage")} help={t("settings.subs_manage_help")}>
-              <button
-                type="button"
-                className="fusion-btn-gh"
+              <Button
+                variant="ghost"
+                size="sm"
+                label={t("settings.subs_manage_btn")}
+                endContent={<ChevronRight size={11} />}
                 onClick={() => navigate(`${RouteConfig.SETTINGS}?tab=subscriptions`)}
-              >
-                {t("settings.subs_manage_btn")}
-                <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round">
-                  <path d="m6 3 5 5-5 5" />
-                </svg>
-              </button>
+              />
             </SRow>
 
             {/* 行为与数据 */}
@@ -561,18 +580,8 @@ export function SettingPage() {
               />
             </SRow>
             <SRow label={t("OPML")} help={t("settings.opml_help")}>
-              <button type="button" className="fusion-btn-gh" onClick={handleExport}>
-                <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
-                  <path d="M8 11V2.5M5 5.5 8 2.5l3 3M3 11v2.5h10V11" />
-                </svg>
-                {t("Export")}
-              </button>
-              <button type="button" className="fusion-btn-gh" onClick={handleImport}>
-                <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
-                  <path d="M8 2.5V11M5 8l3 3 3-3M3 11v2.5h10V11" />
-                </svg>
-                {t("Import")}
-              </button>
+              <Button variant="ghost" size="sm" icon={<Upload size={12} />} label={t("Export")} onClick={handleExport} />
+              <Button variant="ghost" size="sm" icon={<Download size={12} />} label={t("Import")} onClick={handleImport} />
             </SRow>
           </div>
         </div>

@@ -269,7 +269,7 @@ describe("AddFeedChannel（2026-09-25 重梳理后的流程）", () => {
     });
 
     await act(async () => {
-      fireEvent.click(document.querySelector(".fusion-btn-ink-sm") as HTMLElement);
+      fireEvent.click(screen.getByRole("button", { name: "Subscribe" }));
     });
 
     expect(subscribeFeed).toHaveBeenCalledWith("https://sspai.com/feed", undefined, undefined);
@@ -297,7 +297,7 @@ describe("AddFeedChannel（2026-09-25 重梳理后的流程）", () => {
       vi.advanceTimersByTime(500);
     });
     await act(async () => {
-      fireEvent.click(document.querySelector(".fusion-btn-ink-sm") as HTMLElement);
+      fireEvent.click(screen.getByRole("button", { name: "Subscribe" }));
     });
 
     expect(toastError).toHaveBeenCalled();

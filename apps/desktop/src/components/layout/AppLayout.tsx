@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Kbd } from "@astryxdesign/core/Kbd";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useHotkeys } from "react-hotkeys-hook";
 import { Search } from "lucide-react";
@@ -167,7 +168,7 @@ export const AppLayout = React.memo(function () {
             <Search size={12} />
             {t("fusion.search.placeholder")}
             <span className="fusion-spring" />
-            <kbd>⌘K</kbd>
+            <Kbd keys="mod+k" />
           </button>
         </header>
         {/* 播放卡浮在内容上：内容区不占位，只把「让位空白」的高度交给内层滚动容器（--fusion-player-inset） */}

@@ -54,6 +54,7 @@
 4. **外壳批次** ✅：命令面板换 Astryx CommandPalette（删 cmdk）；AppShell 不采用（会改变 fusion 视觉世界）
 5. **内容批次** ✅：FeedCtxMenu → Astryx `ContextMenu`（声明式包裹、嵌套子菜单）；sonner → Astryx `Toast`（helpers/toast 命令式 + useToast）；删除失效 fusion-ctx CSS。FeedProfile/文章行/订阅行本就是自研 fusion、无 Radix；ContentRender 已在原语批次完成
 6. **收口** ✅：删除 Radix Themes（App/ErrorPage 去壳、6 个测试去 Theme 包裹、index.css 去 styles.css 与背景覆盖）、删 `@radix-ui/react-icons`；夜读切换改为 `userConfig.color_scheme` 单源派生（body class 与 Astryx `data-theme` 单一 effect 同步，深色 Slider 可见性问题随之修复）；清理 tailwind 死配置（accordion/spin-slow/调试 log）。保留 `@radix-ui/colors`（fusion 令牌与 tailwind 调色仍消费其色阶变量）
+7. **多主题与词汇收齐** ✅：设置页「组件主题」选择器（7 个 Astryx 主题，`userConfig.astryx_theme` 持久化，Rust 配置新增字段）；全部主题 theme.css 静态导入（`@scope` 隔离互不冲突），App 按配置换 `Theme` prop；全部 kbd 键帽 → Astryx `Kbd`（平台感知 ⌘）；标准 CTA（fusion-btn-ink/gh/ink-sm，11 处 6 文件）→ Astryx `Button` primary/ghost(sm)，死 CSS 删除。剩余原生 button 为 fusion 微控件（行内悬停动作/色板/Seg/播放器传输控制）——是视觉契约本身，不迁
 
 每批次完成标准：tsc 0 错、215 测试（按需更新）全绿、生产构建通过、关键态视觉确认；
 同步更新 `DESIGN.md` 与本文件勾选。

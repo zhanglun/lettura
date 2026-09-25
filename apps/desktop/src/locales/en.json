@@ -304,6 +304,8 @@
     "dsrc": "Lettura · Preferences",
     "instant": "Changes apply instantly and persist locally",
     "theme_help": "Dark is the named variant “Night Reader”, not a simple invert",
+    "astryx_theme": "Component theme",
+    "astryx_theme_help": "Theme for buttons, menus, dialogs and other UI controls (Astryx)",
     "accent_help": "Focus line, dots, playback and selection share one color",
     "font_help": "Serif size for article reading",
     "lh_help": "Line-height multiplier",

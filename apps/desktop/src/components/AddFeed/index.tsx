@@ -1,4 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Kbd } from "@astryxdesign/core/Kbd";
+import { Button } from "@astryxdesign/core/Button";
+import { Plus } from "lucide-react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useNavigate } from "react-router-dom";
 import * as dataAgent from "@/helpers/dataAgent";
@@ -392,7 +395,7 @@ export const AddFeedChannel = (props: any) => {
               {CARRIER_TAG[carrierOfPreview]}
             </span>
           )}
-          <kbd className="fusion-kbd">esc</kbd>
+          <Kbd keys="esc" />
         </div>
 
         {phase.s !== "idle" && (
@@ -519,9 +522,7 @@ export const AddFeedChannel = (props: any) => {
                           }
                         }}
                       />
-                      <button type="button" className="fusion-btn-gh" onClick={createFolderAndSelect}>
-                        {t("fusion.add.create")}
-                      </button>
+                      <Button variant="ghost" size="sm" label={t("fusion.add.create")} onClick={createFolderAndSelect} />
                     </>
                   ) : (
                     <select
@@ -545,15 +546,14 @@ export const AddFeedChannel = (props: any) => {
                     </select>
                   )}
                   <span className="fusion-spring" />
-                  <button type="button" className="fusion-btn-gh" onClick={() => setOpen(false)}>
-                    {t("Cancel")}
-                  </button>
-                  <button type="button" className="fusion-btn-ink-sm" onClick={doSubscribe}>
-                    <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#fff" strokeWidth="1.8" strokeLinecap="round">
-                      <path d="M8 3v10M3 8h10" />
-                    </svg>
-                    {t("Subscribe")}
-                  </button>
+                  <Button variant="ghost" size="sm" label={t("Cancel")} onClick={() => setOpen(false)} />
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    icon={<Plus size={12} />}
+                    label={t("Subscribe")}
+                    onClick={doSubscribe}
+                  />
                 </div>
               </div>
             )}
