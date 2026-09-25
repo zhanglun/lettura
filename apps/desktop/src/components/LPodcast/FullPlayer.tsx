@@ -37,10 +37,12 @@ export const FullPlayer: React.FC<FullPlayerProps> = ({
   onCollapse,
 }) => {
   const { t } = useTranslation();
-  const { playTrack, removeTrack } = useBearStore(
+  const { playTrack, removeTrack, playNext, playPrev } = useBearStore(
     useShallow((state) => ({
       playTrack: state.playTrack,
       removeTrack: state.removeTrack,
+      playNext: state.playNext,
+      playPrev: state.playPrev,
     })),
   );
 
@@ -124,6 +126,18 @@ export const FullPlayer: React.FC<FullPlayerProps> = ({
             </button>
             <button
               type="button"
+              className="fusion-pnav"
+              onClick={playPrev}
+              title={t("podcast.ctl.prev")}
+              aria-label={t("podcast.ctl.prev")}
+              disabled={tracks.length < 2}
+            >
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M12.5 3.5v9l-7-4.5zM3.2 3.5H5v9H3.2z" />
+              </svg>
+            </button>
+            <button
+              type="button"
               className="fusion-bigplay"
               onClick={togglePlay}
               aria-label={isPlaying ? t("Pause") : t("Play")}
@@ -138,6 +152,18 @@ export const FullPlayer: React.FC<FullPlayerProps> = ({
                   <path d="M2.5 1.2v9.6l8-4.8z" />
                 </svg>
               )}
+            </button>
+            <button
+              type="button"
+              className="fusion-pnav"
+              onClick={playNext}
+              title={t("podcast.ctl.next")}
+              aria-label={t("podcast.ctl.next")}
+              disabled={tracks.length < 2}
+            >
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M3.5 3.5v9l7-4.5zM11 3.5h1.8v9H11z" />
+              </svg>
             </button>
             <button type="button" className="fusion-skipbtn" onClick={() => skip(30)}>
               +30s

@@ -191,6 +191,8 @@
   .bigplay{width:48px;height:48px;border-radius:999px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 18px -4px color-mix(in srgb,var(--accent) 50%,transparent);}
   .skipbtn{width:38px;height:34px;border-radius:999px;display:flex;align-items:center;justify-content:center;color:var(--sub);border:1px solid var(--hair2);font-size:11px;font-variant-numeric:tabular-nums;}
   .skipbtn:hover{color:var(--ink);border-color:var(--sub);}
+  .pnav{width:36px;height:36px;border-radius:999px;display:flex;align-items:center;justify-content:center;color:var(--sub);border:1px solid var(--hair2);background:none;cursor:pointer;}
+  .pnav:hover{color:var(--ink);border-color:var(--sub);}
 
   /* UP NEXT 队列：发丝行语法，当前行 = 洗色 + 播放中，无侧线 */
   .queue{width:100%;margin-top:38px;text-align:left;}
@@ -344,9 +346,11 @@
         </div>
         <div class="f-ctrl">
           <button class="skipbtn">−30s</button>
+          <button class="pnav" title="上一集"><svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M12.5 3.5v9l-7-4.5zM3.2 3.5H5v9H3.2z"/></svg></button>
           <button class="bigplay" onclick="togglePlay()" id="fullPlay">
             <svg width="15" height="15" viewBox="0 0 12 12" fill="#fff"><rect x="1.5" y="1" width="3" height="10" rx="1"/><rect x="7.5" y="1" width="3" height="10" rx="1"/></svg>
           </button>
+          <button class="pnav" title="下一集"><svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M3.5 3.5v9l7-4.5zM11 3.5h1.8v9H11z"/></svg></button>
           <button class="skipbtn">+30s</button>
           <button class="chip">1.5×</button>
           <button class="chip on" onclick="toggleSleep()" title="睡眠定时 · 还剩 15:00">

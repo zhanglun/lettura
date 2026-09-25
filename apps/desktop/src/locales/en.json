@@ -530,7 +530,9 @@
     "ctl": {
       "back30": "Back 30s",
       "fwd30": "Forward 30s",
-      "toggle": "play/pause"
+      "toggle": "play/pause",
+      "prev": "previous track",
+      "next": "next track"
     },
     "sleep": {
       "title": "Sleep timer",

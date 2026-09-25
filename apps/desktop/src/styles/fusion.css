@@ -1210,6 +1210,31 @@
   border-color: var(--fusion-sub);
 }
 
+/* 上/下一集：传输排里紧贴大播放钮的圆钮（podcast.html 契约） */
+.fusion-pnav {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--fusion-sub);
+  border: 1px solid var(--fusion-hair2);
+  background: none;
+  cursor: pointer;
+  flex: none;
+}
+
+.fusion-pnav:hover {
+  color: var(--fusion-ink);
+  border-color: var(--fusion-sub);
+}
+
+.fusion-pnav:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
 /* ── 平台详情 ── */
 .fusion-platcover {
   width: 100%;
