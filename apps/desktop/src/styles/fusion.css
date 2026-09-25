@@ -1767,31 +1767,43 @@
   font-weight: 400;
 }
 
-/* ── 源队列帧源头栏：返回 + 源名 + 动作 ── */
-.fusion-fv-top {
-  height: 46px;
+/* ── 源队列帧返回行：回订阅浏览；源标识下沉到源头卡 ── */
+.fusion-fv-backrow {
+  height: 42px;
   display: flex;
   align-items: center;
   gap: 9px;
-  padding: 0 20px;
+  padding: 0 12px;
   border-bottom: 1px solid var(--fusion-hair);
   flex: none;
 }
 
-.fusion-fv-src {
+.fusion-fv-backunread {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--fusion-ter);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── 源头卡（feeds.html 契约扩展）：标识/简介/统计/动作，可收起为单行 ── */
+.fusion-fp {
+  margin: 14px 20px 16px;
+  border: 1px solid var(--fusion-hair);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.5);
+  flex: none;
+  overflow: hidden;
+}
+
+.fusion-fp-bar {
   display: flex;
   align-items: center;
-  gap: 8px;
-  min-width: 0;
+  gap: 9px;
+  height: 44px;
+  padding: 0 10px 0 12px;
 }
 
-.fusion-fv-src .fusion-b-ic {
-  width: 20px;
-  height: 20px;
-  font-size: 10px;
-}
-
-.fusion-fv-name {
+.fusion-fp-name {
   font-size: 13px;
   font-weight: 600;
   color: var(--fusion-ink);
@@ -1800,17 +1812,234 @@
   text-overflow: ellipsis;
 }
 
-.fusion-fv-meta {
-  font-size: 11px;
+.fusion-fp-host {
+  font-size: 11.5px;
   color: var(--fusion-ter);
-  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.fusion-fp-pill {
+  font-size: 10.5px;
+  color: var(--fusion-sub);
+  background: rgba(29, 30, 32, 0.05);
+  border-radius: 999px;
+  padding: 2px 9px;
   white-space: nowrap;
 }
 
-.fusion-fv-acts {
-  display: flex;
-  gap: 2px;
+.fusion-fp-pill.is-bad {
+  color: var(--fusion-warn);
+  background: color-mix(in srgb, var(--fusion-warn) 10%, transparent);
+}
+
+.fusion-fp-bar-unread {
   margin-left: auto;
+  font-size: 11.5px;
+  color: var(--fusion-accent);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.fusion-fp-expand,
+.fusion-fp-collapse {
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--fusion-sub);
+  border: 0;
+  background: none;
+  cursor: pointer;
+  flex: none;
+}
+
+.fusion-fp-expand:hover,
+.fusion-fp-collapse:hover {
+  background: rgba(29, 30, 32, 0.06);
+  color: var(--fusion-ink);
+}
+
+.fusion-fp-body {
+  padding: 15px 16px 13px;
+}
+
+.fusion-fp-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.fusion-fp-logo .fusion-b-ic {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  font-size: 17px;
+}
+
+.fusion-fp-id {
+  min-width: 0;
+  flex: 1;
+}
+
+.fusion-fp-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--fusion-ink);
+  line-height: 1.35;
+  margin: 1px 0 6px;
+  letter-spacing: -0.01em;
+}
+
+.fusion-fp-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.fusion-fp-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--fusion-sub);
+  background: rgba(29, 30, 32, 0.045);
+  border-radius: 6px;
+  padding: 2.5px 8px;
+  white-space: nowrap;
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fusion-fp-tag.is-soft {
+  background: none;
+  padding-left: 2px;
+  color: var(--fusion-ter);
+}
+
+.fusion-fp-collapse {
+  margin-top: -2px;
+}
+
+.fusion-fp-desc {
+  position: relative;
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: var(--fusion-sub);
+  margin: 11px 0 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.fusion-fp-desc.is-open {
+  display: block;
+}
+
+.fusion-fp-more {
+  margin-left: 6px;
+  font-size: 11.5px;
+  color: var(--fusion-accent);
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.fusion-fp-stats {
+  display: flex;
+  gap: 0;
+  margin-top: 14px;
+  border: 1px solid var(--fusion-hair);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.45);
+  overflow: hidden;
+}
+
+.fusion-fp-stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 9px 8px;
+  border-right: 1px solid var(--fusion-hair);
+}
+
+.fusion-fp-stat:last-child {
+  border-right: 0;
+}
+
+.fusion-fp-stat b {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--fusion-ink);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.fusion-fp-stat b.is-accent {
+  color: var(--fusion-accent);
+}
+
+.fusion-fp-stat i {
+  font-size: 10.5px;
+  font-style: normal;
+  color: var(--fusion-ter);
+}
+
+.fusion-fp-stat.is-broken b {
+  color: var(--fusion-warn);
+}
+
+.fusion-fp-reason {
+  margin: 9px 0 0;
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: var(--fusion-warn);
+}
+
+.fusion-fp-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 13px;
+}
+
+.fusion-fp-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 11px;
+  border: 1px solid var(--fusion-hair);
+  border-radius: 9px;
+  font-size: 12px;
+  color: var(--fusion-sub);
+  background: rgba(255, 255, 255, 0.55);
+  cursor: pointer;
+}
+
+.fusion-fp-btn:hover {
+  color: var(--fusion-ink);
+  border-color: var(--fusion-hair2);
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.fusion-fp-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.fusion-fp-btn .is-danger {
+  color: var(--fusion-warn);
 }
 
 .fusion-qa {
@@ -3459,4 +3688,39 @@ body.dark-theme .fusion-cmd .gh-n {
 
 body.dark-theme .fusion-cmd [cmdk-item] .m kbd {
   background: rgba(233, 233, 230, 0.06);
+}
+
+/* 源头卡：暗色（暖黑玻璃，结构不变） */
+body.dark-theme .fusion-fp {
+  background: rgba(233, 233, 230, 0.035);
+  border-color: rgba(233, 233, 230, 0.1);
+}
+
+body.dark-theme .fusion-fp-pill,
+body.dark-theme .fusion-fp-tag {
+  background: rgba(233, 233, 230, 0.07);
+}
+
+body.dark-theme .fusion-fp-expand:hover,
+body.dark-theme .fusion-fp-collapse:hover {
+  background: rgba(233, 233, 233, 230, 0.07);
+}
+
+body.dark-theme .fusion-fp-stats {
+  background: rgba(0, 0, 0, 0.18);
+  border-color: rgba(233, 233, 230, 0.08);
+}
+
+body.dark-theme .fusion-fp-stat {
+  border-color: rgba(233, 233, 230, 0.08);
+}
+
+body.dark-theme .fusion-fp-btn {
+  background: rgba(233, 233, 230, 0.05);
+  border-color: rgba(233, 233, 230, 0.1);
+}
+
+body.dark-theme .fusion-fp-btn:hover {
+  background: rgba(233, 233, 230, 0.1);
+  border-color: rgba(233, 233, 230, 0.18);
 }

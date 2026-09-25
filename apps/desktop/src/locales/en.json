@@ -663,7 +663,27 @@
       "detecting": "Detecting address…",
       "err_no_feed": "No feed found — try an RSS address (.xml / /feed) or a platform homepage link",
       "ungrouped": "Ungrouped",
-      "foot_rsshub": "Platform feeds generated via RSSHub, no self-hosting"
+      "foot_rsshub": "Platform feeds generated via RSSHub, no self-hosting",
+      "profile": {
+        "unread_count": "{{count}} unread",
+        "health_ok": "Healthy",
+        "health_broken": "Sync failed",
+        "expand": "Show source info",
+        "collapse": "Collapse source info",
+        "via": "via {{route}}",
+        "subscribed": "Subscribed {{time}}",
+        "desc_more": "More",
+        "desc_less": "Less",
+        "stat_articles": "Articles",
+        "stat_unread": "Unread",
+        "stat_sync": "Last sync",
+        "stat_health": "Health",
+        "open_home": "Open home page",
+        "copy_url": "Copy feed URL",
+        "sync_now": "Sync now",
+        "mark_read": "Mark all read",
+        "manage": "Manage"
+      }
     }
   },
   "Appearance & Reading": "Appearance & Reading",

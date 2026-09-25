@@ -109,6 +109,20 @@ vi.mock("@/components/ArticleView/DialogView", () => ({
   ArticleDialogView: () => null,
 }));
 
+vi.mock("@/components/FeedProfile", () => ({
+  FeedProfile: ({ onSync, onMarkAllRead, onManage }: {
+    onSync: () => void;
+    onMarkAllRead: () => void;
+    onManage: () => void;
+  }) => (
+    <div data-testid="feed-profile">
+      <button type="button" aria-label="feeds.ctx.sync" onClick={onSync}>sync</button>
+      <button type="button" aria-label="feeds.ctx.mark_all_read" onClick={onMarkAllRead}>read</button>
+      <button type="button" aria-label="fusion.queue.manage" onClick={onManage}>manage</button>
+    </div>
+  ),
+}));
+
 vi.mock("@/components/LPodcast", () => ({
   LPodcast: () => null,
 }));
@@ -130,12 +144,11 @@ describe("ArticleView header", () => {
       </MemoryRouter>,
     );
 
-    // 源头栏：返回浏览 + 源名；过滤条：未读 tab 带 viewMeta 未读数
-    expect(screen.getByText("Feed One")).toBeInTheDocument();
+    // 返回行 + 源头卡；未读 tab 带 viewMeta 未读数
+    expect(screen.getByTestId("feed-profile")).toBeInTheDocument();
     expect(screen.getByText("fusion.nav.subscriptions")).toBeInTheDocument();
     expect(screen.getByText("fusion.nav.unread")).toBeInTheDocument();
     expect(screen.getByText("42")).toBeInTheDocument();
-    expect(screen.queryByText("article.list_unread_count:42")).not.toBeInTheDocument();
   });
 
   it("shows queue actions and the unread/all filter strip", () => {

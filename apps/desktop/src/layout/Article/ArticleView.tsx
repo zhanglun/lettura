@@ -1,15 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useNavigate, useParams, useMatch } from "react-router-dom";
-import { CheckCheck, ChevronLeft, RefreshCw, Settings } from "lucide-react";
+import { CheckCheck, ChevronLeft, RefreshCw } from "lucide-react";
 import dayjs from "dayjs";
 import { ArticleListVirtual } from "@/components/ArticleListVirtual";
 import { ArticleDialogView } from "@/components/ArticleView/DialogView";
 import { View } from "@/layout/Article/View";
 import { RouteConfig } from "@/config";
-import { FeedIcon } from "@/components/FeedIcon";
-import { getHostLabel, formatFeedTime } from "@/helpers/feedMeta";
-import { open } from "@tauri-apps/plugin-shell";
+import { FeedProfile } from "@/components/FeedProfile";
 import { useQuery } from "@/helpers/parseXML";
 import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
@@ -352,8 +350,8 @@ export function ArticleView() {
     <div className="flex h-full w-full flex-col overflow-hidden">
       {isQueueMode ? (
         <>
-          {/* 源头栏：返回浏览 + 源名 + 动作（feeds.html 契约） */}
-          <div className="fusion-fv-top">
+          {/* 返回行：退回订阅浏览（feeds.html 契约） */}
+          <div className="fusion-fv-backrow">
             <button
               type="button"
               className="fusion-back"
@@ -363,51 +361,22 @@ export function ArticleView() {
               {t("fusion.nav.subscriptions")}
               <kbd className="fusion-kbd">esc</kbd>
             </button>
-            <span className="fusion-fv-src">
-              {queueFeed && <FeedIcon feed={queueFeed} />}
-              <span className="fusion-fv-name">
-                {queueFeed?.title ?? title}
-              </span>
-              {queueFeed && (
-                <span className="fusion-fv-meta">{getHostLabel(queueFeed)}</span>
-              )}
-            </span>
-            <span className="fusion-fv-acts">
-              <button
-                type="button"
-                className="fusion-qa"
-                title={t("feeds.ctx.mark_all_read")}
-                aria-label={t("feeds.ctx.mark_all_read")}
-                onClick={markQueueAllRead}
-              >
-                <CheckCheck size={14} />
-              </button>
-              <button
-                type="button"
-                className="fusion-qa"
-                title={t("feeds.ctx.sync")}
-                aria-label={t("feeds.ctx.sync")}
-                onClick={syncQueueFeed}
-                disabled={queueSyncing}
-              >
-                <RefreshCw
-                  size={14}
-                  className={queueSyncing ? "animate-spin" : ""}
-                />
-              </button>
-              <button
-                type="button"
-                className="fusion-qa"
-                title={t("fusion.queue.manage")}
-                aria-label={t("fusion.queue.manage")}
-                onClick={() =>
-                  navigate(`${RouteConfig.SETTINGS}?tab=subscriptions`)
-                }
-              >
-                <Settings size={14} />
-              </button>
+            <span className="fusion-fv-backcount">
+              {unreadCount} {t("fusion.nav.unread")}
             </span>
           </div>
+          {/* 源头卡：源信息 / 统计健康 / 动作，可收起 */}
+          {queueFeed && (
+            <FeedProfile
+              feed={queueFeed}
+              total={total}
+              syncing={queueSyncing}
+              onSync={syncQueueFeed}
+              onMarkAllRead={markQueueAllRead}
+              onManage={() =>
+                navigate(`${RouteConfig.SETTINGS}?tab=subscriptions`)}
+            />
+          )}
 
           {/* 过滤条：未读/全部（全部 = 服务端同条件总数） */}
           <div className="fusion-strip">
@@ -427,16 +396,6 @@ export function ArticleView() {
               {t("fusion.filter.all")}
               <span className="c">{total}</span>
             </button>
-            {queueFeed && (
-              <span className="fusion-strip-meta">
-                {t("fusion.queue.last_sync", {
-                  time: formatFeedTime(queueFeed.last_sync_date) || "—",
-                })}
-                {(queueFeed.health_status ?? 0) > 0
-                  ? ` · ${t("settings.sources.health_broken")}`
-                  : ` · ${t("settings.sources.health_ok")}`}
-              </span>
-            )}
           </div>
         </>
       ) : (
