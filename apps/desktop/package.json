@@ -70,7 +70,7 @@
     "@types/node": "^18.18.9",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "@vitejs/plugin-react": "^3.1.0",
+    "@vitejs/plugin-react": "^4.7.0",
     "autoprefixer": "^10.4.16",
     "jsdom": "^27.4.0",
     "postcss": "^8.4.31",
@@ -78,7 +78,7 @@
     "rome": "^11.0.0",
     "sass": "^1.69.5",
     "typescript": "^5.8.3",
-    "vite": "4.5.14",
+    "vite": "5.4.21",
     "vite-plugin-checker": "^0.6.4",
     "vitest": "^1.6.0",
     "workbox-precaching": "^7.0.0"
