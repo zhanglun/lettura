@@ -1,6 +1,5 @@
 import { describe, it, expect, afterEach, vi } from "vitest";
 import { render, screen, cleanup, fireEvent, waitFor } from "@testing-library/react";
-import { Theme } from "@radix-ui/themes";
 import { PlayList } from "../PlayList";
 import { useBearStore } from "@/stores";
 import type { AudioTrack } from "../index";
@@ -42,9 +41,9 @@ describe("PlayList", () => {
     });
 
     render(
-      <Theme>
+      <>
         <PlayList />
-      </Theme>,
+      </>,
     );
 
     const rows = document.querySelectorAll(".fusion-queue .q-row");
@@ -59,9 +58,9 @@ describe("PlayList", () => {
     useBearStore.setState({ tracks: [], currentTrack: null });
 
     render(
-      <Theme>
+      <>
         <PlayList />
-      </Theme>,
+      </>,
     );
 
     expect(document.querySelectorAll(".q-row")).toHaveLength(0);
@@ -76,9 +75,9 @@ describe("PlayList", () => {
     });
 
     render(
-      <Theme>
+      <>
         <PlayList />
-      </Theme>,
+      </>,
     );
 
     fireEvent.click(document.querySelectorAll(".q-row")[1]);
@@ -95,9 +94,9 @@ describe("PlayList", () => {
     });
 
     render(
-      <Theme>
+      <>
         <PlayList />
-      </Theme>,
+      </>,
     );
 
     fireEvent.click(document.querySelectorAll(".q-row")[0]);
@@ -112,9 +111,9 @@ describe("PlayList", () => {
     });
 
     render(
-      <Theme>
+      <>
         <PlayList />
-      </Theme>,
+      </>,
     );
 
     fireEvent.click(document.querySelectorAll(".q-row .q-x")[1]);

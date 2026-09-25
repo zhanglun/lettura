@@ -176,7 +176,7 @@ space        全局播放/暂停     R   刷新全部来源
 ## 范围约束（0.2.0）
 
 - 视频平台内容：徽章 + feed 简介 + 外跳，**不做站内播放**
-- 深色「夜读本」已定稿（`.impeccable/mocks/decision/dark.html`，见下方令牌表）；颜色永不作唯一信号
+- 深色「夜读本」已定稿（`.impeccable/mocks/decision/dark.html`，见下方令牌表）；颜色永不作唯一信号；切换机制：`userConfig.color_scheme` 单源派生 `body.dark-theme` 与 Astryx `data-theme`（App 内单一 effect 同步，设置页只写 store）
 - AI 不进界面；无 API Key 零损失
 
 ## 夜读本令牌（深色，非反色）

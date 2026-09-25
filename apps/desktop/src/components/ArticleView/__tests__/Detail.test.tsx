@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
-import { Theme } from "@radix-ui/themes";
 import { ArticleDetail } from "../Detail";
 import type { ArticleResItem } from "@/db";
 import { ArticleReadStatus, ArticleStarStatus, ArticleReadLaterStatus } from "@/typing";
@@ -49,7 +48,7 @@ function makeArticle(overrides: Partial<ArticleResItem> = {}): ArticleResItem {
 }
 
 function renderWithTheme(ui: React.ReactElement) {
-  return render(<Theme>{ui}</Theme>);
+  return render(<>{ui}</>);
 }
 
 describe("ArticleDetail", () => {

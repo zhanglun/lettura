@@ -1,7 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { emit, listen } from "@tauri-apps/api/event";
 import { useBearStore } from "@/stores";
-import { Theme } from "@radix-ui/themes";
 import { Theme as AstryxTheme } from "@astryxdesign/core/theme";
 import { neutralTheme } from "@astryxdesign/theme-neutral/built";
 import { DialogAboutApp } from "./components/About";
@@ -15,7 +14,9 @@ import { AppLayout } from "./components/layout/AppLayout";
 
 function App() {
   const navigate = useNavigate();
-  const [isDark, setIsDark] = useState(false);
+  const [systemDark, setSystemDark] = useState(
+    () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  );
   const store = useBearStore(
     useShallow((state) => ({
       userConfig: state.userConfig,
@@ -24,13 +25,6 @@ function App() {
       updateAppMetadata: state.updateAppMetadata,
     })),
   );
-
-  const accentColor = useMemo(() => {
-    return store.userConfig.theme === "default" ||
-      store.userConfig.theme === "custom"
-      ? "indigo"
-      : store.userConfig.theme || "indigo";
-  }, [store.userConfig.theme]);
 
   useEffect(() => {
     if ((window as any).__TAURI_INTERNALS__) {
@@ -72,21 +66,20 @@ function App() {
 
   getUserConfigRef.current = store.getUserConfig;
 
+  // 夜读本：单一真源 = userConfig.color_scheme，body class 与 Astryx mode 均由它派生
+  const scheme = store.userConfig.color_scheme;
+  const isDark =
+    scheme === "dark" || ((scheme === "system" || !scheme) && systemDark);
+
+  useEffect(() => {
+    document.body.classList.toggle("dark-theme", isDark);
+  }, [isDark]);
+
   useEffect(() => {
     if (!hasFetchedConfig.current) {
       hasFetchedConfig.current = true;
       getUserConfigRef.current().then((cfg: UserConfig) => {
-        const { customize_style, color_scheme } = cfg;
-
-        // 夜读本：跟随配置或系统（设置页切换即时生效）
-        const mode =
-          color_scheme === "system" || !color_scheme
-            ? window.matchMedia("(prefers-color-scheme: dark)").matches
-              ? "dark"
-              : "light"
-            : color_scheme;
-        document.body.classList.toggle("dark-theme", mode === "dark");
-        setIsDark(mode === "dark");
+        const { customize_style } = cfg;
 
         // 强调色（userConfig 单源；令牌层 color-mix 派生）/ 列表密度
         applyAccent(cfg.accent_color);
@@ -110,31 +103,21 @@ function App() {
   // 跟随系统时的实时切换
   useEffect(() => {
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
-    const onChange = (e: MediaQueryListEvent) => {
-      if (store.userConfig.color_scheme === "system" || !store.userConfig.color_scheme) {
-        document.body.classList.toggle("dark-theme", e.matches);
-        setIsDark(e.matches);
-      }
-    };
+    const onChange = (e: MediaQueryListEvent) => setSystemDark(e.matches);
     mq.addEventListener("change", onChange);
     return () => mq.removeEventListener("change", onChange);
-  }, [store.userConfig.color_scheme]);
+  }, []);
 
   return (
     <AstryxTheme theme={neutralTheme} mode={isDark ? "dark" : "light"}>
-      <Theme
-        className="w-[100vw] h-[100vh] "
-        accentColor={accentColor}
-        appearance={isDark ? "dark" : "light"}
-        panelBackground="translucent"
-      >
+      <div className="w-[100vw] h-[100vh]">
         <ErrorBoundary>
           <div className="h-full max-h-full ">
             <AppLayout />
           </div>
           <DialogAboutApp />
         </ErrorBoundary>
-      </Theme>
+      </div>
     </AstryxTheme>
   );
 }

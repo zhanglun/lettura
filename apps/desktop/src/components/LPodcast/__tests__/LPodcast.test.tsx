@@ -1,6 +1,5 @@
 import { describe, it, expect, afterEach, vi } from "vitest";
 import { render, cleanup, act } from "@testing-library/react";
-import { Theme } from "@radix-ui/themes";
 import { LPodcast } from "../index";
 import { useBearStore } from "@/stores";
 
@@ -45,9 +44,9 @@ vi.mock("../useAudioPlayer", () => ({
 
 const renderPlayer = () =>
   render(
-    <Theme>
+    <>
       <LPodcast visible />
-    </Theme>,
+    </>,
   );
 
 describe("LPodcast 三态", () => {
@@ -101,9 +100,9 @@ describe("LPodcast 三态", () => {
       useBearStore.setState({ podcastPlayingStatus: true });
     });
     rerender(
-      <Theme>
+      <>
         <LPodcast visible />
-      </Theme>,
+      </>,
     );
 
     expect(document.querySelector(".fusion-player")).toBeNull();

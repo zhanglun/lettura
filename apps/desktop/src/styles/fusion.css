@@ -2951,24 +2951,6 @@ body.dark-theme .fusion-in-sm {
   max-width: 220px;
 }
 
-.fusion-cmd [cmdk-item] .m kbd {
-  font-family: inherit;
-  font-size: 10px;
-  color: var(--fusion-sub);
-  border: 1px solid var(--fusion-hair2);
-  border-radius: 4px;
-  padding: 0 5px;
-  line-height: 15px;
-  background: rgba(255, 255, 255, 0.7);
-}
-
-.fusion-cmd [cmdk-empty] {
-  padding: 28px 0;
-  text-align: center;
-  font-size: 12.5px;
-  color: var(--fusion-ter);
-}
-
 /* ── 设置第三视图（settings.html 契约）：左锚点导航 + 设置行 ── */
 .fusion-set {
   flex: 1;
@@ -3457,24 +3439,6 @@ body.dark-theme .fusion-fbar i {
 
 body.dark-theme .fusion-mark.quiet {
   box-shadow: 0 0 0 6px color-mix(in srgb, var(--fusion-accent) 8%, transparent);
-}
-
-/* ⌘K 面板：暗色（浅投影 + 深洗色） */
-body.dark-theme .fusion-cmd [cmdk-item][data-selected="true"],
-body.dark-theme .fusion-cmd [cmdk-item][aria-selected="true"] {
-  background: rgba(233, 233, 230, 0.06);
-}
-
-body.dark-theme .fusion-cmd [cmdk-item] .ic {
-  background: rgba(233, 233, 230, 0.07);
-}
-
-body.dark-theme .fusion-cmd .gh-n {
-  background: rgba(233, 233, 230, 0.07);
-}
-
-body.dark-theme .fusion-cmd [cmdk-item] .m kbd {
-  background: rgba(233, 233, 230, 0.06);
 }
 
 /* 源头卡：暗色（暖黑玻璃，结构不变） */

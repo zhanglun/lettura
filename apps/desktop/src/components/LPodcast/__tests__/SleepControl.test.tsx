@@ -1,6 +1,5 @@
 import { describe, it, expect, afterEach, beforeAll, vi } from "vitest";
 import { render, screen, cleanup, act, fireEvent } from "@testing-library/react";
-import { Theme } from "@radix-ui/themes";
 import { SleepControl } from "../SleepControl";
 import { useBearStore } from "@/stores";
 
@@ -15,9 +14,9 @@ beforeAll(() => {
 
 const renderControl = () =>
   render(
-    <Theme>
+    <>
       <SleepControl />
-    </Theme>,
+    </>,
   );
 
 describe("SleepControl", () => {

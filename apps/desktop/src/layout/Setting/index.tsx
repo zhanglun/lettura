@@ -157,14 +157,8 @@ export function SettingPage() {
   }
 
   const applyScheme = (v: string) => {
+    // body.dark-theme 与 Astryx mode 均由 App 从 userConfig.color_scheme 派生
     store.updateUserConfig({ ...cfg, color_scheme: v });
-    const mode =
-      v === "system"
-        ? window.matchMedia("(prefers-color-scheme: dark)").matches
-          ? "dark"
-          : "light"
-        : v;
-    document.body.classList.toggle("dark-theme", mode === "dark");
   };
 
   const updateStyle = (patch: Partial<CustomizeStyle>) => {

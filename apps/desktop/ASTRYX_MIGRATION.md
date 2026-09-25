@@ -53,7 +53,7 @@
 3. **表单批次** ✅（设置页部分）：设置页原生控件全换 Astryx——`Switch`(2)、`Selector`(3)、`Slider`(3)、`TextInput`(RSSHub)、`TextArea`(路由)；布局/自研 Seg 保留。AddFeed 为自研浮动面板、无 Radix 原语，推迟到内容批次整面重梳
 4. **外壳批次** ✅：命令面板换 Astryx CommandPalette（删 cmdk）；AppShell 不采用（会改变 fusion 视觉世界）
 5. **内容批次** ✅：FeedCtxMenu → Astryx `ContextMenu`（声明式包裹、嵌套子菜单）；sonner → Astryx `Toast`（helpers/toast 命令式 + useToast）；删除失效 fusion-ctx CSS。FeedProfile/文章行/订阅行本就是自研 fusion、无 Radix；ContentRender 已在原语批次完成
-6. **收口**：删除 Radix Themes 与冗余自定义 CSS（播客用 framer-motion 但无 Radix，保留）
+6. **收口** ✅：删除 Radix Themes（App/ErrorPage 去壳、6 个测试去 Theme 包裹、index.css 去 styles.css 与背景覆盖）、删 `@radix-ui/react-icons`；夜读切换改为 `userConfig.color_scheme` 单源派生（body class 与 Astryx `data-theme` 单一 effect 同步，深色 Slider 可见性问题随之修复）；清理 tailwind 死配置（accordion/spin-slow/调试 log）。保留 `@radix-ui/colors`（fusion 令牌与 tailwind 调色仍消费其色阶变量）
 
 每批次完成标准：tsc 0 错、215 测试（按需更新）全绿、生产构建通过、关键态视觉确认；
 同步更新 `DESIGN.md` 与本文件勾选。

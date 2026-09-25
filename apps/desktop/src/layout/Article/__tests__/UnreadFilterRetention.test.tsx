@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { Theme } from "@radix-ui/themes";
 import { ArticleReadStatus, ArticleStarStatus, ArticleReadLaterStatus } from "@/typing";
 import type { ArticleResItem } from "@/db";
 import { retainArticleAfterRead } from "@/helpers/articleHelpers";
@@ -69,9 +68,9 @@ describe("ArticleItem: unread filter delayed removal", () => {
   it("calls mark-read API when clicking an unread article", () => {
     const article = makeArticle();
     render(
-      <Theme>
+      <>
         <ArticleItem article={article} onRead={mockOnRead} />
-      </Theme>,
+      </>,
     );
 
     fireEvent.click(screen.getByText("Unread Article"));
@@ -85,9 +84,9 @@ describe("ArticleItem: unread filter delayed removal", () => {
   it("passes updated article (with read_status=READ) to onRead callback", () => {
     const article = makeArticle();
     render(
-      <Theme>
+      <>
         <ArticleItem article={article} onRead={mockOnRead} />
-      </Theme>,
+      </>,
     );
 
     fireEvent.click(screen.getByText("Unread Article"));
@@ -103,9 +102,9 @@ describe("ArticleItem: unread filter delayed removal", () => {
   it("does NOT pass a removal/filter instruction — article stays in list", () => {
     const article = makeArticle();
     render(
-      <Theme>
+      <>
         <ArticleItem article={article} onRead={mockOnRead} />
-      </Theme>,
+      </>,
     );
 
     fireEvent.click(screen.getByText("Unread Article"));
@@ -118,9 +117,9 @@ describe("ArticleItem: unread filter delayed removal", () => {
   it("does not call onRead when clicking an already-read article", () => {
     const article = makeArticle({ read_status: ArticleReadStatus.READ });
     render(
-      <Theme>
+      <>
         <ArticleItem article={article} onRead={mockOnRead} />
-      </Theme>,
+      </>,
     );
 
     fireEvent.click(screen.getByText("Unread Article"));
@@ -131,9 +130,9 @@ describe("ArticleItem: unread filter delayed removal", () => {
   it("still calls updateArticleStatus for already-read articles", () => {
     const article = makeArticle({ read_status: ArticleReadStatus.READ });
     render(
-      <Theme>
+      <>
         <ArticleItem article={article} onRead={mockOnRead} />
-      </Theme>,
+      </>,
     );
 
     fireEvent.click(screen.getByText("Unread Article"));
