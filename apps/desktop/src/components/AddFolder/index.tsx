@@ -8,7 +8,8 @@ import React, {
 import * as dataAgent from "../../helpers/dataAgent";
 import { FolderResItem } from "@/db";
 import { useBearStore } from "@/stores";
-import { Dialog, TextField, Tooltip, Button } from "@radix-ui/themes";
+import { Dialog, TextField, Tooltip } from "@radix-ui/themes";
+import { Button } from "@astryxdesign/core/Button";
 import { useShallow } from "zustand/react/shallow";
 import { useTranslation } from "react-i18next";
 
@@ -127,16 +128,18 @@ export const AddFolder = React.memo((props: AddFolderProps) => {
             ref={inputRef}
           />
           <div className="flex justify-end gap-3 mt-4">
-            <Dialog.Close>
-              <Button variant="soft">{t("Cancel")}</Button>
-            </Dialog.Close>
+            <Button
+              variant="secondary"
+              label={t("Cancel")}
+              onClick={handleCancel}
+            />
             <Button
               onClick={handleSave}
-              disabled={confirming || !name}
-              loading={confirming}
-            >
-              {confirming ? t("Saving") : t("Save")}
-            </Button>
+              variant="primary"
+              isDisabled={confirming || !name}
+              isLoading={confirming}
+              label={confirming ? t("Saving") : t("Save")}
+            />
           </div>
         </div>
       </Dialog.Content>

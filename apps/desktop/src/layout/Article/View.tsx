@@ -5,7 +5,7 @@ import {
   ScrollBoxRefObject,
 } from "@/components/ArticleView/ScrollBox";
 import { ReaderControls } from "@/components/ReaderControls";
-import { IconButton } from "@radix-ui/themes";
+import { IconButton } from "@astryxdesign/core/IconButton";
 import { useTranslation } from "react-i18next";
 import { formatDistanceToNow } from "date-fns";
 import { ArticleResItem } from "@/db";
@@ -118,14 +118,12 @@ export function View({
         )}
         {closable && (
           <IconButton
-            size="2"
+            size="md"
             variant="ghost"
-            color="gray"
-            className="text-[var(--gray-11)]"
+            label={t("Close")}
             onClick={onClose}
-          >
-            <X size={16} />
-          </IconButton>
+            icon={<X size={16} />}
+          />
         )}
       </div>
 

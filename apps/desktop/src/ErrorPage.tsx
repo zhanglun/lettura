@@ -1,4 +1,4 @@
-import { Button, Link, Theme } from "@radix-ui/themes";
+import { Link, Theme } from "@radix-ui/themes";
 import { useNavigate, useRouteError } from "react-router-dom";
 import { useBearStore } from "./stores";
 import { ArrowLeftIcon, BugIcon } from "lucide-react";

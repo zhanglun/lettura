@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { AlertDialog, Button, Flex, RadioGroup, Text } from "@radix-ui/themes";
+import { AlertDialog, Flex, RadioGroup, Text } from "@radix-ui/themes";
+import { Button } from "@astryxdesign/core/Button";
 import { FeedResItem } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
 import { busChannel } from "@/helpers/busChannel";
@@ -96,18 +97,20 @@ export const DialogUnsubscribeFeed = React.memo((props: DialogProps) => {
           )}
         </AlertDialog.Description>
         <Flex gap="3" mt="4" justify="end">
-          <AlertDialog.Cancel onClick={() => handleCancel()}>
-            <Button variant="soft" color="gray">
-              {t("Cancel")}
-            </Button>
-          </AlertDialog.Cancel>
           <Button
-            variant="solid"
-            color="red"
+            variant="secondary"
+            label={t("Cancel")}
+            onClick={() => {
+              handleCancel();
+              setDialogStatus(false);
+            }}
+          />
+          <Button
+            variant="destructive"
             onClick={() => confirmUnsubscribe()}
-          >
-            {t("Unsubscribe")}
-          </Button>
+            isLoading={loading}
+            label={t("Unsubscribe")}
+          />
         </Flex>
       </AlertDialog.Content>
     </AlertDialog.Root>

@@ -9,8 +9,8 @@
 
 | Radix（用量） | Astryx 对应 | 备注 / API 差异 |
 |---|---|---|
-| `Button` (5) | `Button` | Radix 用 children 放文案/图标；Astryx 用 `label` + `icon`，`variant` 为 primary/secondary/ghost/destructive，`size` sm/md/lg |
-| `IconButton` (3) | `IconButton` | Astryx 独立组件（非 Button 的 iconOnly 态）；图标钮仍须提供无障碍 label |
+| ~~`Button` (5)~~ ✅ | `Button` | Radix 用 children 放文案/图标；Astryx 用 `label` + `icon`，`variant` 为 primary/secondary/ghost/destructive，`size` sm/md/lg |
+| ~~`IconButton` (3)~~ ✅ | `IconButton` | Astryx 独立组件（非 Button 的 iconOnly 态）；图标钮仍须提供无障碍 label；tooltip 内置 |
 | `Dialog` (3) | `Dialog` | Radix 用 `Dialog.Root/Content/Title` 复合式；Astryx 看具体 props（多为 `open/onOpenChange/title`） |
 | `AlertDialog` (2) | `AlertDialog` | 破坏性确认；destructive 动作需确认步骤 |
 | `Tooltip` (2) | `Tooltip` | Astryx Button 自带 `tooltip` prop；独立场景用 Tooltip |
@@ -48,7 +48,7 @@
 
 ## 三、建议替换顺序（由低风险到整面）
 
-1. **原语批次**：Button（已试水）→ IconButton → Tooltip → Divider → Text/Heading
+1. **原语批次**：~~Button~~ → ~~IconButton~~ → Tooltip → Divider → Text/Heading
 2. **浮层批次**：About 完整 Dialog → AddFolder → AlertDialog → DropdownMenu/ContextMenu → Popover
 3. **表单批次**：Field/TextInput/TextArea → RadioList/Selector/Switch → 设置页 → AddFeed
 4. **外壳批次**：AppShell/TopNav/SideNav 重排导航；命令面板换 Astryx CommandPalette
@@ -61,6 +61,7 @@
 ## 进度
 
 - [x] 地基：AstryxTheme + CSS 层序 + Vite 5
-- [x] Button 试水（About 两个按钮）
+- [x] Button（About + ErrorBoundary/AddFolder/DeleteFolder/Unsubscribe 全部）
+- [x] IconButton（DialogView/View/ReadingOptions）
 - [ ] About Dialog 容器
 - [ ] 其余按上表推进

@@ -1,5 +1,5 @@
 import { Component, ReactNode } from "react";
-import { Button } from "@radix-ui/themes";
+import { Button } from "@astryxdesign/core/Button";
 import { RefreshCw } from "lucide-react";
 
 interface ErrorBoundaryProps {
@@ -68,10 +68,12 @@ export class ErrorBoundary extends Component<
             <p className="text-gray-600 dark:text-gray-400 mb-6">
               An unexpected error occurred. Please try refreshing the page.
             </p>
-            <Button onClick={this.handleReset} size="3">
-              <RefreshCw className="mr-2" size={16} />
-              Try Again
-            </Button>
+            <Button
+              onClick={this.handleReset}
+              size="lg"
+              icon={<RefreshCw size={16} />}
+              label="Try Again"
+            />
           </div>
         </div>
       );

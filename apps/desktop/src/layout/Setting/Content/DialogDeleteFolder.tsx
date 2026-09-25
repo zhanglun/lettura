@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { toast } from "sonner";
-import { Button, AlertDialog, Flex } from "@radix-ui/themes";
+import { AlertDialog, Flex } from "@radix-ui/themes";
+import { Button } from "@astryxdesign/core/Button";
 import { FolderResItem } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
 import { busChannel } from "@/helpers/busChannel";
@@ -65,14 +66,19 @@ export const DialogDeleteFolder = React.memo((props: DialogProps) => {
           />
         </AlertDialog.Description>
         <Flex gap="3" mt="4" justify="end">
-          <AlertDialog.Cancel onClick={() => handleCancel()}>
-            <Button variant="soft" color="gray">
-              {t("Cancel")}
-            </Button>
-          </AlertDialog.Cancel>
-          <Button variant="solid" color="red" onClick={() => confirmDelete()}>
-            {t("Delete folder")}
-          </Button>
+          <Button
+            variant="secondary"
+            label={t("Cancel")}
+            onClick={() => {
+              handleCancel();
+              setDialogStatus(false);
+            }}
+          />
+          <Button
+            variant="destructive"
+            onClick={() => confirmDelete()}
+            label={t("Delete folder")}
+          />
         </Flex>
       </AlertDialog.Content>
     </AlertDialog.Root>

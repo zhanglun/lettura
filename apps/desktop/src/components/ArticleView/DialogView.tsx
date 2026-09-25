@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { X } from "lucide-react";
-import { Separator, Dialog, IconButton } from "@radix-ui/themes";
+import { Separator, Dialog } from "@radix-ui/themes";
+import { IconButton } from "@astryxdesign/core/IconButton";
 import { ReadingOptions } from "@/layout/Article/ReadingOptions";
 import { ReaderControls } from "@/components/ReaderControls";
 import { ArticleDetail } from "@/components/ArticleView/Detail";
@@ -18,6 +20,7 @@ type ArticleDialogViewProps = {
 export const ArticleDialogView = (
   props: ArticleDialogViewProps,
 ): React.ReactElement => {
+  const { t } = useTranslation();
   const {
     article,
     dialogStatus,
@@ -57,14 +60,12 @@ export const ArticleDialogView = (
                   <ReadingOptions article={article} />
                   <Separator orientation="vertical" className="h-4 mx-1" />
                   <IconButton
-                    size="1"
+                    size="sm"
                     variant="ghost"
-                    color="gray"
+                    label={t("Close")}
                     onClick={() => handleDialogChange(false)}
-                    aria-label="Close"
-                  >
-                    <X size={16} />
-                  </IconButton>
+                    icon={<X size={16} />}
+                  />
                 </div>
               </div>
             </div>
