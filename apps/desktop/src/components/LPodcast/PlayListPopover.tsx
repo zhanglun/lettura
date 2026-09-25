@@ -1,3 +1,5 @@
+import { ListMusic } from "lucide-react";
+import { IconButton } from "@astryxdesign/core/IconButton";
 import React from "react";
 import { Popover } from "@astryxdesign/core/Popover";
 import { PlayList } from "./PlayList";
@@ -15,24 +17,12 @@ export const PlayListPopover: React.FC = () => {
       label={t("podcast.playlist")}
       content={<PlayList />}
     >
-      <button
-        type="button"
-        className="fusion-pctl"
-        title={t("podcast.playlist")}
-        aria-label={t("podcast.playlist")}
-      >
-        <svg
-          width="13"
-          height="13"
-          viewBox="0 0 16 16"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.6"
-          strokeLinecap="round"
-        >
-          <path d="M3 4h10M3 8h7M3 12h10" />
-        </svg>
-      </button>
+      <IconButton
+        size="sm"
+        variant="ghost"
+        icon={<ListMusic size={13} />}
+        label={t("podcast.playlist")}
+      />
     </Popover>
   );
 };

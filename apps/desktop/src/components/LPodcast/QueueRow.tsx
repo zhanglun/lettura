@@ -1,3 +1,5 @@
+import { X } from "lucide-react";
+import { IconButton } from "@astryxdesign/core/IconButton";
 import React from "react";
 import type { AudioTrack } from "./index";
 import { formatTime } from "./utils";
@@ -66,28 +68,16 @@ export const QueueRow: React.FC<QueueRowProps> = ({
       <span className="q-d">
         {track.duration ? formatTime(track.duration) : ""}
       </span>
-      <button
-        type="button"
-        className="q-x"
-        title={t("Delete")}
-        aria-label={t("Delete")}
+      <IconButton
+        size="sm"
+        variant="destructive"
+        icon={<X size={11} />}
+        label={t("Delete")}
         onClick={(e) => {
           e.stopPropagation();
           onRemove();
         }}
-      >
-        <svg
-          width="11"
-          height="11"
-          viewBox="0 0 16 16"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.7"
-          strokeLinecap="round"
-        >
-          <path d="M3 3l10 10M13 3 3 13" />
-        </svg>
-      </button>
+      />
     </div>
   );
 };

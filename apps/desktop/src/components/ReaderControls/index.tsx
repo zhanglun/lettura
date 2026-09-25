@@ -5,46 +5,8 @@ import { ArticleReadLaterStatus, ArticleReadStatus, ArticleStarStatus } from "@/
 import * as dataAgent from "@/helpers/dataAgent";
 import { open } from "@tauri-apps/plugin-shell";
 import { useTranslation } from "react-i18next";
-import clsx from "clsx";
-
-export interface ReaderControlBtnProps {
-  icon: React.ElementType;
-  label?: string;
-  active?: boolean;
-  activeClass?: string;
-  disabled?: boolean;
-  onClick: () => void;
-  className?: string;
-}
-
-export function ReaderControlBtn({
-  icon: Icon,
-  label,
-  active = false,
-  activeClass,
-  disabled = false,
-  onClick,
-  className,
-}: ReaderControlBtnProps) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      className={clsx(
-        "inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] transition-all",
-        "disabled:opacity-40 disabled:cursor-default",
-        active
-          ? (activeClass ?? "text-[var(--fusion-accent)] bg-[var(--fusion-accent-soft)]")
-          : "text-[var(--fusion-ter)] hover:bg-[var(--fusion-hair)] hover:text-[var(--fusion-ink)]",
-        className,
-      )}
-    >
-      <Icon size={14} />
-      {label && <span>{label}</span>}
-    </button>
-  );
-}
+import { ToggleButton } from "@astryxdesign/core/ToggleButton";
+import { IconButton } from "@astryxdesign/core/IconButton";
 
 export interface ReaderControlsProps {
   article: ArticleResItem;
@@ -115,37 +77,42 @@ export function ReaderControls({
 
   return (
     <>
-      <ReaderControlBtn
-        icon={Star}
+      <ToggleButton
+        size="sm"
+        icon={<Star size={14} />}
         label={t(starred === ArticleStarStatus.STARRED ? "Unstar it" : "Star it")}
-        active={starred === ArticleStarStatus.STARRED}
-        activeClass="text-amber-500"
-        onClick={toggleStar}
+        isPressed={starred === ArticleStarStatus.STARRED}
+        onPressedChange={toggleStar}
       />
-      <ReaderControlBtn
-        icon={readStatus === ArticleReadStatus.READ ? EyeOff : Eye}
+      <ToggleButton
+        size="sm"
+        icon={readStatus === ArticleReadStatus.READ ? <EyeOff size={14} /> : <Eye size={14} />}
         label={t(
           readStatus === ArticleReadStatus.READ ? "Mark as unread" : "Mark as read",
         )}
-        onClick={toggleRead}
+        isPressed={readStatus === ArticleReadStatus.READ}
+        onPressedChange={toggleRead}
       />
       {showReadLater && (
-        <ReaderControlBtn
-          icon={Bookmark}
+        <ToggleButton
+          size="sm"
+          icon={<Bookmark size={14} />}
           label={t(
             readLater === ArticleReadLaterStatus.SAVED
               ? "article.actions.remove_read_later"
               : "article.actions.read_later",
           )}
-          active={readLater === ArticleReadLaterStatus.SAVED}
-          onClick={toggleReadLater}
+          isPressed={readLater === ArticleReadLaterStatus.SAVED}
+          onPressedChange={toggleReadLater}
         />
       )}
       {showBrowser && (
-        <ReaderControlBtn
-          icon={ExternalLink}
+        <IconButton
+          size="sm"
+          variant="ghost"
+          icon={<ExternalLink size={14} />}
           label={t("Open in browser")}
-          disabled={!article.link}
+          isDisabled={!article.link}
           onClick={handleOpenBrowser}
         />
       )}

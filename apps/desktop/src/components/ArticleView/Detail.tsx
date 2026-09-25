@@ -1,3 +1,5 @@
+import { ExternalLink } from "lucide-react";
+import { Button } from "@astryxdesign/core/Button";
 import React, { useEffect, useState } from "react";
 import * as dataAgent from "@/helpers/dataAgent";
 import { open } from "@tauri-apps/plugin-shell";
@@ -71,13 +73,13 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
         <div className="flex flex-col items-center justify-center py-20 gap-2 text-[var(--fusion-ter)]">
           <p className="text-sm">{t("article.detail.load_error", "Failed to load article content")}</p>
           {article.link && (
-            <button
-              type="button"
+            <Button
+              variant="ghost"
+              size="sm"
+              icon={<ExternalLink size={12} />}
+              label={t("Open in browser")}
               onClick={() => open(article.link)}
-              className="text-[11px] text-[var(--fusion-accent)] hover:underline"
-            >
-              {t("Open in browser")}
-            </button>
+            />
           )}
         </div>
       );

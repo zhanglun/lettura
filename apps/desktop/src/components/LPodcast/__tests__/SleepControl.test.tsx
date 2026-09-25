@@ -32,7 +32,7 @@ describe("SleepControl", () => {
     const trigger = screen.getByRole("button", {
       name: "podcast.sleep.title",
     });
-    expect(trigger.className).toContain("fusion-pctl");
+    expect(trigger.className).toContain("ghost");
     expect(trigger.textContent).toBe("");
   });
 
@@ -44,7 +44,7 @@ describe("SleepControl", () => {
     const trigger = screen.getByRole("button", {
       name: /podcast\.sleep\.remaining/,
     });
-    expect(trigger.className).toContain("fusion-chip");
+    expect(trigger.className).toContain("primary");
     expect(trigger.textContent).toContain("30:00");
   });
 

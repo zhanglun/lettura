@@ -69,7 +69,7 @@ describe("LPodcast 三态", () => {
     const slot = document.querySelector(".fusion-player-slot");
     expect(slot).toBeTruthy();
     expect(slot?.querySelector(".fusion-pbar")).toBeTruthy();
-    expect(slot?.querySelector(".fusion-chip")?.textContent).toBe("1×");
+    expect([...(slot?.querySelectorAll("button") ?? [])].some((b) => b.textContent === "1×")).toBe(true);
     expect(useBearStore.getState().tracks).toHaveLength(1);
     expect(useBearStore.getState().currentTrack?.uuid).toBe("ep-1");
   });

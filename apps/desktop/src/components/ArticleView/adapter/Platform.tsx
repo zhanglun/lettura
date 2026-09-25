@@ -1,3 +1,5 @@
+import { ExternalLink } from "lucide-react";
+import { Button } from "@astryxdesign/core/Button";
 import { ArticleResItem } from "@/db";
 import { open } from "@tauri-apps/plugin-shell";
 import { useTranslation } from "react-i18next";
@@ -53,12 +55,13 @@ export function PlatformAdapter({ article, content }: PlatformAdapterProps) {
       )}
 
       {article.link && (
-        <button type="button" className="fusion-openbtn" onClick={() => open(article.link)}>
-          {t("fusion.platform.open_on", { platform })}
-          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#fff" strokeWidth="1.6" strokeLinecap="round">
-            <path d="M6.5 3H3v10h10V9.5M9 3h4v4M12.8 3.2 7.5 8.5" />
-          </svg>
-        </button>
+        <Button
+          variant="primary"
+          size="sm"
+          label={t("fusion.platform.open_on", { platform })}
+          endContent={<ExternalLink size={12} />}
+          onClick={() => open(article.link)}
+        />
       )}
       <p className="mt-5 text-[12px] text-[var(--fusion-ter)]">
         {t("fusion.platform.hint")}

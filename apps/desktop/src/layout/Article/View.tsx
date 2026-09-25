@@ -95,11 +95,14 @@ export function View({
     <div className="relative flex h-full min-h-0 flex-1 min-w-0 flex-col">
       {/* 固定顶栏 */}
       <div className="fusion-dtop">
-        <button type="button" className="fusion-back" onClick={handleBack}>
-          <ChevronLeft size={12} />
-          {t("article.view.back")}
-          <Kbd keys="esc" />
-        </button>
+        <Button
+          variant="ghost"
+          size="sm"
+          icon={<ChevronLeft size={12} />}
+          label={t("article.view.back")}
+          endContent={<Kbd keys="esc" />}
+          onClick={handleBack}
+        />
         {article && (
           <span className="d-src">
             {article.feed_title} ·{" "}

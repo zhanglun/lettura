@@ -1,3 +1,6 @@
+import { Pause, Play } from "lucide-react";
+import { Button } from "@astryxdesign/core/Button";
+import { IconButton } from "@astryxdesign/core/IconButton";
 import { ArticleResItem } from "@/db";
 import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
@@ -108,27 +111,15 @@ export function PodcastAdapter(props: PodcastAdapter) {
             )}
           </div>
           <div className="fusion-epctrl">
-            <button type="button" className="fusion-bigplay" onClick={handlePlay}>
-              {playing ? (
-                <svg width="13" height="13" viewBox="0 0 12 12" fill="#fff">
-                  <rect x="1.5" y="1" width="3" height="10" rx="1" />
-                  <rect x="7.5" y="1" width="3" height="10" rx="1" />
-                </svg>
-              ) : (
-                <svg width="13" height="13" viewBox="0 0 12 12" fill="#fff">
-                  <path d="M2.5 1.2v9.6l8-4.8z" />
-                </svg>
-              )}
-            </button>
-            <button type="button" className="fusion-skipbtn" onClick={() => skip(-30)}>
-              −30s
-            </button>
-            <button type="button" className="fusion-skipbtn" onClick={() => skip(30)}>
-              +30s
-            </button>
-            <button type="button" className="fusion-chip" onClick={cycleRate}>
-              {playbackRate}×
-            </button>
+            <IconButton
+              size="sm"
+              icon={playing ? <Pause size={13} /> : <Play size={13} />}
+              label={playing ? t("Pause") : t("Play")}
+              onClick={handlePlay}
+            />
+            <Button variant="ghost" size="sm" label="−30s" onClick={() => skip(-30)} />
+            <Button variant="ghost" size="sm" label="+30s" onClick={() => skip(30)} />
+            <Button variant="ghost" size="sm" label={`${playbackRate}×`} onClick={cycleRate} />
           </div>
         </div>
       </div>

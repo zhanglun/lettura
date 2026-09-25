@@ -121,27 +121,6 @@
   flex: 1;
 }
 
-.fusion-cmdbtn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  height: 30px;
-  padding: 0 10px;
-  border: 1px solid var(--fusion-hair2);
-  border-radius: 9px;
-  font-size: 12px;
-  color: var(--fusion-sub);
-  background: rgba(255, 255, 255, 0.55);
-  min-width: 210px;
-  cursor: pointer;
-}
-
-.fusion-cmdbtn:hover {
-  border-color: var(--color-accent);
-  color: var(--fusion-ink);
-}
-
-
 /* ── 过滤条（全部/文章/播客/平台） ── */
 .fusion-strip {
   height: 42px;
@@ -365,31 +344,6 @@
   outline-offset: 1.5px;
 }
 
-.fusion-act-btn {
-  width: 24px;
-  height: 24px;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--fusion-sub);
-  opacity: 0.62;
-  transition: opacity 0.12s ease;
-  border: 0;
-  background: none;
-  cursor: pointer;
-}
-
-.fusion-row:hover .fusion-act-btn,
-.fusion-act-btn.is-on {
-  opacity: 1;
-}
-
-.fusion-act-btn:hover {
-  background: rgba(29, 30, 32, 0.06);
-  color: var(--fusion-ink);
-}
-
 /* ── 底部悬浮播放条（bar 态）的让位 ──
    空白加在滚动内容末尾：真内容盒（::after）而不是滚动容器的 padding，也不是外层容器的占位。
    列表内容因此能从玻璃条下穿过（悬浮），最后一行乜能完全翻到条外。
@@ -450,25 +404,6 @@
 
 .fusion-pc:hover {
   transform: scale(1.06);
-}
-
-.fusion-pskip {
-  width: 24px;
-  height: 24px;
-  border-radius: 999px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--fusion-sub);
-  border: 0;
-  background: none;
-  cursor: pointer;
-  flex: none;
-}
-
-.fusion-pskip:hover {
-  background: rgba(29, 30, 32, 0.06);
-  color: var(--fusion-ink);
 }
 
 .fusion-pmeta {
@@ -571,24 +506,6 @@
 
 /* ── 播放器三态（podcast.html 契约） ── */
 /* bar 态尾部控制钮 */
-.fusion-pctl {
-  width: 24px;
-  height: 24px;
-  border-radius: 7px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--fusion-sub);
-  border: 0;
-  background: none;
-  cursor: pointer;
-  flex: none;
-}
-
-.fusion-pctl:hover {
-  background: rgba(29, 30, 32, 0.06);
-  color: var(--fusion-ink);
-}
 
 /* min 收起态：右下角玻璃圆钮 + 环形进度 */
 .fusion-minipill {
@@ -825,11 +742,6 @@
   margin-top: 24px;
 }
 
-.fusion-fullplayer .fusion-bigplay {
-  width: 48px;
-  height: 48px;
-}
-
 /* UP NEXT 队列：发丝行语法收紧 52px，当前行 = accent-soft 洗色（无侧线） */
 .fusion-queue {
   width: 100%;
@@ -907,29 +819,6 @@
   font-variant-numeric: tabular-nums;
 }
 
-.fusion-queue .q-x {
-  width: 22px;
-  height: 22px;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--fusion-ter);
-  opacity: 0;
-  border: 0;
-  background: none;
-  cursor: pointer;
-}
-
-.fusion-queue .q-row:hover .q-x {
-  opacity: 1;
-}
-
-.fusion-queue .q-x:hover {
-  background: rgba(29, 30, 32, 0.06);
-  color: var(--fusion-ink);
-}
-
 .fusion-playlist {
   width: 380px;
   max-height: 52vh;
@@ -1002,11 +891,6 @@
 
 .fusion-playlist .q-row .q-d {
   grid-column: 3;
-  grid-row: 1 / span 2;
-}
-
-.fusion-playlist .q-row .q-x {
-  grid-column: 4;
   grid-row: 1 / span 2;
 }
 
@@ -1091,69 +975,7 @@
   gap: 10px;
 }
 
-.fusion-bigplay {
-  width: 40px;
-  height: 40px;
-  border-radius: 999px;
-  background: var(--color-accent);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 0;
-  cursor: pointer;
-  box-shadow: 0 6px 14px -3px color-mix(in srgb, var(--color-accent) 50%, transparent);
-  transition: transform 0.15s ease;
-}
-
-.fusion-bigplay:hover {
-  transform: scale(1.05);
-}
-
-.fusion-skipbtn {
-  width: 34px;
-  height: 30px;
-  border-radius: 999px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--fusion-sub);
-  border: 1px solid var(--fusion-hair2);
-  background: none;
-  cursor: pointer;
-  font-size: 11px;
-  font-variant-numeric: tabular-nums;
-}
-
-.fusion-skipbtn:hover {
-  color: var(--fusion-ink);
-  border-color: var(--fusion-sub);
-}
-
 /* 上/下一集：传输排里紧贴大播放钮的圆钮（podcast.html 契约） */
-.fusion-pnav {
-  width: 36px;
-  height: 36px;
-  border-radius: 999px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--fusion-sub);
-  border: 1px solid var(--fusion-hair2);
-  background: none;
-  cursor: pointer;
-  flex: none;
-}
-
-.fusion-pnav:hover {
-  color: var(--fusion-ink);
-  border-color: var(--fusion-sub);
-}
-
-.fusion-pnav:disabled {
-  opacity: 0.45;
-  cursor: default;
-}
 
 /* ── 平台详情 ── */
 .fusion-platcover {
@@ -1168,26 +990,6 @@
   color: var(--fusion-pink);
   border: 1px solid var(--fusion-hair);
   margin-bottom: 24px;
-}
-
-.fusion-openbtn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  height: 36px;
-  padding: 0 16px;
-  margin-top: 6px;
-  border: 0;
-  border-radius: 10px;
-  background: var(--fusion-ink);
-  color: #fff;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.fusion-openbtn:hover {
-  background: #000;
 }
 
 /* ── 文章正文（外壳精密，内容读书） ── */
@@ -1460,25 +1262,6 @@
   pointer-events: none;
 }
 
-.fusion-back {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12.5px;
-  color: var(--fusion-sub);
-  padding: 5px 10px;
-  border-radius: 7px;
-  border: 0;
-  background: none;
-  cursor: pointer;
-  flex: none;
-}
-
-.fusion-back:hover {
-  background: rgba(29, 30, 32, 0.05);
-  color: var(--fusion-ink);
-}
-
 /* 完读区：· 完 · + 下一篇卡 + 已读并返回 */
 .fusion-fin {
   text-align: center;
@@ -1501,7 +1284,6 @@
   justify-content: center;
   margin: 20px 0 8px;
 }
-
 
 /* ── 订阅浏览帧（feeds.html 契约）：分组源列表，未读数是主角 ── */
 .fusion-browse {
@@ -1773,27 +1555,6 @@
   font-variant-numeric: tabular-nums;
 }
 
-.fusion-fp-expand,
-.fusion-fp-collapse {
-  width: 26px;
-  height: 26px;
-  border-radius: 7px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--fusion-sub);
-  border: 0;
-  background: none;
-  cursor: pointer;
-  flex: none;
-}
-
-.fusion-fp-expand:hover,
-.fusion-fp-collapse:hover {
-  background: rgba(29, 30, 32, 0.06);
-  color: var(--fusion-ink);
-}
-
 .fusion-fp-body {
   padding: 15px 16px 13px;
 }
@@ -1852,10 +1613,6 @@
   color: var(--fusion-ter);
 }
 
-.fusion-fp-collapse {
-  margin-top: -2px;
-}
-
 .fusion-fp-desc {
   position: relative;
   font-size: 12.5px;
@@ -1870,17 +1627,6 @@
 
 .fusion-fp-desc.is-open {
   display: block;
-}
-
-.fusion-fp-more {
-  margin-left: 6px;
-  font-size: 11.5px;
-  color: var(--color-accent);
-  background: none;
-  border: 0;
-  padding: 0;
-  cursor: pointer;
-  white-space: nowrap;
 }
 
 .fusion-fp-stats {
@@ -1943,96 +1689,12 @@
   margin-top: 13px;
 }
 
-.fusion-fp-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 30px;
-  padding: 0 11px;
-  border: 1px solid var(--fusion-hair);
-  border-radius: 9px;
-  font-size: 12px;
-  color: var(--fusion-sub);
-  background: rgba(255, 255, 255, 0.55);
-  cursor: pointer;
-}
-
-.fusion-fp-btn:hover {
-  color: var(--fusion-ink);
-  border-color: var(--fusion-hair2);
-  background: rgba(255, 255, 255, 0.8);
-}
-
-.fusion-fp-btn:disabled {
-  opacity: 0.5;
-  cursor: default;
-}
-
-.fusion-fp-btn .is-danger {
-  color: var(--fusion-warn);
-}
-
-.fusion-qa {
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--fusion-sub);
-  border: 0;
-  background: none;
-  cursor: pointer;
-  flex: none;
-}
-
-.fusion-qa:hover {
-  background: rgba(29, 30, 32, 0.06);
-  color: var(--fusion-ink);
-}
-
-.fusion-qa:disabled {
-  opacity: 0.5;
-  cursor: default;
-}
-
 /* ── 订阅管理子视图（settings.html ?view=subs 契约） ── */
 .fusion-subs-bar {
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 16px 0 14px;
-}
-
-.fusion-subs-search {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  height: 34px;
-  flex: 1;
-  border: 1px solid var(--fusion-hair2);
-  border-radius: 9px;
-  padding: 0 11px;
-  background: rgba(255, 255, 255, 0.55);
-  color: var(--fusion-ter);
-}
-
-.fusion-subs-search:focus-within {
-  border-color: var(--color-accent);
-}
-
-.fusion-subs-search input {
-  flex: 1;
-  border: 0;
-  outline: 0;
-  background: none;
-  font: inherit;
-  font-size: 12.5px;
-  color: var(--fusion-ink);
-}
-
-.fusion-subs-search input::placeholder {
-  color: var(--fusion-ter);
 }
 
 .fusion-subs-fh {
@@ -2060,45 +1722,9 @@
   opacity: 1;
 }
 
-.fusion-qa2 {
-  width: 26px;
-  height: 26px;
-  border-radius: 7px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--fusion-sub);
-  border: 0;
-  background: none;
-  cursor: pointer;
-  flex: none;
-}
-
 .fusion-qa2:hover,
-.fusion-qa3:hover {
-  background: rgba(29, 30, 32, 0.06);
-  color: var(--fusion-ink);
-}
 
 .fusion-qa2.danger:hover,
-.fusion-qa3.danger:hover {
-  color: var(--fusion-warn);
-  background: rgba(196, 86, 74, 0.09);
-}
-
-.fusion-qa3 {
-  width: 24px;
-  height: 24px;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--fusion-ter);
-  border: 0;
-  background: none;
-  cursor: pointer;
-  flex: none;
-}
 
 /* 订阅行：44px，题 + 未读药丸 + 域名 + 时间 + 悬停动作 */
 .fusion-subs-row {
@@ -2181,7 +1807,6 @@
   gap: 1px;
   opacity: 0;
 }
-
 
 /* ── 空状态即引导（empty.html 契约） ── */
 .fusion-face {
@@ -2454,14 +2079,6 @@
 .fusion-add-in input::placeholder {
   color: var(--fusion-ter);
 }
-
-
-
-
-
-
-
-
 
 .fusion-abody {
   padding: 14px 16px 16px;
@@ -2750,26 +2367,8 @@
 
 body.dark-theme .fusion-set-ta,
 body.dark-theme .fusion-gen input,
-body.dark-theme .fusion-in-sm {
-  background: rgba(233, 233, 230, 0.05);
-}
 
 /* 内联小输入（新建分组） */
-.fusion-in-sm {
-  height: 32px;
-  min-width: 140px;
-  padding: 0 10px;
-  border: 1px solid var(--fusion-hair2);
-  border-radius: 9px;
-  background: rgba(255, 255, 255, 0.55);
-  color: var(--fusion-ink);
-  font-size: 12.5px;
-  outline: none;
-}
-
-.fusion-in-sm:focus {
-  border-color: var(--color-accent);
-}
 
 .fusion-aerr .fusion-aerr-msg {
   flex: 1;
@@ -2782,23 +2381,6 @@ body.dark-theme .fusion-in-sm {
   gap: 10px;
   margin-top: 14px;
 }
-
-.fusion-sel {
-  height: 32px;
-  padding: 0 10px;
-  border: 1px solid var(--fusion-hair2);
-  border-radius: 9px;
-  font-size: 12.5px;
-  color: var(--fusion-sub);
-  background: rgba(255, 255, 255, 0.55);
-  cursor: pointer;
-  max-width: 150px;
-}
-
-.fusion-sel:hover {
-  border-color: var(--color-accent);
-}
-
 
 .fusion-adone {
   display: flex;
@@ -2989,32 +2571,6 @@ body.dark-theme .fusion-in-sm {
   flex: none;
 }
 
-.fusion-seg {
-  display: flex;
-  gap: 2px;
-  padding: 2px;
-  border: 1px solid var(--fusion-hair2);
-  border-radius: 9px;
-  background: rgba(255, 255, 255, 0.55);
-}
-
-.fusion-seg button {
-  font-size: 11.5px;
-  color: var(--fusion-sub);
-  padding: 4px 12px;
-  border: 0;
-  background: none;
-  border-radius: 7px;
-  cursor: pointer;
-}
-
-.fusion-seg button.on {
-  background: rgba(29, 30, 32, 0.07);
-  color: var(--fusion-ink);
-  font-weight: 600;
-}
-
-
 .fusion-sld {
   display: flex;
   align-items: center;
@@ -3109,15 +2665,9 @@ body.dark-theme .fusion-snav:hover,
 body.dark-theme .fusion-back:hover,
 body.dark-theme .fusion-pskip:hover,
 body.dark-theme .fusion-aerr button:hover,
-body.dark-theme .fusion-act-btn:hover {
-  background: rgba(233, 233, 230, 0.05);
-}
 
 body.dark-theme .fusion-nav button.on,
 body.dark-theme .fusion-tab.on,
-body.dark-theme .fusion-seg button.on {
-  background: rgba(233, 233, 230, 0.08);
-}
 
 body.dark-theme .fusion-cnt,
 body.dark-theme .fusion-chip,
@@ -3197,17 +2747,8 @@ body.dark-theme .fusion-help-in .tt {
   color: var(--fusion-ink);
 }
 
-
 body.dark-theme .fusion-sel,
 body.dark-theme .fusion-seg,
-body.dark-theme .fusion-cmdbtn {
-  background: rgba(233, 233, 230, 0.05);
-  color: var(--fusion-sub);
-}
-
-body.dark-theme .fusion-cmdbtn {
-  background: rgba(233, 233, 230, 0.05);
-}
 
 body.dark-theme .fusion-article-body pre {
   background: rgba(233, 233, 230, 0.05);
@@ -3225,10 +2766,6 @@ body.dark-theme .fusion-b-row:hover::after {
 
 body.dark-theme .fusion-b-row.is-focused::after {
   background: rgba(233, 233, 230, 0.045);
-}
-
-body.dark-theme .fusion-qa:hover {
-  background: rgba(233, 233, 230, 0.05);
 }
 
 body.dark-theme .fusion-b-ic {
@@ -3288,9 +2825,6 @@ body.dark-theme .fusion-pbar {
 /* 播放器三态：暗色 */
 body.dark-theme .fusion-pctl:hover,
 body.dark-theme .fusion-queue .q-row:hover,
-body.dark-theme .fusion-queue .q-x:hover {
-  background: rgba(233, 233, 230, 0.05);
-}
 
 body.dark-theme .fusion-minipill .bubble,
 body.dark-theme .fusion-minipill .ring {
@@ -3337,11 +2871,6 @@ body.dark-theme .fusion-fp-tag {
   background: rgba(233, 233, 230, 0.07);
 }
 
-body.dark-theme .fusion-fp-expand:hover,
-body.dark-theme .fusion-fp-collapse:hover {
-  background: rgba(233, 233, 233, 230, 0.07);
-}
-
 body.dark-theme .fusion-fp-stats {
   background: rgba(0, 0, 0, 0.18);
   border-color: rgba(233, 233, 230, 0.08);
@@ -3349,16 +2878,6 @@ body.dark-theme .fusion-fp-stats {
 
 body.dark-theme .fusion-fp-stat {
   border-color: rgba(233, 233, 230, 0.08);
-}
-
-body.dark-theme .fusion-fp-btn {
-  background: rgba(233, 233, 230, 0.05);
-  border-color: rgba(233, 233, 230, 0.1);
-}
-
-body.dark-theme .fusion-fp-btn:hover {
-  background: rgba(233, 233, 230, 0.1);
-  border-color: rgba(233, 233, 230, 0.18);
 }
 
 /* 虚拟列表分组标签（原 custom-components.css，随死 CSS 清理迁入） */

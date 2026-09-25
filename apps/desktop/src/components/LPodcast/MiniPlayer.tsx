@@ -1,4 +1,7 @@
 import React from "react";
+import { ChevronDown, ChevronUp, Pause, Play, SkipBack, SkipForward } from "lucide-react";
+import { Button } from "@astryxdesign/core/Button";
+import { IconButton } from "@astryxdesign/core/IconButton";
 import { motion } from "framer-motion";
 import { AudioTrack } from "./index";
 import { formatTime, PLAYER_MOTION } from "./utils";
@@ -53,43 +56,26 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({
       <div className="fusion-player">
         {/* 传输簇：播放 + ±30s */}
         <div className="fusion-pcluster">
-          <button
-            type="button"
-            className="fusion-pc"
+          <IconButton
+            size="sm"
+            icon={isPlaying ? <Pause size={11} /> : <Play size={11} />}
+            label={isPlaying ? t("Pause") : t("Play")}
             onClick={togglePlay}
-            aria-label={isPlaying ? t("Pause") : t("Play")}
-          >
-            {isPlaying ? (
-              <svg width="11" height="11" viewBox="0 0 12 12" fill="#fff">
-                <rect x="1.5" y="1" width="3" height="10" rx="1" />
-                <rect x="7.5" y="1" width="3" height="10" rx="1" />
-              </svg>
-            ) : (
-              <svg width="11" height="11" viewBox="0 0 12 12" fill="#fff">
-                <path d="M2.5 1.2v9.6l8-4.8z" />
-              </svg>
-            )}
-          </button>
-          <button
-            type="button"
-            className="fusion-pskip"
-            title={t("podcast.ctl.back30")}
+          />
+          <IconButton
+            size="sm"
+            variant="ghost"
+            icon={<SkipBack size={13} />}
+            label={t("podcast.ctl.back30")}
             onClick={() => skip(-30)}
-          >
-            <svg width="13" height="13" viewBox="0 0 16 16" fill="var(--fusion-sub)">
-              <path d="M13.5 3.5v9l-7-4.5zM3.2 3.5H5v9H3.2z" />
-            </svg>
-          </button>
-          <button
-            type="button"
-            className="fusion-pskip"
-            title={t("podcast.ctl.fwd30")}
+          />
+          <IconButton
+            size="sm"
+            variant="ghost"
+            icon={<SkipForward size={13} />}
+            label={t("podcast.ctl.fwd30")}
             onClick={() => skip(30)}
-          >
-            <svg width="13" height="13" viewBox="0 0 16 16" fill="var(--fusion-sub)">
-              <path d="M2.5 3.5v9l7-4.5zM11 3.5h1.8v9H11z" />
-            </svg>
-          </button>
+          />
         </div>
 
         {/* 单集信息：点击放大到沉浸页 */}
@@ -116,49 +102,23 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({
 
         {/* 右簇：倍速 + 睡眠定时 + 播放列表 + 放大 + 收起 */}
         <div className="fusion-pcluster">
-          <button type="button" className="fusion-chip" onClick={cycleRate}>
-            {playbackRate}×
-          </button>
+          <Button variant="ghost" size="sm" label={`${playbackRate}×`} onClick={cycleRate} />
           <SleepControl />
           <PlayListPopover />
-          <button
-            type="button"
-            className="fusion-pctl"
+          <IconButton
+            size="sm"
+            variant="ghost"
+            icon={<ChevronUp size={13} />}
+            label={t("podcast.expand")}
             onClick={onExpand}
-            title={t("podcast.expand")}
-            aria-label={t("podcast.expand")}
-          >
-            <svg
-              width="13"
-              height="13"
-              viewBox="0 0 16 16"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-            >
-              <path d="M3 9.5 8 5l5 4.5" />
-            </svg>
-          </button>
-          <button
-            type="button"
-            className="fusion-pctl"
+          />
+          <IconButton
+            size="sm"
+            variant="ghost"
+            icon={<ChevronDown size={13} />}
+            label={t("podcast.collapse_bar")}
             onClick={onCollapse}
-            title={t("podcast.collapse_bar")}
-            aria-label={t("podcast.collapse_bar")}
-          >
-            <svg
-              width="13"
-              height="13"
-              viewBox="0 0 16 16"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-            >
-              <path d="M3 6.5 8 11l5-4.5" />
-            </svg>
-          </button>
+          />
         </div>
       </div>
     </motion.div>

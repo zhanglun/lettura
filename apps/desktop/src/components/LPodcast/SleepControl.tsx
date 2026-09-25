@@ -77,7 +77,6 @@ export const SleepControl: React.FC = () => {
       menuWidth={160}
       hasChevron={false}
       button={{
-        variant: "ghost",
         isIconOnly: true,
         icon: (
           <>
@@ -88,7 +87,7 @@ export const SleepControl: React.FC = () => {
           </>
         ),
         label: title,
-        className: remaining !== null ? "fusion-chip on" : "fusion-pctl",
+        variant: remaining !== null ? "primary" : "ghost",
       }}
     />
   );

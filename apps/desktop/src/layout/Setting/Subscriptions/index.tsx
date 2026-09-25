@@ -1,3 +1,4 @@
+import { ChevronLeft } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Kbd } from "@astryxdesign/core/Kbd";
 import type React from "react";
@@ -26,6 +27,8 @@ import {
   Trash2,
 } from "lucide-react";
 import { Button } from "@astryxdesign/core/Button";
+import { TextInput } from "@astryxdesign/core/TextInput";
+import { IconButton } from "@astryxdesign/core/IconButton";
 
 function toFolderResItem(folder: FeedResItem | null): FolderResItem | null {
   if (!folder) return null;
@@ -88,28 +91,26 @@ function SubsRow({
           {formatFeedTime(feed.last_sync_date) || "—"}
         </span>
         <span className="fusion-subs-fa">
-          <button
-            type="button"
-            className="fusion-qa3"
-            title={broken ? t("fusion.subs.retry") : t("feeds.ctx.sync")}
+          <IconButton
+            size="sm"
+            variant="ghost"
+            icon={<RefreshCw size={12} />}
+            label={broken ? t("fusion.subs.retry") : t("feeds.ctx.sync")}
             onClick={(e) => {
               e.stopPropagation();
               onSync(feed);
             }}
-          >
-            <RefreshCw size={12} />
-          </button>
-          <button
-            type="button"
-            className="fusion-qa3 danger"
-            title={t("Unsubscribe")}
+          />
+          <IconButton
+            size="sm"
+            variant="destructive"
+            icon={<Trash2 size={12} />}
+            label={t("Unsubscribe")}
             onClick={(e) => {
               e.stopPropagation();
               onDelete(feed);
             }}
-          >
-            <Trash2 size={12} />
-          </button>
+          />
         </span>
       </div>
     </FeedCtxMenu>
@@ -163,38 +164,34 @@ function SubsGroup({
       </button>
       {folder && (
         <span className="fusion-subs-fa">
-          <button
-            type="button"
-            className="fusion-qa2"
-            title={t("feeds.ctx.sync")}
+          <IconButton
+            size="sm"
+            variant="ghost"
+            icon={<RefreshCw size={13} />}
+            label={t("feeds.ctx.sync")}
             onClick={() => onFolderSync?.(folder)}
-          >
-            <RefreshCw size={13} />
-          </button>
-          <button
-            type="button"
-            className="fusion-qa2"
-            title={t("feeds.ctx.mark_all_read")}
+          />
+          <IconButton
+            size="sm"
+            variant="ghost"
+            icon={<CheckCheck size={13} />}
+            label={t("feeds.ctx.mark_all_read")}
             onClick={() => onFolderMarkAllRead?.(folder)}
-          >
-            <CheckCheck size={13} />
-          </button>
-          <button
-            type="button"
-            className="fusion-qa2"
-            title={t("Edit folder")}
+          />
+          <IconButton
+            size="sm"
+            variant="ghost"
+            icon={<Pencil size={13} />}
+            label={t("Edit folder")}
             onClick={() => onFolderEdit?.(folder)}
-          >
-            <Pencil size={13} />
-          </button>
-          <button
-            type="button"
-            className="fusion-qa2 danger"
-            title={t("Delete folder")}
+          />
+          <IconButton
+            size="sm"
+            variant="destructive"
+            icon={<Trash2 size={13} />}
+            label={t("Delete folder")}
             onClick={() => onFolderDelete?.(folder)}
-          >
-            <Trash2 size={13} />
-          </button>
+          />
         </span>
       )}
     </div>
@@ -325,17 +322,14 @@ export const Subscriptions = () => {
   return (
     <div className="fusion-set">
       <div className="fusion-dtop">
-        <button
-          type="button"
-          className="fusion-back"
+        <Button
+          variant="ghost"
+          size="sm"
+          icon={<ChevronLeft size={12} />}
+          label={t("fusion.nav.settings")}
+          endContent={<Kbd keys="esc" />}
           onClick={() => navigate(RouteConfig.SETTINGS)}
-        >
-          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-            <path d="M10 3 5 8l5 5" />
-          </svg>
-          {t("fusion.nav.settings")}
-          <Kbd keys="esc" />
-        </button>
+        />
         <span className="d-src">{t("settings.tab.subscriptions_title")}</span>
         <span className="fusion-spring" />
         <span className="fusion-subs-fd">
@@ -346,14 +340,15 @@ export const Subscriptions = () => {
       <div className="fusion-set-body">
         <div className="fusion-set-inner wide">
           <div className="fusion-subs-bar">
-            <span className="fusion-subs-search">
-              <Search size={12} />
-              <input
-                placeholder={t("settings.subscriptions.search_placeholder")}
-                value={store.feedsSearchQuery}
-                onChange={(e) => store.setFeedsSearchQuery(e.target.value)}
-              />
-            </span>
+            <TextInput
+              size="sm"
+              isLabelHidden
+              label={t("settings.subscriptions.search_placeholder")}
+              startIcon={<Search size={12} />}
+              placeholder={t("settings.subscriptions.search_placeholder")}
+              value={store.feedsSearchQuery}
+              onChange={(v) => store.setFeedsSearchQuery(v)}
+            />
             <Button
               variant="ghost"
               size="sm"

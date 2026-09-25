@@ -127,7 +127,7 @@ describe("Subscriptions settings panel", () => {
 
     expect(mocks.getSubscribes).toHaveBeenCalled();
     expect(container.querySelector(".fusion-subs-bar")).toBeInTheDocument();
-    expect(container.querySelector(".fusion-subs-search")).toBeInTheDocument();
+    expect(screen.getByRole("textbox")).toBeInTheDocument();
     // 分组（Engineering，标题）+ 未分组；Engineering 也出现在右键子菜单故用 getAll
     const titles = [...container.querySelectorAll(".fusion-b-title")].map(
       (el) => el.textContent,

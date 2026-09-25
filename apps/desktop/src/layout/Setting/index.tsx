@@ -15,7 +15,9 @@ import { RouteConfig } from "@/config";
 import { Subscriptions } from "./Subscriptions";
 import { ASTRYX_THEMES } from "@/themes";
 import { Button } from "@astryxdesign/core/Button";
-import { ChevronRight, Download, Upload } from "lucide-react";
+import { SegmentedControl, SegmentedControlItem } from "@astryxdesign/core/SegmentedControl";
+
+import { ChevronRight, Download, Upload , ChevronLeft} from "lucide-react";
 import { Switch } from "@astryxdesign/core/Switch";
 import { Kbd } from "@astryxdesign/core/Kbd";
 import { Selector } from "@astryxdesign/core/Selector";
@@ -47,31 +49,6 @@ function SRow({
         {help && <div className="hp">{help}</div>}
       </div>
       <div className="ctl">{children}</div>
-    </div>
-  );
-}
-
-function Seg<T extends string | number>({
-  value,
-  options,
-  onChange,
-}: {
-  value: T;
-  options: { value: T; label: string }[];
-  onChange: (v: T) => void;
-}) {
-  return (
-    <div className="fusion-seg">
-      {options.map((o) => (
-        <button
-          key={String(o.value)}
-          type="button"
-          className={value === o.value ? "on" : ""}
-          onClick={() => onChange(o.value)}
-        >
-          {o.label}
-        </button>
-      ))}
     </div>
   );
 }
@@ -246,17 +223,14 @@ export function SettingPage() {
   return (
     <div className="fusion-set">
       <div className="fusion-dtop">
-        <button
-          type="button"
-          className="fusion-back"
+        <Button
+          variant="ghost"
+          size="sm"
+          icon={<ChevronLeft size={12} />}
+          label={t("article.view.back")}
+          endContent={<Kbd keys="esc" />}
           onClick={() => navigate(RouteConfig.LOCAL_ALL)}
-        >
-          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-            <path d="M10 3 5 8l5 5" />
-          </svg>
-          {t("article.view.back")}
-          <Kbd keys="esc" />
-        </button>
+        />
         <span className="d-src">{t("settings.dsrc")}</span>
         <span className="fusion-spring" />
         <span style={{ fontSize: 11, color: "var(--fusion-ter)" }}>
@@ -305,15 +279,16 @@ export function SettingPage() {
               {t("settings.sec.appearance")}
             </div>
             <SRow label={t("Theme mode")} help={t("settings.theme_help")}>
-              <Seg
+              <SegmentedControl
+                size="sm"
+                label={t("Theme mode")}
                 value={(cfg?.color_scheme ?? "system") as string}
-                options={[
-                  { value: "light", label: t("Light") },
-                  { value: "system", label: t("settings.follow_system") },
-                  { value: "dark", label: t("Dark") },
-                ]}
                 onChange={applyScheme}
-              />
+              >
+                <SegmentedControlItem value="light" label={t("Light")} />
+                <SegmentedControlItem value="system" label={t("settings.follow_system")} />
+                <SegmentedControlItem value="dark" label={t("Dark")} />
+              </SegmentedControl>
             </SRow>
             <SRow label={t("settings.astryx_theme")} help={t("settings.astryx_theme_help")}>
               <Selector
@@ -370,14 +345,15 @@ export function SettingPage() {
               </div>
             </SRow>
             <SRow label={t("Card density")} help={t("settings.density_help")}>
-              <Seg
+              <SegmentedControl
+                size="sm"
+                label={t("Card density")}
                 value={(cfg?.card_density ?? "comfortable") as string}
-                options={[
-                  { value: "comfortable", label: t("Comfortable") },
-                  { value: "compact", label: t("Compact") },
-                ]}
                 onChange={(v) => store.updateUserConfig({ ...cfg, card_density: v })}
-              />
+              >
+                <SegmentedControlItem value="comfortable" label={t("Comfortable")} />
+                <SegmentedControlItem value="compact" label={t("Compact")} />
+              </SegmentedControl>
             </SRow>
 
             {/* 校准台 */}

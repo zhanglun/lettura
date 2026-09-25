@@ -116,7 +116,7 @@ describe("PlayList", () => {
       </>,
     );
 
-    fireEvent.click(document.querySelectorAll(".q-row .q-x")[1]);
+    fireEvent.click(screen.getAllByRole("button", { name: "Delete" })[1]);
 
     await waitFor(() =>
       expect(useBearStore.getState().tracks.map((t) => t.uuid)).toEqual(["a"]),

@@ -8,6 +8,7 @@ import clsx from "clsx";
 import { useShallow } from "zustand/react/shallow";
 import { RouteConfig } from "@/config";
 import { Star, CheckCheck } from "lucide-react";
+import { IconButton } from "@astryxdesign/core/IconButton";
 import * as dataAgent from "@/helpers/dataAgent";
 import { useTranslation } from "react-i18next";
 import { getCarrier } from "@/helpers/mediaType";
@@ -153,18 +154,13 @@ export const ArticleItem = React.forwardRef(
         </span>
         <span className="fusion-date">{timeLabel}</span>
         <span className="fusion-acts">
-          <button
-            type="button"
-            className={clsx(
-              "fusion-act-btn",
-              starred === ArticleStarStatus.STARRED && "is-on",
-            )}
-            style={
-              starred === ArticleStarStatus.STARRED
-                ? { color: "var(--fusion-amber)" }
-                : undefined
-            }
-            title={t("Star it")}
+          <IconButton
+            size="sm"
+            variant="ghost"
+            icon={<Star size={12} fill={starred === ArticleStarStatus.STARRED ? "currentColor" : "none"} />}
+            label={t("Star it")}
+            className={clsx(starred === ArticleStarStatus.STARRED && "is-on")}
+            style={starred === ArticleStarStatus.STARRED ? { color: "var(--fusion-amber)" } : undefined}
             onClick={(e) => {
               e.stopPropagation();
               const next =
@@ -176,23 +172,17 @@ export const ArticleItem = React.forwardRef(
                 onUpdate?.({ starred: next });
               });
             }}
-          >
-            <Star
-              size={12}
-              fill={starred === ArticleStarStatus.STARRED ? "currentColor" : "none"}
-            />
-          </button>
-          <button
-            type="button"
-            className="fusion-act-btn"
-            title={t("Mark as read")}
+          />
+          <IconButton
+            size="sm"
+            variant="ghost"
+            icon={<CheckCheck size={12} />}
+            label={t("Mark as read")}
             onClick={(e) => {
               e.stopPropagation();
               markAsRead(article);
             }}
-          >
-            <CheckCheck size={12} />
-          </button>
+          />
         </span>
       </div>
     );

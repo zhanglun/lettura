@@ -12,6 +12,8 @@ import {
   Rss,
   Settings as SettingsIcon,
 } from "lucide-react";
+import { Button } from "@astryxdesign/core/Button";
+import { IconButton } from "@astryxdesign/core/IconButton";
 import { FeedIcon } from "@/components/FeedIcon";
 import { copyText } from "@/helpers/copyText";
 import { getHostLabel, formatFeedTime } from "@/helpers/feedMeta";
@@ -74,16 +76,16 @@ export function FeedProfile({
     onClick: () => void,
     danger = false,
   ) => (
-    <button
+    <Button
       key={key}
-      type="button"
-      className="fusion-fp-btn"
+      variant="ghost"
+      size="sm"
+      icon={icon}
+      label={label}
       onClick={onClick}
-      disabled={key === "sync" && syncing}
-    >
-      <span className={clsx(danger && "is-danger")}>{icon}</span>
-      {label}
-    </button>
+      isDisabled={key === "sync" && syncing}
+      className={clsx(danger && "is-danger")}
+    />
   );
 
   return (
@@ -102,15 +104,13 @@ export function FeedProfile({
           <span className="fusion-fp-bar-unread">
             {t("fusion.profile.unread_count", { count: unread })}
           </span>
-          <button
-            type="button"
-            className="fusion-fp-expand"
+          <IconButton
+            size="sm"
+            variant="ghost"
+            icon={<ChevronDown size={13} />}
+            label={t("fusion.profile.expand")}
             onClick={toggle}
-            aria-label={t("fusion.profile.expand")}
-            title={t("fusion.profile.expand")}
-          >
-            <ChevronDown size={13} />
-          </button>
+          />
         </div>
       ) : (
         <div className="fusion-fp-body">
@@ -149,30 +149,27 @@ export function FeedProfile({
                 )}
               </div>
             </div>
-            <button
-              type="button"
-              className="fusion-fp-collapse"
+            <IconButton
+              size="sm"
+              variant="ghost"
+              icon={<ChevronDown size={14} />}
+              label={t("fusion.profile.collapse")}
               onClick={toggle}
-              aria-label={t("fusion.profile.collapse")}
-              title={t("fusion.profile.collapse")}
-            >
-              <ChevronDown size={14} />
-            </button>
+            />
           </div>
 
           {description && (
             <p className={clsx("fusion-fp-desc", descOpen && "is-open")}>
               {description}
               {description.length > 140 && (
-                <button
-                  type="button"
-                  className="fusion-fp-more"
-                  onClick={() => setDescOpen((v) => !v)}
-                >
-                  {descOpen
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  label={descOpen
                     ? t("fusion.profile.desc_less")
                     : t("fusion.profile.desc_more")}
-                </button>
+                  onClick={() => setDescOpen((v) => !v)}
+                />
               )}
             </p>
           )}

@@ -61,7 +61,7 @@ export const CommonAdapter = ({
             {article.link && (
               <a
                 href="#"
-                className="text-[11px] text-[var(--fusion-accent)] hover:underline"
+                className="text-[11px] text-[var(--color-accent)] hover:underline"
                 onClick={(e) => {
                   e.preventDefault();
                   import("@tauri-apps/plugin-shell").then(({ open }) =>

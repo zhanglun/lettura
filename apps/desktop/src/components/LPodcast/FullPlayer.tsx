@@ -1,5 +1,8 @@
 import React from "react";
 import { Kbd } from "@astryxdesign/core/Kbd";
+import { Button } from "@astryxdesign/core/Button";
+import { IconButton } from "@astryxdesign/core/IconButton";
+import { ChevronLeft, ChevronsUpDown, Pause, Play, SkipBack, SkipForward } from "lucide-react";
 import { motion } from "framer-motion";
 import { AudioTrack } from "./index";
 import { formatTime, PLAYER_MOTION } from "./utils";
@@ -61,30 +64,27 @@ export const FullPlayer: React.FC<FullPlayerProps> = ({
   return (
     <motion.section className="fusion-fullplayer" {...PLAYER_MOTION.full}>
       <div className="f-top">
-        <button type="button" className="fusion-back" onClick={onCollapse}>
-          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-            <path d="M10 3 5 8l5 5" />
-          </svg>
-          {t("podcast.collapse")}
-          <Kbd keys="esc" />
-        </button>
+        <Button
+          variant="ghost"
+          size="sm"
+          icon={<ChevronLeft size={12} />}
+          label={t("podcast.collapse")}
+          endContent={<Kbd keys="esc" />}
+          onClick={onCollapse}
+        />
         <span className="f-src">
           {currentTrack?.feed_title || currentTrack?.author || ""}
           {currentTrack?.feed_title ? " · " : ""}
           {currentTrack?.title || ""}
         </span>
         <span className="fusion-spring" />
-        <button
-          type="button"
-          className="fusion-qa"
+        <IconButton
+          size="sm"
+          variant="ghost"
+          icon={<ChevronsUpDown size={14} />}
+          label={t("podcast.collapse")}
           onClick={onCollapse}
-          title={t("podcast.collapse")}
-          aria-label={t("podcast.collapse")}
-        >
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" stroke-linecap="round">
-            <path d="M3 10l5 5 5-5M3 6l5-5 5 5" />
-          </svg>
-        </button>
+        />
       </div>
 
       <div className="f-body">
@@ -122,56 +122,30 @@ export const FullPlayer: React.FC<FullPlayerProps> = ({
           </div>
 
           <div className="f-ctrl">
-            <button type="button" className="fusion-skipbtn" onClick={() => skip(-30)}>
-              −30s
-            </button>
-            <button
-              type="button"
-              className="fusion-pnav"
+            <Button variant="ghost" size="sm" label="−30s" onClick={() => skip(-30)} />
+            <IconButton
+              size="sm"
+              variant="ghost"
+              icon={<SkipBack size={14} />}
+              label={t("podcast.ctl.prev")}
+              isDisabled={tracks.length < 2}
               onClick={playPrev}
-              title={t("podcast.ctl.prev")}
-              aria-label={t("podcast.ctl.prev")}
-              disabled={tracks.length < 2}
-            >
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-                <path d="M12.5 3.5v9l-7-4.5zM3.2 3.5H5v9H3.2z" />
-              </svg>
-            </button>
-            <button
-              type="button"
-              className="fusion-bigplay"
+            />
+            <IconButton
+              icon={isPlaying ? <Pause size={15} /> : <Play size={15} />}
+              label={isPlaying ? t("Pause") : t("Play")}
               onClick={togglePlay}
-              aria-label={isPlaying ? t("Pause") : t("Play")}
-            >
-              {isPlaying ? (
-                <svg width="15" height="15" viewBox="0 0 12 12" fill="#fff">
-                  <rect x="1.5" y="1" width="3" height="10" rx="1" />
-                  <rect x="7.5" y="1" width="3" height="10" rx="1" />
-                </svg>
-              ) : (
-                <svg width="15" height="15" viewBox="0 0 12 12" fill="#fff">
-                  <path d="M2.5 1.2v9.6l8-4.8z" />
-                </svg>
-              )}
-            </button>
-            <button
-              type="button"
-              className="fusion-pnav"
+            />
+            <IconButton
+              size="sm"
+              variant="ghost"
+              icon={<SkipForward size={14} />}
+              label={t("podcast.ctl.next")}
+              isDisabled={tracks.length < 2}
               onClick={playNext}
-              title={t("podcast.ctl.next")}
-              aria-label={t("podcast.ctl.next")}
-              disabled={tracks.length < 2}
-            >
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-                <path d="M3.5 3.5v9l7-4.5zM11 3.5h1.8v9H11z" />
-              </svg>
-            </button>
-            <button type="button" className="fusion-skipbtn" onClick={() => skip(30)}>
-              +30s
-            </button>
-            <button type="button" className="fusion-chip" onClick={cycleRate}>
-              {playbackRate}×
-            </button>
+            />
+            <Button variant="ghost" size="sm" label="+30s" onClick={() => skip(30)} />
+            <Button variant="ghost" size="sm" label={`${playbackRate}×`} onClick={cycleRate} />
             <SleepControl />
           </div>
 

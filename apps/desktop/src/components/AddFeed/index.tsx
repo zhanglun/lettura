@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Kbd } from "@astryxdesign/core/Kbd";
 import { Button } from "@astryxdesign/core/Button";
-import { Plus } from "lucide-react";
+import { Selector } from "@astryxdesign/core/Selector";
+import { TextInput } from "@astryxdesign/core/TextInput";
+import { Plus, Search } from "lucide-react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useNavigate } from "react-router-dom";
 import * as dataAgent from "@/helpers/dataAgent";
@@ -376,19 +378,18 @@ export const AddFeedChannel = (props: any) => {
         aria-label={t("Create new subscribe")}
       >
         <div className="fusion-add-in">
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="var(--fusion-ter)" strokeWidth="1.7">
-            <circle cx="7" cy="7" r="4.8" />
-            <path d="m11.2 11.2 3 3" />
-          </svg>
-          <input
+          <TextInput
             ref={inputRef}
-            value={url}
+            label={t("fusion.add.ph_any")}
+            isLabelHidden
             placeholder={t("fusion.add.ph_any")}
             autoComplete="off"
-            onChange={(e) => {
-              setUrl(e.target.value);
-              detect(e.target.value);
+            value={url}
+            onChange={(v) => {
+              setUrl(v);
+              detect(v);
             }}
+            startIcon={<Search size={14} />}
           />
           {preview && carrierOfPreview && (
             <span className={`fusion-badge ${CARRIER_BADGE_CLS[carrierOfPreview]}`}>
@@ -420,23 +421,21 @@ export const AddFeedChannel = (props: any) => {
                 </svg>
                 <span className="fusion-aerr-msg">{phase.message}</span>
 
-                <button type="button" onClick={() => detect(url)}>
-                  {t("Retry")}
-                </button>
+                <Button variant="ghost" size="sm" label={t("Retry")} onClick={() => detect(url)} />
               </div>
             )}
             {phase.s === "error" && (
               <div className="fusion-gen">
                 <span className="lb">{t("fusion.add.gen_local")}</span>
-                <input
-                  value={phase.route || manualRoute}
+                <TextInput
+                  size="sm"
+                  isLabelHidden
+                  label={t("fusion.add.gen_route_ph")}
                   placeholder={t("fusion.add.gen_route_ph")}
-                  onChange={(e) => setManualRoute(e.target.value)}
-                  spellCheck={false}
+                  value={phase.route || manualRoute}
+                  onChange={(v) => setManualRoute(v)}
                 />
-                <button type="button" onClick={() => applyRoute(manualRoute || phase.route)}>
-                  {t("fusion.add.gen_apply")}
-                </button>
+                <Button variant="ghost" size="sm" label={t("fusion.add.gen_apply")} onClick={() => applyRoute(manualRoute || phase.route)} />
                 <span className="hp">
                   {instanceRefused
                     ? t("fusion.add.gen_refused")
@@ -509,41 +508,37 @@ export const AddFeedChannel = (props: any) => {
                 <div className="c-foot">
                   {creatingFolder ? (
                     <>
-                      <input
+                      <TextInput
                         ref={folderInputRef}
-                        className="fusion-in-sm"
-                        value={folderName}
+                        size="sm"
+                        isLabelHidden
+                        label={t("fusion.add.new_folder_ph")}
                         placeholder={t("fusion.add.new_folder_ph")}
-                        onChange={(e) => setFolderName(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            e.stopPropagation();
-                            createFolderAndSelect();
-                          }
-                        }}
+                        value={folderName}
+                        onChange={(v) => setFolderName(v)}
+                        onEnter={createFolderAndSelect}
                       />
                       <Button variant="ghost" size="sm" label={t("fusion.add.create")} onClick={createFolderAndSelect} />
                     </>
                   ) : (
-                    <select
-                      className="fusion-sel"
+                    <Selector
+                      size="sm"
+                      label={t("fusion.add.new_folder")}
+                      isLabelHidden
                       value={folderUuid}
-                      onChange={(e) => {
-                        if (e.target.value === "__new__") {
+                      options={[
+                        { value: "", label: t("fusion.add.ungrouped") },
+                        ...folders.map((f) => ({ value: f.uuid, label: f.title })),
+                        { value: "__new__", label: t("fusion.add.new_folder") },
+                      ]}
+                      onChange={(v) => {
+                        if (v === "__new__") {
                           setCreatingFolder(true);
                           return;
                         }
-                        setFolderUuid(e.target.value);
+                        setFolderUuid(v);
                       }}
-                    >
-                      <option value="">{t("fusion.add.ungrouped")}</option>
-                      {folders.map((f) => (
-                        <option key={f.uuid} value={f.uuid}>
-                          {f.title}
-                        </option>
-                      ))}
-                      <option value="__new__">{t("fusion.add.new_folder")}</option>
-                    </select>
+                    />
                   )}
                   <span className="fusion-spring" />
                   <Button variant="ghost" size="sm" label={t("Cancel")} onClick={() => setOpen(false)} />

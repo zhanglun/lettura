@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Kbd } from "@astryxdesign/core/Kbd";
+import { IconButton } from "@astryxdesign/core/IconButton";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useNavigate, useParams, useMatch } from "react-router-dom";
 import { CheckCheck, ChevronLeft, RefreshCw } from "lucide-react";
+import { Button } from "@astryxdesign/core/Button";
 import dayjs from "dayjs";
 import { ArticleListVirtual } from "@/components/ArticleListVirtual";
 import { ArticleDialogView } from "@/components/ArticleView/DialogView";
@@ -353,15 +355,14 @@ export function ArticleView() {
         <>
           {/* 返回行：退回订阅浏览（feeds.html 契约） */}
           <div className="fusion-fv-backrow">
-            <button
-              type="button"
-              className="fusion-back"
+            <Button
+              variant="ghost"
+              size="sm"
+              icon={<ChevronLeft size={12} />}
+              label={t("fusion.nav.subscriptions")}
+              endContent={<Kbd keys="esc" />}
               onClick={() => navigate(RouteConfig.LOCAL_FEEDS)}
-            >
-              <ChevronLeft size={12} />
-              {t("fusion.nav.subscriptions")}
-              <Kbd keys="esc" />
-            </button>
+            />
             <span className="fusion-fv-backcount">
               {unreadCount} {t("fusion.nav.unread")}
             </span>
@@ -422,34 +423,27 @@ export function ArticleView() {
               {t("fusion.strip.meta", { sources: sourceCount, time: lastSync })}
             </span>
             <span className="fusion-strip-acts">
-              <button
-                type="button"
-                className="fusion-qa"
+              <IconButton
+                size="sm"
+                variant="ghost"
+                icon={<RefreshCw size={14} className={store.globalSyncStatus ? "animate-spin" : ""} />}
+                label={t("Sync All")}
+                isDisabled={store.globalSyncStatus}
                 onClick={() => {
                   store.syncAllArticles().finally(() => {
                     refreshCarrierCounts();
                     mutate();
                   });
                 }}
-                disabled={store.globalSyncStatus}
-                title={t("Sync All")}
-                aria-label={t("Sync All")}
-              >
-                <RefreshCw
-                  size={14}
-                  className={store.globalSyncStatus ? "animate-spin" : ""}
-                />
-              </button>
+              />
               {!isStarred && (
-                <button
-                  type="button"
-                  className="fusion-qa"
+                <IconButton
+                  size="sm"
+                  variant="ghost"
+                  icon={<CheckCheck size={14} />}
+                  label={t("Mark all as read")}
                   onClick={markAllRead}
-                  title={t("Mark all as read")}
-                  aria-label={t("Mark all as read")}
-                >
-                  <CheckCheck size={14} />
-                </button>
+                />
               )}
             </span>
           </div>
