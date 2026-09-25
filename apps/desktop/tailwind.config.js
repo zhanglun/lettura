@@ -139,5 +139,5 @@ module.exports = {
       },
     },
   },
-  plugins: [require("@tailwindcss/line-clamp"), require("@tailwindcss/typography"), require("tailwindcss-animate")],
+  plugins: [require("@tailwindcss/typography")],
 };

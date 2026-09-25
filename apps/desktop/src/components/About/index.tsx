@@ -12,7 +12,7 @@ import {
   IconButton,
   Button,
 } from "@radix-ui/themes";
-import { Github, Link2, Shell } from "lucide-react";
+import { Link2, Shell } from "lucide-react";
 import { useBearStore } from "@/stores";
 import logo from "@/logo.svg";
 
@@ -52,7 +52,7 @@ export const DialogAboutApp = React.memo(() => {
             variant="ghost"
             onClick={() => open("https://github.com/zhanglun/lettura")}
           >
-            <Github size={14} /> GitHub
+            <Link2 size={14} /> GitHub
           </Button>
         </div>
       </Dialog.Content>
