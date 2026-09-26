@@ -1,4 +1,5 @@
 import type React from "react";
+import { useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 import { useTranslation } from "react-i18next";
@@ -39,6 +40,20 @@ export interface FeedCtxMenuProps {
 }
 
 /**
+ * 右键坐标按视口边缘收敛：菜单（200 宽 / 约 250 高）不出屏，距边 8px。
+ */
+function clampPoint(x: number, y: number) {
+  const margin = 8;
+  const width = 200;
+  const maxH = typeof window !== "undefined" ? window.innerHeight : 768;
+  const maxW = typeof window !== "undefined" ? window.innerWidth : 1024;
+  return {
+    x: Math.max(margin, Math.min(x, Math.max(margin, maxW - width - margin))),
+    y: Math.max(margin, Math.min(y, Math.max(margin, maxH - 250 - margin))),
+  };
+}
+
+/**
  * 源/分组右键菜单（Astryx ContextMenu，声明式包裹目标行）：
  * 源 = 查看/同步/已读/移动分组（悬停子菜单）/主页/复制/退订；
  * 分组 = 同步/已读 +（管理页：编辑/删除｜浏览帧：去管理页）。
@@ -53,6 +68,14 @@ export function FeedCtxMenu({
 }: FeedCtxMenuProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+
+  // WebKit (Safari/macOS WKWebView 17+, 包括 macOS 26) 对「position-anchor 指向
+  // overflow 滚动容器内锚点」的 popover 会算出正确几何却不绘制。Astryx context
+  // 模式恰把零尺寸锚点放在可滚动列表里 → 右键菜单打开但不可见。
+  // 规避：捕获右键视口坐标，用 CSS 把 popover 从 anchor 切换为 fixed（见 fusion.css
+  // .fusion-ctx-host > [popover]）。坐标按视口边缘收敛，避免菜单溢出。
+  const [point, setPoint] = useState<{ x: number; y: number }>({ x: 8, y: 8 });
+  const capturePoint = useCallback((e: React.MouseEvent) => { setPoint(clampPoint(e.clientX, e.clientY)); }, []);
 
   const store = useBearStore(
     useShallow((state) => ({
@@ -232,8 +255,17 @@ export function FeedCtxMenu({
   }
 
   return (
-    <ContextMenu items={items} size="sm" menuWidth={200}>
-      {children}
-    </ContextMenu>
+    <div
+      className="fusion-ctx-host"
+      style={{
+        "--fusion-ctx-x": `${point.x}px`,
+        "--fusion-ctx-y": `${point.y}px`,
+      } as React.CSSProperties}
+      onContextMenu={capturePoint}
+    >
+      <ContextMenu items={items} size="sm" menuWidth={200}>
+        {children}
+      </ContextMenu>
+    </div>
   );
 }

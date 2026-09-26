@@ -1372,6 +1372,20 @@
   white-space: nowrap;
 }
 
+/* 右键菜单 WebKit 规避：popover 从 anchor 切换为 fixed（见 FeedCtxMenu 注释）。
+   popover 是 wrapper 的直接子元素（Astryx portal 只移出 button/span，不会移出此 div）。
+   保留入场动画，仅解除与 overflow 容器内锚点的绑定。 */
+.fusion-ctx-host > [popover] {
+  position-anchor: none !important;
+  position-area: none !important;
+  position-try-fallbacks: none !important;
+  position: fixed !important;
+  top: var(--fusion-ctx-y, 8px) !important;
+  left: var(--fusion-ctx-x, 8px) !important;
+  right: auto !important;
+  bottom: auto !important;
+}
+
 .fusion-b-feeds {
   border-top: 1px solid var(--fusion-hair);
 }

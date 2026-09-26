@@ -61,6 +61,7 @@
 11. **列表行词汇对齐 Astryx** ✅：文章行（fusion-row）悬停从全宽平铺改为圆角 8px 内衬 ::after 洗色；三列表面移除行间发丝分隔线（分组头规则线保留）；选中/聚焦行统一半透明 accent 调 9%（accent-muted 为实心，适合 chip 不适合行洗色）；j/k 聚焦改为交互后建立（首行不再默认选中洗色）；订阅浏览帧（/local/feeds）行与分组头接上 `FeedCtxMenu`（浏览帧退订回退跳转订阅管理页）
 12. **fusion 演进：找回产品个性 + Astryx 呼吸缝** ✅：确立分工原则——Astryx 供组件词汇/行节奏/材质令牌（退让），fusion 供产品个性（环境光、宋体正文、精密密度、键盘焦点环、未读圆点，保留加强）；三列表行加 2px ground 呼吸缝（行高＝内容 52/44/42 ＋缝 2，步距不变、虚拟滚动与键盘步长兼容），悬停行完整分离为圆角芯片。修复「fusion 被削平、无间隔」
 13. **产品签名随主题呼吸 + 发丝位置线** ✅：环境光左暖从固定 rgba 红改为 `color-mix(background-orange 14%)`（各主题暖色令牌：neutral 桃/matcha 焦糖/y2k 杏/chocolate 焦糖），右光跟 accent；j/k 焦点行（文章行＋浏览帧当前源）加 0.5px accent 45% 发丝左线作位置提示
+14. **修复 WebKit 右键菜单不绘制（真根因）** ✅：此前误判为缓存问题。实测隔离出 WebKit bug——`position-anchor` 指向 `overflow` 滚动容器内的锚点时，top-layer popover 几何正确却不绘制（断开 anchor 改 fixed 立即出现）。FeedCtxMenu 外包 `.fusion-ctx-host` 捕获右键视口坐标，CSS 覆盖 popover 为 `position:fixed`（去 anchor/area/try-fallback，坐标按视口边缘 8px 收敛）。浏览帧＋订阅管理页右键均恢复。另修复独立隐患：tailwindcss 从 desktop devDependencies 缺失（postcss 依赖，靠跨包提升）补回 3.4.19
 
 每批次完成标准：tsc 0 错、215 测试（按需更新）全绿、生产构建通过、关键态视觉确认；
 同步更新 `DESIGN.md` 与本文件勾选。
