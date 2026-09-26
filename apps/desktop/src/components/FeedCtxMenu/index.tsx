@@ -1,5 +1,5 @@
 import type React from "react";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 import { useTranslation } from "react-i18next";
@@ -40,16 +40,30 @@ export interface FeedCtxMenuProps {
 }
 
 /**
- * 右键坐标按视口边缘收敛：菜单（200 宽 / 约 250 高）不出屏，距边 8px。
+ * 右键坐标按视口边缘收敛：菜单（200 宽 / 按实际内容高度）不出屏，距边 8px。
  */
-function clampPoint(x: number, y: number) {
+function menuHeightFor(items: ContextMenuOption[]) {
+  // Astryx sm：menuitem 36px，separator 13px（1px+上下 6px），纵向 padding 12px，项间 gap 3px。
+  return Math.min(
+    314,
+    Math.max(
+      items.reduce(
+        (sum, item) => sum + ("type" in item && item.type === "divider" ? 13 : 36),
+        12 + Math.max(0, items.length - 1) * 3,
+      ),
+      144,
+    ),
+  );
+}
+
+function clampPoint(x: number, y: number, height: number) {
   const margin = 8;
   const width = 200;
   const maxH = typeof window !== "undefined" ? window.innerHeight : 768;
   const maxW = typeof window !== "undefined" ? window.innerWidth : 1024;
   return {
     x: Math.max(margin, Math.min(x, Math.max(margin, maxW - width - margin))),
-    y: Math.max(margin, Math.min(y, Math.max(margin, maxH - 250 - margin))),
+    y: Math.max(margin, Math.min(y, Math.max(margin, maxH - height - margin))),
   };
 }
 
@@ -76,9 +90,6 @@ export function FeedCtxMenu({
   // .fusion-ctx-host > [popover]）。坐标按视口边缘收敛，避免菜单溢出。
   const [point, setPoint] = useState<{ x: number; y: number }>({ x: 8, y: 8 });
   const [menuOpen, setMenuOpen] = useState(false);
-  const capturePoint = useCallback((e: React.MouseEvent) => {
-    setPoint(clampPoint(e.clientX, e.clientY));
-  }, []);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -269,6 +280,10 @@ export function FeedCtxMenu({
       },
     ];
   }
+
+  const capturePoint = (e: React.MouseEvent) => {
+    setPoint(clampPoint(e.clientX, e.clientY, menuHeightFor(items)));
+  };
 
   return (
     <div
