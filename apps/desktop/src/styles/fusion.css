@@ -181,7 +181,9 @@
   display: grid;
   grid-template-columns: 20px 56px minmax(0, 1fr) 170px 92px 56px;
   align-items: center;
-  height: var(--row-h, 54px);
+  /* Astryx 呼吸缝：步距 54 = 内容 52 + 行间 2px（ground 透出成缝） */
+  height: 52px;
+  margin-bottom: 2px;
   padding-right: 20px;
   border: 0;
   cursor: pointer;
@@ -190,7 +192,8 @@
   z-index: 0;
 }
 
-/* 列表行词汇对齐 Astryx（2026-10）：圆角内衬洗色（同菜单项 8px）、无发丝分隔线、选中 = 半透明 accent 调（accent-muted 为实心，适合 chip 不适合行洗色） */
+/* 列表行词汇对齐 Astryx（2026-10）：圆角内衬洗色（同菜单项 8px）、无发丝分隔线、
+   行间留 2px ground 呼吸缝（行高＝内容高＋缝）、选中 = 半透明 accent 调 */
 .fusion-row::after {
   content: "";
   position: absolute;
@@ -1374,7 +1377,9 @@
   display: grid;
   grid-template-columns: 22px minmax(0, 1fr) minmax(150px, 210px) 56px 108px;
   align-items: center;
-  height: 46px;
+  /* 步距 46 = 内容 44 + 行间 2px */
+  height: 44px;
+  margin-bottom: 2px;
   border: 0;
   background: none;
   width: 100%;
@@ -1758,7 +1763,9 @@
   display: grid;
   grid-template-columns: 22px minmax(0, 1fr) 150px 96px 48px;
   align-items: center;
-  height: 44px;
+  /* 步距 44 = 内容 42 + 行间 2px */
+  height: 42px;
+  margin-bottom: 2px;
   border: 0;
   cursor: pointer;
   position: relative;
