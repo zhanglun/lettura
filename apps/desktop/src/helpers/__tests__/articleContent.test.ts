@@ -3,6 +3,7 @@ import {
   pickArticleContent,
   pickThumbUrl,
   processArticleHtml,
+  estimateReadMinutes,
 } from "../articleContent";
 
 describe("pickThumbUrl", () => {
@@ -106,5 +107,26 @@ describe("processArticleHtml", () => {
     );
     const plain = processArticleHtml("<pre><code>no language</code></pre>");
     expect(plain).toBe("<pre><code>no language</code></pre>");
+  });
+});
+
+describe("estimateReadMinutes", () => {
+  it("中文按 400 字/分折算（800 字 → 2 分钟）", () => {
+    const html = "<p>" + "字".repeat(800) + "</p>";
+    expect(estimateReadMinutes(html)).toBe(2);
+  });
+
+  it("西文按 220 词/分折算（440 词 → 2 分钟）", () => {
+    const html = "<p>" + Array.from({ length: 440 }, (_, i) => `word${i}`).join(" ") + "</p>";
+    expect(estimateReadMinutes(html)).toBe(2);
+  });
+
+  it("标签被剥掉，不计入字数；HTML 实体文字仍计数", () => {
+    const html = "<p>" + "字".repeat(400) + "</p><script>console.log(1)</script>";
+    expect(estimateReadMinutes(html)).toBe(1);
+  });
+
+  it("不足 1 分钟返回 0（调用方不显示）", () => {
+    expect(estimateReadMinutes("<p>短文</p>")).toBe(0);
   });
 });

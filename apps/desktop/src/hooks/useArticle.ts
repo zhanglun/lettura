@@ -5,7 +5,7 @@ import { request } from "@/helpers/request";
 import { useMatch } from "react-router-dom";
 import { RouteConfig } from "@/config";
 import { ArticleResItem } from "@/db";
-import { useMemo, useCallback } from "react";
+import { useMemo, useCallback, useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 const PAGE_SIZE = 20;
@@ -146,6 +146,12 @@ export function useArticle(props: UseArticleProps) {
       dedupingInterval: 1000,
     },
   );
+
+  // 过滤条件变化（载体 tab/源队列/已读切换）时分页深度归零：
+  // SWR Infinite 的 size 跨 key 保留，不重置会让新视图把旧深度页全部拉一遍
+  useEffect(() => {
+    setSize(1);
+  }, [query, setSize]);
 
   // 载体过滤条计数：服务端同条件全量（不随分页衰减）。源队列帧无载体条，不取。
   // key 不含 carrier——各载体 tab 共用同一份计数缓存。

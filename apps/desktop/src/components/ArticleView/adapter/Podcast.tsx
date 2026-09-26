@@ -101,11 +101,11 @@ export function PodcastAdapter(props: PodcastAdapter) {
           </h1>
           <div className="fusion-dmeta">
             <span>{article.feed_title}</span>
-            <span>·</span>
+            <span className="sep">·</span>
             <span>{isCurrent && duration > 0 ? formatTime(duration) : t("podcast.episode")}</span>
             {isCurrent && duration > 0 && (
               <>
-                <span>·</span>
+                <span className="sep">·</span>
                 <span>{t("podcast.played_pct", { pct })}</span>
               </>
             )}

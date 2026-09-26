@@ -109,6 +109,7 @@ export const AddFolder = React.memo((props: AddFolderProps) => {
         isOpen={dialogStatus}
         onOpenChange={setDialogStatus}
         width={425}
+        className="fusion-folder-form"
       >
         <DialogHeader title={title} subtitle={content} />
         <div className="py-3">

@@ -44,7 +44,7 @@ export function PlatformAdapter({ article, content }: PlatformAdapterProps) {
       </h1>
       <div className="fusion-dmeta">
         <span>{article.feed_title}</span>
-        <span>·</span>
+        <span className="sep">·</span>
         <span>{dayjs(article.pub_date || article.create_date).format("YYYY-MM-DD HH:mm")}</span>
       </div>
 

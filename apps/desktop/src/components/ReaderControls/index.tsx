@@ -77,15 +77,21 @@ export function ReaderControls({
 
   return (
     <>
+      {/* 阅读面顶栏动作 = 安静图标钮（detail.html .qa 语法）：isIconOnly + pressedIcon 换 outline/实心 */}
       <ToggleButton
         size="sm"
+        isIconOnly
         icon={<Star size={14} />}
+        pressedIcon={
+          <Star size={14} fill="currentColor" style={{ color: "var(--fusion-amber)" }} />
+        }
         label={t(starred === ArticleStarStatus.STARRED ? "Unstar it" : "Star it")}
         isPressed={starred === ArticleStarStatus.STARRED}
         onPressedChange={toggleStar}
       />
       <ToggleButton
         size="sm"
+        isIconOnly
         icon={readStatus === ArticleReadStatus.READ ? <EyeOff size={14} /> : <Eye size={14} />}
         label={t(
           readStatus === ArticleReadStatus.READ ? "Mark as unread" : "Mark as read",
@@ -96,6 +102,7 @@ export function ReaderControls({
       {showReadLater && (
         <ToggleButton
           size="sm"
+          isIconOnly
           icon={<Bookmark size={14} />}
           label={t(
             readLater === ArticleReadLaterStatus.SAVED

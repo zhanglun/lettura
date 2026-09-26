@@ -104,18 +104,21 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
     }
   }
 
+  const articleUuid = article?.uuid as string | undefined;
+  const baseUrl = article?.link as string | undefined;
+
   useEffect(() => {
-    if (!article) return;
+    if (!articleUuid) return;
     const controller = new AbortController();
     setPageContent("");
     setLoadError(false);
 
     dataAgent
-      .getArticleDetail(article.uuid, { signal: controller.signal })
+      .getArticleDetail(articleUuid, { signal: controller.signal })
       .then((res) => {
         const { data } = res;
         const raw = pickArticleContent(data.content, data.description);
-        const processed = processArticleHtml(raw, { baseUrl: article.link });
+        const processed = processArticleHtml(raw, { baseUrl });
         setPageContent(processed);
 
         try {
@@ -133,7 +136,8 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
     return () => {
       controller.abort();
     };
-  }, [article]);
+    // 依赖 uuid 而非对象：打开即标已读的 mutate 会替换对象，重发请求会让正文清空重载
+  }, [articleUuid, baseUrl]);
 
   return renderMain();
 };

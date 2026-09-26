@@ -2,7 +2,8 @@ import { renderArticleContent } from "../ContentRender";
 import { ArticleResItem } from "@/db";
 import Dayjs from "dayjs";
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { estimateReadMinutes } from "@/helpers/articleContent";
 
 export interface CommonAdapterProps {
   content: string;
@@ -18,29 +19,41 @@ export const CommonAdapter = ({
   const { t } = useTranslation();
   const { pub_date } = article;
   const [imgError, setImgError] = useState(false);
+  // 阅读时长：正文就绪后估算（detail.html d-meta「约 N 分钟」契约），<1 分钟不显示
+  const readMinutes = useMemo(
+    () => estimateReadMinutes(content || article.description || ""),
+    [content, article.description],
+  );
 
   return (
-    <div className="pb-20">
-      {/* fusion 详情头部：类型标签 + 24px 题 + 灰 meta */}
+    // 完读区（fin/下一篇卡）紧随其后：底部留白交给 fin 的 38px，不再叠 adapter 的 pb
+    <div>
+      {/* fusion 详情头部：类型标签 + 24px 题 + 灰 meta（题/meta 是外壳 → sans，正文才落宋体） */}
       <div className="fusion-dkind">{t("fusion.filter.article")}</div>
-      <h1 className="mb-3 text-[24px] font-bold leading-[1.4] text-[var(--fusion-ink)]">
+      <h1 className="fusion-dtitle mb-3 text-[24px] font-bold leading-[1.4] text-[var(--fusion-ink)]">
         {article.title}
       </h1>
       <div className="fusion-dmeta">
         <span>{article.feed_title}</span>
         {article.author && (
           <>
-            <span>·</span>
+            <span className="sep">·</span>
             <span>{article.author}</span>
           </>
         )}
-        <span>·</span>
+        <span className="sep">·</span>
         <span>
           {Dayjs(new Date(pub_date || new Date())).format("YYYY-MM-DD HH:mm")}
         </span>
+        {readMinutes >= 1 && (
+          <>
+            <span className="sep">·</span>
+            <span>{t("fusion.read.time", { min: readMinutes })}</span>
+          </>
+        )}
       </div>
       <div
-        className="reading-detail-content fusion-article-body mt-8"
+        className="reading-detail-content fusion-article-body mt-4"
         onClick={delegateContentClick}
       >
         {article.image && !imgError && (
@@ -48,7 +61,7 @@ export const CommonAdapter = ({
             <img
               src={article.image}
               alt=""
-              className="max-h-[420px] w-full rounded-md object-cover"
+              className="max-h-[420px] w-full object-cover"
               onError={() => setImgError(true)}
             />
           </div>

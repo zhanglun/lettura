@@ -104,3 +104,18 @@ export function processArticleHtml(
 
   return result;
 }
+
+/**
+ * 阅读时长估算（detail.html「约 8 分钟」契约）：剥标签后
+ * 中文按 400 字/分、西文按 220 词/分折算；不足 1 分钟返回 0（不显示）。
+ */
+export function estimateReadMinutes(html: string): number {
+  const text = html.replace(/<[^>]+>/g, " ");
+  const cjk = (text.match(/[\u4e00-\u9fff\u3040-\u30ff]/g) || []).length;
+  const latinWords = (
+    text
+      .replace(/[\u4e00-\u9fff\u3040-\u30ff]/g, " ")
+      .match(/[A-Za-z0-9][A-Za-z0-9_'-]*/g) || []
+  ).length;
+  return Math.round(cjk / 400 + latinWords / 220);
+}

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { Kbd } from "@astryxdesign/core/Kbd";
 import { IconButton } from "@astryxdesign/core/IconButton";
 import { useHotkeys } from "react-hotkeys-hook";
@@ -20,6 +20,12 @@ import { retainArticleAfterRead } from "@/helpers/articleHelpers";
 import { EmptyFace } from "./EmptyFace";
 import * as dataAgent from "@/helpers/dataAgent";
 import { ArticleReadStatus, ArticleStarStatus } from "@/typing";
+import {
+  buildSegments,
+  flattenDisplay,
+  subscribeRunExpansion,
+  getRunExpansionVersion,
+} from "@/components/ArticleListVirtual/feedRuns";
 import type { ArticleResItem } from "@/db";
 import { useTranslation } from "react-i18next";
 
@@ -94,14 +100,42 @@ export function ArticleView() {
       : undefined,
   });
 
+  // 载体计数保持鲜活：单篇标记已读/切换读状态后防抖刷新
+  // （段头「全部已读」连发多篇也只触发一次请求；同步/全部已读路径原本就刷新）
+  const countsRefreshTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const scheduleCountsRefresh = useCallback(() => {
+    if (countsRefreshTimer.current) clearTimeout(countsRefreshTimer.current);
+    countsRefreshTimer.current = setTimeout(() => refreshCarrierCounts(), 600);
+  }, [refreshCarrierCounts]);
+  useEffect(
+    () => () => {
+      if (countsRefreshTimer.current) clearTimeout(countsRefreshTimer.current);
+    },
+    [],
+  );
+
   // 服务端已按 kind 过滤，这里只透传
   const visibleArticles = articles;
 
+  // 折叠段的「可见序列」：j/k、焦点、下一篇都沿它走（隐藏行不可达，与渲染严格一致）
+  const expansionVersion = useSyncExternalStore(
+    subscribeRunExpansion,
+    getRunExpansionVersion,
+  );
+  const segments = useMemo(
+    () => (feedUuid ? null : buildSegments(visibleArticles)),
+    [feedUuid, visibleArticles],
+  );
+  const displayArticles = useMemo(
+    () => (segments ? flattenDisplay(segments) : visibleArticles),
+    [segments, visibleArticles, expansionVersion],
+  );
+
   useEffect(() => {
     setFocusIdx((i) =>
-      i === null ? null : Math.min(i, Math.max(0, visibleArticles.length - 1)),
+      i === null ? null : Math.min(i, Math.max(0, displayArticles.length - 1)),
     );
-  }, [visibleArticles.length]);
+  }, [displayArticles.length]);
 
   // Deep-link：从 URL 恢复文章（面板内详情）
   useEffect(() => {
@@ -136,8 +170,9 @@ export function ArticleView() {
           retainArticleAfterRead(pages, nextArticle),
         false,
       );
+      scheduleCountsRefresh();
     },
-    [mutate],
+    [mutate, scheduleCountsRefresh],
   );
 
   const handleArticleUpdate = useCallback(
@@ -147,17 +182,18 @@ export function ArticleView() {
           retainArticleAfterRead(pages, updated),
         false,
       );
+      scheduleCountsRefresh();
     },
-    [mutate],
+    [mutate, scheduleCountsRefresh],
   );
 
   const expandedIdx = store.expandedArticleUuid
-    ? visibleArticles.findIndex((a) => a.uuid === store.expandedArticleUuid)
+    ? displayArticles.findIndex((a) => a.uuid === store.expandedArticleUuid)
     : -1;
 
   const detailArticle =
     expandedIdx >= 0
-      ? visibleArticles[expandedIdx]
+      ? displayArticles[expandedIdx]
       : store.article && store.article.uuid === store.expandedArticleUuid
         ? store.article
         : null;
@@ -173,6 +209,20 @@ export function ArticleView() {
     [store, handleArticleRead],
   );
 
+  // 完读区「下一篇」卡：直接打开卡里那篇。旧实现走 moveFocus(1)，
+  // 鼠标打开详情时 focusIdx 未建立 → 从 -1 起步落回列表顶部，
+  // 看起来就是「点了下一篇却重开当前篇」的数据错乱
+  const openNextArticle = useCallback(() => {
+    const next = displayArticles[expandedIdx + 1] ?? null;
+    if (!next) return;
+    if (next.read_status === ArticleReadStatus.UNREAD) {
+      store.updateArticleStatus(next, ArticleReadStatus.READ);
+      handleArticleRead({ ...next, read_status: ArticleReadStatus.READ });
+    }
+    store.setExpandedArticleUuid(next.uuid);
+    setFocusIdx(expandedIdx + 1);
+  }, [displayArticles, expandedIdx, store, handleArticleRead]);
+
   const closeDetail = useCallback(() => {
     store.setExpandedArticleUuid(null);
     if (isArticleRoute) {
@@ -182,18 +232,23 @@ export function ArticleView() {
 
   const moveFocus = useCallback(
     (delta: number) => {
-      const from = focusIdx ?? (delta > 0 ? -1 : visibleArticles.length);
-      const next = Math.max(0, Math.min(from + delta, visibleArticles.length - 1));
+      // 详情打开时从「正在阅读的文章」起走（点击打开不建立 focusIdx）；
+      // 纯列表态维持原语义：未聚焦时 j 从头 / k 从尾开始
+      const from =
+        store.expandedArticleUuid && expandedIdx >= 0
+          ? expandedIdx
+          : (focusIdx ?? (delta > 0 ? -1 : displayArticles.length));
+      const next = Math.max(0, Math.min(from + delta, displayArticles.length - 1));
       setFocusIdx(next);
-      if (next !== focusIdx) {
-        const a = visibleArticles[next];
+      if (next !== from) {
+        const a = displayArticles[next];
         if (a && store.expandedArticleUuid) store.setExpandedArticleUuid(a.uuid);
       }
     },
-    [focusIdx, visibleArticles, store],
+    [focusIdx, expandedIdx, displayArticles, store],
   );
 
-  const focused = focusIdx === null ? undefined : visibleArticles[focusIdx];
+  const focused = focusIdx === null ? undefined : displayArticles[focusIdx];
 
   const markFocusedRead = useCallback(() => {
     if (!focused || focused.read_status !== ArticleReadStatus.UNREAD) return;
@@ -299,8 +354,8 @@ export function ArticleView() {
           article={detailArticle}
           closable
           onClose={closeDetail}
-          nextArticle={visibleArticles[expandedIdx + 1] ?? null}
-          onOpenNext={() => moveFocus(1)}
+          nextArticle={displayArticles[expandedIdx + 1] ?? null}
+          onOpenNext={openNextArticle}
           onMarkBack={() => {
             markFocusedRead();
             closeDetail();
@@ -460,6 +515,7 @@ export function ArticleView() {
         title={title}
         type={type}
         feedUuid={feedUuid}
+        total={total}
         isLoading={isLoading}
         isEmpty={isEmpty || (!isLoading && visibleArticles.length === 0)}
         isReachingEnd={isReachingEnd}

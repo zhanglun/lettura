@@ -593,12 +593,15 @@
       "all": "全部",
       "article": "文章",
       "podcast": "播客",
-      "video": "视频", "email": "邮件"
+      "video": "视频",
+      "email": "邮件"
     },
     "strip": {
       "meta": "{{sources}} 个来源 · 最近同步 {{time}}"
     },
-    "badge": {"email": "邮", "video": "视", 
+    "badge": {
+      "email": "邮",
+      "video": "视",
       "article": "文",
       "podcast": "播",
       "douyin": "抖"
@@ -658,18 +661,18 @@
       "subscribed": "已订阅 {{count}} 个来源"
     },
     "add": {
-    "ph_any": "粘贴任意地址：RSS、站点主页、B站/知乎/微博、Newsletter…",
-    "recent": "最近条目 RECENT",
-    "candidates": "发现 {{count}} 个 feed",
-    "gen_local": "生成器",
-    "gen_route_ph": "填 RSSHub 路由，例如 bilibili/user/123456",
-    "gen_apply": "转换并预览",
-    "gen_instance": "实例 {{instance}}",
-    "new_folder": "新建分组…",
-    "new_folder_ph": "分组名称",
-    "create": "创建",
-    "done_toast": "已订阅「{{title}}」· 已同步 {{count}} 篇{{folder}}",
-    "foot_hint": "平台源经设置里的 RSSHub 实例生成（当前 {{instance}}）",
+      "ph_any": "粘贴任意地址：RSS、站点主页、B站/知乎/微博、Newsletter…",
+      "recent": "最近条目 RECENT",
+      "candidates": "发现 {{count}} 个 feed",
+      "gen_local": "生成器",
+      "gen_route_ph": "填 RSSHub 路由，例如 bilibili/user/123456",
+      "gen_apply": "转换并预览",
+      "gen_instance": "实例 {{instance}}",
+      "new_folder": "新建分组…",
+      "new_folder_ph": "分组名称",
+      "create": "创建",
+      "done_toast": "已订阅「{{title}}」· 已同步 {{count}} 篇{{folder}}",
+      "foot_hint": "平台源经设置里的 RSSHub 实例生成（当前 {{instance}}）",
       "detecting": "正在探测地址…",
       "err_no_feed": "没找到 feed——试试 RSS 地址（.xml / /feed）或平台主页链接",
       "ungrouped": "未分组",
@@ -694,6 +697,19 @@
       "sync_now": "立即同步",
       "mark_read": "全部已读",
       "manage": "管理"
+    },
+    "list": {
+      "run_count": "{{count}} 篇",
+      "run_mark_read": "全部已读",
+      "run_more": "还有 {{count}} 篇",
+      "run_less": "收起",
+      "run_more_btn": "展开",
+      "run_index_hint": "点击跳到该源",
+      "loaded_of": "已加载 {{loaded}} / 共 {{total}} 篇",
+      "loaded_all": "共 {{total}} 篇 · 已全部显示"
+    },
+    "read": {
+      "time": "约 {{min}} 分钟"
     }
   },
   "Appearance & Reading": "外观与阅读",

@@ -140,19 +140,20 @@ export function View({
 
       {/* 正文 */}
       <ScrollBox
-        className="min-h-0 w-full flex-1"
+        className="fusion-dscroll min-h-0 w-full flex-1"
         ref={scrollBoxRef}
         onProgress={setProgress}
       >
-        <div className="mx-auto w-full max-w-[640px] px-10 py-11 font-[var(--reading-font-body)]">
+        {/* 外壳（题/meta/完读区）继承 UI sans；宋体只落在 .fusion-article-body 正文上 */}
+        <div className="mx-auto w-full max-w-[640px] px-10 py-11">
           {article ? (
             <>
               <ArticleDetail article={article} />
 
-              {/* 完读区 */}
+              {/* 完读区：发丝线夹「· 完 ·」，下一篇入卡（j/k 直达） */}
               <div className="fusion-fin">· 完 ·</div>
               {nextArticle ? (
-                <div>
+                <div className="fusion-nextcard">
                   <div className="fusion-next-h">
                     {t("article.view.next_up")} · J/K
                   </div>

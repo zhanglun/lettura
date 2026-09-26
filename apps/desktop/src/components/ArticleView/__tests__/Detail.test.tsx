@@ -16,6 +16,7 @@ vi.mock("react-i18next", () => ({
 vi.mock("@/helpers/articleContent", () => ({
   pickArticleContent: (content: string) => content,
   processArticleHtml: (raw: string) => raw,
+  estimateReadMinutes: () => 0,
 }));
 
 vi.mock("@/helpers/dataAgent", () => ({

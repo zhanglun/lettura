@@ -577,12 +577,15 @@
       "all": "All",
       "article": "Articles",
       "podcast": "Podcasts",
-      "video": "Videos", "email": "Emails"
+      "video": "Videos",
+      "email": "Emails"
     },
     "strip": {
       "meta": "{{sources}} sources · synced {{time}}"
     },
-    "badge": {"email": "M", "video": "V", 
+    "badge": {
+      "email": "M",
+      "video": "V",
       "article": "A",
       "podcast": "P",
       "douyin": "D"
@@ -642,18 +645,18 @@
       "subscribed": "Subscribed to {{count}} feeds"
     },
     "add": {
-    "ph_any": "Paste any address: RSS, a site homepage, Bilibili/Zhihu/Weibo, a newsletter…",
-    "recent": "RECENT",
-    "candidates": "{{count}} feeds found",
-    "gen_local": "Generator",
-    "gen_route_ph": "RSSHub route, e.g. bilibili/user/123456",
-    "gen_apply": "Convert & preview",
-    "gen_instance": "instance {{instance}}",
-    "new_folder": "New group…",
-    "new_folder_ph": "Group name",
-    "create": "Create",
-    "done_toast": "Subscribed to “{{title}}” · {{count}} articles synced{{folder}}",
-    "foot_hint": "Platform feeds use the RSSHub instance from Settings (now {{instance}})",
+      "ph_any": "Paste any address: RSS, a site homepage, Bilibili/Zhihu/Weibo, a newsletter…",
+      "recent": "RECENT",
+      "candidates": "{{count}} feeds found",
+      "gen_local": "Generator",
+      "gen_route_ph": "RSSHub route, e.g. bilibili/user/123456",
+      "gen_apply": "Convert & preview",
+      "gen_instance": "instance {{instance}}",
+      "new_folder": "New group…",
+      "new_folder_ph": "Group name",
+      "create": "Create",
+      "done_toast": "Subscribed to “{{title}}” · {{count}} articles synced{{folder}}",
+      "foot_hint": "Platform feeds use the RSSHub instance from Settings (now {{instance}})",
       "detecting": "Detecting address…",
       "err_no_feed": "No feed found — try an RSS address (.xml / /feed) or a platform homepage link",
       "ungrouped": "Ungrouped",
@@ -678,6 +681,19 @@
       "sync_now": "Sync now",
       "mark_read": "Mark all read",
       "manage": "Manage"
+    },
+    "list": {
+      "run_count": "{{count}} articles",
+      "run_mark_read": "Mark all read",
+      "run_more": "Show {{count}} more",
+      "run_less": "Collapse",
+      "run_more_btn": "Expand",
+      "run_index_hint": "Jump to feed",
+      "loaded_of": "Loaded {{loaded}} of {{total}}",
+      "loaded_all": "All {{total}} shown"
+    },
+    "read": {
+      "time": "{{min}} min read"
     }
   },
   "Appearance & Reading": "Appearance & Reading",

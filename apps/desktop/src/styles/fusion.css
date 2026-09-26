@@ -25,6 +25,11 @@
   overflow: hidden;
 }
 
+/* 选区也是仪器面的一部分：accent 洗色，切主题即变（detail.html ::selection 契约） */
+.fusion-root ::selection {
+  background: color-mix(in srgb, var(--color-accent) 22%, transparent);
+}
+
 .fusion-root::before {
   content: "";
   position: absolute;
@@ -123,6 +128,279 @@
 
 .fusion-spring {
   flex: 1;
+}
+
+/* ── 同源连跑段头（未读队列按源显影结构）：≥3 篇同源连排时插入，队列仍按时间序 ──
+   分组头保留规则线（DESIGN 契约）；动作钮与行尾动作同语：常显 .62，悬停全显 */
+.fusion-runhead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 26px;
+  margin: 14px 20px 4px 4px;
+  border-radius: 8px;
+  /* 索引条吸顶跳转时给段头让位 */
+  scroll-margin-top: 46px;
+}
+
+.fusion-runhead:first-child {
+  margin-top: 4px;
+}
+
+/* 可折叠的段整行可点 = 展开/收起（行同款 4% 墨洗）；静态段头无 hover */
+.fusion-runhead.is-toggle {
+  cursor: pointer;
+}
+
+.fusion-runhead.is-toggle:hover {
+  background: color-mix(in srgb, var(--color-text-primary) 4%, transparent);
+}
+
+.fusion-runhead.is-flash {
+  animation: fusion-runflash 1.1s ease-out;
+}
+
+@keyframes fusion-runflash {
+  0% {
+    background: color-mix(in srgb, var(--color-accent) 16%, transparent);
+  }
+  100% {
+    background: transparent;
+  }
+}
+
+.fusion-run-id {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  border: 0;
+  background: none;
+  padding: 2px 4px;
+  border-radius: 6px;
+  font: inherit;
+  cursor: pointer;
+  flex: none;
+  min-width: 0;
+}
+
+.fusion-run-id:hover {
+  background: color-mix(in srgb, var(--color-text-primary) 4%, transparent);
+}
+
+.fusion-run-ic {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  object-fit: cover;
+  flex: none;
+}
+
+.fusion-run-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--fusion-sub);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fusion-run-id:hover .fusion-run-name {
+  color: var(--fusion-ink);
+}
+
+.fusion-run-count {
+  font-size: 11px;
+  color: var(--fusion-ter);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.fusion-run-rule {
+  flex: 1;
+  height: 1px;
+  background: var(--fusion-hair);
+}
+
+.fusion-run-read {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border: 0;
+  background: none;
+  padding: 2px 7px;
+  border-radius: 6px;
+  font: inherit;
+  font-size: 11px;
+  color: var(--fusion-ter);
+  cursor: pointer;
+  flex: none;
+  opacity: 0.62;
+  transition: opacity 0.12s ease;
+}
+
+.fusion-runhead:hover .fusion-run-read {
+  opacity: 1;
+}
+
+.fusion-run-read:hover {
+  color: var(--fusion-ink);
+  background: color-mix(in srgb, var(--color-text-primary) 5%, transparent);
+}
+
+/* 段头折叠 chevron（同浏览帧分组头语汇：closed 转向） */
+.fusion-run-chev {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: 0;
+  background: none;
+  border-radius: 6px;
+  color: var(--fusion-ter);
+  cursor: pointer;
+  flex: none;
+  padding: 0;
+}
+
+.fusion-run-chev:hover {
+  color: var(--fusion-ink);
+  background: color-mix(in srgb, var(--color-text-primary) 5%, transparent);
+}
+
+.fusion-run-chev.is-closed svg {
+  transform: rotate(-90deg);
+}
+
+.fusion-run-chev svg {
+  transition: transform 0.15s ease;
+}
+
+/* 折叠段的展开尾行：「还有 N 篇 / 收起」 */
+.fusion-runmore {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 28px;
+  margin: 0 20px 6px 24px;
+  padding: 0 9px;
+  border: 0;
+  background: none;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 11.5px;
+  color: var(--fusion-ter);
+  cursor: pointer;
+}
+
+.fusion-runmore:hover {
+  color: var(--fusion-ink);
+  background: color-mix(in srgb, var(--color-text-primary) 5%, transparent);
+}
+
+.fusion-runmore svg {
+  transition: transform 0.15s ease;
+}
+
+.fusion-runmore svg.is-open {
+  transform: rotate(180deg);
+}
+
+/* ── 队列索引条：当前队列的同源段一览，吸顶；点击展开并跳到该段 ── */
+.fusion-runindex {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  min-height: 36px;
+  background: color-mix(in srgb, var(--color-background-body) 80%, transparent);
+  backdrop-filter: blur(18px) saturate(1.4);
+  border-bottom: 1px solid var(--fusion-hair);
+}
+
+.fusion-runindex-in {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 20px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex: 1;
+  min-width: 0;
+}
+
+.fusion-runindex-in::-webkit-scrollbar {
+  display: none;
+}
+
+.fusion-runchip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex: none;
+  height: 24px;
+  padding: 0 9px;
+  border: 1px solid var(--fusion-hair);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-background-card) 55%, transparent);
+  font: inherit;
+  font-size: 11.5px;
+  color: var(--fusion-sub);
+  cursor: pointer;
+  max-width: 180px;
+}
+
+.fusion-runchip:hover {
+  color: var(--fusion-ink);
+  border-color: var(--fusion-hair2);
+}
+
+.fusion-runchip img {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  object-fit: cover;
+  flex: none;
+}
+
+.fusion-runchip .nm {
+  max-width: 110px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fusion-runchip .c {
+  font-size: 10.5px;
+  color: var(--fusion-ter);
+  font-variant-numeric: tabular-nums;
+}
+
+.fusion-runchip .c.has-unread {
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+.fusion-runchip.is-muted {
+  opacity: 0.55;
+}
+
+.fusion-runindex-hint {
+  flex: none;
+  padding: 0 20px 0 8px;
+  font-size: 10.5px;
+  color: var(--fusion-ter);
+  white-space: nowrap;
+}
+
+/* 列表足注：已加载/全量对账（strip 计数=全量口径，列表=懒加载+折叠摘要） */
+.fusion-list-foot {
+  padding: 16px 20px 6px;
+  text-align: center;
+  font-size: 11px;
+  color: var(--fusion-ter);
+  font-variant-numeric: tabular-nums;
 }
 
 /* ── 过滤条（全部/文章/播客/平台） ── */
@@ -963,18 +1241,27 @@
   font-weight: 700;
   letter-spacing: 0.1em;
   color: var(--color-accent);
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
 .fusion-dmeta {
   font-size: 12px;
   color: var(--fusion-ter);
-  margin: 10px 0 14px;
+  margin: 12px 0 14px;
   display: flex;
   gap: 10px;
   align-items: center;
   font-variant-numeric: tabular-nums;
   flex-wrap: wrap;
+}
+
+.fusion-dmeta .sep {
+  color: var(--fusion-hair2);
+}
+
+/* 详情题是外壳：UI sans + 中文微字距（正文才落宋体） */
+.fusion-dtitle {
+  letter-spacing: 0.005em;
 }
 
 .fusion-cover {
@@ -1250,6 +1537,16 @@
   padding: 0;
 }
 
+/* 正文插图：与代码块同一容器语法（发丝边 + 圆角），居中 */
+.fusion-article-body img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin-inline: auto;
+  border: 1px solid var(--fusion-hair);
+  border-radius: 10px;
+}
+
 /* 固定顶栏 + 阅读进度发丝线（唯一的仪表读数） */
 .fusion-dtop {
   height: 50px;
@@ -1259,6 +1556,24 @@
   padding: 0 20px;
   border-bottom: 1px solid var(--fusion-hair);
   flex: none;
+}
+
+/* 阅读面滚动条：细轨 + 主题派生色（浏览器面也是设计的一部分） */
+.fusion-dscroll {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--color-text-primary) 18%, transparent)
+    transparent;
+}
+
+.fusion-dscroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.fusion-dscroll::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--color-text-primary) 15%, transparent);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
 }
 
 .fusion-dtop .d-src {
@@ -1284,13 +1599,41 @@
   pointer-events: none;
 }
 
-/* 完读区：· 完 · + 下一篇卡 + 已读并返回 */
+/* 完读区：两侧发丝线夹「· 完 ·」，下一篇进卡片容器（detail.html 契约） */
 .fusion-fin {
-  text-align: center;
+  display: flex;
+  align-items: center;
+  gap: 12px;
   color: var(--fusion-ter);
-  font-size: 12px;
-  letter-spacing: 0.4em;
-  margin: 34px 0 6px;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  margin: 38px 0 0;
+}
+
+.fusion-fin::before,
+.fusion-fin::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--fusion-hair);
+}
+
+.fusion-nextcard {
+  margin-top: 26px;
+  border: 1px solid var(--fusion-hair);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--color-background-card) 50%, transparent);
+  overflow: hidden;
+}
+
+.fusion-nextcard .fusion-next-h {
+  margin: 0;
+  padding: 12px 16px 0;
+}
+
+.fusion-nextcard .fusion-row {
+  margin-bottom: 0;
+  padding-right: 16px;
 }
 
 .fusion-next-h {
@@ -1792,6 +2135,15 @@ body.fusion-context-menu-open .fusion-set-body {
   min-width: 0;
 }
 
+.astryx-dialog.fusion-folder-form .astryx-heading,
+.astryx-dialog.fusion-folder-form .astryx-text {
+  font-family: var(--font-family-body);
+}
+
+.astryx-dialog.fusion-folder-form .astryx-text-input {
+  padding-inline-start: calc(var(--spacing-4) - var(--border-width));
+}
+
 .fusion-subs-fh {
   display: flex;
   align-items: center;
@@ -2161,6 +2513,11 @@ body.fusion-context-menu-open .fusion-set-body {
   align-items: center;
   gap: 10px;
   padding: 14px 16px 10px;
+}
+
+.fusion-add-in .astryx-field {
+  flex: 1;
+  min-width: 0;
 }
 
 .fusion-add-in input {
