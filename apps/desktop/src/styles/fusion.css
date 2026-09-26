@@ -1711,6 +1711,19 @@
   padding: 16px 0 14px;
 }
 
+/* 搜索框自适应占满工具行（恢复旧 fusion 行为，2026-10）：
+   Astryx TextInput 外层还有 .astryx-field 包装，需整链 flex */
+.fusion-subs-bar .fusion-subs-search {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.fusion-subs-bar .astryx-field,
+.fusion-subs-bar .astryx-field > * {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
 .fusion-subs-fh {
   display: flex;
   align-items: center;

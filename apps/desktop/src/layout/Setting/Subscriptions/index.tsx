@@ -341,6 +341,7 @@ export const Subscriptions = () => {
         <div className="fusion-set-inner wide">
           <div className="fusion-subs-bar">
             <TextInput
+              className="fusion-subs-search"
               size="sm"
               isLabelHidden
               label={t("settings.subscriptions.search_placeholder")}

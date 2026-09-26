@@ -83,7 +83,6 @@ describe("AppLayout (fusion shell)", () => {
     expect(screen.getByText("fusion.nav.subscriptions")).toBeInTheDocument();
     expect(screen.getByText("fusion.nav.unread")).toBeInTheDocument();
     expect(screen.getByText("fusion.search.placeholder")).toBeInTheDocument();
-    expect(screen.getByText("247")).toBeInTheDocument();
     expect(screen.getByTestId("outlet")).toBeInTheDocument();
   });
 

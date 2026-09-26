@@ -18,6 +18,8 @@ const FILTER_UNREAD = { id: 1, title: "Unread" };
 const FILTER_READ = { id: 2, title: "Read" };
 
 /** fusion 壳：暖灰画布 + 玻璃主面板 + 顶栏导航 + ⌘K（Rail/Sidebar 退役） */
+const buttonBorder = { border: "1px solid var(--color-border)" };
+
 export const AppLayout = React.memo(function () {
   const { t } = useTranslation();
   const location = useLocation();
@@ -57,7 +59,6 @@ export const AppLayout = React.memo(function () {
   const isAll = location.pathname === RouteConfig.LOCAL_ALL;
   const isStarred = location.pathname.startsWith("/local/starred");
   const isFeeds = location.pathname.startsWith("/local/feeds");
-  const isFeedsBrowse = location.pathname === RouteConfig.LOCAL_FEEDS;
   const isUnreadActive = isAll && store.currentFilter.id === 1;
   const isHistoryActive = isAll && store.currentFilter.id === 2;
 
@@ -94,15 +95,6 @@ export const AppLayout = React.memo(function () {
     },
   ];
 
-  const sourceCount = (store.subscribes || []).reduce<number>(
-    (sum, item) =>
-      sum + (item.item_type === "folder" ? item.children?.length ?? 0 : 1),
-    0,
-  );
-
-  const unreadCount = store.collectionMeta.total.unread;
-  // 顶栏药丸：浏览帧 = 源数，其余 = 全局未读（产品级徽章，常驻）
-  const pillCount = isFeedsBrowse ? sourceCount : unreadCount;
   const playerVisible = store.tracks?.length > 0 || store.podcastPlayingStatus;
 
   useHotkeys("meta+k, ctrl+k", (e) => {
@@ -147,7 +139,6 @@ export const AppLayout = React.memo(function () {
           </span>
           {/* 产品名常驻左上；当前位置由导航高亮表达 */}
           <span className="fusion-sec">Lettura</span>
-          {pillCount > 0 && <span className="fusion-cnt">{pillCount}</span>}
           <nav className="fusion-nav">
             {navItems.map((item) => (
               <button
@@ -162,8 +153,9 @@ export const AppLayout = React.memo(function () {
           </nav>
           <span className="fusion-spring" data-tauri-drag-region="" />
           <Button
-            variant="ghost"
+            variant="secondary"
             size="sm"
+            style={buttonBorder}
             icon={<Search size={12} />}
             label={t("fusion.search.placeholder")}
             endContent={<Kbd keys="mod+k" />}
