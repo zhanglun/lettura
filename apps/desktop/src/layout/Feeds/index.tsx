@@ -9,6 +9,7 @@ import { ArticleView } from "@/layout/Article/ArticleView";
 import { RouteConfig } from "@/config";
 import { useBearStore } from "@/stores";
 import { FeedIcon } from "@/components/FeedIcon";
+import { FeedCtxMenu } from "@/components/FeedCtxMenu";
 import { getHostLabel, formatFeedTime } from "@/helpers/feedMeta";
 import { originRoute } from "@/helpers/mediaType";
 import type { FeedResItem } from "@/db";
@@ -40,12 +41,13 @@ function SourceRow({
   const broken = (feed.health_status ?? 0) > 0;
 
   return (
-    <button
-      type="button"
-      className={clsx("fusion-b-row", unread === 0 && "is-muted", focused && "is-focused")}
-      data-feed-uuid={feed.uuid}
-      onClick={() => onOpen(feed)}
-    >
+    <FeedCtxMenu feed={feed}>
+      <button
+        type="button"
+        className={clsx("fusion-b-row", unread === 0 && "is-muted", focused && "is-focused")}
+        data-feed-uuid={feed.uuid}
+        onClick={() => onOpen(feed)}
+      >
       <FeedIcon feed={feed} />
       <span className="fusion-b-name" title={feed.title}>{feed.title}</span>
       <span className={clsx("fusion-b-host", broken && "is-fail")} title={feed.link || getHostLabel(feed)}>
@@ -56,8 +58,9 @@ function SourceRow({
       <span className={clsx("fusion-b-unread", unread === 0 && "is-zero")}>
         {unread}
       </span>
-      <span className="fusion-b-time">{formatFeedTime(feed.last_sync_date)}</span>
-    </button>
+        <span className="fusion-b-time">{formatFeedTime(feed.last_sync_date)}</span>
+      </button>
+    </FeedCtxMenu>
   );
 }
 
@@ -202,11 +205,14 @@ export function FeedsBrowse() {
             key={group.uuid}
             className={clsx("fusion-b-folder", isCollapsed && "closed")}
           >
-            <button
-              type="button"
-              className="fusion-b-head"
-              onClick={() => toggleFolder(group.uuid)}
+            <FeedCtxMenu
+              feed={{ uuid: group.uuid, title: group.title, item_type: "folder" } as FeedResItem}
             >
+              <button
+                type="button"
+                className="fusion-b-head"
+                onClick={() => toggleFolder(group.uuid)}
+              >
               <span className="fusion-b-chev">
                 <ChevronDown size={12} />
               </span>
@@ -214,10 +220,11 @@ export function FeedsBrowse() {
               <span className="fusion-b-count">
                 · {t("fusion.browse.folder_sources", { count: group.feeds.length })}
               </span>
-              <span className="fusion-b-sum">
-                {t("fusion.browse.folder_unread", { count: unread })}
-              </span>
-            </button>
+                <span className="fusion-b-sum">
+                  {t("fusion.browse.folder_unread", { count: unread })}
+                </span>
+              </button>
+            </FeedCtxMenu>
             {!isCollapsed && (
               <div className="fusion-b-feeds">
                 {group.feeds.map((feed) => (

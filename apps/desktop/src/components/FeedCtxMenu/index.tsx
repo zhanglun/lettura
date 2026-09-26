@@ -223,7 +223,10 @@ export function FeedCtxMenu({
         label: t("Unsubscribe"),
         icon: <Trash2 size={13} />,
         variant: "destructive",
-        onClick: () => (onUnsubscribe ? onUnsubscribe(feed) : undefined),
+        onClick: () =>
+          onUnsubscribe
+            ? onUnsubscribe(feed)
+            : navigate(`${RouteConfig.SETTINGS}?tab=subscriptions`),
       },
     ];
   }

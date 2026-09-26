@@ -64,7 +64,8 @@ export function ArticleView() {
 
   // 类型过滤（服务端过滤与计数，不与 read_status/currentFilter 混用）
   const [carrierFilter, setCarrierFilter] = useState<CarrierFilter>("all");
-  const [focusIdx, setFocusIdx] = useState(0);
+  // 聚焦仅在交互（j/k）后建立：首行不再默认带选中洗色
+  const [focusIdx, setFocusIdx] = useState<number | null>(null);
 
   const {
     articles,
@@ -97,7 +98,9 @@ export function ArticleView() {
   const visibleArticles = articles;
 
   useEffect(() => {
-    setFocusIdx((i) => Math.min(i, Math.max(0, visibleArticles.length - 1)));
+    setFocusIdx((i) =>
+      i === null ? null : Math.min(i, Math.max(0, visibleArticles.length - 1)),
+    );
   }, [visibleArticles.length]);
 
   // Deep-link：从 URL 恢复文章（面板内详情）
@@ -179,7 +182,8 @@ export function ArticleView() {
 
   const moveFocus = useCallback(
     (delta: number) => {
-      const next = Math.max(0, Math.min(focusIdx + delta, visibleArticles.length - 1));
+      const from = focusIdx ?? (delta > 0 ? -1 : visibleArticles.length);
+      const next = Math.max(0, Math.min(from + delta, visibleArticles.length - 1));
       setFocusIdx(next);
       if (next !== focusIdx) {
         const a = visibleArticles[next];
@@ -189,7 +193,7 @@ export function ArticleView() {
     [focusIdx, visibleArticles, store],
   );
 
-  const focused = visibleArticles[focusIdx];
+  const focused = focusIdx === null ? undefined : visibleArticles[focusIdx];
 
   const markFocusedRead = useCallback(() => {
     if (!focused || focused.read_status !== ArticleReadStatus.UNREAD) return;
@@ -226,7 +230,7 @@ export function ArticleView() {
     markFocusedRead();
     moveFocus(-1);
   }, [markFocusedRead, moveFocus]);
-  useHotkeys("f", () => toggleStar(focused), [focused, toggleStar]);
+  useHotkeys("f", () => toggleStar(focused ?? null), [focused, toggleStar]);
   useHotkeys("v", () => {
     if (focused?.link) open(focused.link);
   }, [focused]);

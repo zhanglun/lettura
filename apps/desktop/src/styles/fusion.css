@@ -190,7 +190,7 @@
   z-index: 0;
 }
 
-/* 列表行词汇对齐 Astryx（2026-10）：圆角内衬洗色（同菜单项 8px）、无发丝分隔线、选中 = accent-muted */
+/* 列表行词汇对齐 Astryx（2026-10）：圆角内衬洗色（同菜单项 8px）、无发丝分隔线、选中 = 半透明 accent 调（accent-muted 为实心，适合 chip 不适合行洗色） */
 .fusion-row::after {
   content: "";
   position: absolute;
@@ -351,7 +351,7 @@
 
 /* 键盘焦点：洗色 + 圆点光环两种安静信号，无彩色侧线（竖侧线＝side-tab slop，禁用） */
 .fusion-row.is-focused::after {
-  background: var(--color-accent-muted);
+  background: color-mix(in srgb, var(--color-accent) 9%, transparent);
 }
 
 .fusion-row.is-focused .fusion-dot {
@@ -1401,7 +1401,7 @@
 }
 
 .fusion-b-row.is-focused::after {
-  background: var(--color-accent-muted);
+  background: color-mix(in srgb, var(--color-accent) 9%, transparent);
 }
 
 .fusion-b-row.is-focused .fusion-b-name {
