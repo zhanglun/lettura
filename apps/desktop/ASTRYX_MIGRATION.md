@@ -63,6 +63,8 @@
 13. **产品签名随主题呼吸 + 发丝位置线** ✅：环境光左暖从固定 rgba 红改为 `color-mix(background-orange 14%)`（各主题暖色令牌：neutral 桃/matcha 焦糖/y2k 杏/chocolate 焦糖），右光跟 accent；j/k 焦点行（文章行＋浏览帧当前源）加 0.5px accent 45% 发丝左线作位置提示
 14. **修复 WebKit 右键菜单不绘制（真根因）** ✅：此前误判为缓存问题。实测隔离出 WebKit bug——`position-anchor` 指向 `overflow` 滚动容器内的锚点时，top-layer popover 几何正确却不绘制（断开 anchor 改 fixed 立即出现）。FeedCtxMenu 外包 `.fusion-ctx-host` 捕获右键视口坐标，CSS 覆盖 popover 为 `position:fixed`（去 anchor/area/try-fallback，坐标按视口边缘 8px 收敛）。浏览帧＋订阅管理页右键均恢复。另修复独立隐患：tailwindcss 从 desktop devDependencies 缺失（postcss 依赖，靠跨包提升）补回 3.4.19
 
+15. **右键状态、hover 语义与设置页 Fusion 重构** ✅：右键菜单打开时目标行整行覆盖 10% accent 高亮，并通过 body class 锁定浏览/设置滚动；Escape 若菜单仍打开则不触发返回导航。订阅浏览页 hover 扩大为整行圆角芯片（3.5% 墨洗）；订阅管理页取消整行 hover 洗色，仅悬停显隐 ghost 操作按钮，避免大面积红色 destructive 常驻。设置页重构为 Astryx×Fusion 仪器台：196px 玻璃导航、720px 版心、accent 章节规则线、独立玻璃设置行和更安静的 preview 面板；进入 `/local/feeds` 不再默认把第一源设为 focused（修掉用户看到的默认“is-fusion-focued”状态）。
+
 每批次完成标准：tsc 0 错、215 测试（按需更新）全绿、生产构建通过、关键态视觉确认；
 同步更新 `DESIGN.md` 与本文件勾选。
 

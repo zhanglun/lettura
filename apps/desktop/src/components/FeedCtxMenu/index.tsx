@@ -1,5 +1,5 @@
 import type React from "react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 import { useTranslation } from "react-i18next";
@@ -75,7 +75,23 @@ export function FeedCtxMenu({
   // 规避：捕获右键视口坐标，用 CSS 把 popover 从 anchor 切换为 fixed（见 fusion.css
   // .fusion-ctx-host > [popover]）。坐标按视口边缘收敛，避免菜单溢出。
   const [point, setPoint] = useState<{ x: number; y: number }>({ x: 8, y: 8 });
-  const capturePoint = useCallback((e: React.MouseEvent) => { setPoint(clampPoint(e.clientX, e.clientY)); }, []);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const capturePoint = useCallback((e: React.MouseEvent) => {
+    setPoint(clampPoint(e.clientX, e.clientY));
+  }, []);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const stopScroll = (event: Event) => event.preventDefault();
+    document.body.classList.add("fusion-context-menu-open");
+    window.addEventListener("wheel", stopScroll, { passive: false });
+    window.addEventListener("touchmove", stopScroll, { passive: false });
+    return () => {
+      document.body.classList.remove("fusion-context-menu-open");
+      window.removeEventListener("wheel", stopScroll);
+      window.removeEventListener("touchmove", stopScroll);
+    };
+  }, [menuOpen]);
 
   const store = useBearStore(
     useShallow((state) => ({
@@ -256,14 +272,19 @@ export function FeedCtxMenu({
 
   return (
     <div
-      className="fusion-ctx-host"
+      className={`fusion-ctx-host${menuOpen ? " is-context-open" : ""}`}
       style={{
         "--fusion-ctx-x": `${point.x}px`,
         "--fusion-ctx-y": `${point.y}px`,
       } as React.CSSProperties}
-      onContextMenu={capturePoint}
+      onContextMenuCapture={capturePoint}
     >
-      <ContextMenu items={items} size="sm" menuWidth={200}>
+      <ContextMenu
+        items={items}
+        size="sm"
+        menuWidth={200}
+        onOpenChange={setMenuOpen}
+      >
         {children}
       </ContextMenu>
     </div>

@@ -103,7 +103,7 @@ function SubsRow({
           />
           <IconButton
             size="sm"
-            variant="destructive"
+            variant="ghost"
             icon={<Trash2 size={12} />}
             label={t("Unsubscribe")}
             onClick={(e) => {
@@ -252,6 +252,7 @@ export const Subscriptions = () => {
 
   // esc 逐级退回：订阅管理 → 设置（DESIGN 键盘模型契约；沉浸页优先）
   useHotkeys("escape", () => {
+    if (document.body.classList.contains("fusion-context-menu-open")) return;
     if (useBearStore.getState().playerMode === "full") return;
     navigate(RouteConfig.SETTINGS);
   });

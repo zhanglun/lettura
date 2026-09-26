@@ -19,7 +19,7 @@
 | `--hair` / `--hair2` | `rgba(29,30,32,.08)` / `.13` | 发丝线 / 边框 |
 | fusion 中性阶 | **全部接 Astryx 主题令牌**（2026-10 契约）：ground=`background-body`、glass=`card 80% 混`、ink/sub=`text-primary/secondary`、ter=48% 混、hair=`border`、warn=`error`；行/悬停/浮层的中性 rgba 一律 `color-mix` 令牌派生——切主题即整面变色；pink/amber/serif-ink 为固定状态色（夜读暖墨除外） |
 | **fusion×Astryx 分工（2026-11 演进原则）** | Astryx 供「组件词汇」（控件、行节奏、洗色、材质令牌），fusion 供「产品个性」（环境光氛围、宋体正文、精密密度、键盘焦点环、未读圆点）。**融合不是抹平**：凡 Astryx 已定义的控件/行语言一律退让用 Astryx；凡产品级签名（氛围光、宋体、信息密度、键盘模型）保留并加强。行间隔＝Astryx 呼吸缝 2px（ground 透出），非 fusion 发丝线 |
-| **WebKit 右键菜单规避（2026-11）** | WebKit 对「`position-anchor` 指向 `overflow` 滚动容器内锚点」的 top-layer popover 会算出正确几何却不绘制（Astryx context 菜单在此情形下不可见）。FeedCtxMenu 包一层 `.fusion-ctx-host` 捕获右键视口坐标，CSS 将 popover 从 anchor 切换为 `position:fixed`（坐标按视口边缘 8px 收敛）。点击/SVG/键盘不受影响 |
+| **WebKit 右键菜单规避（2026-11）** | WebKit 对「`position-anchor` 指向 `overflow` 滚动容器内锚点」的 top-layer popover 会算出正确几何却不绘制（Astryx context 菜单在此情形下不可见）。FeedCtxMenu 包一层 `.fusion-ctx-host` 捕获右键视口坐标，CSS 将 popover 从 anchor 切换为 `position:fixed`（坐标按视口边缘 8px 收敛）。菜单打开＝目标行整行 10% accent 高亮、背景滚动锁定；Esc 不穿透为返回导航。点击/SVG/键盘不受影响 |
 | 列表行词汇 | **对齐 Astryx（2026-10）**：三个列表面（文章行/订阅浏览行/订阅管理行）＝圆角 8px 内衬洗色（inset 3px 6-8px，同菜单项）、**行间 2px ground 呼吸缝**（步距＝内容高＋缝：52+2 / 44+2 / 42+2）、无发丝线（分组头保留规则线）、选中/聚焦＝半透明 accent 调；悬停＝4% 墨洗 |
 | `--color-accent` | **Astryx 主题 accent，直接消费、无任何 fusion 间接层**（2026-10 契约）：主题即调色板身份，五色板已删；gothic 为永久深色主题，选中即强制深色 | 唯一强调色：焦点线、圆点、播放、选中、正文链接 |
 | `--color-accent-muted` | Astryx 自带 accent 淡底令牌（各主题自带设计值） | 选中底、淡色洗 |
@@ -115,15 +115,15 @@
 
 顶栏保持产品名「Lettura」（不放视图名）；设置视图头部与详情同构（返回钮 + esc + 右侧「N 个来源 · M 个分组」类元信息）；队列计数药丸持续在场。入口：⌘K「打开设置」；导航点「未读」或 esc 一路退回（设置 → 未读 / 订阅 → 设置），列表位置保留。段题单语（中文），不带英文大写后缀。
 
-布局：左锄点导航 176px（发丝线右分）+ 内容区（版心 620px 居中）。导航项 34px，当前段＝tab 选中语法（`.07` 底 + 600 字重，与过滤条/顶栏导航同一套选中语法，无侧线）；点击平滑滚动到段题，滚动侦测反向点亮（末段在触底时兜底选中）；「订阅管理」为导航出口项（尾部箭头，进订阅子视图）。
+布局：左锄点导航 196px（玻璃底 + 发丝线右分）+ 内容区（版心 720px 居中）。导航项 38px，当前段＝Astryx accent 选中语法（10% accent 底 + accent 字重 + 细边框，无侧线）；点击平滑滚动到段题，滚动侦测反向点亮（末段在触底时兜底选中）；「订阅管理」为导航出口项（尾部箭头，进订阅子视图）。
 
 | 语法 | 规则 |
 |---|---|
-| 版心 | 居中 620px，段题用章节字（11px/700/.1em/`--ter`，scroll-margin 顶留白） |
-| 设置行 | 标签左（13.5px/500 + 帮助文字 11.5px/`--sub`）、控件右、发丝线分隔，min-h 52，hover `.02` |
+| 版心 | 居中 720px；段题＝10px/700/.13em 大写 accent 标题，下接 accent 18% 发丝规则线，scroll-margin 顶留白 |
+| 设置行 | 独立仪器卡：标签左（13.5px/500 + 帮助文字 11.5px/`--sub`）、控件右、细边框 + 42% card 玻璃底，min-h 58，无行 hover；控件自身遵循 Astryx hover/focus |
 | 控件词汇 | 分段＝过滤条 tab 语法（胶囊容器，自研 Seg）；下拉＝Astryx `Selector`(sm)；开关＝Astryx `Switch`(sm)；滑杆＝Astryx `Slider`（固定 140 宽）+ 数值 chip；文本＝Astryx `TextInput`/`TextArea`(sm)；主钮＝Astryx `Button` primary(sm)、幽灵钮＝`ghost`(sm)；键帽＝Astryx `Kbd`（esc/m/⌘K，平台感知）；组件主题＝Astryx 主题选择器（neutral 默认，7 选 1，`userConfig.astryx_theme` 持久化，CSS 由 `@scope([data-astryx-theme])` 隔离） |
 | 校准台 | 外观段尾预览块：列表行样本 + 宋体段落，实时反映字号/行高/密度/强调色；拖动即显影，无过渡 |
-| 订阅行 | 列表行收紧至 44px：类型徽章/题/未读药丸/域名/时间/悬停动作；分组头部 32px 可折叠，动作用悬停显隐；右键菜单＝Astryx `ContextMenu`（sm、声明式包裹行，移动分组为悬停子菜单），退订为 destructive 红色 |
+| 订阅行 | 列表行 42px：类型徽章/题/未读药丸/域名/时间；分组头部 32px 可折叠。管理页不做整行 hover，只在悬停时显隐操作钮；右键菜单＝Astryx `ContextMenu`（sm、声明式包裹行，移动分组为悬停子菜单），退订钮常态 ghost、destructive 只出现在菜单/确认语义中 |
 | 生成器行 | 「RSSHub 实例」＝Astryx `TextInput`(sm)；「自定义生成路由」＝Astryx `TextArea`(sm)，mono 内容（一行一条 `匹配 => 路由`）。文本类设置**失焦提交**（其余控件即改即写，逐字符写 TOML 太重） |
 
 状态反馈即时生效（无保存钮），写入本地配置；同步失败在健康行与订阅行以 `--warn` 呈现并附重试。

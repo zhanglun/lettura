@@ -72,9 +72,8 @@ export function FeedsBrowse() {
   const [collapsed, setCollapsed] = useState<Set<string>>(
     () => new Set(browseMemory.collapsed),
   );
-  const [focusUuid, setFocusUuid] = useState<string | null>(
-    browseMemory.focusUuid,
-  );
+  // 焦点只由 j/k 或方向键建立；进入页面不预选第一条源。
+  const [focusUuid, setFocusUuid] = useState<string | null>(null);
 
   const store = useBearStore(
     useShallow((state) => ({
@@ -94,7 +93,7 @@ export function FeedsBrowse() {
     const el = scrollRef.current;
     if (el) el.scrollTop = browseMemory.scrollTop;
     return () => {
-      browseMemory.focusUuid = focusUuid;
+      browseMemory.focusUuid = null;
       browseMemory.scrollTop = scrollRef.current?.scrollTop ?? 0;
       browseMemory.collapsed = new Set(collapsed);
     };
@@ -130,8 +129,8 @@ export function FeedsBrowse() {
       setFocusUuid(null);
       return;
     }
-    if (!(focusUuid && keyboardQueue.some((f) => f.uuid === focusUuid))) {
-      setFocusUuid(keyboardQueue[0].uuid);
+    if (focusUuid && !keyboardQueue.some((f) => f.uuid === focusUuid)) {
+      setFocusUuid(null);
     }
   }, [keyboardQueue, focusUuid]);
 
@@ -145,15 +144,18 @@ export function FeedsBrowse() {
   const moveFocus = (delta: number) => {
     if (keyboardQueue.length === 0) return;
     const idx = keyboardQueue.findIndex((f) => f.uuid === focusUuid);
+    const from = focusUuid === null
+      ? (delta > 0 ? -1 : keyboardQueue.length)
+      : idx;
     const next = Math.max(
       0,
-      Math.min(idx + delta, keyboardQueue.length - 1),
+      Math.min(from + delta, keyboardQueue.length - 1),
     );
     setFocusUuid(keyboardQueue[next].uuid);
   };
 
   const openFeed = (f: FeedResItem) => {
-    browseMemory.focusUuid = f.uuid;
+    browseMemory.focusUuid = null;
     browseMemory.scrollTop = scrollRef.current?.scrollTop ?? 0;
     store.setFeed(f);
     navigate(
@@ -181,6 +183,7 @@ export function FeedsBrowse() {
     if (target) openFeed(target);
   }, [keyboardQueue, focusUuid, openFeed]);
   useHotkeys("escape", () => {
+    if (document.body.classList.contains("fusion-context-menu-open")) return;
     if (useBearStore.getState().playerMode === "full") return; // 沉浸页优先收回条
     navigate(RouteConfig.LOCAL_ALL);
     store.setFilter(FILTER_UNREAD);

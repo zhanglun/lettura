@@ -79,6 +79,7 @@ export function SettingPage() {
 
   // esc 一路退回未读列表
   useHotkeys("escape", () => {
+    if (document.body.classList.contains("fusion-context-menu-open")) return;
     if (useBearStore.getState().playerMode === "full") return; // 沉浸页优先收回条
     if (!isSubscriptions) navigate(RouteConfig.LOCAL_ALL);
   });
