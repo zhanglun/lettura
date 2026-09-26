@@ -89,15 +89,6 @@
   white-space: nowrap;
 }
 
-.fusion-cnt {
-  font-size: 11px;
-  color: var(--fusion-sub);
-  background: color-mix(in srgb, var(--color-text-primary) 6%, transparent);
-  border-radius: 999px;
-  padding: 1.5px 8px;
-  font-variant-numeric: tabular-nums;
-}
-
 .fusion-nav {
   display: flex;
   gap: 4px;
@@ -628,10 +619,6 @@
   gap: 6px;
 }
 
-.fusion-star {
-  color: var(--fusion-amber);
-}
-
 /* 键盘焦点：洗色 + 圆点光环两种安静信号，无彩色侧线（竖侧线＝side-tab slop，禁用） */
 .fusion-row.is-focused::after {
   background: color-mix(in srgb, var(--color-accent) 9%, transparent);
@@ -683,27 +670,6 @@
   align-items: center;
   gap: 2px;
   flex: none;
-}
-
-/* ── 播放卡控件 ── */
-.fusion-pc {
-  width: 32px;
-  height: 32px;
-  border-radius: 999px;
-  background: var(--color-accent);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: none;
-  border: 0;
-  cursor: pointer;
-  box-shadow: 0 4px 10px -2px color-mix(in srgb, var(--color-accent) 50%, transparent);
-  transition: transform 0.15s ease;
-}
-
-.fusion-pc:hover {
-  transform: scale(1.06);
 }
 
 .fusion-pmeta {
@@ -1915,13 +1881,6 @@ body.fusion-context-menu-open .fusion-set-body {
   flex: none;
 }
 
-.fusion-fv-backunread {
-  margin-left: auto;
-  font-size: 11px;
-  color: var(--fusion-ter);
-  font-variant-numeric: tabular-nums;
-}
-
 /* ── 源头卡（feeds.html 契约扩展）：标识/简介/统计/动作，可收起为单行 ── */
 .fusion-fp {
   margin: 14px 20px 16px;
@@ -2169,10 +2128,6 @@ body.fusion-context-menu-open .fusion-set-body {
   opacity: 1;
 }
 
-.fusion-qa2:hover,
-
-.fusion-qa2.danger:hover,
-
 /* 订阅行：44px，题 + 未读药丸 + 域名 + 时间 + 明确操作；设置页不做行 hover */
 .fusion-subs-row {
   display: grid;
@@ -2328,21 +2283,6 @@ body.fusion-context-menu-open .fusion-set-body {
   display: flex;
   gap: 16px;
   align-items: center;
-}
-
-.fusion-quietline button {
-  border: 0;
-  background: none;
-  padding: 0 0 1px;
-  font: inherit;
-  color: var(--fusion-sub);
-  cursor: pointer;
-  border-bottom: 1px solid var(--fusion-hair2);
-}
-
-.fusion-quietline button:hover {
-  color: var(--fusion-ink);
-  border-color: var(--fusion-ink);
 }
 
 /* starter pack 卡 */
@@ -2522,7 +2462,6 @@ body.fusion-context-menu-open .fusion-set-body {
 }
 
 .fusion-add-in input {
-  flex: 1;
   border: 0;
   outline: 0;
   background: none;
@@ -2571,20 +2510,6 @@ body.fusion-context-menu-open .fusion-set-body {
   font-size: 12.5px;
   color: #c4564a;
   padding: 4px 2px;
-}
-
-.fusion-aerr button {
-  font-size: 12px;
-  color: var(--color-accent);
-  padding: 3px 9px;
-  border-radius: 7px;
-  border: 0;
-  background: none;
-  cursor: pointer;
-}
-
-.fusion-aerr button:hover {
-  background: var(--color-accent-muted);
 }
 
 .fusion-card {
@@ -2738,39 +2663,13 @@ body.fusion-context-menu-open .fusion-set-body {
   flex: none;
 }
 
-.fusion-gen input {
+.fusion-gen .astryx-field {
   flex: 1;
-  min-width: 160px;
-  height: 30px;
-  padding: 0 9px;
-  border: 1px solid var(--fusion-hair2);
-  border-radius: 8px;
-  background: color-mix(in srgb, var(--color-background-card) 55%, transparent);
-  color: var(--fusion-ink);
+  min-width: 0;
+}
+
+.fusion-gen input {
   font-family: "SF Mono", Menlo, monospace;
-  font-size: 11.5px;
-  outline: none;
-}
-
-.fusion-gen input:focus {
-  border-color: var(--color-accent);
-}
-
-.fusion-gen button {
-  height: 30px;
-  padding: 0 12px;
-  border: 1px solid var(--fusion-hair2);
-  border-radius: 8px;
-  background: color-mix(in srgb, var(--color-background-card) 55%, transparent);
-  color: var(--fusion-sub);
-  font-size: 12px;
-  cursor: pointer;
-  flex: none;
-}
-
-.fusion-gen button:hover {
-  color: var(--fusion-ink);
-  border-color: var(--fusion-sub);
 }
 
 .fusion-gen .hp {
@@ -2778,32 +2677,6 @@ body.fusion-context-menu-open .fusion-set-body {
   font-size: 11px;
   color: var(--fusion-ter);
 }
-
-/* 设置里的多行输入（自定义生成路由） */
-.fusion-set-ta {
-  width: 100%;
-  max-width: 300px;
-  min-height: 64px;
-  padding: 7px 9px;
-  border: 1px solid var(--fusion-hair2);
-  border-radius: 9px;
-  background: color-mix(in srgb, var(--color-background-card) 55%, transparent);
-  color: var(--fusion-ink);
-  font-family: "SF Mono", Menlo, monospace;
-  font-size: 11px;
-  line-height: 1.6;
-  resize: vertical;
-  outline: none;
-}
-
-.fusion-set-ta:focus {
-  border-color: var(--color-accent);
-}
-
-body.dark-theme .fusion-set-ta,
-body.dark-theme .fusion-gen input,
-
-/* 内联小输入（新建分组） */
 
 .fusion-aerr .fusion-aerr-msg {
   flex: 1;
@@ -2815,27 +2688,6 @@ body.dark-theme .fusion-gen input,
   align-items: center;
   gap: 10px;
   margin-top: 14px;
-}
-
-.fusion-adone {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 6px 2px;
-  font-size: 13px;
-  color: var(--fusion-ink);
-}
-
-.fusion-adone .ok {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: var(--color-accent-muted);
-  color: var(--color-accent);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: none;
 }
 
 /* ── ⌘K 命令面板（Astryx CommandPalette）：内部三列 图标槽 | 标题 | 尾注 ── */
@@ -3020,11 +2872,6 @@ body.dark-theme .fusion-gen input,
   gap: 10px;
 }
 
-.fusion-sld input[type="range"] {
-  width: 140px;
-  accent-color: var(--color-accent);
-}
-
 /* 校准台（预览块） */
 .fusion-prev {
   margin: 18px 0 8px;
@@ -3098,15 +2945,12 @@ body.dark-theme .fusion-logo i {
 /* 灰阶由墨色投影改浅色投影 */
 body.dark-theme .fusion-nav button:hover,
 body.dark-theme .fusion-tab:hover,
-body.dark-theme .fusion-snav:hover,
-body.dark-theme .fusion-back:hover,
-body.dark-theme .fusion-pskip:hover,
-body.dark-theme .fusion-aerr button:hover,
+body.dark-theme .fusion-snav:hover {
+  background: color-mix(in srgb, var(--color-text-primary) 5%, transparent);
+}
 
 body.dark-theme .fusion-nav button.on,
 body.dark-theme .fusion-tab.on,
-
-body.dark-theme .fusion-cnt,
 body.dark-theme .fusion-chip,
 body.dark-theme .fusion-article-body code,
 body.dark-theme .fusion-card .gen code {
@@ -3179,9 +3023,6 @@ body.dark-theme .fusion-help-in .tt {
   color: var(--fusion-ink);
 }
 
-body.dark-theme .fusion-sel,
-body.dark-theme .fusion-seg,
-
 body.dark-theme .fusion-article-body pre {
   background: color-mix(in srgb, var(--color-text-primary) 5%, transparent);
   border-color: var(--fusion-hair2);
@@ -3205,24 +3046,15 @@ body.dark-theme .fusion-ficon {
   background: color-mix(in srgb, var(--color-text-primary) 6%, transparent);
 }
 
-/* 订阅管理：深色浮层与灰阶 */
-body.dark-theme .fusion-subs-search,
-body.dark-theme .fusion-ctx {
+/* 订阅管理：深色搜索框 */
+body.dark-theme .fusion-subs-search {
   background: color-mix(in srgb, var(--color-background-card) 92%, transparent);
   border-color: color-mix(in srgb, var(--color-text-primary) 12%, transparent);
   color: var(--fusion-sub);
 }
 
-body.dark-theme .fusion-subs-search input,
-body.dark-theme .fusion-ctx .mi {
+body.dark-theme .fusion-subs-search input {
   color: var(--fusion-ink);
-}
-
-
-body.dark-theme .fusion-qa2:hover,
-body.dark-theme .fusion-qa3:hover,
-body.dark-theme .fusion-ctx .mi:hover {
-  background: color-mix(in srgb, var(--color-text-primary) 5%, transparent);
 }
 
 body.dark-theme .fusion-subs-ft .uc {
@@ -3247,9 +3079,9 @@ body.dark-theme .fusion-pbar {
   background: color-mix(in srgb, var(--color-text-primary) 12%, transparent);
 }
 
-/* 播放器三态：暗色 */
-body.dark-theme .fusion-pctl:hover,
-body.dark-theme .fusion-queue .q-row:hover,
+body.dark-theme .fusion-queue .q-row:hover {
+  background: color-mix(in srgb, var(--color-text-primary) 5%, transparent);
+}
 
 body.dark-theme .fusion-minipill .bubble,
 body.dark-theme .fusion-minipill .ring {
