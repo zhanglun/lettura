@@ -690,7 +690,9 @@
       "run_more_btn": "Expand",
       "run_index_hint": "Jump to feed",
       "loaded_of": "Loaded {{loaded}} of {{total}}",
-      "loaded_all": "All {{total}} shown"
+      "loaded_all": "All {{total}} shown",
+      "run_marked_toast": "Marked {{count}} articles of {{feed}} as read",
+      "run_mark_read_title": "Mark all unread of {{feed}}"
     },
     "read": {
       "time": "{{min}} min read"

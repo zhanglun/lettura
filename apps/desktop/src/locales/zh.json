@@ -706,7 +706,9 @@
       "run_more_btn": "展开",
       "run_index_hint": "点击跳到该源",
       "loaded_of": "已加载 {{loaded}} / 共 {{total}} 篇",
-      "loaded_all": "共 {{total}} 篇 · 已全部显示"
+      "loaded_all": "共 {{total}} 篇 · 已全部显示",
+      "run_marked_toast": "已标记「{{feed}}」{{count}} 篇已读",
+      "run_mark_read_title": "标记「{{feed}}」的全部未读"
     },
     "read": {
       "time": "约 {{min}} 分钟"

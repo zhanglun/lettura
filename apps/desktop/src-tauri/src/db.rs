@@ -22,13 +22,8 @@ pub fn establish_connection() -> SqliteConnection {
 
   let _env = env::var("LETTURA_ENV");
 
-  match _env {
-    Ok(_env) => {
-      let database_url = &env::var("DATABASE_URL").unwrap();
-
-      SqliteConnection::establish(&database_url)
-        .expect(&format!("Error connecting to {}", &database_url))
-    }
+  let database_url = match _env {
+    Ok(_env) => env::var("DATABASE_URL").unwrap(),
     Err(_) => {
       println!("no LETTURA_ENV");
 
@@ -40,12 +35,25 @@ pub fn establish_connection() -> SqliteConnection {
         .join(".lettura")
         .join("lettura.db");
 
-      let database_url = database_url.to_str().clone().unwrap();
-
-      SqliteConnection::establish(&database_url)
-        .expect(&format!("Error connecting to {}", &database_url))
+      database_url.to_str().clone().unwrap().to_string()
     }
-  }
+  };
+
+  let mut connection = SqliteConnection::establish(&database_url)
+    .expect(&format!("Error connecting to {}", &database_url));
+
+  // 并发写保护（段头「全部已读」等批量写、同步与用户操作并行）：
+  // 无 busy_timeout 时并发写立即 SQLITE_BUSY，而 update handler 把 Err 吞成 0，
+  // 失败对客户端不可见。journal_mode 是库级持久设置（重复执行幂等），
+  // busy_timeout 是连接级（须每次设置）。
+  diesel::sql_query("PRAGMA journal_mode=WAL")
+    .execute(&mut connection)
+    .expect("Failed to set WAL mode");
+  diesel::sql_query("PRAGMA busy_timeout=5000")
+    .execute(&mut connection)
+    .expect("Failed to set busy_timeout");
+
+  connection
 }
 
 #[cfg(test)]

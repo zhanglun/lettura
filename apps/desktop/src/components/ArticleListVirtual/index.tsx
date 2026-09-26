@@ -7,6 +7,8 @@ import { CheckCheck, ChevronDown, Snail } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
+import * as dataAgent from "@/helpers/dataAgent";
+import { toast } from "@/helpers/toast";
 import {
   buildSegments,
   runUnreadCount,
@@ -36,7 +38,8 @@ export type ArticleListVirtualProps = {
 };
 
 /** 段头：源身份 + 计数 + 规则线 + 悬停显影「全部已读」。
- *  可折叠的段整行点击 = 展开/收起（用户 2026-09-26 决策：不跳源队列）；不可折叠的段头是静态标签 */
+ *  「全部已读」是 feed 级动作（清掉该源的整个未读队列，不止已加载行）——
+ *  有未读（行内或订阅表）才显示。可折叠段整行点击 = 展开/收起；不可折叠段头是静态标签 */
 function RunHead({
   segment,
   flash,
@@ -45,13 +48,20 @@ function RunHead({
 }: {
   segment: RunSegment;
   flash: boolean;
-  onMarkRead: (articles: ArticleResItem[]) => void;
+  onMarkRead: (segment: RunSegment) => void;
   onToggle: (segment: RunSegment) => void;
 }) {
   const { t } = useTranslation();
+  const subscribes = useBearStore(useShallow((s) => s.subscribes));
   const { run, collapsible, collapsed } = segment;
   const first = run.articles[0];
   const toggle = () => onToggle(segment);
+  const loadedUnread = run.articles.some(
+    (a) => a.read_status === ArticleReadStatus.UNREAD,
+  );
+  const feedUnread =
+    subscribes.find((f) => f.uuid === run.feedUuid)?.unread ?? 0;
+  const hasUnread = loadedUnread || feedUnread > 0;
 
   const idNode = (
     <>
@@ -91,17 +101,20 @@ function RunHead({
         </span>
       )}
       <span className="fusion-run-rule" />
-      <button
-        type="button"
-        className="fusion-run-read"
-        onClick={(e) => {
-          e.stopPropagation();
-          onMarkRead(run.articles);
-        }}
-      >
-        <CheckCheck size={12} />
-        {t("fusion.list.run_mark_read")}
-      </button>
+      {hasUnread && (
+        <button
+          type="button"
+          className="fusion-run-read"
+          title={t("fusion.list.run_mark_read_title", { feed: first.feed_title })}
+          onClick={(e) => {
+            e.stopPropagation();
+            onMarkRead(segment);
+          }}
+        >
+          <CheckCheck size={12} />
+          {t("fusion.list.run_mark_read")}
+        </button>
+      )}
     </div>
   );
 }
@@ -169,11 +182,6 @@ export const ArticleListVirtual = React.memo(function ArticleListVirtual(
   const containerRef = useRef<HTMLDivElement>(null);
   const flashTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [flashUuid, setFlashUuid] = useState<string | null>(null);
-  const store = useBearStore(
-    useShallow((state) => ({
-      updateArticleStatus: state.updateArticleStatus,
-    })),
-  );
   // 折叠展开是模块级会话状态：订阅版本号让折叠/展开即时重渲染
   const expansionVersion = useSyncExternalStore(
     subscribeRunExpansion,
@@ -188,13 +196,35 @@ export const ArticleListVirtual = React.memo(function ArticleListVirtual(
     [feedUuid, articles],
   );
 
-  const markRunRead = (runArticles: ArticleResItem[]) => {
-    for (const article of runArticles) {
+  // feed 级一次落库（服务端 mark_as_read 单条 SQL）：组头「全部已读」清的是该源的
+  // 整个未读队列——只标已加载的十几条，对有几百条历史未读的源没有意义（用户实测的
+  // 「刷新后组里还有数据」就是它）。本地 retain 已加载行 + 全局未读按 feed 全量扣减 +
+  // toast 报实际数量 + 刷新订阅未读徽标。
+  const markRunRead = async (segment: RunSegment) => {
+    const { run } = segment;
+    const first = run.articles[0];
+    const feed = useBearStore
+      .getState()
+      .subscribes.find((f) => f.uuid === run.feedUuid);
+    const feedUnread = feed?.unread ?? 0;
+
+    await dataAgent.markAllRead({ uuid: run.feedUuid });
+
+    for (const article of run.articles) {
       if (article.read_status === ArticleReadStatus.UNREAD) {
-        store.updateArticleStatus(article, ArticleReadStatus.READ);
         onArticleRead?.({ ...article, read_status: ArticleReadStatus.READ });
       }
     }
+    if (feedUnread > 0) {
+      useBearStore.getState().updateCollectionMeta(0, -feedUnread);
+      toast.success(
+        t("fusion.list.run_marked_toast", {
+          feed: first.feed_title,
+          count: feedUnread,
+        }),
+      );
+    }
+    useBearStore.getState().getSubscribes();
   };
 
   const toggleRun = (segment: RunSegment) => {

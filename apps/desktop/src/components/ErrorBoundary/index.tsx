@@ -65,15 +65,29 @@ export class ErrorBoundary extends Component<
             <h2 className="text-2xl font-bold mb-2">
               Oops, something went wrong
             </h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-6">
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
               An unexpected error occurred. Please try refreshing the page.
             </p>
-            <Button
-              onClick={this.handleReset}
-              size="lg"
-              icon={<RefreshCw size={16} />}
-              label="Try Again"
-            />
+            {this.state.error?.message && (
+              <pre className="mb-6 max-h-28 overflow-auto whitespace-pre-wrap break-all rounded-md bg-gray-100 px-3 py-2 text-left text-xs text-gray-600 dark:bg-gray-800 dark:text-gray-400">
+                {this.state.error.message}
+              </pre>
+            )}
+            <div className="flex items-center justify-center gap-3">
+              <Button
+                onClick={this.handleReset}
+                size="lg"
+                icon={<RefreshCw size={16} />}
+                label="Try Again"
+              />
+              {/* 原地重置对「缓存/热更新污染」类错误可能立刻再崩：整页刷新才是可靠出口 */}
+              <Button
+                onClick={() => window.location.reload()}
+                size="lg"
+                variant="ghost"
+                label="Reload page"
+              />
+            </div>
           </div>
         </div>
       );
