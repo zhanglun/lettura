@@ -30,8 +30,10 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
+  /* 环境光随主题呼吸（2026-11）：左暖＝主题暖色令牌（neutral 桃/matcha 焦糖/y2k 杏），
+     右＝主题 accent；两光极淡，切主题即变调 */
   background:
-    radial-gradient(560px 380px at 10% -8%, rgba(232, 80, 96, 0.05), transparent 70%),
+    radial-gradient(560px 380px at 10% -8%, color-mix(in srgb, var(--color-background-orange) 14%, transparent), transparent 70%),
     radial-gradient(640px 420px at 90% -12%, color-mix(in srgb, var(--color-accent) 5.5%, transparent), transparent 70%);
 }
 
@@ -355,6 +357,8 @@
 /* 键盘焦点：洗色 + 圆点光环两种安静信号，无彩色侧线（竖侧线＝side-tab slop，禁用） */
 .fusion-row.is-focused::after {
   background: color-mix(in srgb, var(--color-accent) 9%, transparent);
+  /* 发丝级位置提示：0.5px accent 左线（非被禁的彩色粗侧线），让 j/k 当前位可定位 */
+  border-left: 0.5px solid color-mix(in srgb, var(--color-accent) 45%, transparent);
 }
 
 .fusion-row.is-focused .fusion-dot {
@@ -1407,6 +1411,7 @@
 
 .fusion-b-row.is-focused::after {
   background: color-mix(in srgb, var(--color-accent) 9%, transparent);
+  border-left: 0.5px solid color-mix(in srgb, var(--color-accent) 45%, transparent);
 }
 
 .fusion-b-row.is-focused .fusion-b-name {

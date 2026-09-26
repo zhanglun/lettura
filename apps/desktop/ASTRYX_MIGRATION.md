@@ -60,6 +60,7 @@
 10. **fusion 中性色全面接主题** ✅（列表页跟主题变的根因修复）：`--fusion-ground/ink/sub/ter/glass/hair/hair2/warn` 全部改读 Astryx 令牌（`--color-background-body/card`、`--color-text-primary/secondary`、`--color-border`、`--color-error`）；散落的 92 处硬编码灰 rgba（29,30,32 / 233,233,230 / 255,255,255 抬升 / 深色浮层 30,30,34）→ `color-mix(令牌)`；body.dark-theme 令牌覆盖块退役（light-dark() 驱动），仅保留 pink/amber/serif-ink 三个固定状态色。切主题 = 整面（玻璃、行、悬停洗色、药丸、浮层）随主题变色
 11. **列表行词汇对齐 Astryx** ✅：文章行（fusion-row）悬停从全宽平铺改为圆角 8px 内衬 ::after 洗色；三列表面移除行间发丝分隔线（分组头规则线保留）；选中/聚焦行统一半透明 accent 调 9%（accent-muted 为实心，适合 chip 不适合行洗色）；j/k 聚焦改为交互后建立（首行不再默认选中洗色）；订阅浏览帧（/local/feeds）行与分组头接上 `FeedCtxMenu`（浏览帧退订回退跳转订阅管理页）
 12. **fusion 演进：找回产品个性 + Astryx 呼吸缝** ✅：确立分工原则——Astryx 供组件词汇/行节奏/材质令牌（退让），fusion 供产品个性（环境光、宋体正文、精密密度、键盘焦点环、未读圆点，保留加强）；三列表行加 2px ground 呼吸缝（行高＝内容 52/44/42 ＋缝 2，步距不变、虚拟滚动与键盘步长兼容），悬停行完整分离为圆角芯片。修复「fusion 被削平、无间隔」
+13. **产品签名随主题呼吸 + 发丝位置线** ✅：环境光左暖从固定 rgba 红改为 `color-mix(background-orange 14%)`（各主题暖色令牌：neutral 桃/matcha 焦糖/y2k 杏/chocolate 焦糖），右光跟 accent；j/k 焦点行（文章行＋浏览帧当前源）加 0.5px accent 45% 发丝左线作位置提示
 
 每批次完成标准：tsc 0 错、215 测试（按需更新）全绿、生产构建通过、关键态视觉确认；
 同步更新 `DESIGN.md` 与本文件勾选。

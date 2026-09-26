@@ -14,7 +14,7 @@
 | `--ground` | `#F4F4F1` | 画布 |
 | `--glass` | `rgba(255,255,255,.78)` + `backdrop-filter: blur(22px) saturate(1.5)` | 主面板 / 播放卡 / 命令面板 |
 | 浮层面板 | `rgba(255,255,255,.94)` + `blur(28px) saturate(1.6)` · radius 14 · 投影 `0 4px 10px .06` + `0 36px 80px -16px .4` | ⌘K / 添加 / 帮助 / 播放列表 / 睡眠菜单——**全套浮层共用一套材质**，不出现新容器类型（夜读本 `rgba(30,30,34,.92)` + 黑基投影） |
-| 环境光 | 红 `rgba(232,80,96,.05)` 左上（固定暖意）+ 靛侧右上 radial（`color-mix` 从 `--color-accent` 派生 ≈5.5%） | 画布氛围，极淡 |
+| 环境光 | **随主题呼吸（2026-11）**：左上＝`color-mix(background-orange 14%)` 主题暖调（neutral 桃/matcha 焦糖/y2k 杏/chocolate 焦糖），右上＝`accent 5.5%`；两光极淡，切主题即变调 | 画布氛围 |
 | `--ink` / `--sub` / `--ter` | `#1D1E20` / `#6A6C6E` / `#9EA0A2` | 文字三级 |
 | `--hair` / `--hair2` | `rgba(29,30,32,.08)` / `.13` | 发丝线 / 边框 |
 | fusion 中性阶 | **全部接 Astryx 主题令牌**（2026-10 契约）：ground=`background-body`、glass=`card 80% 混`、ink/sub=`text-primary/secondary`、ter=48% 混、hair=`border`、warn=`error`；行/悬停/浮层的中性 rgba 一律 `color-mix` 令牌派生——切主题即整面变色；pink/amber/serif-ink 为固定状态色（夜读暖墨除外） |
@@ -57,7 +57,7 @@
 |---|---|
 | 未读 | 6px 靛蓝圆点 |
 | 已读 | 圆点转灰，题转灰 400 |
-| 键盘焦点 | 浅底 `.055` + 圆点 3px 光环（`color-mix(--color-accent 35%)`）——两种安静信号，**无彩色竖侧线**（侧线＝side-tab slop，全线禁用；硬状态，禁 hover 洗色边界） |
+| 键盘焦点 | 9% accent 洗底 + 圆点 3px 光环 + **0.5px 发丝左线**（accent 45% mix，发丝级位置提示，非彩色粗侧线）——让 j/k 当前位在长列表可定位 |
 | 播放中 | 源列「播放中」靛蓝字 |
 | 星标 | 行尾琥珀星 |
 | 同步失败 | 源列 `#C4564A` + 重试 |
