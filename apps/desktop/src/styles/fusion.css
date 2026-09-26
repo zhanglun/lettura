@@ -2135,14 +2135,15 @@ body.fusion-context-menu-open .fusion-set-body {
   min-width: 0;
 }
 
+.astryx-dialog.fusion-folder-form .astryx-layout-header > div {
+  padding-inline: 0;
+}
+
 .astryx-dialog.fusion-folder-form .astryx-heading,
 .astryx-dialog.fusion-folder-form .astryx-text {
   font-family: var(--font-family-body);
 }
 
-.astryx-dialog.fusion-folder-form .astryx-text-input {
-  padding-inline-start: calc(var(--spacing-4) - var(--border-width));
-}
 
 .fusion-subs-fh {
   display: flex;
