@@ -102,9 +102,6 @@ pub struct UserConfig {
   #[serde(default = "default_astryx_theme")]
   pub astryx_theme: String,
 
-  /// 平台源生成器用的 RSSHub 实例（默认公共；可填自建/镜像）
-  #[serde(default = "default_rsshub_instance")]
-  pub rsshub_instance: String,
   /// 自定义生成路由，一行一条：`匹配 => 路由`
   #[serde(default)]
   pub generator_routes: Vec<String>,
@@ -134,9 +131,6 @@ fn default_astryx_theme() -> String {
   "neutral".to_string()
 }
 
-fn default_rsshub_instance() -> String {
-  "https://rsshub.app".to_string()
-}
 
 impl Default for UserConfig {
   fn default() -> Self {
@@ -162,7 +156,6 @@ impl Default for UserConfig {
       reader_preset: default_reader_preset(),
       card_density: default_card_density(),
       astryx_theme: default_astryx_theme(),
-      rsshub_instance: default_rsshub_instance(),
       generator_routes: vec![],
     }
   }

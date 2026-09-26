@@ -195,8 +195,6 @@
     }
   },
   "settings": {
-    "rsshub_instance": "RSSHub instance",
-    "rsshub_instance_help": "Used to generate platform feeds (Bilibili/Zhihu/Weibo/YouTube…). Default is the public rsshub.app; point it at your own instance or a mirror",
     "generator_routes": "Custom generator routes",
     "generator_routes_help": "One per line: `match => route`. The left side is treated as a regex (a bare domain works), and a route starting with http is used as the feed URL directly",
     "subtitle": "Sync, appearance, OPML and data — all on one page.",
@@ -556,7 +554,6 @@
     },
     "browse": {
       "sync_failed": "Sync failed",
-      "via_route": "via RSSHub",
       "folder_sources": "{{count}} sources",
       "folder_unread": "{{count}} unread",
       "empty_title": "No subscriptions yet",
@@ -648,19 +645,13 @@
       "ph_any": "Paste any address: RSS, a site homepage, Bilibili/Zhihu/Weibo, a newsletter…",
       "recent": "RECENT",
       "candidates": "{{count}} feeds found",
-      "gen_local": "Generator",
-      "gen_route_ph": "RSSHub route, e.g. bilibili/user/123456",
-      "gen_apply": "Convert & preview",
-      "gen_instance": "instance {{instance}}",
       "new_folder": "New group…",
       "new_folder_ph": "Group name",
       "create": "Create",
       "done_toast": "Subscribed to “{{title}}” · {{count}} articles synced{{folder}}",
-      "foot_hint": "Platform feeds use the RSSHub instance from Settings (now {{instance}})",
       "detecting": "Detecting address…",
       "err_no_feed": "No feed found — try an RSS address (.xml / /feed) or a platform homepage link",
-      "ungrouped": "Ungrouped",
-      "foot_rsshub": "Platform feeds generated via RSSHub, no self-hosting"
+      "ungrouped": "Ungrouped"
     },
     "profile": {
       "unread_count": "{{count}} unread",

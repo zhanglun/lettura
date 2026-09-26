@@ -74,7 +74,7 @@ describe("AddFeedChannel（2026-09-25 重梳理后的流程）", () => {
     vi.useFakeTimers();
     storeState.value = {
       subscribes: [],
-      userConfig: { rsshub_instance: "https://rsshub.mine.dev", generator_routes: [] },
+      userConfig: { generator_routes: [] },
       addNewFeed: vi.fn(),
       getSubscribes: vi.fn(() => Promise.resolve()),
       initCollectionMetas: vi.fn(),
@@ -136,71 +136,19 @@ describe("AddFeedChannel（2026-09-25 重梳理后的流程）", () => {
     expect(chips[0].getAttribute("aria-label")).toContain("sspai.com/feed");
   });
 
-  it("已知平台主页走生成器快通道：只发一次请求（跳过整轮发现）并标 generator:<route>", async () => {
-    fetchFeed.mockResolvedValue({
-      feed: { ...FEED, title: "某 UP 主" },
-      resolved_url: "https://rsshub.mine.dev/bilibili/user/2207410",
-      candidates: [],
-      entries: [],
-      message: "",
-    });
-
-    renderPanel();
-    typeInto(screen.getByRole("textbox"), "https://space.bilibili.com/2207410");
-    await act(async () => {
-      vi.advanceTimersByTime(500);
-    });
-    await act(async () => {
-      await Promise.resolve();
-    });
-
-    // 关键：不再先探测主页（省掉 1 + N 个串行请求），直接按路由生成地址
-    expect(fetchFeed).toHaveBeenCalledTimes(1);
-    expect(fetchFeed).toHaveBeenCalledWith(
-      "https://rsshub.mine.dev/bilibili/user/2207410",
-      "generator:bilibili",
-      "video",
-    );
-    expect(document.querySelector(".fusion-card .gen")?.textContent).toContain("bilibili/user/2207410");
-  });
-
-  it("生成地址被 403 拒绝 → 路由行给出「换实例」的可操作提示（不是笼统的没找到）", async () => {
-    fetchFeed.mockResolvedValueOnce({
-      feed: null,
-      resolved_url: "",
-      candidates: [],
-      entries: [],
-      message: "HTTP 403 Forbidden",
-    });
-
-    renderPanel();
-    typeInto(screen.getByRole("textbox"), "https://space.bilibili.com/2207410");
-    await act(async () => {
-      vi.advanceTimersByTime(500);
-    });
-    await act(async () => {
-      await Promise.resolve();
-    });
-
-    // 测试环境的 t() 回显 key：断"换实例"那句顶替了普通的实例提示
-    const genRow = document.querySelector(".fusion-gen")?.textContent || "";
-    expect(genRow).toContain("fusion.add.gen_refused");
-    expect(genRow).not.toContain("fusion.add.gen_instance");
-  });
-
-  it("站点自带 feed 的平台（YouTube）：先走发现，发现不到才回落到生成器", async () => {
+  it("站点自带 feed 的生成器（Newsletter）：先走发现，发现不到才回落到生成的 feed 地址", async () => {
     fetchFeed
       .mockResolvedValueOnce({ feed: null, message: "No feed found on that page" })
       .mockResolvedValueOnce({
-        feed: { ...FEED, title: "某频道" },
-        resolved_url: "https://rsshub.mine.dev/youtube/channel/UCabc",
+        feed: { ...FEED, title: "某 Newsletter" },
+        resolved_url: "https://foo.substack.com/feed",
         candidates: [],
         entries: [],
         message: "",
       });
 
     renderPanel();
-    typeInto(screen.getByRole("textbox"), "https://www.youtube.com/channel/UCabc");
+    typeInto(screen.getByRole("textbox"), "https://foo.substack.com");
     await act(async () => {
       vi.advanceTimersByTime(500);
     });
@@ -208,43 +156,13 @@ describe("AddFeedChannel（2026-09-25 重梳理后的流程）", () => {
       await Promise.resolve();
     });
 
-    // 第一次必须是原始频道页（它自己声明了 feed），不是生成地址
-    expect(fetchFeed).toHaveBeenNthCalledWith(1, "https://www.youtube.com/channel/UCabc", undefined, undefined);
+    // 第一次必须是原始主页（它自己声明了 feed），不是生成地址
+    expect(fetchFeed).toHaveBeenNthCalledWith(1, "https://foo.substack.com", undefined, undefined);
     expect(fetchFeed).toHaveBeenNthCalledWith(
       2,
-      "https://rsshub.mine.dev/youtube/channel/UCabc",
-      "generator:youtube",
-      "video",
-    );
-  });
-
-  it("都不行 → 错误态带生成器行；手填路由后按实例预览（用户输入不可控的出口）", async () => {
-    fetchFeed
-      .mockResolvedValueOnce({ feed: null, message: "No feed found on that page" })
-      .mockResolvedValueOnce({ feed: FEED, resolved_url: "https://rsshub.mine.dev/custom/route", candidates: [], entries: [], message: "" });
-
-    renderPanel();
-    typeInto(screen.getByRole("textbox"), "https://unknown.example.com/me");
-    await act(async () => {
-      vi.advanceTimersByTime(500);
-    });
-
-    const genInput = document.querySelector(".fusion-gen input") as HTMLInputElement;
-    expect(genInput).toBeTruthy();
-    expect(document.querySelector(".fusion-gen .hp")?.textContent).toContain("https://rsshub.mine.dev");
-
-    typeInto(genInput, "custom/route => video");
-    await act(async () => {
-      fireEvent.click(screen.getByText("fusion.add.gen_apply"));
-    });
-    await act(async () => {
-      await Promise.resolve();
-    });
-
-    expect(fetchFeed).toHaveBeenLastCalledWith(
-      "https://rsshub.mine.dev/custom/route",
-      "generator:custom",
-      "video",
+      "https://foo.substack.com/feed",
+      "generator:newsletter",
+      "email",
     );
   });
 

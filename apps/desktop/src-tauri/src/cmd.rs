@@ -424,16 +424,7 @@ pub fn get_starter_packs() -> Result<Vec<sources::models::StarterPackSummary>, S
 #[command]
 pub fn preview_pack(pack_id: String) -> Result<sources::models::PackPreviewResponse, String> {
   let pack = sources::starter_pack::load_pack(&pack_id)?;
-  // 空状态的 starter pack 卡片是逐条 subscribeFeed（不走 install_pack），
-  // 所以实例改写要在这里做一次：包里的 rsshub.app 源按设置实例改写
-  let sources = pack
-    .sources
-    .into_iter()
-    .map(|mut source| {
-      source.feed_url = sources::starter_pack::rewrite_rsshub_instance(&source.feed_url);
-      source
-    })
-    .collect();
+  let sources = pack.sources;
 
   Ok(sources::models::PackPreviewResponse {
     id: pack.id,

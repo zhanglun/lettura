@@ -80,8 +80,6 @@ declare interface UserConfig {
   /** Astryx 组件主题 slug（默认 neutral） */
   astryx_theme?: string;
 
-  /** 平台源生成器用的 RSSHub 实例（默认公共 rsshub.app，可填自建/镜像） */
-  rsshub_instance?: string;
   /** 自定义生成路由，一行一条：`匹配 => 路由`（详见 settings 帮助文字） */
   generator_routes?: string[];
 }

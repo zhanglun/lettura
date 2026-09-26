@@ -13,7 +13,6 @@
     { "feed_url": "https://www.engadget.com/rss.xml", "title": "Engadget", "site_url": "https://www.engadget.com", "language": "en" },
     { "feed_url": "https://gizmodo.com/rss", "title": "Gizmodo", "site_url": "https://gizmodo.com", "language": "en" },
     { "feed_url": "https://www.zdnet.com/news/rss.xml", "title": "ZDNet", "site_url": "https://www.zdnet.com", "language": "en" },
-    { "feed_url": "https://rsshub.app/theinformation", "title": "The Information", "site_url": "https://theinformation.com", "language": "en" },
     { "feed_url": "https://9to5mac.com/feed/", "title": "9to5Mac", "site_url": "https://9to5mac.com", "language": "en" },
     { "feed_url": "https://www.androidpolice.com/feed/", "title": "Android Police", "site_url": "https://www.androidpolice.com", "language": "en" },
     { "feed_url": "https://thenextweb.com/feed/", "title": "The Next Web", "site_url": "https://thenextweb.com", "language": "en" },

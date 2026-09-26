@@ -211,8 +211,6 @@
     }
   },
   "settings": {
-    "rsshub_instance": "RSSHub 实例",
-    "rsshub_instance_help": "平台源（B站/知乎/微博/YouTube 等）用它生成 feed 地址；默认公共 rsshub.app，可填自建或镜像",
     "generator_routes": "自定义生成路由",
     "generator_routes_help": "一行一条：`匹配 => 路由`。左侧按正则用（域名也行），右侧以 http 开头则直接当 feed 地址",
     "subtitle": "同步、外观、OPML 与数据，都在这一页。",
@@ -572,7 +570,6 @@
     },
     "browse": {
       "sync_failed": "同步失败",
-      "via_route": "经 RSSHub",
       "folder_sources": "{{count}} 源",
       "folder_unread": "{{count}} 未读",
       "empty_title": "还没有订阅",
@@ -664,19 +661,13 @@
       "ph_any": "粘贴任意地址：RSS、站点主页、B站/知乎/微博、Newsletter…",
       "recent": "最近条目 RECENT",
       "candidates": "发现 {{count}} 个 feed",
-      "gen_local": "生成器",
-      "gen_route_ph": "填 RSSHub 路由，例如 bilibili/user/123456",
-      "gen_apply": "转换并预览",
-      "gen_instance": "实例 {{instance}}",
       "new_folder": "新建分组…",
       "new_folder_ph": "分组名称",
       "create": "创建",
       "done_toast": "已订阅「{{title}}」· 已同步 {{count}} 篇{{folder}}",
-      "foot_hint": "平台源经设置里的 RSSHub 实例生成（当前 {{instance}}）",
       "detecting": "正在探测地址…",
       "err_no_feed": "没找到 feed——试试 RSS 地址（.xml / /feed）或平台主页链接",
-      "ungrouped": "未分组",
-      "foot_rsshub": "平台源经 RSSHub 生成，无需自建"
+      "ungrouped": "未分组"
     },
     "profile": {
       "unread_count": "{{count}} 未读",

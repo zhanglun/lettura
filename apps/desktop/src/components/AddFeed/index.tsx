@@ -17,9 +17,7 @@ import { FeedResItem } from "@/db";
 import { RouteConfig } from "@/config";
 import {
   BUILTIN_GENERATORS,
-  DEFAULT_RSSHUB_INSTANCE,
   FeedGenerator,
-  generateFeedUrl,
   matchGenerator,
   parseUserGenerators,
 } from "@/helpers/feedGenerators";
@@ -34,24 +32,20 @@ interface PreviewEntry {
 
 interface Preview {
   feed: any;
-  /** 真正生效的 feed 地址（粘网页时 != 输入） */
+  /** 真正生效的 feed 地址 */
   resolvedUrl: string;
   /** 探测试过的候选地址（多个让用户换） */
   candidates: string[];
   entries: PreviewEntry[];
-  /** 用了生成器时：落库的来源 generator:<route> 与声明的载体 */
+  /** 来源键（`generator:newsletter` 等）＋ 声明的载体 */
   origin?: string;
   carrierHint?: Carrier;
-  /** 生成器文案/路由/实例（可编辑重试） */
-  generatorLabel?: string;
-  route?: string;
-  instance?: string;
 }
 
 type Phase =
   | { s: "idle" }
   | { s: "trying" }
-  | { s: "error"; message: string; route: string }
+  | { s: "error"; message: string }
   | { s: "preview"; preview: Preview }
   | { s: "subscribing" };
 
@@ -103,7 +97,6 @@ export const AddFeedChannel = (props: any) => {
 
   const [url, setUrl] = useState("");
   const [phase, setPhase] = useState<Phase>({ s: "idle" });
-  const [manualRoute, setManualRoute] = useState("");
   const [folderUuid, setFolderUuid] = useState("");
   const [creatingFolder, setCreatingFolder] = useState(false);
   const [folderName, setFolderName] = useState("");
@@ -116,8 +109,6 @@ export const AddFeedChannel = (props: any) => {
   openRef.current = open;
 
   const folders = flattenFolders(store.subscribes);
-  const instance: string =
-    store.userConfig?.rsshub_instance || DEFAULT_RSSHUB_INSTANCE;
   const generators: FeedGenerator[] = useMemo(
     () => parseUserGenerators(store.userConfig?.generator_routes),
     [store.userConfig?.generator_routes],
@@ -131,7 +122,6 @@ export const AddFeedChannel = (props: any) => {
     if (open) {
       setUrl("");
       setPhase({ s: "idle" });
-      setManualRoute("");
       setFolderUuid("");
       setCreatingFolder(false);
       setFolderName("");
@@ -161,12 +151,10 @@ export const AddFeedChannel = (props: any) => {
     return () => window.removeEventListener("keydown", onKey, true);
   }, [open, phase]);
 
-  /** 真正去探测并进入预览（target 可以是用户输入、生成器地址，或候选/手填路由） */
+  /** 真正去探测并进入预览（target 可以是用户输入、生成器地址或候选地址） */
   const previewUrl = (
     feedUrl: string,
-    meta: Partial<
-      Pick<Preview, "origin" | "carrierHint" | "generatorLabel" | "route" | "instance">
-    > = {},
+    meta: Partial<Pick<Preview, "origin" | "carrierHint">> = {},
   ) => {
     const token = ++probeRef.current;
     setPhase({ s: "trying" });
@@ -178,7 +166,6 @@ export const AddFeedChannel = (props: any) => {
           setPhase({
             s: "error",
             message: res?.message || t("fusion.add.err_no_feed"),
-            route: meta.route || "",
           });
           return;
         }
@@ -196,7 +183,7 @@ export const AddFeedChannel = (props: any) => {
       .catch((error) => {
         if (!openRef.current || token !== probeRef.current) return;
         showErrorToast(error, t("fusion.add.err_no_feed"));
-        setPhase({ s: "error", message: t("fusion.add.err_no_feed"), route: meta.route || "" });
+        setPhase({ s: "error", message: t("fusion.add.err_no_feed") });
       });
   };
 
@@ -204,7 +191,6 @@ export const AddFeedChannel = (props: any) => {
   const detect = (raw: string) => {
     if (timerRef.current) clearTimeout(timerRef.current);
     const text = raw.trim();
-    setManualRoute("");
     if (!text) {
       setPhase({ s: "idle" });
       return;
@@ -212,21 +198,6 @@ export const AddFeedChannel = (props: any) => {
 
     setPhase({ s: "trying" });
     timerRef.current = setTimeout(() => {
-      // 生成器快通道：已知平台主页（B站空间/知乎/微博/YouTube/Substack…）**直接生成并预览**，
-      // 不再先花一轮"发现"（对这类地址，常见路径探测几乎必然全空，纯属浪费用户的等待）。
-      const hit = matchGenerator(text, [...generators, ...BUILTIN_GENERATORS]);
-      if (hit && !hit.generator.nativeFeed) {
-        const generated = generateFeedUrl(hit, instance);
-        previewUrl(generated, {
-          origin: `generator:${hit.generator.key}`,
-          carrierHint: hit.generator.carrier,
-          generatorLabel: hit.generator.label,
-          route: hit.route,
-          instance,
-        });
-        return;
-      }
-
       const token = ++probeRef.current;
       dataAgent
         .fetchFeed(text)
@@ -245,17 +216,12 @@ export const AddFeedChannel = (props: any) => {
             return;
           }
 
-          // 兜底只对"站点自带 feed"的生成器（YouTube/Substack…）有效：它们才走了发现层。
-          // 其余生成器（B站/知乎/微博）是快通道直达，这里再兜一次就会拿着同一个地址
-          // 无限重试——所以必须用 nativeFeed 收口。
+          // 兜底：站点自带 feed 的生成器（Newsletter…）在发现层失败时，用生成的地址直接抓
           const fallback = matchGenerator(text, [...generators, ...BUILTIN_GENERATORS]);
-          if (fallback?.generator.nativeFeed) {
-            previewUrl(generateFeedUrl(fallback, instance), {
+          if (fallback) {
+            previewUrl(fallback.route, {
               origin: `generator:${fallback.generator.key}`,
               carrierHint: fallback.generator.carrier,
-              generatorLabel: fallback.generator.label,
-              route: fallback.route,
-              instance,
             });
             return;
           }
@@ -263,39 +229,14 @@ export const AddFeedChannel = (props: any) => {
           setPhase({
             s: "error",
             message: res?.message || t("fusion.add.err_no_feed"),
-            // 失败时也把命中的路由填回去：用户可以直接改这行再试（也是"换实例"提示的依据）
-            route: hit?.route || "",
           });
         })
         .catch((error) => {
           if (!openRef.current || token !== probeRef.current) return;
           showErrorToast(error, t("fusion.add.err_no_feed"));
-          setPhase({ s: "error", message: t("fusion.add.err_no_feed"), route: "" });
+          setPhase({ s: "error", message: t("fusion.add.err_no_feed") });
         });
     }, 400);
-  };
-
-  /** 手填/改路由 → 生成地址并预览（用户输入不可控时的出口） */
-  const applyRoute = (route: string) => {
-    // 支持三段式：`<route> => <carrier>`（用户在设置/面板里声明这条路由产出什么载体）
-    const [rawRoute, rawCarrier] = route.split("=>").map((part) => part.trim());
-    const trimmed = (rawRoute || "").trim();
-    if (!trimmed) return;
-    const carrierHint: Carrier =
-      rawCarrier === "video" || rawCarrier === "audio" || rawCarrier === "email"
-        ? rawCarrier
-        : "text";
-    const isAbsolute = /^https?:\/\//i.test(trimmed);
-    const feedUrl = isAbsolute
-      ? trimmed
-      : `${instance.replace(/\/+$/, "")}/${trimmed.replace(/^\/+/, "")}`;
-    previewUrl(feedUrl, {
-      origin: isAbsolute ? undefined : `generator:${trimmed.split("/")[0] || "custom"}`,
-      carrierHint,
-      generatorLabel: t("fusion.add.gen_local"),
-      route: trimmed,
-      instance,
-    });
   };
 
   const createFolderAndSelect = async () => {
@@ -321,7 +262,7 @@ export const AddFeedChannel = (props: any) => {
       .then(async (res: any) => {
         if (res[2] !== "") {
           toast.error(`${t("Unable to subscribe")}：${res[2]}`);
-          setPhase({ s: "error", message: res[2], route: preview.route || "" });
+          setPhase({ s: "error", message: res[2] });
           return;
         }
 
@@ -355,7 +296,7 @@ export const AddFeedChannel = (props: any) => {
       })
       .catch((error) => {
         showErrorToast(error, t("Failed to subscribe to feed"));
-        setPhase({ s: "error", message: t("Failed to subscribe to feed"), route: preview.route || "" });
+        setPhase({ s: "error", message: t("Failed to subscribe to feed") });
       });
   };
 
@@ -365,10 +306,6 @@ export const AddFeedChannel = (props: any) => {
   const carrierOfPreview = preview
     ? getFeedCarrier({ carrier: preview.feed?.carrier, origin: preview.feed?.origin })
     : null;
-
-  /** 地址走的是路由/实例、却被 401/403 拒绝：最常见是公共 RSSHub 实例限流 → 提示换实例 */
-  const instanceRefused =
-    phase.s === "error" && !!phase.route && /\b(401|403)\b/.test(phase.message);
 
   return (
     <>
@@ -425,25 +362,6 @@ export const AddFeedChannel = (props: any) => {
                 <Button variant="ghost" size="sm" label={t("Retry")} onClick={() => detect(url)} />
               </div>
             )}
-            {phase.s === "error" && (
-              <div className="fusion-gen">
-                <span className="lb">{t("fusion.add.gen_local")}</span>
-                <TextInput
-                  size="sm"
-                  isLabelHidden
-                  label={t("fusion.add.gen_route_ph")}
-                  placeholder={t("fusion.add.gen_route_ph")}
-                  value={phase.route || manualRoute}
-                  onChange={(v) => setManualRoute(v)}
-                />
-                <Button variant="ghost" size="sm" label={t("fusion.add.gen_apply")} onClick={() => applyRoute(manualRoute || phase.route)} />
-                <span className="hp">
-                  {instanceRefused
-                    ? t("fusion.add.gen_refused")
-                    : t("fusion.add.gen_instance", { instance })}
-                </span>
-              </div>
-            )}
             {preview && (
               <div className="fusion-card">
                 <div className="c-head">
@@ -490,17 +408,6 @@ export const AddFeedChannel = (props: any) => {
                         onPressedChange={() => previewUrl(candidate)}
                       />
                     ))}
-                  </div>
-                )}
-
-                {preview.generatorLabel && (
-                  <div className="gen">
-                    <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
-                      <path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9M13.5 2.5V5h-2.5" />
-                    </svg>
-                    {preview.generatorLabel}
-                    <code>{preview.route || preview.resolvedUrl}</code>
-                    <span>{t("fusion.add.gen_instance", { instance: preview.instance || instance })}</span>
                   </div>
                 )}
 
@@ -557,8 +464,6 @@ export const AddFeedChannel = (props: any) => {
         <div className="fusion-float-foot">
           <span>⏎ {t("Subscribe")}</span>
           <span>esc {t("Cancel")}</span>
-          <span className="fusion-spring" />
-          <span>{t("fusion.add.foot_hint", { instance })}</span>
         </div>
       </section>
       {props.children}

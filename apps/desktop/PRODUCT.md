@@ -17,14 +17,14 @@ Lettura 是一个本地优先（Tauri + SQLite）的开源订阅阅读器。它�
 ## Positioning
 
 - 打开即未读列表，读完就走（不制造停留义务，不用 AI 替用户判断）
-- 订阅你想看的，包括没有 RSS 的来源（经 RSSHub / Kill the Newsletter 生态的平台源生成器，把运维门槛挡在界面后面）
+- 订阅你想看的：有 feed 的站点直接订阅（含 Newsletter 这类自带 feed 的来源）
 - 播客即文章：带音频附件的条目就是一篇文章，行内 ▶ + 底部迷你播放条
 - 本地优先、免费开源、无服务端依赖
 
 ## Operating Context
 
 - 桌面 app（Tauri v2，macOS 为主）：React/Vite/TS 前端 + Rust 后端 + SQLite(Diesel)
-- 订阅：RSS/Atom、OPML 导入导出、平台源（B站/知乎/微博/Newsletter）
+- 订阅：RSS/Atom、OPML 导入导出、自带 feed 的 Newsletter
 - 键盘优先（j/k、Enter/o、m/M、f、v、space、R、`/` 或 ⌘K、`?` 帮助）
 - 中英双语界面（i18n，zh/en locale）
 - 后台定时同步已有（scheduler）；正文只渲染 feed 自带内容，不自动抓全文
@@ -33,7 +33,7 @@ Lettura 是一个本地优先（Tauri + SQLite）的开源订阅阅读器。它�
 
 0.2.0 能力清单（已确认）：
 
-- 订阅管理（添加/分组/退订，含平台源生成器）
+- 订阅管理（添加/分组/退订）
 - 未读列表（跨源、时间倒序、纯文本行）
 - 单栏阅读（渲染 feed 全文；`v` 打开原文）
 - 星标、已读历史
@@ -47,6 +47,7 @@ Lettura 是一个本地优先（Tauri + SQLite）的开源订阅阅读器。它�
 - 卡片流、多面板并列、复杂设置
 - 收藏夹/标签 UI（数据保留，界面不进 0.2.0）
 - 自动抓取摘要 feed 的全文
+- 平台源转换（RSSHub 等）：2026-09-26 决策移除——公共实例不可靠（Cloudflare 拦截/超时），自建运维超出本地优先的产品边界
 
 ## Brand Commitments
 

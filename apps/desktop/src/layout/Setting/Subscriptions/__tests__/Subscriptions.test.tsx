@@ -101,7 +101,7 @@ vi.mock("@/stores", () => ({
           item_type: "channel",
           title: "The Information",
           link: "https://theinformation.com",
-          feed_url: "https://rsshub.app/theinformation",
+          feed_url: "https://example.com/feed",
           unread: 0,
           health_status: 2,
           last_sync_date: "2026-05-26T09:57:00Z",

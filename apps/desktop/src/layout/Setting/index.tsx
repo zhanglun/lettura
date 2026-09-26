@@ -57,7 +57,6 @@ function SRow({
 export function SettingPage() {
   const { t, i18n } = useTranslation();
   // 文本类设置用草稿 + 失焦提交（其余控件即改即写；逐字符写 TOML 太重）
-  const [rsshubDraft, setRsshubDraft] = useState<string | null>(null);
   const [routesDraft, setRoutesDraft] = useState<string | null>(null);
   const navigate = useNavigate();
   const search = useLocation().search;
@@ -417,23 +416,6 @@ export function SettingPage() {
                 />
                 <span className="fusion-chip">{cfg?.threads ?? 3} / 5</span>
               </div>
-            </SRow>
-            <SRow
-              label={t("settings.rsshub_instance")}
-              help={t("settings.rsshub_instance_help")}
-            >
-              <TextInput
-                label={t("settings.rsshub_instance")}
-                isLabelHidden
-                value={rsshubDraft ?? cfg?.rsshub_instance ?? ""}
-                size="sm"
-                onChange={(v) => setRsshubDraft(v)}
-                onBlur={() => {
-                  if (rsshubDraft === null) return;
-                  store.updateUserConfig({ ...cfg, rsshub_instance: rsshubDraft.trim() });
-                  setRsshubDraft(null);
-                }}
-              />
             </SRow>
             <SRow
               label={t("settings.generator_routes")}

@@ -16,10 +16,6 @@
     { "feed_url": "https://towardsdatascience.com/feed", "title": "Towards Data Science", "site_url": "https://towardsdatascience.com", "language": "en" },
     { "feed_url": "https://artificialintelligence-news.com/feed", "title": "AI News", "site_url": "https://artificialintelligence-news.com", "language": "en" },
     { "feed_url": "https://blog.google/innovation-and-ai/technology/ai/rss/", "title": "Google Research Blog", "site_url": "https://blog.google", "language": "en" },
-    { "feed_url": "https://rsshub.app/anthropic/news", "title": "Anthropic News", "site_url": "https://www.anthropic.com", "language": "en" },
-    { "feed_url": "https://www.microsoft.com/en-us/research/feed/", "title": "Microsoft Research Blog", "site_url": "https://www.microsoft.com/research", "language": "en" },
-    { "feed_url": "https://rsshub.app/stabilityai/blog", "title": "Stability AI Blog", "site_url": "https://stability.ai", "language": "en" },
-    { "feed_url": "https://rsshub.app/deeplearningai/the-batch", "title": "The Batch (DeepLearning.AI)", "site_url": "https://www.deeplearning.ai", "language": "en" },
-    { "feed_url": "https://rsshub.app/metaai/blog", "title": "Meta AI Blog", "site_url": "https://ai.meta.com", "language": "en" }
+    { "feed_url": "https://www.microsoft.com/en-us/research/feed/", "title": "Microsoft Research Blog", "site_url": "https://www.microsoft.com/research", "language": "en" }
   ]
 }

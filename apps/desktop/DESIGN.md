@@ -132,13 +132,13 @@
 | 控件词汇 | 分段＝过滤条 tab 语法（胶囊容器，自研 Seg）；下拉＝Astryx `Selector`(sm)；开关＝Astryx `Switch`(sm)；滑杆＝Astryx `Slider`（固定 140 宽）+ 数值 chip；文本＝Astryx `TextInput`/`TextArea`(sm)；主钮＝Astryx `Button` primary(sm)、幽灵钮＝`ghost`(sm)；键帽＝Astryx `Kbd`（esc/m/⌘K，平台感知）；组件主题＝Astryx 主题选择器（neutral 默认，7 选 1，`userConfig.astryx_theme` 持久化，CSS 由 `@scope([data-astryx-theme])` 隔离） |
 | 校准台 | 外观段尾预览块：列表行样本 + 宋体段落，实时反映字号/行高/密度/强调色；拖动即显影，无过渡 |
 | 订阅行 | 列表行 42px：类型徽章/题/未读药丸/域名/时间；分组头部 32px 可折叠。管理页不做整行 hover，只在悬停时显隐操作钮；右键菜单＝Astryx `ContextMenu`（sm、声明式包裹行，移动分组为悬停子菜单），退订钮常态 ghost、destructive 只出现在菜单/确认语义中 |
-| 生成器行 | 「RSSHub 实例」＝Astryx `TextInput`(sm)；「自定义生成路由」＝Astryx `TextArea`(sm)，mono 内容（一行一条 `匹配 => 路由`）。文本类设置**失焦提交**（其余控件即改即写，逐字符写 TOML 太重） |
+| 生成规则行 | 「自定义生成规则」＝Astryx `TextArea`(sm)，mono 内容（一行一条 `匹配 => feed 地址`）。文本类设置**失焦提交**（其余控件即改即写，逐字符写 TOML 太重） |
 
 状态反馈即时生效（无保存钮），写入本地配置；同步失败在健康行与订阅行以 `--warn` 呈现并附重试。
 
-**添加订阅（渐进式面板，参考实现 `.impeccable/mocks/decision/add.html`；2026-09-25 重梳理）**：⌘K 同位同材质的 640px 浮层。一个输入框粘贴**任何**地址——顺序是**发现优先**：后端先直接解析，失败则当网页处理（读 `<link rel="alternate">` 声明的 feed、再试 `/feed` `/rss` `/atom.xml` `/index.xml` `/feed.xml` `/rss.xml`），把命中的地址作为**生效地址**；发现不了才退回平台生成器。输入框内显影类型徽章（RSS / 播 / 视）；探测中是行内 spinner，失败是行内 `--warn` + 重试（永不用弹窗）。
+**添加订阅（渐进式面板，参考实现 `.impeccable/mocks/decision/add.html`；2026-09-25 重梳理）**：⌘K 同位同材质的 640px 浮层。一个输入框粘贴**任何**地址——顺序是**发现优先**：后端先直接解析，失败则当网页处理（读 `<link rel="alternate">` 声明的 feed、再试 `/feed` `/rss` `/atom.xml` `/index.xml` `/feed.xml` `/rss.xml`），把命中的地址作为**生效地址**；发现不了再试生成规则表（Newsletter 等）。输入框内显影类型徽章（RSS / 播 / 视）；探测中是行内 spinner，失败是行内 `--warn` + 重试（永不用弹窗）。
 
-预览卡（唯一动效：grow 220ms 缓出）：源信息 + **最近条目**（列表行收紧至 34px，订阅前就能看到会得到什么）+ 多个候选时列出 chips 让用户换 + **生效地址**（平台源显示路由与所用实例）+ 分组下拉（含「新建分组…」）+ 订阅钮（`--accent` 底）。⏎ 订阅 / esc 关闭。
+预览卡（唯一动效：grow 220ms 缓出）：源信息 + **最近条目**（列表行收紧至 34px，订阅前就能看到会得到什么）+ 多个候选时列出 chips 让用户换 + 分组下拉（含「新建分组…」）+ 订阅钮（`--accent` 底）。⏎ 订阅 / esc 关闭。
 
 **不写死平台清单**（用户输入不可控）：内置表只是"便利匹配"（B站/知乎/微博/YouTube/Newsletter）；用户可在设置里加自定义路由（`匹配 => 路由`，右侧以 http 开头即直接当 feed 地址）；发现失败时面板里还能**手填路由**现生成现预览。生成器用的实例是设置项。
 

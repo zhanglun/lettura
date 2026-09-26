@@ -20,7 +20,6 @@
     { "feed_url": "https://developers.cloudflare.com/changelog/rss.xml", "title": "Cloudflare Changelog", "site_url": "https://developers.cloudflare.com", "language": "en" },
     { "feed_url": "https://www.thoughtworks.com/rss/insights.rss", "title": "ThoughtWorks Insights", "site_url": "https://www.thoughtworks.com", "language": "en" },
     { "feed_url": "https://vercel.com/atom", "title": "Vercel Blog", "site_url": "https://vercel.com", "language": "en" },
-    { "feed_url": "https://stripe.com/blog/feed.rss", "title": "Stripe Blog", "site_url": "https://stripe.com/blog", "language": "en" },
-    { "feed_url": "https://rsshub.app/lesswrong/shortform?user=PaulGraham", "title": "Paul Graham Essays", "site_url": "https://paulgraham.com", "language": "en" }
+    { "feed_url": "https://stripe.com/blog/feed.rss", "title": "Stripe Blog", "site_url": "https://stripe.com/blog", "language": "en" }
   ]
 }

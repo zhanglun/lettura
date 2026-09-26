@@ -19,7 +19,6 @@
     { "feed_url": "https://feed.indiehackers.world/posts.rss", "title": "Indie Hackers", "site_url": "https://www.indiehackers.com", "language": "en" },
     { "feed_url": "https://a16z.com/feed/", "title": "a16z Blog", "site_url": "https://a16z.com", "language": "en" },
     { "feed_url": "https://platformer.news/feed", "title": "Platformer", "site_url": "https://platformer.news", "language": "en" },
-    { "feed_url": "https://rsshub.app/theinformation", "title": "The Information", "site_url": "https://theinformation.com", "language": "en" },
     { "feed_url": "https://m.signalvnoise.com/feed/", "title": "Signal v. Noise Archive", "site_url": "https://m.signalvnoise.com", "language": "en" }
   ]
 }
