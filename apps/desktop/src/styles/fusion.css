@@ -450,7 +450,9 @@
 /* ── 发丝行列表 ──（类型由缩略图预设色承载，不再设徽章列） */
 .fusion-row {
   display: grid;
-  grid-template-columns: 20px 56px minmax(0, 1fr) 170px 92px 56px;
+  /* 时间列 max-content：相对时间（"about 13 hours ago" ≈108px）在固定 92px 里 nowrap
+     会溢出压进操作图标列；宽度差由标题列（1fr）吸收，操作列放宽到 64px 容纳双图标 */
+  grid-template-columns: 20px 56px minmax(0, 1fr) 170px max-content 64px;
   align-items: center;
   /* Astryx 呼吸缝：步距 54 = 内容 52 + 行间 2px（ground 透出成缝） */
   height: 52px;
