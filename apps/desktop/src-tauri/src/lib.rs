@@ -81,6 +81,19 @@ pub fn run() {
       let app_handle = app.handle().clone();
       let main_window = app.get_webview_window("main").unwrap();
 
+      // `tauri dev` 的 CLI/Vite 会响应终端 Ctrl+C，但 macOS GUI 进程不会因此
+      // 自动退出，最终被重新托管给 PID 1。开发模式下让应用本体接住 SIGINT，
+      // 走 Tauri 的正常退出路径；发布版仍保持托盘常驻语义。
+      #[cfg(debug_assertions)]
+      {
+        let app_handle = app_handle.clone();
+        tauri::async_runtime::spawn(async move {
+          if tokio::signal::ctrl_c().await.is_ok() {
+            app_handle.exit(0);
+          }
+        });
+      }
+
       match env::var("LETTURA_ENV") {
         Ok(_env) => {
           main_window.set_title("Lettura in developing").unwrap();
