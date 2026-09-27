@@ -1,4 +1,7 @@
-use super::schema::{article_collections, article_tags, articles, collections, feed_metas, feeds, folders, tags, topic_follows, topics, topic_articles, user_feedback};
+use super::schema::{
+  article_collections, article_tags, articles, collections, feed_metas, feeds, folders, tags,
+  topic_articles, topic_follows, topics, user_feedback,
+};
 use diesel::sql_types::*;
 use diesel::sqlite::Sqlite;
 use serde::Serialize;
@@ -61,6 +64,16 @@ pub struct Feed {
 
   #[diesel(sql_type = Text)]
   pub carrier: String,
+
+  /// 哪个抓取器负责周期同步：rss | mail | bilibili | site
+  #[diesel(sql_type = Text)]
+  pub provider: String,
+
+  #[diesel(sql_type = Nullable<Text>)]
+  pub account_uuid: Option<String>,
+
+  #[diesel(sql_type = Nullable<Text>)]
+  pub source_config: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Insertable)]
@@ -79,6 +92,8 @@ pub struct NewFeed {
   pub sort: i32,
   /// 源级载体提示（源列表图标用）：text | audio | video | email
   pub carrier: String,
+  /// 负责周期同步的 fetcher：rss | mail | bilibili | site
+  pub provider: String,
 }
 
 #[derive(Debug, Queryable, Serialize, QueryableByName, Selectable)]
@@ -104,6 +119,36 @@ pub struct NewFeedMeta {
   pub uuid: String,
   pub folder_uuid: String,
   pub sort: i32,
+}
+
+/// 来源账户（IMAP 授权码、B站 SESSDATA 等凭据的宿主）。
+/// settings 为 provider 特定的 JSON；明文落库与 lettura.toml 同级，
+/// 不走 update_user_config 的前端 round-trip。
+#[derive(Debug, Clone, Queryable, Serialize, QueryableByName)]
+pub struct SourceAccount {
+  #[diesel(sql_type = Integer)]
+  pub id: i32,
+
+  #[diesel(sql_type = Text)]
+  pub uuid: String,
+
+  #[diesel(sql_type = Text)]
+  pub provider: String,
+
+  #[diesel(sql_type = Text)]
+  pub label: String,
+
+  #[diesel(sql_type = Text)]
+  pub settings: String,
+
+  #[diesel(sql_type = Text)]
+  pub status: String,
+
+  #[diesel(sql_type = Text)]
+  pub create_date: String,
+
+  #[diesel(sql_type = Text)]
+  pub update_date: String,
 }
 
 #[derive(Debug, Queryable, Serialize, Associations, QueryableByName)]

@@ -1,0 +1,18 @@
+[package]
+name = "fetcher-mail"
+version = "0.2.0"
+edition = "2021"
+description = "IMAP 邮箱抓取器：把指定发件人的 newsletter 邮件归一化成 FetchedArticle"
+
+[dependencies]
+fetcher-core = { path = "../fetcher-core" }
+async-imap = { version = "0.10.4", default-features = false, features = ["runtime-tokio"] }
+async-native-tls = { version = "0.5", default-features = false, features = ["runtime-tokio"] }
+mail-parser = "0.11.9"
+reqwest = { version = "0.11", features = ["json", "socks"] }
+tokio = { version = "1", features = ["full"] }
+async-trait = "0.1"
+serde_json = "1.0"
+chrono = { version = "0.4", features = ["serde"] }
+log = "0.4"
+futures-util = { version = "0.3", default-features = false, features = ["std", "async-await"] }

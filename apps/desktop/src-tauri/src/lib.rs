@@ -12,13 +12,14 @@ use actix_web::dev::ServerHandle;
 use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 use std::{env, sync::Mutex};
 use tauri::{Emitter, Manager};
-use tauri_plugin_log::{Target, TargetKind};
 use tauri_plugin_autostart::MacosLauncher;
+use tauri_plugin_log::{Target, TargetKind};
 
 mod cmd;
 mod core;
 mod db;
 mod feed;
+mod fetchers;
 mod models;
 mod schema;
 mod server;
@@ -102,6 +103,7 @@ pub fn run() {
       }
 
       let port = user_config.port.clone();
+      let scheduler_handle = app_handle.clone();
 
       // 启动 Actix 服务器
       std::thread::spawn(move || {
@@ -118,9 +120,8 @@ pub fn run() {
       feed::article::Article::purge_articles();
       feed::article::Article::purge_by_data_retention();
 
-
-      tauri::async_runtime::spawn(async {
-        crate::core::scheduler::start_scheduler().await;
+      tauri::async_runtime::spawn(async move {
+        crate::core::scheduler::start_scheduler(scheduler_handle).await;
       });
 
       Ok(())
@@ -152,6 +153,12 @@ pub fn run() {
       cmd::export_opml,
       cmd::import_opml,
       cmd::import_opml_as_source,
+      cmd::list_source_accounts,
+      cmd::save_source_account,
+      cmd::delete_source_account,
+      cmd::test_source_account,
+      cmd::list_site_rules,
+      cmd::import_site_rule,
       core::scheduler::start_scheduler,
       core::scheduler::stop_scheduler,
       core::scheduler::is_scheduler_running,

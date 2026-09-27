@@ -1,0 +1,18 @@
+[package]
+name = "fetcher-bilibili"
+version = "0.2.0"
+edition = "2021"
+description = "B 站 UP 主动态 fetcher：wbi 签名调 web API，动态归一化成阅读器文章"
+
+[dependencies]
+fetcher-core = { path = "../fetcher-core" }
+reqwest = { version = "0.11", features = ["json"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+chrono = "0.4"
+async-trait = "0.1"
+log = "0.4"
+tokio = { version = "1", features = ["full"] }
+once_cell = "1"
+md-5 = "0.10"
+regex = "1"

@@ -78,6 +78,9 @@ diesel::table! {
         update_date -> Timestamp,
         source_id -> Nullable<Integer>,
         carrier -> Text,
+        provider -> Text,
+        account_uuid -> Nullable<Text>,
+        source_config -> Nullable<Text>,
     }
 }
 
@@ -118,6 +121,19 @@ diesel::table! {
         quality_score -> Float,
         weight -> Float,
         is_active -> Bool,
+        create_date -> Timestamp,
+        update_date -> Timestamp,
+    }
+}
+
+diesel::table! {
+    source_accounts (id) {
+        id -> Integer,
+        uuid -> Text,
+        provider -> Text,
+        label -> Text,
+        settings -> Text,
+        status -> Text,
         create_date -> Timestamp,
         update_date -> Timestamp,
     }
@@ -227,6 +243,7 @@ diesel::allow_tables_to_appear_in_same_query!(
   feeds,
   folders,
   pipeline_runs,
+  source_accounts,
   sources,
   tags,
   topic_follows,

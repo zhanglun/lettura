@@ -1,0 +1,16 @@
+# 内置示例：Hacker News 首页（HTML 选择器型规则的最小示范）
+# 字段语法：CSS 选择器 + 可选后缀（@attr 取属性、@text 取文本、缺省取 inner_html）。
+
+[route]
+key = "hn-front"
+pattern = 'news\.ycombinator\.com'
+title = "Hacker News"
+
+[route.fetch]
+url = "https://news.ycombinator.com/"
+type = "html"
+
+[route.item]
+list = "tr.athing"
+title = ".titleline a"
+link = ".titleline a@href"

@@ -7,6 +7,29 @@ config over prose when something conflicts.
 
 - Lettura is a Tauri v2 desktop feed reader: React/Vite frontend plus Rust
   backend in the `apps/desktop/src-tauri` Cargo workspace member.
+- Two overlapping workspaces share the repo tree: pnpm manages JS packages
+  (`apps/desktop`, `apps/docs`, future `packages/*` with package.json) and the
+  root Cargo.toml manages ALL Rust (member `apps/desktop/src-tauri` plus
+  `packages/*`). pnpm silently ignores Rust dirs; keep one Cargo.lock at root.
+- Subscription fetchers are separate crates under `packages/fetcher-*`
+  (`fetcher-core` = `Fetcher` trait + `FetchedArticle`; `fetcher-rss` = parse/
+  discovery layer; `fetcher-mail` = IMAP (async-imap 0.10 + mail-parser 0.11,
+  both feature-locked); `fetcher-bilibili` = wbi-signed web API; `fetcher-site`
+  + `site-rules` = TOML-driven site scraping engine). Fetchers are stateless
+  and must not depend on diesel/tauri/actix; the registry, probe dispatch
+  (`claims` order with rss fallback) and the `FetchedArticle → NewArticle`
+  converters live in `src-tauri/src/fetchers/mod.rs`. Sync dispatch by
+  `feeds.provider` happens in `feed/channel.rs::sync_articles`. Adding a
+  source type = new crate + one registry line. Per-source config lives in
+  `feeds.provider/account_uuid/source_config`; credentials live in the
+  `source_accounts` table (`sources/account_service.rs`, commands
+  `list/save/delete/test_source_account`). Mail syncs write a `last_uid`
+  watermark back into `source_config`.
+- Site rules: builtin TOML packs compile into `packages/site-rules/rules/`;
+  user rules live in `~/.lettura/rules/*.toml` (same key overrides, hot
+  reload on every load). `GET /api/generated/{key}?params` serves a rule's
+  output as RSS (Lettura doubles as a local converter service);
+  `GET /api/rules` lists rules. Import via `import_site_rule` command.
 - The backend has two communication paths. `src/helpers/dataAgent.ts` mixes
   Tauri IPC (`invoke` from `@tauri-apps/api/core`, implemented in
   `src-tauri/src/cmd.rs`) with localhost HTTP calls (`src/helpers/request.ts`,
@@ -32,8 +55,9 @@ config over prose when something conflicts.
   `build/`, not `dist/`.
 - Desktop build: `pnpm tauri build`.
 - Frontend tests: `pnpm test`; focused test: `pnpm test path/to/file.test.ts`.
-- Rust tests: run `cargo test` from repo root (workspace member is
-  `src-tauri`).
+- Rust tests: run `cargo test` from repo root (workspace members are
+  `src-tauri` and `packages/*`); `pnpm cargo:check|cargo:test|cargo:fmt` are
+  convenience wrappers.
 - Lint/format use Rome 11 config, not ESLint/Prettier:
   `npx rome check src/` and `npx rome format src/`.
 
@@ -79,6 +103,11 @@ config over prose when something conflicts.
 
 - Diesel schema output is `src-tauri/src/schema.rs`; migrations live in
   `src-tauri/migrations/` and are embedded by `embed_migrations!`.
+- The scheduler (`core/scheduler.rs`) is due-based: it ticks every 60s and
+  syncs feeds where `last_sync_date + (sync_interval or update_interval)` has
+  elapsed, then emits `sync://completed` `{uuid, title, inserted, error}` per
+  feed (listened in `src/App.tsx`). Feed rows keep `last_sync_date` in Local
+  time as "YYYY-MM-DD HH:MM:SS".
 - Rust modules are split by concern: `core/` for config/menu/scheduler/tray,
   `feed/` for article/channel/folder/OPML logic, and `server/` for Actix routes.
   Tray and menu are built in `setup()` via `TrayIconBuilder`/`MenuBuilder`.

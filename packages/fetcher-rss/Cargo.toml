@@ -1,0 +1,15 @@
+[package]
+name = "fetcher-rss"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+fetcher-core = { path = "../fetcher-core" }
+feed-rs = { workspace = true }
+reqwest = { workspace = true }
+scraper = { workspace = true }
+tokio = { workspace = true }
+async-trait = { workspace = true }
+serde_json = { workspace = true }
+log = { workspace = true }
+chrono = { workspace = true }

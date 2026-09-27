@@ -1,3 +1,23 @@
 [workspace]
-members = ["apps/desktop/src-tauri"]
+members = ["apps/desktop/src-tauri", "packages/*"]
 resolver = "2"
+
+[workspace.package]
+version = "0.2.0"
+edition = "2021"
+
+# 两个 workspace 叠在同一棵树上：
+#   - pnpm 管 JS（apps/desktop、apps/docs），Rust crate 目录没有 package.json，pnpm 直接忽略
+#   - Cargo 管全部 Rust（src-tauri + packages/*），共享一份 Cargo.lock 与 target/
+# 共享版本收敛在这里，子 crate 用 `X.workspace = true` 引用，避免重复依赖树。
+[workspace.dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+reqwest = { version = "0.11", features = ["json", "socks"] }
+tokio = { version = "1", features = ["full"] }
+chrono = { version = "0.4", features = ["serde"] }
+async-trait = "0.1"
+log = "0.4"
+feed-rs = "1.3.0"
+scraper = "0.17.1"
+regex = "1"

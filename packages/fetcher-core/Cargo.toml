@@ -1,0 +1,10 @@
+[package]
+name = "fetcher-core"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+reqwest = { workspace = true }
+async-trait = { workspace = true }

@@ -5,7 +5,6 @@ use std::sync::Arc;
 use tokio::sync::mpsc::channel;
 use tokio::sync::Mutex;
 
-use crate::cmd;
 use crate::feed;
 
 #[derive(Debug, Default, Serialize)]
@@ -153,13 +152,24 @@ mod tests {
     // let url = "https://anyway.fm/rss.xml";
     println!("request channel {}", &url);
 
-    let res = feed::parse_feed(&url).await;
+    let fetcher = crate::fetchers::resolve("rss");
+    let input = fetcher_core::DetectInput {
+      raw: url.to_string(),
+      provider_hint: None,
+      carrier_hint: None,
+      account: None,
+      http: feed::create_client(&url),
+    };
+    let res = fetcher.detect(&input).await;
 
     match res {
-      Ok(res) => {
+      Ok(output) => {
         let channel_uuid = Uuid::new_v4().hyphenated().to_string();
-        let articles =
-          cmd::create_article_models(&channel_uuid, &url.to_string(), &res, "native", "");
+        let articles: Vec<crate::models::NewArticle> = output
+          .entries
+          .iter()
+          .map(|item| crate::fetchers::to_new_article(&channel_uuid, &output.resolved_url, item))
+          .collect();
 
         println!("articles: {:?}", articles);
 

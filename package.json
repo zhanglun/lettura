@@ -8,6 +8,9 @@
     "build:desktop": "pnpm --filter @lettura/desktop build",
     "build:docs": "pnpm --filter @lettura/docs build",
     "tauri": "pnpm --filter @lettura/desktop tauri",
+    "cargo:check": "cargo check --workspace",
+    "cargo:test": "cargo test --workspace",
+    "cargo:fmt": "cargo fmt --all",
     "test": "pnpm --filter @lettura/desktop test",
     "preview": "pnpm --filter @lettura/desktop preview",
     "create-json": "pnpm --filter @lettura/desktop create-json"

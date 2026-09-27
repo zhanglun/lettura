@@ -3,11 +3,11 @@ use std::collections::HashMap;
 use chrono::Local;
 use diesel::prelude::*;
 use diesel::sql_types::*;
+use fetcher_core::{Carrier, FeedView, FetchContext};
 use log::warn;
 use scraper::{Html, Selector};
 use serde::{Deserialize, Serialize};
 
-use crate::cmd::create_article_models;
 use crate::db;
 use crate::feed;
 use crate::models;
@@ -699,31 +699,83 @@ pub async fn sync_articles(uuid: String) -> HashMap<String, (String, usize, Stri
     None => return HashMap::new(),
   };
 
-  let res = match feed::parse_feed(&channel.feed_url).await {
-    Ok(res) => {
+  // 按 provider 分发到对应 fetcher（存量行 provider='rss'，未知值回落 rss）
+  let fetcher = crate::fetchers::resolve(&channel.provider);
+  let source_config: serde_json::Value = channel
+    .source_config
+    .as_deref()
+    .and_then(|s| serde_json::from_str(s).ok())
+    .unwrap_or(serde_json::Value::Null);
+  let context = FetchContext {
+    feed: FeedView {
+      uuid: channel.uuid.clone(),
+      feed_url: channel.feed_url.clone(),
+      provider: channel.provider.clone(),
+      origin: channel.origin.clone(),
+      carrier: Carrier::from_str(&channel.carrier).unwrap_or(Carrier::Text),
+      source_config: source_config.clone(),
+    },
+    // 账户凭据由 app 解析好递入——fetcher 不碰 DB
+    account: channel
+      .account_uuid
+      .as_deref()
+      .and_then(crate::sources::account_service::account_material),
+    http: feed::create_client(&channel.feed_url),
+  };
+
+  let items = match fetcher.fetch(&context).await {
+    Ok(items) => {
       feed::channel::update_health_status(&uuid, 0, "".to_string());
-      res
+      items
     }
     Err(err) => {
-      feed::channel::update_health_status(&uuid, 1, err.to_string());
-      result.insert(uuid, (channel.title, 0, err.to_string()));
+      feed::channel::update_health_status(&uuid, 1, err.clone());
+      result.insert(uuid, (channel.title, 0, err));
 
       return result;
     }
   };
 
-  let articles = create_article_models(
-    &channel.uuid,
-    &channel.feed_url,
-    &res,
-    &channel.origin,
-    &channel.carrier,
-  );
-  let record = feed::article::Article::add_articles(channel.uuid, articles);
+  let articles = items
+    .iter()
+    .map(|item| crate::fetchers::to_new_article(&channel.uuid, &channel.feed_url, item))
+    .collect();
+  let record = feed::article::Article::add_articles(channel.uuid.clone(), articles);
+
+  // mail 的增量水位：同步成功后把本次见到的最大 UID 写回 source_config，
+  // 下轮 UID SEARCH 只取新增（重放无害——link 带 uid，入库按 UNIQUE(link,title) 去重）
+  if channel.provider == "mail" {
+    if let Some(last_uid) = fetcher_mail::max_uid_in(&items) {
+      let mut config = match source_config {
+        serde_json::Value::Object(map) => map,
+        _ => serde_json::Map::new(),
+      };
+      config.insert("last_uid".to_string(), serde_json::json!(last_uid));
+      update_feed_source_config(&uuid, &serde_json::Value::Object(config).to_string());
+    }
+  }
 
   result.insert(uuid, (channel.title, record, "".to_string()));
 
   return result;
+}
+
+/// 更新源级同步节奏（秒）：到期调度优先用它，慢源（邮件）不被全局节奏拖着走
+pub fn update_feed_sync_interval(uuid: &str, seconds: i32) -> usize {
+  let mut connection = db::establish_connection();
+  diesel::update(schema::feeds::dsl::feeds.filter(schema::feeds::uuid.eq(uuid)))
+    .set(schema::feeds::sync_interval.eq(seconds))
+    .execute(&mut connection)
+    .unwrap_or(0)
+}
+
+/// 更新每源配置（目前 mail 的 last_uid 水位；后续 provider 按需扩展）
+pub fn update_feed_source_config(uuid: &str, source_config: &str) -> usize {
+  let mut connection = db::establish_connection();
+  diesel::update(schema::feeds::dsl::feeds.filter(schema::feeds::uuid.eq(uuid)))
+    .set(schema::feeds::source_config.eq(source_config))
+    .execute(&mut connection)
+    .unwrap_or(0)
 }
 
 pub async fn sync_article_in_folder(uuid: String) -> HashMap<String, (String, usize, String)> {

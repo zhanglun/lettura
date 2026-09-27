@@ -1,25 +1,13 @@
-use chrono::{DateTime, Utc};
 use serde::Serialize;
 use tauri::{command, Emitter, WebviewWindow};
 use uuid::Uuid;
 
+use fetcher_core::DetectInput;
+
 use crate::core::config;
-use crate::feed::WrappedMediaObject;
+use crate::fetchers;
 use crate::models;
 use crate::{feed, sources};
-
-/// Normalize an optional publish/updated time into a UTC string formatted as
-/// `YYYY-MM-DD HH:MM:SS`, matching SQLite's `CURRENT_TIMESTAMP` and the
-/// `create_date`/`update_date` columns. This keeps `pub_date` comparable to
-/// other timestamp columns by string ordering in SQLite. Returns an empty
-/// string when the source provides no time; the query layer falls back to
-/// `create_date` for such rows.
-fn normalize_pub_date(t: Option<DateTime<Utc>>) -> String {
-  match t {
-    Some(dt) => dt.naive_utc().format("%Y-%m-%d %H:%M:%S").to_string(),
-    None => String::new(),
-  }
-}
 
 #[derive(Debug, Serialize)]
 pub struct FeedFetchResponse {
@@ -32,12 +20,13 @@ pub struct FeedFetchResponse {
 pub struct PreviewEntry {
   pub title: String,
   pub link: String,
+  /// RFC3339（UTC，带 Z）——前端 `new Date()` 按绝对时刻渲染，格式不能换成 naive 串
   pub pub_date: String,
   /// 播客单集时长（秒），来自 enclosure/itunes:duration
   pub duration: Option<i64>,
 }
 
-/// 添加订阅的探测结果：resolve_feed_input 负责"任意地址 → feed"
+/// 添加订阅的探测结果：fetcher 的 detect 负责"任意输入 → 源"
 #[derive(Debug, Serialize)]
 pub struct FeedPreview {
   pub feed: Option<models::NewFeed>,
@@ -50,24 +39,39 @@ pub struct FeedPreview {
   pub message: String,
 }
 
-fn preview_entries(res: &feed_rs::model::Feed) -> Vec<PreviewEntry> {
-  res
-    .entries
+fn to_preview_entries(items: &[fetcher_core::FetchedArticle]) -> Vec<PreviewEntry> {
+  items
     .iter()
     .take(6)
-    .map(|entry| PreviewEntry {
-      title: entry.title.as_ref().map(|t| t.content.clone()).unwrap_or_default(),
-      link: entry.links.get(0).map(|l| l.href.clone()).unwrap_or_default(),
-      pub_date: entry
-        .published
-        .map(|d| d.to_rfc3339_opts(chrono::SecondsFormat::Secs, true))
-        .unwrap_or_default(),
-      duration: entry
-        .media
-        .iter()
-        .find_map(|m| m.duration.map(|d| d.as_secs() as i64)),
+    .map(|item| PreviewEntry {
+      title: item.title.clone(),
+      link: item.link.clone(),
+      // published_at 是归一化 UTC 串（YYYY-MM-DD HH:MM:SS），补回 RFC3339 的 Z
+      pub_date: if item.published_at.is_empty() {
+        String::new()
+      } else {
+        format!("{}Z", item.published_at.replace(' ', "T"))
+      },
+      duration: fetchers::item_duration(item),
     })
     .collect()
+}
+
+fn detect_input(
+  raw: String,
+  carrier: Option<String>,
+  provider_hint: Option<String>,
+  account_uuid: Option<String>,
+) -> DetectInput {
+  DetectInput {
+    carrier_hint: carrier.as_deref().and_then(fetchers::carrier_from_str),
+    account: account_uuid
+      .as_deref()
+      .and_then(sources::account_service::account_material),
+    http: feed::create_client(&raw),
+    provider_hint,
+    raw,
+  }
 }
 
 /// 预览：先"发现"（HTML 里声明的 feed、常见路径），再回预览卡需要的一切
@@ -76,6 +80,8 @@ pub async fn fetch_feed(
   url: String,
   origin: Option<String>,
   carrier: Option<String>,
+  provider_hint: Option<String>,
+  account_uuid: Option<String>,
 ) -> FeedPreview {
   let empty = |message: String, candidates: Vec<String>| FeedPreview {
     feed: None,
@@ -85,25 +91,23 @@ pub async fn fetch_feed(
     message,
   };
 
-  match feed::resolve_feed_input(&url).await {
-    Ok((res, resolved_url, candidates)) => {
+  match fetchers::detect(&detect_input(url, carrier, provider_hint, account_uuid)).await {
+    Ok(output) => {
       let channel_uuid = Uuid::new_v4().hyphenated().to_string();
-      let origin_value = resolve_origin(origin.as_deref(), &res);
-      let carrier_hint = carrier.as_deref().unwrap_or("");
-      let feed_carrier = feed_carrier_hint(carrier_hint, &res);
-      let channel = create_feed_model(
+      let origin_value = resolve_origin(origin.as_deref());
+      let feed_model = fetchers::to_new_feed(
         &channel_uuid,
-        &resolved_url,
-        &res,
+        &output.resolved_url,
+        &output.provider,
+        &output.feed,
         &origin_value,
-        feed_carrier,
       );
-      let entries = preview_entries(&res);
+      let entries = to_preview_entries(&output.entries);
 
       FeedPreview {
-        feed: Some(channel),
-        resolved_url,
-        candidates,
+        feed: Some(feed_model),
+        resolved_url: output.resolved_url,
+        candidates: output.candidates,
         entries,
         message: String::new(),
       }
@@ -114,53 +118,11 @@ pub async fn fetch_feed(
 
 /// 来源判定（订阅时一次，之后不再猜）：`native` | `generator:<route>`
 /// 客户端已知的生成器路由优先（用户粘贴平台主页时我们生成的）；否则 native。
-pub fn resolve_origin(client_origin: Option<&str>, _res: &feed_rs::model::Feed) -> String {
+pub fn resolve_origin(client_origin: Option<&str>) -> String {
   match client_origin {
     Some(origin) if !origin.is_empty() => origin.to_string(),
     _ => String::from("native"),
   }
-}
-
-/// 条目级类型判定：这条能不能站内播（audio enclosure）——与源类型无关的独立轴。
-fn entry_has_audio(media: &[feed_rs::model::MediaObject]) -> bool {
-  media.iter().any(|m| {
-    m.content.iter().any(|c| {
-      c.content_type
-        .as_ref()
-        .map(|ct| ct.to_string().starts_with("audio"))
-        .unwrap_or(false)
-    })
-  })
-}
-
-/// 条目载体（与前端读同一列，不再各自实现判定）
-/// audio enclosure → audio（能不能站内播）；否则用来源声明的载体提示（video/email）；兜底 text。
-pub fn classify_entry(carrier_hint: &str, media: &[feed_rs::model::MediaObject]) -> &'static str {
-  if entry_has_audio(media) {
-    return "audio";
-  }
-  match carrier_hint {
-    "video" => "video",
-    "email" => "email",
-    _ => "text",
-  }
-}
-
-/// 源级载体提示：客户端按生成器路由声明（video/email），或由条目音频反推
-pub fn feed_carrier_hint(
-  carrier_hint: &str,
-  res: &feed_rs::model::Feed,
-) -> &'static str {
-  if carrier_hint == "video" || carrier_hint == "email" {
-    return match carrier_hint {
-      "video" => "video",
-      _ => "email",
-    };
-  }
-  if res.entries.iter().any(|entry| entry_has_audio(&entry.media)) {
-    return "audio";
-  }
-  "text"
 }
 
 #[command]
@@ -180,166 +142,114 @@ pub async fn move_channel_into_folder(
   result
 }
 
-pub fn create_feed_model(
-  uuid: &String,
-  url: &String,
-  res: &feed_rs::model::Feed,
-  origin: &str,
-  carrier: &str,
-) -> models::NewFeed {
-  let title = match &res.title {
-    Some(link) => link.content.to_string(),
-    None => String::from(""),
-  };
-
-  let link = match res.links.get(0) {
-    Some(link) => link.href.to_string(),
-    None => String::from(""),
-  };
-
-  let description = match &res.description {
-    Some(title) => title.content.clone(),
-    None => String::from(""),
-  };
-
-  let logo = match &res.logo {
-    Some(t) => t.uri.clone(),
-    None => String::from(""),
-  };
-
-  let pub_date = normalize_pub_date(res.published);
-  let updated = normalize_pub_date(res.updated);
-
-  return models::NewFeed {
-    uuid: uuid.to_string(),
-    origin: origin.to_string(),
-    title: title,
-    link: link,
-    logo: logo,
-    feed_url: url.to_string(),
-    description,
-    pub_date: pub_date,
-    updated: updated,
-    sort: 0,
-    carrier: carrier.to_string(),
-  };
-}
-
-pub fn create_article_models(
-  channel_uuid: &String,
-  feed_url: &String,
-  res: &feed_rs::model::Feed,
-  _origin: &str,
-  carrier_hint: &str,
-) -> Vec<models::NewArticle> {
-  let mut articles: Vec<models::NewArticle> = Vec::new();
-
-  for entry in &res.entries {
-    let article_uuid = Uuid::new_v4().hyphenated().to_string();
-
-    let title = match &entry.title {
-      Some(link) => link.content.to_string(),
-      None => String::from(""),
-    };
-
-    let link = match entry.links.get(0) {
-      Some(link) => link.href.to_string(),
-      None => String::from(""),
-    };
-
-    // A short summary of the item
-    let description = match &entry.summary {
-      Some(summary) => summary.content.clone(),
-      None => String::from(""),
-    };
-
-    // The content of the item
-    let content = match &entry.content {
-      Some(content) => content.body.clone().unwrap_or(String::from("")),
-      None => String::from(""),
-    };
-
-    // Time at which this item was first published
-    let pub_date: String = normalize_pub_date(entry.published);
-
-    // Authors of this item
-    let author = match entry.authors.get(0) {
-      Some(person) => {
-        if person.name == "author" {
-          person.email.as_ref().unwrap_or(&person.name).to_string()
-        } else {
-          person.name.to_string()
-        }
-      }
-      None => String::from(""),
-    };
-
-    let media_object = entry
-      .media
-      .clone()
-      .into_iter()
-      .map(|m| WrappedMediaObject(m))
-      .collect::<Vec<WrappedMediaObject>>();
-    let json = serde_json::to_string(&media_object).unwrap();
-
-    let kind = classify_entry(carrier_hint, &entry.media).to_string();
-
-    let s = models::NewArticle {
-      uuid: article_uuid,
-      feed_uuid: channel_uuid.to_string(),
-      title: title.to_string(),
-      link,
-      content,
-      feed_url: feed_url.to_string(),
-      description,
-      author: author,
-      pub_date: pub_date,
-      media_object: json,
-      carrier: kind,
-    };
-
-    articles.push(s);
-  }
-
-  articles
-}
-
 #[command]
 pub async fn add_feed(
   url: String,
   origin: Option<String>,
   carrier: Option<String>,
+  provider_hint: Option<String>,
+  account_uuid: Option<String>,
 ) -> (Option<models::Feed>, usize, String) {
   println!("request channel {}", &url);
 
-  // 预览阶段刚抓过 → 命中缓存，不再二次网络往返
-  let res = feed::parse_feed_cached(&url).await;
-
-  match res {
-    Ok((res, effective_url)) => {
+  // 预览阶段刚抓过 → detect 命中短时缓存/账户，不再二次网络往返
+  match fetchers::detect(&detect_input(url, carrier, provider_hint, account_uuid)).await {
+    Ok(output) => {
       let channel_uuid = Uuid::new_v4().hyphenated().to_string();
-      let origin_value = resolve_origin(origin.as_deref(), &res);
-      let carrier_hint = carrier.as_deref().unwrap_or("");
-      let feed_carrier = feed_carrier_hint(carrier_hint, &res);
-      let feed = create_feed_model(
+      let origin_value = resolve_origin(origin.as_deref());
+      let feed_model = fetchers::to_new_feed(
         &channel_uuid,
-        &effective_url,
-        &res,
+        &output.resolved_url,
+        &output.provider,
+        &output.feed,
         &origin_value,
-        feed_carrier,
       );
-      let articles = create_article_models(
-        &channel_uuid,
-        &effective_url,
-        &res,
-        &origin_value,
-        carrier_hint,
-      );
+      let articles = output
+        .entries
+        .iter()
+        .map(|item| fetchers::to_new_article(&channel_uuid, &output.resolved_url, item))
+        .collect();
 
-      feed::channel::add_feed(feed, articles)
+      let result = feed::channel::add_feed(feed_model, articles);
+
+      // 邮件源默认 15 分钟一查（source-level sync_interval 优先于全局节奏）
+      if result.1 > 0 && output.provider == "mail" {
+        feed::channel::update_feed_sync_interval(&channel_uuid, 900);
+      }
+
+      result
     }
     Err(err) => (None, 0, err),
   }
+}
+
+// ── 来源账户（IMAP / B站 cookie 等凭据的宿主）────────────────────
+
+#[command]
+pub fn list_source_accounts() -> Vec<models::SourceAccount> {
+  sources::account_service::list_accounts()
+}
+
+#[command]
+pub fn save_source_account(
+  provider: String,
+  label: String,
+  settings: String,
+) -> Result<models::SourceAccount, String> {
+  sources::account_service::save_account(&provider, &label, &settings)
+}
+
+#[command]
+pub fn delete_source_account(uuid: String) -> usize {
+  sources::account_service::delete_account(&uuid)
+}
+
+#[command]
+pub async fn test_source_account(provider: String, settings: String) -> Result<String, String> {
+  sources::account_service::test_account(&provider, &settings).await
+}
+
+// ── 站点规则（site-rules：本地转换引擎的配置面）──────────────────
+
+/// 规则摘要（设置页展示 + /api/rules）
+#[derive(Debug, Serialize)]
+pub struct RuleSummary {
+  pub key: String,
+  pub title: String,
+  pub pattern: String,
+  pub kind: String,
+  pub source: String,
+}
+
+#[command]
+pub fn list_site_rules() -> Vec<RuleSummary> {
+  fetcher_site::load_rules()
+    .into_iter()
+    .map(|rule| RuleSummary {
+      source: String::from("builtin"),
+      key: rule.key,
+      title: rule.title,
+      pattern: rule.pattern,
+      kind: rule.fetch.kind,
+    })
+    .collect()
+}
+
+/// 导入规则到 ~/.lettura/rules/{key}.toml（校验通过才落盘；同 key 覆盖）
+#[command]
+pub fn import_site_rule(content: String) -> Result<String, String> {
+  let rule = site_rules::parse_rule(&content)?;
+  let dir = std::env::var("HOME")
+    .map(|home| {
+      std::path::PathBuf::from(home)
+        .join(".lettura")
+        .join("rules")
+    })
+    .map_err(|_| "无法定位用户目录".to_string())?;
+  std::fs::create_dir_all(&dir).map_err(|e| format!("创建规则目录失败: {e}"))?;
+  let path = dir.join(format!("{}.toml", rule.key));
+  std::fs::write(&path, &content).map_err(|e| format!("写入规则失败: {e}"))?;
+  Ok(rule.key)
 }
 
 // the payload type must implement `Serialize` and `Clone`.
@@ -367,7 +277,6 @@ pub fn update_threads(threads: i32) -> usize {
   config::update_threads(threads);
   1
 }
-
 
 #[command]
 pub fn update_user_config(user_cfg: config::UserConfig) -> usize {
@@ -427,44 +336,38 @@ pub fn import_opml_as_source(
 mod tests {
   use super::*;
 
-  #[tokio::test]
-  async fn test_parse_feed() {
-    // let url = "https://www.ximalaya.com/album/70501228.xml".to_string();
-    // let url =
-    // "http://www.youtube.com/feeds/videos.xml?channel_id=UCpVm7bg6pXKo1Pr6k5kxG9A".to_string();
-    // let url = "https://medium.com/feed/google-design".to_string();
-    // let url = "https://www.ximalaya.com/album/70501228.xml".to_string();
-    // let url = "http://www.ximalaya.com/album/3558668.xml".to_string();
-    let url = "https://gapis.money/rss.xml".to_string();
+  #[test]
+  fn test_resolve_origin() {
+    assert_eq!(
+      resolve_origin(Some("generator:bilibili")),
+      "generator:bilibili"
+    );
+    assert_eq!(resolve_origin(Some("")), "native");
+    assert_eq!(resolve_origin(None), "native");
+  }
 
-    println!("{:?}", url);
-
-    let res = feed::parse_feed(&url).await;
-
-    match res {
-      Ok(res) => {
-        let feed_uuid = Uuid::new_v4().hyphenated().to_string();
-        let origin = resolve_origin(None, &res);
-        let carrier = feed_carrier_hint("", &res);
-        let feed = create_feed_model(&feed_uuid, &url, &res, &origin, carrier).clone();
-
-        println!("====>S{:?}", (Some(feed), String::from("")));
-        let articles = create_article_models(&feed_uuid, &url, &res, &origin, carrier);
-        println!("{:?}", articles);
-      }
-      Err(err) => {
-        println!("err {:?}", (None::<models::NewFeed>, err));
-      }
-    }
-
-    ()
+  #[test]
+  fn test_preview_entry_rfc3339() {
+    // 归一化 UTC 串 → RFC3339（带 Z），前端 new Date() 才能按绝对时刻渲染
+    let item = fetcher_core::FetchedArticle {
+      title: "t".into(),
+      link: "l".into(),
+      content_html: None,
+      summary: None,
+      author: None,
+      published_at: "2026-09-27 08:30:00".into(),
+      media: vec![],
+      carrier: fetcher_core::Carrier::Text,
+    };
+    let entries = to_preview_entries(std::slice::from_ref(&item));
+    assert_eq!(entries[0].pub_date, "2026-09-27T08:30:00Z");
   }
 
   #[tokio::test]
   async fn test_add_feed() {
     let url = "http://www.ximalaya.com/album/39643321.xml".to_string();
     // let url = "http://www.smashingmagazine.com/feed/".to_string();
-    let result = add_feed(url, None, None).await;
+    let result = add_feed(url, None, None, None, None).await;
 
     println!("result: {:?}", result);
   }

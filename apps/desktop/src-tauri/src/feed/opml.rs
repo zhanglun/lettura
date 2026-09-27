@@ -225,6 +225,7 @@ fn import_feed(title: &str, feed_url: &str, folder_uuid: Option<String>) -> Resu
     uuid: uuid.clone(),
     origin: "native".to_string(),
     carrier: "text".to_string(),
+    provider: "rss".to_string(),
     title: title.to_string(),
     link: feed_url.to_string(),
     logo: String::new(),

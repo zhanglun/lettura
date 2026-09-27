@@ -5,9 +5,9 @@ use diesel::sql_types::*;
 use serde::{Deserialize, Serialize};
 
 use crate::db::establish_connection;
-use diesel::sqlite::SqliteConnection;
 use crate::models;
 use crate::schema;
+use diesel::sqlite::SqliteConnection;
 
 pub struct Article {}
 
@@ -372,7 +372,10 @@ impl Article {
       .load::<ArticleQueryItem>(&mut connection)
       .expect("Expect loading articles");
 
-    ArticleQueryResult { list: result, total }
+    ArticleQueryResult {
+      list: result,
+      total,
+    }
   }
 
   /// 类型过滤条的真实计数（服务端全量，不随分页衰减）：
@@ -561,13 +564,19 @@ impl Article {
 
     if let Some(article) = article {
       let starred_at = if status == 1 {
-        chrono::Utc::now().naive_utc().format("%Y-%m-%d %H:%M:%S").to_string()
+        chrono::Utc::now()
+          .naive_utc()
+          .format("%Y-%m-%d %H:%M:%S")
+          .to_string()
       } else {
         String::from("")
       };
       let res =
         diesel::update(schema::articles::dsl::articles.filter(schema::articles::uuid.eq(&uuid)))
-          .set((schema::articles::starred.eq(status as i32), schema::articles::starred_at.eq(starred_at)))
+          .set((
+            schema::articles::starred.eq(status as i32),
+            schema::articles::starred_at.eq(starred_at),
+          ))
           .execute(&mut connection)
           .unwrap_or(0);
       res
@@ -705,340 +714,328 @@ impl Article {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use crate::{db, models, schema};
-    use diesel::prelude::*;
-    use diesel::sqlite::SqliteConnection;
+  use super::*;
+  use crate::{db, models, schema};
+  use diesel::prelude::*;
+  use diesel::sqlite::SqliteConnection;
 
-    fn insert_test_feed(conn: &mut SqliteConnection) -> String {
-        let feed_uuid = uuid::Uuid::new_v4().hyphenated().to_string();
-        diesel::insert_into(schema::feeds::table)
-            .values(models::NewFeed {
-                uuid: feed_uuid.clone(),
-                origin: "native".to_string(),
-                carrier: "text".to_string(),
-                title: "Test Feed".to_string(),
-                link: format!("https://{}.example.com", &feed_uuid[..8]),
-                logo: "".to_string(),
-                feed_url: format!("https://{}.example.com/feed.xml", &feed_uuid[..8]),
-                description: "Test".to_string(),
-                pub_date: "2024-01-01 00:00:00".to_string(),
-                updated: "2024-01-01 00:00:00".to_string(),
-                sort: 0,
-            })
-            .execute(conn)
-            .expect("Failed to insert feed");
-        feed_uuid
+  fn insert_test_feed(conn: &mut SqliteConnection) -> String {
+    let feed_uuid = uuid::Uuid::new_v4().hyphenated().to_string();
+    diesel::insert_into(schema::feeds::table)
+      .values(models::NewFeed {
+        provider: "rss".to_string(),
+        uuid: feed_uuid.clone(),
+        origin: "native".to_string(),
+        carrier: "text".to_string(),
+        title: "Test Feed".to_string(),
+        link: format!("https://{}.example.com", &feed_uuid[..8]),
+        logo: "".to_string(),
+        feed_url: format!("https://{}.example.com/feed.xml", &feed_uuid[..8]),
+        description: "Test".to_string(),
+        pub_date: "2024-01-01 00:00:00".to_string(),
+        updated: "2024-01-01 00:00:00".to_string(),
+        sort: 0,
+      })
+      .execute(conn)
+      .expect("Failed to insert feed");
+    feed_uuid
+  }
+
+  fn insert_test_article(conn: &mut SqliteConnection, feed_uuid: &str) -> (i32, String) {
+    let article_uuid = uuid::Uuid::new_v4().hyphenated().to_string();
+    let id: i32 = diesel::insert_into(schema::articles::table)
+      .values(models::NewArticle {
+        uuid: article_uuid.clone(),
+        feed_uuid: feed_uuid.to_string(),
+        title: format!("Test Article {}", uuid::Uuid::new_v4()),
+        link: format!("https://example.com/a/{}", uuid::Uuid::new_v4()),
+        feed_url: format!("https://example.com/f/{}", uuid::Uuid::new_v4()),
+        description: "Test".to_string(),
+        content: "Content".to_string(),
+        author: "Author".to_string(),
+        pub_date: "2024-01-01 00:00:00".to_string(),
+        media_object: "".to_string(),
+        carrier: "text".to_string(),
+      })
+      .returning(schema::articles::id)
+      .get_result(conn)
+      .expect("Failed to insert article");
+    (id, article_uuid)
+  }
+
+  fn set_article_attrs(
+    conn: &mut SqliteConnection,
+    article_id: i32,
+    starred: i32,
+    is_archived: i32,
+    notes: &str,
+    is_read_later: i32,
+  ) {
+    diesel::update(schema::articles::table.filter(schema::articles::id.eq(article_id)))
+      .set((
+        schema::articles::starred.eq(starred),
+        schema::articles::is_archived.eq(is_archived),
+        schema::articles::notes.eq(notes),
+        schema::articles::is_read_later.eq(is_read_later),
+      ))
+      .execute(conn)
+      .expect("Failed to update article attrs");
+  }
+
+  fn make_filter(feed_uuid: &str) -> ArticleFilter {
+    ArticleFilter {
+      feed_uuid: Some(feed_uuid.to_string()),
+      folder_uuid: None,
+      item_type: None,
+      is_today: None,
+      is_starred: None,
+      read_status: None,
+      collection_uuid: None,
+      tag_uuid: None,
+      is_archived: None,
+      is_read_later: None,
+      has_notes: None,
+      carrier: None,
+      cursor: None,
+      limit: None,
     }
+  }
 
-    fn insert_test_article(conn: &mut SqliteConnection, feed_uuid: &str) -> (i32, String) {
-        let article_uuid = uuid::Uuid::new_v4().hyphenated().to_string();
-        let id: i32 = diesel::insert_into(schema::articles::table)
-            .values(models::NewArticle {
-                uuid: article_uuid.clone(),
-                feed_uuid: feed_uuid.to_string(),
-                title: format!("Test Article {}", uuid::Uuid::new_v4()),
-                link: format!("https://example.com/a/{}", uuid::Uuid::new_v4()),
-                feed_url: format!("https://example.com/f/{}", uuid::Uuid::new_v4()),
-                description: "Test".to_string(),
-                content: "Content".to_string(),
-                author: "Author".to_string(),
-                pub_date: "2024-01-01 00:00:00".to_string(),
-                media_object: "".to_string(),
-                carrier: "text".to_string(),
-            })
-            .returning(schema::articles::id)
-            .get_result(conn)
-            .expect("Failed to insert article");
-        (id, article_uuid)
-    }
+  #[test]
+  fn test_article_filters() {
+    let mut conn = db::establish_connection();
+    let feed_uuid = insert_test_feed(&mut conn);
 
-    fn set_article_attrs(
-        conn: &mut SqliteConnection,
-        article_id: i32,
-        starred: i32,
-        is_archived: i32,
-        notes: &str,
-        is_read_later: i32,
-    ) {
-        diesel::update(schema::articles::table.filter(schema::articles::id.eq(article_id)))
-            .set((
-                schema::articles::starred.eq(starred),
-                schema::articles::is_archived.eq(is_archived),
-                schema::articles::notes.eq(notes),
-                schema::articles::is_read_later.eq(is_read_later),
-            ))
-            .execute(conn)
-            .expect("Failed to update article attrs");
-    }
+    // Given: Article A — starred=1, is_archived=0, notes="important", is_read_later=0
+    let (id_a, uuid_a) = insert_test_article(&mut conn, &feed_uuid);
+    set_article_attrs(&mut conn, id_a, 1, 0, "important", 0);
 
-    fn make_filter(feed_uuid: &str) -> ArticleFilter {
-        ArticleFilter {
-            feed_uuid: Some(feed_uuid.to_string()),
-            folder_uuid: None,
-            item_type: None,
-            is_today: None,
-            is_starred: None,
-            read_status: None,
-            collection_uuid: None,
-            tag_uuid: None,
-            is_archived: None,
-            is_read_later: None,
-            has_notes: None,
-            carrier: None,
-            cursor: None,
-            limit: None,
-        }
-    }
+    // Given: Article B — starred=1, is_archived=1, notes="", is_read_later=1
+    let (id_b, uuid_b) = insert_test_article(&mut conn, &feed_uuid);
+    set_article_attrs(&mut conn, id_b, 1, 1, "", 1);
 
-    #[test]
-    fn test_article_filters() {
-        let mut conn = db::establish_connection();
-        let feed_uuid = insert_test_feed(&mut conn);
+    // Given: Article C — starred=0, is_archived=0, notes="", is_read_later=1
+    let (id_c, uuid_c) = insert_test_article(&mut conn, &feed_uuid);
+    set_article_attrs(&mut conn, id_c, 0, 0, "", 1);
 
-        // Given: Article A — starred=1, is_archived=0, notes="important", is_read_later=0
-        let (id_a, uuid_a) = insert_test_article(&mut conn, &feed_uuid);
-        set_article_attrs(&mut conn, id_a, 1, 0, "important", 0);
+    // Given: Article D — starred=1, is_archived=0, notes="", is_read_later=0
+    let (id_d, uuid_d) = insert_test_article(&mut conn, &feed_uuid);
+    set_article_attrs(&mut conn, id_d, 1, 0, "", 0);
 
-        // Given: Article B — starred=1, is_archived=1, notes="", is_read_later=1
-        let (id_b, uuid_b) = insert_test_article(&mut conn, &feed_uuid);
-        set_article_attrs(&mut conn, id_b, 1, 1, "", 1);
+    // Given: collection linked to Article A
+    let coll_uuid = uuid::Uuid::new_v4().hyphenated().to_string();
+    let coll_id: i32 = diesel::insert_into(schema::collections::table)
+      .values(models::NewCollection {
+        uuid: coll_uuid.clone(),
+        name: format!("Test Collection {}", uuid::Uuid::new_v4()),
+        description: "".to_string(),
+        icon: "".to_string(),
+        sort_order: 0,
+      })
+      .returning(schema::collections::id)
+      .get_result(&mut conn)
+      .expect("Failed to insert collection");
 
-        // Given: Article C — starred=0, is_archived=0, notes="", is_read_later=1
-        let (id_c, uuid_c) = insert_test_article(&mut conn, &feed_uuid);
-        set_article_attrs(&mut conn, id_c, 0, 0, "", 1);
+    diesel::insert_into(schema::article_collections::table)
+      .values(models::NewArticleCollection {
+        article_id: id_a,
+        collection_id: coll_id,
+      })
+      .execute(&mut conn)
+      .expect("Failed to link article to collection");
 
-        // Given: Article D — starred=1, is_archived=0, notes="", is_read_later=0
-        let (id_d, uuid_d) = insert_test_article(&mut conn, &feed_uuid);
-        set_article_attrs(&mut conn, id_d, 1, 0, "", 0);
+    // Given: tag linked to Article D
+    let tag_uuid = uuid::Uuid::new_v4().hyphenated().to_string();
+    let tag_id: i32 = diesel::insert_into(schema::tags::table)
+      .values(models::NewTag {
+        uuid: tag_uuid.clone(),
+        name: format!("filter_tag_{}", uuid::Uuid::new_v4().hyphenated()),
+      })
+      .returning(schema::tags::id)
+      .get_result(&mut conn)
+      .expect("Failed to insert tag");
 
-        // Given: collection linked to Article A
-        let coll_uuid = uuid::Uuid::new_v4().hyphenated().to_string();
-        let coll_id: i32 = diesel::insert_into(schema::collections::table)
-            .values(models::NewCollection {
-                uuid: coll_uuid.clone(),
-                name: format!("Test Collection {}", uuid::Uuid::new_v4()),
-                description: "".to_string(),
-                icon: "".to_string(),
-                sort_order: 0,
-            })
-            .returning(schema::collections::id)
-            .get_result(&mut conn)
-            .expect("Failed to insert collection");
+    diesel::insert_into(schema::article_tags::table)
+      .values(models::NewArticleTag {
+        article_id: id_d,
+        tag_id,
+      })
+      .execute(&mut conn)
+      .expect("Failed to link article to tag");
 
-        diesel::insert_into(schema::article_collections::table)
-            .values(models::NewArticleCollection {
-                article_id: id_a,
-                collection_id: coll_id,
-            })
-            .execute(&mut conn)
-            .expect("Failed to link article to collection");
+    // When/Then: is_starred=1 returns A, B, D
+    let result = Article::get_article(ArticleFilter {
+      is_starred: Some(1),
+      ..make_filter(&feed_uuid)
+    });
+    let uuids: Vec<String> = result.list.iter().map(|a| a.uuid.clone()).collect();
+    assert_eq!(
+      uuids.len(),
+      3,
+      "Starred filter should return 3 articles (A, B, D)"
+    );
+    assert!(uuids.contains(&uuid_a), "Starred should contain A");
+    assert!(uuids.contains(&uuid_b), "Starred should contain B");
+    assert!(uuids.contains(&uuid_d), "Starred should contain D");
 
-        // Given: tag linked to Article D
-        let tag_uuid = uuid::Uuid::new_v4().hyphenated().to_string();
-        let tag_id: i32 = diesel::insert_into(schema::tags::table)
-            .values(models::NewTag {
-                uuid: tag_uuid.clone(),
-                name: format!("filter_tag_{}", uuid::Uuid::new_v4().hyphenated()),
-            })
-            .returning(schema::tags::id)
-            .get_result(&mut conn)
-            .expect("Failed to insert tag");
+    // When/Then: is_archived=1 returns only B
+    let result = Article::get_article(ArticleFilter {
+      is_archived: Some(1),
+      ..make_filter(&feed_uuid)
+    });
+    let uuids: Vec<String> = result.list.iter().map(|a| a.uuid.clone()).collect();
+    assert_eq!(
+      uuids.len(),
+      1,
+      "Archived filter should return 1 article (B)"
+    );
+    assert!(uuids.contains(&uuid_b), "Archived should contain B");
 
-        diesel::insert_into(schema::article_tags::table)
-            .values(models::NewArticleTag {
-                article_id: id_d,
-                tag_id,
-            })
-            .execute(&mut conn)
-            .expect("Failed to link article to tag");
+    // When/Then: is_read_later=1 returns B, C
+    let result = Article::get_article(ArticleFilter {
+      is_read_later: Some(1),
+      ..make_filter(&feed_uuid)
+    });
+    let uuids: Vec<String> = result.list.iter().map(|a| a.uuid.clone()).collect();
+    assert_eq!(
+      uuids.len(),
+      2,
+      "Read later filter should return 2 articles (B, C)"
+    );
+    assert!(uuids.contains(&uuid_b), "Read later should contain B");
+    assert!(uuids.contains(&uuid_c), "Read later should contain C");
 
-        // When/Then: is_starred=1 returns A, B, D
-        let result = Article::get_article(ArticleFilter {
-            is_starred: Some(1),
-            ..make_filter(&feed_uuid)
-        });
-        let uuids: Vec<String> = result.list.iter().map(|a| a.uuid.clone()).collect();
-        assert_eq!(uuids.len(), 3, "Starred filter should return 3 articles (A, B, D)");
-        assert!(uuids.contains(&uuid_a), "Starred should contain A");
-        assert!(uuids.contains(&uuid_b), "Starred should contain B");
-        assert!(uuids.contains(&uuid_d), "Starred should contain D");
+    // When/Then: collection_uuid returns only A
+    let result = Article::get_article(ArticleFilter {
+      collection_uuid: Some(coll_uuid),
+      ..make_filter(&feed_uuid)
+    });
+    let uuids: Vec<String> = result.list.iter().map(|a| a.uuid.clone()).collect();
+    assert_eq!(
+      uuids.len(),
+      1,
+      "Collection filter should return 1 article (A)"
+    );
+    assert!(uuids.contains(&uuid_a), "Collection should contain A");
 
-        // When/Then: is_archived=1 returns only B
-        let result = Article::get_article(ArticleFilter {
-            is_archived: Some(1),
-            ..make_filter(&feed_uuid)
-        });
-        let uuids: Vec<String> = result.list.iter().map(|a| a.uuid.clone()).collect();
-        assert_eq!(uuids.len(), 1, "Archived filter should return 1 article (B)");
-        assert!(uuids.contains(&uuid_b), "Archived should contain B");
+    // When/Then: tag_uuid returns only D
+    let result = Article::get_article(ArticleFilter {
+      tag_uuid: Some(tag_uuid),
+      ..make_filter(&feed_uuid)
+    });
+    let uuids: Vec<String> = result.list.iter().map(|a| a.uuid.clone()).collect();
+    assert_eq!(uuids.len(), 1, "Tag filter should return 1 article (D)");
+    assert!(uuids.contains(&uuid_d), "Tag filter should contain D");
 
-        // When/Then: is_read_later=1 returns B, C
-        let result = Article::get_article(ArticleFilter {
-            is_read_later: Some(1),
-            ..make_filter(&feed_uuid)
-        });
-        let uuids: Vec<String> = result.list.iter().map(|a| a.uuid.clone()).collect();
-        assert_eq!(uuids.len(), 2, "Read later filter should return 2 articles (B, C)");
-        assert!(uuids.contains(&uuid_b), "Read later should contain B");
-        assert!(uuids.contains(&uuid_c), "Read later should contain C");
+    // When/Then: has_notes=1 returns only A
+    let result = Article::get_article(ArticleFilter {
+      has_notes: Some(1),
+      ..make_filter(&feed_uuid)
+    });
+    let uuids: Vec<String> = result.list.iter().map(|a| a.uuid.clone()).collect();
+    assert_eq!(
+      uuids.len(),
+      1,
+      "Has notes filter should return 1 article (A)"
+    );
+    assert!(uuids.contains(&uuid_a), "Has notes should contain A");
+  }
 
-        // When/Then: collection_uuid returns only A
-        let result = Article::get_article(ArticleFilter {
-            collection_uuid: Some(coll_uuid),
-            ..make_filter(&feed_uuid)
-        });
-        let uuids: Vec<String> = result.list.iter().map(|a| a.uuid.clone()).collect();
-        assert_eq!(uuids.len(), 1, "Collection filter should return 1 article (A)");
-        assert!(uuids.contains(&uuid_a), "Collection should contain A");
+  #[test]
+  fn test_carrier_filter_and_counts() {
+    let mut conn = db::establish_connection();
+    let feed_uuid = insert_test_feed(&mut conn);
 
-        // When/Then: tag_uuid returns only D
-        let result = Article::get_article(ArticleFilter {
-            tag_uuid: Some(tag_uuid),
-            ..make_filter(&feed_uuid)
-        });
-        let uuids: Vec<String> = result.list.iter().map(|a| a.uuid.clone()).collect();
-        assert_eq!(uuids.len(), 1, "Tag filter should return 1 article (D)");
-        assert!(uuids.contains(&uuid_d), "Tag filter should contain D");
+    // Given: text + audio + video（载体是**入库时写入的列**，测试直接给列赋值）
+    let _plain = insert_test_article(&mut conn, &feed_uuid);
 
-        // When/Then: has_notes=1 returns only A
-        let result = Article::get_article(ArticleFilter {
-            has_notes: Some(1),
-            ..make_filter(&feed_uuid)
-        });
-        let uuids: Vec<String> = result.list.iter().map(|a| a.uuid.clone()).collect();
-        assert_eq!(uuids.len(), 1, "Has notes filter should return 1 article (A)");
-        assert!(uuids.contains(&uuid_a), "Has notes should contain A");
-    }
+    let (_id_audio, uuid_audio) = insert_test_article(&mut conn, &feed_uuid);
+    diesel::update(schema::articles::table.filter(schema::articles::uuid.eq(&uuid_audio)))
+      .set(schema::articles::carrier.eq("audio"))
+      .execute(&mut conn)
+      .expect("Failed to set carrier");
 
-    #[test]
-    fn test_carrier_filter_and_counts() {
-        let mut conn = db::establish_connection();
-        let feed_uuid = insert_test_feed(&mut conn);
+    let (_id_video, uuid_video) = insert_test_article(&mut conn, &feed_uuid);
+    diesel::update(schema::articles::table.filter(schema::articles::uuid.eq(&uuid_video)))
+      .set(schema::articles::carrier.eq("video"))
+      .execute(&mut conn)
+      .expect("Failed to set carrier");
 
-        // Given: text + audio + video（载体是**入库时写入的列**，测试直接给列赋值）
-        let _plain = insert_test_article(&mut conn, &feed_uuid);
+    // Then: counts 1 text / 1 audio / 1 video / 0 email
+    let counts = Article::get_carrier_counts(make_filter(&feed_uuid));
+    assert_eq!(counts.text, 1, "Carrier counts: text");
+    assert_eq!(counts.audio, 1, "Carrier counts: audio");
+    assert_eq!(counts.video, 1, "Carrier counts: video");
+    assert_eq!(counts.email, 0, "Carrier counts: email");
 
-        let (_id_audio, uuid_audio) = insert_test_article(&mut conn, &feed_uuid);
-        diesel::update(schema::articles::table.filter(schema::articles::uuid.eq(&uuid_audio)))
-            .set(schema::articles::carrier.eq("audio"))
-            .execute(&mut conn)
-            .expect("Failed to set carrier");
+    // Then: carrier filter returns the matching article only
+    let result = Article::get_article(ArticleFilter {
+      carrier: Some("audio".to_string()),
+      ..make_filter(&feed_uuid)
+    });
+    assert_eq!(result.list.len(), 1, "Audio filter returns 1");
+    assert_eq!(
+      result.list[0].uuid, uuid_audio,
+      "Audio filter returns the audio row"
+    );
+    assert_eq!(
+      result.list[0].carrier, "audio",
+      "Row carries the stored carrier"
+    );
 
-        let (_id_video, uuid_video) = insert_test_article(&mut conn, &feed_uuid);
-        diesel::update(schema::articles::table.filter(schema::articles::uuid.eq(&uuid_video)))
-            .set(schema::articles::carrier.eq("video"))
-            .execute(&mut conn)
-            .expect("Failed to set carrier");
+    let result = Article::get_article(ArticleFilter {
+      carrier: Some("video".to_string()),
+      ..make_filter(&feed_uuid)
+    });
+    assert_eq!(result.list.len(), 1, "Video filter returns 1");
+    assert_eq!(
+      result.list[0].uuid, uuid_video,
+      "Video filter returns the video row"
+    );
+  }
 
-        // Then: counts 1 text / 1 audio / 1 video / 0 email
-        let counts = Article::get_carrier_counts(make_filter(&feed_uuid));
-        assert_eq!(counts.text, 1, "Carrier counts: text");
-        assert_eq!(counts.audio, 1, "Carrier counts: audio");
-        assert_eq!(counts.video, 1, "Carrier counts: video");
-        assert_eq!(counts.email, 0, "Carrier counts: email");
+  // 入库判定（classify/feed_carrier）测试已随实现迁往 packages/fetcher-rss
 
-        // Then: carrier filter returns the matching article only
-        let result = Article::get_article(ArticleFilter {
-            carrier: Some("audio".to_string()),
-            ..make_filter(&feed_uuid)
-        });
-        assert_eq!(result.list.len(), 1, "Audio filter returns 1");
-        assert_eq!(result.list[0].uuid, uuid_audio, "Audio filter returns the audio row");
-        assert_eq!(result.list[0].carrier, "audio", "Row carries the stored carrier");
+  #[test]
+  fn test_update_article_read_later_status() {
+    let mut conn = db::establish_connection();
+    let feed_uuid = insert_test_feed(&mut conn);
+    let (article_id, article_uuid) = insert_test_article(&mut conn, &feed_uuid);
 
-        let result = Article::get_article(ArticleFilter {
-            carrier: Some("video".to_string()),
-            ..make_filter(&feed_uuid)
-        });
-        assert_eq!(result.list.len(), 1, "Video filter returns 1");
-        assert_eq!(result.list[0].uuid, uuid_video, "Video filter returns the video row");
-    }
+    // When: set read_later to 1
+    let updated = Article::update_article_read_later_status(article_uuid.clone(), 1);
+    // Then: should update 1 row
+    assert_eq!(updated, 1, "Should update 1 row when setting read_later=1");
 
-    /// 入库判定：audio enclosure → audio；来源声明 video/email 则照用；其余 text
-    #[test]
-    fn test_classify_entry_from_parsed_feed() {
-        use crate::cmd::{classify_entry, feed_carrier_hint, resolve_origin};
+    // Then: article should have is_read_later=1
+    let article: models::Article = schema::articles::table
+      .filter(schema::articles::id.eq(article_id))
+      .first(&mut conn)
+      .expect("Failed to query article");
+    assert_eq!(
+      article.is_read_later, 1,
+      "Article should have is_read_later=1"
+    );
 
-        let xml = r#"<?xml version="1.0" encoding="UTF-8"?>
-          <rss version="2.0"><channel>
-            <title>测试源</title><link>https://example.com</link><description>d</description>
-            <item>
-              <title>EP.1 音频单集</title>
-              <link>https://example.com/ep1</link>
-              <enclosure url="https://example.com/ep1.mp3" type="audio/mpeg" length="1"/>
-            </item>
-            <item>
-              <title>文字公告</title>
-              <link>https://example.com/post</link>
-              <description>纯文字</description>
-            </item>
-          </channel></rss>"#;
+    // When: set read_later to 0
+    let updated = Article::update_article_read_later_status(article_uuid.clone(), 0);
+    // Then: should update 1 row
+    assert_eq!(updated, 1, "Should update 1 row when setting read_later=0");
 
-        let feed = feed_rs::parser::parse(xml.as_bytes()).expect("parse test feed");
-        let audio_entry = &feed.entries[0];
-        let text_entry = &feed.entries[1];
+    // Then: article should have is_read_later=0
+    let article: models::Article = schema::articles::table
+      .filter(schema::articles::id.eq(article_id))
+      .first(&mut conn)
+      .expect("Failed to query article");
+    assert_eq!(
+      article.is_read_later, 0,
+      "Article should have is_read_later=0"
+    );
 
-        // 条目载体（决定"能不能站内播"）
-        assert_eq!(classify_entry("", &audio_entry.media), "audio");
-        assert_eq!(classify_entry("", &text_entry.media), "text");
-        assert_eq!(classify_entry("video", &audio_entry.media), "audio", "有音频就是音频（先问能不能播）");
-        assert_eq!(classify_entry("video", &text_entry.media), "video");
-        assert_eq!(classify_entry("email", &text_entry.media), "email");
-
-        // 来源（决定"从哪来"）
-        assert_eq!(resolve_origin(None, &feed), "native");
-        assert_eq!(resolve_origin(Some("generator:bilibili"), &feed), "generator:bilibili");
-
-        // 源级载体提示（源列表图标）
-        assert_eq!(feed_carrier_hint("", &feed), "audio", "有音频条目的源 → audio");
-        assert_eq!(feed_carrier_hint("video", &feed), "video", "生成器声明的载体优先");
-        assert_eq!(feed_carrier_hint("", &text_only_feed()), "text");
-    }
-
-    /// 无音频 enclosure 的源
-    fn text_only_feed() -> feed_rs::model::Feed {
-        let xml = r#"<?xml version="1.0"?><rss version="2.0"><channel>
-            <title>纯文字源</title><link>https://example.com</link><description>d</description>
-            <item><title>a</title><link>https://example.com/a</link></item>
-          </channel></rss>"#;
-        feed_rs::parser::parse(xml.as_bytes()).expect("parse")
-    }
-
-    #[test]
-    fn test_update_article_read_later_status() {
-        let mut conn = db::establish_connection();
-        let feed_uuid = insert_test_feed(&mut conn);
-        let (article_id, article_uuid) = insert_test_article(&mut conn, &feed_uuid);
-
-        // When: set read_later to 1
-        let updated = Article::update_article_read_later_status(article_uuid.clone(), 1);
-        // Then: should update 1 row
-        assert_eq!(updated, 1, "Should update 1 row when setting read_later=1");
-
-        // Then: article should have is_read_later=1
-        let article: models::Article = schema::articles::table
-            .filter(schema::articles::id.eq(article_id))
-            .first(&mut conn)
-            .expect("Failed to query article");
-        assert_eq!(article.is_read_later, 1, "Article should have is_read_later=1");
-
-        // When: set read_later to 0
-        let updated = Article::update_article_read_later_status(article_uuid.clone(), 0);
-        // Then: should update 1 row
-        assert_eq!(updated, 1, "Should update 1 row when setting read_later=0");
-
-        // Then: article should have is_read_later=0
-        let article: models::Article = schema::articles::table
-            .filter(schema::articles::id.eq(article_id))
-            .first(&mut conn)
-            .expect("Failed to query article");
-        assert_eq!(article.is_read_later, 0, "Article should have is_read_later=0");
-
-        // When: update with non-existent UUID
-        let fake_uuid = uuid::Uuid::new_v4().hyphenated().to_string();
-        let updated = Article::update_article_read_later_status(fake_uuid, 1);
-        // Then: should return 0
-        assert_eq!(updated, 0, "Non-existent UUID should update 0 rows");
-    }
+    // When: update with non-existent UUID
+    let fake_uuid = uuid::Uuid::new_v4().hyphenated().to_string();
+    let updated = Article::update_article_read_later_status(fake_uuid, 1);
+    // Then: should return 0
+    assert_eq!(updated, 0, "Non-existent UUID should update 0 rows");
+  }
 }

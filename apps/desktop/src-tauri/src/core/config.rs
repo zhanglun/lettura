@@ -8,7 +8,6 @@ use std::{
 };
 use toml;
 
-
 #[derive(Debug, Serialize, Deserialize)]
 pub enum ColorScheme {
   #[serde(rename = "light")]
@@ -94,6 +93,10 @@ pub struct UserConfig {
   pub astryx_theme: String,
 
   /// 自定义生成路由，一行一条：`匹配 => 路由`
+  /// 外部桥接实例（用户自建的 RSSHub/Nitter 等）：AddFeed 探测失败时
+  /// 对「无 scheme 的路由路径」自动补前缀重试一次；不内置公共实例
+  #[serde(default)]
+  pub bridge_instance: Option<String>,
   #[serde(default)]
   pub generator_routes: Vec<String>,
 }
@@ -122,7 +125,6 @@ fn default_astryx_theme() -> String {
   "neutral".to_string()
 }
 
-
 impl Default for UserConfig {
   fn default() -> Self {
     Self {
@@ -147,6 +149,7 @@ impl Default for UserConfig {
       card_density: default_card_density(),
       astryx_theme: default_astryx_theme(),
       generator_routes: vec![],
+      bridge_instance: None,
     }
   }
 }
@@ -389,7 +392,6 @@ pub fn update_threads(threads: i32) -> usize {
 
   return 1;
 }
-
 
 pub fn update_port(port: u16) -> usize {
   let data = get_user_config();
