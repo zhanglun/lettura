@@ -12,6 +12,7 @@ import { FeedIcon } from "@/components/FeedIcon";
 import { FeedCtxMenu } from "@/components/FeedCtxMenu";
 import { getHostLabel, formatFeedTime } from "@/helpers/feedMeta";
 import { HK } from "@/shortcuts";
+import { DEV_PREVIEW_FIRST_RUN } from "@/layout/Article/EmptyFace";
 import type { FeedResItem } from "@/db";
 
 const FILTER_UNREAD = { id: 1, title: "Unread" };
@@ -188,7 +189,7 @@ export function FeedsBrowse() {
     store.setFilter(FILTER_UNREAD);
   }, [navigate, store]);
 
-  if (groups.length === 0) {
+  if (DEV_PREVIEW_FIRST_RUN || groups.length === 0) {
     return (
       <div className="fusion-face">
         <h1>{t("fusion.browse.empty_title")}</h1>

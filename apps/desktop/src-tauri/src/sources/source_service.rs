@@ -53,15 +53,6 @@ pub fn create_source(
     .map_err(|e| format!("Failed to retrieve created source: {}", e))
 }
 
-pub fn get_sources_by_pack(pack_id: &str) -> Result<Vec<Source>, String> {
-  let mut connection = db::establish_connection();
-
-  schema::sources::dsl::sources
-    .filter(schema::sources::pack_id.eq(pack_id))
-    .load::<Source>(&mut connection)
-    .map_err(|e| format!("Database error: {}", e))
-}
-
 pub fn get_sources_by_type(source_type: &str) -> Result<Vec<Source>, String> {
   let mut connection = db::establish_connection();
 
@@ -133,7 +124,7 @@ mod tests {
       "https://example.com/feed.xml",
       Some("Test Feed"),
       Some("https://example.com"),
-      "starter_pack",
+      "user",
       Some("ai"),
       "en",
     );
@@ -149,7 +140,7 @@ mod tests {
       feed_url,
       Some("Test"),
       None,
-      "starter_pack",
+      "user",
       Some("ai"),
       "en",
     )
@@ -158,7 +149,7 @@ mod tests {
       feed_url,
       Some("Test"),
       None,
-      "starter_pack",
+      "user",
       Some("ai"),
       "en",
     );
@@ -167,24 +158,8 @@ mod tests {
   }
 
   #[test]
-  fn test_get_sources_by_pack() {
-    create_source(
-      "https://test-pack.example.com/feed.xml",
-      Some("Test"),
-      None,
-      "starter_pack",
-      Some("test_pack_query"),
-      "en",
-    )
-    .ok();
-    let result = get_sources_by_pack("test_pack_query");
-    assert!(result.is_ok());
-    assert!(!result.unwrap().is_empty());
-  }
-
-  #[test]
   fn test_get_sources_by_type() {
-    let result = get_sources_by_type("starter_pack");
+    let result = get_sources_by_type("user");
     assert!(result.is_ok());
   }
 }

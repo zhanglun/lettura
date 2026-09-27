@@ -18,7 +18,7 @@ import { request } from "@/helpers/request";
 import { useArticle } from "@/hooks/useArticle";
 import type { ScrollBoxRefObject } from "@/components/ArticleView/ScrollBox";
 import { retainArticleAfterRead } from "@/helpers/articleHelpers";
-import { EmptyFace } from "./EmptyFace";
+import { EmptyFace, DEV_PREVIEW_FIRST_RUN } from "./EmptyFace";
 import * as dataAgent from "@/helpers/dataAgent";
 import { ArticleReadStatus, ArticleStarStatus } from "@/typing";
 import { HK } from "@/shortcuts";
@@ -414,7 +414,7 @@ export function ArticleView() {
       : []),
   ];
 
-  const isFirstRun = (store.subscribes?.length ?? 0) === 0;
+  const isFirstRun = DEV_PREVIEW_FIRST_RUN || (store.subscribes?.length ?? 0) === 0;
   const isClearQuiet =
     !isFirstRun &&
     isAll &&

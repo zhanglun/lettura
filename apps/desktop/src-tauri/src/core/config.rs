@@ -28,12 +28,6 @@ pub struct Proxy {
   pub enable: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, Default)]
-pub struct AppConfig {
-  #[serde(default)]
-  pub onboarding_completed: bool,
-}
-
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CustomizeStyle {
   typeface: String,
@@ -83,9 +77,6 @@ pub struct UserConfig {
   pub purge_on_days: u64,
   pub purge_unread_articles: bool,
   pub port: u16,
-  #[serde(default)]
-  pub app: AppConfig,
-
   #[serde(default)]
   pub launch_at_login: bool,
   #[serde(default = "default_true")]
@@ -148,7 +139,6 @@ impl Default for UserConfig {
       purge_on_days: 0,
       purge_unread_articles: true,
       port: 3456,
-      app: AppConfig::default(),
       launch_at_login: false,
       background_sync: true,
       cache_retention_days: default_cache_retention_days(),

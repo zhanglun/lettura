@@ -53,7 +53,6 @@ declare type ThemeAccentColor =
   | "sky";
 
 declare interface AppConfig {
-  onboarding_completed?: boolean;
 }
 
 declare interface UserConfig {

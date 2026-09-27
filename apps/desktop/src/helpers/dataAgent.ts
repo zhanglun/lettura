@@ -253,20 +253,6 @@ export const importOpml = async (
   return invoke("import_opml", { opmlContent });
 };
 
-export interface PackPreview {
-  id: string;
-  name: string;
-  description: string;
-  icon: string;
-  language: string;
-  tags: string[];
-  sources: { feed_url: string; title: string; site_url: string; language: string }[];
-}
-
-export const previewPack = async (packId: string): Promise<PackPreview> => {
-  return invoke("preview_pack", { packId });
-};
-
 export const importOpmlAsSource = async (
   opmlContent: string,
 ): Promise<OpmlImportResult> => {

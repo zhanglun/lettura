@@ -141,59 +141,6 @@
       "delete": "Delete"
     }
   },
-  "onboarding": {
-    "welcome": {
-      "title": "Welcome to Lettura",
-      "subtitle": "Lettura is your daily judgment desk. Pick your interests and starter packs, then turn feeds into readable signals.",
-      "get_started": "Start Setup",
-      "import_opml": "Import OPML",
-      "import_opml_desc": "Already have subscriptions? Import from an OPML file.",
-      "importing": "Importing...",
-      "import_success": "OPML imported successfully!",
-      "import_error": "Failed to import OPML file"
-    },
-    "interests": {
-      "step": "Step 1 · Interests",
-      "title": "What do you want to follow?",
-      "subtitle": "Select at least one area so Lettura can recommend starter packs. You can adjust sources later in Settings.",
-      "next": "Next: Choose Packs"
-    },
-    "select_pack": {
-      "step": "Step 2 · Starter Packs",
-      "title": "Choose Starter Packs",
-      "subtitle": "Each pack contains curated sources. You can add, remove, and organize them later.",
-      "recommended": "Matches your interests",
-      "sources_count": "{{count}} sources",
-      "confirm_title": "Confirm Installation",
-      "confirm_description": "You are about to install {{count}} packs with a total of {{sources}} sources.",
-      "confirm_button": "Install",
-      "back": "Back",
-      "install": "Install Selected",
-      "retry": "Retry",
-      "error_title": "Could not load starter packs",
-      "empty_title": "No starter packs available",
-      "empty_subtitle": "Go back to adjust your interests, or import existing subscriptions with OPML.",
-      "none_selected": "Please select at least one pack"
-    },
-    "installing": {
-      "title": "Setting Up Your Feeds",
-      "subtitle": "Installing your selected packs and fetching articles...",
-      "progress": "Installing pack {{current}} of {{total}}...",
-      "success_title": "All Done!",
-      "success_subtitle": "Successfully installed {{feeds}} feeds from {{sources}} sources.",
-      "partial_title": "Partially Completed",
-      "partial_subtitle": "Some feeds could not be installed.",
-      "error_title": "Installation Failed",
-      "error_subtitle": "Something went wrong during installation.",
-      "retry": "Retry",
-      "skip": "Skip"
-    },
-    "complete": {
-      "title": "You're All Set!",
-      "subtitle": "Your feeds are ready. Start exploring your personalized reading list.",
-      "start_reading": "Start Reading"
-    }
-  },
   "settings": {
     "generator_routes": "Custom generator routes",
     "generator_routes_help": "One per line: `match => route`. The left side is treated as a regex (a bare domain works), and a route starting with http is used as the feed URL directly",
@@ -248,7 +195,6 @@
       "broken_count": "{{count}} feed(s) with errors",
       "total_feeds": "{{total}} feeds · {{healthy}} healthy · {{broken}} broken",
       "opml_subtitle": "Import subscriptions from OPML files",
-      "packs_title": "Starter Packs",
       "packs_help": "Curated bundles to get started quickly",
       "browse_packs": "Browse Packs",
       "tag_installed": "Installed",
@@ -606,7 +552,7 @@
     },
     "help": {
       "title": "Keyboard Shortcuts",
-      "desc": "The full keyboard model of the fusion shell",
+      "desc": "Every shortcut in the app, active outside text fields",
       "jk": "List: move focus · Detail: scroll article",
       "open": "Open focused row",
       "esc": "Back to list / close layer by layer",
@@ -631,11 +577,10 @@
     },
     "empty": {
       "first_title": "Subscribe to what you read",
-      "first_lede": "RSS, Bilibili, Zhihu, Weibo, newsletters — paste an address and Lettura handles the rest. Data stays local; read and go.",
+      "first_lede": "RSS and newsletters — paste an address and Lettura handles the rest. Data stays local; read and go.",
       "clear_title": "Today's queue is clear",
       "clear_lede": "Read and leave. Tomorrow at the same time, new unread items will be waiting here. Press ? for all shortcuts.",
       "import_opml": "Import OPML",
-      "pack_title": "STARTER PACK · {{name}}",
       "pack_count": "{{selected}} / {{total}} selected",
       "select_all": "Select all",
       "unselect_all": "Clear",
@@ -644,7 +589,7 @@
       "subscribed": "Subscribed to {{count}} feeds"
     },
     "add": {
-      "ph_any": "Paste any address: RSS, a site homepage, Bilibili/Zhihu/Weibo, a newsletter…",
+      "ph_any": "Paste any address: RSS, a site homepage, a newsletter…",
       "recent": "RECENT",
       "candidates": "{{count}} feeds found",
       "new_folder": "New group…",

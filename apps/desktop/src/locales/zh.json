@@ -157,59 +157,6 @@
       "delete": "删除"
     }
   },
-  "onboarding": {
-    "welcome": {
-      "title": "欢迎使用 Lettura",
-      "subtitle": "Lettura 是你的每日判断入口。先选关注方向和 Starter Pack，我们会帮你把信息流整理成可阅读、可追踪的信号。",
-      "get_started": "开始设置",
-      "import_opml": "导入 OPML",
-      "import_opml_desc": "已有订阅？从 OPML 文件导入。",
-      "importing": "导入中...",
-      "import_success": "OPML 导入成功！",
-      "import_error": "导入 OPML 文件失败"
-    },
-    "interests": {
-      "step": "第 1 步 · 兴趣选择",
-      "title": "你主要关注哪些领域？",
-      "subtitle": "选择至少一个方向，用于推荐更合适的 Starter Pack。后续仍然可以在设置里调整来源。",
-      "next": "下一步：选择订阅包"
-    },
-    "select_pack": {
-      "step": "第 2 步 · 安装订阅包",
-      "title": "选择 Starter Pack",
-      "subtitle": "每个 Pack 包含精选信息源，安装后可在订阅管理里继续增删和整理。",
-      "recommended": "匹配你的兴趣",
-      "sources_count": "{{count}} 个源",
-      "confirm_title": "确认安装",
-      "confirm_description": "即将安装 {{count}} 个包，共 {{sources}} 个源。",
-      "confirm_button": "安装",
-      "back": "返回",
-      "install": "安装所选",
-      "retry": "重新加载",
-      "error_title": "无法加载 Starter Pack",
-      "empty_title": "暂时没有可用订阅包",
-      "empty_subtitle": "你可以返回上一步调整兴趣，或先通过 OPML 导入已有订阅。",
-      "none_selected": "请至少选择一个包"
-    },
-    "installing": {
-      "title": "正在设置您的订阅",
-      "subtitle": "正在安装所选包并获取文章...",
-      "progress": "正在安装第 {{current}} / {{total}} 个包...",
-      "success_title": "全部完成！",
-      "success_subtitle": "已成功安装 {{sources}} 个来源的 {{feeds}} 个订阅。",
-      "partial_title": "部分完成",
-      "partial_subtitle": "部分订阅无法安装。",
-      "error_title": "安装失败",
-      "error_subtitle": "安装过程中出现了问题。",
-      "retry": "重试",
-      "skip": "跳过"
-    },
-    "complete": {
-      "title": "一切就绪！",
-      "subtitle": "您的订阅已准备就绪。开始探索您的个性化阅读列表吧。",
-      "start_reading": "开始阅读"
-    }
-  },
   "settings": {
     "generator_routes": "自定义生成路由",
     "generator_routes_help": "一行一条：`匹配 => 路由`。左侧按正则用（域名也行），右侧以 http 开头则直接当 feed 地址",
@@ -264,7 +211,6 @@
       "broken_count": "{{count}} 个订阅源存在错误",
       "total_feeds": "{{total}} 个源 · {{healthy}} 正常 · {{broken}} 异常",
       "opml_subtitle": "从 OPML 文件导入订阅",
-      "packs_title": "订阅包",
       "packs_help": "精选内容包，快速上手",
       "browse_packs": "浏览订阅包",
       "tag_installed": "已安装",
@@ -622,7 +568,7 @@
     },
     "help": {
       "title": "键盘快捷键",
-      "desc": "fusion 壳的完整键盘模型",
+      "desc": "应用内全部快捷键，输入框外随时生效",
       "jk": "列表：移动焦点 · 详情：滚动文章",
       "open": "打开焦点行",
       "esc": "返回列表 / 逐级关闭",
@@ -647,11 +593,10 @@
     },
     "empty": {
       "first_title": "订阅你想读的",
-      "first_lede": "RSS、B站、知乎、微博、Newsletter——粘贴一个地址，其余交给 Lettura。数据在本机，读完就走。",
+      "first_lede": "RSS、Newsletter——粘贴一个地址，其余交给 Lettura。数据在本机，读完就走。",
       "clear_title": "今天的队列清空了",
       "clear_lede": "读完就走。明天同一时间，新的未读会在这里等你。 按 ? 查看全部快捷键。",
       "import_opml": "导入 OPML",
-      "pack_title": "STARTER PACK · {{name}}",
       "pack_count": "已选 {{selected}} / {{total}}",
       "select_all": "全选",
       "unselect_all": "取消全选",
@@ -660,7 +605,7 @@
       "subscribed": "已订阅 {{count}} 个来源"
     },
     "add": {
-      "ph_any": "粘贴任意地址：RSS、站点主页、B站/知乎/微博、Newsletter…",
+      "ph_any": "粘贴任意地址：RSS、站点主页、Newsletter…",
       "recent": "最近条目 RECENT",
       "candidates": "发现 {{count}} 个 feed",
       "new_folder": "新建分组…",
