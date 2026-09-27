@@ -17,14 +17,16 @@ import { Subscriptions } from "./Subscriptions";
 import { ASTRYX_THEMES } from "@/themes";
 import { Button } from "@astryxdesign/core/Button";
 import { SegmentedControl, SegmentedControlItem } from "@astryxdesign/core/SegmentedControl";
+import { Dialog, DialogHeader } from "@astryxdesign/core/Dialog";
 
-import { ChevronRight, Download, Upload , ChevronLeft} from "lucide-react";
+import { ChevronRight, Download, Upload , ChevronLeft, Plus, Trash2 } from "lucide-react";
 import { Switch } from "@astryxdesign/core/Switch";
 import { Kbd } from "@astryxdesign/core/Kbd";
 import { Selector } from "@astryxdesign/core/Selector";
 import { Slider } from "@astryxdesign/core/Slider";
 import { TextArea } from "@astryxdesign/core/TextArea";
 import { TextInput } from "@astryxdesign/core/TextInput";
+import { SiteRuleSummary, SourceAccount } from "@/db";
 
 const INTERVALS = [
   { value: 0, labelKey: "Manual" },
@@ -77,6 +79,40 @@ export function SettingPage() {
   const [activeSec, setActiveSec] = useState("appearance");
   const bodyRef = useRef<HTMLDivElement>(null);
 
+  // ── 来源账户 / 站点规则（后端命令直连；失败静默为空列表）──
+  const [accounts, setAccounts] = useState<SourceAccount[]>([]);
+  const [rules, setRules] = useState<SiteRuleSummary[]>([]);
+  // 外部桥接实例：文本类设置用草稿 + 失焦提交（同 generator_routes）
+  const [bridgeDraft, setBridgeDraft] = useState<string | null>(null);
+  // 添加邮箱账户对话框
+  const [accDialogOpen, setAccDialogOpen] = useState(false);
+  const [accForm, setAccForm] = useState({ host: "", port: "993", user: "", password: "", label: "" });
+  const [accTesting, setAccTesting] = useState(false);
+  const [accSaving, setAccSaving] = useState(false);
+  // 行内测试 / 删除确认
+  const [testingUuid, setTestingUuid] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<SourceAccount | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
+  const loadAccounts = () => {
+    dataAgent
+      .listSourceAccounts()
+      .then((list) => setAccounts(list || []))
+      .catch(() => setAccounts([]));
+  };
+
+  const loadRules = () => {
+    dataAgent
+      .listSiteRules()
+      .then((list) => setRules(list || []))
+      .catch(() => setRules([]));
+  };
+
+  useEffect(() => {
+    loadAccounts();
+    loadRules();
+  }, []);
+
   // esc 一路退回未读列表
   useHotkeys(HK.escape, () => {
     if (document.body.classList.contains("fusion-context-menu-open")) return;
@@ -95,7 +131,7 @@ export function SettingPage() {
   useEffect(() => {
     const el = bodyRef.current;
     if (!el) return;
-    const sections = ["appearance", "sync", "system"];
+    const sections = ["appearance", "sync", "sources", "rules", "system"];
     let ticking = false;
     const onScroll = () => {
       if (ticking) return;
@@ -193,9 +229,111 @@ export function SettingPage() {
     }
   };
 
+  // ── 来源账户 ─────────────────────────────────────────────
+  const providerLabel = (provider: string) => {
+    if (provider === "mail") return t("settings.source_accounts.provider_mail");
+    if (provider === "bilibili") return t("settings.source_accounts.provider_bilibili");
+    return provider;
+  };
+
+  const testRowAccount = async (account: SourceAccount) => {
+    setTestingUuid(account.uuid);
+    try {
+      const message = await dataAgent.testSourceAccount(account.provider, account.settings);
+      toast.success(message || t("settings.source_accounts.test_ok"));
+    } catch (error) {
+      showErrorToast(error, t("settings.source_accounts.test_fail"));
+    } finally {
+      setTestingUuid(null);
+    }
+  };
+
+  const confirmDeleteAccount = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    try {
+      await dataAgent.deleteSourceAccount(deleteTarget.uuid);
+      toast.success(t("settings.source_accounts.deleted"));
+      setDeleteTarget(null);
+      loadAccounts();
+    } catch (error) {
+      showErrorToast(error, t("settings.source_accounts.delete_fail"));
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const openAddAccount = () => {
+    setAccForm({ host: "", port: "993", user: "", password: "", label: "" });
+    setAccDialogOpen(true);
+  };
+
+  const mailSettingsJson = () =>
+    JSON.stringify({
+      host: accForm.host.trim(),
+      port: parseInt(accForm.port, 10) || 993,
+      user: accForm.user.trim(),
+      password: accForm.password,
+    });
+
+  const accFormReady =
+    accForm.host.trim() !== "" && accForm.user.trim() !== "" && accForm.password !== "";
+
+  const testNewAccount = async () => {
+    setAccTesting(true);
+    try {
+      const message = await dataAgent.testSourceAccount("mail", mailSettingsJson());
+      toast.success(message || t("settings.source_accounts.test_ok"));
+    } catch (error) {
+      showErrorToast(error, t("settings.source_accounts.test_fail"));
+    } finally {
+      setAccTesting(false);
+    }
+  };
+
+  const saveNewAccount = async () => {
+    if (!accFormReady) return;
+    setAccSaving(true);
+    try {
+      // 名称默认取 host（用户没填时）
+      await dataAgent.saveSourceAccount(
+        "mail",
+        accForm.label.trim() || accForm.host.trim(),
+        mailSettingsJson(),
+      );
+      toast.success(t("settings.source_accounts.saved"));
+      setAccDialogOpen(false);
+      loadAccounts();
+    } catch (error) {
+      showErrorToast(error, t("settings.source_accounts.save_fail"));
+    } finally {
+      setAccSaving(false);
+    }
+  };
+
+  // ── 站点规则 ─────────────────────────────────────────────
+  const handleImportRule = async () => {
+    const selected = await openDialog({
+      multiple: false,
+      filters: [{ name: "TOML", extensions: ["toml"] }],
+    });
+    if (selected && typeof selected === "string") {
+      try {
+        const content = await readTextFile(selected);
+        const key = await dataAgent.importSiteRule(content);
+        toast.success(t("settings.site_rules.imported", { key }));
+        loadRules();
+      } catch (error) {
+        showErrorToast(error, t("settings.site_rules.import_fail"));
+      }
+    }
+  };
+
   const navItems = [
     { id: "appearance", label: t("settings.sec.appearance") },
     { id: "sync", label: t("settings.sec.sync") },
+    { id: "sources", label: t("settings.sec.sources") },
+    { id: "rules", label: t("settings.sec.rules") },
     { id: "system", label: t("settings.sec.system") },
   ];
 
@@ -449,6 +587,107 @@ export function SettingPage() {
                 onClick={() => navigate(`${RouteConfig.SETTINGS}?tab=subscriptions`)}
               />
             </SRow>
+            <SRow label={t("settings.bridge_instance")} help={t("settings.bridge_instance_help")}>
+              <TextInput
+                label={t("settings.bridge_instance")}
+                isLabelHidden
+                width={260}
+                placeholder="https://hub.example.com"
+                value={bridgeDraft ?? (cfg?.bridge_instance ?? "")}
+                onChange={(v) => setBridgeDraft(v)}
+                onBlur={() => {
+                  if (bridgeDraft === null) return;
+                  store.updateUserConfig({
+                    ...cfg,
+                    bridge_instance: bridgeDraft.trim(),
+                  });
+                  setBridgeDraft(null);
+                }}
+              />
+            </SRow>
+
+            {/* 来源账户 */}
+            <div className="fusion-set-h" id="sources">
+              {t("settings.sec.sources")}
+            </div>
+            <SRow label={t("settings.source_accounts.title")} help={t("settings.source_accounts.help")}>
+              <Button
+                variant="ghost"
+                size="sm"
+                icon={<Plus size={12} />}
+                label={t("settings.source_accounts.add_mail")}
+                onClick={openAddAccount}
+              />
+            </SRow>
+            {accounts.map((account) => (
+              <div className="fusion-srow" key={account.uuid}>
+                <div className="min-w-0">
+                  <div className="lb" style={{ display: "flex", alignItems: "center", gap: 7 }}>
+                    <span
+                      className="fusion-dot"
+                      style={account.status !== "ok" ? { background: "#E5484D" } : undefined}
+                    />
+                    {account.label}
+                  </div>
+                  <div className="hp">
+                    <span className="fusion-chip">{providerLabel(account.provider)}</span>
+                    {account.status !== "ok" && (
+                      <span style={{ marginLeft: 6 }}>{account.status}</span>
+                    )}
+                  </div>
+                </div>
+                <div className="ctl">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    label={t("settings.source_accounts.test")}
+                    isLoading={testingUuid === account.uuid}
+                    onClick={() => testRowAccount(account)}
+                  />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    icon={<Trash2 size={12} />}
+                    label={t("settings.source_accounts.delete")}
+                    onClick={() => setDeleteTarget(account)}
+                  />
+                </div>
+              </div>
+            ))}
+
+            {/* 订阅规则 */}
+            <div className="fusion-set-h" id="rules">
+              {t("settings.sec.rules")}
+            </div>
+            <SRow label={t("settings.site_rules.title")} help={t("settings.site_rules.help")}>
+              <Button
+                variant="ghost"
+                size="sm"
+                icon={<Upload size={12} />}
+                label={t("settings.site_rules.import")}
+                onClick={handleImportRule}
+              />
+            </SRow>
+            {rules.length === 0 ? (
+              <div className="fusion-srow">
+                <div className="min-w-0">
+                  <div className="hp">{t("settings.site_rules.empty")}</div>
+                </div>
+                <div className="ctl" />
+              </div>
+            ) : (
+              rules.map((rule) => (
+                <div className="fusion-srow" key={rule.key}>
+                  <div className="min-w-0">
+                    <div className="lb">{rule.title || rule.key}</div>
+                    <div className="hp">{rule.pattern}</div>
+                  </div>
+                  <div className="ctl">
+                    <span className="fusion-chip">{rule.kind}</span>
+                  </div>
+                </div>
+              ))
+            )}
 
             {/* 行为与数据 */}
             <div className="fusion-set-h" id="system">
@@ -524,6 +763,83 @@ export function SettingPage() {
           </div>
         </div>
       </div>
+
+      {/* 添加邮箱账户：先测试连接，再落库 */}
+      <Dialog isOpen={accDialogOpen} onOpenChange={setAccDialogOpen} width={420}>
+        <DialogHeader title={t("settings.source_accounts.add_mail")} />
+        <div className="flex flex-col gap-3 py-2">
+          <TextInput
+            label={t("settings.source_accounts.fld_host")}
+            placeholder="imap.example.com"
+            value={accForm.host}
+            onChange={(v) => setAccForm((f) => ({ ...f, host: v }))}
+          />
+          <TextInput
+            label={t("settings.source_accounts.fld_port")}
+            value={accForm.port}
+            onChange={(v) => setAccForm((f) => ({ ...f, port: v.replace(/\D/g, "") }))}
+          />
+          <TextInput
+            label={t("settings.source_accounts.fld_user")}
+            autoComplete="off"
+            value={accForm.user}
+            onChange={(v) => setAccForm((f) => ({ ...f, user: v }))}
+          />
+          <TextInput
+            label={t("settings.source_accounts.fld_password")}
+            type="password"
+            autoComplete="new-password"
+            value={accForm.password}
+            onChange={(v) => setAccForm((f) => ({ ...f, password: v }))}
+          />
+          <TextInput
+            label={t("settings.source_accounts.fld_label")}
+            description={t("settings.source_accounts.fld_label_help")}
+            placeholder={accForm.host}
+            value={accForm.label}
+            onChange={(v) => setAccForm((f) => ({ ...f, label: v }))}
+          />
+          <div className="flex justify-end gap-3 pt-1">
+            <Button
+              variant="secondary"
+              label={t("settings.source_accounts.test")}
+              isLoading={accTesting}
+              isDisabled={!accFormReady}
+              onClick={testNewAccount}
+            />
+            <Button
+              variant="primary"
+              label={t("Save")}
+              isLoading={accSaving}
+              isDisabled={!accFormReady}
+              onClick={saveNewAccount}
+            />
+          </div>
+        </div>
+      </Dialog>
+
+      {/* 删除账户确认（引用它的订阅会置回无账户，不删订阅） */}
+      <Dialog
+        isOpen={!!deleteTarget}
+        onOpenChange={(v) => !v && setDeleteTarget(null)}
+        width={400}
+      >
+        <DialogHeader title={t("settings.source_accounts.delete_confirm_title")} />
+        <div className="flex flex-col gap-4 py-2">
+          <span style={{ fontSize: 13, color: "var(--fusion-ter)" }}>
+            {t("settings.source_accounts.delete_confirm", { label: deleteTarget?.label ?? "" })}
+          </span>
+          <div className="flex justify-end gap-3">
+            <Button variant="secondary" label={t("Cancel")} onClick={() => setDeleteTarget(null)} />
+            <Button
+              variant="destructive"
+              label={t("settings.source_accounts.delete")}
+              isLoading={deleting}
+              onClick={confirmDeleteAccount}
+            />
+          </div>
+        </div>
+      </Dialog>
     </div>
   );
 }

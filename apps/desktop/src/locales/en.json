@@ -144,6 +144,8 @@
   "settings": {
     "generator_routes": "Custom generator routes",
     "generator_routes_help": "One per line: `match => route`. The left side is treated as a regex (a bare domain works), and a route starting with http is used as the feed URL directly",
+    "bridge_instance": "Bridge instance",
+    "bridge_instance_help": "Leave empty to disable. With a self-hosted RSSHub/Nitter address set, a failed probe of a protocol-less path is retried once as `instance/path`",
     "subtitle": "Sync, appearance, OPML and data — all on one page.",
     "status_secure": "Local config secure",
     "status_sources": "42 sources active",
@@ -243,7 +245,40 @@
     "sec": {
       "appearance": "Appearance & Reading",
       "sync": "Sync & Sources",
+      "sources": "Source accounts",
+      "rules": "Site rules",
       "system": "Behavior & Data"
+    },
+    "source_accounts": {
+      "title": "Source accounts",
+      "help": "Credentials such as IMAP mailboxes live in the local database and power mail subscriptions",
+      "add_mail": "Add mail account",
+      "provider_mail": "Mail",
+      "provider_bilibili": "Bilibili",
+      "test": "Test",
+      "delete": "Delete",
+      "test_ok": "Connection OK",
+      "test_fail": "Connection test failed",
+      "saved": "Account saved",
+      "save_fail": "Failed to save account",
+      "deleted": "Account deleted",
+      "delete_fail": "Failed to delete account",
+      "delete_confirm_title": "Delete this account?",
+      "delete_confirm": "Account “{{label}}” will be removed. Feeds using it are kept, but unlinked from the account.",
+      "fld_host": "Server (IMAP host)",
+      "fld_port": "Port",
+      "fld_user": "Account",
+      "fld_password": "Password / app token",
+      "fld_label": "Label",
+      "fld_label_help": "Defaults to the host"
+    },
+    "site_rules": {
+      "title": "Site rules",
+      "help": "Site adaptation rules (TOML) for the local conversion engine; an imported rule with the same key overwrites",
+      "import": "Import rule",
+      "imported": "Rule imported: {{key}}",
+      "import_fail": "Failed to import rule",
+      "empty": "No custom rules yet — builtin rules ship with the app"
     },
     "dsrc": "Lettura · Preferences",
     "instant": "Changes apply instantly and persist locally",
@@ -589,6 +624,13 @@
       "subscribed": "Subscribed to {{count}} feeds"
     },
     "add": {
+      "mode": "Subscription mode",
+      "link_mode": "Link",
+      "email_mode": "Email",
+      "email_ph": "Sender address, e.g. newsletter@example.com",
+      "account": "Mail account",
+      "account_hint": "Probes and syncs with the selected account",
+      "account_missing": "No mail account yet — add one in Settings",
       "ph_any": "Paste any address: RSS, a site homepage, a newsletter…",
       "recent": "RECENT",
       "candidates": "{{count}} feeds found",

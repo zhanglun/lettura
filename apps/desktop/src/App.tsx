@@ -7,6 +7,7 @@ import { DialogAboutApp } from "./components/About";
 import { useShallow } from "zustand/react/shallow";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { showErrorToast } from "@/helpers/errorHandler";
+import { busChannel } from "@/helpers/busChannel";
 import { useNavigate } from "react-router-dom";
 import { RouteConfig } from "./config";
 import { AppLayout } from "./components/layout/AppLayout";
@@ -48,10 +49,17 @@ function App() {
         emit("tauri://update");
       });
 
+      // 后台 worker 单源同步完成 → 刷新订阅树与未读数。
+      // 首次打通后端事件推送；payload 为 {uuid, title, inserted, error}。
+      const syncCompletedUnsubscribe = listen("sync://completed", () => {
+        busChannel.emit("getChannels");
+      });
+
       return () => {
         aboutUnsubscribe.then((unsub) => unsub());
         settingsUnsubscribe.then((unsub) => unsub());
         updateUnsubscribe.then((unsub) => unsub());
+        syncCompletedUnsubscribe.then((unsub) => unsub());
       };
     }
   }, [

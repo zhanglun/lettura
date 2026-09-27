@@ -5,6 +5,8 @@ import {
   Channel,
   FeedResItem,
   FolderResItem,
+  SiteRuleSummary,
+  SourceAccount,
 } from "../db";
 import { request } from "@/helpers/request";
 import { AxiosRequestConfig, AxiosResponse } from "axios";
@@ -93,6 +95,8 @@ export const fetchFeed = async (
   url: string,
   origin?: string,
   carrier?: string,
+  providerHint?: string,
+  accountUuid?: string,
 ): Promise<{
   feed: any;
   resolved_url: string;
@@ -100,15 +104,55 @@ export const fetchFeed = async (
   entries: any[];
   message: string;
 }> => {
-  return invoke("fetch_feed", { url, origin, carrier });
+  return invoke("fetch_feed", { url, origin, carrier, providerHint, accountUuid });
 };
 
 export const subscribeFeed = async (
   url: string,
   origin?: string,
   carrier?: string,
+  providerHint?: string,
+  accountUuid?: string,
 ): Promise<[FeedResItem, number, string]> => {
-  return invoke("add_feed", { url, origin, carrier });
+  return invoke("add_feed", { url, origin, carrier, providerHint, accountUuid });
+};
+
+// ── 来源账户（IMAP / B站 cookie 等凭据的宿主）────────────────────
+
+export const listSourceAccounts = async (): Promise<SourceAccount[]> => {
+  return invoke("list_source_accounts");
+};
+
+/** settings 为 provider 特定的 JSON 字符串（mail: {host, port, user, password}） */
+export const saveSourceAccount = async (
+  provider: string,
+  label: string,
+  settings: string,
+): Promise<SourceAccount> => {
+  return invoke("save_source_account", { provider, label, settings });
+};
+
+export const deleteSourceAccount = async (uuid: string): Promise<number> => {
+  return invoke("delete_source_account", { uuid });
+};
+
+/** 成功返回消息；失败 reject */
+export const testSourceAccount = async (
+  provider: string,
+  settings: string,
+): Promise<string> => {
+  return invoke("test_source_account", { provider, settings });
+};
+
+// ── 站点规则（site-rules：本地转换引擎的配置面）──────────────────
+
+export const listSiteRules = async (): Promise<SiteRuleSummary[]> => {
+  return invoke("list_site_rules");
+};
+
+/** 导入规则 TOML 内容，成功返回规则 key（同 key 覆盖） */
+export const importSiteRule = async (content: string): Promise<string> => {
+  return invoke("import_site_rule", { content });
 };
 
 export const syncFeed = async (

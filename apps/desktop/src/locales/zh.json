@@ -160,6 +160,8 @@
   "settings": {
     "generator_routes": "自定义生成路由",
     "generator_routes_help": "一行一条：`匹配 => 路由`。左侧按正则用（域名也行），右侧以 http 开头则直接当 feed 地址",
+    "bridge_instance": "外部桥接实例",
+    "bridge_instance_help": "留空不启用；填自建 RSSHub/Nitter 地址后，订阅探测失败时会对无协议的路径自动重试 `实例/路径`",
     "subtitle": "同步、外观、OPML 与数据，都在这一页。",
     "status_secure": "本地配置安全",
     "status_sources": "42 个源活跃",
@@ -259,7 +261,40 @@
     "sec": {
       "appearance": "外观与阅读",
       "sync": "同步与来源",
+      "sources": "来源账户",
+      "rules": "订阅规则",
       "system": "行为与数据"
+    },
+    "source_accounts": {
+      "title": "来源账户",
+      "help": "IMAP 邮箱等凭据保存在本机数据库，供邮件订阅使用",
+      "add_mail": "添加邮箱账户",
+      "provider_mail": "邮箱",
+      "provider_bilibili": "B站",
+      "test": "测试",
+      "delete": "删除",
+      "test_ok": "连接成功",
+      "test_fail": "连接测试失败",
+      "saved": "账户已保存",
+      "save_fail": "保存账户失败",
+      "deleted": "账户已删除",
+      "delete_fail": "删除账户失败",
+      "delete_confirm_title": "删除这个账户？",
+      "delete_confirm": "将删除账户「{{label}}」。使用它的订阅会保留，但会置回无账户状态。",
+      "fld_host": "服务器（IMAP host）",
+      "fld_port": "端口",
+      "fld_user": "账号",
+      "fld_password": "密码 / 授权码",
+      "fld_label": "名称",
+      "fld_label_help": "默认取服务器地址"
+    },
+    "site_rules": {
+      "title": "站点规则",
+      "help": "本地转换引擎的站点适配规则（TOML），同 key 覆盖",
+      "import": "导入规则",
+      "imported": "规则已导入：{{key}}",
+      "import_fail": "导入规则失败",
+      "empty": "暂无自定义规则——内置规则已随应用提供"
     },
     "dsrc": "Lettura · 偏好",
     "instant": "更改即时生效并写入本地配置",
@@ -605,6 +640,13 @@
       "subscribed": "已订阅 {{count}} 个来源"
     },
     "add": {
+      "mode": "订阅方式",
+      "link_mode": "链接",
+      "email_mode": "邮件订阅",
+      "email_ph": "输入发件人地址，如 newsletter@example.com",
+      "account": "邮箱账户",
+      "account_hint": "用所选账户的凭据探测与同步",
+      "account_missing": "还没有邮箱账户，去设置添加",
       "ph_any": "粘贴任意地址：RSS、站点主页、Newsletter…",
       "recent": "最近条目 RECENT",
       "candidates": "发现 {{count}} 个 feed",

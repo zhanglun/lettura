@@ -4,7 +4,8 @@ import { Button } from "@astryxdesign/core/Button";
 import { Selector } from "@astryxdesign/core/Selector";
 import { TextInput } from "@astryxdesign/core/TextInput";
 import { ToggleButton } from "@astryxdesign/core/ToggleButton";
-import { Plus, Search } from "lucide-react";
+import { SegmentedControl, SegmentedControlItem } from "@astryxdesign/core/SegmentedControl";
+import { ChevronRight, Plus, Search } from "lucide-react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useNavigate } from "react-router-dom";
 import * as dataAgent from "@/helpers/dataAgent";
@@ -14,7 +15,7 @@ import { toast } from "@/helpers/toast";
 import { useTranslation } from "react-i18next";
 import { HK } from "@/shortcuts";
 import { showErrorToast } from "@/helpers/errorHandler";
-import { FeedResItem } from "@/db";
+import { FeedResItem, SourceAccount } from "@/db";
 import { RouteConfig } from "@/config";
 import {
   BUILTIN_GENERATORS,
@@ -41,6 +42,9 @@ interface Preview {
   /** 来源键（`generator:newsletter` 等）＋ 声明的载体 */
   origin?: string;
   carrierHint?: Carrier;
+  /** 邮件订阅：provider 提示与账户（后端 detect_input 用） */
+  providerHint?: string;
+  accountUuid?: string;
 }
 
 type Phase =
@@ -101,6 +105,10 @@ export const AddFeedChannel = (props: any) => {
   const [folderUuid, setFolderUuid] = useState("");
   const [creatingFolder, setCreatingFolder] = useState(false);
   const [folderName, setFolderName] = useState("");
+  /** 订阅模式：链接（RSS/站点/Newsletter）或邮件（发件人地址 + 邮箱账户） */
+  const [mode, setMode] = useState<"link" | "email">("link");
+  const [accounts, setAccounts] = useState<SourceAccount[]>([]);
+  const [accountUuid, setAccountUuid] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const folderInputRef = useRef<HTMLInputElement>(null);
   /** 探测请求令牌：慢响应回来时若已被新输入取代，直接丢弃 */
@@ -126,9 +134,40 @@ export const AddFeedChannel = (props: any) => {
       setFolderUuid("");
       setCreatingFolder(false);
       setFolderName("");
+      setAccountUuid("");
       setTimeout(() => inputRef.current?.focus(), 30);
     }
   }, [open]);
+
+  // 邮件模式挂载时拉一次邮箱账户；没有账户就引导去设置页（探测禁用）
+  useEffect(() => {
+    if (!open || mode !== "email") return;
+    let cancelled = false;
+    dataAgent
+      .listSourceAccounts()
+      .then((list) => {
+        if (cancelled) return;
+        const mails = (list || []).filter((a) => a.provider === "mail");
+        setAccounts(mails);
+        setAccountUuid((cur) => cur || mails[0]?.uuid || "");
+      })
+      .catch(() => {
+        if (!cancelled) setAccounts([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [open, mode]);
+
+  // 切模式即作废在途探测并清空预览（链接的预览结论不适用于邮件）
+  const switchMode = (v: string) => {
+    if (v === mode) return;
+    setMode(v as "link" | "email");
+    setUrl("");
+    setPhase({ s: "idle" });
+    if (timerRef.current) clearTimeout(timerRef.current);
+    probeRef.current++;
+  };
 
   // 选「新建分组…」后才出现输入框：出现即聚焦（与面板输入一致，用 ref 而非 autoFocus）
   useEffect(() => {
@@ -152,15 +191,15 @@ export const AddFeedChannel = (props: any) => {
     return () => window.removeEventListener("keydown", onKey, true);
   }, [open, phase]);
 
-  /** 真正去探测并进入预览（target 可以是用户输入、生成器地址或候选地址） */
+  /** 真正去探测并进入预览（target 可以是用户输入、生成器地址、桥接地址或候选地址） */
   const previewUrl = (
     feedUrl: string,
-    meta: Partial<Pick<Preview, "origin" | "carrierHint">> = {},
+    meta: Partial<Pick<Preview, "origin" | "carrierHint" | "providerHint" | "accountUuid">> = {},
   ) => {
     const token = ++probeRef.current;
     setPhase({ s: "trying" });
     dataAgent
-      .fetchFeed(feedUrl, meta.origin, meta.carrierHint)
+      .fetchFeed(feedUrl, meta.origin, meta.carrierHint, meta.providerHint, meta.accountUuid)
       .then((res: any) => {
         if (!openRef.current || token !== probeRef.current) return;
         if (!res?.feed) {
@@ -188,7 +227,18 @@ export const AddFeedChannel = (props: any) => {
       });
   };
 
-  /** 输入 → 防抖 → 发现（发现失败再退回生成器表，命中就自动生成并预览） */
+  /**
+   * 外部桥接重试（只一次）：链接模式探测失败、配置了 bridge_instance、
+   * 且输入是不带协议的路径时，用 `实例/路径` 再探测（自建 RSSHub/Nitter）。
+   */
+  const maybeBridgeRetry = (text: string) => {
+    const bridge = (store.userConfig?.bridge_instance ?? "").trim().replace(/\/+$/, "");
+    if (mode !== "link" || !bridge || text.includes("://")) return false;
+    previewUrl(`${bridge}/${text}`);
+    return true;
+  };
+
+  /** 输入 → 防抖 → 发现（发现失败再退回生成器表/外部桥接，命中就自动生成并预览） */
   const detect = (raw: string) => {
     if (timerRef.current) clearTimeout(timerRef.current);
     const text = raw.trim();
@@ -197,11 +247,24 @@ export const AddFeedChannel = (props: any) => {
       return;
     }
 
+    // 邮件模式：没有可用账户就不去探测（后端拿不到凭据），引导去设置页
+    if (mode === "email" && !accountUuid) {
+      setPhase({ s: "error", message: t("fusion.add.account_missing") });
+      return;
+    }
+
     setPhase({ s: "trying" });
     timerRef.current = setTimeout(() => {
       const token = ++probeRef.current;
+      const emailMode = mode === "email";
       dataAgent
-        .fetchFeed(text)
+        .fetchFeed(
+          text,
+          undefined,
+          undefined,
+          emailMode ? "mail" : undefined,
+          emailMode ? accountUuid : undefined,
+        )
         .then((res: any) => {
           if (!openRef.current || token !== probeRef.current) return;
           if (res?.feed) {
@@ -212,13 +275,19 @@ export const AddFeedChannel = (props: any) => {
                 resolvedUrl: res.resolved_url || text,
                 candidates: res.candidates || [],
                 entries: res.entries || [],
+                // 邮件订阅的载体与账户随订阅一起提交（后端 add_feed 同样要凭据）
+                ...(emailMode
+                  ? { carrierHint: "email" as const, providerHint: "mail", accountUuid }
+                  : {}),
               },
             });
             return;
           }
 
           // 兜底：站点自带 feed 的生成器（Newsletter…）在发现层失败时，用生成的地址直接抓
-          const fallback = matchGenerator(text, [...generators, ...BUILTIN_GENERATORS]);
+          const fallback = emailMode
+            ? null
+            : matchGenerator(text, [...generators, ...BUILTIN_GENERATORS]);
           if (fallback) {
             previewUrl(fallback.route, {
               origin: `generator:${fallback.generator.key}`,
@@ -227,6 +296,7 @@ export const AddFeedChannel = (props: any) => {
             return;
           }
 
+          if (maybeBridgeRetry(text)) return;
           setPhase({
             s: "error",
             message: res?.message || t("fusion.add.err_no_feed"),
@@ -234,6 +304,7 @@ export const AddFeedChannel = (props: any) => {
         })
         .catch((error) => {
           if (!openRef.current || token !== probeRef.current) return;
+          if (maybeBridgeRetry(text)) return;
           showErrorToast(error, t("fusion.add.err_no_feed"));
           setPhase({ s: "error", message: t("fusion.add.err_no_feed") });
         });
@@ -259,7 +330,13 @@ export const AddFeedChannel = (props: any) => {
     setPhase({ s: "subscribing" });
 
     dataAgent
-      .subscribeFeed(preview.resolvedUrl, preview.origin, preview.carrierHint)
+      .subscribeFeed(
+        preview.resolvedUrl,
+        preview.origin,
+        preview.carrierHint,
+        preview.providerHint,
+        preview.accountUuid,
+      )
       .then(async (res: any) => {
         if (res[2] !== "") {
           toast.error(`${t("Unable to subscribe")}：${res[2]}`);
@@ -305,7 +382,10 @@ export const AddFeedChannel = (props: any) => {
 
   const preview = phase.s === "preview" ? phase.preview : null;
   const carrierOfPreview = preview
-    ? getFeedCarrier({ carrier: preview.feed?.carrier, origin: preview.feed?.origin })
+    ? getFeedCarrier({
+        carrier: preview.feed?.carrier ?? preview.carrierHint,
+        origin: preview.feed?.origin,
+      })
     : null;
 
   return (
@@ -316,12 +396,19 @@ export const AddFeedChannel = (props: any) => {
         role="dialog"
         aria-label={t("Create new subscribe")}
       >
-        <div className="fusion-add-in">
+        <div className="fusion-add-in" style={{ paddingBottom: 0 }}>
+          <SegmentedControl size="sm" label={t("fusion.add.mode")} value={mode} onChange={switchMode}>
+            <SegmentedControlItem value="link" label={t("fusion.add.link_mode")} />
+            <SegmentedControlItem value="email" label={t("fusion.add.email_mode")} />
+          </SegmentedControl>
+          <span className="fusion-spring" />
+        </div>
+        <div className="fusion-add-in" style={{ paddingTop: 8 }}>
           <TextInput
             ref={inputRef}
-            label={t("fusion.add.ph_any")}
+            label={mode === "email" ? t("fusion.add.email_ph") : t("fusion.add.ph_any")}
             isLabelHidden
-            placeholder={t("fusion.add.ph_any")}
+            placeholder={mode === "email" ? t("fusion.add.email_ph") : t("fusion.add.ph_any")}
             autoComplete="off"
             value={url}
             onChange={(v) => {
@@ -337,6 +424,34 @@ export const AddFeedChannel = (props: any) => {
           )}
           <Kbd keys="esc" />
         </div>
+        {mode === "email" && (
+          <div className="fusion-add-in" style={{ paddingTop: 0 }}>
+            {accounts.length > 0 ? (
+              <>
+                <Selector
+                  size="sm"
+                  label={t("fusion.add.account")}
+                  isLabelHidden
+                  value={accountUuid}
+                  options={accounts.map((a) => ({ value: a.uuid, label: a.label }))}
+                  onChange={(v) => setAccountUuid(v)}
+                />
+                <span className="fusion-spring" />
+                <span style={{ fontSize: 11, color: "var(--fusion-ter)" }}>
+                  {t("fusion.add.account_hint")}
+                </span>
+              </>
+            ) : (
+              <Button
+                variant="ghost"
+                size="sm"
+                label={t("fusion.add.account_missing")}
+                endContent={<ChevronRight size={12} />}
+                onClick={() => navigate(RouteConfig.SETTINGS)}
+              />
+            )}
+          </div>
+        )}
 
         {phase.s !== "idle" && (
           <div className="fusion-abody">

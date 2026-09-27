@@ -104,3 +104,26 @@ export interface FolderResItem {
   create_date: string;
   update_date: string;
 }
+
+/** 来源账户（IMAP 邮箱等凭据的宿主）；settings 为 provider 特定的 JSON 字符串 */
+export interface SourceAccount {
+  id: number;
+  uuid: string;
+  /** mail | bilibili … */
+  provider: string;
+  label: string;
+  settings: string;
+  /** ok | …（数据库默认 ok） */
+  status: string;
+  create_date: string;
+  update_date: string;
+}
+
+/** 站点规则摘要（本地转换引擎的配置面） */
+export interface SiteRuleSummary {
+  key: string;
+  title: string;
+  pattern: string;
+  kind: string;
+  source: string;
+}
