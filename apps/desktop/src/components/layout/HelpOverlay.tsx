@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Kbd } from "@astryxdesign/core/Kbd";
 import { useTranslation } from "react-i18next";
+import { SHORTCUT_GROUPS } from "@/shortcuts";
 
 interface HelpOverlayProps {
   open: boolean;
@@ -26,59 +27,20 @@ export function HelpOverlay({ open, onClose }: HelpOverlayProps) {
 
   if (!open) return null;
 
-  const col1 = [
-    {
-      title: t("fusion.help.g_nav"),
-      rows: [
-        { keys: ["j", "k"], desc: t("fusion.help.jk") },
-        { keys: ["⏎", "o"], desc: t("fusion.help.open") },
-        { keys: ["esc"], desc: t("fusion.help.esc") },
-        { keys: ["⌘K", "/"], desc: t("fusion.help.palette") },
-      ],
-    },
-    {
-      title: t("fusion.help.g_mark"),
-      rows: [
-        { keys: ["m"], desc: t("fusion.help.m") },
-        { keys: ["M"], desc: t("fusion.help.M") },
-        { keys: ["f"], desc: t("fusion.help.f") },
-      ],
-    },
-  ];
-  const col2 = [
-    {
-      title: t("fusion.help.g_read"),
-      rows: [
-        { keys: ["v"], desc: t("fusion.help.v") },
-        { keys: ["space"], desc: t("fusion.help.space") },
-      ],
-    },
-    {
-      title: t("fusion.help.g_global"),
-      rows: [
-        { keys: ["R"], desc: t("fusion.help.R") },
-        { keys: ["c"], desc: t("fusion.help.c") },
-        { keys: ["?"], desc: t("fusion.help.help") },
-        { keys: ["⌘,"], desc: t("fusion.help.settings") },
-      ],
-    },
-  ];
-
-  const renderCol = (groups: typeof col1) => (
-    <div className="fusion-help-grp">
-      {groups.map((g) => (
-        <div key={g.title}>
-          <div className="fusion-help-gh">{g.title}</div>
-          {g.rows.map((r) => (
-            <div className="fusion-krow" key={r.keys.join()}>
-              <span className="keys">
-                {r.keys.map((k) => (
-                  <Kbd key={k} keys={k} />
-                ))}
-              </span>
-              <span className="desc">{r.desc}</span>
-            </div>
-          ))}
+  const renderGroup = (g: (typeof SHORTCUT_GROUPS)[number]) => (
+    <div key={g.titleKey}>
+      <div className="fusion-help-gh">{t(g.titleKey)}</div>
+      {g.rows.map((r) => (
+        <div className="fusion-krow" key={r.descKey}>
+          <span className="keys">
+            {r.keys.map((k) => (
+              <Kbd key={k} keys={k} />
+            ))}
+          </span>
+          <span className="desc">{t(r.descKey)}</span>
+          {r.scope === "list" && (
+            <span className="fusion-krow-scope">{t("fusion.help.scope_list")}</span>
+          )}
         </div>
       ))}
     </div>
@@ -94,8 +56,8 @@ export function HelpOverlay({ open, onClose }: HelpOverlayProps) {
           <Kbd keys="esc" />
         </div>
         <div className="fusion-help-cols">
-          {renderCol(col1)}
-          {renderCol(col2)}
+          <div className="fusion-help-grp">{SHORTCUT_GROUPS.slice(0, 2).map(renderGroup)}</div>
+          <div className="fusion-help-grp">{SHORTCUT_GROUPS.slice(2).map(renderGroup)}</div>
         </div>
         <div className="fusion-float-foot">
           <span>{t("fusion.help.foot_close")}</span>

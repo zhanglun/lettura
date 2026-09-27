@@ -1287,18 +1287,30 @@
 
 .fusion-float {
   position: absolute;
-  left: 50%;
+  /* 水平居中不用 transform：transformed 祖先会成为后代（含 top-layer 弹层、
+     position:fixed 元素）的包含块，Astryx 弹层按视口锚点计算的位置会被套进
+     面板坐标系，整体偏移一个面板左缘。inset+auto margin 等效居中且无副作用 */
+  inset-inline: 0;
+  margin-inline: auto;
   top: 84px;
-  transform: translateX(-50%);
   z-index: 50;
   border-radius: 14px;
   overflow: hidden;
   background: color-mix(in srgb, var(--color-background-card) 94%, transparent);
-  backdrop-filter: blur(28px) saturate(1.6);
   border: 1px solid color-mix(in srgb, var(--color-text-primary) 10%, transparent);
   box-shadow:
     0 4px 10px color-mix(in srgb, var(--color-text-primary) 6%, transparent),
     0 36px 80px -16px color-mix(in srgb, var(--color-text-primary) 40%, transparent);
+}
+
+/* 玻璃模糊放在伪元素上：backdrop-filter 与 transform 一样会创建 fixed/top-layer
+   后代的包含块——留在面板本体上，Astryx 的锚定弹层（分组下拉等）就会整体偏移 */
+.fusion-float::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  backdrop-filter: blur(28px) saturate(1.6);
 }
 
 .fusion-float-foot {
@@ -1565,6 +1577,22 @@
   transform: scaleX(0);
   transition: transform 0.1s linear;
   pointer-events: none;
+}
+
+/* 键位表行尾的作用域微标签（m/M/f/v 仅列表/详情内生效） */
+.fusion-krow-scope {
+  margin-left: auto;
+  font-size: 10px;
+  color: var(--fusion-ter);
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+/* 顶栏动作钮：文案 + 快捷键（ToggleButton children 渲染） */
+.fusion-act {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 /* 完读区：两侧发丝线夹「· 完 ·」，下一篇进卡片容器（detail.html 契约） */

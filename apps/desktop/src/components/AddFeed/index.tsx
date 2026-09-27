@@ -12,6 +12,7 @@ import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
 import { toast } from "@/helpers/toast";
 import { useTranslation } from "react-i18next";
+import { HK } from "@/shortcuts";
 import { showErrorToast } from "@/helpers/errorHandler";
 import { FeedResItem } from "@/db";
 import { RouteConfig } from "@/config";
@@ -114,7 +115,7 @@ export const AddFeedChannel = (props: any) => {
     [store.userConfig?.generator_routes],
   );
 
-  useHotkeys("c", () => {
+  useHotkeys(HK.addFeed, () => {
     setOpen(true);
   });
 

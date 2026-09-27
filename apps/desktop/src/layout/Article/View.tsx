@@ -5,7 +5,6 @@ import {
   ScrollBoxRefObject,
 } from "@/components/ArticleView/ScrollBox";
 import { ReaderControls } from "@/components/ReaderControls";
-import { IconButton } from "@astryxdesign/core/IconButton";
 import { Kbd } from "@astryxdesign/core/Kbd";
 import { useTranslation } from "react-i18next";
 import { formatDistanceToNow } from "date-fns";
@@ -18,6 +17,8 @@ import { RowThumb } from "@/components/ArticleItem";
 
 export interface ArticleViewProps {
   article: ArticleResItem | null;
+  /** 详情滚动容器句柄：ArticleView 的 j/k 滚动用（传入后由 ScrollBox 挂载） */
+  scrollRef?: React.RefObject<ScrollBoxRefObject | null>;
   /** 下一篇（完读区卡片，j/k 直达） */
   nextArticle?: ArticleResItem | null;
   onOpenNext?: () => void;
@@ -37,19 +38,21 @@ export function View({
   closable,
   onClose,
   onArticleUpdate,
+  scrollRef,
 }: ArticleViewProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const params = useParams<{ uuid?: string }>();
   const setArticle = useBearStore((state) => state.setArticle);
   const [progress, setProgress] = useState(0);
-  const scrollBoxRef = useRef<ScrollBoxRefObject>(null);
+  const internalRef = useRef<ScrollBoxRefObject>(null);
+  const scrollBoxRef = scrollRef ?? internalRef;
 
   // 切换文章回滚顶部，进度线归零
   useEffect(() => {
     scrollBoxRef.current?.scrollToTop();
     setProgress(0);
-  }, [article?.uuid]);
+  }, [article?.uuid, scrollBoxRef]);
 
   const handleBack = () => {
     if (closable) {
@@ -122,12 +125,13 @@ export function View({
           />
         )}
         {closable && (
-          <IconButton
-            size="md"
+          <Button
             variant="ghost"
+            size="sm"
+            icon={<X size={14} />}
             label={t("Close")}
+            endContent={<Kbd keys="esc" />}
             onClick={onClose}
-            icon={<X size={16} />}
           />
         )}
       </div>
@@ -155,7 +159,7 @@ export function View({
               {nextArticle ? (
                 <div className="fusion-nextcard">
                   <div className="fusion-next-h">
-                    {t("article.view.next_up")} · J/K
+                    {t("article.view.next_up")} · ↑/↓
                   </div>
                   <div
                     className="fusion-row"

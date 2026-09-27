@@ -607,7 +607,7 @@
     "help": {
       "title": "Keyboard Shortcuts",
       "desc": "The full keyboard model of the fusion shell",
-      "jk": "Move focus (in detail = next/prev article)",
+      "jk": "List: move focus · Detail: scroll article",
       "open": "Open focused row",
       "esc": "Back to list / close layer by layer",
       "m": "Mark read, move down",
@@ -625,13 +625,15 @@
       "g_global": "GLOBAL",
       "settings": "Open settings (same as ⌘K “Open settings”)",
       "foot_close": "esc to close",
-      "foot_mouse": "Keyboard first, mouse always works"
+      "foot_mouse": "Keyboard first, mouse always works",
+      "arrows": "Like j/k (detail = prev/next article)",
+      "scope_list": "List · Detail"
     },
     "empty": {
       "first_title": "Subscribe to what you read",
       "first_lede": "RSS, Bilibili, Zhihu, Weibo, newsletters — paste an address and Lettura handles the rest. Data stays local; read and go.",
       "clear_title": "Today's queue is clear",
-      "clear_lede": "Read and leave. New unread will be here tomorrow, same time.",
+      "clear_lede": "Read and leave. Tomorrow at the same time, new unread items will be waiting here. Press ? for all shortcuts.",
       "import_opml": "Import OPML",
       "pack_title": "STARTER PACK · {{name}}",
       "pack_count": "{{selected}} / {{total}} selected",

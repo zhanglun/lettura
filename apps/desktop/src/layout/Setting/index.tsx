@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { HK } from "@/shortcuts";
 import { toast } from "@/helpers/toast";
 import { open as openDialog, save as saveDialog } from "@tauri-apps/plugin-dialog";
 import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
@@ -77,7 +78,7 @@ export function SettingPage() {
   const bodyRef = useRef<HTMLDivElement>(null);
 
   // esc 一路退回未读列表
-  useHotkeys("escape", () => {
+  useHotkeys(HK.escape, () => {
     if (document.body.classList.contains("fusion-context-menu-open")) return;
     if (useBearStore.getState().playerMode === "full") return; // 沉浸页优先收回条
     if (!isSubscriptions) navigate(RouteConfig.LOCAL_ALL);

@@ -24,6 +24,13 @@ export function stopSharedAudio() {
   }
 }
 
+/** 键盘 ←/→ 的 ±30s：在模块级共享音频上直接 seek（AppLayout 等无 hook 场景调用） */
+export function seekSharedAudioBy(delta: number) {
+  if (!sharedAudio) return;
+  const max = Number.isFinite(sharedAudio.duration) ? sharedAudio.duration : Infinity;
+  sharedAudio.currentTime = Math.min(Math.max(0, sharedAudio.currentTime + delta), max);
+}
+
 /** 进度写库节流（timeupdate 高频触发，且可能有多个消费者监听） */
 const PROGRESS_FLUSH_MS = 5000;
 

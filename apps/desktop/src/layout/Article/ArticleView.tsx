@@ -16,10 +16,12 @@ import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
 import { request } from "@/helpers/request";
 import { useArticle } from "@/hooks/useArticle";
+import type { ScrollBoxRefObject } from "@/components/ArticleView/ScrollBox";
 import { retainArticleAfterRead } from "@/helpers/articleHelpers";
 import { EmptyFace } from "./EmptyFace";
 import * as dataAgent from "@/helpers/dataAgent";
 import { ArticleReadStatus, ArticleStarStatus } from "@/typing";
+import { HK } from "@/shortcuts";
 import {
   buildSegments,
   flattenDisplay,
@@ -70,6 +72,8 @@ export function ArticleView() {
 
   // 类型过滤（服务端过滤与计数，不与 read_status/currentFilter 混用）
   const [carrierFilter, setCarrierFilter] = useState<CarrierFilter>("all");
+  /** 详情滚动容器句柄：详情打开时 j/k 在这里滚动文章 */
+  const detailScrollRef = useRef<ScrollBoxRefObject>(null);
   // 聚焦仅在交互（j/k）后建立：首行不再默认带选中洗色
   const [focusIdx, setFocusIdx] = useState<number | null>(null);
 
@@ -270,26 +274,41 @@ export function ArticleView() {
     [handleArticleUpdate],
   );
 
-  // 键盘流：j/k 移动 · ⏎/o 打开 · m 已读并下移 · shift+m 未读 · f 星标 · v 浏览器 · esc 返回
-  useHotkeys("j", () => moveFocus(1), [moveFocus]);
-  useHotkeys("k", () => moveFocus(-1), [moveFocus]);
-  useHotkeys("enter, o", () => {
+  // 键盘流：j/k 列表移动焦点、详情内滚动文章（到边即停）· ↑/↓ 切换上/下一篇 ·
+  // ⏎/o 打开 · m 已读并下移 · ⇧M 上移 · f 星标 · v 浏览器 · esc 返回
+  useHotkeys(HK.focusNext, () => {
+    if (detailArticle) {
+      detailScrollRef.current?.scrollByViewport(1);
+      return;
+    }
+    moveFocus(1);
+  }, [detailArticle, moveFocus]);
+  useHotkeys(HK.focusPrev, () => {
+    if (detailArticle) {
+      detailScrollRef.current?.scrollByViewport(-1);
+      return;
+    }
+    moveFocus(-1);
+  }, [detailArticle, moveFocus]);
+  // ↑/↓：列表移动焦点；详情内 = 上一篇/下一篇（j/k 让位给滚动）
+  useHotkeys(HK.articleNext, () => moveFocus(1), [moveFocus]);
+  useHotkeys(HK.articlePrev, () => moveFocus(-1), [moveFocus]);
+  useHotkeys(HK.open, () => {
     if (focused) openArticle(focused);
   }, [focused, openArticle]);
-  useHotkeys("m", () => {
+  useHotkeys(HK.markRead, () => {
     markFocusedRead();
     moveFocus(1);
   }, [markFocusedRead, moveFocus]);
-  // M：已读并上移（DESIGN 键盘模型契约）
-  useHotkeys("shift+m", () => {
+  useHotkeys(HK.markReadUp, () => {
     markFocusedRead();
     moveFocus(-1);
   }, [markFocusedRead, moveFocus]);
-  useHotkeys("f", () => toggleStar(focused ?? null), [focused, toggleStar]);
-  useHotkeys("v", () => {
+  useHotkeys(HK.star, () => toggleStar(focused ?? null), [focused, toggleStar]);
+  useHotkeys(HK.openOriginal, () => {
     if (focused?.link) open(focused.link);
   }, [focused]);
-  useHotkeys("escape", () => {
+  useHotkeys(HK.escape, () => {
     if (useBearStore.getState().playerMode === "full") return; // 沉浸页优先收回条
     if (store.expandedArticleUuid) {
       closeDetail();
@@ -353,6 +372,7 @@ export function ArticleView() {
         <View
           article={detailArticle}
           closable
+          scrollRef={detailScrollRef}
           onClose={closeDetail}
           nextArticle={displayArticles[expandedIdx + 1] ?? null}
           onOpenNext={openNextArticle}

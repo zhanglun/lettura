@@ -11,6 +11,7 @@ import { useBearStore } from "@/stores";
 import { FeedIcon } from "@/components/FeedIcon";
 import { FeedCtxMenu } from "@/components/FeedCtxMenu";
 import { getHostLabel, formatFeedTime } from "@/helpers/feedMeta";
+import { HK } from "@/shortcuts";
 import type { FeedResItem } from "@/db";
 
 const FILTER_UNREAD = { id: 1, title: "Unread" };
@@ -174,13 +175,13 @@ export function FeedsBrowse() {
   };
 
   // 键盘流：j/k 移动（跳过零未读源）· ⏎/o 进源队列 · esc 回未读列表
-  useHotkeys("j, arrowdown", () => moveFocus(1), [moveFocus]);
-  useHotkeys("k, arrowup", () => moveFocus(-1), [moveFocus]);
-  useHotkeys("enter, o", () => {
+  useHotkeys(HK.focusNextBrowse, () => moveFocus(1), [moveFocus]);
+  useHotkeys(HK.focusPrevBrowse, () => moveFocus(-1), [moveFocus]);
+  useHotkeys(HK.open, () => {
     const target = keyboardQueue.find((f) => f.uuid === focusUuid);
     if (target) openFeed(target);
   }, [keyboardQueue, focusUuid, openFeed]);
-  useHotkeys("escape", () => {
+  useHotkeys(HK.escape, () => {
     if (document.body.classList.contains("fusion-context-menu-open")) return;
     if (useBearStore.getState().playerMode === "full") return; // 沉浸页优先收回条
     navigate(RouteConfig.LOCAL_ALL);

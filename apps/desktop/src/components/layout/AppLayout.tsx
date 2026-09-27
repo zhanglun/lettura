@@ -3,7 +3,9 @@ import { Kbd } from "@astryxdesign/core/Kbd";
 import { Button } from "@astryxdesign/core/Button";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useHotkeys } from "react-hotkeys-hook";
-import { Search } from "lucide-react";
+import { Search, CircleHelp } from "lucide-react";
+import { HK } from "@/shortcuts";
+import { seekSharedAudioBy } from "@/components/LPodcast/useAudioPlayer";
 import { useShallow } from "zustand/react/shallow";
 import { useTranslation } from "react-i18next";
 import { RouteConfig } from "@/config";
@@ -97,22 +99,31 @@ export const AppLayout = React.memo(function () {
 
   const playerVisible = store.tracks?.length > 0 || store.podcastPlayingStatus;
 
-  useHotkeys("meta+k, ctrl+k", (e) => {
+  useHotkeys(HK.palette, (e) => {
     e.preventDefault();
     setPaletteOpen((v) => !v);
   });
-  useHotkeys("/", (e) => {
+  useHotkeys(HK.paletteFocus, (e) => {
     e.preventDefault();
     setPaletteOpen(true);
   });
-  useHotkeys("shift+/", () => {
+  useHotkeys(HK.help, () => {
     setHelpOpen((v) => !v);
     setPaletteOpen(false);
   });
-  useHotkeys("meta+comma, ctrl+comma", () => {
+  useHotkeys(HK.settings, () => {
     navigate(RouteConfig.SETTINGS);
   });
-  useHotkeys("shift+r", () => store.syncAllArticles());
+  useHotkeys(HK.syncAll, () => store.syncAllArticles());
+  // ←/→：播客 ±30s（有曲目且浮层未挡住时全局生效）
+  useHotkeys(HK.seekBack, () => {
+    if (!store.tracks?.length || paletteOpen || helpOpen || store.addFeedModalOpen) return;
+    seekSharedAudioBy(-30);
+  }, [store, paletteOpen, helpOpen]);
+  useHotkeys(HK.seekFwd, () => {
+    if (!store.tracks?.length || paletteOpen || helpOpen || store.addFeedModalOpen) return;
+    seekSharedAudioBy(30);
+  }, [store, paletteOpen, helpOpen]);
   // esc 逐级退回：悬浮层优先（浮层 / 帮助在捕获阶段已 preventDefault 的那次 esc 不再收回播放器）
   useHotkeys(
     "escape",
@@ -124,7 +135,7 @@ export const AppLayout = React.memo(function () {
     },
     [store],
   );
-  useHotkeys("space", (e) => {
+  useHotkeys(HK.playPause, (e) => {
     if (!store.tracks?.length) return;
     e.preventDefault();
     store.updatePodcastPlayingStatus(!store.podcastPlayingStatus);
@@ -160,6 +171,17 @@ export const AppLayout = React.memo(function () {
             label={t("fusion.search.placeholder")}
             endContent={<Kbd keys="mod+k" />}
             onClick={() => setPaletteOpen(true)}
+          />
+          {/* 快捷键表的可见入口：? 键的鼠标通路（HelpOverlay） */}
+          <Button
+            variant="secondary"
+            size="sm"
+            style={buttonBorder}
+            aria-label={t("fusion.help.title")}
+            label={t("fusion.help.title")}
+            isIconOnly
+            icon={<CircleHelp size={13} />}
+            onClick={() => setHelpOpen(true)}
           />
         </header>
         {/* 播放卡浮在内容上：内容区不占位，只把「让位空白」的高度交给内层滚动容器（--fusion-player-inset） */}

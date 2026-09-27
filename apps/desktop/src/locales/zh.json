@@ -623,7 +623,7 @@
     "help": {
       "title": "键盘快捷键",
       "desc": "fusion 壳的完整键盘模型",
-      "jk": "移动焦点（详情内 = 下一篇/上一篇）",
+      "jk": "列表：移动焦点 · 详情：滚动文章",
       "open": "打开焦点行",
       "esc": "返回列表 / 逐级关闭",
       "m": "已读并下移",
@@ -641,13 +641,15 @@
       "g_global": "全局 GLOBAL",
       "settings": "打开设置（同 ⌘K「打开设置」）",
       "foot_close": "esc 关闭",
-      "foot_mouse": "键盘优先，鼠标永远可用"
+      "foot_mouse": "键盘优先，鼠标永远可用",
+      "arrows": "同 j/k（详情内 = 上一篇/下一篇）",
+      "scope_list": "列表 · 详情"
     },
     "empty": {
       "first_title": "订阅你想读的",
       "first_lede": "RSS、B站、知乎、微博、Newsletter——粘贴一个地址，其余交给 Lettura。数据在本机，读完就走。",
       "clear_title": "今天的队列清空了",
-      "clear_lede": "读完就走。明天同一时间，新的未读会在这里等你。",
+      "clear_lede": "读完就走。明天同一时间，新的未读会在这里等你。 按 ? 查看全部快捷键。",
       "import_opml": "导入 OPML",
       "pack_title": "STARTER PACK · {{name}}",
       "pack_count": "已选 {{selected}} / {{total}}",

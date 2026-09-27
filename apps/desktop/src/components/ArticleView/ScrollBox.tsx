@@ -3,6 +3,11 @@ import React, { useImperativeHandle, useRef } from "react";
 
 export interface ScrollBoxRefObject {
   scrollToTop: () => void;
+  /**
+   * 键盘滚动（详情内 j/k）：dir 1 向下 / -1 向上，按视口高度步进。
+   * 已到对应边缘返回 false（调用方决定是否切换上/下一篇）。
+   */
+  scrollByViewport: (dir: 1 | -1) => boolean;
 }
 
 export interface ScrollBoxProps {
@@ -24,8 +29,20 @@ export const ScrollBox = React.forwardRef((props: ScrollBoxProps, ref: any) => {
   };
 
   useImperativeHandle(ref, () => {
+    const atBottom = (el: HTMLDivElement) =>
+      el.scrollTop + el.clientHeight >= el.scrollHeight - 4;
+    const atTop = (el: HTMLDivElement) => el.scrollTop <= 4;
+
     return {
       scrollToTop,
+      scrollByViewport: (dir: 1 | -1) => {
+        const el = scrollRef.current;
+        if (!el) return false;
+        if (dir > 0 && atBottom(el)) return false;
+        if (dir < 0 && atTop(el)) return false;
+        el.scrollBy({ top: dir * el.clientHeight * 0.85, behavior: "smooth" });
+        return true;
+      },
     };
   });
 

@@ -6,7 +6,8 @@ import * as dataAgent from "@/helpers/dataAgent";
 import { open } from "@tauri-apps/plugin-shell";
 import { useTranslation } from "react-i18next";
 import { ToggleButton } from "@astryxdesign/core/ToggleButton";
-import { IconButton } from "@astryxdesign/core/IconButton";
+import { Button } from "@astryxdesign/core/Button";
+import { Kbd } from "@astryxdesign/core/Kbd";
 
 export interface ReaderControlsProps {
   article: ArticleResItem;
@@ -77,10 +78,9 @@ export function ReaderControls({
 
   return (
     <>
-      {/* 阅读面顶栏动作 = 安静图标钮（detail.html .qa 语法）：isIconOnly + pressedIcon 换 outline/实心 */}
+      {/* 阅读面顶栏动作：文案 + 快捷键（f 星标 / m 已读 / v 原文，键盘模型见 DESIGN） */}
       <ToggleButton
         size="sm"
-        isIconOnly
         icon={<Star size={14} />}
         pressedIcon={
           <Star size={14} fill="currentColor" style={{ color: "var(--fusion-amber)" }} />
@@ -88,21 +88,31 @@ export function ReaderControls({
         label={t(starred === ArticleStarStatus.STARRED ? "Unstar it" : "Star it")}
         isPressed={starred === ArticleStarStatus.STARRED}
         onPressedChange={toggleStar}
-      />
+      >
+        <span className="fusion-act">
+          {t(starred === ArticleStarStatus.STARRED ? "Unstar it" : "Star it")}
+          <Kbd keys="f" />
+        </span>
+      </ToggleButton>
       <ToggleButton
         size="sm"
-        isIconOnly
         icon={readStatus === ArticleReadStatus.READ ? <EyeOff size={14} /> : <Eye size={14} />}
         label={t(
           readStatus === ArticleReadStatus.READ ? "Mark as unread" : "Mark as read",
         )}
         isPressed={readStatus === ArticleReadStatus.READ}
         onPressedChange={toggleRead}
-      />
+      >
+        <span className="fusion-act">
+          {t(
+            readStatus === ArticleReadStatus.READ ? "Mark as unread" : "Mark as read",
+          )}
+          <Kbd keys="m" />
+        </span>
+      </ToggleButton>
       {showReadLater && (
         <ToggleButton
           size="sm"
-          isIconOnly
           icon={<Bookmark size={14} />}
           label={t(
             readLater === ArticleReadLaterStatus.SAVED
@@ -111,14 +121,23 @@ export function ReaderControls({
           )}
           isPressed={readLater === ArticleReadLaterStatus.SAVED}
           onPressedChange={toggleReadLater}
-        />
+        >
+          <span className="fusion-act">
+            {t(
+              readLater === ArticleReadLaterStatus.SAVED
+                ? "article.actions.remove_read_later"
+                : "article.actions.read_later",
+            )}
+          </span>
+        </ToggleButton>
       )}
       {showBrowser && (
-        <IconButton
-          size="sm"
+        <Button
           variant="ghost"
+          size="sm"
           icon={<ExternalLink size={14} />}
           label={t("Open in browser")}
+          endContent={<Kbd keys="v" />}
           isDisabled={!article.link}
           onClick={handleOpenBrowser}
         />

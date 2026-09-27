@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Kbd } from "@astryxdesign/core/Kbd";
 import type React from "react";
 import { useTranslation } from "react-i18next";
+import { HK } from "@/shortcuts";
 import { useNavigate } from "react-router-dom";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useBearStore } from "@/stores";
@@ -251,7 +252,7 @@ export const Subscriptions = () => {
   }, []);
 
   // esc 逐级退回：订阅管理 → 设置（DESIGN 键盘模型契约；沉浸页优先）
-  useHotkeys("escape", () => {
+  useHotkeys(HK.escape, () => {
     if (document.body.classList.contains("fusion-context-menu-open")) return;
     if (useBearStore.getState().playerMode === "full") return;
     navigate(RouteConfig.SETTINGS);
