@@ -14,7 +14,7 @@ import { useShallow } from "zustand/react/shallow";
 import { RouteConfig } from "@/config";
 
 /** 预览开关：置 true 强制走「零订阅」首启分支（查看新用户首屏），平时保持 false */
-export const DEV_PREVIEW_FIRST_RUN = true;
+export const DEV_PREVIEW_FIRST_RUN = false;
 
 /** 空状态即引导（empty.html 契约）：零订阅 = 产品自我介绍，零未读 = 读完就走的收尾 */
 export function EmptyFace({ mode }: { mode: "first" | "clear" }) {
