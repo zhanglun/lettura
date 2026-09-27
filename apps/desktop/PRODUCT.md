@@ -24,7 +24,7 @@ Lettura 是一个本地优先（Tauri + SQLite）的开源订阅阅读器。它�
 ## Operating Context
 
 - 桌面 app（Tauri v2，macOS 为主）：React/Vite/TS 前端 + Rust 后端 + SQLite(Diesel)
-- 订阅：RSS/Atom、OPML 导入导出、自带 feed 的 Newsletter
+- 订阅：RSS/Atom、OPML 导入导出、邮件订阅（IMAP 直读）、B站动态、无 feed 站点（本地 TOML 规则引擎）；外部桥接实例仅作用户自选的兜底设置项
 - 键盘优先（j/k、Enter/o、m/M、f、v、space、R、`/` 或 ⌘K、`?` 帮助）
 - 中英双语界面（i18n，zh/en locale）
 - 后台定时同步已有（scheduler）；正文只渲染 feed 自带内容，不自动抓全文
@@ -39,7 +39,8 @@ Lettura 是一个本地优先（Tauri + SQLite）的开源订阅阅读器。它�
 - 星标、已读历史
 - 播客播放（保留：enclosure 检测 → 列表预设色缩略图 + 播放器三态——底部条/沉浸页/收起圆钮，audio 单例）；队列/进度/时长持久在本地库（续播），含整队播放列表浮层、睡眠定时、倍速、系统媒体键
 - 搜索（⌘K 命令面板统一入口：文章/来源/命令混合）
-- 一页极简设置（面板内第三视图，三段：外观与阅读/同步与来源/行为与数据，含 OPML 进出；订阅管理为子视图）
+- 一页极简设置（面板内第三视图，三段：外观与阅读/同步与来源/行为与数据，含 OPML 进出；订阅管理为子视图；来源账户/订阅规则区块）
+- 多源订阅（fetcher 家族）：RSS 发现层 / IMAP 邮件 / B站动态（wbi 签名 + SESSDATA）/ 站点规则引擎（内置包 + 用户目录热加载）；同步按源级节奏到期调度并推送 sync 事件；`/api/generated/{key}` 把规则产出供应为本地 RSS
 
 明确的非目标（0.2.0 不做）：
 
@@ -47,7 +48,7 @@ Lettura 是一个本地优先（Tauri + SQLite）的开源订阅阅读器。它�
 - 卡片流、多面板并列、复杂设置
 - 收藏夹/标签 UI（数据保留，界面不进 0.2.0）
 - 自动抓取摘要 feed 的全文
-- 平台源转换（RSSHub 等）：2026-09-26 决策移除——公共实例不可靠（Cloudflare 拦截/超时），自建运维超出本地优先的产品边界
+- 依赖公共转换实例（RSSHub/Nitter 公共实例）：2026-09-26 决策移除固定依赖——公共实例不可靠（Cloudflare 拦截/超时）。2026-09-27 演进：转为本地原生适配器（`packages/fetcher-*`）+ 用户自建桥接实例设置项；X/Twitter 仍不做（无可靠路径，留 provider 口子）
 
 ## Brand Commitments
 
@@ -60,6 +61,7 @@ Lettura 是一个本地优先（Tauri + SQLite）的开源订阅阅读器。它�
 ## Evidence on Hand
 
 - 既有代码：apps/desktop（feed 同步/OPML/调度器/迁移已就绪，复用不重写）
+- 多源订阅实现：根 Cargo workspace 的 `packages/fetcher-{core,rss,mail,bilibili,site}` 与 `packages/site-rules`（探测分发在 `src-tauri/src/fetchers/mod.rs`，凭据在 `source_accounts` 表）
 - 设置面参考实现：`.impeccable/mocks/decision/settings.html`（可交互：esc 逐级返回 · 实时校准台 · 订阅分组/右键菜单 · ?view=subs 直链）
 - 其余面参考实现：detail.html（阅读面，?size=&lh= 直达排版）、feeds.html（订阅浏览，?state=browse|feed）、add.html（渐进式订阅面板）、empty.html（空状态即引导）、help.html（? 键帮助）、dark.html（夜读本，?state=list|detail|cmd）
 - 播放器组件已存在：components/LPodcast、components/PodcastPlayer、podcastDB(Dexie)

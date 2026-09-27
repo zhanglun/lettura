@@ -30,8 +30,8 @@
 | `fusion.html` | 未读列表 / 详情骨架 / ⌘K / 播放卡 | `?view=starred\|history` 列表变体 | ✅ 已落地 | `components/layout/AppLayout.tsx` + `styles/fusion.css`（第二刀）；列表行 `components/ArticleItem`、徽章 `components/KindBadge`、详情适配器 `components/ArticleView/adapter/{Common,Podcast,Platform}` |
 | `detail.html` | 阅读面（排版要素 + 完读） | `?size=17&lh=2.2` 直达排版 | ✅ 已落地 | `components/ArticleView/Detail.tsx` + `layout/Article/View.tsx`（进度发丝线/引文/代码块语言标/「· 完 ·」+下一篇卡均已落地；语言标注入在 `helpers/articleContent.ts`） |
 | `feeds.html` | 订阅浏览 + 源队列 | `?state=browse\|feed` | ✅ 已落地 | 浏览帧 `layout/Feeds/index.tsx`（分组源列表/键盘队列跳过零未读/折叠/位置保留）；源队列源头栏+未读/全部过滤条在 `layout/Article/ArticleView.tsx`（`readStatus` 覆盖经 `hooks/useArticle.ts`） |
-| `settings.html` | 设置（三段+锚点导航+校准台）+ 订阅管理 | `?view=subs`、`?focus=sync` | ✅ 已落地 | `layout/Setting/index.tsx`（左锚点导航 + 校准台参数写入令牌已实现）；订阅管理 `layout/Setting/Subscriptions` |
-| `add.html` | 渐进式订阅面板（发现优先 + 生成器回退） | `?q=<url>` 直达预览/失败/生成器态 | ✅ 已落地（2026-09-25 重梳理） | `components/AddFeed/index.tsx`；生成器表 `helpers/feedGenerators.ts`（内置 + 用户自定义）；发现层 `src-tauri/src/feed/mod.rs`（`resolve_feed_input`）；一次性抓取缓存 `parse_feed_cached`；实例/路由设置 `core/config.rs` + `layout/Setting` |
+| `settings.html` | 设置（三段+锚点导航+校准台）+ 订阅管理 | `?view=subs`、`?focus=sync` | ✅ 已落地 | `layout/Setting/index.tsx`（左锚点导航 + 校准台参数写入令牌已实现）；订阅管理 `layout/Setting/Subscriptions`；来源账户/订阅规则区块（2026-09-27，**无 mock 先行**） |
+| `add.html` | 渐进式订阅面板（发现优先 + 生成器回退） | `?q=<url>` 直达预览/失败/生成器态 | ✅ 已落地（2026-09-25 重梳理） | `components/AddFeed/index.tsx`（含 2026-09-27 邮件订阅模式，**无 mock 先行**）；生成器表 `helpers/feedGenerators.ts`（内置 + 用户自定义）；发现层 `packages/fetcher-rss`（探测分发 `src-tauri/src/fetchers/mod.rs`）；一次性抓取缓存（fetcher-rss 内）；桥接实例/路由设置 `core/config.rs` + `layout/Setting` |
 | `empty.html` | 空状态即引导 / 读完收尾 | `?s=first\|clear` | ✅ 已落地 | `layout/Article/EmptyFace.tsx`（`mode: "first" \| "clear"`） |
 | `help.html` | ? 键帮助浮层 | — | ✅ 已落地 | `components/layout/HelpOverlay.tsx` |
 | `dark.html` | 夜读本（深色令牌层） | `?state=list\|detail\|cmd` | ✅ 已落地 | `styles/fusion.css`（`body.dark-theme` 覆写全部 `--fusion-*`）；切换在 `App.tsx`（跟随配置或系统） |
@@ -201,13 +201,14 @@ R            刷新全部来源
 
 | 项 | 出处 | 状态 |
 |---|---|---|
-| ~~知乎/微博的 RSSHub 真实路由~~ | AddFeed brief | ✅ 2026-09-25 定：不做固定清单——内置便利匹配 + 设置里自定义路由 + 面板手填路由；实例是设置项 |
-| ~~Kill the Newsletter 实例~~ | AddFeed brief | ✅ 2026-09-25 定：Newsletter 走「RSSHub 实例设置」（substack 另有原生 `/feed` 直连） |
+| ~~知乎/微博的 RSSHub 真实路由~~ | AddFeed brief | ✅ 2026-09-25 定：不做固定清单——内置便利匹配 + 设置里自定义路由 + 面板手填路由；实例是设置项。2026-09-27 演进：B站/邮件/t.me/长尾站点走 `packages/fetcher-*` 原生适配器与站点规则引擎（`site-rules` TOML 热加载） |
+| ~~Kill the Newsletter 实例~~ | AddFeed brief | ✅ 2026-09-27 定并落地：Newsletter 走 IMAP 直读（`packages/fetcher-mail`，设置里配邮箱账户），substack 原生 `/feed` 直连不变；外部桥接实例降级为兜底设置项 |
 | 全部设计稿零眼审 | 设置 brief | 机械验证全绿，人未过目——落地前应人工走查一遍 8 份 mock |
 | `add.html` 探测耗时 | AddFeed brief | 已按真实网络（无 520ms 演示值），慢站点由行内 spinner 承担 |
 | 焦点行禁 hover 洗色的边界情况 | DESIGN.md | 详情内 j/k 连续移动时确认无闪烁 |
 | 清空整队（播放列表） | P2.1 | 队列即 `podcasts` 表，清空＝删光行＋抹掉续播进度；未设计确认态，暂不做——要加先补 mock（建议 `--warn` 二次确认） |
 | 系统媒体键（MediaSession） | P2.1 | 已实现（锁屏/耳机键 play·pause·±30s·上下集），无 UI 依赖；若判定越出 0.2.0 范围可整段移除 |
+| 来源账户/订阅规则设置区块 + AddFeed 邮件模式无 mock | 2026-09-27 落地 | 先于设计走查上线（后端能力先通）；走查后若要调整，先补 mock（settings.html / add.html）再改码 |
 
 ## 7. 面内策略（surface briefs）
 
