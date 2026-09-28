@@ -1,11 +1,7 @@
-import { ChevronLeft } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
-import { Kbd } from "@astryxdesign/core/Kbd";
+import { memo, useEffect, useMemo, useState } from "react";
 import type React from "react";
 import { useTranslation } from "react-i18next";
-import { HK } from "@/shortcuts";
 import { useNavigate } from "react-router-dom";
-import { useHotkeys } from "react-hotkeys-hook";
 import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
 import * as dataAgent from "@/helpers/dataAgent";
@@ -230,16 +226,18 @@ function SubsGroup({
   );
 }
 
-/** 订阅管理：分组折叠 + 44px 订阅行 + 右键菜单（settings.html ?view=subs 契约） */
-export const Subscriptions = () => {
+/**
+ * 订阅管理：分组折叠 + 44px 订阅行 + 右键菜单；设置页的内联区块（非独立页面）。
+ * memo 隔离：组件无 props，设置页锚点高亮/滚动的重渲染不波及订阅区块，
+ * 避免左侧导航点击时整个区块（全部分组行 + 图标）跟着重渲染造成卡顿。
+ */
+export const SubscriptionsSection = memo(function SubscriptionsSection() {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
   const store = useBearStore(
     useShallow((state) => ({
       subscribes: state.subscribes,
-      feedsSearchQuery: state.feedsSearchQuery,
-      setFeedsSearchQuery: state.setFeedsSearchQuery,
       syncArticles: state.syncArticles,
       getSubscribes: state.getSubscribes,
       setFeed: state.setFeed,
@@ -251,14 +249,8 @@ export const Subscriptions = () => {
     store.getSubscribes();
   }, []);
 
-  // esc 逐级退回：订阅管理 → 设置（DESIGN 键盘模型契约；沉浸页优先）
-  useHotkeys(HK.escape, () => {
-    if (document.body.classList.contains("fusion-context-menu-open")) return;
-    if (useBearStore.getState().playerMode === "full") return;
-    navigate(RouteConfig.SETTINGS);
-  });
-
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
+  const [searchQuery, setSearchQuery] = useState("");
   const [folderDialog, setFolderDialog] = useState<"add" | "edit" | null>(null);
   const [deleteFolderDialog, setDeleteFolderDialog] = useState(false);
   const [deleteFeedDialog, setDeleteFeedDialog] = useState(false);
@@ -270,7 +262,7 @@ export const Subscriptions = () => {
   const rootFeeds = sourceItems.filter((i) => i.item_type !== "folder");
 
   const matches = (feed: FeedResItem) => {
-    const q = store.feedsSearchQuery.toLowerCase();
+    const q = searchQuery.trim().toLowerCase();
     if (!q) return true;
     return (
       feed.title.toLowerCase().includes(q) ||
@@ -287,12 +279,11 @@ export const Subscriptions = () => {
     }
     for (const folder of folderItems) {
       const feeds = (folder.children ?? []).filter(matches);
-      if (feeds.length > 0) {
-        list.push({ uuid: folder.uuid, title: folder.title, feeds, folder });
-      }
+      list.push({ uuid: folder.uuid, title: folder.title, feeds, folder });
     }
     return list;
-  }, [sourceItems, store.feedsSearchQuery, t]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sourceItems, searchQuery, t]);
 
   const totalFeeds = groups.reduce((sum, g) => sum + g.feeds.length, 0);
 
@@ -322,89 +313,72 @@ export const Subscriptions = () => {
     dataAgent.markAllRead({ uuid: f.uuid }).then(() => store.getSubscribes());
 
   return (
-    <div className="fusion-set">
-      <div className="fusion-dtop">
+    <>
+      <div className="fusion-subs-bar">
+        <TextInput
+          className="fusion-subs-search"
+          size="sm"
+          isLabelHidden
+          label={t("settings.subscriptions.search_placeholder")}
+          startIcon={<Search size={12} />}
+          placeholder={t("settings.subscriptions.search_placeholder")}
+          value={searchQuery}
+          onChange={setSearchQuery}
+        />
         <Button
           variant="ghost"
           size="sm"
-          icon={<ChevronLeft size={12} />}
-          label={t("fusion.nav.settings")}
-          endContent={<Kbd keys="esc" />}
-          onClick={() => navigate(RouteConfig.SETTINGS)}
+          icon={<FolderPlus size={12} />}
+          label={t("feeds.add_folder")}
+          onClick={() => setFolderDialog("add")}
         />
-        <span className="d-src">{t("settings.tab.subscriptions_title")}</span>
-        <span className="fusion-spring" />
-        <span className="fusion-subs-fd">
+        <Button
+          variant="primary"
+          size="sm"
+          icon={<Plus size={12} />}
+          label={t("feeds.add_feed")}
+          onClick={() => store.setAddFeedModalOpen(true)}
+        />
+        <span className="fusion-subs-fd" style={{ marginLeft: "auto" }}>
           {t("fusion.subs.meta", { sources: totalFeeds, folders: folderItems.length })}
         </span>
       </div>
 
-      <div className="fusion-set-body">
-        <div className="fusion-set-inner wide">
-          <div className="fusion-subs-bar">
-            <TextInput
-              className="fusion-subs-search"
-              size="sm"
-              isLabelHidden
-              label={t("settings.subscriptions.search_placeholder")}
-              startIcon={<Search size={12} />}
-              placeholder={t("settings.subscriptions.search_placeholder")}
-              value={store.feedsSearchQuery}
-              onChange={(v) => store.setFeedsSearchQuery(v)}
-            />
-            <Button
-              variant="ghost"
-              size="sm"
-              icon={<FolderPlus size={12} />}
-              label={t("feeds.add_folder")}
-              onClick={() => setFolderDialog("add")}
-            />
-            <Button
-              variant="primary"
-              size="sm"
-              icon={<Plus size={12} />}
-              label={t("feeds.add_feed")}
-              onClick={() => store.setAddFeedModalOpen(true)}
-            />
-          </div>
+      {groups.map((group) => (
+        <SubsGroup
+          key={group.uuid}
+          uuid={group.uuid}
+          title={group.title}
+          feeds={group.feeds}
+          folder={group.folder}
+          collapsed={collapsed.has(group.uuid)}
+          onToggle={() => handleToggle(group.uuid)}
+          onFolderSync={handleSync}
+          onFolderMarkAllRead={handleMarkAllRead}
+          onFolderEdit={(f) => {
+            setFolderTarget(f);
+            setFolderDialog("edit");
+          }}
+          onFolderDelete={(f) => {
+            setFolderTarget(f);
+            setDeleteFolderDialog(true);
+          }}
+          onOpen={handleOpen}
+          onFeedSync={handleSync}
+          onFeedDelete={(f) => {
+            setDeleteFeed(f);
+            setDeleteFeedDialog(true);
+          }}
+        />
+      ))}
 
-          {groups.map((group) => (
-            <SubsGroup
-              key={group.uuid}
-              uuid={group.uuid}
-              title={group.title}
-              feeds={group.feeds}
-              folder={group.folder}
-              collapsed={collapsed.has(group.uuid)}
-              onToggle={() => handleToggle(group.uuid)}
-              onFolderSync={handleSync}
-              onFolderMarkAllRead={handleMarkAllRead}
-              onFolderEdit={(f) => {
-                setFolderTarget(f);
-                setFolderDialog("edit");
-              }}
-              onFolderDelete={(f) => {
-                setFolderTarget(f);
-                setDeleteFolderDialog(true);
-              }}
-              onOpen={handleOpen}
-              onFeedSync={handleSync}
-              onFeedDelete={(f) => {
-                setDeleteFeed(f);
-                setDeleteFeedDialog(true);
-              }}
-            />
-          ))}
-
-          {groups.length === 0 && (
-            <div className="py-10 text-center text-[13px] text-[var(--fusion-ter)]">
-              {store.feedsSearchQuery
-                ? t("No feeds match your search")
-                : t("No feeds yet")}
-            </div>
-          )}
+      {groups.length === 0 && (
+        <div className="py-10 text-center text-[13px] text-[var(--fusion-ter)]">
+          {searchQuery
+            ? t("No feeds match your search")
+            : t("No feeds yet")}
         </div>
-      </div>
+      )}
 
       <DialogUnsubscribeFeed
         feed={deleteFeed}
@@ -443,6 +417,6 @@ export const Subscriptions = () => {
         }}
         afterCancel={() => setFolderTarget(null)}
       />
-    </div>
+    </>
   );
-};
+});

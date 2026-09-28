@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import type React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { Subscriptions } from "../index";
+import { SubscriptionsSection } from "../index";
 
 const mocks = vi.hoisted(() => ({
   navigate: vi.fn(),
@@ -123,7 +123,7 @@ describe("Subscriptions settings panel", () => {
   });
 
   it("renders the fusion subs layout: toolbar, groups and 44px rows", () => {
-    const { container } = render(<Subscriptions />);
+    const { container } = render(<SubscriptionsSection />);
 
     expect(mocks.getSubscribes).toHaveBeenCalled();
     expect(container.querySelector(".fusion-subs-bar")).toBeInTheDocument();
@@ -140,7 +140,7 @@ describe("Subscriptions settings panel", () => {
   });
 
   it("flags broken feeds on the row and shows the meta count", () => {
-    render(<Subscriptions />);
+    render(<SubscriptionsSection />);
 
     expect(
       screen.getAllByText(/settings.sources.health_broken/).length,
@@ -149,7 +149,7 @@ describe("Subscriptions settings panel", () => {
   });
 
   it("opens the feed queue on row click", () => {
-    render(<Subscriptions />);
+    render(<SubscriptionsSection />);
 
     fireEvent.click(screen.getByText("Vercel Blog"));
 
@@ -162,7 +162,7 @@ describe("Subscriptions settings panel", () => {
   });
 
   it("wires the context menu actions to real handlers", () => {
-    render(<Subscriptions />);
+    render(<SubscriptionsSection />);
 
     fireEvent.contextMenu(screen.getByText("Vercel Blog"));
 
@@ -177,7 +177,7 @@ describe("Subscriptions settings panel", () => {
   });
 
   it("exposes add-feed and add-folder entries from the toolbar", () => {
-    render(<Subscriptions />);
+    render(<SubscriptionsSection />);
 
     fireEvent.click(screen.getByText("feeds.add_feed"));
     expect(mocks.setAddFeedModalOpen).toHaveBeenCalledWith(true);

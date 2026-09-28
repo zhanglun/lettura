@@ -41,11 +41,13 @@ export const createUserConfigSlice: StateCreator<UserConfigSlice> = (
   updateUserConfig: (config: UserConfig) => {
     const cfg = { ...get().userConfig, ...config };
 
-    return dataAgent.updateUserConfig(cfg).then(() => {
-      set(() => ({
-        userConfig: cfg,
-      }));
-    });
+    // 乐观更新：UI 即时生效（切主题/密度等视觉反馈不等落盘），TOML 经
+    // HTTP 到 Rust 同步写盘在后台完成。返回的 promise 仍等持久化结束，
+    // 需要 await 的调用方语义不变。
+    set(() => ({
+      userConfig: cfg,
+    }));
+    return dataAgent.updateUserConfig(cfg);
   },
 
   setLastSyncTime(t) {

@@ -7,12 +7,19 @@
   --fusion-sub: var(--color-text-secondary);
   --fusion-ter: color-mix(in srgb, var(--color-text-primary) 48%, transparent);
   --fusion-glass: color-mix(in srgb, var(--color-background-card) 80%, transparent);
-  --fusion-hair: var(--color-border);
+  /* 发丝线取主题墨色低透明度，而非主题的 --color-border：个别主题
+     （y2k 亮色 #2F292E 近黑 / chocolate #C4AC95 实色棕）把 border 定义为
+     高对比实色，作为组件描边是设计意图，铺满 fusion 的分隔线场景则过重；
+     色相仍随主题墨色走，明暗由 light-dark() 自动翻转 */
+  --fusion-hair: color-mix(in srgb, var(--color-text-primary) 9%, transparent);
   --fusion-hair2: color-mix(in srgb, var(--color-text-primary) 13%, transparent);
   --fusion-warn: var(--color-error);
   --fusion-pink: #e86a92;
   --fusion-pink-soft: rgba(232, 106, 146, 0.1);
   --fusion-amber: #e5a50a;
+  /* 阅读正文墨色（Songti serif 阅读契约的一部分，刻意不随主题墨色）：
+     单一真源，夜读暖墨在 dark 块覆写 */
+  --fusion-serif-ink: #33363b;
   /* 中性色全部接 Astryx 主题令牌（2026-10 契约）：明暗由 light-dark() 驱动，
      切主题即整面变色；pink/amber 为固定状态色，夜读暖墨 serif-ink 见 dark 块 */
 }
@@ -79,7 +86,8 @@
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: #fff;
+  /* 墨底上的点：取画布色，明暗自动翻转（夜读 dark 覆盖已删） */
+  background: var(--fusion-ground);
 }
 
 .fusion-sec {
@@ -493,8 +501,11 @@
   background: var(--color-accent);
 }
 
-.fusion-row.is-read .fusion-dot {
-  background: #cfd1d3;
+/* 已读点：墨色低透明度，明暗随 light-dark() 翻转（替代 #cfd1d3/#4e5055 双份硬编码）；
+   设置页阅读预览行（.prow.is-read）复用同一视觉 */
+.fusion-row.is-read .fusion-dot,
+.fusion-prev .prow.is-read .fusion-dot {
+  background: color-mix(in srgb, var(--color-text-primary) 22%, transparent);
 }
 
 /* 行首缩略图：内容 banner / 预览图，无图落预设（类型色块 + 字符） */
@@ -574,7 +585,8 @@
   padding: 0 10px;
 }
 
-.fusion-row.is-read .fusion-title {
+.fusion-row.is-read .fusion-title,
+.fusion-prev .prow.is-read .fusion-title {
   color: var(--fusion-ter);
   font-weight: 400;
 }
@@ -851,7 +863,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
+  color: var(--color-on-accent);
   box-shadow: 0 3px 8px -1px
     color-mix(in srgb, var(--color-accent) 50%, transparent);
   cursor: pointer;
@@ -1274,7 +1286,7 @@
   font-family: "Songti SC", "STSong", "Noto Serif SC", serif;
   font-size: 15.5px;
   line-height: 2;
-  color: #33363b;
+  color: var(--fusion-serif-ink);
 }
 
 /* ── 浮层通用语法（⌘K / 帮助 / 添加订阅共用） ── */
@@ -1407,7 +1419,7 @@
   font-family: "Songti SC", "STSong", "Noto Serif SC", serif;
   font-size: var(--read-size);
   line-height: var(--read-lh);
-  color: #33363b;
+  color: var(--fusion-serif-ink);
 }
 
 /* Tailwind preflight 的 * {font-family} 会截断继承，强制后代回归正文设定 */
@@ -1511,7 +1523,7 @@
 .fusion-article-body pre code {
   font-size: 12.5px;
   line-height: 1.75;
-  color: #33363b;
+  color: var(--fusion-serif-ink);
   background: none;
   border: 0;
   padding: 0;
@@ -1818,8 +1830,6 @@ body.fusion-context-menu-open .fusion-set-body {
 .fusion-b-ic {
   width: 18px;
   height: 18px;
-  border-radius: 5px;
-  background: color-mix(in srgb, var(--color-text-primary) 6%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1829,6 +1839,10 @@ body.fusion-context-menu-open .fusion-set-body {
   justify-self: center;
   overflow: hidden;
   flex: none;
+}
+
+.fusion-b-ic.is-initial {
+  color: #fff;
 }
 
 .fusion-b-ic img {
@@ -2124,15 +2138,6 @@ body.fusion-context-menu-open .fusion-set-body {
   min-width: 0;
 }
 
-.astryx-dialog.fusion-folder-form .astryx-layout-header > div {
-  padding-inline: 0;
-}
-
-.astryx-dialog.fusion-folder-form .astryx-heading,
-.astryx-dialog.fusion-folder-form .astryx-text {
-  font-family: var(--font-family-body);
-}
-
 
 .fusion-subs-fh {
   display: flex;
@@ -2270,7 +2275,7 @@ body.fusion-context-menu-open .fusion-set-body {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: #fff;
+  background: var(--fusion-ground);
 }
 
 .fusion-mark.quiet {
@@ -2386,7 +2391,7 @@ body.fusion-context-menu-open .fusion-set-body {
   align-items: center;
   justify-content: center;
   flex: none;
-  color: #fff;
+  color: var(--color-on-accent);
 }
 
 .fusion-pack .pk-row.on .cb {
@@ -2455,7 +2460,7 @@ body.fusion-context-menu-open .fusion-set-body {
   border: 0;
   border-radius: 8px;
   background: var(--color-accent);
-  color: #fff;
+  color: var(--color-on-accent);
   font-size: 12px;
   font-weight: 600;
   box-shadow: 0 4px 10px -3px color-mix(in srgb, var(--color-accent) 50%, transparent);
@@ -2538,7 +2543,7 @@ body.fusion-context-menu-open .fusion-set-body {
   align-items: center;
   gap: 10px;
   font-size: 12.5px;
-  color: #c4564a;
+  color: var(--color-error);
   padding: 4px 2px;
 }
 
@@ -2722,11 +2727,8 @@ body.fusion-context-menu-open .fusion-set-body {
 
 /* ── ⌘K 命令面板（Astryx CommandPalette）：内部三列 图标槽 | 标题 | 尾注 ── */
 .astryx-command-palette-item .ic {
-  width: 24px;
-  height: 24px;
-  border-radius: 7px;
-  background: color-mix(in srgb, var(--color-text-primary) 6%, transparent);
-  color: var(--fusion-sub);
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2735,10 +2737,17 @@ body.fusion-context-menu-open .fusion-set-body {
 }
 
 .astryx-command-palette-item .ic .fusion-badge {
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   border-radius: 7px;
   font-size: 10px;
+}
+
+.astryx-command-palette-item .ic .fusion-b-ic {
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  font-size: 11px;
 }
 
 .astryx-command-palette-item .t {
@@ -2931,7 +2940,9 @@ body.fusion-context-menu-open .fusion-set-body {
 
 .fusion-prev .prow {
   display: grid;
-  grid-template-columns: 16px 56px 20px minmax(0, 1fr) 120px 56px;
+  /* 预览行 4 子元素：状态点 / 缩略图 / 标题 / 来源；
+     旧模板混入了文章行的操作列（20px+56px），标题落进 20px 窄列向右溢出盖住来源 */
+  grid-template-columns: 16px 56px minmax(0, 1fr) 140px;
   align-items: center;
   /* 跟随密度令牌：校准台预览即真实行高 */
   height: var(--row-h, 54px);
@@ -2946,7 +2957,7 @@ body.fusion-context-menu-open .fusion-set-body {
   font-family: "Songti SC", "STSong", "Noto Serif SC", serif;
   font-size: var(--read-size);
   line-height: var(--read-lh);
-  color: #33363b;
+  color: var(--fusion-serif-ink);
   margin-top: 10px;
 }
 
@@ -2968,10 +2979,6 @@ body.dark-theme .fusion-article-body {
   color: var(--fusion-serif-ink);
 }
 
-body.dark-theme .fusion-logo i {
-  background: var(--fusion-ground);
-}
-
 /* 灰阶由墨色投影改浅色投影 */
 body.dark-theme .fusion-nav button:hover,
 body.dark-theme .fusion-tab:hover,
@@ -2989,7 +2996,7 @@ body.dark-theme .fusion-card .gen code {
 }
 
 body.dark-theme .fusion-row:hover::after {
-  background: color-mix(in srgb, var(--color-text-primary) 4%, transparent);
+  background: color-mix(in srgb, var(--color-text-primary) 7%, transparent);
 }
 
 body.dark-theme .fusion-srow:hover::after {
@@ -2998,10 +3005,6 @@ body.dark-theme .fusion-srow:hover::after {
 
 body.dark-theme .fusion-snav.on {
   background: color-mix(in srgb, var(--color-text-primary) 7%, transparent);
-}
-
-body.dark-theme .fusion-row.is-read .fusion-dot {
-  background: #4e5055;
 }
 
 body.dark-theme .fusion-badge.b-art {

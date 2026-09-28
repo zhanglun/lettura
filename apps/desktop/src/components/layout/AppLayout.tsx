@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 import { RouteConfig } from "@/config";
 import { useBearStore } from "@/stores";
 import { busChannel } from "@/helpers/busChannel";
+import { recordNav } from "@/helpers/navHistory";
 import { LPodcast } from "@/components/LPodcast";
 import { AddFeedChannel } from "@/components/AddFeed";
 import { CommandPalette } from "./CommandPalette";
@@ -57,6 +58,11 @@ export const AppLayout = React.memo(function () {
       unsub();
     };
   }, []);
+
+  // 路由足迹：esc「回到上一页」的事实来源
+  useEffect(() => {
+    recordNav(location.pathname + location.search);
+  }, [location.pathname, location.search]);
 
   const isAll = location.pathname === RouteConfig.LOCAL_ALL;
   const isStarred = location.pathname.startsWith("/local/starred");

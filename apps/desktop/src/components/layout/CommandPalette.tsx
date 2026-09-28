@@ -70,12 +70,14 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
     })),
   );
 
-  // Astryx 初始不高亮首项；打开后对输入框派发一次 ArrowDown，使 Enter 直达首项
+  // Astryx 初始不高亮首项；打开后对输入框派发一次 ArrowDown，使 Enter 直达首项。
+  // 只在面板自己的对话框里找 combobox——页面上的 Astryx Selector 触发器也是
+  // role="combobox"，全局 querySelector 会把这次合成按键派给它、误开下拉。
   useEffect(() => {
     if (!open) return;
     const fire = () => {
       const input = document.querySelector<HTMLInputElement>(
-        '[role="combobox"]',
+        '#lettura-command-palette [role="combobox"]',
       );
       input?.dispatchEvent(
         new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true }),
@@ -227,6 +229,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
 
   return (
     <AstryxCommandPalette
+      id="lettura-command-palette"
       isOpen={open}
       onOpenChange={onOpenChange}
       searchSource={searchSource}

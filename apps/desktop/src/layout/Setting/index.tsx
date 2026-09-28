@@ -13,11 +13,13 @@ import { busChannel } from "@/helpers/busChannel";
 import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
 import { RouteConfig } from "@/config";
-import { Subscriptions } from "./Subscriptions";
+import { lastNavFrom } from "@/helpers/navHistory";
+import { SubscriptionsSection } from "./Subscriptions";
 import { ASTRYX_THEMES } from "@/themes";
 import { Button } from "@astryxdesign/core/Button";
 import { SegmentedControl, SegmentedControlItem } from "@astryxdesign/core/SegmentedControl";
 import { Dialog, DialogHeader } from "@astryxdesign/core/Dialog";
+import { Layout, LayoutContent } from "@astryxdesign/core/Layout";
 
 import { ChevronRight, Download, Upload , ChevronLeft, Plus, Trash2 } from "lucide-react";
 import { Switch } from "@astryxdesign/core/Switch";
@@ -62,9 +64,9 @@ export function SettingPage() {
   // 文本类设置用草稿 + 失焦提交（其余控件即改即写；逐字符写 TOML 太重）
   const [routesDraft, setRoutesDraft] = useState<string | null>(null);
   const navigate = useNavigate();
-  const search = useLocation().search;
-  const isSubscriptions =
-    new URLSearchParams(search).get("tab") === "subscriptions";
+  const location = useLocation();
+  const locationKey = location.pathname + location.search;
+  const tabParam = new URLSearchParams(location.search).get("tab");
 
   const store = useBearStore(
     useShallow((state) => ({
@@ -78,6 +80,9 @@ export function SettingPage() {
 
   const [activeSec, setActiveSec] = useState("appearance");
   const bodyRef = useRef<HTMLDivElement>(null);
+  // 自绘锚点滚动动画的句柄（scrollIntoView smooth 在 WebKit 由主线程驱动且
+  // 时长随距离增长，长页面上一卡一卡；固定时长 + easeOutCubic 手感稳定）
+  const scrollAnim = useRef(0);
 
   // ── 来源账户 / 站点规则（后端命令直连；失败静默为空列表）──
   const [accounts, setAccounts] = useState<SourceAccount[]>([]);
@@ -113,25 +118,61 @@ export function SettingPage() {
     loadRules();
   }, []);
 
-  // esc 一路退回未读列表
+  // esc / 左上返回：回到进入设置前的页面（无足迹如启动直达时落回未读列表）
+  const backTo = lastNavFrom(locationKey) ?? RouteConfig.LOCAL_ALL;
   useHotkeys(HK.escape, () => {
     if (document.body.classList.contains("fusion-context-menu-open")) return;
     if (useBearStore.getState().playerMode === "full") return; // 沉浸页优先收回条
-    if (!isSubscriptions) navigate(RouteConfig.LOCAL_ALL);
-  });
+    navigate(backTo);
+  }, [backTo]);
 
+  // 左锚点导航滚动：固定 320ms easeOutCubic；scrollIntoView smooth 交给浏览器
+  // 的时长不可控（WebKit 主线程驱动、随距离变长），页面变高后点击明显发顿
   const scrollTo = (id: string) => {
+    const el = bodyRef.current;
+    if (!el) return;
+    const node = el.querySelector(`#${id}`);
+    if (!node) return;
     setActiveSec(id);
-    bodyRef.current
-      ?.querySelector(`#${id}`)
-      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    cancelAnimationFrame(scrollAnim.current);
+    const gap = parseFloat(getComputedStyle(node).scrollMarginTop) || 0;
+    const from = el.scrollTop;
+    const to =
+      from +
+      node.getBoundingClientRect().top -
+      el.getBoundingClientRect().top -
+      gap;
+    if (
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+      Math.abs(to - from) < 2
+    ) {
+      el.scrollTop = to;
+      return;
+    }
+    const start = performance.now();
+    const step = (now: number) => {
+      const p = Math.min((now - start) / 320, 1);
+      el.scrollTop = from + (to - from) * (1 - Math.pow(1 - p, 3));
+      if (p < 1) scrollAnim.current = requestAnimationFrame(step);
+    };
+    scrollAnim.current = requestAnimationFrame(step);
   };
 
-  // 滚动侦测反向点亮锚点导航；末段在触底时兜底选中（settings.html 契约）
+  // 深链 ?tab=xxx（源队列 / 右键菜单的「管理订阅」入口）：进入后滚到对应区块
+  useEffect(() => {
+    if (tabParam) scrollTo(tabParam);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tabParam]);
+
+  // 滚动侦测反向点亮锚点导航；末段在触底时兜底选中（settings.html 契约）。
+  // 区块节点挂载时缓存一次——每帧 6 次 querySelector 在内联订阅区块后已能感知
   useEffect(() => {
     const el = bodyRef.current;
     if (!el) return;
-    const sections = ["appearance", "sync", "sources", "rules", "system"];
+    const sections = ["appearance", "sync", "sources", "rules", "system", "subscriptions"];
+    const nodes = sections
+      .map((id) => el.querySelector(`#${id}`) as HTMLElement | null)
+      .filter((n): n is HTMLElement => !!n);
     let ticking = false;
     const onScroll = () => {
       if (ticking) return;
@@ -140,17 +181,21 @@ export function SettingPage() {
         ticking = false;
         const box = el.getBoundingClientRect();
         const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 8;
-        const current = sections
-          .map((id) => el.querySelector(`#${id}`) as HTMLElement | null)
-          .filter((n): n is HTMLElement => !!n)
-          .reduce<string | null>((acc, node) => {
-            return node.getBoundingClientRect().top - box.top <= 72 ? node.id : acc;
-          }, null);
+        const current = nodes.reduce<string | null>((acc, node) => {
+          return node.getBoundingClientRect().top - box.top <= 72 ? node.id : acc;
+        }, null);
         setActiveSec(atBottom ? sections[sections.length - 1] : current ?? sections[0]);
       });
     };
+    const stopAnim = () => cancelAnimationFrame(scrollAnim.current);
     el.addEventListener("scroll", onScroll, { passive: true });
-    return () => el.removeEventListener("scroll", onScroll);
+    // 用户手动滚动时终止锚点动画，避免与滚轮抢滚动位置
+    el.addEventListener("wheel", stopAnim, { passive: true });
+    return () => {
+      cancelAnimationFrame(scrollAnim.current);
+      el.removeEventListener("scroll", onScroll);
+      el.removeEventListener("wheel", stopAnim);
+    };
   }, []);
 
   // 校准台参数写入令牌
@@ -168,10 +213,6 @@ export function SettingPage() {
       (cfg?.card_density ?? "comfortable") === "compact" ? "44px" : "54px",
     );
   }, [cfg?.card_density]);
-
-  if (isSubscriptions) {
-    return <Subscriptions />;
-  }
 
   const applyScheme = (v: string) => {
     // body.dark-theme 与 Astryx mode 均由 App 从 userConfig.color_scheme 派生
@@ -335,27 +376,20 @@ export function SettingPage() {
     { id: "sources", label: t("settings.sec.sources") },
     { id: "rules", label: t("settings.sec.rules") },
     { id: "system", label: t("settings.sec.system") },
+    // 内容长度随订阅数变化，放末尾让固定区块的锚点位置稳定
+    { id: "subscriptions", label: t("settings.tab.subscriptions_title") },
   ];
 
   const previewRow = (title: string, src: string, read: boolean, badge: { link: string; feed_url: string }) => (
-    <div className="prow">
+    <div className={`prow ${read ? "is-read" : ""}`}>
       <span className="fusion-st">
-        <span
-          className="fusion-dot"
-          style={read ? { background: "#CFD1D3" } : undefined}
-        />
+        <span className="fusion-dot" />
       </span>
       <span className={`fusion-thumb ${badge.link ? "pod" : ""}`} />
-      <span
-        className="fusion-title"
-        style={read ? { color: "var(--fusion-ter)", fontWeight: 400 } : undefined}
-      >
-        {title}
-      </span>
+      <span className="fusion-title">{title}</span>
       <span className="fusion-src">
         <span className="fn">{src}</span>
       </span>
-      <span />
     </div>
   );
 
@@ -368,7 +402,7 @@ export function SettingPage() {
           icon={<ChevronLeft size={12} />}
           label={t("article.view.back")}
           endContent={<Kbd keys="esc" />}
-          onClick={() => navigate(RouteConfig.LOCAL_ALL)}
+          onClick={() => navigate(backTo)}
         />
         <span className="d-src">{t("settings.dsrc")}</span>
         <span className="fusion-spring" />
@@ -389,26 +423,6 @@ export function SettingPage() {
               {n.label}
             </button>
           ))}
-          <button
-            type="button"
-            className="fusion-snav"
-            style={{ marginTop: 10 }}
-            onClick={() => navigate(`${RouteConfig.SETTINGS}?tab=subscriptions`)}
-          >
-            {t("settings.tab.subscriptions_title")}
-            <svg
-              width="11"
-              height="11"
-              viewBox="0 0 16 16"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.7"
-              strokeLinecap="round"
-              style={{ marginLeft: "auto", color: "var(--fusion-ter)", flex: "none" }}
-            >
-              <path d="m6 3 5 5-5 5" />
-            </svg>
-          </button>
         </nav>
 
         <div className="fusion-set-body fusion-inset-tail" ref={bodyRef}>
@@ -584,7 +598,7 @@ export function SettingPage() {
                 size="sm"
                 label={t("settings.subs_manage_btn")}
                 endContent={<ChevronRight size={11} />}
-                onClick={() => navigate(`${RouteConfig.SETTINGS}?tab=subscriptions`)}
+                onClick={() => scrollTo("subscriptions")}
               />
             </SRow>
             <SRow label={t("settings.bridge_instance")} help={t("settings.bridge_instance_help")}>
@@ -625,7 +639,7 @@ export function SettingPage() {
                   <div className="lb" style={{ display: "flex", alignItems: "center", gap: 7 }}>
                     <span
                       className="fusion-dot"
-                      style={account.status !== "ok" ? { background: "#E5484D" } : undefined}
+                      style={account.status !== "ok" ? { background: "var(--color-error)" } : undefined}
                     />
                     {account.label}
                   </div>
@@ -760,62 +774,74 @@ export function SettingPage() {
               <Button variant="ghost" size="sm" icon={<Upload size={12} />} label={t("Export")} onClick={handleExport} />
               <Button variant="ghost" size="sm" icon={<Download size={12} />} label={t("Import")} onClick={handleImport} />
             </SRow>
+
+            {/* 订阅管理（内联区块：内容随订阅数变化，置于末尾同层滚动展示） */}
+            <div className="fusion-set-h" id="subscriptions">
+              {t("settings.tab.subscriptions_title")}
+            </div>
+            <SubscriptionsSection />
           </div>
         </div>
       </div>
 
       {/* 添加邮箱账户：先测试连接，再落库 */}
       <Dialog isOpen={accDialogOpen} onOpenChange={setAccDialogOpen} width={420}>
-        <DialogHeader title={t("settings.source_accounts.add_mail")} />
-        <div className="flex flex-col gap-3 py-2">
-          <TextInput
-            label={t("settings.source_accounts.fld_host")}
-            placeholder="imap.example.com"
-            value={accForm.host}
-            onChange={(v) => setAccForm((f) => ({ ...f, host: v }))}
-          />
-          <TextInput
-            label={t("settings.source_accounts.fld_port")}
-            value={accForm.port}
-            onChange={(v) => setAccForm((f) => ({ ...f, port: v.replace(/\D/g, "") }))}
-          />
-          <TextInput
-            label={t("settings.source_accounts.fld_user")}
-            autoComplete="off"
-            value={accForm.user}
-            onChange={(v) => setAccForm((f) => ({ ...f, user: v }))}
-          />
-          <TextInput
-            label={t("settings.source_accounts.fld_password")}
-            type="password"
-            autoComplete="new-password"
-            value={accForm.password}
-            onChange={(v) => setAccForm((f) => ({ ...f, password: v }))}
-          />
-          <TextInput
-            label={t("settings.source_accounts.fld_label")}
-            description={t("settings.source_accounts.fld_label_help")}
-            placeholder={accForm.host}
-            value={accForm.label}
-            onChange={(v) => setAccForm((f) => ({ ...f, label: v }))}
-          />
-          <div className="flex justify-end gap-3 pt-1">
-            <Button
-              variant="secondary"
-              label={t("settings.source_accounts.test")}
-              isLoading={accTesting}
-              isDisabled={!accFormReady}
-              onClick={testNewAccount}
-            />
-            <Button
-              variant="primary"
-              label={t("Save")}
-              isLoading={accSaving}
-              isDisabled={!accFormReady}
-              onClick={saveNewAccount}
-            />
-          </div>
-        </div>
+        <Layout
+          header={<DialogHeader title={t("settings.source_accounts.add_mail")} />}
+          content={
+            <LayoutContent isScrollable={false}>
+              <div className="flex flex-col gap-3 py-2">
+                <TextInput
+                  label={t("settings.source_accounts.fld_host")}
+                  placeholder="imap.example.com"
+                  value={accForm.host}
+                  onChange={(v) => setAccForm((f) => ({ ...f, host: v }))}
+                />
+                <TextInput
+                  label={t("settings.source_accounts.fld_port")}
+                  value={accForm.port}
+                  onChange={(v) => setAccForm((f) => ({ ...f, port: v.replace(/\D/g, "") }))}
+                />
+                <TextInput
+                  label={t("settings.source_accounts.fld_user")}
+                  autoComplete="off"
+                  value={accForm.user}
+                  onChange={(v) => setAccForm((f) => ({ ...f, user: v }))}
+                />
+                <TextInput
+                  label={t("settings.source_accounts.fld_password")}
+                  type="password"
+                  autoComplete="new-password"
+                  value={accForm.password}
+                  onChange={(v) => setAccForm((f) => ({ ...f, password: v }))}
+                />
+                <TextInput
+                  label={t("settings.source_accounts.fld_label")}
+                  description={t("settings.source_accounts.fld_label_help")}
+                  placeholder={accForm.host}
+                  value={accForm.label}
+                  onChange={(v) => setAccForm((f) => ({ ...f, label: v }))}
+                />
+                <div className="flex justify-end gap-3 pt-1">
+                  <Button
+                    variant="secondary"
+                    label={t("settings.source_accounts.test")}
+                    isLoading={accTesting}
+                    isDisabled={!accFormReady}
+                    onClick={testNewAccount}
+                  />
+                  <Button
+                    variant="primary"
+                    label={t("Save")}
+                    isLoading={accSaving}
+                    isDisabled={!accFormReady}
+                    onClick={saveNewAccount}
+                  />
+                </div>
+              </div>
+            </LayoutContent>
+          }
+        />
       </Dialog>
 
       {/* 删除账户确认（引用它的订阅会置回无账户，不删订阅） */}
