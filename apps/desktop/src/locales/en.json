@@ -43,7 +43,6 @@
   "Save": "Save",
   "Saving": "Saving",
   "Are you absolutely sure?": "Are you absolutely sure?",
-  "This action cannot be undone. This will permanently delete the data relates with": "This action cannot be undone. This will permanently delete the data relates with",
   "Star it": "Star it",
   "Unstar it": "Unstar it",
   "Read later": "Read later",
@@ -771,5 +770,6 @@
   "1 hour": "Every hour",
   "6 hours": "Every 6 hours",
   "12 hours": "Every 12 hours",
-  "24 hours": "Every 24 hours"
+  "24 hours": "Every 24 hours",
+  "This action cannot be undone. This will permanently delete the data related to {{title}}": "This action cannot be undone. This will permanently delete the data related to \"{{title}}\""
 }

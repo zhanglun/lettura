@@ -40,7 +40,6 @@
   "Save": "保存",
   "Saving": "保存中",
   "Are you absolutely sure?": "你确定吗？",
-  "This action cannot be undone. This will permanently delete the data relates with": "此操作无法撤消。这将永久删除与 <bold>{{title}}</bold> 相关的数据",
   "All articles": "全部文章",
   "Unread": "未读文章",
   "Read": "已读文章",
@@ -270,7 +269,7 @@
       "rules": "订阅规则",
       "system": "行为与数据"
     },
-      "source_accounts": {
+    "source_accounts": {
       "title": "来源账户",
       "help": "IMAP 邮箱、B站 SESSDATA 等凭据保存在本机数据库，供对应来源的订阅使用",
       "mode": "账户类型",
@@ -787,5 +786,6 @@
   "1 hour": "每小时",
   "6 hours": "每 6 小时",
   "12 hours": "每 12 小时",
-  "24 hours": "每 24 小时"
+  "24 hours": "每 24 小时",
+  "This action cannot be undone. This will permanently delete the data related to {{title}}": "此操作无法撤消。这将永久删除与「{{title}}」相关的数据"
 }

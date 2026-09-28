@@ -48,7 +48,7 @@ export const DialogDeleteFolder = React.memo((props: DialogProps) => {
         onOpenChange={setDialogStatus}
         title={t("Are you absolutely sure?")}
         description={t(
-          "This action cannot be undone. This will permanently delete the data relates with",
+          "This action cannot be undone. This will permanently delete the data related to {{title}}",
           { title: folder?.title },
         )}
         actionLabel={t("Delete folder")}

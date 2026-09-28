@@ -71,13 +71,14 @@ export const DialogUnsubscribeFeed = React.memo((props: DialogProps) => {
               <div className="flex flex-col gap-4 py-2">
                 <Text size="sm" color="secondary">
                   {t(
-                    "This action cannot be undone. This will permanently delete the data relates with",
+                    "This action cannot be undone. This will permanently delete the data related to {{title}}",
                     { title: feed?.title },
                   )}
                 </Text>
                 <RadioList
                   label={t("Article handling")}
                   isLabelHidden
+                  size="sm"
                   value={deleteMode}
                   onChange={(v) => setDeleteMode(v as "keep" | "delete")}
                 >
@@ -91,8 +92,8 @@ export const DialogUnsubscribeFeed = React.memo((props: DialogProps) => {
                   />
                 </RadioList>
                 {deleteMode === "delete" && (
-                  <div className="rounded-md border border-[var(--color-border-orange)] bg-[var(--color-background-orange)] px-3 py-2">
-                    <Text size="xsm" color="secondary">
+                  <div className="rounded-md border border-[var(--color-border-orange)] bg-[var(--color-background-orange)] px-3 py-2.5">
+                    <Text size="sm" color="primary">
                       {t("layout.feeds.delete.warning")}
                     </Text>
                   </div>
