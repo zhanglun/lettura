@@ -12,24 +12,30 @@ import { IconButton } from "@astryxdesign/core/IconButton";
 import * as dataAgent from "@/helpers/dataAgent";
 import { useTranslation } from "react-i18next";
 import { getCarrier } from "@/helpers/mediaType";
-import { pickThumbUrl } from "@/helpers/articleContent";
+import { pickThumbUrl, pickDuration, formatDuration } from "@/helpers/articleContent";
 
-/** 行首缩略图：内容首图（feed 自带）> feed 图标 > 安静类型色块（无字符） */
+/** 行首缩略图：内容首图（feed 自带）> feed 图标 > 安静类型色块（无字符）。
+ *  视频行走加宽 16:9 变体并叠时长角标（.fusion-thumb.vid）。 */
 export function RowThumb({ article }: { article: ArticleResItem }) {
   const [imgError, setImgError] = useState(false);
   const thumbUrl = useMemo(() => pickThumbUrl(article), [article]);
   const carrier = getCarrier(article);
-  const tint = carrier === "audio" ? "pod" : carrier === "video" ? "bil" : "";
+  const duration = useMemo(() => pickDuration(article), [article]);
+  const tint = carrier === "audio" ? "pod" : carrier === "video" ? "vid" : "";
+  const isVideoRow = carrier === "video" && !!thumbUrl && !imgError;
 
   if (thumbUrl && !imgError) {
     return (
-      <span className={clsx("fusion-thumb", tint)}>
+      <span className={clsx("fusion-thumb", isVideoRow && "vid", tint)}>
         <img
           src={thumbUrl}
           alt=""
           loading="lazy"
           onError={() => setImgError(true)}
         />
+        {isVideoRow && duration != null && (
+          <span className="fusion-thumb-dur">{formatDuration(duration)}</span>
+        )}
       </span>
     );
   }
@@ -118,6 +124,8 @@ export const ArticleItem = React.forwardRef(
       new Date(article.pub_date || article.create_date),
       { includeSeconds: true, addSuffix: true },
     );
+    // 视频行元信息第二行：时长（媒体附件给出时），替代纯文字行的空缺
+    const duration = pickDuration(article);
 
     useEffect(() => {
       setReadStatus(article.read_status);
@@ -131,6 +139,7 @@ export const ArticleItem = React.forwardRef(
       <div
         className={clsx(
           "fusion-row",
+          getCarrier(article) === "video" && "is-video",
           readStatus === ArticleReadStatus.READ && "is-read",
           focused && "is-focused",
         )}
@@ -151,6 +160,9 @@ export const ArticleItem = React.forwardRef(
             <img className="fusion-ficon" src={article.feed_logo} alt="" loading="lazy" />
           )}
           <span className="fn">{article.feed_title}</span>
+          {getCarrier(article) === "video" && duration != null && (
+            <span className="fusion-src-dur">{formatDuration(duration)}</span>
+          )}
         </span>
         <span className="fusion-date">{timeLabel}</span>
         <span className="fusion-acts">

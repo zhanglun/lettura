@@ -111,7 +111,7 @@ export function FeedsBrowse() {
         title: f.title,
         feeds: f.children ?? [],
       })),
-    ].filter((g) => g.feeds.length > 0);
+    ];
   }, [store.subscribes, t]);
 
   // 键盘队列：可见（未折叠分组）且有未读的源
@@ -189,7 +189,7 @@ export function FeedsBrowse() {
     store.setFilter(FILTER_UNREAD);
   }, [navigate, store]);
 
-  if (DEV_PREVIEW_FIRST_RUN || groups.length === 0) {
+  if (DEV_PREVIEW_FIRST_RUN || (groups.length === 0 && store.subscribes.length === 0)) {
     // 零订阅复用 EmptyFace 首启面（CTA：添加订阅 / 导入 OPML），不再裸排版
     return <EmptyFace mode="first" />;
   }

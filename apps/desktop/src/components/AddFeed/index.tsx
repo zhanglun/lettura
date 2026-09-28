@@ -338,7 +338,7 @@ export const AddFeedChannel = (props: any) => {
         preview.accountUuid,
       )
       .then(async (res: any) => {
-        if (res[2] !== "") {
+        if (res[2] !== "" && !res[0]) {
           toast.error(`${t("Unable to subscribe")}：${res[2]}`);
           setPhase({ s: "error", message: res[2] });
           return;

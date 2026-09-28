@@ -40,6 +40,37 @@ export function pickThumbUrl(a: {
 }
 
 /**
+ * 条目媒体时长（秒）：media_object 附件带的 duration（B站视频/播客单集）。
+ * 读取失败或缺省返回 null。
+ */
+export function pickDuration(a: {
+  media_object?: string | null;
+}): number | null {
+  try {
+    const medias = JSON.parse(a.media_object || "[]");
+    if (Array.isArray(medias)) {
+      for (const m of medias) {
+        const d = m?.duration;
+        if (typeof d === "number" && d > 0) return d;
+      }
+    }
+  } catch {
+    // 同 pickThumbUrl：非法 JSON 静默退级
+  }
+  return null;
+}
+
+/** 秒 → "mm:ss" / "h:mm:ss" 视频时长角标格式 */
+export function formatDuration(seconds: number): string {
+  const s = Math.round(seconds);
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  const two = (n: number) => String(n).padStart(2, "0");
+  return h > 0 ? `${h}:${two(m)}:${two(sec)}` : `${m}:${two(sec)}`;
+}
+
+/**
  * Pick the richer content between `content` and `description`.
  * Falls back to the optional `fallback` string when both are empty.
  */

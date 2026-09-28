@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { HK } from "@/shortcuts";
@@ -19,6 +19,7 @@ import { ASTRYX_THEMES } from "@/themes";
 import { Button } from "@astryxdesign/core/Button";
 import { SegmentedControl, SegmentedControlItem } from "@astryxdesign/core/SegmentedControl";
 import { Dialog, DialogHeader } from "@astryxdesign/core/Dialog";
+import { RadioList, RadioListItem } from "@astryxdesign/core/RadioList";
 import { Layout, LayoutContent } from "@astryxdesign/core/Layout";
 
 import { ChevronRight, Download, Upload , ChevronLeft, Plus, Trash2 } from "lucide-react";
@@ -91,7 +92,8 @@ export function SettingPage() {
   const [bridgeDraft, setBridgeDraft] = useState<string | null>(null);
   // 添加邮箱账户对话框
   const [accDialogOpen, setAccDialogOpen] = useState(false);
-  const [accForm, setAccForm] = useState({ host: "", port: "993", user: "", password: "", label: "" });
+  const [accProvider, setAccProvider] = useState<"mail" | "bilibili">("mail");
+  const [accForm, setAccForm] = useState({ host: "", port: "993", user: "", password: "", sessdata: "", label: "" });
   const [accTesting, setAccTesting] = useState(false);
   const [accSaving, setAccSaving] = useState(false);
   // 行内测试 / 删除确认
@@ -117,6 +119,22 @@ export function SettingPage() {
     loadAccounts();
     loadRules();
   }, []);
+
+  // 账户按 provider 分组展示：已知类型排前，未知类型兜底在后（新 provider 即插即用）
+  const accountGroups = useMemo(() => {
+    const groups = new Map<string, SourceAccount[]>();
+    for (const account of accounts) {
+      const list = groups.get(account.provider) ?? [];
+      list.push(account);
+      groups.set(account.provider, list);
+    }
+    const rank = (provider: string) => {
+      const known = ["mail", "bilibili"];
+      const index = known.indexOf(provider);
+      return index === -1 ? known.length : index;
+    };
+    return [...groups.entries()].sort((a, b) => rank(a[0]) - rank(b[0]));
+  }, [accounts]);
 
   // esc / 左上返回：回到进入设置前的页面（无足迹如启动直达时落回未读列表）
   const backTo = lastNavFrom(locationKey) ?? RouteConfig.LOCAL_ALL;
@@ -304,26 +322,31 @@ export function SettingPage() {
     }
   };
 
-  const openAddAccount = () => {
-    setAccForm({ host: "", port: "993", user: "", password: "", label: "" });
+  const openAddAccount = (provider: "mail" | "bilibili" = "mail") => {
+    setAccProvider(provider);
+    setAccForm({ host: "", port: "993", user: "", password: "", sessdata: "", label: "" });
     setAccDialogOpen(true);
   };
 
-  const mailSettingsJson = () =>
-    JSON.stringify({
-      host: accForm.host.trim(),
-      port: parseInt(accForm.port, 10) || 993,
-      user: accForm.user.trim(),
-      password: accForm.password,
-    });
+  const accountSettingsJson = () =>
+    accProvider === "bilibili"
+      ? JSON.stringify({ sessdata: accForm.sessdata.trim() })
+      : JSON.stringify({
+          host: accForm.host.trim(),
+          port: parseInt(accForm.port, 10) || 993,
+          user: accForm.user.trim(),
+          password: accForm.password,
+        });
 
   const accFormReady =
-    accForm.host.trim() !== "" && accForm.user.trim() !== "" && accForm.password !== "";
+    accProvider === "bilibili"
+      ? accForm.sessdata.trim() !== ""
+      : accForm.host.trim() !== "" && accForm.user.trim() !== "" && accForm.password !== "";
 
   const testNewAccount = async () => {
     setAccTesting(true);
     try {
-      const message = await dataAgent.testSourceAccount("mail", mailSettingsJson());
+      const message = await dataAgent.testSourceAccount(accProvider, accountSettingsJson());
       toast.success(message || t("settings.source_accounts.test_ok"));
     } catch (error) {
       showErrorToast(error, t("settings.source_accounts.test_fail"));
@@ -336,11 +359,12 @@ export function SettingPage() {
     if (!accFormReady) return;
     setAccSaving(true);
     try {
-      // 名称默认取 host（用户没填时）
+      // 名称默认取 host（邮箱）或固定名（B站），用户没填时
       await dataAgent.saveSourceAccount(
-        "mail",
-        accForm.label.trim() || accForm.host.trim(),
-        mailSettingsJson(),
+        accProvider,
+        accForm.label.trim() ||
+          (accProvider === "mail" ? accForm.host.trim() : t("settings.source_accounts.provider_bilibili")),
+        accountSettingsJson(),
       );
       toast.success(t("settings.source_accounts.saved"));
       setAccDialogOpen(false);
@@ -629,43 +653,50 @@ export function SettingPage() {
                 variant="ghost"
                 size="sm"
                 icon={<Plus size={12} />}
-                label={t("settings.source_accounts.add_mail")}
-                onClick={openAddAccount}
+                label={t("settings.source_accounts.add_account")}
+                onClick={() => openAddAccount()}
               />
             </SRow>
-            {accounts.map((account) => (
-              <div className="fusion-srow" key={account.uuid}>
-                <div className="min-w-0">
-                  <div className="lb" style={{ display: "flex", alignItems: "center", gap: 7 }}>
-                    <span
-                      className="fusion-dot"
-                      style={account.status !== "ok" ? { background: "var(--color-error)" } : undefined}
-                    />
-                    {account.label}
-                  </div>
-                  <div className="hp">
-                    <span className="fusion-chip">{providerLabel(account.provider)}</span>
-                    {account.status !== "ok" && (
-                      <span style={{ marginLeft: 6 }}>{account.status}</span>
-                    )}
-                  </div>
+            {accountGroups.map(([provider, list]) => (
+              <div key={provider}>
+                <div className="fusion-acct-h">
+                  {providerLabel(provider)}
+                  <span className="n">
+                    {t("settings.source_accounts.count", { count: list.length })}
+                  </span>
                 </div>
-                <div className="ctl">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    label={t("settings.source_accounts.test")}
-                    isLoading={testingUuid === account.uuid}
-                    onClick={() => testRowAccount(account)}
-                  />
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    icon={<Trash2 size={12} />}
-                    label={t("settings.source_accounts.delete")}
-                    onClick={() => setDeleteTarget(account)}
-                  />
-                </div>
+                {list.map((account) => (
+                  <div className="fusion-srow" key={account.uuid}>
+                    <div className="min-w-0">
+                      <div className="lb" style={{ display: "flex", alignItems: "center", gap: 7 }}>
+                        <span
+                          className="fusion-dot"
+                          style={account.status !== "ok" ? { background: "var(--color-error)" } : undefined}
+                        />
+                        {account.label}
+                      </div>
+                      {account.status !== "ok" && (
+                        <div className="hp">{account.status}</div>
+                      )}
+                    </div>
+                    <div className="ctl">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        label={t("settings.source_accounts.test")}
+                        isLoading={testingUuid === account.uuid}
+                        onClick={() => testRowAccount(account)}
+                      />
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        icon={<Trash2 size={12} />}
+                        label={t("settings.source_accounts.delete")}
+                        onClick={() => setDeleteTarget(account)}
+                      />
+                    </div>
+                  </div>
+                ))}
               </div>
             ))}
 
@@ -784,41 +815,87 @@ export function SettingPage() {
         </div>
       </div>
 
-      {/* 添加邮箱账户：先测试连接，再落库 */}
+      {/* 添加来源账户：类型切换 + 先测试连接，再落库 */}
       <Dialog isOpen={accDialogOpen} onOpenChange={setAccDialogOpen} width={420}>
         <Layout
-          header={<DialogHeader title={t("settings.source_accounts.add_mail")} />}
+          header={
+            <DialogHeader
+              title={
+                accProvider === "mail"
+                  ? t("settings.source_accounts.add_mail")
+                  : t("settings.source_accounts.add_bilibili")
+              }
+            />
+          }
           content={
             <LayoutContent isScrollable={false}>
               <div className="flex flex-col gap-3 py-2">
-                <TextInput
-                  label={t("settings.source_accounts.fld_host")}
-                  placeholder="imap.example.com"
-                  value={accForm.host}
-                  onChange={(v) => setAccForm((f) => ({ ...f, host: v }))}
-                />
-                <TextInput
-                  label={t("settings.source_accounts.fld_port")}
-                  value={accForm.port}
-                  onChange={(v) => setAccForm((f) => ({ ...f, port: v.replace(/\D/g, "") }))}
-                />
-                <TextInput
-                  label={t("settings.source_accounts.fld_user")}
-                  autoComplete="off"
-                  value={accForm.user}
-                  onChange={(v) => setAccForm((f) => ({ ...f, user: v }))}
-                />
-                <TextInput
-                  label={t("settings.source_accounts.fld_password")}
-                  type="password"
-                  autoComplete="new-password"
-                  value={accForm.password}
-                  onChange={(v) => setAccForm((f) => ({ ...f, password: v }))}
-                />
+                <RadioList
+                  label={t("settings.source_accounts.mode")}
+                  isLabelHidden
+                  value={accProvider}
+                  onChange={(v) => setAccProvider(v as "mail" | "bilibili")}
+                >
+                  <RadioListItem
+                    value="mail"
+                    label={t("settings.source_accounts.provider_mail")}
+                    description={t("settings.source_accounts.provider_mail_desc")}
+                  />
+                  <RadioListItem
+                    value="bilibili"
+                    label={t("settings.source_accounts.provider_bilibili")}
+                    description={t("settings.source_accounts.provider_bilibili_desc")}
+                  />
+                </RadioList>
+                {accProvider === "mail" ? (
+                  <>
+                    <TextInput
+                      label={t("settings.source_accounts.fld_host")}
+                      placeholder="imap.example.com"
+                      value={accForm.host}
+                      onChange={(v) => setAccForm((f) => ({ ...f, host: v }))}
+                    />
+                    <TextInput
+                      label={t("settings.source_accounts.fld_port")}
+                      value={accForm.port}
+                      onChange={(v) => setAccForm((f) => ({ ...f, port: v.replace(/\D/g, "") }))}
+                    />
+                    <TextInput
+                      label={t("settings.source_accounts.fld_user")}
+                      autoComplete="off"
+                      value={accForm.user}
+                      onChange={(v) => setAccForm((f) => ({ ...f, user: v }))}
+                    />
+                    <TextInput
+                      label={t("settings.source_accounts.fld_password")}
+                      type="password"
+                      autoComplete="new-password"
+                      value={accForm.password}
+                      onChange={(v) => setAccForm((f) => ({ ...f, password: v }))}
+                    />
+                  </>
+                ) : (
+                  <TextInput
+                    label={t("settings.source_accounts.fld_sessdata")}
+                    type="password"
+                    autoComplete="new-password"
+                    description={t("settings.source_accounts.fld_sessdata_help")}
+                    value={accForm.sessdata}
+                    onChange={(v) => setAccForm((f) => ({ ...f, sessdata: v }))}
+                  />
+                )}
                 <TextInput
                   label={t("settings.source_accounts.fld_label")}
-                  description={t("settings.source_accounts.fld_label_help")}
-                  placeholder={accForm.host}
+                  description={
+                    accProvider === "mail"
+                      ? t("settings.source_accounts.fld_label_help")
+                      : undefined
+                  }
+                  placeholder={
+                    accProvider === "mail"
+                      ? accForm.host
+                      : t("settings.source_accounts.provider_bilibili")
+                  }
                   value={accForm.label}
                   onChange={(v) => setAccForm((f) => ({ ...f, label: v }))}
                 />

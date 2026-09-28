@@ -270,12 +270,18 @@
       "rules": "订阅规则",
       "system": "行为与数据"
     },
-    "source_accounts": {
+      "source_accounts": {
       "title": "来源账户",
-      "help": "IMAP 邮箱等凭据保存在本机数据库，供邮件订阅使用",
+      "help": "IMAP 邮箱、B站 SESSDATA 等凭据保存在本机数据库，供对应来源的订阅使用",
+      "mode": "账户类型",
       "add_mail": "添加邮箱账户",
+      "add_bilibili": "添加 B站账户",
+      "add_account": "添加账户",
+      "count": "{{count}} 个",
       "provider_mail": "邮箱",
+      "provider_mail_desc": "IMAP 账号——Newsletter 与邮件列表",
       "provider_bilibili": "B站",
+      "provider_bilibili_desc": "UP 主动态——需粘贴 SESSDATA",
       "test": "测试",
       "delete": "删除",
       "test_ok": "连接成功",
@@ -290,6 +296,8 @@
       "fld_port": "端口",
       "fld_user": "账号",
       "fld_password": "密码 / 授权码",
+      "fld_sessdata": "SESSDATA",
+      "fld_sessdata_help": "浏览器登录 B站后，从 Cookie 中复制 SESSDATA 的值",
       "fld_label": "名称",
       "fld_label_help": "默认取服务器地址"
     },

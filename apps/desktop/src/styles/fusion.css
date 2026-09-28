@@ -459,7 +459,8 @@
 .fusion-row {
   display: grid;
   /* 时间列 max-content：相对时间（"about 13 hours ago" ≈108px）在固定 92px 里 nowrap
-     会溢出压进操作图标列；宽度差由标题列（1fr）吸收，操作列放宽到 64px 容纳双图标 */
+     会溢出压进操作图标列；宽度差由标题列（1fr）吸收，操作列放宽到 64px 容纳双图标；
+     视频行走 .is-video 把封面列加宽到 16:9（76×43），宽度差同样由标题列吸收 */
   grid-template-columns: 20px 56px minmax(0, 1fr) 170px max-content 64px;
   align-items: center;
   /* Astryx 呼吸缝：步距 54 = 内容 52 + 行间 2px（ground 透出成缝） */
@@ -471,6 +472,9 @@
   user-select: none;
   position: relative;
   z-index: 0;
+}
+.fusion-row.is-video {
+  grid-template-columns: 20px 76px minmax(0, 1fr) 170px max-content 64px;
 }
 
 /* 列表行词汇对齐 Astryx（2026-10）：圆角内衬洗色（同菜单项 8px）、无发丝分隔线、
@@ -540,8 +544,39 @@
   background: var(--color-accent-muted);
 }
 
-.fusion-thumb.bil {
-  background: var(--fusion-pink-soft);
+/* 视频行变体：16:9 加宽封面 + 右下时长角标（视频是先看封面和时长再决定点开的载体） */
+.fusion-thumb.vid {
+  width: 76px;
+  height: 43px;
+  position: relative;
+}
+.fusion-thumb.vid img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.fusion-thumb-dur {
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+  padding: 1px 4px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.66);
+  color: #fff;
+  font-size: 10px;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+/* 来源行的时长 chip：与 fn 同色阶但更弱，用中点分隔 */
+.fusion-src-dur {
+  flex: none;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.75;
+}
+.fusion-src-dur::before {
+  content: "· ";
+  opacity: 0.6;
 }
 
 .fusion-badge {
@@ -2320,9 +2355,24 @@ body.fusion-context-menu-open .fusion-set-body {
   align-items: center;
 }
 
+/* 来源账户分组头：provider 名 + 计数，弱于区块标题一档（列表行已按 provider 归组） */
+.fusion-acct-h {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 16px 4px 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--fusion-sub);
+}
+.fusion-acct-h .n {
+  color: var(--fusion-ter);
+  font-weight: 400;
+}
+
 /* ── 静默空态（quiet empty）：小幅空态与 fusion-face 同一语言——
-     发丝线几何 + 排版层级，glyph 为 lucide 统一线重，不画插画 ── */
-.fusion-empty {
+     发丝线几何 + 排版层级，glyph 为 lucide 统一线重，不画插画 ── */.fusion-empty {
   display: flex;
   flex-direction: column;
   align-items: center;
