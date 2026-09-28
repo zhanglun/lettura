@@ -59,6 +59,11 @@ pub async fn detect(input: &DetectInput) -> Result<DetectOutput, String> {
 
   let mut claimed_error: Option<String> = None;
   for fetcher in FETCHERS.iter().filter(|f| f.id() != "rss") {
+    // 邮件订阅 UI 暂隐藏（见前端 EMAIL_SUBSCRIPTION_ENABLED）：没有 mail 账户时
+    // 不认领——粘贴邮箱地址走 RSS 发现层的"Not a feed"，而非"去设置添加账户"死路
+    if fetcher.id() == "mail" && !crate::sources::account_service::has_mail_accounts() {
+      continue;
+    }
     if !fetcher.claims(&input.raw) {
       continue;
     }

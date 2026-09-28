@@ -121,3 +121,13 @@ mod tests {
     assert!(save_account("mail", "l", "not-json").is_err());
   }
 }
+
+/// 是否存在可用的 mail 账户。探测分发用它决定是否让 mail fetcher
+/// 认领输入——订阅 UI 暂未暴露邮件模式（EMAIL_SUBSCRIPTION_ENABLED=false），
+/// 没有账户时把纯邮箱地址放行给 RSS 发现层自然失败，
+/// 而不是引导用户去一个界面上不存在的设置区。
+pub fn has_mail_accounts() -> bool {
+  list_accounts()
+    .iter()
+    .any(|account| account.provider == "mail")
+}

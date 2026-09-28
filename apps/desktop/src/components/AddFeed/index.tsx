@@ -17,6 +17,7 @@ import { HK } from "@/shortcuts";
 import { showErrorToast } from "@/helpers/errorHandler";
 import { FeedResItem, SourceAccount } from "@/db";
 import { RouteConfig } from "@/config";
+import { EMAIL_SUBSCRIPTION_ENABLED } from "@/config";
 import {
   BUILTIN_GENERATORS,
   FeedGenerator,
@@ -397,10 +398,12 @@ export const AddFeedChannel = (props: any) => {
         aria-label={t("Create new subscribe")}
       >
         <div className="fusion-add-in" style={{ paddingBottom: 0 }}>
-          <SegmentedControl size="sm" label={t("fusion.add.mode")} value={mode} onChange={switchMode}>
-            <SegmentedControlItem value="link" label={t("fusion.add.link_mode")} />
-            <SegmentedControlItem value="email" label={t("fusion.add.email_mode")} />
-          </SegmentedControl>
+          {EMAIL_SUBSCRIPTION_ENABLED && (
+            <SegmentedControl size="sm" label={t("fusion.add.mode")} value={mode} onChange={switchMode}>
+              <SegmentedControlItem value="link" label={t("fusion.add.link_mode")} />
+              <SegmentedControlItem value="email" label={t("fusion.add.email_mode")} />
+            </SegmentedControl>
+          )}
           <span className="fusion-spring" />
         </div>
         <div className="fusion-add-in" style={{ paddingTop: 8 }}>

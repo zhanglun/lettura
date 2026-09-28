@@ -209,6 +209,7 @@ R            刷新全部来源
 | 清空整队（播放列表） | P2.1 | 队列即 `podcasts` 表，清空＝删光行＋抹掉续播进度；未设计确认态，暂不做——要加先补 mock（建议 `--warn` 二次确认） |
 | 系统媒体键（MediaSession） | P2.1 | 已实现（锁屏/耳机键 play·pause·±30s·上下集），无 UI 依赖；若判定越出 0.2.0 范围可整段移除 |
 | 来源账户/订阅规则设置区块 + AddFeed 邮件模式无 mock | 2026-09-27 落地 | 先于设计走查上线（后端能力先通）；走查后若要调整，先补 mock（settings.html / add.html）再改码 |
+| 邮件订阅（Newsletter）UI 暂隐藏 | 2026-09-28 定 | `EMAIL_SUBSCRIPTION_ENABLED=false` 收起模式切换与 mail 账户入口，探测分发同步门控；后端能力保留。回归条件：服务商预设 + 授权码指引 + 收件箱发件人扫描；回归时先补 add.html 邮件模式 mock |
 
 ## 7. 面内策略（surface briefs）
 

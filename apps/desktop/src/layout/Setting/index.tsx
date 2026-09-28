@@ -13,6 +13,7 @@ import { busChannel } from "@/helpers/busChannel";
 import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
 import { RouteConfig } from "@/config";
+import { EMAIL_SUBSCRIPTION_ENABLED } from "@/config";
 import { lastNavFrom } from "@/helpers/navHistory";
 import { SubscriptionsSection } from "./Subscriptions";
 import { ASTRYX_THEMES } from "@/themes";
@@ -322,7 +323,7 @@ export function SettingPage() {
     }
   };
 
-  const openAddAccount = (provider: "mail" | "bilibili" = "mail") => {
+  const openAddAccount = (provider: "mail" | "bilibili" = EMAIL_SUBSCRIPTION_ENABLED ? "mail" : "bilibili") => {
     setAccProvider(provider);
     setAccForm({ host: "", port: "993", user: "", password: "", sessdata: "", label: "" });
     setAccDialogOpen(true);
@@ -830,23 +831,25 @@ export function SettingPage() {
           content={
             <LayoutContent isScrollable={false}>
               <div className="flex flex-col gap-3 py-2">
-                <RadioList
-                  label={t("settings.source_accounts.mode")}
-                  isLabelHidden
-                  value={accProvider}
-                  onChange={(v) => setAccProvider(v as "mail" | "bilibili")}
-                >
-                  <RadioListItem
-                    value="mail"
-                    label={t("settings.source_accounts.provider_mail")}
-                    description={t("settings.source_accounts.provider_mail_desc")}
-                  />
-                  <RadioListItem
-                    value="bilibili"
-                    label={t("settings.source_accounts.provider_bilibili")}
-                    description={t("settings.source_accounts.provider_bilibili_desc")}
-                  />
-                </RadioList>
+                {EMAIL_SUBSCRIPTION_ENABLED && (
+                  <RadioList
+                    label={t("settings.source_accounts.mode")}
+                    isLabelHidden
+                    value={accProvider}
+                    onChange={(v) => setAccProvider(v as "mail" | "bilibili")}
+                  >
+                    <RadioListItem
+                      value="mail"
+                      label={t("settings.source_accounts.provider_mail")}
+                      description={t("settings.source_accounts.provider_mail_desc")}
+                    />
+                    <RadioListItem
+                      value="bilibili"
+                      label={t("settings.source_accounts.provider_bilibili")}
+                      description={t("settings.source_accounts.provider_bilibili_desc")}
+                    />
+                  </RadioList>
+                )}
                 {accProvider === "mail" ? (
                   <>
                     <TextInput
