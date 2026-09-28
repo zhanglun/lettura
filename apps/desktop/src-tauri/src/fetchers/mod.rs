@@ -35,6 +35,16 @@ pub fn resolve(provider: &str) -> Arc<dyn Fetcher> {
     .expect("rss fetcher must be registered")
 }
 
+/// 无显式 provider_hint 时，按探测分发同序推断粘贴内容的来源
+/// （rss 兜底不参与——它什么都能"接"，不构成账户推断依据）。
+pub fn claimed_provider(raw: &str) -> Option<&'static str> {
+  FETCHERS
+    .iter()
+    .filter(|f| f.id() != "rss")
+    .find(|f| f.claims(raw))
+    .map(|f| f.id())
+}
+
 /// 探测分发：
 /// 1. 显式 provider_hint（前端订阅模式）→ 只用该 fetcher，错误直传
 /// 2. 否则按注册顺序试 claims 命中的 fetcher，首个成功即用
@@ -75,6 +85,8 @@ pub fn to_new_feed(
   provider: &str,
   draft: &FeedDraft,
   origin: &str,
+  account_uuid: Option<String>,
+  source_config: Option<String>,
 ) -> models::NewFeed {
   models::NewFeed {
     uuid: uuid.to_string(),
@@ -89,6 +101,8 @@ pub fn to_new_feed(
     sort: 0,
     carrier: draft.carrier.as_str().to_string(),
     provider: provider.to_string(),
+    account_uuid,
+    source_config,
   }
 }
 
@@ -140,6 +154,14 @@ mod tests {
     let ids: Vec<&str> = FETCHERS.iter().map(|f| f.id()).collect();
     assert_eq!(ids.first(), Some(&"mail"));
     assert_eq!(ids.last(), Some(&"rss"));
+  }
+
+  #[test]
+  fn test_claimed_provider_for_account_fallback() {
+    // 账户回落推断：space 链接 → bilibili；发件人地址 → mail；普通 URL → None（rss 兜底）
+    assert_eq!(claimed_provider("https://space.bilibili.com/546195"), Some("bilibili"));
+    assert_eq!(claimed_provider("digest@substack.com"), Some("mail"));
+    assert_eq!(claimed_provider("https://example.com/feed.xml"), None);
   }
 
   #[test]

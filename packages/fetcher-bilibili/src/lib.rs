@@ -73,7 +73,7 @@ fn mid_from_config(config: &Value) -> Option<String> {
   }
 }
 
-/// 带限速的 GET：HTTP 403/412 一律按「风控或 SESSDATA 失效」翻成中文提示
+/// 带限速的 GET：HTTP 403/412 一律按风控翻成中文提示
 async fn get_json(
   http: &reqwest::Client,
   url: &str,
@@ -88,7 +88,7 @@ async fn get_json(
     .map_err(|e| format!("B站接口请求失败: {}", e))?;
   let status = resp.status().as_u16();
   if status == 403 || status == 412 {
-    return Err("B站风控或 SESSDATA 失效，请到设置更新".into());
+    return Err(risk_error(sessdata.is_none()));
   }
   resp
     .json::<Value>()
@@ -96,13 +96,62 @@ async fn get_json(
     .map_err(|e| format!("B站响应解析失败: {}", e))
 }
 
+/// 风控/登录类错误按「是否配过账户」给出可操作的文案：
+/// 没配过 → 引导添加；配过仍被拒 → 引导更新
+fn risk_error(no_account: bool) -> String {
+  if no_account {
+    "B站请求被风控：尚未配置 SESSDATA。请到 设置 → 来源账户 添加 B站账户".into()
+  } else {
+    "B站风控或 SESSDATA 失效，请到设置更新".into()
+  }
+}
+
 /// B 站业务码 → 中文错误：-352/-412 是风控，-101 是没登录/SESSDATA 失效
-fn api_error(code: i64, message: &str) -> String {
+fn api_error(code: i64, message: &str, no_account: bool) -> String {
   match code {
-    -352 | -412 => "B站风控或 SESSDATA 失效，请到设置更新".into(),
-    -101 => "B站账号未登录（-101）：SESSDATA 缺失或已失效，请到设置更新".into(),
+    -352 | -412 => risk_error(no_account),
+    -101 => {
+      if no_account {
+        risk_error(true)
+      } else {
+        "B站账号未登录（-101）：SESSDATA 已失效，请到设置更新".into()
+      }
+    }
     _ => format!("B站接口错误 {}: {}", code, message),
   }
+}
+
+/// 设置页「测试连接」：nav 接口带 SESSDATA，登录成功返回昵称，
+/// -101 → SESSDATA 无效/过期。settings 形如 {"sessdata": "..."}。
+pub async fn probe_account(settings: &Value) -> Result<String, String> {
+  let sessdata = settings
+    .get("sessdata")
+    .and_then(|v| v.as_str())
+    .map(str::trim)
+    .filter(|s| !s.is_empty())
+    .ok_or("settings 缺少 sessdata 字段")?;
+
+  rate_limit::pace().await;
+  let http = reqwest::Client::new();
+  let resp: Value = http
+    .get("https://api.bilibili.com/x/web-interface/nav")
+    .headers(browser_headers(Some(sessdata)))
+    .send()
+    .await
+    .map_err(|e| format!("B站接口请求失败: {}", e))?
+    .json()
+    .await
+    .map_err(|e| format!("B站响应解析失败: {}", e))?;
+
+  let code = resp.get("code").and_then(|v| v.as_i64()).unwrap_or(-1);
+  if code != 0 {
+    return Err(api_error(code, resp.get("message").and_then(|v| v.as_str()).unwrap_or(""), false));
+  }
+  let uname = resp
+    .pointer("/data/uname")
+    .and_then(|v| v.as_str())
+    .unwrap_or("");
+  Ok(format!("登录成功：{uname}"))
 }
 
 /// acc/info 响应，只取展示需要的 name/face
@@ -159,7 +208,7 @@ impl Fetcher for BilibiliFetcher {
     let resp: AccInfoResp =
       serde_json::from_value(value).map_err(|e| format!("B站用户信息解析失败: {}", e))?;
     if resp.code != 0 {
-      return Err(api_error(resp.code, &resp.message));
+      return Err(api_error(resp.code, &resp.message, sessdata.is_none()));
     }
 
     Ok(DetectOutput {
@@ -198,7 +247,7 @@ impl Fetcher for BilibiliFetcher {
     let resp: dynamic::DynamicResp =
       serde_json::from_value(value).map_err(|e| format!("B站动态响应解析失败: {}", e))?;
     if resp.code != 0 {
-      return Err(api_error(resp.code, &resp.message));
+      return Err(api_error(resp.code, &resp.message, sessdata.is_none()));
     }
     Ok(dynamic::to_articles(&resp.data.items))
   }
@@ -267,10 +316,20 @@ mod tests {
 
   #[test]
   fn api_error_messages_are_actionable() {
-    let risk = "B站风控或 SESSDATA 失效，请到设置更新";
-    assert_eq!(api_error(-352, "risk control"), risk);
-    assert_eq!(api_error(-412, "intercepted"), risk);
-    assert!(api_error(-101, "").contains("SESSDATA"));
-    assert_eq!(api_error(1, "boom"), "B站接口错误 1: boom");
+    // 配过账户仍被拒 → 提示更新；没配过 → 引导添加
+    assert_eq!(
+      api_error(-352, "risk control", false),
+      "B站风控或 SESSDATA 失效，请到设置更新"
+    );
+    assert_eq!(
+      api_error(-412, "intercepted", true),
+      "B站请求被风控：尚未配置 SESSDATA。请到 设置 → 来源账户 添加 B站账户"
+    );
+    assert_eq!(
+      api_error(-101, "", true),
+      "B站请求被风控：尚未配置 SESSDATA。请到 设置 → 来源账户 添加 B站账户"
+    );
+    assert!(api_error(-101, "", false).contains("SESSDATA 已失效"));
+    assert_eq!(api_error(1, "boom", false), "B站接口错误 1: boom");
   }
 }

@@ -234,6 +234,8 @@ fn import_feed(title: &str, feed_url: &str, folder_uuid: Option<String>) -> Resu
     pub_date: String::new(),
     updated: String::new(),
     sort: 0,
+    account_uuid: None,
+    source_config: None,
   };
 
   diesel::insert_into(schema::feeds::dsl::feeds)

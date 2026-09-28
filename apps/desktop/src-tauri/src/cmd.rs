@@ -63,11 +63,22 @@ fn detect_input(
   provider_hint: Option<String>,
   account_uuid: Option<String>,
 ) -> DetectInput {
+  // 链接模式粘贴 B 站地址不带 accountUuid：回落到最近保存的 B站账户，
+  // 否则 cookieless 请求必被风控。mail 不参与回落——多账户语义靠显式选择。
+  let account = account_uuid
+    .as_deref()
+    .and_then(sources::account_service::account_material)
+    .or_else(|| {
+      let provider = provider_hint
+        .as_deref()
+        .or_else(|| fetchers::claimed_provider(&raw))?;
+      (provider == "bilibili")
+        .then(|| sources::account_service::latest_account_material(provider))
+        .flatten()
+    });
   DetectInput {
     carrier_hint: carrier.as_deref().and_then(fetchers::carrier_from_str),
-    account: account_uuid
-      .as_deref()
-      .and_then(sources::account_service::account_material),
+    account,
     http: feed::create_client(&raw),
     provider_hint,
     raw,
@@ -101,6 +112,8 @@ pub async fn fetch_feed(
         &output.provider,
         &output.feed,
         &origin_value,
+        None,
+        None,
       );
       let entries = to_preview_entries(&output.entries);
 
@@ -153,7 +166,7 @@ pub async fn add_feed(
   println!("request channel {}", &url);
 
   // 预览阶段刚抓过 → detect 命中短时缓存/账户，不再二次网络往返
-  match fetchers::detect(&detect_input(url, carrier, provider_hint, account_uuid)).await {
+  match fetchers::detect(&detect_input(url, carrier, provider_hint, account_uuid.clone())).await {
     Ok(output) => {
       let channel_uuid = Uuid::new_v4().hyphenated().to_string();
       let origin_value = resolve_origin(origin.as_deref());
@@ -163,6 +176,14 @@ pub async fn add_feed(
         &output.provider,
         &output.feed,
         &origin_value,
+        // 账户绑定随订阅落库（mail 显式选择；bilibili 链接模式为空，同步时回落）；
+        // source_config（bilibili 的 mid、mail 的水位）不落库同步就没法跑
+        account_uuid,
+        if output.source_config.is_null() {
+          None
+        } else {
+          Some(output.source_config.to_string())
+        },
       );
       let articles = output
         .entries

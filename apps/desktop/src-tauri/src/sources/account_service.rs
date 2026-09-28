@@ -79,6 +79,7 @@ pub async fn test_account(provider: &str, settings: &str) -> Result<String, Stri
 
   match provider {
     "mail" => fetcher_mail::probe_account(&parsed).await,
+    "bilibili" => fetcher_bilibili::probe_account(&parsed).await,
     other => Err(format!("暂不支持测试 {other} 类型的账户")),
   }
 }
@@ -90,6 +91,23 @@ pub fn account_material(uuid: &str) -> Option<fetcher_core::AccountMaterial> {
     provider: account.provider,
     settings: serde_json::from_str(&account.settings).unwrap_or(serde_json::Value::Null),
   })
+}
+
+/// 某 provider 最近保存的账户：探测/同步未显式绑定账户时回落用
+/// （B站 SESSDATA 是全局配置，链接模式订阅不带 accountUuid）。
+/// provider 无账户时返回 None，rss/site 等无账户来源天然不受影响。
+pub fn latest_account_material(provider: &str) -> Option<fetcher_core::AccountMaterial> {
+  let mut connection = db::establish_connection();
+  schema::source_accounts::dsl::source_accounts
+    .filter(schema::source_accounts::provider.eq(provider))
+    .order(schema::source_accounts::id.desc())
+    .first::<SourceAccount>(&mut connection)
+    .ok()
+    .map(|account| fetcher_core::AccountMaterial {
+      uuid: account.uuid,
+      provider: account.provider,
+      settings: serde_json::from_str(&account.settings).unwrap_or(serde_json::Value::Null),
+    })
 }
 
 #[cfg(test)]

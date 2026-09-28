@@ -104,6 +104,8 @@ mod tests {
         diesel::insert_into(schema::feeds::table)
             .values(models::NewFeed {
         provider: "rss".to_string(),
+            account_uuid: None,
+            source_config: None,
                 uuid: feed_uuid.clone(),
                 origin: "native".to_string(),
                 carrier: "text".to_string(),

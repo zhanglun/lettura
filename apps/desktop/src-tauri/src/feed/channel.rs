@@ -4,7 +4,7 @@ use chrono::Local;
 use diesel::prelude::*;
 use diesel::sql_types::*;
 use fetcher_core::{Carrier, FeedView, FetchContext};
-use log::warn;
+use log::{error, warn};
 use scraper::{Html, Selector};
 use serde::{Deserialize, Serialize};
 
@@ -188,16 +188,30 @@ pub struct FeedMetaUpdateRequest {
 
 pub fn update_feed_meta(uuid: String, update: FeedMetaUpdateRequest) -> usize {
   let mut connection = db::establish_connection();
-  let updated_row =
-    diesel::update(schema::feed_metas::dsl::feed_metas.filter(schema::feed_metas::uuid.eq(uuid)))
-      .set((
-        schema::feed_metas::folder_uuid.eq(update.folder_uuid),
-        schema::feed_metas::sort.eq(update.sort),
-      ))
-      .execute(&mut connection)
-      .expect("update feed meta");
+  let updated_row = diesel::update(
+    schema::feed_metas::dsl::feed_metas.filter(schema::feed_metas::uuid.eq(&uuid)),
+  )
+  .set((
+    schema::feed_metas::folder_uuid.eq(&update.folder_uuid),
+    schema::feed_metas::sort.eq(update.sort),
+  ))
+  .execute(&mut connection)
+  .expect("update feed meta");
 
-  updated_row
+  if updated_row > 0 {
+    return updated_row;
+  }
+
+  // New feeds have no feed_metas row until they are assigned to a folder.
+  // Insert the relation instead of silently leaving the feed ungrouped.
+  diesel::insert_into(schema::feed_metas::dsl::feed_metas)
+    .values(models::NewFeedMeta {
+      uuid,
+      folder_uuid: update.folder_uuid,
+      sort: update.sort,
+    })
+    .execute(&mut connection)
+    .expect("insert feed meta")
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -287,9 +301,11 @@ pub fn get_feeds() -> Vec<SubscribeItem> {
       C.carrier as carrier,
       F.folder_uuid as folder_uuid
     FROM feeds as C
-    LEFT JOIN feed_metas AS F
-    ON C.uuid = F.uuid
-    WHERE folder_uuid != '' and folder_uuid IS NOT NULL
+    INNER JOIN feed_metas AS F
+      ON C.uuid = F.uuid
+    INNER JOIN folders AS D
+      ON D.uuid = F.folder_uuid
+    WHERE F.folder_uuid != ''
     ORDER BY F.sort ASC;";
 
   let mut connection = db::establish_connection();
@@ -426,8 +442,14 @@ pub fn add_feed(
         _,
       ) = error
       {
+        // Treat a repeated canonical feed URL as idempotent. Older data can
+        // still be present even when the UI lost its cached subscription tree.
+        let existing = schema::feeds::dsl::feeds
+          .filter(schema::feeds::feed_url.eq(&record.feed_url))
+          .first::<models::Feed>(&mut connection)
+          .ok();
         return (
-          None,
+          existing,
           0,
           "The content you are trying to subscribe already exists.".to_string(),
         );
@@ -715,11 +737,16 @@ pub async fn sync_articles(uuid: String) -> HashMap<String, (String, usize, Stri
       carrier: Carrier::from_str(&channel.carrier).unwrap_or(Carrier::Text),
       source_config: source_config.clone(),
     },
-    // 账户凭据由 app 解析好递入——fetcher 不碰 DB
+    // 账户凭据由 app 解析好递入——fetcher 不碰 DB。
+    // 未显式绑定账户的源（存量行/链接模式订阅，feeds.account_uuid 为空）
+    // 回落到该 provider 最近保存的账户；rss/site 无账户时回落自然为 None
     account: channel
       .account_uuid
       .as_deref()
-      .and_then(crate::sources::account_service::account_material),
+      .and_then(crate::sources::account_service::account_material)
+      .or_else(|| {
+        crate::sources::account_service::latest_account_material(&channel.provider)
+      }),
     http: feed::create_client(&channel.feed_url),
   };
 
@@ -729,6 +756,8 @@ pub async fn sync_articles(uuid: String) -> HashMap<String, (String, usize, Stri
       items
     }
     Err(err) => {
+      // 手动/调度同步失败都要落日志：tauri dev 看 stdout，生产看 LogDir 文件
+      error!("sync feed {} ({}) failed: {}", uuid, channel.provider, err);
       feed::channel::update_health_status(&uuid, 1, err.clone());
       result.insert(uuid, (channel.title, 0, err));
 

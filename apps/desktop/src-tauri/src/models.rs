@@ -94,6 +94,12 @@ pub struct NewFeed {
   pub carrier: String,
   /// 负责周期同步的 fetcher：rss | mail | bilibili | site
   pub provider: String,
+  /// 绑定的来源账户（mail 显式选择；bilibili 链接模式订阅可为空，同步时回落）
+  #[diesel(sql_type = Nullable<Text>)]
+  pub account_uuid: Option<String>,
+  /// provider 私有配置（bilibili 的 mid、mail 的 last_uid 水位）
+  #[diesel(sql_type = Nullable<Text>)]
+  pub source_config: Option<String>,
 }
 
 #[derive(Debug, Queryable, Serialize, QueryableByName, Selectable)]
