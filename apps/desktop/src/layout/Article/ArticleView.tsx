@@ -3,6 +3,7 @@ import { Kbd } from "@astryxdesign/core/Kbd";
 import { IconButton } from "@astryxdesign/core/IconButton";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useNavigate, useParams, useMatch } from "react-router-dom";
+import { open } from "@tauri-apps/plugin-shell";
 import { CheckCheck, ChevronLeft, RefreshCw, Star, SearchX, Inbox, FileText, Podcast, Clapperboard, Mail } from "lucide-react";
 import { Button } from "@astryxdesign/core/Button";
 import dayjs from "dayjs";
@@ -14,12 +15,11 @@ import { FeedProfile } from "@/components/FeedProfile";
 import { useQuery } from "@/helpers/parseXML";
 import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
-import { request } from "@/helpers/request";
+import * as dataAgent from "@/helpers/dataAgent";
 import { useArticle } from "@/hooks/useArticle";
 import type { ScrollBoxRefObject } from "@/components/ArticleView/ScrollBox";
 import { retainArticleAfterRead } from "@/helpers/articleHelpers";
 import { EmptyFace, DEV_PREVIEW_FIRST_RUN } from "./EmptyFace";
-import * as dataAgent from "@/helpers/dataAgent";
 import { ArticleReadStatus, ArticleStarStatus } from "@/typing";
 import { HK } from "@/shortcuts";
 import {
@@ -146,11 +146,11 @@ export function ArticleView() {
     if (!(isArticleRoute && params.id)) return;
     if (store.expandedArticleUuid === params.id) return;
     let cancelled = false;
-    request
-      .get(`/articles/${params.id}`)
-      .then((res) => {
-        if (!cancelled && res.data) {
-          store.setArticle(res.data);
+    dataAgent
+      .getArticleDetail(params.id!)
+      .then((article) => {
+        if (!cancelled && article) {
+          store.setArticle(article);
           store.setExpandedArticleUuid(params.id!);
         }
       })
@@ -170,8 +170,7 @@ export function ArticleView() {
   const handleArticleRead = useCallback(
     (nextArticle: ArticleResItem) => {
       mutate(
-        (pages: { list: ArticleResItem[] }[] | undefined) =>
-          retainArticleAfterRead(pages, nextArticle),
+        (pages) => retainArticleAfterRead(pages, nextArticle),
         false,
       );
       scheduleCountsRefresh();
@@ -182,8 +181,7 @@ export function ArticleView() {
   const handleArticleUpdate = useCallback(
     (updated: ArticleResItem) => {
       mutate(
-        (pages: { list: ArticleResItem[] }[] | undefined) =>
-          retainArticleAfterRead(pages, updated),
+        (pages) => retainArticleAfterRead(pages, updated),
         false,
       );
       scheduleCountsRefresh();

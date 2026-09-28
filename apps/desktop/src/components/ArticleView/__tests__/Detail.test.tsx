@@ -59,7 +59,9 @@ describe("ArticleDetail", () => {
 
   it("成功加载时渲染文章内容", async () => {
     (dataAgent.getArticleDetail as ReturnType<typeof vi.fn>).mockResolvedValue({
-      data: { content: "<p>Hello world</p>", description: "", media_object: "[]" },
+      content: "<p>Hello world</p>",
+      description: "",
+      media_object: "[]",
     });
 
     const article = makeArticle();
@@ -98,16 +100,18 @@ describe("ArticleDetail", () => {
     });
   });
 
-  it("AbortError 不触发错误态", async () => {
-    const abortErr = new Error("Aborted");
-    abortErr.name = "AbortError";
-    (dataAgent.getArticleDetail as ReturnType<typeof vi.fn>).mockRejectedValue(abortErr);
+  it("切文章后过期的失败不再置错误态（invoke 无法中断，靠 cancelled 标志位）", async () => {
+    let rejectFirst!: (e: Error) => void;
+    (dataAgent.getArticleDetail as ReturnType<typeof vi.fn>)
+      .mockImplementationOnce(() => new Promise((_resolve, reject) => { rejectFirst = reject; }))
+      .mockImplementationOnce(() => Promise.resolve({ content: "<p>new</p>", description: "", media_object: "[]" }));
 
-    const article = makeArticle();
-    renderWithTheme(<ArticleDetail article={article} />);
-
-    // 等待异步完成后不应出现错误文案
+    const { rerender } = renderWithTheme(<ArticleDetail article={makeArticle({ uuid: "art-1" })} />);
+    // 换 uuid → 旧请求 cleanup（cancelled = true），随后它的失败不应污染新视图
+    rerender(<ArticleDetail article={makeArticle({ uuid: "art-2" })} />);
+    rejectFirst(new Error("late failure"));
     await new Promise((r) => setTimeout(r, 50));
+
     expect(
       screen.queryByText("Failed to load article content"),
     ).not.toBeInTheDocument();
