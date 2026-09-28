@@ -3,7 +3,7 @@ import { Kbd } from "@astryxdesign/core/Kbd";
 import { IconButton } from "@astryxdesign/core/IconButton";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useNavigate, useParams, useMatch } from "react-router-dom";
-import { CheckCheck, ChevronLeft, RefreshCw } from "lucide-react";
+import { CheckCheck, ChevronLeft, RefreshCw, Star, SearchX, Inbox, FileText, Podcast, Clapperboard, Mail } from "lucide-react";
 import { Button } from "@astryxdesign/core/Button";
 import dayjs from "dayjs";
 import { ArticleListVirtual } from "@/components/ArticleListVirtual";
@@ -321,6 +321,70 @@ export function ArticleView() {
 
   // ── 源队列帧（feeds.html 契约）：源头栏 + 未读/全部过滤 ──
   const isQueueMode = !!feedUuid;
+
+  // 空态分型（quiet empty 语言）：载体过滤空 → 类型图标 + 切回全部；
+  // 源队列无未读 → 收尾语气 + 查看全部；星标空 → 键盘提示；其余 → 同步等待
+  const listEmpty = useMemo(() => {
+    if (!isQueueMode && carrierFilter !== "all") {
+      const carrierIcon =
+        carrierFilter === "text"
+          ? FileText
+          : carrierFilter === "audio"
+            ? Podcast
+            : carrierFilter === "video"
+              ? Clapperboard
+              : Mail;
+      return {
+        icon: carrierIcon,
+        title: t("fusion.empty.carrier_title", {
+          type: t(`fusion.filter.${carrierFilter}`),
+        }),
+        hint: t("fusion.empty.carrier_hint"),
+        action: (
+          <Button
+            variant="ghost"
+            size="sm"
+            label={t("fusion.empty.show_all")}
+            onClick={() => setCarrierFilter("all")}
+          />
+        ),
+      };
+    }
+    if (isQueueMode) {
+      return queueFilter === "unread"
+        ? {
+            icon: CheckCheck,
+            title: t("fusion.empty.queue_unread_title"),
+            hint: t("fusion.empty.queue_unread_hint"),
+            action: (
+              <Button
+                variant="ghost"
+                size="sm"
+                label={t("fusion.empty.show_all_articles")}
+                onClick={() => setQueueFilter("all")}
+              />
+            ),
+          }
+        : {
+            icon: Inbox,
+            title: t("fusion.empty.queue_all_title"),
+            hint: t("fusion.empty.queue_all_hint"),
+          };
+    }
+    if (isStarred) {
+      return {
+        icon: Star,
+        title: t("fusion.empty.starred_title"),
+        hint: t("fusion.empty.starred_hint"),
+      };
+    }
+    return {
+      icon: Inbox,
+      title: t("fusion.empty.default_title"),
+      hint: t("fusion.empty.default_hint"),
+    };
+  }, [isQueueMode, carrierFilter, queueFilter, isStarred, t]);
+
   const queueFeed = useMemo(() => {
     if (!feedUuid) return null;
     for (const item of store.subscribes || []) {
@@ -540,6 +604,10 @@ export function ArticleView() {
         isLoading={isLoading}
         isEmpty={isEmpty || (!isLoading && visibleArticles.length === 0)}
         isReachingEnd={isReachingEnd}
+        emptyIcon={listEmpty.icon}
+        emptyTitle={listEmpty.title}
+        emptyHint={listEmpty.hint}
+        emptyAction={listEmpty.action}
         size={size}
         setSize={setSize}
         onArticleRead={handleArticleRead}

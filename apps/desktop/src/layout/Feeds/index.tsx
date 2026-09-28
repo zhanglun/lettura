@@ -12,7 +12,7 @@ import { FeedIcon } from "@/components/FeedIcon";
 import { FeedCtxMenu } from "@/components/FeedCtxMenu";
 import { getHostLabel, formatFeedTime } from "@/helpers/feedMeta";
 import { HK } from "@/shortcuts";
-import { DEV_PREVIEW_FIRST_RUN } from "@/layout/Article/EmptyFace";
+import { DEV_PREVIEW_FIRST_RUN, EmptyFace } from "@/layout/Article/EmptyFace";
 import type { FeedResItem } from "@/db";
 
 const FILTER_UNREAD = { id: 1, title: "Unread" };
@@ -190,12 +190,8 @@ export function FeedsBrowse() {
   }, [navigate, store]);
 
   if (DEV_PREVIEW_FIRST_RUN || groups.length === 0) {
-    return (
-      <div className="fusion-face">
-        <h1>{t("fusion.browse.empty_title")}</h1>
-        <p className="lede">{t("fusion.browse.empty_lede")}</p>
-      </div>
-    );
+    // 零订阅复用 EmptyFace 首启面（CTA：添加订阅 / 导入 OPML），不再裸排版
+    return <EmptyFace mode="first" />;
   }
 
   return (

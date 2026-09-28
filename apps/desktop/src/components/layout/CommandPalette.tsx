@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useShallow } from "zustand/react/shallow";
-import { History, Inbox, Plus, RefreshCw, Settings, Star } from "lucide-react";
+import { History, Inbox, Plus, RefreshCw, SearchX, Settings, Star } from "lucide-react";
 import { request } from "@/helpers/request";
 import { useBearStore } from "@/stores";
 import { RouteConfig } from "@/config";
@@ -10,6 +10,7 @@ import { FeedResItem } from "@/db";
 import { getCarrier, mediaBadge } from "@/helpers/mediaType";
 import { getHostLabel } from "@/helpers/feedMeta";
 import { FeedIcon } from "@/components/FeedIcon";
+import { QuietEmpty } from "@/components/QuietEmpty";
 import { CommandPalette as AstryxCommandPalette } from "@astryxdesign/core/CommandPalette";
 import type { SearchableItem } from "@astryxdesign/core/Typeahead";
 import i18n from "@/i18n";
@@ -244,7 +245,14 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
           )}
         </>
       )}
-      emptySearchText={t("Yay, no matching items.")}
+      emptySearchText={
+        <QuietEmpty
+          compact
+          icon={SearchX}
+          title={t("fusion.empty.palette_title")}
+          hint={t("fusion.empty.palette_hint")}
+        />
+      }
     />
   );
 }

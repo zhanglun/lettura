@@ -20,12 +20,15 @@ import {
   Pencil,
   Plus,
   RefreshCw,
+  Rss,
   Search,
+  SearchX,
   Trash2,
 } from "lucide-react";
 import { Button } from "@astryxdesign/core/Button";
 import { TextInput } from "@astryxdesign/core/TextInput";
 import { IconButton } from "@astryxdesign/core/IconButton";
+import { QuietEmpty } from "@/components/QuietEmpty";
 
 function toFolderResItem(folder: FeedResItem | null): FolderResItem | null {
   if (!folder) return null;
@@ -273,12 +276,15 @@ export const SubscriptionsSection = memo(function SubscriptionsSection() {
 
   const groups = useMemo(() => {
     const list: { uuid: string; title: string; feeds: FeedResItem[]; folder: FeedResItem | null }[] = [];
+    const q = searchQuery.trim();
     const ungrouped = rootFeeds.filter(matches);
     if (ungrouped.length > 0) {
       list.push({ uuid: "__ungrouped__", title: t("feeds.ungrouped"), feeds: ungrouped, folder: null });
     }
     for (const folder of folderItems) {
       const feeds = (folder.children ?? []).filter(matches);
+      // 搜索时空分组不立头（0 sources 的组头是噪音），空态交给 QuietEmpty
+      if (q && feeds.length === 0) continue;
       list.push({ uuid: folder.uuid, title: folder.title, feeds, folder });
     }
     return list;
@@ -373,11 +379,37 @@ export const SubscriptionsSection = memo(function SubscriptionsSection() {
       ))}
 
       {groups.length === 0 && (
-        <div className="py-10 text-center text-[13px] text-[var(--fusion-ter)]">
-          {searchQuery
-            ? t("No feeds match your search")
-            : t("No feeds yet")}
-        </div>
+        <QuietEmpty
+          icon={searchQuery.trim() ? SearchX : Rss}
+          title={
+            searchQuery.trim()
+              ? t("settings.subscriptions.no_match_title", { query: searchQuery.trim() })
+              : t("settings.subscriptions.no_feeds_title")
+          }
+          hint={
+            searchQuery.trim()
+              ? t("settings.subscriptions.no_match_hint")
+              : t("settings.subscriptions.no_feeds_hint")
+          }
+          action={
+            searchQuery.trim() ? (
+              <Button
+                variant="ghost"
+                size="sm"
+                label={t("fusion.empty.clear_search")}
+                onClick={() => setSearchQuery("")}
+              />
+            ) : (
+              <Button
+                variant="primary"
+                size="sm"
+                icon={<Plus size={12} />}
+                label={t("feeds.add_feed")}
+                onClick={() => store.setAddFeedModalOpen(true)}
+              />
+            )
+          }
+        />
       )}
 
       <DialogUnsubscribeFeed

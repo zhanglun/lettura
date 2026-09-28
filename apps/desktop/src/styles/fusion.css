@@ -2320,6 +2320,80 @@ body.fusion-context-menu-open .fusion-set-body {
   align-items: center;
 }
 
+/* ── 静默空态（quiet empty）：小幅空态与 fusion-face 同一语言——
+     发丝线几何 + 排版层级，glyph 为 lucide 统一线重，不画插画 ── */
+.fusion-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 44px 24px;
+  text-align: center;
+}
+.fusion-empty.compact {
+  padding: 26px 16px;
+  gap: 5px;
+}
+.fusion-empty-glyph {
+  width: 40px;
+  height: 40px;
+  border-radius: 13px;
+  border: 1px solid var(--fusion-hair2);
+  background: color-mix(in srgb, var(--color-background-card) 55%, transparent);
+  color: var(--fusion-ter);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+  /* 唯一的一次动效：印章轻轻落定，无散点入场 */
+  animation: fusion-empty-in 0.26s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.fusion-empty.compact .fusion-empty-glyph {
+  width: 34px;
+  height: 34px;
+  border-radius: 11px;
+  margin-bottom: 2px;
+}
+.fusion-empty-t {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--fusion-ink);
+  margin: 0;
+}
+.fusion-empty.compact .fusion-empty-t {
+  font-size: 13px;
+}
+.fusion-empty-h {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--fusion-sub);
+  max-width: 340px;
+  margin: 0;
+}
+.fusion-empty.compact .fusion-empty-h {
+  font-size: 11.5px;
+}
+.fusion-empty-a {
+  margin-top: 8px;
+  display: flex;
+  gap: 8px;
+}
+.fusion-empty.compact .fusion-empty-a {
+  margin-top: 4px;
+}
+@keyframes fusion-empty-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fusion-empty-glyph {
+    animation: none;
+  }
+}
+
 /* starter pack 卡 */
 .fusion-pack {
   margin-top: 38px;

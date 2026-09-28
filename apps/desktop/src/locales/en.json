@@ -35,7 +35,6 @@
   "All articles": "All articles",
   "Unread": "Unread",
   "Read": "Read",
-  "Yay, no matching items.": "Yay, no matching items.",
   "Cancel": "Cancel",
   "Subscribe": "Subscribe",
   "Subscribing": "Subscribing",
@@ -166,6 +165,10 @@
     },
     "subscriptions": {
       "search_placeholder": "Search by feed name, URL, or homepage...",
+      "no_match_title": "No feeds match \"{{query}}\"",
+      "no_match_hint": "Try part of a title, domain or feed URL",
+      "no_feeds_title": "No subscriptions yet",
+      "no_feeds_hint": "Add an address to start reading — RSS, email, Bilibili or site rules",
       "filter_all": "All",
       "filter_unread": "Unread",
       "filter_broken": "Broken",
@@ -538,9 +541,7 @@
     "browse": {
       "sync_failed": "Sync failed",
       "folder_sources": "{{count}} sources",
-      "folder_unread": "{{count}} unread",
-      "empty_title": "No subscriptions yet",
-      "empty_lede": "Paste an address to subscribe. Manage in Settings, read here."
+      "folder_unread": "{{count}} unread"
     },
     "queue": {
       "last_sync": "Last sync {{time}}",
@@ -623,7 +624,22 @@
       "unselect_all": "Clear",
       "subscribe_selected": "Subscribe",
       "subscribe_n": "Subscribe · {{count}} feeds",
-      "subscribed": "Subscribed to {{count}} feeds"
+      "subscribed": "Subscribed to {{count}} feeds",
+      "palette_title": "No matching results",
+      "palette_hint": "Search commands, feeds and articles here",
+      "carrier_title": "No {{type}} yet",
+      "carrier_hint": "Switch back to All to see other types",
+      "show_all": "Show all",
+      "show_all_articles": "Show all articles",
+      "queue_unread_title": "No unread in this feed",
+      "queue_unread_hint": "New items will appear here after sync",
+      "queue_all_title": "No articles in this feed yet",
+      "queue_all_hint": "Content will appear here once synced",
+      "starred_title": "Nothing starred yet",
+      "starred_hint": "Press f or tap the star while reading — starred pieces collect here",
+      "default_title": "Nothing here yet",
+      "default_hint": "New content will appear here after sync",
+      "clear_search": "Clear search"
     },
     "add": {
       "mode": "Subscription mode",

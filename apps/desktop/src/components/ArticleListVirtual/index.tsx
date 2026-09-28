@@ -1,10 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { ArticleItem } from "../ArticleItem";
 import { Skeleton } from "@astryxdesign/core/Skeleton";
+import type { LucideIcon } from "lucide-react";
+import { SearchX } from "lucide-react";
 import type { ArticleResItem } from "@/db";
 import { ArticleReadStatus } from "@/typing";
-import { CheckCheck, ChevronDown, Snail } from "lucide-react";
+import { CheckCheck, ChevronDown } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { QuietEmpty } from "@/components/QuietEmpty";
 import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
 import * as dataAgent from "@/helpers/dataAgent";
@@ -30,6 +33,11 @@ export type ArticleListVirtualProps = {
   isReachingEnd?: boolean;
   isEmpty: boolean;
   isLoading: boolean;
+  /** 空态分型（由父级按上下文给出）：图标 / 标题 / 提示 / 恢复动作 */
+  emptyIcon?: LucideIcon;
+  emptyTitle?: React.ReactNode;
+  emptyHint?: React.ReactNode;
+  emptyAction?: React.ReactNode;
   onArticleRead?: (article: ArticleResItem) => void;
   onArticleUpdate?: (updated: ArticleResItem) => void;
   onExpandArticle?: (article: ArticleResItem) => void;
@@ -172,6 +180,10 @@ export const ArticleListVirtual = React.memo(function ArticleListVirtual(
     size,
     setSize,
     total,
+    emptyIcon,
+    emptyTitle,
+    emptyHint,
+    emptyAction,
     onArticleRead,
     onArticleUpdate,
     onExpandArticle,
@@ -372,9 +384,13 @@ export const ArticleListVirtual = React.memo(function ArticleListVirtual(
       }`}
     >
       {isEmpty ? (
-        <div className="flex flex-col justify-center items-center gap-1 text-[var(--fusion-ter)] min-h-full py-20">
-          <Snail size={34} strokeWidth={1} />
-          <p>{t("Yay, no matching items.")}</p>
+        <div className="flex flex-col justify-center min-h-full">
+          <QuietEmpty
+            icon={emptyIcon ?? SearchX}
+            title={emptyTitle ?? t("fusion.empty.default_title")}
+            hint={emptyHint ?? t("fusion.empty.default_hint")}
+            action={emptyAction}
+          />
         </div>
       ) : (
         <div>

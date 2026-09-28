@@ -44,7 +44,6 @@
   "All articles": "全部文章",
   "Unread": "未读文章",
   "Read": "已读文章",
-  "Yay, no matching items.": "哎呀，没有找到内容",
   "Star it": "添加星标",
   "Unstar it": "取消星标",
   "Read later": "稍后读",
@@ -182,6 +181,10 @@
     },
     "subscriptions": {
       "search_placeholder": "按订阅名、源地址或主页搜索...",
+      "no_match_title": "没有匹配「{{query}}」的订阅",
+      "no_match_hint": "试试标题、域名或 feed 地址的一部分",
+      "no_feeds_title": "还没有订阅",
+      "no_feeds_hint": "添加一个地址开始阅读——RSS、邮件、B站、站点规则都行",
       "filter_all": "全部",
       "filter_unread": "未读",
       "filter_broken": "异常",
@@ -554,9 +557,7 @@
     "browse": {
       "sync_failed": "同步失败",
       "folder_sources": "{{count}} 源",
-      "folder_unread": "{{count}} 未读",
-      "empty_title": "还没有订阅",
-      "empty_lede": "粘贴一个地址开始订阅；管理与浏览分工——设置里管订阅，这里读订阅。"
+      "folder_unread": "{{count}} 未读"
     },
     "queue": {
       "last_sync": "最近同步 {{time}}",
@@ -639,7 +640,22 @@
       "unselect_all": "取消全选",
       "subscribe_selected": "订阅所选",
       "subscribe_n": "订阅所选 · {{count}} 源",
-      "subscribed": "已订阅 {{count}} 个来源"
+      "subscribed": "已订阅 {{count}} 个来源",
+      "palette_title": "没有匹配的结果",
+      "palette_hint": "命令、来源和文章都可以在这里检索",
+      "carrier_title": "暂无{{type}}",
+      "carrier_hint": "切回「全部」查看其他类型",
+      "show_all": "查看全部",
+      "show_all_articles": "查看全部文章",
+      "queue_unread_title": "此源没有未读",
+      "queue_unread_hint": "新内容同步后会出现在这里",
+      "queue_all_title": "这个源还没有文章",
+      "queue_all_hint": "同步完成后，内容会出现在这里",
+      "starred_title": "还没有星标",
+      "starred_hint": "阅读时按 f 或点亮星标，文章会收在这里",
+      "default_title": "暂无内容",
+      "default_hint": "新内容同步后会出现在这里",
+      "clear_search": "清除搜索"
     },
     "add": {
       "mode": "订阅方式",
