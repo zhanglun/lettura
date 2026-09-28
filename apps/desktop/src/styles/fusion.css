@@ -458,10 +458,11 @@
 /* ── 发丝行列表 ──（类型由缩略图预设色承载，不再设徽章列） */
 .fusion-row {
   display: grid;
-  /* 时间列 max-content：相对时间（"about 13 hours ago" ≈108px）在固定 92px 里 nowrap
-     会溢出压进操作图标列；宽度差由标题列（1fr）吸收，操作列放宽到 64px 容纳双图标；
-     视频行走 .is-video 把封面列加宽到 16:9（76×43），宽度差同样由标题列吸收 */
-  grid-template-columns: 20px 56px minmax(0, 1fr) 170px max-content 64px;
+  /* 时间列固定 120px：最长相对时间（"about 13 hours ago" ≈111px）放得下且全行左缘对齐
+     （max-content 会让每行宽度随文案浮动，时间左缘/与源列的间距参差）；132px = 最长英文文案 111px + 内距 20px；
+     超长文案由 .fusion-date 省略号防御；操作列 64px 容纳双图标；
+     视频行走 .is-video 把封面列加宽到 16:9（76×43），宽度差由标题列吸收 */
+  grid-template-columns: 20px 56px minmax(0, 1fr) 170px 132px 64px;
   align-items: center;
   /* Astryx 呼吸缝：步距 54 = 内容 52 + 行间 2px（ground 透出成缝） */
   height: 52px;
@@ -474,7 +475,7 @@
   z-index: 0;
 }
 .fusion-row.is-video {
-  grid-template-columns: 20px 76px minmax(0, 1fr) 170px max-content 64px;
+  grid-template-columns: 20px 76px minmax(0, 1fr) 170px 132px 64px;
 }
 
 /* 列表行词汇对齐 Astryx（2026-10）：圆角内衬洗色（同菜单项 8px）、无发丝分隔线、
@@ -657,8 +658,10 @@
   color: var(--fusion-ter);
   text-align: right;
   font-variant-numeric: tabular-nums;
-  padding-right: 12px;
+  padding: 0 12px 0 8px;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .fusion-acts {
@@ -2198,10 +2201,11 @@ body.fusion-context-menu-open .fusion-set-body {
   opacity: 1;
 }
 
-/* 订阅行：44px，题 + 未读药丸 + 域名 + 时间 + 明确操作；设置页不做行 hover */
+/* 订阅行：44px，题 + 未读药丸 + 域名 + 时间 + 明确操作；设置页不做行 hover。
+   操作列 64px 容纳双图标（48px 会挤压重叠），时间列 104px + 省略号防御 */
 .fusion-subs-row {
   display: grid;
-  grid-template-columns: 22px minmax(0, 1fr) 150px 96px 48px;
+  grid-template-columns: 22px minmax(0, 1fr) 150px 104px 64px;
   align-items: center;
   /* 步距 44 = 内容 42 + 行间 2px */
   height: 42px;
@@ -2269,13 +2273,16 @@ body.fusion-context-menu-open .fusion-set-body {
   color: var(--fusion-ter);
   text-align: right;
   font-variant-numeric: tabular-nums;
+  padding: 0 10px 0 8px;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .fusion-subs-row .fusion-subs-fa {
   display: flex;
   justify-content: flex-end;
-  gap: 1px;
+  gap: 4px;
 }
 
 /* 只显示操作，不给整行加 hover 洗色。 */

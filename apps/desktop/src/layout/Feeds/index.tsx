@@ -10,6 +10,7 @@ import { RouteConfig } from "@/config";
 import { useBearStore } from "@/stores";
 import { FeedIcon } from "@/components/FeedIcon";
 import { FeedCtxMenu } from "@/components/FeedCtxMenu";
+import { DialogUnsubscribeFeed } from "@/layout/Setting/Content/DialogUnsubscribeFeed";
 import { getHostLabel, formatFeedTime } from "@/helpers/feedMeta";
 import { HK } from "@/shortcuts";
 import { DEV_PREVIEW_FIRST_RUN, EmptyFace } from "@/layout/Article/EmptyFace";
@@ -32,17 +33,19 @@ function SourceRow({
   feed,
   focused,
   onOpen,
+  onUnsubscribe,
 }: {
   feed: FeedResItem;
   focused: boolean;
   onOpen: (feed: FeedResItem) => void;
+  onUnsubscribe: (feed: FeedResItem) => void;
 }) {
   const { t } = useTranslation();
   const unread = feed.unread ?? 0;
   const broken = (feed.health_status ?? 0) > 0;
 
   return (
-    <FeedCtxMenu feed={feed}>
+    <FeedCtxMenu feed={feed} onUnsubscribe={onUnsubscribe}>
       <button
         type="button"
         className={clsx("fusion-b-row", unread === 0 && "is-muted", focused && "is-focused")}
@@ -72,6 +75,8 @@ export function FeedsBrowse() {
   const [collapsed, setCollapsed] = useState<Set<string>>(
     () => new Set(browseMemory.collapsed),
   );
+  /** 右键退订的确认弹窗（与设置订阅管理共用 DialogUnsubscribeFeed） */
+  const [deleteFeed, setDeleteFeed] = useState<FeedResItem | null>(null);
   // 焦点只由 j/k 或方向键建立；进入页面不预选第一条源。
   const [focusUuid, setFocusUuid] = useState<string | null>(null);
 
@@ -232,6 +237,7 @@ export function FeedsBrowse() {
                     feed={feed}
                     focused={focusUuid === feed.uuid}
                     onOpen={openFeed}
+                    onUnsubscribe={setDeleteFeed}
                   />
                 ))}
               </div>
@@ -239,6 +245,19 @@ export function FeedsBrowse() {
           </div>
         );
       })}
+
+      <DialogUnsubscribeFeed
+        feed={deleteFeed}
+        dialogStatus={!!deleteFeed}
+        setDialogStatus={(v) => {
+          if (!v) setDeleteFeed(null);
+        }}
+        afterConfirm={() => {
+          setDeleteFeed(null);
+          store.getSubscribes();
+        }}
+        afterCancel={() => setDeleteFeed(null)}
+      />
     </div>
   );
 }
