@@ -201,6 +201,9 @@ export const ArticleListVirtual = React.memo(function ArticleListVirtual(
   );
   /** 已据此 size 请求过下一页：代替 1s 时间冷却（时间冷却会把“停住不动”的续加载卡成必须再动一下） */
   const requestedSizeRef = useRef(-1);
+  /** 「正在加载更多」的显式状态：SWRInfinite 追加下一页时 isLoading/isValidating 都可能为 false
+      （顶层已有数据），反馈必须由我们自己掌控 —— 触发时置位，新数据到达清除 */
+  const [loadingMore, setLoadingMore] = useState(false);
 
   // 源队列帧整屏同源，段头/索引/折叠都是噪音；只有跨源队列（全部/星标/历史）分组
   const segments = useMemo(
@@ -285,9 +288,10 @@ export const ArticleListVirtual = React.memo(function ArticleListVirtual(
       const contentHeight = Math.max(1, scrollHeight - inset);
       const notScrollable = scrollHeight <= clientHeight + 1;
       const atBottom = (scrollTop + clientHeight) / contentHeight > 0.9;
-      // auto 用 notScrollable || atBottom：内容恰好压着视口（scrollHeight≈clientHeight）
-      // 时 notScrollable 会差 1px 误判，atBottom 能兜住；失控由预算封顶
-      const shouldLoad = auto ? notScrollable || atBottom : atBottom;
+      // auto 只认 notScrollable：数据到达后 auto effect 会重跑，若它也认 atBottom，
+      // 「加载完成时恰在底部」就会 setSize → 再触发 → 请求风暴；滚到底的加载
+      // 一律由 scroll 事件负责，auto 只兜「列表不足一屏、无滚动事件可言」的续载
+      const shouldLoad = auto ? notScrollable : atBottom;
 
       if (!shouldLoad) {        autoLoadBudgetRef.current = 0;
         return;
@@ -298,6 +302,7 @@ export const ArticleListVirtual = React.memo(function ArticleListVirtual(
       if (auto && autoLoadBudgetRef.current >= 20) return;
       if (auto) autoLoadBudgetRef.current += 1;
       requestedSizeRef.current = size;
+      setLoadingMore(true);
       setSize(size + 1);
     },
     [isReachingEnd, isLoading, size, setSize],
@@ -321,6 +326,15 @@ export const ArticleListVirtual = React.memo(function ArticleListVirtual(
     }
     lastSizeRef.current = size;
   }, [size]);
+
+  // 新数据到达（行数变化）= 一次加载完成，撤下加载指示
+  const lastRowCount = useRef(articles.length);
+  useEffect(() => {
+    if (articles.length !== lastRowCount.current) {
+      lastRowCount.current = articles.length;
+      setLoadingMore(false);
+    }
+  }, [articles.length]);
 
   // 布局变化（首屏/展开收起/新页到达）后补一次判定，否则「列表不足一屏」时续载链条断掉
   useEffect(() => {
@@ -407,7 +421,7 @@ export const ArticleListVirtual = React.memo(function ArticleListVirtual(
           )}
         </div>
       )}
-      {isLoading && (
+      {(isLoading || loadingMore) && (
         <div className="p-2 pl-6 grid gap-1 relative shrink-0">
           <Skeleton height={20} />
           <div>
@@ -422,12 +436,20 @@ export const ArticleListVirtual = React.memo(function ArticleListVirtual(
           </div>
         </div>
       )}
-      {/* 足注对账：strip 计数是全量口径，列表是懒加载+按源折叠摘要，这里把两者接起来 */}
+      {/* 足注 = 加载状态行：加载中转圈提示，完成后回到计数对账（strip 计数是全量口径，
+          列表是懒加载+按源折叠摘要，这里把两者接起来） */}
       {!isEmpty && articles.length > 0 && total != null && (
-        <div className="fusion-list-foot">
-          {isReachingEnd
-            ? t("fusion.list.loaded_all", { total })
-            : t("fusion.list.loaded_of", { loaded: articles.length, total })}
+        <div className={`fusion-list-foot${isLoading || loadingMore ? " is-loading" : ""}`}>
+          {isLoading || loadingMore ? (
+            <>
+              <span className="fusion-foot-spin" />
+              {t("fusion.list.loading_more")}
+            </>
+          ) : isReachingEnd ? (
+            t("fusion.list.loaded_all", { total })
+          ) : (
+            t("fusion.list.loaded_of", { loaded: articles.length, total })
+          )}
         </div>
       )}
     </div>

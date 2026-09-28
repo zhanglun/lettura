@@ -697,7 +697,8 @@
       "loaded_of": "Loaded {{loaded}} of {{total}}",
       "loaded_all": "All {{total}} shown",
       "run_marked_toast": "Marked {{count}} articles of {{feed}} as read",
-      "run_mark_read_title": "Mark all unread of {{feed}}"
+      "run_mark_read_title": "Mark all unread of {{feed}}",
+      "loading_more": "Loading more…"
     },
     "read": {
       "time": "{{min}} min read"

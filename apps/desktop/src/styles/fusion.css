@@ -393,13 +393,38 @@
   white-space: nowrap;
 }
 
-/* 列表足注：已加载/全量对账（strip 计数=全量口径，列表=懒加载+折叠摘要） */
+/* 列表足注：已加载/全量对账 + 加载中状态行（spinner 固定占位，避免行高跳动） */
 .fusion-list-foot {
   padding: 16px 20px 6px;
   text-align: center;
   font-size: 11px;
   color: var(--fusion-ter);
   font-variant-numeric: tabular-nums;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 33px;
+}
+
+.fusion-list-foot.is-loading {
+  color: var(--fusion-sub);
+}
+
+.fusion-foot-spin {
+  width: 11px;
+  height: 11px;
+  flex: none;
+  border-radius: 50%;
+  border: 1.5px solid color-mix(in srgb, var(--color-accent) 25%, transparent);
+  border-top-color: var(--color-accent);
+  animation: fusion-foot-rotate 0.8s linear infinite;
+}
+
+@keyframes fusion-foot-rotate {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ── 过滤条（全部/文章/播客/平台） ── */

@@ -131,13 +131,17 @@ export function useArticle(props: UseArticleProps) {
     },
     [query],
   );
-  const { data, isLoading, size, mutate, setSize, error } = useSWRInfinite(
+  const { data, isLoading, isValidating, size, mutate, setSize, error } = useSWRInfinite(
     getKey,
     (q) => dataAgent.getArticleList({ ...q }),
     {
       revalidateIfStale: false,
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
+      // 关键：size 推进时默认会重验第一页（revalidateFirstPage 默认 true）——
+      // 与触底加载叠加会形成请求风暴（cursor=1 被重复请求几十次）。本地优先 +
+      // 显式 mutate 的架构下不需要它
+      revalidateFirstPage: false,
       dedupingInterval: 1000,
     },
   );
