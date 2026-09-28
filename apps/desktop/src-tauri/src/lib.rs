@@ -11,7 +11,7 @@ extern crate dotenv;
 use actix_web::dev::ServerHandle;
 use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 use std::{env, sync::Mutex};
-use tauri::{Emitter, Manager};
+use tauri::Manager;
 use tauri_plugin_autostart::MacosLauncher;
 use tauri_plugin_log::{Target, TargetKind};
 
@@ -105,11 +105,11 @@ pub fn run() {
       let port = user_config.port.clone();
       let scheduler_handle = app_handle.clone();
 
-      // 启动 Actix 服务器
+      // 启动 Actix 服务器（仅承载 /api/rules 与 /api/generated 本地 RSS 供应；
+      // 前端数据面全部走 invoke，不再感知端口）
       std::thread::spawn(move || {
         let state = app_handle.state::<AppState>();
         server::start_server(port, state).unwrap();
-        main_window.emit("get_server_port", ()).unwrap();
       });
 
       // 设置托盘
@@ -159,6 +159,22 @@ pub fn run() {
       cmd::test_source_account,
       cmd::list_site_rules,
       cmd::import_site_rule,
+      cmd::get_user_config,
+      cmd::get_subscribes,
+      cmd::get_folders,
+      cmd::update_feed_sort,
+      cmd::delete_feed,
+      cmd::get_articles,
+      cmd::get_carrier_counts,
+      cmd::get_article_detail,
+      cmd::get_unread_total,
+      cmd::get_collection_metas,
+      cmd::sync_feed,
+      cmd::update_article_read_status,
+      cmd::update_article_star_status,
+      cmd::update_article_read_later_status,
+      cmd::mark_all_read,
+      cmd::global_search,
       core::scheduler::start_scheduler,
       core::scheduler::stop_scheduler,
       core::scheduler::is_scheduler_running,

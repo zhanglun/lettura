@@ -7,9 +7,7 @@ import {
 
 vi.mock("@/helpers/dataAgent", () => ({
   getUserConfig: vi.fn(() =>
-    Promise.resolve({
-      data: { purge_on_days: 7, purge_unread_articles: false },
-    }),
+    Promise.resolve({ purge_on_days: 7, purge_unread_articles: false }),
   ),
   updateUserConfig: vi.fn(() => Promise.resolve()),
 }));

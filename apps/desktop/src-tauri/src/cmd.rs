@@ -1,9 +1,12 @@
+use std::collections::HashMap;
+
 use serde::Serialize;
 use tauri::{command, Emitter, WebviewWindow};
 use uuid::Uuid;
 
 use fetcher_core::DetectInput;
 
+use crate::core::common;
 use crate::core::config;
 use crate::fetchers;
 use crate::models;
@@ -392,4 +395,113 @@ mod tests {
 
     println!("result: {:?}", result);
   }
+}
+
+// ── 数据面命令（原 Actix HTTP 路由的 1:1 搬运）────────────────────
+// 双通道收敛：前端数据操作全部走 invoke；Actix 只保留必须以 URL 存在的
+// 资源（/api/rules、/api/generated 本地 RSS 供应）。
+
+#[command]
+pub fn get_user_config() -> config::UserConfig {
+  config::get_user_config()
+}
+
+#[command]
+pub fn get_subscribes() -> Vec<feed::channel::SubscribeItem> {
+  feed::channel::get_feeds()
+}
+
+#[command]
+pub fn get_folders() -> Vec<models::Folder> {
+  feed::folder::get_folders()
+}
+
+#[command]
+pub fn update_feed_sort(sorts: Vec<feed::channel::FeedSort>) -> usize {
+  feed::channel::update_feed_sort(sorts)
+}
+
+#[command]
+pub fn delete_feed(uuid: String, delete_articles: Option<bool>) -> usize {
+  feed::channel::delete_feed(uuid, delete_articles.unwrap_or(false))
+}
+
+#[command]
+pub fn get_articles(
+  filter: feed::article::ArticleFilter,
+) -> feed::article::ArticleQueryResult {
+  feed::article::Article::get_article(filter)
+}
+
+#[command]
+pub fn get_carrier_counts(
+  filter: feed::article::ArticleFilter,
+) -> feed::article::CarrierCounts {
+  feed::article::Article::get_carrier_counts(filter)
+}
+
+#[command]
+pub fn get_article_detail(uuid: String) -> Option<feed::article::ArticleDetailResult> {
+  feed::article::Article::get_article_with_uuid(uuid)
+}
+
+#[command]
+pub fn get_unread_total() -> HashMap<String, i32> {
+  feed::channel::get_unread_total()
+}
+
+#[command]
+pub fn get_collection_metas() -> Option<feed::article::CollectionMeta> {
+  feed::article::Article::get_collection_metas()
+}
+
+#[command]
+pub async fn sync_feed(uuid: String, feed_type: String) -> HashMap<String, (String, usize, String)> {
+  let result = feed::channel::sync_feed(uuid, feed_type).await;
+
+  feed::article::Article::purge_articles();
+  feed::article::Article::purge_by_data_retention();
+
+  result
+}
+
+#[command]
+pub fn update_article_read_status(uuid: String, read_status: i32) -> usize {
+  feed::article::Article::update_article_read_status(uuid, read_status)
+}
+
+#[command]
+pub fn update_article_star_status(uuid: String, starred: i32) -> usize {
+  feed::article::Article::update_article_star_status(uuid, starred)
+}
+
+#[command]
+pub fn update_article_read_later_status(uuid: String, is_read_later: i32) -> usize {
+  feed::article::Article::update_article_read_later_status(uuid, is_read_later)
+}
+
+#[command]
+pub fn mark_all_read(param: feed::article::MarkAllUnreadParam) -> usize {
+  feed::article::Article::mark_as_read(feed::article::MarkAllUnreadParam {
+    uuid: param.uuid,
+    is_today: param.is_today,
+    is_all: param.is_all,
+  })
+}
+
+#[command]
+pub fn global_search(
+  query: String,
+  limit: Option<i32>,
+) -> Vec<common::ArticleQueryItem> {
+  common::Common::global_search(common::GlobalSearchQuery {
+    query,
+    limit,
+    cursor: None,
+    start_date: None,
+    end_date: None,
+    feed_uuid: None,
+    is_starred: None,
+    min_relevance: None,
+  })
 }

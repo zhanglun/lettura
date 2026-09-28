@@ -1,7 +1,7 @@
 import useSWR from "swr";
 import useSWRInfinite from "swr/infinite";
 import { useBearStore } from "@/stores";
-import { request } from "@/helpers/request";
+import * as dataAgent from "@/helpers/dataAgent";
 import { useMatch } from "react-router-dom";
 import { RouteConfig } from "@/config";
 import { ArticleResItem } from "@/db";
@@ -133,12 +133,7 @@ export function useArticle(props: UseArticleProps) {
   );
   const { data, isLoading, size, mutate, setSize, error } = useSWRInfinite(
     getKey,
-    (q) =>
-      request
-        .get("/articles", {
-          params: { ...q },
-        })
-        .then((res) => res.data),
+    (q) => dataAgent.getArticleList({ ...q }),
     {
       revalidateIfStale: false,
       revalidateOnFocus: false,
@@ -160,9 +155,9 @@ export function useArticle(props: UseArticleProps) {
     return rest;
   }, [query]);
   const { data: carrierCountsData, mutate: mutateCarrierCounts } = useSWR(
-    feedUuid ? null : ["/articles/carrier-counts", countsParams],
-    ([url, params]: [string, Record<string, unknown>]) =>
-      request.get(url, { params }).then((res) => res.data as CarrierCounts),
+    feedUuid ? null : ["carrier-counts", countsParams],
+    ([, params]: [string, Record<string, unknown>]) =>
+      dataAgent.getCarrierCounts({ ...params }) as Promise<CarrierCounts>,
     {
       revalidateIfStale: false,
       revalidateOnFocus: false,
@@ -178,9 +173,12 @@ export function useArticle(props: UseArticleProps) {
   };
 
   const list = data
-    ? data.reduce((acu, cur) => acu.concat(cur.list || []), [])
+    ? data.reduce(
+        (acu: ArticleResItem[], cur) => acu.concat(cur.list || []),
+        [],
+      )
     : [];
-  const articles: ArticleResItem[] = list ? [].concat(list) : [];
+  const articles: ArticleResItem[] = list ? [...list] : [];
   const isEmpty = !isLoading && list.length === 0;
   const isReachingEnd =
     isEmpty || (data && data[data.length - 1]?.list?.length < PAGE_SIZE);

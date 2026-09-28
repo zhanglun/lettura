@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useShallow } from "zustand/react/shallow";
 import { History, Inbox, Plus, RefreshCw, SearchX, Settings, Star } from "lucide-react";
-import { request } from "@/helpers/request";
+import * as dataAgent from "@/helpers/dataAgent";
 import { useBearStore } from "@/stores";
 import { RouteConfig } from "@/config";
 import { FeedResItem } from "@/db";
@@ -198,10 +198,10 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
           .slice(0, 6);
 
         // 文章走后端异步搜索，与本地命令/来源过滤并发，合并返回
-        return request
-          .get("/search", { params: { query: text, limit: 6 } })
-          .then((res) => {
-            const articles: PaletteItem[] = (res.data || []).map((a: any) => ({
+        return dataAgent
+          .globalSearch(text, 6)
+          .then((rows) => {
+            const articles: PaletteItem[] = (rows || []).map((a: any) => ({
               id: `article:${a.uuid}`,
               label: a.title,
               auxiliaryData: {

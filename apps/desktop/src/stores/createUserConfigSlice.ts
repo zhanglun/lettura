@@ -4,7 +4,7 @@ import * as dataAgent from "../helpers/dataAgent";
 export interface UserConfigSlice {
   userConfig: UserConfig;
   getUserConfig: any;
-  updateUserConfig: (cfg: UserConfig) => Promise<void>;
+  updateUserConfig: (cfg: UserConfig) => Promise<unknown>;
 
   setLastSyncTime: (t: Date) => void;
 
@@ -29,7 +29,7 @@ export const createUserConfigSlice: StateCreator<UserConfigSlice> = (
   userConfig: {} as UserConfig,
 
   getUserConfig: () => {
-    return dataAgent.getUserConfig().then(({ data: cfg }) => {
+    return dataAgent.getUserConfig().then((cfg) => {
       set(() => ({
         userConfig: cfg,
       }));

@@ -109,14 +109,15 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
 
   useEffect(() => {
     if (!articleUuid) return;
-    const controller = new AbortController();
+    // invoke 无法中断：切文章时靠 cleanup 的标志位丢弃过期结果
+    let cancelled = false;
     setPageContent("");
     setLoadError(false);
 
     dataAgent
-      .getArticleDetail(articleUuid, { signal: controller.signal })
-      .then((res) => {
-        const { data } = res;
+      .getArticleDetail(articleUuid)
+      .then((data) => {
+        if (cancelled || !data) return;
         const raw = pickArticleContent(data.content, data.description);
         const processed = processArticleHtml(raw, { baseUrl });
         setPageContent(processed);
@@ -127,14 +128,14 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
           setMedias([]);
         }
       })
-      .catch((err) => {
-        if (err?.name !== "AbortError" && err?.code !== "ERR_CANCELED") {
+      .catch(() => {
+        if (!cancelled) {
           setLoadError(true);
         }
       });
 
     return () => {
-      controller.abort();
+      cancelled = true;
     };
     // 依赖 uuid 而非对象：打开即标已读的 mutate 会替换对象，重发请求会让正文清空重载
   }, [articleUuid, baseUrl]);

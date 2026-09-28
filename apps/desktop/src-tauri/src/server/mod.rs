@@ -39,14 +39,8 @@ pub async fn start_server(port: u16, state: tauri::State<'_, AppState>) -> std::
       .wrap(cors)
       // .app_data(tauri_app.clone())
       .wrap(middleware::Logger::default())
-      .configure(handlers::common::config)
-      .configure(handlers::article::config)
-      .configure(handlers::collection::config)
-      .configure(handlers::feed::config)
-      .configure(handlers::folder::config)
       .configure(handlers::site::config)
-      .configure(handlers::tag::config)
-  })
+      })
   .bind(("127.0.0.1", port))?
   .run();
 

@@ -139,11 +139,13 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
   },
 
   initCollectionMetas() {
-    dataAgent.getCollectionMetas().then(({ data }) => {
+    dataAgent.getCollectionMetas().then((meta) => {
+      const today = typeof meta?.today === "number" ? meta.today : (meta?.today?.unread ?? 0);
+      const total = typeof meta?.total === "number" ? meta.total : (meta?.total?.unread ?? 0);
       set(() => ({
         collectionMeta: {
-          today: { unread: data.today },
-          total: { unread: data.total },
+          today: { unread: today },
+          total: { unread: total },
         },
       }));
     });
@@ -219,7 +221,7 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
     return Promise.all([
       dataAgent.getSubscribes(),
       dataAgent.getUnreadTotal(),
-    ]).then(([{ data: feedList }, { data: unreadTotal }]) => {
+    ]).then(([feedList, unreadTotal]) => {
       feedList = initUnreadCount(feedList, unreadTotal);
       set(() => ({
         subscribes: feedList || [],
@@ -289,8 +291,8 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
 
     return Promise.all(fns)
       .then((resList) => {
-        const map = resList.reduce((acu, { data }) => {
-          const [[uuid, values] = []] = Object.entries(data);
+        const map = resList.reduce((acu, res) => {
+          const [[uuid, values] = []] = Object.entries(res);
 
           if (uuid && values) {
             acu[uuid] = values;

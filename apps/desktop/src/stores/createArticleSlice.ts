@@ -66,8 +66,10 @@ export const createArticleSlice: StateCreator<
 
   getArticleList: async (query: any) => {
     const currentList = get().articleList;
-    const res = await dataAgent.getArticleList(query);
-    const { list } = res.data as { list: ArticleResItem[] };
+    const res = (await dataAgent.getArticleList(query)) as {
+      list: ArticleResItem[];
+    };
+    const { list } = res;
 
     get().setArticleList([...currentList, ...list]);
 
@@ -125,8 +127,7 @@ export const createArticleSlice: StateCreator<
     if (isAll) params.is_all = isAll;
     if (feed) params.uuid = feed.uuid;
 
-    const res = await dataAgent.markAllRead(params);
-    const { data } = res;
+    await dataAgent.markAllRead(params);
 
     set(() => ({
       articleList: get().articleList.map((_) => {
@@ -137,8 +138,6 @@ export const createArticleSlice: StateCreator<
 
     get().getSubscribes();
     get().initCollectionMetas();
-
-    return data;
   },
 
   articleDialogViewStatus: false,

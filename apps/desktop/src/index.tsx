@@ -4,8 +4,6 @@ import {
   Navigate,
   RouterProvider,
 } from "react-router-dom";
-import { invoke } from "@tauri-apps/api/core";
-
 import App from "./App";
 import ErrorPage from "./ErrorPage";
 import { RouteConfig } from "./config";
@@ -56,13 +54,7 @@ const router = createBrowserRouter([
 const domNode = document.getElementById("root") as HTMLElement;
 const root = createRoot(domNode);
 
-if (typeof (window as any).__TAURI_INTERNALS__ !== "undefined") {
-  invoke("get_server_port").then((port) => {
-    window.localStorage.setItem("port", port as string);
-    root.render(<RouterProvider router={router} />);
-  });
-} else {
-  window.localStorage.setItem("port", "3456");
-  root.render(<RouterProvider router={router} />);
-}
+// 数据面全部走 Tauri invoke，不再等待/存储 HTTP 端口；
+// Actix 仅承载 /api/rules 与 /api/generated（外部消费的本地 RSS 供应）
+root.render(<RouterProvider router={router} />);
 
