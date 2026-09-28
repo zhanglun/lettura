@@ -306,8 +306,9 @@ export function ArticleView() {
   }, [markFocusedRead, moveFocus]);
   useHotkeys(HK.star, () => toggleStar(focused ?? null), [focused, toggleStar]);
   useHotkeys(HK.openOriginal, () => {
-    if (focused?.link) open(focused.link);
-  }, [focused]);
+    const article = detailArticle ?? focused;
+    if (article?.link) open(article.link);
+  }, [detailArticle, focused]);
   useHotkeys(HK.escape, () => {
     if (useBearStore.getState().playerMode === "full") return; // 沉浸页优先收回条
     if (store.expandedArticleUuid) {

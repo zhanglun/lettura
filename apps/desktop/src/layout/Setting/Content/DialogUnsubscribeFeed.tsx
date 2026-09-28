@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Dialog, DialogHeader } from "@astryxdesign/core/Dialog";
+import { Layout, LayoutContent } from "@astryxdesign/core/Layout";
 import { Button } from "@astryxdesign/core/Button";
 import { RadioList, RadioListItem } from "@astryxdesign/core/RadioList";
 import { Text } from "@astryxdesign/core/Text";
@@ -63,50 +64,56 @@ export const DialogUnsubscribeFeed = React.memo((props: DialogProps) => {
         onOpenChange={setDialogStatus}
         width={440}
       >
-        <DialogHeader title={t("Are you absolutely sure?")} />
-        <div className="flex flex-col gap-4 py-2">
-          <Text size="sm" color="secondary">
-            {t(
-              "This action cannot be undone. This will permanently delete the data relates with",
-              { title: feed?.title },
-            )}
-          </Text>
-          <RadioList
-            label={t("Article handling")}
-            isLabelHidden
-            value={deleteMode}
-            onChange={(v) => setDeleteMode(v as "keep" | "delete")}
-          >
-            <RadioListItem
-              value="keep"
-              label={t("layout.feeds.delete.keep_articles")}
-            />
-            <RadioListItem
-              value="delete"
-              label={t("layout.feeds.delete.delete_articles")}
-            />
-          </RadioList>
-          {deleteMode === "delete" && (
-            <div className="rounded-md border border-[var(--color-border-orange)] bg-[var(--color-background-orange)] px-3 py-2">
-              <Text size="xsm" color="secondary">
-                {t("layout.feeds.delete.warning")}
-              </Text>
-            </div>
-          )}
-          <div className="flex justify-end gap-3">
-            <Button
-              variant="secondary"
-              label={t("Cancel")}
-              onClick={() => setDialogStatus(false)}
-            />
-            <Button
-              variant="destructive"
-              onClick={confirmUnsubscribe}
-              isLoading={loading}
-              label={t("Unsubscribe")}
-            />
-          </div>
-        </div>
+        <Layout
+          header={<DialogHeader title={t("Are you absolutely sure?")} />}
+          content={
+            <LayoutContent isScrollable={false}>
+              <div className="flex flex-col gap-4 py-2">
+                <Text size="sm" color="secondary">
+                  {t(
+                    "This action cannot be undone. This will permanently delete the data relates with",
+                    { title: feed?.title },
+                  )}
+                </Text>
+                <RadioList
+                  label={t("Article handling")}
+                  isLabelHidden
+                  value={deleteMode}
+                  onChange={(v) => setDeleteMode(v as "keep" | "delete")}
+                >
+                  <RadioListItem
+                    value="keep"
+                    label={t("layout.feeds.delete.keep_articles")}
+                  />
+                  <RadioListItem
+                    value="delete"
+                    label={t("layout.feeds.delete.delete_articles")}
+                  />
+                </RadioList>
+                {deleteMode === "delete" && (
+                  <div className="rounded-md border border-[var(--color-border-orange)] bg-[var(--color-background-orange)] px-3 py-2">
+                    <Text size="xsm" color="secondary">
+                      {t("layout.feeds.delete.warning")}
+                    </Text>
+                  </div>
+                )}
+                <div className="flex justify-end gap-3">
+                  <Button
+                    variant="secondary"
+                    label={t("Cancel")}
+                    onClick={() => setDialogStatus(false)}
+                  />
+                  <Button
+                    variant="destructive"
+                    onClick={confirmUnsubscribe}
+                    isLoading={loading}
+                    label={t("Unsubscribe")}
+                  />
+                </div>
+              </div>
+            </LayoutContent>
+          }
+        />
       </Dialog>
     </>
   );

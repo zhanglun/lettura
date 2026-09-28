@@ -5,9 +5,11 @@ import React, {
   useMemo,
 } from "react";
 import * as dataAgent from "../../helpers/dataAgent";
+import { toast } from "@/helpers/toast";
 import { FolderResItem } from "@/db";
 import { useBearStore } from "@/stores";
 import { Dialog, DialogHeader } from "@astryxdesign/core/Dialog";
+import { Layout, LayoutContent } from "@astryxdesign/core/Layout";
 import { Button } from "@astryxdesign/core/Button";
 import { Tooltip } from "@astryxdesign/core/Tooltip";
 import { TextInput } from "@astryxdesign/core/TextInput";
@@ -66,6 +68,9 @@ export const AddFolder = React.memo((props: AddFolderProps) => {
 
     p.then((res) => {
       if (res[0] > 0) {
+        toast.success(
+          action === "add" ? t("Folder created") : t("Folder updated"),
+        );
         store.getSubscribes();
         afterConfirm?.();
         handleCancel();
@@ -109,32 +114,37 @@ export const AddFolder = React.memo((props: AddFolderProps) => {
         isOpen={dialogStatus}
         onOpenChange={setDialogStatus}
         width={425}
-        className="fusion-folder-form"
       >
-        <DialogHeader title={title} subtitle={content} />
-        <div className="py-3">
-          <TextInput
-            label={title}
-            isLabelHidden
-            value={name}
-            onChange={(v) => handleNameChange(v)}
-            ref={inputRef}
-          />
-          <div className="flex justify-end gap-3 mt-4">
-            <Button
-              variant="secondary"
-              label={t("Cancel")}
-              onClick={handleCancel}
-            />
-            <Button
-              onClick={handleSave}
-              variant="primary"
-              isDisabled={confirming || !name}
-              isLoading={confirming}
-              label={confirming ? t("Saving") : t("Save")}
-            />
-          </div>
-        </div>
+        <Layout
+          header={<DialogHeader title={title} subtitle={content} />}
+          content={
+            <LayoutContent isScrollable={false}>
+              <div className="py-3">
+                <TextInput
+                  label={title}
+                  isLabelHidden
+                  value={name}
+                  onChange={(v) => handleNameChange(v)}
+                  ref={inputRef}
+                />
+                <div className="flex justify-end gap-3 mt-4">
+                  <Button
+                    variant="secondary"
+                    label={t("Cancel")}
+                    onClick={handleCancel}
+                  />
+                  <Button
+                    onClick={handleSave}
+                    variant="primary"
+                    isDisabled={confirming || !name}
+                    isLoading={confirming}
+                    label={confirming ? t("Saving") : t("Save")}
+                  />
+                </div>
+              </div>
+            </LayoutContent>
+          }
+        />
       </Dialog>
     </>
   );
