@@ -1,35 +1,41 @@
-import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
-import { Kbd } from "@astryxdesign/core/Kbd";
-import { IconButton } from "@astryxdesign/core/IconButton";
-import { useHotkeys } from "react-hotkeys-hook";
-import { useNavigate, useParams, useMatch } from "react-router-dom";
-import { open } from "@tauri-apps/plugin-shell";
-import { CheckCheck, ChevronLeft, RefreshCw, Star, SearchX, Inbox, FileText, Podcast, Clapperboard, Mail } from "lucide-react";
 import { Button } from "@astryxdesign/core/Button";
+import { IconButton } from "@astryxdesign/core/IconButton";
+import { Kbd } from "@astryxdesign/core/Kbd";
+import { open } from "@tauri-apps/plugin-shell";
 import dayjs from "dayjs";
+import {
+  CheckCheck,
+  ChevronLeft,
+  Clapperboard,
+  FileText,
+  Inbox,
+  Mail,
+  Podcast,
+  RefreshCw,
+  SearchX,
+  Star,
+} from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useHotkeys } from "react-hotkeys-hook";
+import { useTranslation } from "react-i18next";
+import { useMatch, useNavigate, useParams } from "react-router-dom";
+import { useShallow } from "zustand/react/shallow";
 import { ArticleListVirtual } from "@/components/ArticleListVirtual";
 import { ArticleDialogView } from "@/components/ArticleView/DialogView";
-import { View } from "@/layout/Article/View";
-import { RouteConfig } from "@/config";
-import { FeedProfile } from "@/components/FeedProfile";
-import { useQuery } from "@/helpers/parseXML";
-import { useBearStore } from "@/stores";
-import { useShallow } from "zustand/react/shallow";
-import * as dataAgent from "@/helpers/dataAgent";
-import { useArticle } from "@/hooks/useArticle";
 import type { ScrollBoxRefObject } from "@/components/ArticleView/ScrollBox";
-import { retainArticleAfterRead } from "@/helpers/articleHelpers";
-import { EmptyFace, DEV_PREVIEW_FIRST_RUN } from "./EmptyFace";
-import { ArticleReadStatus, ArticleStarStatus } from "@/typing";
-import { HK } from "@/shortcuts";
-import {
-  buildSegments,
-  flattenDisplay,
-  subscribeRunExpansion,
-  getRunExpansionVersion,
-} from "@/components/ArticleListVirtual/feedRuns";
+import { FeedPrism } from "@/components/FeedPrism";
+import { FeedProfile } from "@/components/FeedProfile";
+import { RouteConfig } from "@/config";
 import type { ArticleResItem } from "@/db";
-import { useTranslation } from "react-i18next";
+import { retainArticleAfterRead } from "@/helpers/articleHelpers";
+import * as dataAgent from "@/helpers/dataAgent";
+import { useQuery } from "@/helpers/parseXML";
+import { useArticle } from "@/hooks/useArticle";
+import { View } from "@/layout/Article/View";
+import { HK } from "@/shortcuts";
+import { useBearStore } from "@/stores";
+import { ArticleReadStatus, ArticleStarStatus } from "@/typing";
+import { DEV_PREVIEW_FIRST_RUN, EmptyFace } from "./EmptyFace";
 
 type CarrierFilter = "all" | "text" | "audio" | "video" | "email";
 
@@ -78,15 +84,14 @@ export function ArticleView() {
   const [focusIdx, setFocusIdx] = useState<number | null>(null);
 
   const {
+    sections,
     articles,
     total,
     carrierCounts,
     refreshCarrierCounts,
     isLoading,
-    size,
-    setSize,
     isEmpty,
-    isReachingEnd,
+    dayCounts,
     mutate,
     isToday,
     isAll,
@@ -97,12 +102,29 @@ export function ArticleView() {
     // 载体过滤条（全部/文章/播客/视频[+邮件]）：服务端过滤，不随分页截断
     carrier: feedUuid ? undefined : carrierFilter,
     // 源队列帧：过滤条未读/全部，脱离全局 currentFilter（feeds.html 契约）
-    readStatus: feedUuid
-      ? queueFilter === "unread"
-        ? 1
-        : null
-      : undefined,
+    readStatus: feedUuid ? (queueFilter === "unread" ? 1 : null) : undefined,
   });
+
+  // 桶收起状态：父级持有（j/k 可达序列随收起过滤）；「更早」积压区默认收起，
+  // 会话级不持久化（日期桶随时间漂移，持久化语义混乱）
+  const [collapsedBuckets, setCollapsedBuckets] = useState<Set<string>>(
+    () => new Set(["earlier"]),
+  );
+  const toggleBucket = useCallback((bucket: string) => {
+    setCollapsedBuckets((prev) => {
+      const next = new Set(prev);
+      if (next.has(bucket)) next.delete(bucket);
+      else next.add(bucket);
+      return next;
+    });
+  }, []);
+  const identity = useCallback((pages: any) => pages, []);
+  const loadMoreBucket = useCallback(
+    (key: string) => {
+      sections.find((s) => s.key === key)?.loadMore();
+    },
+    [sections],
+  );
 
   // 载体计数保持鲜活：单篇标记已读/切换读状态后防抖刷新
   // （段头「全部已读」连发多篇也只触发一次请求；同步/全部已读路径原本就刷新）
@@ -117,22 +139,11 @@ export function ArticleView() {
     },
     [],
   );
-
-  // 服务端已按 kind 过滤，这里只透传
-  const visibleArticles = articles;
-
-  // 折叠段的「可见序列」：j/k、焦点、下一篇都沿它走（隐藏行不可达，与渲染严格一致）
-  const expansionVersion = useSyncExternalStore(
-    subscribeRunExpansion,
-    getRunExpansionVersion,
-  );
-  const segments = useMemo(
-    () => (feedUuid ? null : buildSegments(visibleArticles)),
-    [feedUuid, visibleArticles],
-  );
+  // 键盘可达序列 = 各 section 可见行的串联（收起桶的行已不在 section.rows 里——
+  // 父级统一过滤，与渲染严格一致）
   const displayArticles = useMemo(
-    () => (segments ? flattenDisplay(segments) : visibleArticles),
-    [segments, visibleArticles, expansionVersion],
+    () => sections.flatMap((s) => s.rows),
+    [sections],
   );
 
   useEffect(() => {
@@ -140,6 +151,23 @@ export function ArticleView() {
       i === null ? null : Math.min(i, Math.max(0, displayArticles.length - 1)),
     );
   }, [displayArticles.length]);
+
+  // 队列身份任一变化 = 换了一个队列：键盘焦点清零。ArticleView 被路由表跨路由复用
+  // （/local/all、/local/starred、源队列同一个组件），React 不卸载它——focusIdx 会
+  // 活过视图切换，切回来时上次的高亮留在首行，看起来像「默认聚焦」（用户实测）。
+  // 注意 esc 从详情回列表不走这里：同一队列，焦点跟随阅读位置是设计内行为。
+  const queueIdentity = [
+    feedUuid ?? "",
+    isStarred ? "s" : "",
+    isToday ? "t" : "",
+    store.currentFilter.id,
+    carrierFilter,
+    queueFilter,
+  ].join("|");
+  useEffect(() => {
+    setFocusIdx(null);
+    setFocusStyleSuppressed(false);
+  }, [queueIdentity]);
 
   // Deep-link：从 URL 恢复文章（面板内详情）
   useEffect(() => {
@@ -169,10 +197,7 @@ export function ArticleView() {
 
   const handleArticleRead = useCallback(
     (nextArticle: ArticleResItem) => {
-      mutate(
-        (pages) => retainArticleAfterRead(pages, nextArticle),
-        false,
-      );
+      mutate((pages: any) => retainArticleAfterRead(pages, nextArticle));
       scheduleCountsRefresh();
     },
     [mutate, scheduleCountsRefresh],
@@ -180,10 +205,7 @@ export function ArticleView() {
 
   const handleArticleUpdate = useCallback(
     (updated: ArticleResItem) => {
-      mutate(
-        (pages) => retainArticleAfterRead(pages, updated),
-        false,
-      );
+      mutate((pages: any) => retainArticleAfterRead(pages, updated));
       scheduleCountsRefresh();
     },
     [mutate, scheduleCountsRefresh],
@@ -235,20 +257,37 @@ export function ArticleView() {
   const moveFocus = useCallback(
     (delta: number) => {
       // 详情打开时从「正在阅读的文章」起走（点击打开不建立 focusIdx）；
-      // 纯列表态维持原语义：未聚焦时 j 从头 / k 从尾开始
+      // 纯列表态维持原语义：未聚焦时 j 从头 / k 从尾开始。
+      // 「未聚焦 + j」落在第 0 行 = 光标 establishment，不是移动——
+      // 用户反馈（2026-09-29）：首行刚出现就带高亮读起来像「默认选中」。
+      // 因此首行只画焦点环（j/k 光标位），不画行洗色；第二次 j 起才是真正的移动。
+      const establishing = focusIdx === null && delta > 0;
       const from =
         store.expandedArticleUuid && expandedIdx >= 0
           ? expandedIdx
           : (focusIdx ?? (delta > 0 ? -1 : displayArticles.length));
-      const next = Math.max(0, Math.min(from + delta, displayArticles.length - 1));
+      const next = Math.max(
+        0,
+        Math.min(from + delta, displayArticles.length - 1),
+      );
       setFocusIdx(next);
+      if (establishing && next === 0) {
+        setFocusStyleSuppressed(true);
+      } else {
+        setFocusStyleSuppressed(false);
+      }
       if (next !== from) {
         const a = displayArticles[next];
-        if (a && store.expandedArticleUuid) store.setExpandedArticleUuid(a.uuid);
+        if (a && store.expandedArticleUuid)
+          store.setExpandedArticleUuid(a.uuid);
       }
     },
     [focusIdx, expandedIdx, displayArticles, store],
   );
+
+  // 光标位建立但样式压住：首行接收焦点时不亮（见 moveFocus 的 establishing 分支），
+  // 任何后续移动/换向都恢复正常焦点样式
+  const [focusStyleSuppressed, setFocusStyleSuppressed] = useState(false);
 
   const focused = focusIdx === null ? undefined : displayArticles[focusIdx];
 
@@ -399,7 +438,7 @@ export function ArticleView() {
     await dataAgent.markAllRead({ uuid: feedUuid });
     if (before > 0) store.updateCollectionMeta(0, -before);
     store.setViewMeta({ ...store.viewMeta, unread: 0 });
-    await Promise.all([store.getSubscribes?.(), mutate()]);
+    await Promise.all([store.getSubscribes?.(), mutate(identity)]);
   }, [feedUuid, store, queueFeed, mutate]);
 
   const syncQueueFeed = useCallback(async () => {
@@ -407,7 +446,7 @@ export function ArticleView() {
     setQueueSyncing(true);
     try {
       await store.syncArticles(queueFeed);
-      await Promise.all([store.getSubscribes?.(), mutate()]);
+      await Promise.all([store.getSubscribes?.(), mutate(identity)]);
     } finally {
       setQueueSyncing(false);
     }
@@ -415,18 +454,18 @@ export function ArticleView() {
 
   const markAllRead = async () => {
     await store.markArticleListAsRead(isToday, isAll);
-    await Promise.all([mutate(), refreshCarrierCounts()]);
+    await Promise.all([mutate(identity), refreshCarrierCounts()]);
   };
 
   const title = store.viewMeta?.title ?? "";
-  const unreadCount = (feedUuid
-    ? store.viewMeta?.unread
-    : isToday
-      ? store.collectionMeta.today.unread
-      : isAll
-        ? store.collectionMeta.total.unread
-        : store.viewMeta?.unread)
-    ?? 0;
+  const unreadCount =
+    (feedUuid
+      ? store.viewMeta?.unread
+      : isToday
+        ? store.collectionMeta.today.unread
+        : isAll
+          ? store.collectionMeta.total.unread
+          : store.viewMeta?.unread) ?? 0;
 
   // 面板内替换：详情视图
   if (detailArticle) {
@@ -459,7 +498,7 @@ export function ArticleView() {
   // 列表视图
   const sourceCount = (store.subscribes || []).reduce<number>(
     (sum, item) =>
-      sum + (item.item_type === "folder" ? item.children?.length ?? 0 : 1),
+      sum + (item.item_type === "folder" ? (item.children?.length ?? 0) : 1),
     0,
   );
   const lastSync = store.userConfig?.last_sync_time
@@ -477,7 +516,8 @@ export function ArticleView() {
       : []),
   ];
 
-  const isFirstRun = DEV_PREVIEW_FIRST_RUN || (store.subscribes?.length ?? 0) === 0;
+  const isFirstRun =
+    DEV_PREVIEW_FIRST_RUN || (store.subscribes?.length ?? 0) === 0;
   const isClearQuiet =
     !isFirstRun &&
     isAll &&
@@ -486,9 +526,7 @@ export function ArticleView() {
     isEmpty;
 
   if (isFirstRun || isClearQuiet) {
-    return (
-      <EmptyFace mode={isFirstRun ? "first" : "clear"} />
-    );
+    return <EmptyFace mode={isFirstRun ? "first" : "clear"} />;
   }
 
   return (
@@ -518,7 +556,8 @@ export function ArticleView() {
               onSync={syncQueueFeed}
               onMarkAllRead={markQueueAllRead}
               onManage={() =>
-                navigate(`${RouteConfig.SETTINGS}?tab=subscriptions`)}
+                navigate(`${RouteConfig.SETTINGS}?tab=subscriptions`)
+              }
             />
           )}
 
@@ -544,7 +583,8 @@ export function ArticleView() {
         </>
       ) : (
         <>
-          {/* 载体过滤条：全部 = 服务端真实总数；各档计数同为服务端（不随分页截断） */}
+          {/* 载体过滤条：全部 = 服务端真实总数；各档计数同为服务端（不随分页截断）。
+              源棱镜（list-prism.html 契约）挂在计数 tab 之后：按源筛选的按需入口 */}
           <div className="fusion-strip">
             {carrierTabs.map((tab) => (
               <button
@@ -556,11 +596,17 @@ export function ArticleView() {
                 {tab.label}
                 <span className="c">
                   {tab.key === "all"
-                    ? carrierCounts.text + carrierCounts.audio + carrierCounts.video + carrierCounts.email
+                    ? carrierCounts.text +
+                      carrierCounts.audio +
+                      carrierCounts.video +
+                      carrierCounts.email
                     : carrierCounts[tab.key]}
                 </span>
               </button>
             ))}
+            {!(isQueueMode || isStarred) && (
+              <FeedPrism selectedUuid={feedUuid} />
+            )}
             <span className="fusion-strip-meta">
               {t("fusion.strip.meta", { sources: sourceCount, time: lastSync })}
             </span>
@@ -568,13 +614,18 @@ export function ArticleView() {
               <IconButton
                 size="sm"
                 variant="ghost"
-                icon={<RefreshCw size={14} className={store.globalSyncStatus ? "animate-spin" : ""} />}
+                icon={
+                  <RefreshCw
+                    size={14}
+                    className={store.globalSyncStatus ? "animate-spin" : ""}
+                  />
+                }
                 label={t("Sync All")}
                 isDisabled={store.globalSyncStatus}
                 onClick={() => {
                   store.syncAllArticles().finally(() => {
                     refreshCarrierCounts();
-                    mutate();
+                    mutate((pages: any) => pages);
                   });
                 }}
               />
@@ -592,25 +643,22 @@ export function ArticleView() {
         </>
       )}
 
-      {/* 类型过滤已移服务端（kind 参数），列表与计数都是全量口径 */}
+      {/* 时间流：六桶 section（源队列帧 = 单段）；桶头计数来自 get_article_summary */}
       <ArticleListVirtual
-        articles={visibleArticles}
-        title={title}
-        type={type}
-        feedUuid={feedUuid}
-        total={total}
-        isLoading={isLoading}
-        isEmpty={isEmpty || (!isLoading && visibleArticles.length === 0)}
-        isReachingEnd={isReachingEnd}
+        sections={sections}
+        collapsedBuckets={collapsedBuckets}
+        onToggleBucket={toggleBucket}
+        onLoadMore={loadMoreBucket}
+        dayCounts={dayCounts as Record<string, number> | undefined}
+        isEmpty={isEmpty}
         emptyIcon={listEmpty.icon}
         emptyTitle={listEmpty.title}
         emptyHint={listEmpty.hint}
         emptyAction={listEmpty.action}
-        size={size}
-        setSize={setSize}
         onArticleRead={handleArticleRead}
         onArticleUpdate={handleArticleUpdate}
         focusedUuid={focused?.uuid}
+        focusStyleSuppressed={focusStyleSuppressed}
         onExpandArticle={openArticle}
       />
       <ArticleDialogView

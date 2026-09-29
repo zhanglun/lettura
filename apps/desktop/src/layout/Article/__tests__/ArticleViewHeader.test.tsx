@@ -37,15 +37,26 @@ vi.mock("@/helpers/parseXML", () => ({
 
 vi.mock("@/hooks/useArticle", () => ({
   useArticle: () => ({
+    sections: [
+      {
+        bucket: "today",
+        key: "today",
+        rows: [
+          { uuid: "a1", read_status: ArticleReadStatus.UNREAD },
+          { uuid: "a2", read_status: ArticleReadStatus.UNREAD },
+        ],
+        loaded: 2,
+        hasMore: false,
+        loading: false,
+        loadMore: vi.fn(),
+      },
+    ],
     articles: [
       { uuid: "a1", read_status: ArticleReadStatus.UNREAD },
       { uuid: "a2", read_status: ArticleReadStatus.UNREAD },
     ],
     isLoading: false,
-    size: 1,
-    setSize: vi.fn(),
     isEmpty: false,
-    isReachingEnd: false,
     mutate: mocks.mutate,
     isToday: false,
     isAll: false,

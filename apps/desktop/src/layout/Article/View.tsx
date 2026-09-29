@@ -1,11 +1,11 @@
 import { Button } from "@astryxdesign/core/Button";
 import { Kbd } from "@astryxdesign/core/Kbd";
-import { formatDistanceToNow } from "date-fns";
 import { Check, ChevronLeft, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { RowThumb } from "@/components/ArticleItem";
+import { formatRelative } from "@/helpers/feedMeta";
 import { ArticleDetail } from "@/components/ArticleView/Detail";
 import {
   ScrollBox,
@@ -109,9 +109,8 @@ export function View({
         {article && (
           <span className="d-src">
             {article.feed_title} ·{" "}
-            {formatDistanceToNow(
+            {formatRelative(
               new Date(article.pub_date || article.create_date),
-              { addSuffix: true },
             )}
           </span>
         )}
@@ -187,11 +186,10 @@ export function View({
                       <span className="fn">{nextArticle.feed_title}</span>
                     </span>
                     <span className="fusion-date">
-                      {formatDistanceToNow(
+                      {formatRelative(
                         new Date(
                           nextArticle.pub_date || nextArticle.create_date,
                         ),
-                        { addSuffix: true },
                       )}
                     </span>
                     <span />

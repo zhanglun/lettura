@@ -6,13 +6,21 @@
   --fusion-ink: var(--color-text-primary);
   --fusion-sub: var(--color-text-secondary);
   --fusion-ter: color-mix(in srgb, var(--color-text-primary) 48%, transparent);
-  --fusion-glass: color-mix(in srgb, var(--color-background-card) 80%, transparent);
+  --fusion-glass: color-mix(
+    in srgb,
+    var(--color-background-card) 80%,
+    transparent
+  );
   /* 发丝线取主题墨色低透明度，而非主题的 --color-border：个别主题
      （y2k 亮色 #2F292E 近黑 / chocolate #C4AC95 实色棕）把 border 定义为
      高对比实色，作为组件描边是设计意图，铺满 fusion 的分隔线场景则过重；
      色相仍随主题墨色走，明暗由 light-dark() 自动翻转 */
   --fusion-hair: color-mix(in srgb, var(--color-text-primary) 9%, transparent);
-  --fusion-hair2: color-mix(in srgb, var(--color-text-primary) 13%, transparent);
+  --fusion-hair2: color-mix(
+    in srgb,
+    var(--color-text-primary) 13%,
+    transparent
+  );
   --fusion-warn: var(--color-error);
   --fusion-pink: #e86a92;
   --fusion-pink-soft: rgba(232, 106, 146, 0.1);
@@ -45,8 +53,16 @@
   /* 环境光随主题呼吸（2026-11）：左暖＝主题暖色令牌（neutral 桃/matcha 焦糖/y2k 杏），
      右＝主题 accent；两光极淡，切主题即变调 */
   background:
-    radial-gradient(560px 380px at 10% -8%, color-mix(in srgb, var(--color-background-orange) 14%, transparent), transparent 70%),
-    radial-gradient(640px 420px at 90% -12%, color-mix(in srgb, var(--color-accent) 5.5%, transparent), transparent 70%);
+    radial-gradient(
+      560px 380px at 10% -8%,
+      color-mix(in srgb, var(--color-background-orange) 14%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      640px 420px at 90% -12%,
+      color-mix(in srgb, var(--color-accent) 5.5%, transparent),
+      transparent 70%
+    );
 }
 
 /* ── 玻璃主面板（铺满窗口：无外框/圆角，fusion 内容即 app 主体） ── */
@@ -131,6 +147,287 @@
 
 /* ── 同源连跑段头（未读队列按源显影结构）：≥3 篇同源连排时插入，队列仍按时间序 ──
    分组头保留规则线（DESIGN 契约）；动作钮与行尾动作同语：常显 .62，悬停全显 */
+/* ── 日期分隔条（list-prism.html 契约）：时间流唯一导航锚点，
+     段头/折叠/索引条退役（2026-09-29 决策）。吸顶 + 规则线 + 桶内计数 ── */
+.fusion-dayhead {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 20px 7px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--fusion-ter);
+  background: color-mix(in srgb, var(--fusion-ground) 86%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--fusion-hair);
+}
+.fusion-dayhead .rule {
+  flex: 1;
+  height: 1px;
+  background: var(--fusion-hair);
+}
+.fusion-dayhead .n {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+  text-transform: none;
+}
+/* 可收起桶（今天除外）：整行点击收起/展开，行同款 4% 墨洗；收起态规则线变实提示「下面还有」 */
+.fusion-dayhead.is-toggle {
+  cursor: pointer;
+}
+.fusion-dayhead.is-toggle:hover {
+  background: color-mix(in srgb, var(--color-text-primary) 4%, transparent);
+}
+.fusion-dayhead .chev {
+  display: flex;
+  color: var(--fusion-ter);
+  transition: transform 0.15s ease;
+  flex: none;
+}
+.fusion-dayhead .chev.is-closed {
+  transform: rotate(-90deg);
+}
+
+/* ── 源棱镜（list-prism.html 契约）：过滤条右端的源漏斗按钮 + 弹层 ── */
+.fusion-prism {
+  position: relative;
+  margin-left: 6px;
+}
+.fusion-prism-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 10px;
+  border: 1px solid var(--fusion-hair2);
+  border-radius: 999px;
+  font-size: 11.5px;
+  color: var(--fusion-sub);
+  background: color-mix(in srgb, var(--color-background-card) 55%, transparent);
+  cursor: pointer;
+}
+.fusion-prism-btn:hover {
+  border-color: var(--color-accent);
+  color: var(--fusion-ink);
+}
+.fusion-prism-btn.on {
+  border-color: var(--color-accent);
+  color: var(--fusion-ink);
+  background: var(--color-accent-muted);
+  font-weight: 500;
+}
+.fusion-prism-btn .ficons {
+  display: flex;
+  flex-direction: row;
+}
+.fusion-prism-btn .fmini {
+  width: 15px;
+  height: 15px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--color-text-primary) 8%, transparent);
+  font-size: 7.5px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--fusion-sub);
+  margin-left: -4px;
+  border: 1px solid
+    color-mix(in srgb, var(--color-background-card) 80%, transparent);
+  overflow: hidden;
+}
+.fusion-prism-btn .fmini img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.fusion-prism-btn .chev {
+  font-size: 8px;
+  color: var(--fusion-ter);
+}
+.fusion-prism-btn .n {
+  font-variant-numeric: tabular-nums;
+}
+
+.fusion-prism-pop {
+  position: absolute;
+  top: 32px;
+  right: 0;
+  width: 264px;
+  max-height: 420px;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  background: var(--fusion-glass);
+  backdrop-filter: blur(28px) saturate(1.6);
+  border: 1px solid var(--fusion-hair2);
+  border-radius: 14px;
+  box-shadow:
+    0 4px 10px rgba(0, 0, 0, 0.06),
+    0 36px 80px -16px
+    color-mix(in srgb, var(--color-text-primary) 40%, transparent);
+  padding: 6px;
+}
+.fusion-prism-search {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--fusion-hair);
+  margin-bottom: 4px;
+  flex: none;
+}
+.fusion-prism-search input {
+  width: 100%;
+  height: 26px;
+  border: 0;
+  background: none;
+  outline: none;
+  font-size: 12px;
+  color: var(--fusion-ink);
+}
+.fusion-prism-scroll {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  min-height: 0;
+}
+.fusion-prism-scope {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 9px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  cursor: pointer;
+  color: var(--fusion-ink);
+}
+.fusion-prism-scope:hover {
+  background: color-mix(in srgb, var(--color-text-primary) 5%, transparent);
+}
+.fusion-prism-scope .ic {
+  width: 15px;
+  height: 15px;
+  border-radius: 5px;
+  background: var(--fusion-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+.fusion-prism-scope .ic i {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--fusion-ground);
+  display: block;
+}
+.fusion-prism-scope .b {
+  margin-left: auto;
+  font-size: 10.5px;
+  color: var(--fusion-ter);
+  font-variant-numeric: tabular-nums;
+}
+.fusion-prism-h {
+  padding: 7px 9px 3px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--fusion-ter);
+}
+.fusion-prism-f {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 5px 9px;
+  border-radius: 8px;
+  font-size: 12px;
+  cursor: pointer;
+  color: var(--fusion-ink);
+}
+.fusion-prism-f:hover {
+  background: color-mix(in srgb, var(--color-text-primary) 5%, transparent);
+}
+.fusion-prism-f .ficon {
+  width: 16px;
+  height: 16px;
+  border-radius: 5px;
+  background: color-mix(in srgb, var(--color-text-primary) 8%, transparent);
+  font-size: 8px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  color: var(--fusion-sub);
+  overflow: hidden;
+}
+.fusion-prism-f .ficon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.fusion-prism-f .nm {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fusion-prism-f .b {
+  margin-left: auto;
+  font-size: 10.5px;
+  color: var(--fusion-ter);
+  font-variant-numeric: tabular-nums;
+  flex: none;
+}
+.fusion-prism-foot {
+  border-top: 1px solid var(--fusion-hair);
+  margin-top: 4px;
+  padding: 6px 9px 3px;
+  font-size: 10.5px;
+  color: var(--fusion-ter);
+  display: flex;
+  gap: 10px;
+  flex: none;
+}
+.fusion-prism-foot b {
+  color: var(--fusion-sub);
+  font-weight: 500;
+}
+
+/* ── 透镜提示条：棱镜激活后条下浮现，随时一键退回全局 ── */
+.fusion-lens {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 20px;
+  font-size: 11.5px;
+  color: var(--fusion-sub);
+  border-bottom: 1px solid var(--fusion-hair);
+  flex: none;
+  background: var(--color-accent-muted);
+}
+.fusion-lens b {
+  color: var(--fusion-ink);
+  font-weight: 600;
+}
+.fusion-lens .x {
+  margin-left: auto;
+  font-size: 10.5px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  color: var(--fusion-sub);
+  cursor: pointer;
+  flex: none;
+}
+.fusion-lens .x:hover {
+  background: color-mix(in srgb, var(--color-text-primary) 7%, transparent);
+}
+
+/* 段头主规则（.fusion-runhead 本体）在下方恢复 */
+
 .fusion-runhead {
   display: flex;
   align-items: center;
@@ -697,7 +994,8 @@
 .fusion-row.is-focused::after {
   background: color-mix(in srgb, var(--color-accent) 9%, transparent);
   /* 发丝级位置提示：0.5px accent 左线（非被禁的彩色粗侧线），让 j/k 当前位可定位 */
-  border-left: 0.5px solid color-mix(in srgb, var(--color-accent) 45%, transparent);
+  border-left: 0.5px solid
+    color-mix(in srgb, var(--color-accent) 45%, transparent);
 }
 
 .fusion-row.is-focused .fusion-dot {
@@ -730,7 +1028,8 @@
   backdrop-filter: blur(22px) saturate(1.5);
   border: 1px solid var(--fusion-hair2);
   border-radius: 14px;
-  box-shadow: 0 20px 44px -16px color-mix(in srgb, var(--color-text-primary) 26%, transparent);
+  box-shadow: 0 20px 44px -16px
+    color-mix(in srgb, var(--color-text-primary) 26%, transparent);
   display: flex;
   align-items: center;
   gap: 14px;
@@ -815,7 +1114,8 @@
   border-radius: 50%;
   background: var(--color-accent);
   transform: translate(-50%, -50%);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-background-card) 90%, transparent);
+  box-shadow: 0 0 0 3px
+    color-mix(in srgb, var(--color-background-card) 90%, transparent);
   pointer-events: none;
 }
 
@@ -873,7 +1173,10 @@
   font-size: 11.5px;
   color: var(--fusion-sub);
   padding: 0;
-  transition: max-width 0.18s ease, opacity 0.18s ease, padding 0.18s ease,
+  transition:
+    max-width 0.18s ease,
+    opacity 0.18s ease,
+    padding 0.18s ease,
     margin 0.18s ease;
 }
 
@@ -900,7 +1203,8 @@
   background: var(--fusion-glass);
   backdrop-filter: blur(22px) saturate(1.5);
   border: 1px solid var(--fusion-hair2);
-  box-shadow: 0 10px 24px -10px color-mix(in srgb, var(--color-text-primary) 30%, transparent);
+  box-shadow: 0 10px 24px -10px
+    color-mix(in srgb, var(--color-text-primary) 30%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -938,8 +1242,11 @@
   backdrop-filter: blur(28px) saturate(1.6);
   border: 1px solid var(--fusion-hair2);
   border-radius: 16px;
-  box-shadow: 0 1px 0 color-mix(in srgb, var(--color-background-card) 70%, transparent) inset,
-    0 40px 90px -20px color-mix(in srgb, var(--color-text-primary) 40%, transparent);
+  box-shadow:
+    0 1px 0 color-mix(in srgb, var(--color-background-card) 70%, transparent)
+    inset,
+    0 40px 90px -20px
+    color-mix(in srgb, var(--color-text-primary) 40%, transparent);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -1072,7 +1379,8 @@
   border-radius: 50%;
   background: var(--color-accent);
   transform: translate(-50%, -50%);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-background-card) 90%, transparent);
+  box-shadow: 0 0 0 4px
+    color-mix(in srgb, var(--color-background-card) 90%, transparent);
 }
 
 .fusion-fullplayer .f-ctrl {
@@ -1168,10 +1476,12 @@
   border-radius: 14px;
   background: color-mix(in srgb, var(--color-background-card) 94%, transparent);
   backdrop-filter: blur(28px) saturate(1.6);
-  border: 1px solid color-mix(in srgb, var(--color-text-primary) 10%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--color-text-primary) 10%, transparent);
   box-shadow:
     0 4px 10px color-mix(in srgb, var(--color-text-primary) 6%, transparent),
-    0 36px 80px -16px color-mix(in srgb, var(--color-text-primary) 40%, transparent);
+    0 36px 80px -16px
+    color-mix(in srgb, var(--color-text-primary) 40%, transparent);
 }
 
 .fusion-playlist .pl-head {
@@ -1314,7 +1624,8 @@
   align-items: center;
   justify-content: center;
   color: var(--color-accent);
-  box-shadow: 0 12px 28px -10px color-mix(in srgb, var(--color-accent) 35%, transparent);
+  box-shadow: 0 12px 28px -10px
+    color-mix(in srgb, var(--color-accent) 35%, transparent);
   overflow: hidden;
 }
 
@@ -1332,7 +1643,11 @@
   height: 200px;
   border-radius: 14px;
   overflow: hidden;
-  background: linear-gradient(135deg, rgba(232, 106, 146, 0.14), color-mix(in srgb, var(--color-accent) 12%, transparent));
+  background: linear-gradient(
+    135deg,
+    rgba(232, 106, 146, 0.14),
+    color-mix(in srgb, var(--color-accent) 12%, transparent)
+  );
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1369,10 +1684,12 @@
   border-radius: 14px;
   overflow: hidden;
   background: color-mix(in srgb, var(--color-background-card) 94%, transparent);
-  border: 1px solid color-mix(in srgb, var(--color-text-primary) 10%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--color-text-primary) 10%, transparent);
   box-shadow:
     0 4px 10px color-mix(in srgb, var(--color-text-primary) 6%, transparent),
-    0 36px 80px -16px color-mix(in srgb, var(--color-text-primary) 40%, transparent);
+    0 36px 80px -16px
+    color-mix(in srgb, var(--color-text-primary) 40%, transparent);
 }
 
 /* 玻璃模糊放在伪元素上：backdrop-filter 与 transform 一样会创建 fixed/top-layer
@@ -1500,7 +1817,11 @@
   text-decoration: underline;
   text-underline-offset: 3px;
   text-decoration-thickness: 1px;
-  text-decoration-color: color-mix(in srgb, var(--color-accent) 35%, transparent);
+  text-decoration-color: color-mix(
+    in srgb,
+    var(--color-accent) 35%,
+    transparent
+  );
 }
 
 .fusion-article-body a:hover {
@@ -1613,7 +1934,11 @@
 /* 阅读面滚动条：细轨 + 主题派生色（浏览器面也是设计的一部分） */
 .fusion-dscroll {
   scrollbar-width: thin;
-  scrollbar-color: color-mix(in srgb, var(--color-text-primary) 18%, transparent)
+  scrollbar-color: color-mix(
+      in srgb,
+      var(--color-text-primary) 18%,
+      transparent
+    )
     transparent;
 }
 
@@ -1880,7 +2205,8 @@ body.fusion-context-menu-open .fusion-set-body {
 
 .fusion-b-row.is-focused::after {
   background: color-mix(in srgb, var(--color-accent) 9%, transparent);
-  border-left: 0.5px solid color-mix(in srgb, var(--color-accent) 45%, transparent);
+  border-left: 0.5px solid
+    color-mix(in srgb, var(--color-accent) 45%, transparent);
 }
 
 .fusion-b-row.is-focused .fusion-b-name {
@@ -2198,7 +2524,6 @@ body.fusion-context-menu-open .fusion-set-body {
   min-width: 0;
 }
 
-
 .fusion-subs-fh {
   display: flex;
   align-items: center;
@@ -2331,7 +2656,8 @@ body.fusion-context-menu-open .fusion-set-body {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 14px 30px -10px color-mix(in srgb, var(--color-text-primary) 35%, transparent);
+  box-shadow: 0 14px 30px -10px
+    color-mix(in srgb, var(--color-text-primary) 35%, transparent);
   flex: none;
 }
 
@@ -2401,7 +2727,7 @@ body.fusion-context-menu-open .fusion-set-body {
 }
 
 /* ── 静默空态（quiet empty）：小幅空态与 fusion-face 同一语言——
-     发丝线几何 + 排版层级，glyph 为 lucide 统一线重，不画插画 ── */.fusion-empty {
+     发丝线几何 + 排版层级，glyph 为 lucide 统一线重，不画插画 ── */ .fusion-empty {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2616,7 +2942,8 @@ body.fusion-context-menu-open .fusion-set-body {
   color: var(--color-on-accent);
   font-size: 12px;
   font-weight: 600;
-  box-shadow: 0 4px 10px -3px color-mix(in srgb, var(--color-accent) 50%, transparent);
+  box-shadow: 0 4px 10px -3px
+    color-mix(in srgb, var(--color-accent) 50%, transparent);
   opacity: 0.35;
   pointer-events: none;
   transition: opacity 0.15s ease;
@@ -3003,7 +3330,8 @@ body.fusion-context-menu-open .fusion-set-body {
   color: var(--color-accent);
   margin: 28px 0 10px;
   padding: 0 4px 8px;
-  border-bottom: 1px solid color-mix(in srgb, var(--color-accent) 18%, var(--fusion-hair));
+  border-bottom: 1px solid
+    color-mix(in srgb, var(--color-accent) 18%, var(--fusion-hair));
   scroll-margin-top: 20px;
 }
 
@@ -3067,10 +3395,12 @@ body.fusion-context-menu-open .fusion-set-body {
 /* 校准台（预览块） */
 .fusion-prev {
   margin: 18px 0 8px;
-  border: 1px solid color-mix(in srgb, var(--color-accent) 16%, var(--fusion-hair));
+  border: 1px solid
+    color-mix(in srgb, var(--color-accent) 16%, var(--fusion-hair));
   border-radius: 12px;
   background: color-mix(in srgb, var(--color-background-card) 58%, transparent);
-  box-shadow: 0 10px 26px -22px color-mix(in srgb, var(--color-accent) 40%, transparent);
+  box-shadow: 0 10px 26px -22px
+    color-mix(in srgb, var(--color-accent) 40%, transparent);
   padding: 14px 18px 16px;
 }
 
@@ -3123,8 +3453,16 @@ body.dark-theme {
 
 body.dark-theme .fusion-root::before {
   background:
-    radial-gradient(620px 420px at 8% -10%, rgba(232, 80, 96, 0.03), transparent 70%),
-    radial-gradient(700px 460px at 92% -14%, color-mix(in srgb, var(--color-accent) 4.5%, transparent), transparent 70%);
+    radial-gradient(
+      620px 420px at 8% -10%,
+      rgba(232, 80, 96, 0.03),
+      transparent 70%
+    ),
+    radial-gradient(
+      700px 460px at 92% -14%,
+      color-mix(in srgb, var(--color-accent) 4.5%, transparent),
+      transparent 70%
+    );
 }
 
 body.dark-theme .fusion-article-body {
@@ -3281,7 +3619,9 @@ body.dark-theme .fusion-minipill .ring > svg circle:first-child {
 body.dark-theme .fusion-fullplayer {
   background: color-mix(in srgb, var(--color-background-card) 92%, transparent);
   border-color: color-mix(in srgb, var(--color-text-primary) 12%, transparent);
-  box-shadow: 0 1px 0 color-mix(in srgb, var(--color-background-card) 4%, transparent) inset,
+  box-shadow:
+    0 1px 0 color-mix(in srgb, var(--color-background-card) 4%, transparent)
+    inset,
     0 40px 90px -20px rgba(0, 0, 0, 0.6);
 }
 
@@ -3295,7 +3635,8 @@ body.dark-theme .fusion-queue .q-thumb {
 }
 
 body.dark-theme .fusion-fbar i {
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-background-card) 90%, transparent);
+  box-shadow: 0 0 0 4px
+    color-mix(in srgb, var(--color-background-card) 90%, transparent);
 }
 
 body.dark-theme .fusion-mark.quiet {

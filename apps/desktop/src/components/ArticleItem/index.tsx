@@ -1,6 +1,5 @@
 import { IconButton } from "@astryxdesign/core/IconButton";
 import clsx from "clsx";
-import { formatDistanceToNow } from "date-fns";
 import { CheckCheck, Star } from "lucide-react";
 import React, { type ForwardedRef, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -15,6 +14,7 @@ import {
 } from "@/helpers/articleContent";
 import * as dataAgent from "@/helpers/dataAgent";
 import { getCarrier } from "@/helpers/mediaType";
+import { formatRelative } from "@/helpers/feedMeta";
 import { useBearStore } from "@/stores";
 import { ArticleReadStatus, ArticleStarStatus } from "@/typing";
 
@@ -124,9 +124,9 @@ export const ArticleItem = React.forwardRef(
       }
     };
 
-    const timeLabel = formatDistanceToNow(
+    const timeLabel = formatRelative(
       new Date(article.pub_date || article.create_date),
-      { includeSeconds: true, addSuffix: true },
+      { includeSeconds: true },
     );
     // 视频行元信息第二行：时长（媒体附件给出时），替代纯文字行的空缺
     const duration = pickDuration(article);

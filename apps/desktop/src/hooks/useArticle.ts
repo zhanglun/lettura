@@ -1,23 +1,25 @@
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import useSWR from "swr";
 import useSWRInfinite from "swr/infinite";
-import { useBearStore } from "@/stores";
-import * as dataAgent from "@/helpers/dataAgent";
 import { useMatch } from "react-router-dom";
 import { RouteConfig } from "@/config";
-import { ArticleResItem } from "@/db";
-import { useMemo, useCallback, useEffect } from "react";
+import * as dataAgent from "@/helpers/dataAgent";
+import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
+import type { ArticleResItem } from "@/db";
 
 const PAGE_SIZE = 20;
 
-function omitUndefined<T extends Record<string, unknown>>(obj: T): Partial<T> {
+function omitUndefined<T extends Record<string, unknown>>(
+  obj: T,
+): Record<string, unknown> {
   const result: Record<string, unknown> = {};
-  for (const [key, value] of Object.entries(obj)) {
-    if (value !== undefined) {
-      result[key] = value;
+  for (const key of Object.keys(obj)) {
+    if (obj[key] !== undefined) {
+      result[key] = obj[key];
     }
   }
-  return result as Partial<T>;
+  return result;
 }
 
 export interface CarrierCounts {
@@ -25,6 +27,16 @@ export interface CarrierCounts {
   audio: number;
   video: number;
   email: number;
+}
+
+/** 日期桶真实分布（服务端同条件全量口径，与 buckets.ts 同一定义） */
+export interface DayBucketCounts {
+  today: number;
+  yesterday: number;
+  week: number;
+  lastweek: number;
+  month: number;
+  earlier: number;
 }
 
 export interface UseArticleProps {
@@ -43,6 +55,81 @@ export interface UseArticleProps {
    * null = 不过滤（全部）；1/2 = 未读/已读。源队列帧的过滤条用它。
    */
   readStatus?: number | null;
+}
+
+/** 一个时间桶的独立懒加载列表（每桶一条 SWRInfinite 通道，互不阻塞）。
+ *  bucket = 日期桶键（today…earlier）；源队列帧为 null（无日期头） */
+export interface ListSection {
+  bucket: string | null;
+  /** 桶键（bucket ?? "queue"），父级 onLoadMore 回传用 */
+  key: string;
+  rows: ArticleResItem[];
+  /** 已加载行数 */
+  loaded: number;
+  /** 服务端同条件真实总量；缺省 = 未知，回落 loaded */
+  realCount?: number;
+  hasMore: boolean;
+  loading: boolean;
+  loadMore: () => void;
+}
+
+interface BucketPage {
+  list: ArticleResItem[];
+  total: number;
+}
+
+/** 单桶懒加载：day_bucket 走服务端过滤，翻页只翻本桶 */
+function useBucketList(
+  query: Record<string, any>,
+  bucket: string,
+  enabled: boolean,
+  registerMutate: (bucket: string, m: (fn: any) => void) => void,
+) {
+  const getKey = useCallback(
+    (pageIndex: number, previousPageData: BucketPage | null) => {
+      if (!enabled) return null;
+      if (previousPageData && !previousPageData.list?.length) return null;
+      return { ...query, day_bucket: bucket, cursor: pageIndex + 1 };
+    },
+    [query, bucket, enabled],
+  );
+  const { data, size, setSize, isLoading, mutate } = useSWRInfinite(
+    getKey,
+    (q) => dataAgent.getArticleList({ ...q }),
+    {
+      revalidateIfStale: false,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      revalidateFirstPage: false,
+      dedupingInterval: 1000,
+    },
+  );
+
+  // 过滤条件变化（载体 tab/视图切换）时分页深度归零：SWR Infinite 的 size 跨 key
+  // 保留，不重置会让新视图把旧深度页全部并发拉一遍（请求风暴），桶与桶的加载
+  // 状态也会互相纠缠。旧扁平实现有同款 effect，重写时恢复（2026-09-29）
+  useEffect(() => {
+    setSize(1);
+  }, [query, setSize]);
+
+  // 读态/星标等操作经父级 retain 后写回本桶缓存（每桶注册自己的 mutator）
+  const mutateRef = useRef(mutate);
+  mutateRef.current = mutate;
+  useEffect(() => {
+    registerMutate(bucket, (fn: any) => mutateRef.current(fn, false));
+  }, [bucket, registerMutate, mutate]);
+
+  const rows: ArticleResItem[] = data
+    ? data.reduce((acu: ArticleResItem[], cur) => acu.concat(cur.list || []), [])
+    : [];
+  const hasMore = !!data && data[data.length - 1]?.list?.length === PAGE_SIZE;
+  // 首页未拉过 = 尚无数据可判；hasMore 视为真，展开/哨兵会触发首拉
+  const loadMore = useCallback(() => {
+    if (isLoading) return;
+    setSize(size + 1);
+  }, [isLoading, size, setSize]);
+
+  return { rows, loaded: rows.length, hasMore, loading: isLoading, loadMore };
 }
 
 export function useArticle(props: UseArticleProps) {
@@ -98,7 +185,8 @@ export function useArticle(props: UseArticleProps) {
       collection_uuid: collectionUuid || undefined,
       tag_uuid: tagUuid || undefined,
       is_archived: isArchived !== undefined ? (isArchived ? 1 : 0) : undefined,
-      is_read_later: isReadLater !== undefined ? (isReadLater ? 1 : 0) : undefined,
+      is_read_later:
+        isReadLater !== undefined ? (isReadLater ? 1 : 0) : undefined,
       has_notes: hasNotes ? 1 : undefined,
       carrier,
     });
@@ -119,49 +207,61 @@ export function useArticle(props: UseArticleProps) {
     readStatus,
   ]);
 
-  const getKey = useCallback(
-    (pageIndex: number, previousPageData: any) => {
-      if (previousPageData && !previousPageData.list?.length)
-        return null;
+  const isQueue = !!feedUuid;
 
-      return {
-        ...query,
-        cursor: pageIndex + 1,
-      };
+  // ── 源队列帧：单通道扁平分页（单源行数有限，无桶的必要）──
+  const getKey = useCallback(
+    (pageIndex: number, previousPageData: BucketPage | null) => {
+      if (!isQueue) return null;
+      if (previousPageData && !previousPageData.list?.length) return null;
+      return { ...query, cursor: pageIndex + 1 };
     },
-    [query],
+    [isQueue, query],
   );
-  const { data, isLoading, isValidating, size, mutate, setSize, error } = useSWRInfinite(
+  const queue = useSWRInfinite(
     getKey,
     (q) => dataAgent.getArticleList({ ...q }),
     {
       revalidateIfStale: false,
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
-      // 关键：size 推进时默认会重验第一页（revalidateFirstPage 默认 true）——
-      // 与触底加载叠加会形成请求风暴（cursor=1 被重复请求几十次）。本地优先 +
-      // 显式 mutate 的架构下不需要它
       revalidateFirstPage: false,
       dedupingInterval: 1000,
     },
   );
-
-  // 过滤条件变化（载体 tab/源队列/已读切换）时分页深度归零：
-  // SWR Infinite 的 size 跨 key 保留，不重置会让新视图把旧深度页全部拉一遍
+  // 同桶列表：过滤变化时分页深度归零
   useEffect(() => {
-    setSize(1);
-  }, [query, setSize]);
+    if (isQueue) queue.setSize(1);
+  }, [query, isQueue, queue]);
 
-  // 载体过滤条计数：服务端同条件全量（不随分页衰减）。源队列帧无载体条，不取。
-  // key 不含 carrier——各载体 tab 共用同一份计数缓存。
+  // ── 全局视图：六个时间桶各自独立懒加载（时间流契约）。
+  // hooks 固定六路无条件调用，enabled 门控是否发请求──
+  const mutatorsRef = useRef(new Map<string, (fn: any) => void>());
+  const registerMutate = useCallback((bucket: string, m: (fn: any) => void) => {
+    mutatorsRef.current.set(bucket, m);
+  }, []);
+
+  const today = useBucketList(query, "today", !isQueue, registerMutate);
+  const yesterday = useBucketList(query, "yesterday", !isQueue, registerMutate);
+  const week = useBucketList(query, "week", !isQueue, registerMutate);
+  const lastweek = useBucketList(query, "lastweek", !isQueue, registerMutate);
+  const month = useBucketList(query, "month", !isQueue, registerMutate);
+  const earlier = useBucketList(query, "earlier", !isQueue, registerMutate);
+
+  // 载体过滤条计数 + 日期桶分布：服务端同条件单趟扫描（不随分页衰减）。
+  // 全局 summary：顶栏载体 tab 的计数（tab 计数本身就是全局分布，不随激活 tab 变）。
   const countsParams = useMemo(() => {
-    const { carrier: _carrier, limit: _limit, ...rest } = query as Record<string, unknown>;
+    const {
+      carrier: _carrier,
+      limit: _limit,
+      ...rest
+    } = query as Record<string, unknown>;
     return rest;
   }, [query]);
-  const { data: carrierCountsData, mutate: mutateCarrierCounts } = useSWR(
-    feedUuid ? null : ["carrier-counts", countsParams],
+  const { data: globalSummary, mutate: mutateSummary } = useSWR(
+    feedUuid ? null : ["article-summary", countsParams],
     ([, params]: [string, Record<string, unknown>]) =>
-      dataAgent.getCarrierCounts({ ...params }) as Promise<CarrierCounts>,
+      dataAgent.getArticleSummary({ ...params }),
     {
       revalidateIfStale: false,
       revalidateOnFocus: false,
@@ -169,40 +269,122 @@ export function useArticle(props: UseArticleProps) {
       dedupingInterval: 1000,
     },
   );
-  const carrierCounts: CarrierCounts = carrierCountsData ?? {
-    text: 0,
-    audio: 0,
-    video: 0,
-    email: 0,
-  };
 
-  const list = data
-    ? data.reduce(
-        (acu: ArticleResItem[], cur) => acu.concat(cur.list || []),
-        [],
-      )
+  // 作用域 summary：含当前载体 tab——日期头的桶计数必须随 tab 重新统计
+  // （用户实测：切到播客后日期头还挂着全局数字、空桶照样渲染）。
+  // carrier = "all" 时与全局同参，直接复用，不多发一趟。
+  const scopedParams = useMemo(() => {
+    const { limit: _limit, ...rest } = query as Record<string, unknown>;
+    return rest;
+  }, [query]);
+  const { data: scopedSummary } = useSWR(
+    feedUuid || !carrier || carrier === "all"
+      ? null
+      : ["article-summary-scoped", scopedParams],
+    ([, params]: [string, Record<string, unknown>]) =>
+      dataAgent.getArticleSummary({ ...params }),
+    {
+      revalidateIfStale: false,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      dedupingInterval: 1000,
+    },
+  );
+
+  const carrierCounts: CarrierCounts = {
+    text: globalSummary?.text ?? 0,
+    audio: globalSummary?.audio ?? 0,
+    video: globalSummary?.video ?? 0,
+    email: globalSummary?.email ?? 0,
+  };
+  // 日期头口径：有作用域结果用作用域；"全部" tab（无作用域请求）回落全局
+  const bucketSource =
+    !carrier || carrier === "all"
+      ? globalSummary
+      : scopedSummary ?? globalSummary;
+  const dayCounts: DayBucketCounts | undefined = bucketSource
+    ? {
+        today: bucketSource.day_today,
+        yesterday: bucketSource.day_yesterday,
+        week: bucketSource.day_week,
+        lastweek: bucketSource.day_lastweek,
+        month: bucketSource.day_month,
+        earlier: Math.max(
+          0,
+          bucketSource.total -
+            bucketSource.day_today -
+            bucketSource.day_yesterday -
+            bucketSource.day_week -
+            bucketSource.day_lastweek -
+            bucketSource.day_month,
+        ),
+      }
+    : undefined;
+
+  const queueRows: ArticleResItem[] = queue.data
+    ? queue.data.reduce((acu: ArticleResItem[], cur) => acu.concat(cur.list || []), [])
     : [];
-  const articles: ArticleResItem[] = list ? [...list] : [];
-  const isEmpty = !isLoading && list.length === 0;
-  const isReachingEnd =
-    isEmpty || (data && data[data.length - 1]?.list?.length < PAGE_SIZE);
-  // 服务端同条件总数（不衰减分页）
-  const total = data?.[data.length - 1]?.total ?? 0;
+  const queueTotal = queue.data?.[queue.data.length - 1]?.total ?? 0;
+
+  // sections：全局 = 六桶固定顺序（头永远在，真实计数先行）；队列 = 单段
+  const sections: ListSection[] = isQueue
+    ? [
+        {
+          bucket: null,
+          key: "queue",
+          rows: queueRows,
+          loaded: queueRows.length,
+          realCount: queueTotal,
+          hasMore:
+            !!queue.data &&
+            queue.data[queue.data.length - 1]?.list?.length === PAGE_SIZE,
+          loading: queue.isLoading,
+          loadMore: () => queue.setSize(queue.size + 1),
+        },
+      ]
+    : [
+        { bucket: "today", key: "today", ...today },
+        { bucket: "yesterday", key: "yesterday", ...yesterday },
+        { bucket: "week", key: "week", ...week },
+        { bucket: "lastweek", key: "lastweek", ...lastweek },
+        { bucket: "month", key: "month", ...month },
+        { bucket: "earlier", key: "earlier", ...earlier },
+      ].map((s) => ({
+        ...s,
+        realCount: dayCounts
+          ? dayCounts[s.bucket as keyof DayBucketCounts]
+          : undefined,
+      }));
+
+  const articles: ArticleResItem[] = sections.flatMap((s) => s.rows);
+  const isLoadingAny = isQueue
+    ? queue.isLoading
+    : sections.some((s) => s.loading);
+  const isEmpty = !isLoadingAny && articles.length === 0;
+  const total = isQueue ? queueTotal : globalSummary?.total ?? 0;
+
+  // 读态/星标 retain：应用到每一条桶通道的缓存（原扁平版本的 mutate 语义）
+  const mutate = useCallback((fn: (pages: any) => any) => {
+    for (const m of mutatorsRef.current.values()) m(fn);
+    if (isQueue) queueRef.current(fn);
+  }, [isQueue]);
+
+  const queueRef = useRef(queue.mutate);
+  queueRef.current = queue.mutate;
 
   return {
+    sections,
     articles,
     total,
     carrierCounts,
-    refreshCarrierCounts: () => mutateCarrierCounts(),
-    isLoading,
+    dayCounts,
+    refreshCarrierCounts: () => mutateSummary(),
+    isLoading: isLoadingAny,
     mutate,
-    size,
-    setSize,
     isEmpty,
-    isReachingEnd,
     isToday: !!isToday,
     isAll: !!isAll,
     isStarred: !!isStarred,
-    error: error ?? null,
+    error: null,
   };
 }

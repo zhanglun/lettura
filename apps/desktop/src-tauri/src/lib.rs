@@ -166,6 +166,7 @@ pub fn run() {
       cmd::delete_feed,
       cmd::get_articles,
       cmd::get_carrier_counts,
+      cmd::get_article_summary,
       cmd::get_article_detail,
       cmd::get_unread_total,
       cmd::get_collection_metas,

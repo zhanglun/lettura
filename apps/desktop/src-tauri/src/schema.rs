@@ -81,6 +81,7 @@ diesel::table! {
         provider -> Text,
         account_uuid -> Nullable<Text>,
         source_config -> Nullable<Text>,
+        unread_count -> Integer,
     }
 }
 

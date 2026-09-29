@@ -698,10 +698,33 @@
       "loaded_all": "All {{total}} shown",
       "run_marked_toast": "Marked {{count}} articles of {{feed}} as read",
       "run_mark_read_title": "Mark all unread of {{feed}}",
-      "loading_more": "Loading more…"
+      "loading_more": "Loading more…",
+      "day_today": "Today",
+      "day_yesterday": "Yesterday",
+      "day_earlier": "Earlier",
+      "day_count": "{{count}}",
+      "day_collapsed_count": "collapsed · {{count}}",
+      "day_week": "This week",
+      "day_lastweek": "Last week",
+      "day_month": "Last 30 days"
     },
     "read": {
       "time": "{{min}} min read"
+    },
+    "prism": {
+      "open": "Filter by feed",
+      "label": "Feeds",
+      "search_placeholder": "Filter feeds…",
+      "all": "All unread",
+      "groups": "Groups",
+      "empty": "No matching feeds",
+      "esc_close": "close"
+    },
+    "lens": {
+      "only": "Only",
+      "articles": "{{count}} unread",
+      "view_source": "Open source card in Subscriptions",
+      "back_all": "Back to all"
     }
   },
   "Appearance & Reading": "Appearance & Reading",

@@ -74,6 +74,10 @@ pub struct Feed {
 
   #[diesel(sql_type = Nullable<Text>)]
   pub source_config: Option<String>,
+
+  /// 未读数物化（迁移 2026-09-29）：写路径增量维护，订阅树不再 GROUP BY articles
+  #[diesel(sql_type = Integer)]
+  pub unread_count: i32,
 }
 
 #[derive(Debug, Clone, Serialize, Insertable)]

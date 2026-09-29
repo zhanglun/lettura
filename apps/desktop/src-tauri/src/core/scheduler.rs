@@ -305,6 +305,7 @@ mod tests {
       provider: "rss".into(),
       account_uuid: None,
       source_config: None,
+      unread_count: 0,
     }
   }
 

@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
-import {
+import type {
   ArticleResItem,
   FeedResItem,
   SiteRuleSummary,
@@ -63,6 +63,27 @@ export const getCarrierCounts = async (filter: any) => {
   return invoke("get_carrier_counts", { filter });
 };
 
+/** 同条件单趟扫描：total + 四档载体计数 + 六桶日期分布一次返回（首屏原先
+ *  COUNT+counts 两个全表聚合，实测 687ms + 3187ms；合并后全局过滤免 JOIN）。
+ *  day_* 与前端 buckets.ts 同口径：week=前天~6天前、lastweek=7~13、month=14~29；
+ *  earlier = total − 五桶（前端推导） */
+export const getArticleSummary = async (
+  filter: any,
+): Promise<{
+  total: number;
+  text: number;
+  audio: number;
+  video: number;
+  email: number;
+  day_today: number;
+  day_yesterday: number;
+  day_week: number;
+  day_lastweek: number;
+  day_month: number;
+}> => {
+  return invoke("get_article_summary", { filter });
+};
+
 export const fetchFeed = async (
   url: string,
   origin?: string,
@@ -76,7 +97,13 @@ export const fetchFeed = async (
   entries: any[];
   message: string;
 }> => {
-  return invoke("fetch_feed", { url, origin, carrier, providerHint, accountUuid });
+  return invoke("fetch_feed", {
+    url,
+    origin,
+    carrier,
+    providerHint,
+    accountUuid,
+  });
 };
 
 export const subscribeFeed = async (
@@ -86,7 +113,13 @@ export const subscribeFeed = async (
   providerHint?: string,
   accountUuid?: string,
 ): Promise<[FeedResItem, number, string]> => {
-  return invoke("add_feed", { url, origin, carrier, providerHint, accountUuid });
+  return invoke("add_feed", {
+    url,
+    origin,
+    carrier,
+    providerHint,
+    accountUuid,
+  });
 };
 
 // ── 来源账户（IMAP / B站 cookie 等凭据的宿主）────────────────────
@@ -149,21 +182,30 @@ export const updateArticleReadStatus = async (
   article_uuid: string,
   read_status: number,
 ) => {
-  return invoke("update_article_read_status", { uuid: article_uuid, readStatus: read_status });
+  return invoke("update_article_read_status", {
+    uuid: article_uuid,
+    readStatus: read_status,
+  });
 };
 
 export const updateArticleStarStatus = async (
   article_uuid: string,
   star_status: number,
 ) => {
-  return invoke("update_article_star_status", { uuid: article_uuid, starred: star_status });
+  return invoke("update_article_star_status", {
+    uuid: article_uuid,
+    starred: star_status,
+  });
 };
 
 export const updateArticleReadLaterStatus = async (
   article_uuid: string,
   is_read_later: number,
 ) => {
-  return invoke("update_article_read_later_status", { uuid: article_uuid, isReadLater: is_read_later });
+  return invoke("update_article_read_later_status", {
+    uuid: article_uuid,
+    isReadLater: is_read_later,
+  });
 };
 
 export const markAllRead = async (body: {

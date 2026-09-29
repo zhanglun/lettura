@@ -441,6 +441,13 @@ pub fn get_carrier_counts(
 }
 
 #[command]
+pub fn get_article_summary(
+  filter: feed::article::ArticleFilter,
+) -> feed::article::ArticleSummary {
+  feed::article::Article::get_article_summary(filter)
+}
+
+#[command]
 pub fn get_article_detail(uuid: String) -> Option<feed::article::ArticleDetailResult> {
   feed::article::Article::get_article_with_uuid(uuid)
 }

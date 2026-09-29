@@ -127,53 +127,65 @@ pub struct MetaGroup {
   pub sort: i32,
 }
 
-pub fn get_unread_total() -> HashMap<String, i32> {
-  const SQL_QUERY_UNREAD_TOTAL: &str = "
-    SELECT
-      id,
-      feed_uuid,
-      count(read_status) as unread_count
-    FROM articles
-    WHERE read_status = 1
-    GROUP BY feed_uuid;
-  ";
-  let sql_folders: &str = "
-    SELECT
-      child_uuid,
-      parent_uuid,
-      sort
-    FROM feed_metas;
-  ";
-
-  let mut connection = db::establish_connection();
-  let record = diesel::sql_query(SQL_QUERY_UNREAD_TOTAL)
-    .load::<UnreadTotal>(&mut connection)
-    .unwrap_or(vec![]);
-  let total_map = record
-    .clone()
-    .into_iter()
-    .map(|r| (r.feed_uuid.clone(), r.unread_count.clone()))
-    .collect::<HashMap<String, i32>>();
-  let meta_group = diesel::sql_query(sql_folders)
-    .load::<MetaGroup>(&mut connection)
-    .unwrap_or(vec![]);
-  let mut result_map: HashMap<String, i32> = HashMap::new();
-
-  for group in meta_group {
-    if let Some(count) = total_map.get(&group.child_uuid) {
-      if group.parent_uuid != "".to_string() {
-        let c = result_map.entry(group.parent_uuid).or_insert(0);
-
-        *c += count;
-      }
-
-      result_map.entry(group.child_uuid).or_insert(count.clone());
-    }
+/// 订阅树未读数物化（迁移 2026-09-29）的增量维护：
+/// feeds.unread_count += delta（可负）。写路径（新文章入库/标记已读）调用，
+/// get_unread_total 只读该列，不再对 articles 全表 GROUP BY（36k 行 217ms → 0）。
+pub fn adjust_unread_count(feed_uuids: &[String], delta: i32) {
+  if feed_uuids.is_empty() || delta == 0 {
+    return;
   }
+  let mut connection = db::establish_connection();
+  diesel::update(schema::feeds::dsl::feeds.filter(schema::feeds::uuid.eq_any(feed_uuids)))
+    .set(schema::feeds::unread_count.eq(schema::feeds::unread_count + delta))
+    .execute(&mut connection)
+    .ok();
+}
 
-  for i in record {
-    if let Some(count) = total_map.get(&i.feed_uuid) {
-      result_map.entry(i.feed_uuid).or_insert(count.clone());
+/// 按实际未读数校准（大批量变更后调用；COUNT 走
+/// idx_articles_feed_uuid_read_status 索引，单源毫秒级）
+pub fn recalc_unread_count(feed_uuids: &[String]) {
+  if feed_uuids.is_empty() {
+    return;
+  }
+  let mut connection = db::establish_connection();
+  for uuid in feed_uuids {
+    let actual: i64 = schema::articles::dsl::articles
+      .filter(schema::articles::feed_uuid.eq(uuid))
+      .filter(schema::articles::read_status.eq(1))
+      .count()
+      .get_result(&mut connection)
+      .unwrap_or(0);
+    diesel::update(schema::feeds::dsl::feeds.filter(schema::feeds::uuid.eq(uuid)))
+      .set(schema::feeds::unread_count.eq(actual as i32))
+      .execute(&mut connection)
+      .ok();
+  }
+}
+
+/// 订阅树未读数：读物化列（feeds.unread_count，写路径增量维护），
+/// 不再对 articles 全表 GROUP BY（36k 行实测 217ms，每次同步事件都触发）
+pub fn get_unread_total() -> HashMap<String, i32> {
+  let mut connection = db::establish_connection();
+  let feeds: Vec<models::Feed> = schema::feeds::dsl::feeds
+    .load(&mut connection)
+    .unwrap_or(vec![]);
+
+  let mut result_map: HashMap<String, i32> = HashMap::new();
+  // 子源未读向上累加到分组（原 GROUP BY 版本的同语义）
+  for feed in &feeds {
+    result_map.insert(feed.uuid.clone(), feed.unread_count.max(0));
+  }
+  let relations: Vec<MetaGroup> = diesel::sql_query(
+    "SELECT child_uuid, parent_uuid, sort FROM feed_metas",
+  )
+  .load(&mut connection)
+  .unwrap_or(vec![]);
+  for group in relations {
+    if group.parent_uuid.is_empty() {
+      continue;
+    }
+    if let Some(count) = result_map.get(&group.child_uuid).copied() {
+      *result_map.entry(group.parent_uuid).or_insert(0) += count;
     }
   }
 

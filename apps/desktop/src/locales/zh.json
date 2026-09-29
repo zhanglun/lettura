@@ -714,10 +714,33 @@
       "loaded_all": "共 {{total}} 篇 · 已全部显示",
       "run_marked_toast": "已标记「{{feed}}」{{count}} 篇已读",
       "run_mark_read_title": "标记「{{feed}}」的全部未读",
-      "loading_more": "正在加载更多…"
+      "loading_more": "正在加载更多…",
+      "day_today": "今天",
+      "day_yesterday": "昨天",
+      "day_earlier": "更早",
+      "day_count": "{{count}} 篇",
+      "day_collapsed_count": "已收起 · {{count}} 篇",
+      "day_week": "本周",
+      "day_lastweek": "上周",
+      "day_month": "30 天内"
     },
     "read": {
       "time": "约 {{min}} 分钟"
+    },
+    "prism": {
+      "open": "按订阅源筛选",
+      "label": "源",
+      "search_placeholder": "筛选订阅源…",
+      "all": "全部未读",
+      "groups": "分组",
+      "empty": "没有匹配的订阅源",
+      "esc_close": "收起"
+    },
+    "lens": {
+      "only": "只看",
+      "articles": "{{count}} 篇未读",
+      "view_source": "在订阅浏览中查看源站卡",
+      "back_all": "退回全部"
     }
   },
   "Appearance & Reading": "外观与阅读",
