@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>方案 B · 源面板双栏 — 未读列表重设计</title>
+<style>
+  :root{
+    --ground:#F4F4F1;
+    --ink:#1D1E20; --sub:#6A6C6E; --ter:#9EA0A2;
+    --glass:rgba(255,255,255,.78);
+    --hair:rgba(29,30,32,.08); --hair2:rgba(29,30,32,.13);
+    --accent:#5E6AD2; --accent-soft:rgba(94,109,210,.1); --accent-line:rgba(94,109,210,.35);
+    --pink:#E86A92; --pink-soft:rgba(232,106,146,.1);
+    --amber:#E5A50A;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{width:1180px;height:738px;overflow:hidden;}
+  body{
+    background:var(--ground);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Helvetica Neue",sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--accent-soft);}
+  button{font:inherit;border:0;background:none;cursor:pointer;color:inherit;}
+  kbd{font-family:inherit;font-size:10.5px;color:var(--sub);border:1px solid var(--hair2);border-radius:4px;padding:0 4.5px;line-height:15px;background:rgba(255,255,255,.7);}
+
+  .stage::before{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:
+      radial-gradient(560px 380px at 10% -8%,rgba(232,80,96,.05),transparent 70%),
+      radial-gradient(640px 420px at 90% -12%,rgba(94,109,210,.055),transparent 70%);
+  }
+  .stage{width:1180px;height:738px;position:relative;}
+
+  .panel{
+    position:absolute;inset:22px;
+    background:var(--glass);backdrop-filter:blur(22px) saturate(1.5);
+    border:1px solid var(--hair2);border-radius:16px;
+    box-shadow:0 1px 0 rgba(255,255,255,.7) inset,0 32px 64px -20px rgba(29,30,32,.28);
+    display:flex;flex-direction:column;overflow:hidden;
+  }
+
+  .top{height:54px;display:flex;align-items:center;padding:0 20px;gap:10px;border-bottom:1px solid var(--hair);flex:none;}
+  .logo{width:20px;height:20px;border-radius:7px;background:var(--ink);display:flex;align-items:center;justify-content:center;flex:none;}
+  .logo i{width:5px;height:5px;border-radius:50%;background:#fff;}
+  .sec{font-size:13px;font-weight:600;}
+  .cnt{font-size:11px;color:var(--sub);background:rgba(29,30,32,.06);border-radius:999px;padding:1.5px 8px;font-variant-numeric:tabular-nums;}
+  .nav{display:flex;gap:4px;margin-left:14px;}
+  .nav a{font-size:12.5px;color:var(--sub);text-decoration:none;padding:4px 10px;border-radius:7px;cursor:pointer;}
+  .nav a:hover{background:rgba(29,30,32,.05);}
+  .nav a.on{color:var(--ink);font-weight:600;background:rgba(29,30,32,.06);}
+  .spring{flex:1;}
+  .cmdbtn{display:flex;align-items:center;gap:8px;height:30px;padding:0 10px;border:1px solid var(--hair2);border-radius:9px;font-size:12px;color:var(--sub);background:rgba(255,255,255,.55);}
+  .cmdbtn:hover{border-color:var(--accent);color:var(--ink);}
+
+  /* ── 方案 B：240px 源面板 + 内容列 ── */
+  .shell{flex:1;display:flex;min-height:0;}
+
+  .rail{
+    width:236px;flex:none;border-right:1px solid var(--hair);
+    display:flex;flex-direction:column;min-height:0;
+    background:rgba(255,255,255,.35);
+  }
+  .rail-search{padding:10px 12px 6px;flex:none;}
+  .rail-search input{
+    width:100%;height:28px;border:1px solid var(--hair2);border-radius:8px;
+    background:rgba(255,255,255,.6);padding:0 9px;font-size:12px;color:var(--ink);outline:none;
+  }
+  .rail-search input:focus{border-color:var(--accent);}
+  .rail-scroll{flex:1;overflow-y:auto;padding:2px 8px 12px;scrollbar-width:thin;}
+
+  .scope{
+    display:flex;align-items:center;gap:8px;width:100%;
+    padding:6px 9px;border-radius:8px;font-size:12.5px;color:var(--ink);cursor:pointer;
+  }
+  .scope:hover{background:rgba(29,30,32,.045);}
+  .scope.on{background:var(--accent-soft);font-weight:600;}
+  .scope .ic{width:16px;height:16px;border-radius:5px;background:var(--ink);display:flex;align-items:center;justify-content:center;flex:none;}
+  .scope .ic i{width:4px;height:4px;border-radius:50%;background:#fff;display:block;}
+  .scope .b{margin-left:auto;font-size:10.5px;color:var(--sub);font-variant-numeric:tabular-nums;}
+  .scope.on .b{color:var(--accent);font-weight:600;}
+
+  .grp{margin-top:10px;}
+  .grp-h{
+    display:flex;align-items:center;gap:5px;width:100%;
+    padding:4px 9px;font-size:11px;font-weight:600;color:var(--sub);cursor:pointer;border-radius:6px;
+  }
+  .grp-h:hover{background:rgba(29,30,32,.045);}
+  .grp-h .chev{transition:transform .15s ease;font-size:9px;color:var(--ter);}
+  .grp-h.closed .chev{transform:rotate(-90deg);}
+  .grp-h .b{margin-left:auto;font-size:10.5px;color:var(--ter);font-variant-numeric:tabular-nums;}
+
+  .feed{
+    display:flex;align-items:center;gap:8px;width:100%;
+    padding:5px 9px;border-radius:8px;font-size:12.5px;color:var(--ink);cursor:pointer;
+  }
+  .feed:hover{background:rgba(29,30,32,.045);}
+  .feed.on{background:var(--accent-soft);font-weight:500;}
+  .feed .ficon{width:16px;height:16px;border-radius:5px;background:rgba(29,30,32,.08);font-size:8px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none;color:var(--sub);}
+  .feed .ficon.pod{background:var(--accent-soft);color:var(--accent);}
+  .feed .ficon.vid{background:var(--pink-soft);color:var(--pink);}
+  .feed .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .feed .b{margin-left:auto;font-size:10.5px;font-variant-numeric:tabular-nums;color:var(--sub);flex:none;}
+  .feed .b.hot{color:var(--accent);font-weight:600;}
+  .grp.closed .feed{display:none;}
+
+  .rail-foot{flex:none;border-top:1px solid var(--hair);padding:8px 12px;display:flex;gap:6px;align-items:center;font-size:10.5px;color:var(--ter);}
+  .rail-foot .add{display:flex;align-items:center;gap:5px;padding:4px 8px;border-radius:7px;font-size:11.5px;color:var(--sub);}
+  .rail-foot .add:hover{background:rgba(29,30,32,.05);color:var(--ink);}
+
+  .content{flex:1;display:flex;flex-direction:column;min-width:0;}
+  .crumb{height:42px;display:flex;align-items:center;gap:6px;padding:0 16px;border-bottom:1px solid var(--hair);flex:none;font-size:12.5px;}
+  .crumb .where{font-weight:600;display:flex;align-items:center;gap:7px;}
+  .crumb .ficon{width:16px;height:16px;border-radius:5px;background:var(--pink-soft);color:var(--pink);font-size:8px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+  .crumb .meta{margin-left:auto;font-size:11px;color:var(--ter);font-variant-numeric:tabular-nums;}
+  .crumb .mk{font-size:11px;color:var(--sub);padding:3px 8px;border-radius:7px;}
+  .crumb .mk:hover{background:rgba(29,30,32,.05);}
+
+  .list{flex:1;overflow-y:auto;padding-bottom:96px;scrollbar-width:thin;}
+  .day{
+    position:sticky;top:0;z-index:3;
+    display:flex;align-items:center;gap:8px;
+    padding:9px 16px 7px;
+    font-size:10px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;
+    color:var(--ter);
+    background:rgba(244,244,241,.86);backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--hair);
+  }
+  .day .rule{flex:1;height:1px;background:var(--hair);}
+  .day .n{font-variant-numeric:tabular-nums;letter-spacing:0;text-transform:none;}
+
+  .row{
+    display:grid;grid-template-columns:20px 76px minmax(0,1fr) 132px 64px;
+    align-items:center;height:52px;padding-right:16px;cursor:pointer;position:relative;
+  }
+  .row::after{content:"";position:absolute;inset:3px 6px 3px 4px;border-radius:8px;background:transparent;pointer-events:none;}
+  .row:hover::after{background:rgba(29,30,32,.04);}
+  .row:hover .act{opacity:1;}
+  .st{display:flex;justify-content:center;position:relative;z-index:1;}
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);}
+  .read .dot{background:#CFD1D3;}
+  .thumb{
+    width:76px;height:43px;border-radius:7px;border:1px solid var(--hair);
+    background:rgba(29,30,32,.04);overflow:hidden;position:relative;flex:none;
+    display:flex;align-items:center;justify-content:center;
+    font-size:9px;font-weight:700;color:var(--sub);
+  }
+  .thumb.pod{background:var(--accent-soft);color:var(--accent);}
+  .thumb.vid{background:var(--pink-soft);color:var(--pink);}
+  .thumb.img{background:linear-gradient(135deg,#DDE0E3,#C9CDD2);}
+  .dur{position:absolute;right:3px;bottom:3px;padding:1px 4px;border-radius:4px;background:rgba(0,0,0,.66);color:#fff;font-size:10px;line-height:1.5;font-variant-numeric:tabular-nums;font-style:normal;}
+  .t{font-size:13.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 10px;position:relative;z-index:1;}
+  .read .t{color:var(--ter);font-weight:400;}
+  .d{font-size:11.5px;color:var(--ter);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;padding-right:12px;position:relative;z-index:1;}
+  .acts{display:flex;justify-content:center;align-items:center;gap:6px;position:relative;z-index:1;}
+  .act{opacity:0;transition:opacity .12s ease;color:var(--sub);display:flex;font-size:11px;}
+  .act.star{color:var(--amber);}
+
+  .foot{
+    position:absolute;left:236px;right:0;bottom:0;z-index:4;
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    padding:10px 0 12px;font-size:11px;color:var(--ter);font-variant-numeric:tabular-nums;
+    background:linear-gradient(transparent,var(--ground) 40%);
+  }
+
+  .anno{
+    position:absolute;right:34px;bottom:104px;width:300px;z-index:6;
+    font-size:11px;line-height:1.7;color:var(--sub);
+    background:rgba(255,255,255,.94);border:1px solid var(--hair2);border-radius:12px;
+    padding:12px 14px;box-shadow:0 12px 32px -12px rgba(29,30,32,.25);
+  }
+  .anno b{color:var(--ink);}
+  .anno .k{font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--accent);margin-bottom:6px;}
+  .anno ul{margin:6px 0 0 14px;}
+  .anno li{margin-bottom:2px;}
+</style>
+</head>
+<body>
+<div class="stage">
+  <main class="panel">
+    <header class="top">
+      <span class="logo"><i></i></span>
+      <span class="sec">Lettura</span>
+      <span class="cnt">36225</span>
+      <nav class="nav">
+        <a class="on">未读</a><a>星标</a><a>历史</a><a>订阅</a>
+      </nav>
+      <span class="spring"></span>
+      <button class="cmdbtn">🔍 搜索或输入命令 <kbd>⌘K</kbd></button>
+      <button class="cmdbtn">?</button>
+    </header>
+
+    <div class="shell">
+      <aside class="rail">
+        <div class="rail-search"><input placeholder="筛选订阅源…" /></div>
+        <div class="rail-scroll">
+          <button class="scope on"><span class="ic"><i></i></span>全部未读<span class="b">36225</span></button>
+          <button class="scope">稍后读<span class="b">12</span></button>
+
+          <div class="grp">
+            <button class="grp-h"><span class="chev">▾</span>掘金<span class="b">4</span></button>
+            <button class="feed"><span class="ficon">掘</span><span class="nm">掘金</span><span class="b hot">4</span></button>
+          </div>
+
+          <div class="grp">
+            <button class="grp-h"><span class="chev">▾</span>技术博客<span class="b">27</span></button>
+            <button class="feed"><span class="ficon">D</span><span class="nm">Dev.to</span><span class="b hot">22</span></button>
+            <button class="feed"><span class="ficon">S</span><span class="nm">Six Colors</span><span class="b">4</span></button>
+            <button class="feed"><span class="ficon">P</span><span class="nm">Phys.org</span><span class="b">1</span></button>
+          </div>
+
+          <div class="grp">
+            <button class="grp-h"><span class="chev">▾</span>视频<span class="b">31</span></button>
+            <button class="feed"><span class="ficon vid">B</span><span class="nm">影视飓风</span><span class="b hot">18</span></button>
+            <button class="feed"><span class="ficon vid">B</span><span class="nm">老石谈芯</span><span class="b">13</span></button>
+          </div>
+
+          <div class="grp">
+            <button class="grp-h"><span class="chev">▾</span>播客<span class="b">845</span></button>
+            <button class="feed"><span class="ficon pod">内</span><span class="nm">内核恐慌</span><span class="b hot">210</span></button>
+            <button class="feed"><span class="ficon pod">声</span><span class="nm">声东击西</span><span class="b">96</span></button>
+          </div>
+
+          <div class="grp">
+            <button class="grp-h"><span class="chev">▾</span>新闻<span class="b">59</span></button>
+            <button class="feed"><span class="ficon">人</span><span class="nm">人民日报</span><span class="b">59</span></button>
+          </div>
+        </div>
+        <div class="rail-foot">
+          <button class="add">＋ 添加订阅</button>
+          <span style="margin-left:auto;">268 源</span>
+        </div>
+      </aside>
+
+      <section class="content">
+        <div class="crumb">
+          <span class="where"><span class="ficon">B</span>影视飓风</span>
+          <span style="color:var(--ter);">·</span>
+          <span style="color:var(--ter);font-size:11.5px;">18 篇未读</span>
+          <span class="spring" style="flex:1;"></span>
+          <button class="mk">全部已读</button>
+          <button class="mk">浏览器打开源站</button>
+        </div>
+
+        <div class="list">
+          <div class="day">今天<span class="rule"></span><span class="n">3 篇</span></div>
+          <div class="row">
+            <span class="st"><span class="dot"></span></span>
+            <span class="thumb vid">B<span class="dur">12:34</span></span>
+            <span class="t">[Playlist] 秋天的窗，让下午变得很浪漫｜光落在桌上，时间也跟着温柔</span>
+            <span class="d">09:12</span>
+            <span class="acts"><button class="act star">★</button><button class="act">✓</button></span>
+          </div>
+          <div class="row">
+            <span class="st"><span class="dot"></span></span>
+            <span class="thumb vid">B<span class="dur">08:12</span></span>
+            <span class="t">实拍：把工作室搬进山里一个月，效率发生了什么变化</span>
+            <span class="d">昨天 18:47</span>
+            <span class="acts"><button class="act star">★</button><button class="act">✓</button></span>
+          </div>
+          <div class="row">
+            <span class="st"><span class="dot"></span></span>
+            <span class="thumb vid">B<span class="dur">21:05</span></span>
+            <span class="t">我们拆了一台停产的胶片扫描仪，发现了厂商不会告诉你的事</span>
+            <span class="d">09:02</span>
+            <span class="acts"><button class="act star">★</button><button class="act">✓</button></span>
+          </div>
+
+          <div class="day">更早<span class="rule"></span><span class="n">15 篇</span></div>
+          <div class="row read">
+            <span class="st"><span class="dot"></span></span>
+            <span class="thumb vid">B<span class="dur">15:41</span></span>
+            <span class="t">为什么 4K 片源看起来还是不如胶片</span>
+            <span class="d">周三 20:11</span>
+            <span class="acts"><button class="act star">★</button><button class="act">↩</button></span>
+          </div>
+          <div class="row">
+            <span class="st"><span class="dot"></span></span>
+            <span class="thumb vid">B<span class="dur">09:59</span></span>
+            <span class="t">一卷胶卷的化学：显影液里到底发生了什么</span>
+            <span class="d">周三 12:30</span>
+            <span class="acts"><button class="act star">★</button><button class="act">✓</button></span>
+          </div>
+        </div>
+
+        <div class="foot"><span class="spinner" style="display:none;"></span> 已加载 5 / 18 · 已全部显示</div>
+      </section>
+    </div>
+
+    <aside class="anno">
+      <div class="k">方案 B · 源面板双栏</div>
+      <b>把「按源」从时间流里拿出来，变成显式导航：</b>
+      <ul>
+        <li>左栏源树（分组/徽标/筛选框），右栏永远是单一范围的纯时间流</li>
+        <li>列表查询永远走单源索引（feed_uuid 索引直取），全部未读=一次 keyset 流</li>
+        <li>按源操作有固定归宿（栏内 hover 即「全部已读」），徽标=物化计数，不再 GROUP BY 36k 行</li>
+        <li>占宽 236px；窄窗口/沉浸阅读时整栏可收起</li>
+      </ul>
+    </aside>
+  </main>
+</div>
+</body>
+</html>

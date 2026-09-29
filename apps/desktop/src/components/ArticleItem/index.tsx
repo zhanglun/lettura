@@ -139,7 +139,6 @@ export const ArticleItem = React.forwardRef(
       <div
         className={clsx(
           "fusion-row",
-          getCarrier(article) === "video" && "is-video",
           readStatus === ArticleReadStatus.READ && "is-read",
           focused && "is-focused",
         )}

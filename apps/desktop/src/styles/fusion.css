@@ -486,8 +486,9 @@
   /* 时间列固定 120px：最长相对时间（"about 13 hours ago" ≈111px）放得下且全行左缘对齐
      （max-content 会让每行宽度随文案浮动，时间左缘/与源列的间距参差）；132px = 最长英文文案 111px + 内距 20px；
      超长文案由 .fusion-date 省略号防御；操作列 64px 容纳双图标；
-     视频行走 .is-video 把封面列加宽到 16:9（76×43），宽度差由标题列吸收 */
-  grid-template-columns: 20px 56px minmax(0, 1fr) 170px 132px 64px;
+     缩略图列全载体统一 76×43（精确 16:9，2026-09-29 放大）——视频封面与
+     文章首图同尺寸，混排队列左列对齐 */
+  grid-template-columns: 20px 76px minmax(0, 1fr) 170px 132px 64px;
   align-items: center;
   /* Astryx 呼吸缝：步距 54 = 内容 52 + 行间 2px（ground 透出成缝） */
   height: 52px;
@@ -498,9 +499,6 @@
   user-select: none;
   position: relative;
   z-index: 0;
-}
-.fusion-row.is-video {
-  grid-template-columns: 20px 76px minmax(0, 1fr) 170px 132px 64px;
 }
 
 /* 列表行词汇对齐 Astryx（2026-10）：圆角内衬洗色（同菜单项 8px）、无发丝分隔线、
@@ -540,8 +538,8 @@
 
 /* 行首缩略图：内容 banner / 预览图，无图落预设（类型色块 + 字符） */
 .fusion-thumb {
-  width: 56px;
-  height: 34px;
+  width: 76px;
+  height: 43px;
   border-radius: 7px;
   border: 1px solid var(--fusion-hair);
   background: color-mix(in srgb, var(--color-text-primary) 4%, transparent);
@@ -572,9 +570,8 @@
 
 /* 视频行变体：16:9 加宽封面 + 右下时长角标（视频是先看封面和时长再决定点开的载体） */
 .fusion-thumb.vid {
-  width: 76px;
-  height: 43px;
   position: relative;
+  background: var(--fusion-pink-soft);
 }
 .fusion-thumb.vid img {
   width: 100%;
@@ -3096,12 +3093,11 @@ body.fusion-context-menu-open .fusion-set-body {
 
 .fusion-prev .prow {
   display: grid;
-  /* 预览行 4 子元素：状态点 / 缩略图 / 标题 / 来源；
-     旧模板混入了文章行的操作列（20px+56px），标题落进 20px 窄列向右溢出盖住来源 */
-  grid-template-columns: 16px 56px minmax(0, 1fr) 140px;
+  /* 预览行 4 子元素：状态点 / 缩略图 / 标题 / 来源（列宽随真实列表 76px 封面同步） */
+  grid-template-columns: 16px 76px minmax(0, 1fr) 140px;
   align-items: center;
-  /* 跟随密度令牌：校准台预览即真实行高 */
-  height: var(--row-h, 54px);
+  /* 跟随密度令牌：校准台预览即真实行高；76×43 封面要求行高不低于 52px */
+  height: max(var(--row-h, 54px), 52px);
   border-bottom: 1px solid var(--fusion-hair);
 }
 
