@@ -1,0 +1,55 @@
+---
+/** 下载段：平台入口 + GitHub；双语短句。 */
+import L from "~/components/L.astro";
+---
+
+<section id="download" class="mx-auto max-w-6xl scroll-mt-20 pb-24 pt-10">
+  <div
+    class="rounded-2xl border border-[var(--color-hair2)] bg-panel px-7 py-12 text-center shadow-panel sm:px-12"
+  >
+    <p class="section-eyebrow"><L en="DOWNLOAD" zh="下载" /></p>
+    <h2 class="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">
+      <L en="Open it, read it, close it." zh="打开，读完，关掉。" />
+    </h2>
+    <p class="mx-auto mt-4 max-w-md text-[15px] text-[var(--color-text-offset)]">
+      <L
+        en="Free, open source, MIT. macOS and Windows builds from CI."
+        zh="免费开源，MIT 许可。macOS 与 Windows 构建由 CI 发布。"
+      />
+    </p>
+    <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+      <a
+        class="btn-ink"
+        href="https://github.com/zhanglun/lettura/releases"
+        target="_blank"
+        rel="noopener"
+      >
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M8 2.5v9M5 8.5 8 11.5l3-3M3 13.5h10"/></svg>
+        <L en="macOS &amp; Windows" zh="macOS 与 Windows" />
+      </a>
+      <a
+        class="btn-gh"
+        href="https://github.com/zhanglun/lettura"
+        target="_blank"
+        rel="noopener"
+      >
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 .2a8 8 0 0 0-2.53 15.59c.4.07.55-.17.55-.38l-.01-1.49c-2.23.49-2.7-1.07-2.7-1.07-.36-.93-.89-1.18-.89-1.18-.73-.5.06-.49.06-.49.8.06 1.23.83 1.23.83.72 1.23 1.88.88 2.34.67.07-.52.28-.88.51-1.08-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.83-2.15-.09-.2-.36-1.02.08-2.12 0 0 .67-.22 2.2.82a7.66 7.66 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.17 1.92.08 2.12.52.56.83 1.28.83 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48l-.01 2.2c0 .21.15.46.55.38A8 8 0 0 0 8 .2Z"/></svg>
+        <L en="Star on GitHub" zh="去 GitHub 点星" />
+      </a>
+    </div>
+    <p class="mt-6 text-[11.5px] text-[var(--color-ter)]">
+      <L
+        en="Import your OPML, press"
+        zh="导入 OPML，按"
+      /> <span class="kbd">?</span> <L en="— the rest is reading." zh="——剩下的就是阅读。" />
+    </p>
+  </div>
+</section>
+
+<style>
+  .bg-panel {
+    background: var(--color-panel);
+    backdrop-filter: blur(22px) saturate(1.5);
+    box-shadow: var(--shadow-panel);
+  }
+</style>

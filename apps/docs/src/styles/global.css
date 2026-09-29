@@ -1,12 +1,79 @@
-/* TODO: consider creating <Button> and <GradientText> components */
-a,
-.btn {
-  @apply transition-colors duration-200;
-  @apply hover:text-secondary;
-  @apply focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2 focus:ring-offset-transparent;
+/* fusion 世界通用件（对齐 apps/desktop/DESIGN.md） */
+
+/* 单地址双语：html[data-lang] 驱动，默认英文（无 data-lang 时按 en 渲染） */
+html:not([data-lang="zh"]) .l10n-zh {
+  display: none !important;
 }
 
-.gradient-text {
-  @apply bg-clip-text text-transparent;
-  @apply bg-gradient-to-br from-indigo-500 via-fuchsia-500 to-pink-500;
+html[data-lang="zh"] .l10n-en {
+  display: none !important;
+}
+
+a,
+.btn {
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+/* 章节字：11px/700/.1em/ter（DESIGN.md 组件语法） */
+.section-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--color-ter);
+}
+
+/* kbd：app 同款词汇 */
+.kbd {
+  font-family: inherit;
+  font-size: 10.5px;
+  color: var(--color-text-offset);
+  border: 1px solid var(--color-hair2);
+  border-radius: 4px;
+  padding: 0 4.5px;
+  line-height: 15px;
+  background: var(--kbd-bg);
+  white-space: nowrap;
+}
+
+/* 主钮＝墨底 · 幽灵钮＝发丝边（app 控件词汇） */
+.btn-ink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--color-text);
+  color: var(--color-background);
+  font-size: 14px;
+  font-weight: 600;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+[data-theme="dark"] .btn-ink {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.btn-ink:hover {
+  transform: scale(1.03);
+}
+
+.btn-gh {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 18px;
+  border: 1px solid var(--color-hair2);
+  border-radius: 10px;
+  font-size: 14px;
+  color: var(--color-text-offset);
+  background: var(--color-card);
+}
+
+.btn-gh:hover {
+  color: var(--color-text);
+  border-color: var(--color-ter);
 }

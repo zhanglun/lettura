@@ -1,139 +1,106 @@
 ---
-import { Icon } from "astro-icon";
 import ThemeSwitcher from "~/components/theme-switcher.astro";
+import L from "~/components/L.astro";
 import type { NavItem } from "~/types";
 
 const navItems: Array<NavItem> = [
   { title: "Features", url: "#features" },
-  // { title: "Compatibility", url: "#compatibility" },
-  { title: "Showcase", url: "#showcase" },
+  { title: "Player", url: "#player" },
+  { title: "Download", url: "#download" },
 ];
 ---
 
 <header
-  id="page-header"
-  class="absolute bottom-0 z-20 flex w-full items-center justify-between border-b border-transparent px-8 py-4 text-white"
+  class="sticky top-0 z-20 border-b border-[var(--color-hairline)] bg-[var(--color-background)]/80 backdrop-blur-md"
 >
-  <a class="flex items-center gap-3 hover:!text-default" href="#">
-    <h1 class="sr-only">Lettura</h1>
-    <Icon name="app-icon" class="h-10" />
-    <!-- <Icon name="wordmark" class="hidden h-4 sm:block" /> -->
-    <p>Lettura</p>
-  </a>
-  <div>
-    <div class="flex items-center gap-6">
-      <nav class="hidden sm:block">
-        <ul class="flex items-center gap-6">
+  <div
+    class="mx-auto flex max-w-6xl items-center justify-between px-5 py-3 sm:px-8"
+  >
+    <a class="flex items-center gap-2.5" href="#">
+      <span class="logo-dot" aria-hidden="true"><i></i></span>
+      <span class="text-[14px] font-semibold tracking-tight">Lettura</span>
+    </a>
+    <div class="flex items-center gap-5">
+      <nav class="hidden sm:block" aria-label="Sections">
+        <ul class="flex items-center gap-5">
           {
             navItems.map(({ title, url }) => (
               <li>
-                <a class="text-sm" href={url}>
-                  {title}
+                <a
+                  class="text-[13px] text-[var(--color-text-offset)] hover:text-[var(--color-text)]"
+                  href={url}
+                >
+                  <L
+                    en={title}
+                    zh={{ Features: "能力", Player: "播放器", Download: "下载" }[title] ?? title}
+                  />
                 </a>
               </li>
             ))
           }
         </ul>
       </nav>
-      <button
-        id="open-nav-button"
-        type="button"
-        class="btn sm:hidden"
-        aria-label="Navigation"
+      <a
+        class="hidden text-[13px] text-[var(--color-text-offset)] hover:text-[var(--color-text)] sm:block"
+        href="https://github.com/zhanglun/lettura"
+        target="_blank"
+        rel="noopener"
       >
-        <Icon pack="mdi" name="menu" class="h-8" />
+        <L en="GitHub" zh="GitHub" />
+      </a>
+      <button
+        id="lang-switcher"
+        type="button"
+        class="text-[13px] text-[var(--color-text-offset)] hover:text-[var(--color-text)]"
+        aria-label="切换语言 / Switch language"
+      >
+        <L en="中文" zh="EN" />
       </button>
       <ThemeSwitcher />
-    </div>
-    <div id="menu-modal" class="modal hidden" aria-hidden="true">
-      <div class="fixed inset-0 bg-default px-8 py-4 text-default">
-        <div class="space-y-4" role="dialog" aria-modal="true">
-          <header class="text-right">
-            <button
-              id="close-nav-button"
-              type="button"
-              class="btn"
-              aria-label="Close navigation"
-            >
-              <Icon pack="mdi" name="close" class="h-8" />
-            </button>
-          </header>
-          <div class="flex justify-center">
-            <Icon name="app-icon" class="h-16" />
-          </div>
-          <nav>
-            <ul class="flex flex-col">
-              {
-                navItems.map(({ title, url }) => (
-                  <li>
-                    <a class="block py-4 text-center text-xl" href={url}>
-                      {title}
-                    </a>
-                  </li>
-                ))
-              }
-            </ul>
-          </nav>
-        </div>
-      </div>
     </div>
   </div>
 </header>
 
 <script>
-  import MicroModal from "micromodal";
-  import invariant from "tiny-invariant";
+  const langBtn = document.querySelector("#lang-switcher");
 
-  const menuModalId = "menu-modal";
-
-  const header = document.querySelector("#page-header") as HTMLElement;
-  const page = document.documentElement;
-  const menu = document.querySelector(`#${menuModalId} ul`);
-  const openNavButton = document.querySelector("#open-nav-button");
-  const closeNavButton = document.querySelector("#close-nav-button");
-
-  invariant(header, "header should not be null");
-  invariant(menu, "menu should not be null");
-  invariant(openNavButton, "openNavButton should not be null");
-  invariant(closeNavButton, "closeNavButton should not be null");
-
-  const openMenu = () => {
-    MicroModal.show(menuModalId, { disableScroll: true });
-  };
-
-  const closeMenu = () => {
-    MicroModal.close(menuModalId);
-  };
-
-  openNavButton.addEventListener("click", openMenu);
-  closeNavButton.addEventListener("click", closeMenu);
-
-  document.addEventListener("scroll", () => {
-    const d = page.clientHeight - page.scrollTop - header.offsetHeight;
-    header.classList.toggle("fixed-header", d < 0);
-  });
-
-  menu.addEventListener("click", (event) => {
-    if ((event.target as HTMLElement).tagName === "A") {
-      closeMenu();
-    }
+  langBtn?.addEventListener("click", () => {
+    const next =
+      (document.documentElement.dataset.lang || "en") === "en" ? "zh" : "en";
+    document.documentElement.dataset.lang = next;
+    localStorage.setItem("lang", next);
+    document.documentElement.lang = next === "zh" ? "zh-CN" : "en";
+    document.title =
+      next === "zh"
+        ? "Lettura — 本地优先的订阅阅读器"
+        : "Lettura — a local-first feed reader";
   });
 </script>
 
-<noscript>
-  <style>
-    #open-nav-button {
-      display: none;
-    }
-  </style>
-</noscript>
-
 <style>
-  .fixed-header {
-    @apply fixed bottom-auto top-0;
-    @apply border-default bg-default text-default;
+  .logo-dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 7px;
+    background: var(--color-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
   }
-  .modal.is-open {
-    @apply block;
+
+  .logo-dot i {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--color-background);
+  }
+
+  [data-theme="dark"] .logo-dot {
+    background: var(--color-primary);
+  }
+
+  [data-theme="dark"] .logo-dot i {
+    background: var(--color-background);
   }
 </style>

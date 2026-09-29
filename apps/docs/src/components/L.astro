@@ -1,0 +1,17 @@
+---
+/**
+ * 双语文本原子：一个地址内的中英切换（html[data-lang] 驱动，CSS 显隐，
+ * 头部内联脚本在绘制前设好语言——零闪烁）。en/zh 传纯文本；富文本用插槽。
+ */
+interface Props {
+  en: string;
+  zh: string;
+}
+
+const { en, zh } = Astro.props;
+---
+
+<span class="l10n l10n-en" set:html={en}><slot name="en">{en}</slot></span><span
+  class="l10n l10n-zh"
+  set:html={zh}><slot name="zh">{zh}</slot></span
+>

@@ -1,0 +1,525 @@
+---
+/**
+ * Hero：界面即叙事。左列主张 + CTA，右列用真实行语法（DESIGN.md 列表行）
+ * 重现 app 未读队列；面板底缘浮动玻璃播放条（podcast.html bar 契约）。
+ * 全部 HTML/CSS 重现，无位图截图。双语经 <L /> 原子（html[data-lang] 显隐）。
+ */
+import L from "~/components/L.astro";
+---
+
+<section class="relative overflow-hidden px-5 sm:px-8 pt-6 pb-10">
+  <div class="site-ambient" aria-hidden="true"></div>
+
+  <div
+    class="relative mx-auto max-w-6xl rounded-2xl border border-[var(--color-hair2)] bg-panel shadow-panel overflow-hidden"
+  >
+    <!-- 面板顶栏（app 同款 54px） -->
+    <div class="flex h-[54px] items-center gap-2.5 border-b border-[var(--color-hair)] px-5">
+      <span class="logo-dot" aria-hidden="true"><i></i></span>
+      <span class="text-[13px] font-semibold">Lettura</span>
+      <span class="cnt-pill">3,289</span>
+      <nav class="ml-3 hidden items-center gap-1 sm:flex" aria-hidden="true">
+        <span class="topnav on"><L en="Unread" zh="未读" /></span>
+        <span class="topnav"><L en="Starred" zh="星标" /></span>
+        <span class="topnav"><L en="History" zh="历史" /></span>
+        <span class="topnav"><L en="Feeds" zh="订阅" /></span>
+      </nav>
+      <span class="flex-1" aria-hidden="true"></span>
+      <span
+        class="hidden h-[30px] items-center gap-2 rounded-[9px] border border-[var(--color-hair2)] bg-card px-2.5 text-xs text-[var(--color-text-offset)] md:flex"
+        aria-hidden="true">
+        <L en="Search or type a command" zh="搜索或输入命令" /> <span class="flex-1"></span><span class="kbd">⌘K</span>
+      </span>
+    </div>
+
+    <!-- 过滤条（app 同款 42px） -->
+    <div class="flex h-[42px] items-center gap-1 border-b border-[var(--color-hair)] px-5" aria-hidden="true">
+      <span class="ftab on"><L en="All" zh="全部" /> <b>3,289</b></span>
+      <span class="ftab"><L en="Articles" zh="文章" /> <b>2,970</b></span>
+      <span class="ftab"><L en="Podcasts" zh="播客" /> <b>6</b></span>
+      <span class="ftab"><L en="Platforms" zh="平台" /> <b>15</b></span>
+      <span class="flex-1"></span>
+      <span class="strip-meta text-[11px] text-[var(--color-ter)]"><L en="142 sources · synced 08:00" zh="142 个来源 · 最近同步 08:00" /></span>
+    </div>
+
+    <div class="grid gap-0 md:grid-cols-[minmax(300px,2fr)_3fr]">
+      <!-- 左列：主张 + CTA -->
+      <div class="flex flex-col justify-center gap-6 px-7 py-12 sm:px-10 md:border-r md:border-[var(--color-hair)]">
+        <p class="section-eyebrow"><L en="FREE &amp; OPEN-SOURCE" zh="免费 · 开源" /></p>
+        <h2 class="hero-h2 text-4xl font-bold leading-[1.2] tracking-tight sm:text-[40px]">
+          <L en="All your feeds," zh="你订阅的东西，" /><br />
+          <L en="in one list." zh="都在这条列表里。" />
+        </h2>
+        <p class="max-w-sm text-[15px] leading-relaxed text-[var(--color-text-offset)]">
+          <L
+            en="RSS, podcasts, mail newsletters, Bilibili — in one list, ordered by time."
+            zh="RSS、播客、邮件订阅、B站动态——收进一条列表，按时间排序。"
+          />
+        </p>
+        <div class="flex flex-wrap items-center gap-3">
+          <a class="btn-ink" href="#download">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 2.5V11M4.8 8 8 11.2 11.2 8M3 13.5h10"/></svg>
+            <L en="Download free" zh="免费下载" />
+          </a>
+          <a class="btn-gh" href="https://github.com/zhanglun/lettura" target="_blank" rel="noopener">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 .2a8 8 0 0 0-2.53 15.59c.4.07.55-.17.55-.38l-.01-1.49c-2.23.49-2.7-1.07-2.7-1.07-.36-.93-.89-1.18-.89-1.18-.73-.5.06-.49.06-.49.8.06 1.23.83 1.23.83.72 1.23 1.88.88 2.34.67.07-.52.28-.88.51-1.08-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.83-2.15-.09-.2-.36-1.02.08-2.12 0 0 .67-.22 2.2.82a7.66 7.66 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.17 1.92.08 2.12.52.56.83 1.28.83 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48l-.01 2.2c0 .21.15.46.55.38A8 8 0 0 0 8 .2Z"/></svg>
+            <L en="GitHub" zh="GitHub" />
+          </a>
+        </div>
+        <p class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11.5px] text-[var(--color-ter)]">
+          <span><b class="font-semibold text-[var(--color-text-offset)]">j/k</b> <L en="move" zh="移动" /></span>
+          <span>·</span>
+          <span><b class="font-semibold text-[var(--color-text-offset)]">Enter</b> <L en="read" zh="阅读" /></span>
+          <span>·</span>
+          <span><b class="font-semibold text-[var(--color-text-offset)]">m</b> <L en="done &amp; next" zh="已读并前进" /></span>
+          <span>·</span>
+          <span><b class="font-semibold text-[var(--color-text-offset)]">?</b> <L en="all shortcuts" zh="全部快捷键" /></span>
+        </p>
+      </div>
+
+      <!-- 右列：高保真列表重现（发丝行语法） -->
+      <div class="relative min-h-[360px] overflow-hidden" aria-hidden="true">
+        <div class="pt-1.5">
+          <div class="approw is-focused">
+            <span class="st"><span class="dot"></span></span>
+            <span class="thumb th-img"></span>
+            <span class="tt"><L en="Rust 1.90 released: compiler parallelization, phase two" zh="Rust 1.90 发布：编译器并行化进入第二阶段" /></span>
+            <span class="src">blog.rust-lang.org</span>
+            <span class="date">09:41</span>
+            <span class="acts"><svg class="star on" width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1.8l1.85 3.9 4.3.55-3.2 2.9.85 4.2L8 11.3l-3.8 2.05.85-4.2-3.2-2.9 4.3-.55z"/></svg></span>
+          </div>
+          <div class="approw">
+            <span class="st"><span class="dot"></span></span>
+            <span class="thumb th-pod"><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 7.5v5M7.3 5v10M10.6 8v4M14 6v8M17.3 7.5v5"/></svg></span>
+            <span class="tt"><L en="EP.87 Local-first software, with guevaria" zh="EP.87 与 guevaria 聊本地优先软件" /></span>
+            <span class="src live">Kernel Panic<L en=" · playing" zh=" · 播放中" /></span>
+            <span class="date">72:00</span>
+            <span class="acts"></span>
+          </div>
+          <div class="approw">
+            <span class="st"><span class="dot"></span></span>
+            <span class="thumb th-img"></span>
+            <span class="tt"><L en="Why I moved all my reading back to RSS" zh="为什么我把全部阅读搬回了 RSS" /></span>
+            <span class="src">overreacted.io</span>
+            <span class="date">08:52</span>
+            <span class="acts"></span>
+          </div>
+          <div class="approw">
+            <span class="st"><span class="dot"></span></span>
+            <span class="thumb th-bil"></span>
+            <span class="tt"><L en="Local models in 2026: what they can actually do" zh="2026 年的本地模型到底能干什么" /></span>
+            <span class="src">bilibili</span>
+            <span class="date">23:07</span>
+            <span class="acts"></span>
+          </div>
+          <div class="approw is-read">
+            <span class="st"><span class="dot"></span></span>
+            <span class="thumb"></span>
+            <span class="tt"><L en="Weekly #212: The shape of tools" zh="Weekly #212：工具的形状" /></span>
+            <span class="src"><L en="mail" zh="邮件订阅" /></span>
+            <span class="date"><L en="yesterday" zh="昨日" /></span>
+            <span class="acts"></span>
+          </div>
+          <div class="approw">
+            <span class="st"><span class="dot"></span></span>
+            <span class="thumb th-img"></span>
+            <span class="tt"><L en="SQLite in 2026: one file holds everything" zh="SQLite 在 2026：一个文件扛住一切" /></span>
+            <span class="src">fly.io</span>
+            <span class="date">21:33</span>
+            <span class="acts"><svg class="star on" width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1.8l1.85 3.9 4.3.55-3.2 2.9.85 4.2L8 11.3l-3.8 2.05.85-4.2-3.2-2.9 4.3-.55z"/></svg></span>
+          </div>
+          <div class="approw">
+            <span class="st"><span class="dot"></span></span>
+            <span class="thumb th-img"></span>
+            <span class="tt"><L en="TypeScript 7.0 native port: six months in" zh="TypeScript 7.0 原生移植：半年进展" /></span>
+            <span class="src">devblogs.microsoft.com</span>
+            <span class="date">17:02</span>
+            <span class="acts"></span>
+          </div>
+        </div>
+        <!-- 底部渐隐，暗示列表继续 -->
+        <div class="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[var(--color-panel)] to-transparent"></div>
+
+        <!-- 浮动玻璃播放条（bar 契约精简版） -->
+        <div class="player-float" aria-hidden="true">
+          <span class="pcore">
+            <svg width="9" height="9" viewBox="0 0 12 12" fill="#fff"><rect x="1.5" y="1" width="3" height="10" rx="1"/><rect x="7.5" y="1" width="3" height="10" rx="1"/></svg>
+          </span>
+          <span class="pinfo">
+            <span class="pep"><L en="Kernel Panic · EP.87" zh="内核恐慌 · EP.87" /></span>
+            <span class="pnm"><L en="Local-first software, with guevaria" zh="EP.87 与 guevaria 聊本地优先软件" /></span>
+          </span>
+          <span class="ptime">18:30</span>
+          <span class="pbar"><b></b><i></i></span>
+          <span class="ptime">72:00</span>
+          <span class="prate">1.5×</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="relative mx-auto mt-4 max-w-6xl text-right text-[10.5px] tracking-wide text-[var(--color-ter)]">
+    <L en="Interface above is a live replica, not a screenshot. Synthetic data." zh="界面为代码重现，非截图；数据为合成。" />
+  </p>
+</section>
+
+<style>
+  :global(html[data-lang="zh"]) .hero-h2 {
+    font-size: 36px;
+  }
+
+  .site-ambient {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: var(--ambient);
+  }
+
+  .bg-panel {
+    background: var(--color-panel);
+    backdrop-filter: blur(22px) saturate(1.5);
+    box-shadow: var(--shadow-panel);
+  }
+
+  .bg-card {
+    background: var(--color-card);
+  }
+
+  .logo-dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 7px;
+    background: var(--color-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+  }
+
+  .logo-dot i {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--color-background);
+  }
+
+  [data-theme="dark"] .logo-dot {
+    background: var(--color-primary);
+  }
+
+  [data-theme="dark"] .logo-dot i {
+    background: var(--color-background);
+  }
+
+  .cnt-pill {
+    font-size: 11px;
+    color: var(--color-text-offset);
+    background: var(--color-card);
+    border-radius: 999px;
+    padding: 1.5px 8px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .topnav {
+    font-size: 12.5px;
+    color: var(--color-text-offset);
+    padding: 4px 10px;
+    border-radius: 7px;
+  }
+
+  .topnav.on {
+    color: var(--color-text);
+    font-weight: 600;
+    background: var(--color-card);
+  }
+
+  .ftab {
+    font-size: 12px;
+    color: var(--color-text-offset);
+    padding: 4px 10px;
+    border-radius: 999px;
+  }
+
+  @media (max-width: 640px) {
+    .strip-meta {
+      display: none;
+    }
+
+    .ftab b {
+      display: none;
+    }
+
+    .ftab {
+      padding: 4px 8px;
+    }
+  }
+
+  .ftab.on {
+    background: var(--color-card);
+    color: var(--color-text);
+    font-weight: 600;
+  }
+
+  .ftab b {
+    font-variant-numeric: tabular-nums;
+    margin-left: 3px;
+    color: var(--color-ter);
+    font-weight: 500;
+  }
+
+  /* app 列表行：54px 发丝行六列（DESIGN.md 语法） */
+  .approw {
+    display: grid;
+    grid-template-columns: 20px 56px minmax(0, 1fr) 190px 64px 32px;
+    align-items: center;
+    height: 54px;
+    padding-right: 20px;
+    border-bottom: 1px solid var(--color-hair);
+  }
+
+  @media (max-width: 900px) {
+    .approw {
+      grid-template-columns: 16px 44px minmax(0, 1fr) 52px 20px;
+    }
+
+    .thumb {
+      width: 44px;
+      height: 30px;
+    }
+
+    .src {
+      display: none;
+    }
+
+    .acts {
+      justify-content: flex-start;
+    }
+
+    .m-star {
+      display: none;
+    }
+
+    .date {
+      padding-right: 14px;
+    }
+  }
+
+  .approw .st {
+    display: flex;
+    justify-content: center;
+  }
+
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-primary);
+  }
+
+  .thumb {
+    width: 56px;
+    height: 34px;
+    border-radius: 7px;
+    border: 1px solid var(--color-hair);
+    background: var(--color-card);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-offset);
+    overflow: hidden;
+  }
+
+  .th-img {
+    background: linear-gradient(135deg, rgba(29, 30, 32, 0.1), rgba(29, 30, 32, 0.16));
+  }
+
+  .th-pod {
+    background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+    color: var(--color-primary);
+  }
+
+  .th-bil {
+    background: color-mix(in srgb, #e86a92 10%, transparent);
+    color: #e86a92;
+  }
+
+  .tt {
+    font-size: 13.5px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 10px;
+  }
+
+  .src {
+    font-size: 11.5px;
+    color: var(--color-ter);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .src.live {
+    color: var(--color-primary);
+  }
+
+  .src .sep {
+    color: var(--color-ter);
+  }
+
+  .date {
+    font-size: 11.5px;
+    color: var(--color-ter);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    padding-right: 12px;
+    white-space: nowrap;
+  }
+
+  .acts {
+    display: flex;
+    justify-content: center;
+  }
+
+  .star.on {
+    color: #e5a50a;
+  }
+
+  .m-star {
+    display: none;
+  }
+
+  .approw.is-focused {
+    background: color-mix(in srgb, var(--color-text) 5.5%, transparent);
+  }
+
+  .approw.is-focused .dot {
+    outline: 3px solid color-mix(in srgb, var(--color-primary) 35%, transparent);
+    outline-offset: 1.5px;
+  }
+
+  .approw.is-read .dot {
+    background: color-mix(in srgb, var(--color-text) 25%, transparent);
+  }
+
+  .approw.is-read .tt {
+    color: var(--color-ter);
+    font-weight: 400;
+  }
+
+  /* 播放条浮层 */
+  .player-float {
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    bottom: 14px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 14px;
+    background: var(--color-panel);
+    backdrop-filter: blur(22px) saturate(1.5);
+    border: 1px solid var(--color-hair2);
+    border-radius: 14px;
+    box-shadow: 0 20px 44px -16px rgba(29, 30, 32, 0.26);
+  }
+
+  .pcore {
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    background: var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    box-shadow: 0 4px 10px -2px color-mix(in srgb, var(--color-primary) 50%, transparent);
+  }
+
+  .pinfo {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    flex: none;
+    width: 34%;
+  }
+
+  .pep {
+    font-size: 9.5px;
+    color: var(--color-text-offset);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .pnm {
+    font-size: 11.5px;
+    font-weight: 600;
+    margin-top: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .ptime {
+    font-size: 10px;
+    color: var(--color-text-offset);
+    font-variant-numeric: tabular-nums;
+    font-family: "SF Mono", Menlo, monospace;
+    flex: none;
+  }
+
+  .pbar {
+    flex: 1;
+    height: 3px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--color-text) 10%, transparent);
+    position: relative;
+  }
+
+  .pbar b {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 26%;
+    border-radius: 999px;
+    background: var(--color-primary);
+  }
+
+  .pbar i {
+    position: absolute;
+    left: 26%;
+    top: 50%;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 0 3px var(--color-panel);
+  }
+
+  .prate {
+    font-size: 10.5px;
+    color: var(--color-text-offset);
+    background: var(--color-card);
+    border-radius: 6px;
+    padding: 2.5px 8px;
+    flex: none;
+  }
+
+  @media (max-width: 640px) {
+    .pinfo,
+    .prate {
+      display: none;
+    }
+
+    .player-float {
+      left: 10px;
+      right: 10px;
+      gap: 10px;
+    }
+  }
+</style>

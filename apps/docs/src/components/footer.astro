@@ -1,49 +1,51 @@
 ---
-import { Icon } from "astro-icon";
-import HeroImage from "~/components/hero-image.astro";
-import type { FooterLink } from "~/types";
+/** 页脚：一句话 + 链接行，发丝线分隔。 */
+import L from "~/components/L.astro";
 
-const links: Array<FooterLink> = [
-  {
-    url: "https://astro.build/",
-    description: "Astro's official website",
-    icon: "mdi:home",
-  },
-  {
-    url: "https://github.com/mhyfritz/astro-landing-page",
-    description: "View source on GitHub",
-    icon: "fa-brands:github-alt",
-  },
-  {
-    url: "https://astro.build/chat",
-    description: "Astro on Discord",
-    icon: "fa-brands:discord",
-  },
-  {
-    url: "https://twitter.com/astrodotbuild",
-    description: "Astro on Twitter",
-    icon: "fa-brands:twitter",
-  },
-];
+const year = new Date().getFullYear();
 ---
 
-<footer class="relative flex h-64 items-center justify-center">
-  <div class="absolute inset-0 overflow-hidden opacity-40">
-    <HeroImage />
+<footer class="border-t border-[var(--color-hairline)]">
+  <div
+    class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-5 py-10 sm:flex-row sm:px-8"
+  >
+    <div class="flex items-center gap-2.5">
+      <span class="logo-dot" aria-hidden="true"><i></i></span>
+      <span class="text-[13px] font-semibold">Lettura</span>
+      <span class="text-[12px] text-[var(--color-ter)]"><L en="— a local-first feed reader. MIT," zh="—— 本地优先的订阅阅读器。MIT," /> {year}.</span>
+    </div>
+    <nav class="flex items-center gap-6 text-[13px] text-[var(--color-text-offset)]">
+      <a class="hover:text-[var(--color-text)]" href="https://github.com/zhanglun/lettura" target="_blank" rel="noopener"><L en="GitHub" zh="GitHub" /></a>
+      <a class="hover:text-[var(--color-text)]" href="https://github.com/zhanglun/lettura/releases" target="_blank" rel="noopener"><L en="Releases" zh="Releases" /></a>
+      <a class="hover:text-[var(--color-text)]" href="https://github.com/zhanglun/lettura/issues" target="_blank" rel="noopener"><L en="Issues" zh="Issues" /></a>
+    </nav>
   </div>
-  <ul class="relative grid grid-cols-2 gap-4 sm:grid-cols-4">
-    {
-      links.map((link) => (
-        <li>
-          <a
-            class="flex h-16 w-16 items-center justify-center rounded-full border-2 border-current p-4"
-            href={link.url}
-          >
-            <span class="sr-only">{link.description}</span>
-            <Icon class="h-full" name={link.icon} />
-          </a>
-        </li>
-      ))
-    }
-  </ul>
 </footer>
+
+<style>
+  .logo-dot {
+    width: 18px;
+    height: 18px;
+    border-radius: 6px;
+    background: var(--color-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+  }
+
+  .logo-dot i {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--color-background);
+  }
+
+  [data-theme="dark"] .logo-dot {
+    background: var(--color-primary);
+  }
+
+  [data-theme="dark"] .logo-dot i {
+    background: var(--color-background);
+  }
+</style>

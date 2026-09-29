@@ -1,41 +1,60 @@
 ---
 import "@fontsource-variable/inter";
-import Compatibility from "~/components/compatibility.astro";
-import Features from "~/components/features.astro";
-import Footer from "~/components/footer.astro";
 import Header from "~/components/header.astro";
-import Intro from "~/components/intro.astro";
-import Showcase from "~/components/showcase.astro";
-import Splash from "~/components/splash.astro";
+import Hero from "~/components/hero.astro";
+import Manifesto from "~/components/manifesto.astro";
+import Features from "~/components/features.astro";
+import Player from "~/components/player.astro";
+import Download from "~/components/download.astro";
+import Footer from "~/components/footer.astro";
 import "~/styles/index.css";
 
 const { generator, site } = Astro;
 const image = new URL("social.jpg", site);
 const description =
-  "Follow your favorite content and never miss a story. Lettura is more than a RSS reader for everyone. Lightning-fast performance meets powerful user experience.";
+  "Lettura is a local-first desktop feed reader: RSS, podcasts, newsletters and platform feeds in one list. Open, scan, read, done. For macOS and Windows.";
 ---
 
+<!--
+  DIRECTION CONTRACT · Lettura 官网（Persuade） · 「静密 × 聚光」
+  THESIS: 官网是 app 世界的一次外景拍摄——同一台玻璃仪器放到画布上：暖灰 ground + 双色环境光、靛蓝单强调、发丝线、kbd 词汇；界面即叙事（hero 直接重现 app 真实列表，非截图贴图），访客 5 秒看懂「打开即队列，读完就走」。拒绝：渐变大字标题、宇航员/星场、三卡 feature 网格的模板语法。
+  OWN-WORLD: 令牌全部取自 apps/desktop/DESIGN.md（ground #F4F4F1 / ink #1D1E20 / accent #5E6AD2 / hair .08·.13 / 夜读本 #17171A + #848CE8）；主钮墨底、幽灵钮发丝边、章节字 11/700/.1em。
+  STORY: 访客在 hero 看见真实界面与一句话主张 → manifesto 段用克制字重讲「读完就走」哲学 → 能力四条（未读队列/键盘优先/播放器三态/本地优先）→ 播放器段展示三态 → 下载段给平台入口与 GitHub。
+  FIRST VIEWPORT: 顶栏（logo+Lettura / Features·Player·Download / GitHub·主题切换）→ 玻璃面板内：左列（章节字 FREE & OPEN-SOURCE → 大主张「Your feeds, one quiet queue.」→ 副句 → [Download] [GitHub] → kbd 提示行）+ 右列高保真列表重现（发丝行 + 焦点行洗色）；面板底缘浮动玻璃播放条。
+  FORM: 既有产品世界的整面重建（用户 2026-09 指定 redesign）；app 侧契约 mock 见 .impeccable/mocks/decision/。
+  FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance.
+-->
 <!doctype html>
-<html lang="en" class="h-full motion-safe:scroll-smooth" data-theme="dark">
+<html lang="en" class="h-full motion-safe:scroll-smooth" data-theme="light">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <meta name="generator" content={generator} />
 
-    <title>Lettura, new RSS reader</title>
+    <title>Lettura — a local-first feed reader</title>
     <meta name="description" content={description} />
 
     <!-- social media -->
-    <meta property="og:title" content="Astro" />
+    <meta property="og:title" content="Lettura — a local-first feed reader" />
     <meta property="og:type" content="website" />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={image} />
     <meta property="og:url" content={site} />
     <meta name="twitter:card" content="summary_large_image" />
 
-    <!-- initialize theme -->
+    <!-- initialize theme + language（绘制前，零闪烁） -->
     <script is:inline>
+      const langSaved = localStorage.getItem("lang");
+      const langInitial =
+        langSaved ||
+        (navigator.language.toLowerCase().startsWith("zh") ? "zh" : "en");
+      document.documentElement.dataset.lang = langInitial;
+      if (langInitial === "zh") {
+        document.documentElement.lang = "zh-CN";
+        document.title = "Lettura — 本地优先的订阅阅读器";
+      }
+
       const themeSaved = localStorage.getItem("theme");
 
       if (themeSaved) {
@@ -58,17 +77,17 @@ const description =
         });
     </script>
   </head>
-  <body
-    class="h-full overflow-x-hidden bg-default text-default text-base selection:bg-secondary selection:text-white"
-  >
+  <body class="h-full overflow-x-hidden bg-default text-default">
     <Header />
-    <Splash />
-    <div class="space-y-24 px-8 py-32">
-      <Intro />
-      <Features />
-      <!-- <Compatibility /> -->
-      <Showcase />
-    </div>
-    <!-- <Footer /> -->
+    <main>
+      <Hero />
+      <div class="px-5 sm:px-8">
+        <Manifesto />
+        <Features />
+        <Player />
+        <Download />
+      </div>
+    </main>
+    <Footer />
   </body>
 </html>

@@ -1,66 +1,56 @@
 ---
-import { Icon } from "astro-icon";
-import ContentSection from "~/components/content-section.astro";
-import type { FeatureItem } from "~/types";
+/** 能力四条：发丝线行（app 设置行语法），双语短句。 */
+import L from "~/components/L.astro";
 
-const features: Array<FeatureItem> = [
+const rows = [
   {
-    title: "Open-source",
-    description:
-      "Basic functionality open-sourced, Let's build it together!",
-    icon: "mdi:penguin",
+    en: ["One queue, ordered by time", "It doesn't guess what you want to read. What arrived today is on top."],
+    zh: ["一条队列，按时间排序", "不猜你想读什么，只把今天到的放在最上面。"],
   },
   {
-    title: "Cross Platform",
-    description:
-      "Support MacOS and Window, and maybe the Linux family too!",
-    icon: "mdi:cellphone-link",
+    en: ["Keyboard is the interface", "j/k to scan, Enter to read, m to move on."],
+    zh: ["键盘即界面", "j/k 扫读，Enter 阅读，m 读完就走。"],
   },
   {
-    title: "Keyboard Access",
-    description:
-      "Keyboard shortcuts to access nearly all functions with ease.",
-    icon: "mdi:keyboard",
+    en: ["Reads like paper", "A serif column and a hairline of progress. Nothing else."],
+    zh: ["像纸一样阅读", "宋体单栏，一条发丝进度线，没有别的。"],
   },
   {
-    title: "Beautiful UI",
-    description:
-      "Thanks @shadcn/ui, make lettura simple and clean",
-    icon: "mdi:palette",
-  },
-  {
-    title: "Search Enabled",
-    description:
-      "Search in your data",
-    icon: "mdi:search-web",
-  },
-  {
-    title: "More In development",
-    description:
-      "We are developing constantly!",
-    icon: "mdi:developer-board",
+    en: ["Local-first, forever", "One SQLite file on your machine. OPML in, OPML out."],
+    zh: ["本地优先，一直如此", "数据在本机一个 SQLite 文件里，OPML 随进随出。"],
   },
 ];
 ---
 
-<ContentSection title="Features" id="features">
-  <!-- <Fragment slot="lead">
-    Astro comes <span class="text-primary">batteries included</span>. It takes
-    the best parts of
-    <span class="text-primary">state-of-the-art</span>
-     tools and adds its own <span class="text-primary">innovations</span>.
-  </Fragment> -->
-  <ul class="grid max-w-6xl grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+<section id="features" class="mx-auto max-w-6xl scroll-mt-24 py-10">
+  <p class="section-eyebrow"><L en="WHAT IT DOES" zh="它做什么" /></p>
+  <div class="mt-4 border-t border-[var(--color-hairline)]">
     {
-      features.map(({ title, description, icon }) => (
-        <li class="flex flex-col items-center gap-4 border border-default bg-offset p-6">
-          <div class="h-16 w-16 rounded-full border-2 border-current p-3">
-            <Icon name={icon} />
-          </div>
-          <p class="text-center font-extrabold text-xl">{title}</p>
-          <p class="text-center text-offset text-sm">{description}</p>
-        </li>
+      rows.map((row, i) => (
+        <div class="feat-row grid grid-cols-[auto_minmax(0,1fr)_minmax(0,2fr)] items-baseline gap-6 border-b border-[var(--color-hairline)] py-7">
+          <span class="font-mono text-[11px] text-[var(--color-ter)]">
+            {String(i + 1).padStart(2, "0")}
+          </span>
+          <h3 class="text-[17px] font-semibold tracking-tight">
+            <L en={row.en[0]} zh={row.zh[0]} />
+          </h3>
+          <p class="text-[14.5px] leading-relaxed text-[var(--color-text-offset)]">
+            <L en={row.en[1]} zh={row.zh[1]} />
+          </p>
+        </div>
       ))
     }
-  </ul>
-</ContentSection>
+  </div>
+</section>
+
+<style>
+  @media (max-width: 768px) {
+    .feat-row {
+      grid-template-columns: auto minmax(0, 1fr);
+    }
+
+    .feat-row p {
+      grid-column: 2;
+    }
+  }
+</style>
