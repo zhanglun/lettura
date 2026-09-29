@@ -1,6 +1,6 @@
-import { Component, ReactNode } from "react";
 import { Button } from "@astryxdesign/core/Button";
 import { RefreshCw } from "lucide-react";
+import { Component, type ReactNode } from "react";
 
 interface ErrorBoundaryProps {
   children: ReactNode;

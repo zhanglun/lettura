@@ -1,15 +1,19 @@
-import { ExternalLink } from "lucide-react";
 import { Button } from "@astryxdesign/core/Button";
-import React, { useEffect, useState } from "react";
-import * as dataAgent from "@/helpers/dataAgent";
 import { open } from "@tauri-apps/plugin-shell";
-import { ArticleResItem } from "@/db";
-import { PodcastAdapter } from "./adapter/Podcast";
-import { PlatformAdapter } from "./adapter/Platform";
-import { CommonAdapter } from "./adapter/Common";
-import { canPlayInApp, getCarrier, opensExternally } from "@/helpers/mediaType";
-import { pickArticleContent, processArticleHtml } from "@/helpers/articleContent";
+import { ExternalLink } from "lucide-react";
+import type React from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import type { ArticleResItem } from "@/db";
+import {
+  pickArticleContent,
+  processArticleHtml,
+} from "@/helpers/articleContent";
+import * as dataAgent from "@/helpers/dataAgent";
+import { canPlayInApp, getCarrier, opensExternally } from "@/helpers/mediaType";
+import { CommonAdapter } from "./adapter/Common";
+import { PlatformAdapter } from "./adapter/Platform";
+import { PodcastAdapter } from "./adapter/Podcast";
 
 function validateFeed(article: ArticleResItem, medias: any) {
   // 载体定消费方式：audio → 站内播放器；video → 外跳；text/email → 阅读面
@@ -71,7 +75,9 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
     if (loadError) {
       return (
         <div className="flex flex-col items-center justify-center py-20 gap-2 text-[var(--fusion-ter)]">
-          <p className="text-sm">{t("article.detail.load_error", "Failed to load article content")}</p>
+          <p className="text-sm">
+            {t("article.detail.load_error", "Failed to load article content")}
+          </p>
           {article.link && (
             <Button
               variant="ghost"
@@ -85,13 +91,20 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
       );
     }
 
-    const { isCommon, isPlatform, isPodcast } = validateFeed(article, medias || []);
+    const { isCommon, isPlatform, isPodcast } = validateFeed(
+      article,
+      medias || [],
+    );
 
     if (isPlatform) {
       return <PlatformAdapter article={article} content={pageContent} />;
     } else if (isPodcast) {
       return (
-        <PodcastAdapter article={article} content={pageContent} medias={medias} />
+        <PodcastAdapter
+          article={article}
+          content={pageContent}
+          medias={medias}
+        />
       );
     } else {
       return (

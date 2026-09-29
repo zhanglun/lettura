@@ -1,7 +1,7 @@
-import { StateCreator } from "zustand";
-import { AudioTrack } from "@/components/LPodcast";
-import { Podcast, db } from "@/helpers/podcastDB";
+import type { StateCreator } from "zustand";
+import type { AudioTrack } from "@/components/LPodcast";
 import { showErrorToast } from "@/helpers/errorHandler";
+import { db, type Podcast } from "@/helpers/podcastDB";
 
 export type PlayerMode = "bar" | "full" | "min";
 

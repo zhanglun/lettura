@@ -1,20 +1,20 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useHotkeys } from "react-hotkeys-hook";
-import { ChevronDown } from "lucide-react";
 import clsx from "clsx";
-import { useShallow } from "zustand/react/shallow";
+import { ChevronDown } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useHotkeys } from "react-hotkeys-hook";
 import { useTranslation } from "react-i18next";
-import { ArticleView } from "@/layout/Article/ArticleView";
-import { RouteConfig } from "@/config";
-import { useBearStore } from "@/stores";
-import { FeedIcon } from "@/components/FeedIcon";
+import { useNavigate, useParams } from "react-router-dom";
+import { useShallow } from "zustand/react/shallow";
 import { FeedCtxMenu } from "@/components/FeedCtxMenu";
-import { DialogUnsubscribeFeed } from "@/layout/Setting/Content/DialogUnsubscribeFeed";
-import { getHostLabel, formatFeedTime } from "@/helpers/feedMeta";
-import { HK } from "@/shortcuts";
-import { DEV_PREVIEW_FIRST_RUN, EmptyFace } from "@/layout/Article/EmptyFace";
+import { FeedIcon } from "@/components/FeedIcon";
+import { RouteConfig } from "@/config";
 import type { FeedResItem } from "@/db";
+import { formatFeedTime, getHostLabel } from "@/helpers/feedMeta";
+import { ArticleView } from "@/layout/Article/ArticleView";
+import { DEV_PREVIEW_FIRST_RUN, EmptyFace } from "@/layout/Article/EmptyFace";
+import { DialogUnsubscribeFeed } from "@/layout/Setting/Content/DialogUnsubscribeFeed";
+import { HK } from "@/shortcuts";
+import { useBearStore } from "@/stores";
 
 const FILTER_UNREAD = { id: 1, title: "Unread" };
 
@@ -48,20 +48,31 @@ function SourceRow({
     <FeedCtxMenu feed={feed} onUnsubscribe={onUnsubscribe}>
       <button
         type="button"
-        className={clsx("fusion-b-row", unread === 0 && "is-muted", focused && "is-focused")}
+        className={clsx(
+          "fusion-b-row",
+          unread === 0 && "is-muted",
+          focused && "is-focused",
+        )}
         data-feed-uuid={feed.uuid}
         onClick={() => onOpen(feed)}
       >
-      <FeedIcon feed={feed} />
-      <span className="fusion-b-name" title={feed.title}>{feed.title}</span>
-      <span className={clsx("fusion-b-host", broken && "is-fail")} title={feed.link || getHostLabel(feed)}>
-        {getHostLabel(feed)}
-        {broken ? ` · ${t("fusion.browse.sync_failed")}` : ""}
-      </span>
-      <span className={clsx("fusion-b-unread", unread === 0 && "is-zero")}>
-        {unread}
-      </span>
-        <span className="fusion-b-time">{formatFeedTime(feed.last_sync_date)}</span>
+        <FeedIcon feed={feed} />
+        <span className="fusion-b-name" title={feed.title}>
+          {feed.title}
+        </span>
+        <span
+          className={clsx("fusion-b-host", broken && "is-fail")}
+          title={feed.link || getHostLabel(feed)}
+        >
+          {getHostLabel(feed)}
+          {broken ? ` · ${t("fusion.browse.sync_failed")}` : ""}
+        </span>
+        <span className={clsx("fusion-b-unread", unread === 0 && "is-zero")}>
+          {unread}
+        </span>
+        <span className="fusion-b-time">
+          {formatFeedTime(feed.last_sync_date)}
+        </span>
       </button>
     </FeedCtxMenu>
   );
@@ -109,7 +120,13 @@ export function FeedsBrowse() {
     const folders = store.subscribes.filter((i) => i.item_type === "folder");
     return [
       ...(rootFeeds.length > 0
-        ? [{ uuid: "__ungrouped__", title: t("feeds.ungrouped"), feeds: rootFeeds }]
+        ? [
+            {
+              uuid: "__ungrouped__",
+              title: t("feeds.ungrouped"),
+              feeds: rootFeeds,
+            },
+          ]
         : []),
       ...folders.map((f) => ({
         uuid: f.uuid,
@@ -142,20 +159,18 @@ export function FeedsBrowse() {
   // 焦点行滚进可视区
   useEffect(() => {
     if (!(focusUuid && scrollRef.current)) return;
-    const el = scrollRef.current.querySelector(`[data-feed-uuid="${focusUuid}"]`);
+    const el = scrollRef.current.querySelector(
+      `[data-feed-uuid="${focusUuid}"]`,
+    );
     el?.scrollIntoView({ block: "nearest" });
   }, [focusUuid]);
 
   const moveFocus = (delta: number) => {
     if (keyboardQueue.length === 0) return;
     const idx = keyboardQueue.findIndex((f) => f.uuid === focusUuid);
-    const from = focusUuid === null
-      ? (delta > 0 ? -1 : keyboardQueue.length)
-      : idx;
-    const next = Math.max(
-      0,
-      Math.min(from + delta, keyboardQueue.length - 1),
-    );
+    const from =
+      focusUuid === null ? (delta > 0 ? -1 : keyboardQueue.length) : idx;
+    const next = Math.max(0, Math.min(from + delta, keyboardQueue.length - 1));
     setFocusUuid(keyboardQueue[next].uuid);
   };
 
@@ -194,7 +209,10 @@ export function FeedsBrowse() {
     store.setFilter(FILTER_UNREAD);
   }, [navigate, store]);
 
-  if (DEV_PREVIEW_FIRST_RUN || (groups.length === 0 && store.subscribes.length === 0)) {
+  if (
+    DEV_PREVIEW_FIRST_RUN ||
+    (groups.length === 0 && store.subscribes.length === 0)
+  ) {
     // 零订阅复用 EmptyFace 首启面（CTA：添加订阅 / 导入 OPML），不再裸排版
     return <EmptyFace mode="first" />;
   }
@@ -210,20 +228,29 @@ export function FeedsBrowse() {
             className={clsx("fusion-b-folder", isCollapsed && "closed")}
           >
             <FeedCtxMenu
-              feed={{ uuid: group.uuid, title: group.title, item_type: "folder" } as FeedResItem}
+              feed={
+                {
+                  uuid: group.uuid,
+                  title: group.title,
+                  item_type: "folder",
+                } as FeedResItem
+              }
             >
               <button
                 type="button"
                 className="fusion-b-head"
                 onClick={() => toggleFolder(group.uuid)}
               >
-              <span className="fusion-b-chev">
-                <ChevronDown size={12} />
-              </span>
-              <span className="fusion-b-title">{group.title}</span>
-              <span className="fusion-b-count">
-                · {t("fusion.browse.folder_sources", { count: group.feeds.length })}
-              </span>
+                <span className="fusion-b-chev">
+                  <ChevronDown size={12} />
+                </span>
+                <span className="fusion-b-title">{group.title}</span>
+                <span className="fusion-b-count">
+                  ·{" "}
+                  {t("fusion.browse.folder_sources", {
+                    count: group.feeds.length,
+                  })}
+                </span>
                 <span className="fusion-b-sum">
                   {t("fusion.browse.folder_unread", { count: unread })}
                 </span>

@@ -1,5 +1,5 @@
-import { useEffect } from "react";
 import { Kbd } from "@astryxdesign/core/Kbd";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { SHORTCUT_GROUPS } from "@/shortcuts";
 
@@ -39,7 +39,9 @@ export function HelpOverlay({ open, onClose }: HelpOverlayProps) {
           </span>
           <span className="desc">{t(r.descKey)}</span>
           {r.scope === "list" && (
-            <span className="fusion-krow-scope">{t("fusion.help.scope_list")}</span>
+            <span className="fusion-krow-scope">
+              {t("fusion.help.scope_list")}
+            </span>
           )}
         </div>
       ))}
@@ -49,15 +51,23 @@ export function HelpOverlay({ open, onClose }: HelpOverlayProps) {
   return (
     <>
       <div className="fusion-veil" onClick={onClose} />
-      <section className="fusion-float fusion-help" role="dialog" aria-label={t("fusion.help.title")}>
+      <section
+        className="fusion-float fusion-help"
+        role="dialog"
+        aria-label={t("fusion.help.title")}
+      >
         <div className="fusion-help-in">
           <span className="tt">{t("fusion.help.title")}</span>
           <span className="sub">{t("fusion.help.desc")}</span>
           <Kbd keys="esc" />
         </div>
         <div className="fusion-help-cols">
-          <div className="fusion-help-grp">{SHORTCUT_GROUPS.slice(0, 2).map(renderGroup)}</div>
-          <div className="fusion-help-grp">{SHORTCUT_GROUPS.slice(2).map(renderGroup)}</div>
+          <div className="fusion-help-grp">
+            {SHORTCUT_GROUPS.slice(0, 2).map(renderGroup)}
+          </div>
+          <div className="fusion-help-grp">
+            {SHORTCUT_GROUPS.slice(2).map(renderGroup)}
+          </div>
         </div>
         <div className="fusion-float-foot">
           <span>{t("fusion.help.foot_close")}</span>

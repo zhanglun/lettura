@@ -1,5 +1,5 @@
-import { useNavigate, useRouteError } from "react-router-dom";
 import { ArrowLeftIcon, BugIcon } from "lucide-react";
+import { useNavigate, useRouteError } from "react-router-dom";
 
 export default function ErrorPage() {
   const navigator = useNavigate();
@@ -25,6 +25,7 @@ export default function ErrorPage() {
             href="https://github.com/zhanglun/lettura/issues/new?assignees=&labels=&projects=&template=bug_report.md&title="
             className="flex items-center gap-1 text-red-600"
             target="_blank"
+            rel="noopener"
           >
             <BugIcon size="18" strokeWidth={1.5} /> Click to report bugs
           </a>

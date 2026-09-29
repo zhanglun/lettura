@@ -1,6 +1,12 @@
-import { describe, it, expect } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
-import { MemoryRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import {
+  MemoryRouter,
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+} from "react-router-dom";
+import { describe, expect, it } from "vitest";
 import { RouteConfig } from "@/config";
 
 function LocationDisplay() {
@@ -13,7 +19,10 @@ describe("C3: Default route", () => {
     render(
       <MemoryRouter initialEntries={["/"]}>
         <Routes>
-          <Route path="/" element={<Navigate to={RouteConfig.LOCAL_TODAY} replace />} />
+          <Route
+            path="/"
+            element={<Navigate to={RouteConfig.LOCAL_TODAY} replace />}
+          />
           <Route path="/local/today" element={<LocationDisplay />} />
         </Routes>
       </MemoryRouter>,

@@ -45,7 +45,9 @@ describe("来源读取（源级）", () => {
   });
 
   it("源级载体：存的优先，其次按路由推", () => {
-    expect(getFeedCarrier({ carrier: "audio", origin: "native" })).toBe("audio");
+    expect(getFeedCarrier({ carrier: "audio", origin: "native" })).toBe(
+      "audio",
+    );
     expect(getFeedCarrier({ origin: "generator:bilibili" })).toBe("video");
     expect(getFeedCarrier({ origin: "generator:youtube" })).toBe("video");
     expect(getFeedCarrier({ origin: "generator:newsletter" })).toBe("email");
@@ -56,8 +58,14 @@ describe("来源读取（源级）", () => {
 
 describe("徽章：载体定字形，品牌字优先（不再是逐个平台的特例）", () => {
   it("音频/文本/邮件按载体字", () => {
-    expect(mediaBadge("audio", "native", LABELS)).toEqual({ char: "播", cls: "b-pod" });
-    expect(mediaBadge("text", "native", LABELS)).toEqual({ char: "文", cls: "b-art" });
+    expect(mediaBadge("audio", "native", LABELS)).toEqual({
+      char: "播",
+      cls: "b-pod",
+    });
+    expect(mediaBadge("text", "native", LABELS)).toEqual({
+      char: "文",
+      cls: "b-art",
+    });
     expect(mediaBadge("email", "generator:newsletter", LABELS)).toEqual({
       char: "邮",
       cls: "b-pod",
@@ -65,8 +73,14 @@ describe("徽章：载体定字形，品牌字优先（不再是逐个平台的�
   });
 
   it("视频：已知路由出品牌字（B/抖），未知路由回落载体字", () => {
-    expect(mediaBadge("video", "generator:bilibili", LABELS)).toEqual({ char: "B", cls: "b-bil" });
-    expect(mediaBadge("video", "generator:douyin", LABELS)).toEqual({ char: "抖", cls: "b-dou" });
+    expect(mediaBadge("video", "generator:bilibili", LABELS)).toEqual({
+      char: "B",
+      cls: "b-bil",
+    });
+    expect(mediaBadge("video", "generator:douyin", LABELS)).toEqual({
+      char: "抖",
+      cls: "b-dou",
+    });
     expect(mediaBadge("video", "generator:xiaohongshu", LABELS)).toEqual({
       char: "视",
       cls: "b-bil",
@@ -74,12 +88,20 @@ describe("徽章：载体定字形，品牌字优先（不再是逐个平台的�
   });
 
   it("品牌字只在视频载体上生效（文本载体的 B站源不会借用品牌字）", () => {
-    expect(mediaBadge("text", "generator:bilibili", LABELS)).toEqual({ char: "文", cls: "b-art" });
+    expect(mediaBadge("text", "generator:bilibili", LABELS)).toEqual({
+      char: "文",
+      cls: "b-art",
+    });
   });
 });
 
 describe("平台名（详情页）", () => {
-  const names = { bilibili: "Bilibili", douyin: "抖音", youtube: "YouTube", generic: "视频" };
+  const names = {
+    bilibili: "Bilibili",
+    douyin: "抖音",
+    youtube: "YouTube",
+    generic: "视频",
+  };
 
   it("已知路由 → 品牌名；其余 → 通用名", () => {
     expect(platformName("generator:bilibili", names)).toBe("Bilibili");

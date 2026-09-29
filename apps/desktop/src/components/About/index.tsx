@@ -1,10 +1,10 @@
-import React from "react";
-import { open } from "@tauri-apps/plugin-shell";
-import { Dialog } from "@astryxdesign/core/Dialog";
 import { Button } from "@astryxdesign/core/Button";
+import { Dialog } from "@astryxdesign/core/Dialog";
+import { open } from "@tauri-apps/plugin-shell";
 import { Link2, Shell } from "lucide-react";
-import { useBearStore } from "@/stores";
+import React from "react";
 import logo from "@/logo.svg";
+import { useBearStore } from "@/stores";
 
 export const DialogAboutApp = React.memo(() => {
   const store = useBearStore((state) => ({

@@ -52,8 +52,7 @@ declare type ThemeAccentColor =
   | "mint"
   | "sky";
 
-declare interface AppConfig {
-}
+declare type AppConfig = {};
 
 declare interface UserConfig {
   port?: number;

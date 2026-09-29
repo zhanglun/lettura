@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from "react";
-import { Kbd } from "@astryxdesign/core/Kbd";
 import { Button } from "@astryxdesign/core/Button";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Kbd } from "@astryxdesign/core/Kbd";
+import { CircleHelp, Search } from "lucide-react";
+import React, { useEffect, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
-import { Search, CircleHelp } from "lucide-react";
-import { HK } from "@/shortcuts";
-import { seekSharedAudioBy } from "@/components/LPodcast/useAudioPlayer";
-import { useShallow } from "zustand/react/shallow";
 import { useTranslation } from "react-i18next";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useShallow } from "zustand/react/shallow";
+import { AddFeedChannel } from "@/components/AddFeed";
+import { LPodcast } from "@/components/LPodcast";
+import { seekSharedAudioBy } from "@/components/LPodcast/useAudioPlayer";
 import { RouteConfig } from "@/config";
-import { useBearStore } from "@/stores";
 import { busChannel } from "@/helpers/busChannel";
 import { recordNav } from "@/helpers/navHistory";
-import { LPodcast } from "@/components/LPodcast";
-import { AddFeedChannel } from "@/components/AddFeed";
+import { HK } from "@/shortcuts";
+import { useBearStore } from "@/stores";
 import { CommandPalette } from "./CommandPalette";
 import { HelpOverlay } from "./HelpOverlay";
 
@@ -23,7 +23,7 @@ const FILTER_READ = { id: 2, title: "Read" };
 /** fusion 壳：暖灰画布 + 玻璃主面板 + 顶栏导航 + ⌘K（Rail/Sidebar 退役） */
 const buttonBorder = { border: "1px solid var(--color-border)" };
 
-export const AppLayout = React.memo(function () {
+export const AppLayout = React.memo(() => {
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
@@ -123,11 +123,23 @@ export const AppLayout = React.memo(function () {
   useHotkeys(HK.syncAll, () => store.syncAllArticles());
   // ←/→：播客 ±30s（有曲目且浮层未挡住时全局生效）
   useHotkeys(HK.seekBack, () => {
-    if (!store.tracks?.length || paletteOpen || helpOpen || store.addFeedModalOpen) return;
+    if (
+      !store.tracks?.length ||
+      paletteOpen ||
+      helpOpen ||
+      store.addFeedModalOpen
+    )
+      return;
     seekSharedAudioBy(-30);
   }, [store, paletteOpen, helpOpen]);
   useHotkeys(HK.seekFwd, () => {
-    if (!store.tracks?.length || paletteOpen || helpOpen || store.addFeedModalOpen) return;
+    if (
+      !store.tracks?.length ||
+      paletteOpen ||
+      helpOpen ||
+      store.addFeedModalOpen
+    )
+      return;
     seekSharedAudioBy(30);
   }, [store, paletteOpen, helpOpen]);
   // esc 逐级退回：悬浮层优先（浮层 / 帮助在捕获阶段已 preventDefault 的那次 esc 不再收回播放器）
@@ -195,7 +207,8 @@ export const AppLayout = React.memo(function () {
           className="flex min-h-0 flex-1 flex-col"
           style={
             {
-              "--fusion-player-inset": playerVisible && store.playerMode === "bar" ? "102px" : "0px",
+              "--fusion-player-inset":
+                playerVisible && store.playerMode === "bar" ? "102px" : "0px",
             } as React.CSSProperties
           }
         >

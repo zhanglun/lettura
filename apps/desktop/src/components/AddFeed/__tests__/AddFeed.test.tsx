@@ -1,15 +1,29 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen, cleanup, act, fireEvent } from "@testing-library/react";
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+} from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AddFeedChannel } from "..";
 
 /** 面板只经 dataAgent 与后端说话；Tauri IPC 在 jsdom 里不存在，所以这里全替掉 */
-const fetchFeed = vi.fn<[url: string, origin?: string, carrier?: string], Promise<unknown>>();
-const subscribeFeed = vi.fn<[url: string, origin?: string, carrier?: string], Promise<unknown>>();
+const fetchFeed = vi.fn<
+  [url: string, origin?: string, carrier?: string],
+  Promise<unknown>
+>();
+const subscribeFeed = vi.fn<
+  [url: string, origin?: string, carrier?: string],
+  Promise<unknown>
+>();
 const moveChannelIntoFolder = vi.fn<
   [uuid: string, folder: string, sort: number],
   Promise<number>
 >(() => Promise.resolve(1));
-const createFolder = vi.fn<[name: string], Promise<number>>(() => Promise.resolve(1));
+const createFolder = vi.fn<[name: string], Promise<number>>(() =>
+  Promise.resolve(1),
+);
 const navigate = vi.fn();
 const toastSuccess = vi.fn();
 const toastError = vi.fn();
@@ -46,20 +60,40 @@ const storeState = vi.hoisted(() => ({
 
 vi.mock("@/stores", () => ({
   useBearStore: Object.assign(
-    (selector: (s: Record<string, unknown>) => unknown) => selector(storeState.value),
+    (selector: (s: Record<string, unknown>) => unknown) =>
+      selector(storeState.value),
     { getState: () => storeState.value },
   ),
 }));
 
 vi.mock("zustand/react/shallow", () => ({ useShallow: (s: unknown) => s }));
 vi.mock("react-i18next", () => ({
-  useTranslation: () => ({ t: (k: string, v?: Record<string, unknown>) => (v ? `${k}:${JSON.stringify(v)}` : k), i18n: { language: "zh" } }),
+  useTranslation: () => ({
+    t: (k: string, v?: Record<string, unknown>) =>
+      v ? `${k}:${JSON.stringify(v)}` : k,
+    i18n: { language: "zh" },
+  }),
 }));
 
-const FEED = { title: "少数派", description: "高效工作，品质生活", logo: "", feed_url: "https://sspai.com/feed" };
+const FEED = {
+  title: "少数派",
+  description: "高效工作，品质生活",
+  logo: "",
+  feed_url: "https://sspai.com/feed",
+};
 const ENTRIES = [
-  { title: "派评 | 近期值得关注的 App", link: "https://sspai.com/post/1", pub_date: "2026-09-24T08:00:00Z", duration: null },
-  { title: "本周看什么", link: "https://sspai.com/post/2", pub_date: "2026-09-23T08:00:00Z", duration: null },
+  {
+    title: "派评 | 近期值得关注的 App",
+    link: "https://sspai.com/post/1",
+    pub_date: "2026-09-24T08:00:00Z",
+    duration: null,
+  },
+  {
+    title: "本周看什么",
+    link: "https://sspai.com/post/2",
+    pub_date: "2026-09-23T08:00:00Z",
+    duration: null,
+  },
 ];
 
 const renderPanel = () =>
@@ -106,13 +140,22 @@ describe("AddFeedChannel（2026-09-25 重梳理后的流程）", () => {
       vi.advanceTimersByTime(500);
     });
 
-    expect(fetchFeed).toHaveBeenCalledWith("https://sspai.com", undefined, undefined);
-    expect(document.querySelector(".fusion-card .c-t")?.textContent).toBe("少数派");
-    expect(document.querySelector(".fusion-card .c-h")?.textContent).toContain("recent");
-    expect(Array.from(document.querySelectorAll(".fusion-card .c-row .rt")).map((e) => e.textContent)).toEqual([
-      "派评 | 近期值得关注的 App",
-      "本周看什么",
-    ]);
+    expect(fetchFeed).toHaveBeenCalledWith(
+      "https://sspai.com",
+      undefined,
+      undefined,
+    );
+    expect(document.querySelector(".fusion-card .c-t")?.textContent).toBe(
+      "少数派",
+    );
+    expect(document.querySelector(".fusion-card .c-h")?.textContent).toContain(
+      "recent",
+    );
+    expect(
+      Array.from(document.querySelectorAll(".fusion-card .c-row .rt")).map(
+        (e) => e.textContent,
+      ),
+    ).toEqual(["派评 | 近期值得关注的 App", "本周看什么"]);
   });
 
   it("多个候选：列出 chips 并标出当前生效的那个", async () => {
@@ -138,7 +181,10 @@ describe("AddFeedChannel（2026-09-25 重梳理后的流程）", () => {
 
   it("站点自带 feed 的生成器（Newsletter）：先走发现，发现不到才回落到生成的 feed 地址", async () => {
     fetchFeed
-      .mockResolvedValueOnce({ feed: null, message: "No feed found on that page" })
+      .mockResolvedValueOnce({
+        feed: null,
+        message: "No feed found on that page",
+      })
       .mockResolvedValueOnce({
         feed: { ...FEED, title: "某 Newsletter" },
         resolved_url: "https://foo.substack.com/feed",
@@ -157,7 +203,12 @@ describe("AddFeedChannel（2026-09-25 重梳理后的流程）", () => {
     });
 
     // 第一次必须是原始主页（它自己声明了 feed），不是生成地址
-    expect(fetchFeed).toHaveBeenNthCalledWith(1, "https://foo.substack.com", undefined, undefined);
+    expect(fetchFeed).toHaveBeenNthCalledWith(
+      1,
+      "https://foo.substack.com",
+      undefined,
+      undefined,
+    );
     expect(fetchFeed).toHaveBeenNthCalledWith(
       2,
       "https://foo.substack.com/feed",
@@ -175,7 +226,11 @@ describe("AddFeedChannel（2026-09-25 重梳理后的流程）", () => {
       message: "",
     });
     subscribeFeed.mockResolvedValue([
-      { uuid: "feed-uuid-1", title: "少数派", feed_url: "https://sspai.com/feed" },
+      {
+        uuid: "feed-uuid-1",
+        title: "少数派",
+        feed_url: "https://sspai.com/feed",
+      },
       12,
       "",
     ]);
@@ -190,7 +245,11 @@ describe("AddFeedChannel（2026-09-25 重梳理后的流程）", () => {
       fireEvent.click(screen.getByRole("button", { name: "Subscribe" }));
     });
 
-    expect(subscribeFeed).toHaveBeenCalledWith("https://sspai.com/feed", undefined, undefined);
+    expect(subscribeFeed).toHaveBeenCalledWith(
+      "https://sspai.com/feed",
+      undefined,
+      undefined,
+    );
     expect(toastSuccess).toHaveBeenCalled();
     expect(navigate).toHaveBeenCalledWith(
       "/local/feeds/feed-uuid-1?feedUuid=feed-uuid-1&feedUrl=https%3A%2F%2Fsspai.com%2Ffeed&type=channel",
@@ -207,7 +266,11 @@ describe("AddFeedChannel（2026-09-25 重梳理后的流程）", () => {
       entries: [],
       message: "",
     });
-    subscribeFeed.mockResolvedValue([null, 0, "The content you are trying to subscribe already exists."]);
+    subscribeFeed.mockResolvedValue([
+      null,
+      0,
+      "The content you are trying to subscribe already exists.",
+    ]);
 
     renderPanel();
     typeInto(screen.getByRole("textbox"), "https://sspai.com/feed");

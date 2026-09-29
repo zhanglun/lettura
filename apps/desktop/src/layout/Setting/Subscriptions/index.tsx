@@ -1,18 +1,6 @@
-import { memo, useEffect, useMemo, useState } from "react";
-import type React from "react";
-import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
-import { useBearStore } from "@/stores";
-import { useShallow } from "zustand/react/shallow";
-import * as dataAgent from "@/helpers/dataAgent";
-import { RouteConfig } from "@/config";
-import type { FeedResItem, FolderResItem } from "@/db";
-import { DialogUnsubscribeFeed } from "@/layout/Setting/Content/DialogUnsubscribeFeed";
-import { DialogDeleteFolder } from "@/layout/Setting/Content/DialogDeleteFolder";
-import { AddFolder } from "@/components/AddFolder";
-import { FeedIcon } from "@/components/FeedIcon";
-import { FeedCtxMenu } from "@/components/FeedCtxMenu";
-import { getHostLabel, formatFeedTime } from "@/helpers/feedMeta";
+import { Button } from "@astryxdesign/core/Button";
+import { IconButton } from "@astryxdesign/core/IconButton";
+import { TextInput } from "@astryxdesign/core/TextInput";
 import {
   CheckCheck,
   ChevronDown,
@@ -25,10 +13,22 @@ import {
   SearchX,
   Trash2,
 } from "lucide-react";
-import { Button } from "@astryxdesign/core/Button";
-import { TextInput } from "@astryxdesign/core/TextInput";
-import { IconButton } from "@astryxdesign/core/IconButton";
+import type React from "react";
+import { memo, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+import { useShallow } from "zustand/react/shallow";
+import { AddFolder } from "@/components/AddFolder";
+import { FeedCtxMenu } from "@/components/FeedCtxMenu";
+import { FeedIcon } from "@/components/FeedIcon";
 import { QuietEmpty } from "@/components/QuietEmpty";
+import { RouteConfig } from "@/config";
+import type { FeedResItem, FolderResItem } from "@/db";
+import * as dataAgent from "@/helpers/dataAgent";
+import { formatFeedTime, getHostLabel } from "@/helpers/feedMeta";
+import { DialogDeleteFolder } from "@/layout/Setting/Content/DialogDeleteFolder";
+import { DialogUnsubscribeFeed } from "@/layout/Setting/Content/DialogUnsubscribeFeed";
+import { useBearStore } from "@/stores";
 
 function toFolderResItem(folder: FeedResItem | null): FolderResItem | null {
   if (!folder) return null;
@@ -159,7 +159,11 @@ function SubsGroup({
         </span>
         <span className="fusion-b-title">{title}</span>
         <span className="fusion-b-count">
-          · {t("settings.subscriptions.folder_meta", { sources: feeds.length, unread })}
+          ·{" "}
+          {t("settings.subscriptions.folder_meta", {
+            sources: feeds.length,
+            unread,
+          })}
         </span>
       </button>
       {folder && (
@@ -275,11 +279,21 @@ export const SubscriptionsSection = memo(function SubscriptionsSection() {
   };
 
   const groups = useMemo(() => {
-    const list: { uuid: string; title: string; feeds: FeedResItem[]; folder: FeedResItem | null }[] = [];
+    const list: {
+      uuid: string;
+      title: string;
+      feeds: FeedResItem[];
+      folder: FeedResItem | null;
+    }[] = [];
     const q = searchQuery.trim();
     const ungrouped = rootFeeds.filter(matches);
     if (ungrouped.length > 0) {
-      list.push({ uuid: "__ungrouped__", title: t("feeds.ungrouped"), feeds: ungrouped, folder: null });
+      list.push({
+        uuid: "__ungrouped__",
+        title: t("feeds.ungrouped"),
+        feeds: ungrouped,
+        folder: null,
+      });
     }
     for (const folder of folderItems) {
       const feeds = (folder.children ?? []).filter(matches);
@@ -346,7 +360,10 @@ export const SubscriptionsSection = memo(function SubscriptionsSection() {
           onClick={() => store.setAddFeedModalOpen(true)}
         />
         <span className="fusion-subs-fd" style={{ marginLeft: "auto" }}>
-          {t("fusion.subs.meta", { sources: totalFeeds, folders: folderItems.length })}
+          {t("fusion.subs.meta", {
+            sources: totalFeeds,
+            folders: folderItems.length,
+          })}
         </span>
       </div>
 
@@ -383,7 +400,9 @@ export const SubscriptionsSection = memo(function SubscriptionsSection() {
           icon={searchQuery.trim() ? SearchX : Rss}
           title={
             searchQuery.trim()
-              ? t("settings.subscriptions.no_match_title", { query: searchQuery.trim() })
+              ? t("settings.subscriptions.no_match_title", {
+                  query: searchQuery.trim(),
+                })
               : t("settings.subscriptions.no_feeds_title")
           }
           hint={

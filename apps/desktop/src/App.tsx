@@ -1,16 +1,16 @@
-import { useEffect, useRef, useState } from "react";
-import { emit, listen } from "@tauri-apps/api/event";
-import { useBearStore } from "@/stores";
 import { Theme as AstryxTheme } from "@astryxdesign/core/theme";
+import { emit, listen } from "@tauri-apps/api/event";
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useShallow } from "zustand/react/shallow";
+import { busChannel } from "@/helpers/busChannel";
+import { showErrorToast } from "@/helpers/errorHandler";
+import { useBearStore } from "@/stores";
 import { getAstryxTheme } from "@/themes";
 import { DialogAboutApp } from "./components/About";
-import { useShallow } from "zustand/react/shallow";
 import { ErrorBoundary } from "./components/ErrorBoundary";
-import { showErrorToast } from "@/helpers/errorHandler";
-import { busChannel } from "@/helpers/busChannel";
-import { useNavigate } from "react-router-dom";
-import { RouteConfig } from "./config";
 import { AppLayout } from "./components/layout/AppLayout";
+import { RouteConfig } from "./config";
 
 function App() {
   const navigate = useNavigate();
@@ -28,18 +28,17 @@ function App() {
 
   useEffect(() => {
     if ((window as any).__TAURI_INTERNALS__) {
-      const aboutUnsubscribe = listen("about_lettura", ({
-        payload,
-      }: {
-        payload: string;
-      }) => {
-        store.updateAboutDialogStatus(true);
-        try {
-          store.updateAppMetadata(JSON.parse(payload));
-        } catch (err) {
-          showErrorToast(err, "Failed to parse app metadata");
-        }
-      });
+      const aboutUnsubscribe = listen(
+        "about_lettura",
+        ({ payload }: { payload: string }) => {
+          store.updateAboutDialogStatus(true);
+          try {
+            store.updateAppMetadata(JSON.parse(payload));
+          } catch (err) {
+            showErrorToast(err, "Failed to parse app metadata");
+          }
+        },
+      );
 
       const settingsUnsubscribe = listen("go_to_settings", () => {
         navigate(RouteConfig.SETTINGS);
@@ -62,11 +61,7 @@ function App() {
         syncCompletedUnsubscribe.then((unsub) => unsub());
       };
     }
-  }, [
-    store.updateAboutDialogStatus,
-    store.updateAppMetadata,
-    navigate,
-  ]);
+  }, [store.updateAboutDialogStatus, store.updateAppMetadata, navigate]);
 
   const hasFetchedConfig = useRef(false);
   const getUserConfigRef = useRef(store.getUserConfig);

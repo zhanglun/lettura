@@ -1,9 +1,6 @@
-import type React from "react";
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useShallow } from "zustand/react/shallow";
-import { useTranslation } from "react-i18next";
-import { toast } from "@/helpers/toast";
+import type { ContextMenuOption } from "@astryxdesign/core/ContextMenu";
+import { ContextMenu } from "@astryxdesign/core/ContextMenu";
+import { open as openExternal } from "@tauri-apps/plugin-shell";
 import {
   BookOpen,
   CheckCheck,
@@ -15,16 +12,19 @@ import {
   Settings,
   Trash2,
 } from "lucide-react";
+import type React from "react";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+import { useShallow } from "zustand/react/shallow";
 import { RouteConfig } from "@/config";
-import { useBearStore } from "@/stores";
-import * as dataAgent from "@/helpers/dataAgent";
+import type { FeedResItem } from "@/db";
 import { busChannel } from "@/helpers/busChannel";
 import { copyText } from "@/helpers/copyText";
+import * as dataAgent from "@/helpers/dataAgent";
 import { showErrorToast } from "@/helpers/errorHandler";
-import { open as openExternal } from "@tauri-apps/plugin-shell";
-import { ContextMenu } from "@astryxdesign/core/ContextMenu";
-import type { ContextMenuOption } from "@astryxdesign/core/ContextMenu";
-import type { FeedResItem } from "@/db";
+import { toast } from "@/helpers/toast";
+import { useBearStore } from "@/stores";
 
 export interface FeedCtxMenuProps {
   /** 右键目标（源或分组） */
@@ -48,7 +48,8 @@ function menuHeightFor(items: ContextMenuOption[]) {
     314,
     Math.max(
       items.reduce(
-        (sum, item) => sum + ("type" in item && item.type === "divider" ? 13 : 36),
+        (sum, item) =>
+          sum + ("type" in item && item.type === "divider" ? 13 : 36),
         12 + Math.max(0, items.length - 1) * 3,
       ),
       144,
@@ -212,8 +213,7 @@ export function FeedCtxMenu({
           id: "manage",
           label: t("fusion.queue.manage"),
           icon: <Settings size={13} />,
-          onClick: () =>
-            navigate(`${RouteConfig.SETTINGS}?tab=subscriptions`),
+          onClick: () => navigate(`${RouteConfig.SETTINGS}?tab=subscriptions`),
         },
       );
     }
@@ -288,10 +288,12 @@ export function FeedCtxMenu({
   return (
     <div
       className={`fusion-ctx-host${menuOpen ? " is-context-open" : ""}`}
-      style={{
-        "--fusion-ctx-x": `${point.x}px`,
-        "--fusion-ctx-y": `${point.y}px`,
-      } as React.CSSProperties}
+      style={
+        {
+          "--fusion-ctx-x": `${point.x}px`,
+          "--fusion-ctx-y": `${point.y}px`,
+        } as React.CSSProperties
+      }
       onContextMenuCapture={capturePoint}
     >
       <ContextMenu

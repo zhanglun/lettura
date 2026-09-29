@@ -1,7 +1,7 @@
-import { createRoot } from "react-dom/client";
-import type React from "react";
-import { Toast } from "@astryxdesign/core/Toast";
 import type { ToastType } from "@astryxdesign/core/Toast";
+import { Toast } from "@astryxdesign/core/Toast";
+import type React from "react";
+import { createRoot } from "react-dom/client";
 
 /**
  * 组件外命令式 toast（替代 sonner）。Astryx Toast 可独立渲染，

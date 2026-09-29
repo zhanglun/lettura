@@ -20,45 +20,62 @@
  * its deliberate Songti rule in fusion.css.
  */
 [data-astryx-theme="neutral"] {
-  --font-family-body: Figtree, "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", sans-serif;
-  --font-family-heading: Figtree, "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", sans-serif;
+  --font-family-body:
+    Figtree, "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", sans-serif;
+  --font-family-heading:
+    Figtree, "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", sans-serif;
 }
 
 [data-astryx-theme="matcha"] {
-  --font-family-body: "DM Sans", "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", sans-serif;
-  --font-family-heading: "Playwrite US Trad", Georgia, "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", serif;
+  --font-family-body:
+    "DM Sans", "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", sans-serif;
+  --font-family-heading:
+    "Playwrite US Trad", Georgia, "PingFang SC", "Hiragino Sans GB",
+    "Noto Sans CJK SC", serif;
 }
 
 [data-astryx-theme="stone"] {
-  --font-family-body: Figtree, "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", sans-serif;
-  --font-family-heading: Montserrat, "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", sans-serif;
+  --font-family-body:
+    Figtree, "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", sans-serif;
+  --font-family-heading:
+    Montserrat, "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC",
+    sans-serif;
 }
 
 [data-astryx-theme="gothic"] {
-  --font-family-body: Fustat, "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", sans-serif;
-  --font-family-heading: Fustat, "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", sans-serif;
+  --font-family-body:
+    Fustat, "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", sans-serif;
+  --font-family-heading:
+    Fustat, "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", sans-serif;
 }
 
 [data-astryx-theme="chocolate"] {
-  --font-family-body: "Albert Sans", "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", sans-serif;
-  --font-family-heading: Fraunces, Georgia, "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", serif;
+  --font-family-body:
+    "Albert Sans", "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC",
+    sans-serif;
+  --font-family-heading:
+    Fraunces, Georgia, "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC",
+    serif;
 }
 
 [data-astryx-theme="butter"] {
-  --font-family-body: Outfit, "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", sans-serif;
-  --font-family-heading: Outfit, "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", sans-serif;
+  --font-family-body:
+    Outfit, "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", sans-serif;
+  --font-family-heading:
+    Outfit, "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", sans-serif;
 }
 
 [data-astryx-theme="y2k"] {
-  --font-family-body: Poppins, "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", sans-serif;
-  --font-family-heading: Poppins, "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", sans-serif;
+  --font-family-body:
+    Poppins, "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", sans-serif;
+  --font-family-heading:
+    Poppins, "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", sans-serif;
 }
 
 @layer tw-preflight {
   @tailwind base;
 }
 @tailwind utilities;
-
 
 * {
   box-sizing: border-box;
@@ -88,8 +105,8 @@ body {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
+  font-family:
+    source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
 .spinning {
@@ -127,7 +144,11 @@ code {
   border: 0px solid transparent;
   border-radius: 6px;
   /* 墨色低透明度：随主题墨色/明暗走，替代固定灰 #808080 */
-  background-color: color-mix(in srgb, var(--color-text-primary) 38%, transparent);
+  background-color: color-mix(
+    in srgb,
+    var(--color-text-primary) 38%,
+    transparent
+  );
   background-clip: padding-box;
 }
 

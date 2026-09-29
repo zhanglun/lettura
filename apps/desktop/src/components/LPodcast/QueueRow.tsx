@@ -1,9 +1,9 @@
-import { X } from "lucide-react";
 import { IconButton } from "@astryxdesign/core/IconButton";
-import React from "react";
+import { X } from "lucide-react";
+import type React from "react";
+import { useTranslation } from "react-i18next";
 import type { AudioTrack } from "./index";
 import { formatTime } from "./utils";
-import { useTranslation } from "react-i18next";
 
 interface QueueRowProps {
   track: AudioTrack;

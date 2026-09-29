@@ -1,7 +1,7 @@
-import { describe, it, expect, afterEach, vi } from "vitest";
-import { render, cleanup, act } from "@testing-library/react";
-import { LPodcast } from "../index";
+import { act, cleanup, render } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { useBearStore } from "@/stores";
+import { LPodcast } from "../index";
 
 const ROW = {
   uuid: "ep-1",
@@ -69,7 +69,11 @@ describe("LPodcast 三态", () => {
     const slot = document.querySelector(".fusion-player-slot");
     expect(slot).toBeTruthy();
     expect(slot?.querySelector(".fusion-pbar")).toBeTruthy();
-    expect([...(slot?.querySelectorAll("button") ?? [])].some((b) => b.textContent === "1×")).toBe(true);
+    expect(
+      [...(slot?.querySelectorAll("button") ?? [])].some(
+        (b) => b.textContent === "1×",
+      ),
+    ).toBe(true);
     expect(useBearStore.getState().tracks).toHaveLength(1);
     expect(useBearStore.getState().currentTrack?.uuid).toBe("ep-1");
   });

@@ -1,13 +1,14 @@
-import React, { useEffect, useMemo, useRef } from "react";
+import { useLiveQuery } from "dexie-react-hooks";
 import { AnimatePresence } from "framer-motion";
-import { useAudioPlayer, stopSharedAudio } from "./useAudioPlayer";
-import { MiniPlayer, RATES } from "./MiniPlayer";
+import type React from "react";
+import { useEffect, useMemo, useRef } from "react";
+import { useShallow } from "zustand/react/shallow";
+import { db } from "@/helpers/podcastDB";
+import { useBearStore } from "@/stores";
 import { FullPlayer } from "./FullPlayer";
 import { MiniPill } from "./MiniPill";
-import { useBearStore } from "@/stores";
-import { useShallow } from "zustand/react/shallow";
-import { useLiveQuery } from "dexie-react-hooks";
-import { db } from "@/helpers/podcastDB";
+import { MiniPlayer, RATES } from "./MiniPlayer";
+import { stopSharedAudio, useAudioPlayer } from "./useAudioPlayer";
 
 export interface AudioTrack {
   uuid: string;
@@ -80,8 +81,11 @@ export const LPodcast: React.FC<LPodcastProps> = ({ visible = true }) => {
     if (key === projectedRef.current) return;
     projectedRef.current = key;
 
-    const { currentTrack: now, setCurrentTrack: setNow, updatePodcastPlayingStatus } =
-      useBearStore.getState();
+    const {
+      currentTrack: now,
+      setCurrentTrack: setNow,
+      updatePodcastPlayingStatus,
+    } = useBearStore.getState();
     setTracks(tracks);
     if (!tracks.some((t) => t.uuid === now?.uuid)) {
       setNow(tracks[0] ?? null);

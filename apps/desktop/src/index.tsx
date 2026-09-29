@@ -5,11 +5,11 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import App from "./App";
-import ErrorPage from "./ErrorPage";
 import { RouteConfig } from "./config";
+import ErrorPage from "./ErrorPage";
 import { ArticleContainer } from "./layout/Article";
-import { SettingPage } from "./layout/Setting";
 import { FeedsPage } from "./layout/Feeds";
+import { SettingPage } from "./layout/Setting";
 
 import "./index.css";
 import "./i18n";
@@ -57,4 +57,3 @@ const root = createRoot(domNode);
 // 数据面全部走 Tauri invoke，不再等待/存储 HTTP 端口；
 // Actix 仅承载 /api/rules 与 /api/generated（外部消费的本地 RSS 供应）
 root.render(<RouterProvider router={router} />);
-

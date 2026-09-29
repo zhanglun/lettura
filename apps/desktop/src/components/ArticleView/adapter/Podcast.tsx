@@ -1,15 +1,15 @@
-import { Pause, Play } from "lucide-react";
 import { Button } from "@astryxdesign/core/Button";
 import { IconButton } from "@astryxdesign/core/IconButton";
-import { ArticleResItem } from "@/db";
-import { useBearStore } from "@/stores";
+import { Pause, Play } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useShallow } from "zustand/react/shallow";
+import { RATES } from "@/components/LPodcast/MiniPlayer";
 import { useAudioPlayer } from "@/components/LPodcast/useAudioPlayer";
 import { formatTime } from "@/components/LPodcast/utils";
+import type { ArticleResItem } from "@/db";
+import type { Podcast } from "@/helpers/podcastDB";
+import { useBearStore } from "@/stores";
 import { renderArticleContent } from "../ContentRender";
-import { Podcast } from "@/helpers/podcastDB";
-import { useTranslation } from "react-i18next";
-import { RATES } from "@/components/LPodcast/MiniPlayer";
 
 export interface PodcastAdapter {
   article: ArticleResItem;
@@ -40,7 +40,8 @@ export function PodcastAdapter(props: PodcastAdapter) {
 
   const isCurrent = currentTrack?.uuid === article.uuid;
   const playing = isCurrent && isPlaying;
-  const pct = isCurrent && duration > 0 ? Math.round((progress / duration) * 100) : 0;
+  const pct =
+    isCurrent && duration > 0 ? Math.round((progress / duration) * 100) : 0;
 
   function handlePlay() {
     if (isCurrent) {
@@ -79,7 +80,8 @@ export function PodcastAdapter(props: PodcastAdapter) {
     setPlaybackRate(RATES[(idx + 1) % RATES.length] ?? 1);
   }
 
-  const thumbnail = medias?.[0]?.thumbnails?.[0]?.image?.uri || article.feed_logo;
+  const thumbnail =
+    medias?.[0]?.thumbnails?.[0]?.image?.uri || article.feed_logo;
 
   return (
     <div className="mx-auto w-full max-w-[640px] py-2">
@@ -87,9 +89,21 @@ export function PodcastAdapter(props: PodcastAdapter) {
       <div className="flex gap-5 mb-6">
         <div className="fusion-cover">
           {thumbnail ? (
-            <img src={thumbnail} alt="" className="w-full h-full object-cover rounded-[18px]" />
+            <img
+              src={thumbnail}
+              alt=""
+              className="w-full h-full object-cover rounded-[18px]"
+            />
           ) : (
-            <svg width="40" height="40" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+            <svg
+              width="40"
+              height="40"
+              viewBox="0 0 20 20"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+            >
               <path d="M4 7.5v5M7.3 5v10M10.6 8v4M14 6v8M17.3 7.5v5" />
             </svg>
           )}
@@ -102,7 +116,11 @@ export function PodcastAdapter(props: PodcastAdapter) {
           <div className="fusion-dmeta">
             <span>{article.feed_title}</span>
             <span className="sep">·</span>
-            <span>{isCurrent && duration > 0 ? formatTime(duration) : t("podcast.episode")}</span>
+            <span>
+              {isCurrent && duration > 0
+                ? formatTime(duration)
+                : t("podcast.episode")}
+            </span>
             {isCurrent && duration > 0 && (
               <>
                 <span className="sep">·</span>
@@ -117,9 +135,24 @@ export function PodcastAdapter(props: PodcastAdapter) {
               label={playing ? t("Pause") : t("Play")}
               onClick={handlePlay}
             />
-            <Button variant="ghost" size="sm" label="−30s" onClick={() => skip(-30)} />
-            <Button variant="ghost" size="sm" label="+30s" onClick={() => skip(30)} />
-            <Button variant="ghost" size="sm" label={`${playbackRate}×`} onClick={cycleRate} />
+            <Button
+              variant="ghost"
+              size="sm"
+              label="−30s"
+              onClick={() => skip(-30)}
+            />
+            <Button
+              variant="ghost"
+              size="sm"
+              label="+30s"
+              onClick={() => skip(30)}
+            />
+            <Button
+              variant="ghost"
+              size="sm"
+              label={`${playbackRate}×`}
+              onClick={cycleRate}
+            />
           </div>
         </div>
       </div>

@@ -1,7 +1,7 @@
-import { useTranslation } from "react-i18next";
 import clsx from "clsx";
-import { getFeedCarrier, mediaBadge } from "@/helpers/mediaType";
+import { useTranslation } from "react-i18next";
 import type { FeedResItem } from "@/db";
+import { getFeedCarrier, mediaBadge } from "@/helpers/mediaType";
 
 const ICON_COLORS = [
   "#D97757",
@@ -40,7 +40,9 @@ export function FeedIcon({ feed }: { feed: FeedResItem }) {
   return (
     <span
       className={clsx("fusion-b-ic", !feed.logo && "is-initial", cls)}
-      style={feed.logo || cls ? undefined : { backgroundColor: colorForFeed(feed) }}
+      style={
+        feed.logo || cls ? undefined : { backgroundColor: colorForFeed(feed) }
+      }
     >
       {feed.logo ? (
         <img src={feed.logo} alt="" loading="lazy" decoding="async" />

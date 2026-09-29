@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { create } from "zustand";
-import { createArticleSlice, ArticleSlice } from "../createArticleSlice";
-import { createFeedSlice, FeedSlice } from "../createFeedSlice";
-import { ArticleResItem } from "@/db";
+import type { ArticleResItem } from "@/db";
+import { type ArticleSlice, createArticleSlice } from "../createArticleSlice";
+import { createFeedSlice, type FeedSlice } from "../createFeedSlice";
 
 const createTestStore = () =>
   create<ArticleSlice & FeedSlice>((set, get, ...args) => ({

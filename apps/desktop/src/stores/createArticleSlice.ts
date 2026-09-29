@@ -1,9 +1,9 @@
-import { StateCreator } from "zustand";
 import dayjs from "dayjs";
-import { ArticleResItem } from "@/db";
+import type { StateCreator } from "zustand";
+import type { ArticleResItem } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
-import { FeedSlice } from "./createFeedSlice";
 import { ArticleReadStatus } from "@/typing";
+import type { FeedSlice } from "./createFeedSlice";
 
 export interface ArticleSlice {
   article: ArticleResItem | null;
@@ -76,7 +76,10 @@ export const createArticleSlice: StateCreator<
     return list;
   },
 
-  updateArticleStatus: async (article: ArticleResItem, status: ArticleReadStatus) => {
+  updateArticleStatus: async (
+    article: ArticleResItem,
+    status: ArticleReadStatus,
+  ) => {
     if (article.read_status === status) {
       return;
     }

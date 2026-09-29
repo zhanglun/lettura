@@ -1,19 +1,19 @@
+import { Button } from "@astryxdesign/core/Button";
+import { Kbd } from "@astryxdesign/core/Kbd";
+import { formatDistanceToNow } from "date-fns";
+import { Check, ChevronLeft, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useNavigate, useParams } from "react-router-dom";
+import { RowThumb } from "@/components/ArticleItem";
 import { ArticleDetail } from "@/components/ArticleView/Detail";
 import {
   ScrollBox,
-  ScrollBoxRefObject,
+  type ScrollBoxRefObject,
 } from "@/components/ArticleView/ScrollBox";
 import { ReaderControls } from "@/components/ReaderControls";
-import { Kbd } from "@astryxdesign/core/Kbd";
-import { useTranslation } from "react-i18next";
-import { formatDistanceToNow } from "date-fns";
-import { ArticleResItem } from "@/db";
-import { Check, ChevronLeft, X } from "lucide-react";
-import { Button } from "@astryxdesign/core/Button";
+import type { ArticleResItem } from "@/db";
 import { useBearStore } from "@/stores";
-import { useNavigate, useParams } from "react-router-dom";
-import { RowThumb } from "@/components/ArticleItem";
 
 export interface ArticleViewProps {
   article: ArticleResItem | null;
@@ -188,7 +188,9 @@ export function View({
                     </span>
                     <span className="fusion-date">
                       {formatDistanceToNow(
-                        new Date(nextArticle.pub_date || nextArticle.create_date),
+                        new Date(
+                          nextArticle.pub_date || nextArticle.create_date,
+                        ),
                         { addSuffix: true },
                       )}
                     </span>

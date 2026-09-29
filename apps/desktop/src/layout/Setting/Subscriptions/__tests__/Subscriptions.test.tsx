@@ -167,9 +167,9 @@ describe("Subscriptions settings panel", () => {
     fireEvent.contextMenu(screen.getByText("Vercel Blog"));
 
     // Astryx 菜单项以 menuitem 角色渲染
-    const copyItem = screen.getAllByRole("menuitem").find(
-      (el) => el.textContent === "Copy feed URL",
-    );
+    const copyItem = screen
+      .getAllByRole("menuitem")
+      .find((el) => el.textContent === "Copy feed URL");
     expect(copyItem).toBeTruthy();
 
     fireEvent.click(copyItem!);

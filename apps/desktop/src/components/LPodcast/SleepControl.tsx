@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
 import { DropdownMenu } from "@astryxdesign/core/DropdownMenu";
 import { Check } from "lucide-react";
-import { useBearStore } from "@/stores";
-import { useShallow } from "zustand/react/shallow";
+import type React from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { SLEEP_STEPS, SleepTimer } from "@/stores/createPodcastSlice";
+import { useShallow } from "zustand/react/shallow";
+import { useBearStore } from "@/stores";
+import { SLEEP_STEPS, type SleepTimer } from "@/stores/createPodcastSlice";
 import { formatTime } from "./utils";
 
 const OFF = "off";

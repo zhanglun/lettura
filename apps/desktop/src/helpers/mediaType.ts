@@ -32,12 +32,19 @@ export function getFeedCarrier(feed: {
   origin?: string | null;
 }): Carrier {
   const stored = feed.carrier;
-  if (stored === "audio" || stored === "video" || stored === "email" || stored === "text") {
+  if (
+    stored === "audio" ||
+    stored === "video" ||
+    stored === "email" ||
+    stored === "text"
+  ) {
     return stored;
   }
   const route = originRoute(feed.origin);
-  if (route === "bilibili" || route === "douyin" || route === "youtube") return "video";
-  if (route === "newsletter" || route === "buttondown" || route === "substack") return "email";
+  if (route === "bilibili" || route === "douyin" || route === "youtube")
+    return "video";
+  if (route === "newsletter" || route === "buttondown" || route === "substack")
+    return "email";
   return "text";
 }
 
@@ -52,7 +59,8 @@ export function originRoute(origin?: string | null): string | null {
 export const canPlayInApp = (carrier: Carrier): boolean => carrier === "audio";
 
 /** 要不要外跳（载体是视频：0.2.0 不做站内视频） */
-export const opensExternally = (carrier: Carrier): boolean => carrier === "video";
+export const opensExternally = (carrier: Carrier): boolean =>
+  carrier === "video";
 
 /** 已知生成器路由的品牌字（读者认字，所以保留；未知路由回落载体字） */
 const BRAND_BADGE: Record<string, { char: string; cls: string }> = {

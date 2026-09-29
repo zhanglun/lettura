@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { useBearStore } from "@/stores";
 import { useShallow } from "zustand/react/shallow";
-import { db } from "@/helpers/podcastDB";
 import { showErrorToast } from "@/helpers/errorHandler";
+import { db } from "@/helpers/podcastDB";
+import { useBearStore } from "@/stores";
 
 /**
  * 音频元素是模块级单例：LPodcast（壳层）与 PodcastAdapter（详情页）
@@ -27,8 +27,13 @@ export function stopSharedAudio() {
 /** 键盘 ←/→ 的 ±30s：在模块级共享音频上直接 seek（AppLayout 等无 hook 场景调用） */
 export function seekSharedAudioBy(delta: number) {
   if (!sharedAudio) return;
-  const max = Number.isFinite(sharedAudio.duration) ? sharedAudio.duration : Infinity;
-  sharedAudio.currentTime = Math.min(Math.max(0, sharedAudio.currentTime + delta), max);
+  const max = Number.isFinite(sharedAudio.duration)
+    ? sharedAudio.duration
+    : Infinity;
+  sharedAudio.currentTime = Math.min(
+    Math.max(0, sharedAudio.currentTime + delta),
+    max,
+  );
 }
 
 /** 进度写库节流（timeupdate 高频触发，且可能有多个消费者监听） */
@@ -79,7 +84,11 @@ export const useAudioPlayer = () => {
     }
 
     return () => {
-      if (audioRef.current && store.currentTrack?.uuid && audioRef.current.currentTime > 0) {
+      if (
+        audioRef.current &&
+        store.currentTrack?.uuid &&
+        audioRef.current.currentTime > 0
+      ) {
         db.podcasts.where("uuid").equals(store.currentTrack.uuid).modify({
           progress: audioRef.current.currentTime,
         });

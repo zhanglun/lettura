@@ -1,9 +1,9 @@
-import { ExternalLink } from "lucide-react";
 import { Button } from "@astryxdesign/core/Button";
-import { ArticleResItem } from "@/db";
 import { open } from "@tauri-apps/plugin-shell";
-import { useTranslation } from "react-i18next";
 import dayjs from "dayjs";
+import { ExternalLink } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import type { ArticleResItem } from "@/db";
 import { platformName } from "@/helpers/mediaType";
 import { renderArticleContent } from "../ContentRender";
 
@@ -31,9 +31,21 @@ export function PlatformAdapter({ article, content }: PlatformAdapterProps) {
 
       <div className="fusion-platcover">
         {article.image ? (
-          <img src={article.image} alt="" className="h-full w-full object-cover rounded-[14px]" />
+          <img
+            src={article.image}
+            alt=""
+            className="h-full w-full object-cover rounded-[14px]"
+          />
         ) : (
-          <svg width="44" height="44" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round">
+          <svg
+            width="44"
+            height="44"
+            viewBox="0 0 20 20"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.4"
+            strokeLinecap="round"
+          >
             <path d="M6 4.5 8 7M14 4.5 12 7M4 7h12v8.5H4zM8 10.5v2M12 10.5v2" />
           </svg>
         )}
@@ -45,7 +57,11 @@ export function PlatformAdapter({ article, content }: PlatformAdapterProps) {
       <div className="fusion-dmeta">
         <span>{article.feed_title}</span>
         <span className="sep">·</span>
-        <span>{dayjs(article.pub_date || article.create_date).format("YYYY-MM-DD HH:mm")}</span>
+        <span>
+          {dayjs(article.pub_date || article.create_date).format(
+            "YYYY-MM-DD HH:mm",
+          )}
+        </span>
       </div>
 
       {summary && (

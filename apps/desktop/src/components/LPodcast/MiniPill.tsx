@@ -1,8 +1,8 @@
-import React from "react";
 import { motion } from "framer-motion";
-import { AudioTrack } from "./index";
-import { PLAYER_MOTION } from "./utils";
+import type React from "react";
 import { useTranslation } from "react-i18next";
+import type { AudioTrack } from "./index";
+import { PLAYER_MOTION } from "./utils";
 
 interface MiniPillProps {
   currentTrack: AudioTrack | null;
@@ -44,7 +44,14 @@ export const MiniPill: React.FC<MiniPillProps> = ({
         title={t("podcast.expand_bar")}
       >
         <svg width="40" height="40" viewBox="0 0 40 40">
-          <circle cx="20" cy="20" r={R} fill="none" stroke="rgba(29,30,32,.1)" strokeWidth="2" />
+          <circle
+            cx="20"
+            cy="20"
+            r={R}
+            fill="none"
+            stroke="rgba(29,30,32,.1)"
+            strokeWidth="2"
+          />
           <circle
             cx="20"
             cy="20"

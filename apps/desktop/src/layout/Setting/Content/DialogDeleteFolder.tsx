@@ -1,10 +1,10 @@
-import React from "react";
-import { toast } from "@/helpers/toast";
 import { AlertDialog } from "@astryxdesign/core/AlertDialog";
-import { FolderResItem } from "@/db";
-import * as dataAgent from "@/helpers/dataAgent";
-import { busChannel } from "@/helpers/busChannel";
+import React from "react";
 import { useTranslation } from "react-i18next";
+import type { FolderResItem } from "@/db";
+import { busChannel } from "@/helpers/busChannel";
+import * as dataAgent from "@/helpers/dataAgent";
+import { toast } from "@/helpers/toast";
 
 export interface DialogProps {
   folder?: FolderResItem | null;
@@ -17,13 +17,8 @@ export interface DialogProps {
 
 export const DialogDeleteFolder = React.memo((props: DialogProps) => {
   const { t } = useTranslation();
-  const {
-    folder,
-    dialogStatus,
-    setDialogStatus,
-    afterConfirm,
-    trigger,
-  } = props;
+  const { folder, dialogStatus, setDialogStatus, afterConfirm, trigger } =
+    props;
 
   const confirmDelete = () => {
     if (folder?.uuid) {

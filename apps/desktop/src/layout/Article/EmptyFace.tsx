@@ -1,17 +1,17 @@
-import { useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import { Plus, Upload } from "lucide-react";
 import { Button } from "@astryxdesign/core/Button";
-import { toast } from "@/helpers/toast";
 import { open as openDialog } from "@tauri-apps/plugin-dialog";
 import { readTextFile } from "@tauri-apps/plugin-fs";
-import * as dataAgent from "@/helpers/dataAgent";
-import { showErrorToast } from "@/helpers/errorHandler";
-import { busChannel } from "@/helpers/busChannel";
-import { useBearStore } from "@/stores";
+import { Plus, Upload } from "lucide-react";
+import { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 import { RouteConfig } from "@/config";
+import { busChannel } from "@/helpers/busChannel";
+import * as dataAgent from "@/helpers/dataAgent";
+import { showErrorToast } from "@/helpers/errorHandler";
+import { toast } from "@/helpers/toast";
+import { useBearStore } from "@/stores";
 
 /** 预览开关：置 true 强制走「零订阅」首启分支（查看新用户首屏），平时保持 false */
 export const DEV_PREVIEW_FIRST_RUN = false;
@@ -42,7 +42,9 @@ export function EmptyFace({ mode }: { mode: "first" | "clear" }) {
         store.initCollectionMetas();
         if (result.feed_count > 0) {
           toast.success(
-            t("Successfully imported {count} feeds", { count: result.feed_count }),
+            t("Successfully imported {count} feeds", {
+              count: result.feed_count,
+            }),
           );
         }
       } catch (error) {
@@ -66,8 +68,18 @@ export function EmptyFace({ mode }: { mode: "first" | "clear" }) {
             label={t("fusion.nav.history")}
             onClick={() => navigate(RouteConfig.LOCAL_ALL)}
           />
-          <Button variant="ghost" size="sm" label={t("fusion.nav.starred")} onClick={() => navigate(RouteConfig.LOCAL_STARRED)} />
-          <Button variant="ghost" size="sm" label={t("fusion.cmd.add_feed")} onClick={() => store.setAddFeedModalOpen(true)} />
+          <Button
+            variant="ghost"
+            size="sm"
+            label={t("fusion.nav.starred")}
+            onClick={() => navigate(RouteConfig.LOCAL_STARRED)}
+          />
+          <Button
+            variant="ghost"
+            size="sm"
+            label={t("fusion.cmd.add_feed")}
+            onClick={() => store.setAddFeedModalOpen(true)}
+          />
         </div>
       </div>
     );

@@ -37,8 +37,13 @@ describe("parseUserGenerators（设置里的自定义规则）", () => {
   });
 
   it("用户表可以覆盖内置表（同 key 先命中者胜）", () => {
-    const mine = parseUserGenerators(["substack.com => https://mirror.example.com/substack/feed"]);
-    const hit = matchGenerator("https://foo.substack.com", [...mine, ...BUILTIN_GENERATORS]);
+    const mine = parseUserGenerators([
+      "substack.com => https://mirror.example.com/substack/feed",
+    ]);
+    const hit = matchGenerator("https://foo.substack.com", [
+      ...mine,
+      ...BUILTIN_GENERATORS,
+    ]);
     expect(hit?.route).toBe("https://mirror.example.com/substack/feed");
   });
 });

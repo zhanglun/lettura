@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { toast } from "@/helpers/toast";
+import { Button } from "@astryxdesign/core/Button";
+import { IconButton } from "@astryxdesign/core/IconButton";
+import { open as openExternal } from "@tauri-apps/plugin-shell";
 import clsx from "clsx";
 import {
   CheckCheck,
@@ -12,14 +12,14 @@ import {
   Rss,
   Settings as SettingsIcon,
 } from "lucide-react";
-import { Button } from "@astryxdesign/core/Button";
-import { IconButton } from "@astryxdesign/core/IconButton";
+import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { FeedIcon } from "@/components/FeedIcon";
-import { copyText } from "@/helpers/copyText";
-import { getHostLabel, formatFeedTime } from "@/helpers/feedMeta";
-import { originRoute, getFeedCarrier } from "@/helpers/mediaType";
-import { open as openExternal } from "@tauri-apps/plugin-shell";
 import type { FeedResItem } from "@/db";
+import { copyText } from "@/helpers/copyText";
+import { formatFeedTime, getHostLabel } from "@/helpers/feedMeta";
+import { getFeedCarrier, originRoute } from "@/helpers/mediaType";
+import { toast } from "@/helpers/toast";
 
 /** 收起态会话级记住：浏览多个源时不用反复收起 */
 let profileCollapsed = false;
@@ -60,7 +60,10 @@ export function FeedProfile({
     setCollapsed(next);
   };
 
-  const description = useMemo(() => plainText(feed.description), [feed.description]);
+  const description = useMemo(
+    () => plainText(feed.description),
+    [feed.description],
+  );
   const host = getHostLabel(feed);
   const unread = feed.unread ?? 0;
   const broken = (feed.health_status ?? 0) > 0;
@@ -133,7 +136,9 @@ export function FeedProfile({
                   </span>
                 ) : (
                   <span className="fusion-fp-tag">
-                    {t(`fusion.filter.${carrier === "email" ? "email" : carrier === "audio" ? "podcast" : carrier === "video" ? "video" : "article"}`)}
+                    {t(
+                      `fusion.filter.${carrier === "email" ? "email" : carrier === "audio" ? "podcast" : carrier === "video" ? "video" : "article"}`,
+                    )}
                   </span>
                 )}
                 {feed.folder_name && (
@@ -165,9 +170,11 @@ export function FeedProfile({
                 <Button
                   variant="ghost"
                   size="sm"
-                  label={descOpen
-                    ? t("fusion.profile.desc_less")
-                    : t("fusion.profile.desc_more")}
+                  label={
+                    descOpen
+                      ? t("fusion.profile.desc_less")
+                      : t("fusion.profile.desc_more")
+                  }
                   onClick={() => setDescOpen((v) => !v)}
                 />
               )}
@@ -187,13 +194,12 @@ export function FeedProfile({
               <b>{lastSync || "—"}</b>
               <i>{t("fusion.profile.stat_sync")}</i>
             </span>
-            <span
-              className={clsx(
-                "fusion-fp-stat",
-                broken && "is-broken",
-              )}
-            >
-              <b>{broken ? t("fusion.profile.health_broken") : t("fusion.profile.health_ok")}</b>
+            <span className={clsx("fusion-fp-stat", broken && "is-broken")}>
+              <b>
+                {broken
+                  ? t("fusion.profile.health_broken")
+                  : t("fusion.profile.health_ok")}
+              </b>
               <i>{t("fusion.profile.stat_health")}</i>
             </span>
           </div>
@@ -219,7 +225,10 @@ export function FeedProfile({
             )}
             {actionBtn(
               "sync",
-              <RefreshCw size={12.5} className={syncing ? "animate-spin" : ""} />,
+              <RefreshCw
+                size={12.5}
+                className={syncing ? "animate-spin" : ""}
+              />,
               t("fusion.profile.sync_now"),
               onSync,
             )}

@@ -1,16 +1,23 @@
-import React from "react";
-import { Kbd } from "@astryxdesign/core/Kbd";
 import { Button } from "@astryxdesign/core/Button";
 import { IconButton } from "@astryxdesign/core/IconButton";
-import { ChevronLeft, ChevronsUpDown, Pause, Play, SkipBack, SkipForward } from "lucide-react";
+import { Kbd } from "@astryxdesign/core/Kbd";
 import { motion } from "framer-motion";
-import { AudioTrack } from "./index";
-import { formatTime, PLAYER_MOTION } from "./utils";
-import { SleepControl } from "./SleepControl";
-import { QueueRow } from "./QueueRow";
-import { useBearStore } from "@/stores";
-import { useShallow } from "zustand/react/shallow";
+import {
+  ChevronLeft,
+  ChevronsUpDown,
+  Pause,
+  Play,
+  SkipBack,
+  SkipForward,
+} from "lucide-react";
+import type React from "react";
 import { useTranslation } from "react-i18next";
+import { useShallow } from "zustand/react/shallow";
+import { useBearStore } from "@/stores";
+import type { AudioTrack } from "./index";
+import { QueueRow } from "./QueueRow";
+import { SleepControl } from "./SleepControl";
+import { formatTime, PLAYER_MOTION } from "./utils";
 
 interface FullPlayerProps {
   currentTrack: AudioTrack | null;
@@ -93,7 +100,15 @@ export const FullPlayer: React.FC<FullPlayerProps> = ({
             {cover ? (
               <img src={cover} alt="" />
             ) : (
-              <svg width="56" height="56" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round">
+              <svg
+                width="56"
+                height="56"
+                viewBox="0 0 20 20"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.2"
+                strokeLinecap="round"
+              >
                 <path d="M4 7.5v5M7.3 5v10M10.6 8v4M14 6v8M17.3 7.5v5" />
               </svg>
             )}
@@ -101,7 +116,9 @@ export const FullPlayer: React.FC<FullPlayerProps> = ({
           <div className="f-kind">{t("podcast.now_playing")}</div>
           <h1>{currentTrack?.title || t("podcast.no_track")}</h1>
           <div className="f-meta">
-            <span>{currentTrack?.feed_title || currentTrack?.author || ""}</span>
+            <span>
+              {currentTrack?.feed_title || currentTrack?.author || ""}
+            </span>
             {duration > 0 && (
               <>
                 <span>·</span>
@@ -122,7 +139,12 @@ export const FullPlayer: React.FC<FullPlayerProps> = ({
           </div>
 
           <div className="f-ctrl">
-            <Button variant="ghost" size="sm" label="−30s" onClick={() => skip(-30)} />
+            <Button
+              variant="ghost"
+              size="sm"
+              label="−30s"
+              onClick={() => skip(-30)}
+            />
             <IconButton
               size="sm"
               variant="ghost"
@@ -144,8 +166,18 @@ export const FullPlayer: React.FC<FullPlayerProps> = ({
               isDisabled={tracks.length < 2}
               onClick={playNext}
             />
-            <Button variant="ghost" size="sm" label="+30s" onClick={() => skip(30)} />
-            <Button variant="ghost" size="sm" label={`${playbackRate}×`} onClick={cycleRate} />
+            <Button
+              variant="ghost"
+              size="sm"
+              label="+30s"
+              onClick={() => skip(30)}
+            />
+            <Button
+              variant="ghost"
+              size="sm"
+              label={`${playbackRate}×`}
+              onClick={cycleRate}
+            />
             <SleepControl />
           </div>
 

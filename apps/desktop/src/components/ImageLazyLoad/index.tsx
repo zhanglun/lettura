@@ -1,5 +1,5 @@
-import React, { useState } from "react";
 import { clsx } from "clsx";
+import React, { useState } from "react";
 import { useInView } from "react-intersection-observer";
 
 interface ImageLazyLoadProps {
@@ -54,7 +54,11 @@ export const ImageLazyLoad = ({
   }
 
   return (
-    <div ref={ref} style={{ width, height }} className={clsx("relative", className)}>
+    <div
+      ref={ref}
+      style={{ width, height }}
+      className={clsx("relative", className)}
+    >
       {inView ? (
         <>
           {!isLoaded && (

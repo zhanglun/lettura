@@ -1,18 +1,22 @@
-import React, { ForwardedRef, useEffect, useMemo, useState } from "react";
-import { formatDistanceToNow } from "date-fns";
-import { useNavigate } from "react-router-dom";
-import { useBearStore } from "@/stores";
-import { ArticleResItem } from "@/db";
-import { ArticleReadStatus, ArticleStarStatus } from "@/typing";
+import { IconButton } from "@astryxdesign/core/IconButton";
 import clsx from "clsx";
+import { formatDistanceToNow } from "date-fns";
+import { CheckCheck, Star } from "lucide-react";
+import React, { type ForwardedRef, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 import { RouteConfig } from "@/config";
-import { Star, CheckCheck } from "lucide-react";
-import { IconButton } from "@astryxdesign/core/IconButton";
+import type { ArticleResItem } from "@/db";
+import {
+  formatDuration,
+  pickDuration,
+  pickThumbUrl,
+} from "@/helpers/articleContent";
 import * as dataAgent from "@/helpers/dataAgent";
-import { useTranslation } from "react-i18next";
 import { getCarrier } from "@/helpers/mediaType";
-import { pickThumbUrl, pickDuration, formatDuration } from "@/helpers/articleContent";
+import { useBearStore } from "@/stores";
+import { ArticleReadStatus, ArticleStarStatus } from "@/typing";
 
 /** 行首缩略图：内容首图（feed 自带）> feed 图标 > 安静类型色块（无字符）。
  *  视频行走加宽 16:9 变体并叠时长角标（.fusion-thumb.vid）。 */
@@ -156,7 +160,12 @@ export const ArticleItem = React.forwardRef(
         <span className="fusion-title">{article.title}</span>
         <span className="fusion-src">
           {article.feed_logo && (
-            <img className="fusion-ficon" src={article.feed_logo} alt="" loading="lazy" />
+            <img
+              className="fusion-ficon"
+              src={article.feed_logo}
+              alt=""
+              loading="lazy"
+            />
           )}
           <span className="fn">{article.feed_title}</span>
           {getCarrier(article) === "video" && duration != null && (
@@ -168,10 +177,23 @@ export const ArticleItem = React.forwardRef(
           <IconButton
             size="sm"
             variant="ghost"
-            icon={<Star size={12} fill={starred === ArticleStarStatus.STARRED ? "currentColor" : "none"} />}
+            icon={
+              <Star
+                size={12}
+                fill={
+                  starred === ArticleStarStatus.STARRED
+                    ? "currentColor"
+                    : "none"
+                }
+              />
+            }
             label={t("Star it")}
             className={clsx(starred === ArticleStarStatus.STARRED && "is-on")}
-            style={starred === ArticleStarStatus.STARRED ? { color: "var(--fusion-amber)" } : undefined}
+            style={
+              starred === ArticleStarStatus.STARRED
+                ? { color: "var(--fusion-amber)" }
+                : undefined
+            }
             onClick={(e) => {
               e.stopPropagation();
               const next =

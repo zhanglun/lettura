@@ -1,14 +1,14 @@
-import React, { useState } from "react";
+import { Button } from "@astryxdesign/core/Button";
 import { Dialog, DialogHeader } from "@astryxdesign/core/Dialog";
 import { Layout, LayoutContent } from "@astryxdesign/core/Layout";
-import { Button } from "@astryxdesign/core/Button";
 import { RadioList, RadioListItem } from "@astryxdesign/core/RadioList";
 import { Text } from "@astryxdesign/core/Text";
-import { FeedResItem } from "@/db";
-import * as dataAgent from "@/helpers/dataAgent";
-import { busChannel } from "@/helpers/busChannel";
-import { toast } from "@/helpers/toast";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import type { FeedResItem } from "@/db";
+import { busChannel } from "@/helpers/busChannel";
+import * as dataAgent from "@/helpers/dataAgent";
+import { toast } from "@/helpers/toast";
 
 export interface DialogProps {
   feed: FeedResItem | null;
@@ -21,13 +21,7 @@ export interface DialogProps {
 
 export const DialogUnsubscribeFeed = React.memo((props: DialogProps) => {
   const { t } = useTranslation();
-  const {
-    feed,
-    dialogStatus,
-    setDialogStatus,
-    afterConfirm,
-    trigger,
-  } = props;
+  const { feed, dialogStatus, setDialogStatus, afterConfirm, trigger } = props;
   const [loading, setLoading] = useState(false);
   const [deleteMode, setDeleteMode] = useState<"keep" | "delete">("keep");
 
@@ -59,11 +53,7 @@ export const DialogUnsubscribeFeed = React.memo((props: DialogProps) => {
   return (
     <>
       {trigger}
-      <Dialog
-        isOpen={dialogStatus}
-        onOpenChange={setDialogStatus}
-        width={440}
-      >
+      <Dialog isOpen={dialogStatus} onOpenChange={setDialogStatus} width={440}>
         <Layout
           header={<DialogHeader title={t("Are you absolutely sure?")} />}
           content={

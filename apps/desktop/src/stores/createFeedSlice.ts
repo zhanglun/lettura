@@ -1,7 +1,7 @@
-import { StateCreator } from "zustand";
-import { Channel, FeedResItem } from "@/db";
-import * as dataAgent from "@/helpers/dataAgent";
 import pLimit from "p-limit";
+import type { StateCreator } from "zustand";
+import type { Channel, FeedResItem } from "@/db";
+import * as dataAgent from "@/helpers/dataAgent";
 
 export type CollectionMeta = {
   total: { unread: number };
@@ -85,11 +85,11 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
     const strategy = (action: string, target: any) => {
       switch (action) {
         case "increase": {
-          target ? (target.unread += count) : null;
+          if (target) target.unread += count;
           break;
         }
         case "decrease": {
-          target ? (target.unread -= count) : null;
+          if (target) target.unread -= count;
           break;
         }
         case "upgrade": {
@@ -98,7 +98,7 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
         }
 
         case "set": {
-          target ? (target.unread = count) : null;
+          if (target) target.unread = count;
           break;
         }
         default: {
@@ -107,9 +107,10 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
       }
     };
 
-    let list = get().subscribes.map((feed) => {
+    const list = get().subscribes.map((feed) => {
       let target: any = feed.uuid === uuid ? feed : null;
-      let child: any = feed.children.find((item) => item.uuid === uuid) || null;
+      const child: any =
+        feed.children.find((item) => item.uuid === uuid) || null;
 
       if (child) {
         target = feed;
@@ -127,7 +128,6 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
       return feed;
     });
 
-
     set({
       subscribes: list,
     });
@@ -140,8 +140,14 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
 
   initCollectionMetas() {
     dataAgent.getCollectionMetas().then((meta) => {
-      const today = typeof meta?.today === "number" ? meta.today : (meta?.today?.unread ?? 0);
-      const total = typeof meta?.total === "number" ? meta.total : (meta?.total?.unread ?? 0);
+      const today =
+        typeof meta?.today === "number"
+          ? meta.today
+          : (meta?.today?.unread ?? 0);
+      const total =
+        typeof meta?.total === "number"
+          ? meta.total
+          : (meta?.total?.unread ?? 0);
       set(() => ({
         collectionMeta: {
           today: { unread: today },
@@ -251,7 +257,7 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
   },
 
   closeFolder: (uuid: string) => {
-    let list = get().subscribes;
+    const list = get().subscribes;
 
     list.forEach((_) => {
       if (_.uuid === uuid) {
@@ -265,7 +271,7 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
   },
 
   openFolder: (uuid: string) => {
-    let list = get().subscribes;
+    const list = get().subscribes;
 
     list.forEach((_) => {
       if (_.uuid === uuid) {
@@ -291,16 +297,19 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
 
     return Promise.all(fns)
       .then((resList) => {
-        const map = resList.reduce((acu, res) => {
-          const [[uuid, values] = []] = Object.entries(res);
+        const map = resList.reduce(
+          (acu, res) => {
+            const [[uuid, values] = []] = Object.entries(res);
 
-          if (uuid && values) {
-            acu[uuid] = values;
-          }
+            if (uuid && values) {
+              acu[uuid] = values;
+            }
 
-          return acu;
-        }, {} as { [key: string]: any });
-        let list = get().subscribes.map((_) => {
+            return acu;
+          },
+          {} as { [key: string]: any },
+        );
+        const list = get().subscribes.map((_) => {
           if (map[_.uuid]) {
             _.unread += map[_.uuid][1];
 
@@ -347,7 +356,14 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
   },
 
   syncAllArticles: async () => {
-    const { globalSyncStatus, subscribes, syncArticles, getUserConfig, getSubscribes, setGlobalSyncStatus } = get() as any;
+    const {
+      globalSyncStatus,
+      subscribes,
+      syncArticles,
+      getUserConfig,
+      getSubscribes,
+      setGlobalSyncStatus,
+    } = get() as any;
     if (globalSyncStatus) return;
 
     setGlobalSyncStatus(true);
@@ -361,9 +377,9 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
           limit(() =>
             syncArticles(feed).catch(() => {
               // single feed failure should not block others
-            })
-          )
-        )
+            }),
+          ),
+        ),
       );
     } finally {
       setGlobalSyncStatus(false);

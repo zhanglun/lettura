@@ -1,4 +1,4 @@
-import { StateCreator } from "zustand";
+import type { StateCreator } from "zustand";
 import * as dataAgent from "../helpers/dataAgent";
 
 export interface UserConfigSlice {

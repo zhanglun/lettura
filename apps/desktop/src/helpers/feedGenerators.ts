@@ -42,10 +42,17 @@ export const BUILTIN_GENERATORS: FeedGenerator[] = [
 ];
 
 /** 把模板里的 $1..$n 换成捕获组（不匹配返回 null） */
-function expand(pattern: RegExp, template: string, input: string): string | null {
+function expand(
+  pattern: RegExp,
+  template: string,
+  input: string,
+): string | null {
   const matched = input.match(pattern);
   if (!matched) return null;
-  return template.replace(/\$(\d)/g, (_, index) => matched[Number(index)] ?? "");
+  return template.replace(
+    /\$(\d)/g,
+    (_, index) => matched[Number(index)] ?? "",
+  );
 }
 
 export interface GeneratorHit {
@@ -71,7 +78,9 @@ export function matchGenerator(
  *   `example.com/blog => https://example.com/blog/feed`
  * 分隔符接受 `=>` `->` `→`；左侧按正则用（纯域名也是合法正则），右侧是完整的 feed 地址。
  */
-export function parseUserGenerators(lines: string[] | undefined): FeedGenerator[] {
+export function parseUserGenerators(
+  lines: string[] | undefined,
+): FeedGenerator[] {
   const result: FeedGenerator[] = [];
 
   for (const raw of lines || []) {

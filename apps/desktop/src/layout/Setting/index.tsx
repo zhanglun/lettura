@@ -1,36 +1,50 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import { HK } from "@/shortcuts";
-import { toast } from "@/helpers/toast";
-import { open as openDialog, save as saveDialog } from "@tauri-apps/plugin-dialog";
-import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
-import { enable as enableAutostart, disable as disableAutostart } from "@tauri-apps/plugin-autostart";
-import { useHotkeys } from "react-hotkeys-hook";
-import * as dataAgent from "@/helpers/dataAgent";
-import { showErrorToast } from "@/helpers/errorHandler";
-import { busChannel } from "@/helpers/busChannel";
-import { useBearStore } from "@/stores";
-import { useShallow } from "zustand/react/shallow";
-import { RouteConfig } from "@/config";
-import { EMAIL_SUBSCRIPTION_ENABLED } from "@/config";
-import { lastNavFrom } from "@/helpers/navHistory";
-import { SubscriptionsSection } from "./Subscriptions";
-import { ASTRYX_THEMES } from "@/themes";
 import { Button } from "@astryxdesign/core/Button";
-import { SegmentedControl, SegmentedControlItem } from "@astryxdesign/core/SegmentedControl";
 import { Dialog, DialogHeader } from "@astryxdesign/core/Dialog";
-import { RadioList, RadioListItem } from "@astryxdesign/core/RadioList";
-import { Layout, LayoutContent } from "@astryxdesign/core/Layout";
-
-import { ChevronRight, Download, Upload , ChevronLeft, Plus, Trash2 } from "lucide-react";
-import { Switch } from "@astryxdesign/core/Switch";
 import { Kbd } from "@astryxdesign/core/Kbd";
+import { Layout, LayoutContent } from "@astryxdesign/core/Layout";
+import { RadioList, RadioListItem } from "@astryxdesign/core/RadioList";
+import {
+  SegmentedControl,
+  SegmentedControlItem,
+} from "@astryxdesign/core/SegmentedControl";
 import { Selector } from "@astryxdesign/core/Selector";
 import { Slider } from "@astryxdesign/core/Slider";
+import { Switch } from "@astryxdesign/core/Switch";
 import { TextArea } from "@astryxdesign/core/TextArea";
 import { TextInput } from "@astryxdesign/core/TextInput";
-import { SiteRuleSummary, SourceAccount } from "@/db";
+import {
+  disable as disableAutostart,
+  enable as enableAutostart,
+} from "@tauri-apps/plugin-autostart";
+import {
+  open as openDialog,
+  save as saveDialog,
+} from "@tauri-apps/plugin-dialog";
+import { readTextFile, writeTextFile } from "@tauri-apps/plugin-fs";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Download,
+  Plus,
+  Trash2,
+  Upload,
+} from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useHotkeys } from "react-hotkeys-hook";
+import { useTranslation } from "react-i18next";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useShallow } from "zustand/react/shallow";
+import { EMAIL_SUBSCRIPTION_ENABLED, RouteConfig } from "@/config";
+import type { SiteRuleSummary, SourceAccount } from "@/db";
+import { busChannel } from "@/helpers/busChannel";
+import * as dataAgent from "@/helpers/dataAgent";
+import { showErrorToast } from "@/helpers/errorHandler";
+import { lastNavFrom } from "@/helpers/navHistory";
+import { toast } from "@/helpers/toast";
+import { HK } from "@/shortcuts";
+import { useBearStore } from "@/stores";
+import { ASTRYX_THEMES } from "@/themes";
+import { SubscriptionsSection } from "./Subscriptions";
 
 const INTERVALS = [
   { value: 0, labelKey: "Manual" },
@@ -94,7 +108,14 @@ export function SettingPage() {
   // 添加邮箱账户对话框
   const [accDialogOpen, setAccDialogOpen] = useState(false);
   const [accProvider, setAccProvider] = useState<"mail" | "bilibili">("mail");
-  const [accForm, setAccForm] = useState({ host: "", port: "993", user: "", password: "", sessdata: "", label: "" });
+  const [accForm, setAccForm] = useState({
+    host: "",
+    port: "993",
+    user: "",
+    password: "",
+    sessdata: "",
+    label: "",
+  });
   const [accTesting, setAccTesting] = useState(false);
   const [accSaving, setAccSaving] = useState(false);
   // 行内测试 / 删除确认
@@ -171,7 +192,7 @@ export function SettingPage() {
     const start = performance.now();
     const step = (now: number) => {
       const p = Math.min((now - start) / 320, 1);
-      el.scrollTop = from + (to - from) * (1 - Math.pow(1 - p, 3));
+      el.scrollTop = from + (to - from) * (1 - (1 - p) ** 3);
       if (p < 1) scrollAnim.current = requestAnimationFrame(step);
     };
     scrollAnim.current = requestAnimationFrame(step);
@@ -188,7 +209,14 @@ export function SettingPage() {
   useEffect(() => {
     const el = bodyRef.current;
     if (!el) return;
-    const sections = ["appearance", "sync", "sources", "rules", "system", "subscriptions"];
+    const sections = [
+      "appearance",
+      "sync",
+      "sources",
+      "rules",
+      "system",
+      "subscriptions",
+    ];
     const nodes = sections
       .map((id) => el.querySelector(`#${id}`) as HTMLElement | null)
       .filter((n): n is HTMLElement => !!n);
@@ -201,9 +229,13 @@ export function SettingPage() {
         const box = el.getBoundingClientRect();
         const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 8;
         const current = nodes.reduce<string | null>((acc, node) => {
-          return node.getBoundingClientRect().top - box.top <= 72 ? node.id : acc;
+          return node.getBoundingClientRect().top - box.top <= 72
+            ? node.id
+            : acc;
         }, null);
-        setActiveSec(atBottom ? sections[sections.length - 1] : current ?? sections[0]);
+        setActiveSec(
+          atBottom ? sections[sections.length - 1] : (current ?? sections[0]),
+        );
       });
     };
     const stopAnim = () => cancelAnimationFrame(scrollAnim.current);
@@ -280,7 +312,9 @@ export function SettingPage() {
         busChannel.emit("getChannels");
         if (result.feed_count > 0) {
           toast.success(
-            t("Successfully imported {count} feeds", { count: result.feed_count }),
+            t("Successfully imported {count} feeds", {
+              count: result.feed_count,
+            }),
           );
         }
       } catch (error) {
@@ -292,14 +326,18 @@ export function SettingPage() {
   // ── 来源账户 ─────────────────────────────────────────────
   const providerLabel = (provider: string) => {
     if (provider === "mail") return t("settings.source_accounts.provider_mail");
-    if (provider === "bilibili") return t("settings.source_accounts.provider_bilibili");
+    if (provider === "bilibili")
+      return t("settings.source_accounts.provider_bilibili");
     return provider;
   };
 
   const testRowAccount = async (account: SourceAccount) => {
     setTestingUuid(account.uuid);
     try {
-      const message = await dataAgent.testSourceAccount(account.provider, account.settings);
+      const message = await dataAgent.testSourceAccount(
+        account.provider,
+        account.settings,
+      );
       toast.success(message || t("settings.source_accounts.test_ok"));
     } catch (error) {
       showErrorToast(error, t("settings.source_accounts.test_fail"));
@@ -323,9 +361,20 @@ export function SettingPage() {
     }
   };
 
-  const openAddAccount = (provider: "mail" | "bilibili" = EMAIL_SUBSCRIPTION_ENABLED ? "mail" : "bilibili") => {
+  const openAddAccount = (
+    provider: "mail" | "bilibili" = EMAIL_SUBSCRIPTION_ENABLED
+      ? "mail"
+      : "bilibili",
+  ) => {
     setAccProvider(provider);
-    setAccForm({ host: "", port: "993", user: "", password: "", sessdata: "", label: "" });
+    setAccForm({
+      host: "",
+      port: "993",
+      user: "",
+      password: "",
+      sessdata: "",
+      label: "",
+    });
     setAccDialogOpen(true);
   };
 
@@ -342,12 +391,17 @@ export function SettingPage() {
   const accFormReady =
     accProvider === "bilibili"
       ? accForm.sessdata.trim() !== ""
-      : accForm.host.trim() !== "" && accForm.user.trim() !== "" && accForm.password !== "";
+      : accForm.host.trim() !== "" &&
+        accForm.user.trim() !== "" &&
+        accForm.password !== "";
 
   const testNewAccount = async () => {
     setAccTesting(true);
     try {
-      const message = await dataAgent.testSourceAccount(accProvider, accountSettingsJson());
+      const message = await dataAgent.testSourceAccount(
+        accProvider,
+        accountSettingsJson(),
+      );
       toast.success(message || t("settings.source_accounts.test_ok"));
     } catch (error) {
       showErrorToast(error, t("settings.source_accounts.test_fail"));
@@ -364,7 +418,9 @@ export function SettingPage() {
       await dataAgent.saveSourceAccount(
         accProvider,
         accForm.label.trim() ||
-          (accProvider === "mail" ? accForm.host.trim() : t("settings.source_accounts.provider_bilibili")),
+          (accProvider === "mail"
+            ? accForm.host.trim()
+            : t("settings.source_accounts.provider_bilibili")),
         accountSettingsJson(),
       );
       toast.success(t("settings.source_accounts.saved"));
@@ -405,7 +461,12 @@ export function SettingPage() {
     { id: "subscriptions", label: t("settings.tab.subscriptions_title") },
   ];
 
-  const previewRow = (title: string, src: string, read: boolean, badge: { link: string; feed_url: string }) => (
+  const previewRow = (
+    title: string,
+    src: string,
+    read: boolean,
+    badge: { link: string; feed_url: string },
+  ) => (
     <div className={`prow ${read ? "is-read" : ""}`}>
       <span className="fusion-st">
         <span className="fusion-dot" />
@@ -464,11 +525,17 @@ export function SettingPage() {
                 onChange={applyScheme}
               >
                 <SegmentedControlItem value="light" label={t("Light")} />
-                <SegmentedControlItem value="system" label={t("settings.follow_system")} />
+                <SegmentedControlItem
+                  value="system"
+                  label={t("settings.follow_system")}
+                />
                 <SegmentedControlItem value="dark" label={t("Dark")} />
               </SegmentedControl>
             </SRow>
-            <SRow label={t("settings.astryx_theme")} help={t("settings.astryx_theme_help")}>
+            <SRow
+              label={t("settings.astryx_theme")}
+              help={t("settings.astryx_theme_help")}
+            >
               <Selector
                 label={t("settings.astryx_theme")}
                 isLabelHidden
@@ -527,9 +594,14 @@ export function SettingPage() {
                 size="sm"
                 label={t("Card density")}
                 value={(cfg?.card_density ?? "comfortable") as string}
-                onChange={(v) => store.updateUserConfig({ ...cfg, card_density: v })}
+                onChange={(v) =>
+                  store.updateUserConfig({ ...cfg, card_density: v })
+                }
               >
-                <SegmentedControlItem value="comfortable" label={t("Comfortable")} />
+                <SegmentedControlItem
+                  value="comfortable"
+                  label={t("Comfortable")}
+                />
                 <SegmentedControlItem value="compact" label={t("Compact")} />
               </SegmentedControl>
             </SRow>
@@ -540,18 +612,14 @@ export function SettingPage() {
                 <span>{t("settings.preview")}</span>
                 <span className="live">{t("settings.preview_live")}</span>
               </div>
-              {previewRow(
-                t("settings.prev_row1"),
-                "overreacted.io",
-                false,
-                { link: "", feed_url: "" },
-              )}
-              {previewRow(
-                t("settings.prev_row2"),
-                "内核恐慌",
-                true,
-                { link: "https://www.example.com/ep.mp3?x=1", feed_url: "https://example.com/feed.xml" },
-              )}
+              {previewRow(t("settings.prev_row1"), "overreacted.io", false, {
+                link: "",
+                feed_url: "",
+              })}
+              {previewRow(t("settings.prev_row2"), "内核恐慌", true, {
+                link: "https://www.example.com/ep.mp3?x=1",
+                feed_url: "https://example.com/feed.xml",
+              })}
               <p className="serif">{t("settings.prev_serif")}</p>
             </div>
 
@@ -559,7 +627,10 @@ export function SettingPage() {
             <div className="fusion-set-h" id="sync">
               {t("settings.sec.sync")}
             </div>
-            <SRow label={t("Update Interval")} help={t("set the update interval")}>
+            <SRow
+              label={t("Update Interval")}
+              help={t("set the update interval")}
+            >
               <Selector
                 label={t("Update Interval")}
                 isLabelHidden
@@ -577,7 +648,10 @@ export function SettingPage() {
                 }
               />
             </SRow>
-            <SRow label={t("Thread")} help={t("set the concurrent number of requests (from 1 to 5)")}>
+            <SRow
+              label={t("Thread")}
+              help={t("set the concurrent number of requests (from 1 to 5)")}
+            >
               <div className="fusion-sld">
                 <Slider
                   label={t("Thread")}
@@ -617,7 +691,10 @@ export function SettingPage() {
                 }}
               />
             </SRow>
-            <SRow label={t("settings.subs_manage")} help={t("settings.subs_manage_help")}>
+            <SRow
+              label={t("settings.subs_manage")}
+              help={t("settings.subs_manage_help")}
+            >
               <Button
                 variant="ghost"
                 size="sm"
@@ -626,13 +703,16 @@ export function SettingPage() {
                 onClick={() => scrollTo("subscriptions")}
               />
             </SRow>
-            <SRow label={t("settings.bridge_instance")} help={t("settings.bridge_instance_help")}>
+            <SRow
+              label={t("settings.bridge_instance")}
+              help={t("settings.bridge_instance_help")}
+            >
               <TextInput
                 label={t("settings.bridge_instance")}
                 isLabelHidden
                 width={260}
                 placeholder="https://hub.example.com"
-                value={bridgeDraft ?? (cfg?.bridge_instance ?? "")}
+                value={bridgeDraft ?? cfg?.bridge_instance ?? ""}
                 onChange={(v) => setBridgeDraft(v)}
                 onBlur={() => {
                   if (bridgeDraft === null) return;
@@ -649,7 +729,10 @@ export function SettingPage() {
             <div className="fusion-set-h" id="sources">
               {t("settings.sec.sources")}
             </div>
-            <SRow label={t("settings.source_accounts.title")} help={t("settings.source_accounts.help")}>
+            <SRow
+              label={t("settings.source_accounts.title")}
+              help={t("settings.source_accounts.help")}
+            >
               <Button
                 variant="ghost"
                 size="sm"
@@ -663,16 +746,29 @@ export function SettingPage() {
                 <div className="fusion-acct-h">
                   {providerLabel(provider)}
                   <span className="n">
-                    {t("settings.source_accounts.count", { count: list.length })}
+                    {t("settings.source_accounts.count", {
+                      count: list.length,
+                    })}
                   </span>
                 </div>
                 {list.map((account) => (
                   <div className="fusion-srow" key={account.uuid}>
                     <div className="min-w-0">
-                      <div className="lb" style={{ display: "flex", alignItems: "center", gap: 7 }}>
+                      <div
+                        className="lb"
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 7,
+                        }}
+                      >
                         <span
                           className="fusion-dot"
-                          style={account.status !== "ok" ? { background: "var(--color-error)" } : undefined}
+                          style={
+                            account.status !== "ok"
+                              ? { background: "var(--color-error)" }
+                              : undefined
+                          }
                         />
                         {account.label}
                       </div>
@@ -705,7 +801,10 @@ export function SettingPage() {
             <div className="fusion-set-h" id="rules">
               {t("settings.sec.rules")}
             </div>
-            <SRow label={t("settings.site_rules.title")} help={t("settings.site_rules.help")}>
+            <SRow
+              label={t("settings.site_rules.title")}
+              help={t("settings.site_rules.help")}
+            >
               <Button
                 variant="ghost"
                 size="sm"
@@ -739,7 +838,10 @@ export function SettingPage() {
             <div className="fusion-set-h" id="system">
               {t("settings.sec.system")}
             </div>
-            <SRow label={t("Launch at Login")} help={t("Start with system, but do not show window")}>
+            <SRow
+              label={t("Launch at Login")}
+              help={t("Start with system, but do not show window")}
+            >
               <Switch
                 size="sm"
                 isLabelHidden
@@ -759,7 +861,10 @@ export function SettingPage() {
                 }}
               />
             </SRow>
-            <SRow label={t("Background Sync")} help={t("Continue syncing via tray after window is closed")}>
+            <SRow
+              label={t("Background Sync")}
+              help={t("Continue syncing via tray after window is closed")}
+            >
               <Switch
                 size="sm"
                 isLabelHidden
@@ -786,7 +891,10 @@ export function SettingPage() {
                 }}
               />
             </SRow>
-            <SRow label={t("Data Retention")} help={t("Read articles and analysis metadata")}>
+            <SRow
+              label={t("Data Retention")}
+              help={t("Read articles and analysis metadata")}
+            >
               <Selector
                 label={t("Data Retention")}
                 isLabelHidden
@@ -798,13 +906,28 @@ export function SettingPage() {
                   { value: "0", label: t("Keep forever") },
                 ]}
                 onChange={(v) =>
-                  store.updateUserConfig({ ...cfg, purge_on_days: parseInt(v, 10) })
+                  store.updateUserConfig({
+                    ...cfg,
+                    purge_on_days: parseInt(v, 10),
+                  })
                 }
               />
             </SRow>
             <SRow label={t("OPML")} help={t("settings.opml_help")}>
-              <Button variant="ghost" size="sm" icon={<Upload size={12} />} label={t("Export")} onClick={handleExport} />
-              <Button variant="ghost" size="sm" icon={<Download size={12} />} label={t("Import")} onClick={handleImport} />
+              <Button
+                variant="ghost"
+                size="sm"
+                icon={<Upload size={12} />}
+                label={t("Export")}
+                onClick={handleExport}
+              />
+              <Button
+                variant="ghost"
+                size="sm"
+                icon={<Download size={12} />}
+                label={t("Import")}
+                onClick={handleImport}
+              />
             </SRow>
 
             {/* 订阅管理（内联区块：内容随订阅数变化，置于末尾同层滚动展示） */}
@@ -817,7 +940,11 @@ export function SettingPage() {
       </div>
 
       {/* 添加来源账户：类型切换 + 先测试连接，再落库 */}
-      <Dialog isOpen={accDialogOpen} onOpenChange={setAccDialogOpen} width={420}>
+      <Dialog
+        isOpen={accDialogOpen}
+        onOpenChange={setAccDialogOpen}
+        width={420}
+      >
         <Layout
           header={
             <DialogHeader
@@ -841,12 +968,16 @@ export function SettingPage() {
                     <RadioListItem
                       value="mail"
                       label={t("settings.source_accounts.provider_mail")}
-                      description={t("settings.source_accounts.provider_mail_desc")}
+                      description={t(
+                        "settings.source_accounts.provider_mail_desc",
+                      )}
                     />
                     <RadioListItem
                       value="bilibili"
                       label={t("settings.source_accounts.provider_bilibili")}
-                      description={t("settings.source_accounts.provider_bilibili_desc")}
+                      description={t(
+                        "settings.source_accounts.provider_bilibili_desc",
+                      )}
                     />
                   </RadioList>
                 )}
@@ -861,7 +992,12 @@ export function SettingPage() {
                     <TextInput
                       label={t("settings.source_accounts.fld_port")}
                       value={accForm.port}
-                      onChange={(v) => setAccForm((f) => ({ ...f, port: v.replace(/\D/g, "") }))}
+                      onChange={(v) =>
+                        setAccForm((f) => ({
+                          ...f,
+                          port: v.replace(/\D/g, ""),
+                        }))
+                      }
                     />
                     <TextInput
                       label={t("settings.source_accounts.fld_user")}
@@ -874,7 +1010,9 @@ export function SettingPage() {
                       type="password"
                       autoComplete="new-password"
                       value={accForm.password}
-                      onChange={(v) => setAccForm((f) => ({ ...f, password: v }))}
+                      onChange={(v) =>
+                        setAccForm((f) => ({ ...f, password: v }))
+                      }
                     />
                   </>
                 ) : (
@@ -882,7 +1020,9 @@ export function SettingPage() {
                     label={t("settings.source_accounts.fld_sessdata")}
                     type="password"
                     autoComplete="new-password"
-                    description={t("settings.source_accounts.fld_sessdata_help")}
+                    description={t(
+                      "settings.source_accounts.fld_sessdata_help",
+                    )}
                     value={accForm.sessdata}
                     onChange={(v) => setAccForm((f) => ({ ...f, sessdata: v }))}
                   />
@@ -930,13 +1070,21 @@ export function SettingPage() {
         onOpenChange={(v) => !v && setDeleteTarget(null)}
         width={400}
       >
-        <DialogHeader title={t("settings.source_accounts.delete_confirm_title")} />
+        <DialogHeader
+          title={t("settings.source_accounts.delete_confirm_title")}
+        />
         <div className="flex flex-col gap-4 py-2">
           <span style={{ fontSize: 13, color: "var(--fusion-ter)" }}>
-            {t("settings.source_accounts.delete_confirm", { label: deleteTarget?.label ?? "" })}
+            {t("settings.source_accounts.delete_confirm", {
+              label: deleteTarget?.label ?? "",
+            })}
           </span>
           <div className="flex justify-end gap-3">
-            <Button variant="secondary" label={t("Cancel")} onClick={() => setDeleteTarget(null)} />
+            <Button
+              variant="secondary"
+              label={t("Cancel")}
+              onClick={() => setDeleteTarget(null)}
+            />
             <Button
               variant="destructive"
               label={t("settings.source_accounts.delete")}

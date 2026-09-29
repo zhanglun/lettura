@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { invoke } from "@tauri-apps/api/core";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as dataAgent from "@/helpers/dataAgent";
 
 // 数据面已收敛为单一 invoke 通道：这里只验证「函数 → 命令名 + 参数」的契约。
@@ -24,7 +24,12 @@ describe("dataAgent", () => {
   });
 
   it("getCarrierCounts 透传 filter", async () => {
-    (invoke as any).mockResolvedValue({ text: 1, audio: 0, video: 0, email: 0 });
+    (invoke as any).mockResolvedValue({
+      text: 1,
+      audio: 0,
+      video: 0,
+      email: 0,
+    });
     await dataAgent.getCarrierCounts({ feed_uuid: "f1" });
     expect(invoke).toHaveBeenCalledWith("get_carrier_counts", {
       filter: { feed_uuid: "f1" },
@@ -32,7 +37,13 @@ describe("dataAgent", () => {
   });
 
   it("fetchFeed 透传探测参数（含新模式参数）", async () => {
-    (invoke as any).mockResolvedValue({ feed: null, resolved_url: "", candidates: [], entries: [], message: "" });
+    (invoke as any).mockResolvedValue({
+      feed: null,
+      resolved_url: "",
+      candidates: [],
+      entries: [],
+      message: "",
+    });
     await dataAgent.fetchFeed("a@x.com", undefined, "email", "mail", "acct-1");
     expect(invoke).toHaveBeenCalledWith("fetch_feed", {
       url: "a@x.com",
@@ -45,7 +56,13 @@ describe("dataAgent", () => {
 
   it("subscribeFeed 透传订阅参数", async () => {
     (invoke as any).mockResolvedValue([{}, 1, ""]);
-    await dataAgent.subscribeFeed("https://x.com/feed", "native", undefined, undefined, "acct-1");
+    await dataAgent.subscribeFeed(
+      "https://x.com/feed",
+      "native",
+      undefined,
+      undefined,
+      "acct-1",
+    );
     expect(invoke).toHaveBeenCalledWith("add_feed", {
       url: "https://x.com/feed",
       origin: "native",
@@ -112,7 +129,9 @@ describe("dataAgent", () => {
 
     (invoke as any).mockClear().mockResolvedValue(1);
     await dataAgent.deleteSourceAccount("acct-1");
-    expect(invoke).toHaveBeenCalledWith("delete_source_account", { uuid: "acct-1" });
+    expect(invoke).toHaveBeenCalledWith("delete_source_account", {
+      uuid: "acct-1",
+    });
 
     (invoke as any).mockClear().mockResolvedValue("ok");
     await dataAgent.testSourceAccount("mail", "{}");
@@ -129,12 +148,17 @@ describe("dataAgent", () => {
 
     (invoke as any).mockClear().mockResolvedValue("demo");
     await dataAgent.importSiteRule("[route]");
-    expect(invoke).toHaveBeenCalledWith("import_site_rule", { content: "[route]" });
+    expect(invoke).toHaveBeenCalledWith("import_site_rule", {
+      content: "[route]",
+    });
   });
 
   it("globalSearch 透传查询与条数", async () => {
     (invoke as any).mockResolvedValue([]);
     await dataAgent.globalSearch("rust", 6);
-    expect(invoke).toHaveBeenCalledWith("global_search", { query: "rust", limit: 6 });
+    expect(invoke).toHaveBeenCalledWith("global_search", {
+      query: "rust",
+      limit: 6,
+    });
   });
 });

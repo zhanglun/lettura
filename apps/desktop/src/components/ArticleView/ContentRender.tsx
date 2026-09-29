@@ -1,9 +1,9 @@
 import DOMPurify from "dompurify";
 import HTMLReactParser, {
-  domToReact,
-  HTMLReactParserOptions,
-  DOMNode,
   attributesToProps,
+  type DOMNode,
+  domToReact,
+  type HTMLReactParserOptions,
 } from "html-react-parser";
 import { ImageLazyLoad } from "@/components/ImageLazyLoad/index";
 

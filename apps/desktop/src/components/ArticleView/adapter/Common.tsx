@@ -1,9 +1,9 @@
-import { renderArticleContent } from "../ContentRender";
-import { ArticleResItem } from "@/db";
 import Dayjs from "dayjs";
-import { useTranslation } from "react-i18next";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import type { ArticleResItem } from "@/db";
 import { estimateReadMinutes } from "@/helpers/articleContent";
+import { renderArticleContent } from "../ContentRender";
 
 export interface CommonAdapterProps {
   content: string;
@@ -70,7 +70,9 @@ export const CommonAdapter = ({
           <div>{renderArticleContent(content)}</div>
         ) : (
           <div className="flex flex-col items-center justify-center py-16 gap-2 text-[var(--fusion-ter)]">
-            <p className="text-sm">{t("article.detail.no_content", "No content available")}</p>
+            <p className="text-sm">
+              {t("article.detail.no_content", "No content available")}
+            </p>
             {article.link && (
               <a
                 href="#"

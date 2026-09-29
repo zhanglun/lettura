@@ -1,7 +1,13 @@
-import { describe, it, expect, afterEach, beforeAll, vi } from "vitest";
-import { render, screen, cleanup, act, fireEvent } from "@testing-library/react";
-import { SleepControl } from "../SleepControl";
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+} from "@testing-library/react";
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { useBearStore } from "@/stores";
+import { SleepControl } from "../SleepControl";
 
 // Astryx 菜单内容需要 ResizeObserver，jsdom 未实现
 beforeAll(() => {

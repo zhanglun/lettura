@@ -1,11 +1,11 @@
-import { neutralTheme } from "@astryxdesign/theme-neutral/built";
-import { matchaTheme } from "@astryxdesign/theme-matcha/built";
-import { stoneTheme } from "@astryxdesign/theme-stone/built";
-import { gothicTheme } from "@astryxdesign/theme-gothic/built";
-import { chocolateTheme } from "@astryxdesign/theme-chocolate/built";
-import { butterTheme } from "@astryxdesign/theme-butter/built";
-import { y2kTheme } from "@astryxdesign/theme-y2k/built";
 import type { DefinedTheme } from "@astryxdesign/core/theme";
+import { butterTheme } from "@astryxdesign/theme-butter/built";
+import { chocolateTheme } from "@astryxdesign/theme-chocolate/built";
+import { gothicTheme } from "@astryxdesign/theme-gothic/built";
+import { matchaTheme } from "@astryxdesign/theme-matcha/built";
+import { neutralTheme } from "@astryxdesign/theme-neutral/built";
+import { stoneTheme } from "@astryxdesign/theme-stone/built";
+import { y2kTheme } from "@astryxdesign/theme-y2k/built";
 
 export interface AstryxThemeOption {
   /** 持久化 slug（userConfig.astryx_theme） */

@@ -1,13 +1,14 @@
-import React, { useEffect, useRef, useCallback } from "react";
-import { useTranslation } from "react-i18next";
-import { X } from "lucide-react";
 import { Dialog } from "@astryxdesign/core/Dialog";
-import { IconButton } from "@astryxdesign/core/IconButton";
 import { Divider } from "@astryxdesign/core/Divider";
-import { ReadingOptions } from "@/layout/Article/ReadingOptions";
-import { ReaderControls } from "@/components/ReaderControls";
+import { IconButton } from "@astryxdesign/core/IconButton";
+import { X } from "lucide-react";
+import type React from "react";
+import { useCallback, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { ArticleDetail } from "@/components/ArticleView/Detail";
-import { ScrollBox, ScrollBoxRefObject } from "./ScrollBox";
+import { ReaderControls } from "@/components/ReaderControls";
+import { ReadingOptions } from "@/layout/Article/ReadingOptions";
+import { ScrollBox, type ScrollBoxRefObject } from "./ScrollBox";
 
 type ArticleDialogViewProps = {
   article: any | null;
@@ -32,13 +33,16 @@ export const ArticleDialogView = (
   } = props;
 
   const scrollBoxRef = useRef<ScrollBoxRefObject>(null);
-  const handleDialogChange = useCallback((status: boolean) => {
-    setDialogStatus(status);
+  const handleDialogChange = useCallback(
+    (status: boolean) => {
+      setDialogStatus(status);
 
-    if (!status) {
-      afterCancel();
-    }
-  }, [setDialogStatus, afterCancel]);
+      if (!status) {
+        afterCancel();
+      }
+    },
+    [setDialogStatus, afterCancel],
+  );
 
   useEffect(() => {
     scrollBoxRef.current?.scrollToTop();
@@ -60,7 +64,11 @@ export const ArticleDialogView = (
               <div className="flex items-center justify-between px-4 py-1.5 rounded-tl-lg rounded-tr-lg bg-[var(--color-background-muted)] border-b border-[var(--color-border)]">
                 <div className="flex items-center gap-0.5">
                   {article && (
-                    <ReaderControls article={article} showBrowser showReadLater />
+                    <ReaderControls
+                      article={article}
+                      showBrowser
+                      showReadLater
+                    />
                   )}
                 </div>
                 <div className="flex items-center gap-0.5">

@@ -1,8 +1,12 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
-import { ArticleReadStatus, ArticleStarStatus, ArticleReadLaterStatus } from "@/typing";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ArticleResItem } from "@/db";
 import { retainArticleAfterRead } from "@/helpers/articleHelpers";
+import {
+  ArticleReadLaterStatus,
+  ArticleReadStatus,
+  ArticleStarStatus,
+} from "@/typing";
 
 const mockUpdateArticleStatus = vi.fn();
 const mockSetArticle = vi.fn();

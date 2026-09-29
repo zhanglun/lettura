@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it, vi, beforeEach } from "vitest";
-import { FeedsPage, FeedsBrowse } from "../index";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { FeedsBrowse, FeedsPage } from "../index";
 
 const mocks = vi.hoisted(() => ({
   articleView: vi.fn((_props: Record<string, unknown>) => (

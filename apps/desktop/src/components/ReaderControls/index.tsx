@@ -1,13 +1,17 @@
-import { useCallback, useEffect, useState } from "react";
-import { Star, Eye, EyeOff, ExternalLink, Bookmark } from "lucide-react";
-import type { ArticleResItem } from "@/db";
-import { ArticleReadLaterStatus, ArticleReadStatus, ArticleStarStatus } from "@/typing";
-import * as dataAgent from "@/helpers/dataAgent";
-import { open } from "@tauri-apps/plugin-shell";
-import { useTranslation } from "react-i18next";
-import { ToggleButton } from "@astryxdesign/core/ToggleButton";
 import { Button } from "@astryxdesign/core/Button";
 import { Kbd } from "@astryxdesign/core/Kbd";
+import { ToggleButton } from "@astryxdesign/core/ToggleButton";
+import { open } from "@tauri-apps/plugin-shell";
+import { Bookmark, ExternalLink, Eye, EyeOff, Star } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import type { ArticleResItem } from "@/db";
+import * as dataAgent from "@/helpers/dataAgent";
+import {
+  ArticleReadLaterStatus,
+  ArticleReadStatus,
+  ArticleStarStatus,
+} from "@/typing";
 
 export interface ReaderControlsProps {
   article: ArticleResItem;
@@ -31,8 +35,12 @@ export function ReaderControls({
     article.is_read_later ?? ArticleReadLaterStatus.UNSAVED,
   );
 
-  useEffect(() => { setReadStatus(article.read_status); }, [article.read_status]);
-  useEffect(() => { setStarred(article.starred); }, [article.starred]);
+  useEffect(() => {
+    setReadStatus(article.read_status);
+  }, [article.read_status]);
+  useEffect(() => {
+    setStarred(article.starred);
+  }, [article.starred]);
   useEffect(() => {
     setReadLater(article.is_read_later ?? ArticleReadLaterStatus.UNSAVED);
   }, [article.is_read_later]);
@@ -83,9 +91,15 @@ export function ReaderControls({
         size="sm"
         icon={<Star size={14} />}
         pressedIcon={
-          <Star size={14} fill="currentColor" style={{ color: "var(--fusion-amber)" }} />
+          <Star
+            size={14}
+            fill="currentColor"
+            style={{ color: "var(--fusion-amber)" }}
+          />
         }
-        label={t(starred === ArticleStarStatus.STARRED ? "Unstar it" : "Star it")}
+        label={t(
+          starred === ArticleStarStatus.STARRED ? "Unstar it" : "Star it",
+        )}
         isPressed={starred === ArticleStarStatus.STARRED}
         onPressedChange={toggleStar}
       >
@@ -96,16 +110,26 @@ export function ReaderControls({
       </ToggleButton>
       <ToggleButton
         size="sm"
-        icon={readStatus === ArticleReadStatus.READ ? <EyeOff size={14} /> : <Eye size={14} />}
+        icon={
+          readStatus === ArticleReadStatus.READ ? (
+            <EyeOff size={14} />
+          ) : (
+            <Eye size={14} />
+          )
+        }
         label={t(
-          readStatus === ArticleReadStatus.READ ? "Mark as unread" : "Mark as read",
+          readStatus === ArticleReadStatus.READ
+            ? "Mark as unread"
+            : "Mark as read",
         )}
         isPressed={readStatus === ArticleReadStatus.READ}
         onPressedChange={toggleRead}
       >
         <span className="fusion-act">
           {t(
-            readStatus === ArticleReadStatus.READ ? "Mark as unread" : "Mark as read",
+            readStatus === ArticleReadStatus.READ
+              ? "Mark as unread"
+              : "Mark as read",
           )}
           <Kbd keys="m" />
         </span>

@@ -79,12 +79,15 @@ export function setRunExpanded(feedUuid: string, expanded: boolean): void {
   }
   expandedRuns = next;
   expansionVersion += 1;
-  listeners.forEach((l) => l());
+  listeners.forEach((l) => {
+    l();
+  });
 }
 
 export function buildSegments(articles: ArticleResItem[]): RunSegment[] {
   return groupRuns(articles).map((run) => {
-    const collapsible = !!run.feedUuid && run.articles.length >= RUN_COLLAPSE_MIN;
+    const collapsible =
+      !!run.feedUuid && run.articles.length >= RUN_COLLAPSE_MIN;
     return {
       run,
       head: !!run.feedUuid && run.articles.length >= RUN_HEAD_MIN,

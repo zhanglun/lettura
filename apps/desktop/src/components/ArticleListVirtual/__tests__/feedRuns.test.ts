@@ -1,21 +1,25 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
+import type { ArticleResItem } from "@/db";
+import { ArticleReadStatus } from "@/typing";
 import {
   buildSegments,
   flattenDisplay,
   getRunExpansionVersion,
   groupRuns,
   isRunExpanded,
-  runUnreadCount,
-  setRunExpanded,
-  subscribeRunExpansion,
   RUN_COLLAPSE_MIN,
   RUN_HEAD_MIN,
   RUN_PREVIEW_COUNT,
+  runUnreadCount,
+  setRunExpanded,
+  subscribeRunExpansion,
 } from "../feedRuns";
-import type { ArticleResItem } from "@/db";
-import { ArticleReadStatus } from "@/typing";
 
-const article = (uuid: string, feedUuid: string, unread = true): ArticleResItem =>
+const article = (
+  uuid: string,
+  feedUuid: string,
+  unread = true,
+): ArticleResItem =>
   ({
     uuid,
     feed_uuid: feedUuid,

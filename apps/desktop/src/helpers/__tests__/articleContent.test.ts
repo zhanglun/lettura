@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
+  estimateReadMinutes,
   pickArticleContent,
   pickThumbUrl,
   processArticleHtml,
-  estimateReadMinutes,
 } from "../articleContent";
 
 describe("pickThumbUrl", () => {
@@ -81,7 +81,9 @@ describe("processArticleHtml", () => {
   });
 
   it("keeps existing target attributes untouched", () => {
-    const out = processArticleHtml('<a target="_self" href="https://a.example">a</a>');
+    const out = processArticleHtml(
+      '<a target="_self" href="https://a.example">a</a>',
+    );
     expect(out).toContain('target="_self"');
     expect(out.match(/target=/g)?.length).toBe(1);
   });
@@ -102,9 +104,9 @@ describe("processArticleHtml", () => {
   });
 
   it("supports lang- prefix and leaves unlabelled code blocks untouched", () => {
-    expect(processArticleHtml('<pre><code class="lang-sql">SELECT 1;</code></pre>')).toContain(
-      '<span class="code-lang">SQL</span>',
-    );
+    expect(
+      processArticleHtml('<pre><code class="lang-sql">SELECT 1;</code></pre>'),
+    ).toContain('<span class="code-lang">SQL</span>');
     const plain = processArticleHtml("<pre><code>no language</code></pre>");
     expect(plain).toBe("<pre><code>no language</code></pre>");
   });
@@ -117,12 +119,16 @@ describe("estimateReadMinutes", () => {
   });
 
   it("西文按 220 词/分折算（440 词 → 2 分钟）", () => {
-    const html = "<p>" + Array.from({ length: 440 }, (_, i) => `word${i}`).join(" ") + "</p>";
+    const html =
+      "<p>" +
+      Array.from({ length: 440 }, (_, i) => `word${i}`).join(" ") +
+      "</p>";
     expect(estimateReadMinutes(html)).toBe(2);
   });
 
   it("标签被剥掉，不计入字数；HTML 实体文字仍计数", () => {
-    const html = "<p>" + "字".repeat(400) + "</p><script>console.log(1)</script>";
+    const html =
+      "<p>" + "字".repeat(400) + "</p><script>console.log(1)</script>";
     expect(estimateReadMinutes(html)).toBe(1);
   });
 

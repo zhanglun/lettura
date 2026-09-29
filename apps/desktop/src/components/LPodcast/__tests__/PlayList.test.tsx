@@ -1,8 +1,14 @@
-import { describe, it, expect, afterEach, vi } from "vitest";
-import { render, screen, cleanup, fireEvent, waitFor } from "@testing-library/react";
-import { PlayList } from "../PlayList";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { useBearStore } from "@/stores";
 import type { AudioTrack } from "../index";
+import { PlayList } from "../PlayList";
 
 const deleteMock = vi.fn(() => Promise.resolve());
 

@@ -1,13 +1,20 @@
-import React from "react";
-import { ChevronDown, ChevronUp, Pause, Play, SkipBack, SkipForward } from "lucide-react";
 import { Button } from "@astryxdesign/core/Button";
 import { IconButton } from "@astryxdesign/core/IconButton";
 import { motion } from "framer-motion";
-import { AudioTrack } from "./index";
-import { formatTime, PLAYER_MOTION } from "./utils";
-import { SleepControl } from "./SleepControl";
-import { PlayListPopover } from "./PlayListPopover";
+import {
+  ChevronDown,
+  ChevronUp,
+  Pause,
+  Play,
+  SkipBack,
+  SkipForward,
+} from "lucide-react";
+import type React from "react";
 import { useTranslation } from "react-i18next";
+import type { AudioTrack } from "./index";
+import { PlayListPopover } from "./PlayListPopover";
+import { SleepControl } from "./SleepControl";
+import { formatTime, PLAYER_MOTION } from "./utils";
 
 const RATES = [1, 1.25, 1.5, 2];
 
@@ -88,7 +95,9 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({
           <div className="ep">
             {currentTrack?.feed_title || currentTrack?.author || ""}
           </div>
-          <div className="nm">{currentTrack?.title || t("podcast.no_track")}</div>
+          <div className="nm">
+            {currentTrack?.title || t("podcast.no_track")}
+          </div>
         </button>
 
         <div className="fusion-ptrack">
@@ -102,7 +111,12 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({
 
         {/* 右簇：倍速 + 睡眠定时 + 播放列表 + 放大 + 收起 */}
         <div className="fusion-pcluster">
-          <Button variant="ghost" size="sm" label={`${playbackRate}×`} onClick={cycleRate} />
+          <Button
+            variant="ghost"
+            size="sm"
+            label={`${playbackRate}×`}
+            onClick={cycleRate}
+          />
           <SleepControl />
           <PlayListPopover />
           <IconButton

@@ -1,13 +1,13 @@
 import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
-import { createFeedSlice } from "@/stores/createFeedSlice";
-import { createArticleSlice } from "@/stores/createArticleSlice";
-import { createUserConfigSlice } from "@/stores/createUserConfigSlice";
-import { createPodcastSlice } from "@/stores/createPodcastSlice";
-import type { FeedSlice } from "@/stores/createFeedSlice";
 import type { ArticleSlice } from "@/stores/createArticleSlice";
-import type { UserConfigSlice } from "@/stores/createUserConfigSlice";
+import { createArticleSlice } from "@/stores/createArticleSlice";
+import type { FeedSlice } from "@/stores/createFeedSlice";
+import { createFeedSlice } from "@/stores/createFeedSlice";
 import type { PodcastSlice } from "@/stores/createPodcastSlice";
+import { createPodcastSlice } from "@/stores/createPodcastSlice";
+import type { UserConfigSlice } from "@/stores/createUserConfigSlice";
+import { createUserConfigSlice } from "@/stores/createUserConfigSlice";
 
 export const useBearStore = create<
   FeedSlice & ArticleSlice & UserConfigSlice & PodcastSlice

@@ -7,7 +7,7 @@ allowBuilds:
   '@astryxdesign/core': false
   '@parcel/watcher': true
   esbuild: true
-  rome: true
+  rome: set this to true or false
   sharp: true
 
 onlyBuiltDependencies:

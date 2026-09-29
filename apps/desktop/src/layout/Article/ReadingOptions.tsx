@@ -1,10 +1,10 @@
-import { ExternalLink, Link } from "lucide-react";
-import { Article, ArticleResItem } from "@/db";
-import { open } from "@tauri-apps/plugin-shell";
-import { toast } from "@/helpers/toast";
 import { IconButton } from "@astryxdesign/core/IconButton";
+import { open } from "@tauri-apps/plugin-shell";
+import { ExternalLink, Link } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { Article, type ArticleResItem } from "@/db";
 import { showErrorToast } from "@/helpers/errorHandler";
+import { toast } from "@/helpers/toast";
 
 export const ReadingOptions = ({ article }: { article: ArticleResItem }) => {
   const { t } = useTranslation();
@@ -17,10 +17,10 @@ export const ReadingOptions = ({ article }: { article: ArticleResItem }) => {
     const { link } = article;
 
     navigator.clipboard.writeText(link).then(
-      function () {
+      () => {
         toast.message(t("Copied"));
       },
-      function (err) {
+      (err) => {
         showErrorToast(err, t("Failed to copy link"));
       },
     );

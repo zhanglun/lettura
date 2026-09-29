@@ -1,6 +1,6 @@
-import { toast } from "./toast";
-import { t } from "i18next";
 import { AxiosError } from "axios";
+import { t } from "i18next";
+import { toast } from "./toast";
 
 export enum ErrorType {
   NETWORK = "NETWORK",
@@ -75,7 +75,6 @@ export const showErrorToast = (
 export const showSuccessToast = (message: string): void => {
   toast.success(message);
 };
-
 
 export const withErrorToast = async <T>(
   promise: Promise<T>,

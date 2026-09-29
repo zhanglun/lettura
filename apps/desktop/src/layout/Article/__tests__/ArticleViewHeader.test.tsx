@@ -2,8 +2,8 @@ import { render, screen } from "@testing-library/react";
 import { forwardRef } from "react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ArticleView } from "../ArticleView";
 import { ArticleReadStatus } from "@/typing";
+import { ArticleView } from "../ArticleView";
 
 const mocks = vi.hoisted(() => ({
   setArticle: vi.fn(),
@@ -110,15 +110,29 @@ vi.mock("@/components/ArticleView/DialogView", () => ({
 }));
 
 vi.mock("@/components/FeedProfile", () => ({
-  FeedProfile: ({ onSync, onMarkAllRead, onManage }: {
+  FeedProfile: ({
+    onSync,
+    onMarkAllRead,
+    onManage,
+  }: {
     onSync: () => void;
     onMarkAllRead: () => void;
     onManage: () => void;
   }) => (
     <div data-testid="feed-profile">
-      <button type="button" aria-label="feeds.ctx.sync" onClick={onSync}>sync</button>
-      <button type="button" aria-label="feeds.ctx.mark_all_read" onClick={onMarkAllRead}>read</button>
-      <button type="button" aria-label="fusion.queue.manage" onClick={onManage}>manage</button>
+      <button type="button" aria-label="feeds.ctx.sync" onClick={onSync}>
+        sync
+      </button>
+      <button
+        type="button"
+        aria-label="feeds.ctx.mark_all_read"
+        onClick={onMarkAllRead}
+      >
+        read
+      </button>
+      <button type="button" aria-label="fusion.queue.manage" onClick={onManage}>
+        manage
+      </button>
     </div>
   ),
 }));

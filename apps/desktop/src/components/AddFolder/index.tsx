@@ -1,20 +1,15 @@
-import React, {
-  useEffect,
-  useRef,
-  useState,
-  useMemo,
-} from "react";
-import * as dataAgent from "../../helpers/dataAgent";
-import { toast } from "@/helpers/toast";
-import { FolderResItem } from "@/db";
-import { useBearStore } from "@/stores";
+import { Button } from "@astryxdesign/core/Button";
 import { Dialog, DialogHeader } from "@astryxdesign/core/Dialog";
 import { Layout, LayoutContent } from "@astryxdesign/core/Layout";
-import { Button } from "@astryxdesign/core/Button";
-import { Tooltip } from "@astryxdesign/core/Tooltip";
 import { TextInput } from "@astryxdesign/core/TextInput";
-import { useShallow } from "zustand/react/shallow";
+import { Tooltip } from "@astryxdesign/core/Tooltip";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useShallow } from "zustand/react/shallow";
+import type { FolderResItem } from "@/db";
+import { toast } from "@/helpers/toast";
+import { useBearStore } from "@/stores";
+import * as dataAgent from "../../helpers/dataAgent";
 
 export interface AddFolderProps {
   action: "add" | "edit";
@@ -76,8 +71,7 @@ export const AddFolder = React.memo((props: AddFolderProps) => {
         handleCancel();
       }
     })
-      .catch((err) => {
-      })
+      .catch((err) => {})
       .finally(() => {
         setConfirming(false);
       });
@@ -110,11 +104,7 @@ export const AddFolder = React.memo((props: AddFolderProps) => {
           {trigger}
         </Tooltip>
       )}
-      <Dialog
-        isOpen={dialogStatus}
-        onOpenChange={setDialogStatus}
-        width={425}
-      >
+      <Dialog isOpen={dialogStatus} onOpenChange={setDialogStatus} width={425}>
         <Layout
           header={<DialogHeader title={title} subtitle={content} />}
           content={

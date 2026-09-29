@@ -1,30 +1,36 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Kbd } from "@astryxdesign/core/Kbd";
 import { Button } from "@astryxdesign/core/Button";
+import { Kbd } from "@astryxdesign/core/Kbd";
+import {
+  SegmentedControl,
+  SegmentedControlItem,
+} from "@astryxdesign/core/SegmentedControl";
 import { Selector } from "@astryxdesign/core/Selector";
 import { TextInput } from "@astryxdesign/core/TextInput";
 import { ToggleButton } from "@astryxdesign/core/ToggleButton";
-import { SegmentedControl, SegmentedControlItem } from "@astryxdesign/core/SegmentedControl";
 import { ChevronRight, Plus, Search } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
-import { useNavigate } from "react-router-dom";
-import * as dataAgent from "@/helpers/dataAgent";
-import { useBearStore } from "@/stores";
-import { useShallow } from "zustand/react/shallow";
-import { toast } from "@/helpers/toast";
 import { useTranslation } from "react-i18next";
-import { HK } from "@/shortcuts";
+import { useNavigate } from "react-router-dom";
+import { useShallow } from "zustand/react/shallow";
+import { EMAIL_SUBSCRIPTION_ENABLED, RouteConfig } from "@/config";
+import type { FeedResItem, SourceAccount } from "@/db";
+import * as dataAgent from "@/helpers/dataAgent";
 import { showErrorToast } from "@/helpers/errorHandler";
-import { FeedResItem, SourceAccount } from "@/db";
-import { RouteConfig } from "@/config";
-import { EMAIL_SUBSCRIPTION_ENABLED } from "@/config";
 import {
   BUILTIN_GENERATORS,
-  FeedGenerator,
+  type FeedGenerator,
   matchGenerator,
   parseUserGenerators,
 } from "@/helpers/feedGenerators";
-import { CARRIER_BADGE_CLS, Carrier, getFeedCarrier } from "@/helpers/mediaType";
+import {
+  CARRIER_BADGE_CLS,
+  type Carrier,
+  getFeedCarrier,
+} from "@/helpers/mediaType";
+import { toast } from "@/helpers/toast";
+import { HK } from "@/shortcuts";
+import { useBearStore } from "@/stores";
 
 interface PreviewEntry {
   title: string;
@@ -66,7 +72,11 @@ function flattenFolders(items: FeedResItem[]): FeedResItem[] {
   return (items || []).filter((i) => i.item_type === "folder");
 }
 
-function entryMeta(entry: PreviewEntry, formatTime: (s: number) => string, locale: string) {
+function entryMeta(
+  entry: PreviewEntry,
+  formatTime: (s: number) => string,
+  locale: string,
+) {
   if (entry.duration) return formatTime(entry.duration);
   if (!entry.pub_date) return "";
   const date = new Date(entry.pub_date);
@@ -195,12 +205,20 @@ export const AddFeedChannel = (props: any) => {
   /** 真正去探测并进入预览（target 可以是用户输入、生成器地址、桥接地址或候选地址） */
   const previewUrl = (
     feedUrl: string,
-    meta: Partial<Pick<Preview, "origin" | "carrierHint" | "providerHint" | "accountUuid">> = {},
+    meta: Partial<
+      Pick<Preview, "origin" | "carrierHint" | "providerHint" | "accountUuid">
+    > = {},
   ) => {
     const token = ++probeRef.current;
     setPhase({ s: "trying" });
     dataAgent
-      .fetchFeed(feedUrl, meta.origin, meta.carrierHint, meta.providerHint, meta.accountUuid)
+      .fetchFeed(
+        feedUrl,
+        meta.origin,
+        meta.carrierHint,
+        meta.providerHint,
+        meta.accountUuid,
+      )
       .then((res: any) => {
         if (!openRef.current || token !== probeRef.current) return;
         if (!res?.feed) {
@@ -233,7 +251,9 @@ export const AddFeedChannel = (props: any) => {
    * 且输入是不带协议的路径时，用 `实例/路径` 再探测（自建 RSSHub/Nitter）。
    */
   const maybeBridgeRetry = (text: string) => {
-    const bridge = (store.userConfig?.bridge_instance ?? "").trim().replace(/\/+$/, "");
+    const bridge = (store.userConfig?.bridge_instance ?? "")
+      .trim()
+      .replace(/\/+$/, "");
     if (mode !== "link" || !bridge || text.includes("://")) return false;
     previewUrl(`${bridge}/${text}`);
     return true;
@@ -278,7 +298,11 @@ export const AddFeedChannel = (props: any) => {
                 entries: res.entries || [],
                 // 邮件订阅的载体与账户随订阅一起提交（后端 add_feed 同样要凭据）
                 ...(emailMode
-                  ? { carrierHint: "email" as const, providerHint: "mail", accountUuid }
+                  ? {
+                      carrierHint: "email" as const,
+                      providerHint: "mail",
+                      accountUuid,
+                    }
                   : {}),
               },
             });
@@ -350,9 +374,10 @@ export const AddFeedChannel = (props: any) => {
 
         let folderTitle = "";
         if (folderUuid) {
-          folderTitle =
-            folders.find((f) => f.uuid === folderUuid)?.title ?? "";
-          await dataAgent.moveChannelIntoFolder(feed.uuid, folderUuid, 0).catch(() => {});
+          folderTitle = folders.find((f) => f.uuid === folderUuid)?.title ?? "";
+          await dataAgent
+            .moveChannelIntoFolder(feed.uuid, folderUuid, 0)
+            .catch(() => {});
         }
 
         feed.children = [];
@@ -366,7 +391,11 @@ export const AddFeedChannel = (props: any) => {
 
         // 完成即走：不再停在面板上（用户 2026-09-25：不要"再加一个"循环，直接去读）
         toast.success(
-          t("fusion.add.done_toast", { title: feed.title, count, folder: folderTitle }),
+          t("fusion.add.done_toast", {
+            title: feed.title,
+            count,
+            folder: folderTitle,
+          }),
         );
         setOpen(false);
         navigate(
@@ -399,9 +428,20 @@ export const AddFeedChannel = (props: any) => {
       >
         <div className="fusion-add-in" style={{ paddingBottom: 0 }}>
           {EMAIL_SUBSCRIPTION_ENABLED && (
-            <SegmentedControl size="sm" label={t("fusion.add.mode")} value={mode} onChange={switchMode}>
-              <SegmentedControlItem value="link" label={t("fusion.add.link_mode")} />
-              <SegmentedControlItem value="email" label={t("fusion.add.email_mode")} />
+            <SegmentedControl
+              size="sm"
+              label={t("fusion.add.mode")}
+              value={mode}
+              onChange={switchMode}
+            >
+              <SegmentedControlItem
+                value="link"
+                label={t("fusion.add.link_mode")}
+              />
+              <SegmentedControlItem
+                value="email"
+                label={t("fusion.add.email_mode")}
+              />
             </SegmentedControl>
           )}
           <span className="fusion-spring" />
@@ -409,9 +449,17 @@ export const AddFeedChannel = (props: any) => {
         <div className="fusion-add-in" style={{ paddingTop: 8 }}>
           <TextInput
             ref={inputRef}
-            label={mode === "email" ? t("fusion.add.email_ph") : t("fusion.add.ph_any")}
+            label={
+              mode === "email"
+                ? t("fusion.add.email_ph")
+                : t("fusion.add.ph_any")
+            }
             isLabelHidden
-            placeholder={mode === "email" ? t("fusion.add.email_ph") : t("fusion.add.ph_any")}
+            placeholder={
+              mode === "email"
+                ? t("fusion.add.email_ph")
+                : t("fusion.add.ph_any")
+            }
             autoComplete="off"
             value={url}
             onChange={(v) => {
@@ -421,7 +469,9 @@ export const AddFeedChannel = (props: any) => {
             startIcon={<Search size={14} />}
           />
           {preview && carrierOfPreview && (
-            <span className={`fusion-badge ${CARRIER_BADGE_CLS[carrierOfPreview]}`}>
+            <span
+              className={`fusion-badge ${CARRIER_BADGE_CLS[carrierOfPreview]}`}
+            >
               {CARRIER_TAG[carrierOfPreview]}
             </span>
           )}
@@ -436,7 +486,10 @@ export const AddFeedChannel = (props: any) => {
                   label={t("fusion.add.account")}
                   isLabelHidden
                   value={accountUuid}
-                  options={accounts.map((a) => ({ value: a.uuid, label: a.label }))}
+                  options={accounts.map((a) => ({
+                    value: a.uuid,
+                    label: a.label,
+                  }))}
                   onChange={(v) => setAccountUuid(v)}
                 />
                 <span className="fusion-spring" />
@@ -472,19 +525,34 @@ export const AddFeedChannel = (props: any) => {
             )}
             {phase.s === "error" && (
               <div className="fusion-aerr">
-                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round">
+                <svg
+                  width="13"
+                  height="13"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.7"
+                  strokeLinecap="round"
+                >
                   <circle cx="8" cy="8" r="6.2" />
                   <path d="M8 4.8v3.6M8 10.8v.4" />
                 </svg>
                 <span className="fusion-aerr-msg">{phase.message}</span>
 
-                <Button variant="ghost" size="sm" label={t("Retry")} onClick={() => detect(url)} />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  label={t("Retry")}
+                  onClick={() => detect(url)}
+                />
               </div>
             )}
             {preview && (
               <div className="fusion-card">
                 <div className="c-head">
-                  <span className={`c-ic ${carrierOfPreview === "video" ? "b-bil" : ""}`}>
+                  <span
+                    className={`c-ic ${carrierOfPreview === "video" ? "b-bil" : ""}`}
+                  >
                     {preview.feed.logo ? (
                       <img src={preview.feed.logo} alt="" />
                     ) : (
@@ -494,7 +562,8 @@ export const AddFeedChannel = (props: any) => {
                   <div className="min-w-0">
                     <div className="c-t">{preview.feed.title}</div>
                     <div className="c-d">
-                      {preview.feed.description?.slice(0, 80) || preview.resolvedUrl}
+                      {preview.feed.description?.slice(0, 80) ||
+                        preview.resolvedUrl}
                     </div>
                   </div>
                 </div>
@@ -503,6 +572,7 @@ export const AddFeedChannel = (props: any) => {
                   <>
                     <div className="c-h">{t("fusion.add.recent")}</div>
                     {preview.entries.map((entry, index) => (
+                      // biome-ignore lint/suspicious/noArrayIndexKey: entry.link 可能重复，复合 key 保证唯一
                       <div className="c-row" key={`${entry.link}-${index}`}>
                         <span className="rt">{entry.title}</span>
                         <span className="rd">
@@ -516,13 +586,17 @@ export const AddFeedChannel = (props: any) => {
                 {preview.candidates.length > 1 && (
                   <div className="fusion-cands">
                     <span className="lb">
-                      {t("fusion.add.candidates", { count: preview.candidates.length })}
+                      {t("fusion.add.candidates", {
+                        count: preview.candidates.length,
+                      })}
                     </span>
                     {preview.candidates.slice(0, 6).map((candidate) => (
                       <ToggleButton
                         key={candidate}
                         size="sm"
-                        label={candidate.replace(/^https?:\/\//, "").slice(0, 34)}
+                        label={candidate
+                          .replace(/^https?:\/\//, "")
+                          .slice(0, 34)}
                         isPressed={candidate === preview.resolvedUrl}
                         onPressedChange={() => previewUrl(candidate)}
                       />
@@ -543,7 +617,12 @@ export const AddFeedChannel = (props: any) => {
                         onChange={(v) => setFolderName(v)}
                         onEnter={createFolderAndSelect}
                       />
-                      <Button variant="ghost" size="sm" label={t("fusion.add.create")} onClick={createFolderAndSelect} />
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        label={t("fusion.add.create")}
+                        onClick={createFolderAndSelect}
+                      />
                     </>
                   ) : (
                     <Selector
@@ -553,7 +632,10 @@ export const AddFeedChannel = (props: any) => {
                       value={folderUuid}
                       options={[
                         { value: "", label: t("fusion.add.ungrouped") },
-                        ...folders.map((f) => ({ value: f.uuid, label: f.title })),
+                        ...folders.map((f) => ({
+                          value: f.uuid,
+                          label: f.title,
+                        })),
                         { value: "__new__", label: t("fusion.add.new_folder") },
                       ]}
                       onChange={(v) => {
@@ -566,7 +648,12 @@ export const AddFeedChannel = (props: any) => {
                     />
                   )}
                   <span className="fusion-spring" />
-                  <Button variant="ghost" size="sm" label={t("Cancel")} onClick={() => setOpen(false)} />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    label={t("Cancel")}
+                    onClick={() => setOpen(false)}
+                  />
                   <Button
                     variant="primary"
                     size="sm"

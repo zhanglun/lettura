@@ -1,8 +1,12 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
-import { ArticleDetail } from "../Detail";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ArticleResItem } from "@/db";
-import { ArticleReadStatus, ArticleStarStatus, ArticleReadLaterStatus } from "@/typing";
+import {
+  ArticleReadLaterStatus,
+  ArticleReadStatus,
+  ArticleStarStatus,
+} from "@/typing";
+import { ArticleDetail } from "../Detail";
 
 vi.mock("@tauri-apps/plugin-shell", () => ({ open: vi.fn() }));
 
@@ -103,10 +107,23 @@ describe("ArticleDetail", () => {
   it("切文章后过期的失败不再置错误态（invoke 无法中断，靠 cancelled 标志位）", async () => {
     let rejectFirst!: (e: Error) => void;
     (dataAgent.getArticleDetail as ReturnType<typeof vi.fn>)
-      .mockImplementationOnce(() => new Promise((_resolve, reject) => { rejectFirst = reject; }))
-      .mockImplementationOnce(() => Promise.resolve({ content: "<p>new</p>", description: "", media_object: "[]" }));
+      .mockImplementationOnce(
+        () =>
+          new Promise((_resolve, reject) => {
+            rejectFirst = reject;
+          }),
+      )
+      .mockImplementationOnce(() =>
+        Promise.resolve({
+          content: "<p>new</p>",
+          description: "",
+          media_object: "[]",
+        }),
+      );
 
-    const { rerender } = renderWithTheme(<ArticleDetail article={makeArticle({ uuid: "art-1" })} />);
+    const { rerender } = renderWithTheme(
+      <ArticleDetail article={makeArticle({ uuid: "art-1" })} />,
+    );
     // 换 uuid → 旧请求 cleanup（cancelled = true），随后它的失败不应污染新视图
     rerender(<ArticleDetail article={makeArticle({ uuid: "art-2" })} />);
     rejectFirst(new Error("late failure"));

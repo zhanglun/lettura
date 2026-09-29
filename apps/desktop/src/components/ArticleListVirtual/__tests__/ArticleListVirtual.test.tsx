@@ -1,8 +1,8 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, cleanup, fireEvent } from "@testing-library/react";
+import { cleanup, fireEvent, render } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { ArticleListVirtual } from "..";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ArticleResItem } from "@/db";
+import { ArticleListVirtual } from "..";
 
 const article = (uuid: string): ArticleResItem =>
   ({
@@ -31,7 +31,9 @@ const stubMetrics = (
   }
 };
 
-const List = (props: Partial<React.ComponentProps<typeof ArticleListVirtual>>) => (
+const List = (
+  props: Partial<React.ComponentProps<typeof ArticleListVirtual>>,
+) => (
   <MemoryRouter>
     <ArticleListVirtual
       articles={[article("a"), article("b")]}
@@ -46,7 +48,9 @@ const List = (props: Partial<React.ComponentProps<typeof ArticleListVirtual>>) =
   </MemoryRouter>
 );
 
-const renderList = (props: Partial<React.ComponentProps<typeof ArticleListVirtual>> = {}) => {
+const renderList = (
+  props: Partial<React.ComponentProps<typeof ArticleListVirtual>> = {},
+) => {
   const setSize = vi.fn();
   const utils = render(<List {...props} setSize={setSize} />);
   const container = utils.container.querySelector(
@@ -67,7 +71,11 @@ describe("ArticleListVirtual 触底加载", () => {
 
   it("滚到底请求下一页", () => {
     const { container, setSize } = renderList();
-    stubMetrics(container, { scrollTop: 900, scrollHeight: 1000, clientHeight: 100 });
+    stubMetrics(container, {
+      scrollTop: 900,
+      scrollHeight: 1000,
+      clientHeight: 100,
+    });
 
     fireEvent.scroll(container);
 
@@ -76,7 +84,11 @@ describe("ArticleListVirtual 触底加载", () => {
 
   it("同一个 size 不重复请求（不靠时间冷却：不推进定时器也不该二次触发）", () => {
     const { container, setSize } = renderList();
-    stubMetrics(container, { scrollTop: 900, scrollHeight: 1000, clientHeight: 100 });
+    stubMetrics(container, {
+      scrollTop: 900,
+      scrollHeight: 1000,
+      clientHeight: 100,
+    });
 
     fireEvent.scroll(container);
     fireEvent.scroll(container);
@@ -86,13 +98,21 @@ describe("ArticleListVirtual 触底加载", () => {
 
   it("下一页到位（size 递增）后，立刻再滚到底就能续上——不需要等待冷却", () => {
     const { container, setSize, rerender } = renderList();
-    stubMetrics(container, { scrollTop: 900, scrollHeight: 1000, clientHeight: 100 });
+    stubMetrics(container, {
+      scrollTop: 900,
+      scrollHeight: 1000,
+      clientHeight: 100,
+    });
     fireEvent.scroll(container);
     expect(setSize).toHaveBeenCalledWith(1);
 
     // 父级把 size 推进到 1（新一页到位）
     rerender(<List size={1} setSize={setSize} />);
-    stubMetrics(container, { scrollTop: 1900, scrollHeight: 2000, clientHeight: 100 });
+    stubMetrics(container, {
+      scrollTop: 1900,
+      scrollHeight: 2000,
+      clientHeight: 100,
+    });
     fireEvent.scroll(container);
 
     expect(setSize).toHaveBeenLastCalledWith(2);
@@ -106,7 +126,11 @@ describe("ArticleListVirtual 触底加载", () => {
     rerender(<List size={0} setSize={setSize} isLoading={true} />);
     rerender(<List size={0} setSize={setSize} isLoading={false} />);
     // 内容 1000（含末尾 102 空白）· 视口 100 → 「最后一行可见」= scrollTop 800
-    stubMetrics(container, { scrollTop: 800, scrollHeight: 1000, clientHeight: 100 });
+    stubMetrics(container, {
+      scrollTop: 800,
+      scrollHeight: 1000,
+      clientHeight: 100,
+    });
 
     fireEvent.scroll(container);
 

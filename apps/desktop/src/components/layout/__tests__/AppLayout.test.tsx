@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
+import { useHotkeys } from "react-hotkeys-hook";
 import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { useHotkeys } from "react-hotkeys-hook";
 import { AppLayout } from "../AppLayout";
 
 vi.mock("react-hotkeys-hook", () => ({
@@ -42,7 +42,10 @@ vi.mock("react-i18next", () => ({
 }));
 
 vi.mock("react-router-dom", async () => {
-  const actual = await vi.importActual<typeof import("react-router-dom")>("react-router-dom");
+  const actual =
+    await vi.importActual<typeof import("react-router-dom")>(
+      "react-router-dom",
+    );
   return {
     ...actual,
     Outlet: () => <main data-testid="outlet" />,
@@ -99,9 +102,9 @@ describe("AppLayout (fusion shell)", () => {
 
   describe("esc 逐级退回", () => {
     const escapeHandler = () => {
-      const call = (useHotkeys as unknown as { mock: { calls: unknown[][] } }).mock.calls.find(
-        ([keys]) => keys === "escape",
-      );
+      const call = (
+        useHotkeys as unknown as { mock: { calls: unknown[][] } }
+      ).mock.calls.find(([keys]) => keys === "escape");
       return call?.[1] as (e: { defaultPrevented: boolean }) => void;
     };
 

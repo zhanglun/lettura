@@ -1,8 +1,12 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { ReaderControls } from "../index";
-import { ArticleReadLaterStatus, ArticleReadStatus, ArticleStarStatus } from "@/typing";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ArticleResItem } from "@/db";
+import {
+  ArticleReadLaterStatus,
+  ArticleReadStatus,
+  ArticleStarStatus,
+} from "@/typing";
+import { ReaderControls } from "../index";
 
 vi.mock("@/helpers/dataAgent", () => ({
   updateArticleStarStatus: vi.fn().mockResolvedValue({}),
@@ -59,9 +63,9 @@ describe("ReaderControls", () => {
       const article = makeArticle();
       renderWithTheme(<ReaderControls article={article} />);
 
-      const btn = screen.getAllByRole("button").find(
-        (b) => b.querySelector("svg.lucide-star") !== null,
-      );
+      const btn = screen
+        .getAllByRole("button")
+        .find((b) => b.querySelector("svg.lucide-star") !== null);
       fireEvent.click(btn!);
 
       await waitFor(() => {
@@ -76,9 +80,9 @@ describe("ReaderControls", () => {
       const article = makeArticle({ starred: ArticleStarStatus.STARRED });
       renderWithTheme(<ReaderControls article={article} />);
 
-      const btn = screen.getAllByRole("button").find(
-        (b) => b.querySelector("svg.lucide-star") !== null,
-      );
+      const btn = screen
+        .getAllByRole("button")
+        .find((b) => b.querySelector("svg.lucide-star") !== null);
       fireEvent.click(btn!);
 
       await waitFor(() => {
@@ -92,16 +96,20 @@ describe("ReaderControls", () => {
     it("操作成功后触发 onStarChange 回调并携带更新后的 article", async () => {
       const article = makeArticle();
       const onStarChange = vi.fn();
-      renderWithTheme(<ReaderControls article={article} onStarChange={onStarChange} />);
-
-      const btn = screen.getAllByRole("button").find(
-        (b) => b.querySelector("svg.lucide-star") !== null,
+      renderWithTheme(
+        <ReaderControls article={article} onStarChange={onStarChange} />,
       );
+
+      const btn = screen
+        .getAllByRole("button")
+        .find((b) => b.querySelector("svg.lucide-star") !== null);
       fireEvent.click(btn!);
 
       await waitFor(() => {
         expect(onStarChange).toHaveBeenCalledOnce();
-        expect(onStarChange.mock.calls[0][0].starred).toBe(ArticleStarStatus.STARRED);
+        expect(onStarChange.mock.calls[0][0].starred).toBe(
+          ArticleStarStatus.STARRED,
+        );
       });
     });
   });
@@ -111,9 +119,9 @@ describe("ReaderControls", () => {
       const article = makeArticle({ read_status: ArticleReadStatus.UNREAD });
       renderWithTheme(<ReaderControls article={article} />);
 
-      const btn = screen.getAllByRole("button").find(
-        (b) => b.querySelector("svg.lucide-eye") !== null,
-      );
+      const btn = screen
+        .getAllByRole("button")
+        .find((b) => b.querySelector("svg.lucide-eye") !== null);
       fireEvent.click(btn!);
 
       await waitFor(() => {
@@ -127,16 +135,20 @@ describe("ReaderControls", () => {
     it("操作成功后触发 onReadChange 回调并携带更新后的 article", async () => {
       const article = makeArticle({ read_status: ArticleReadStatus.UNREAD });
       const onReadChange = vi.fn();
-      renderWithTheme(<ReaderControls article={article} onReadChange={onReadChange} />);
-
-      const btn = screen.getAllByRole("button").find(
-        (b) => b.querySelector("svg.lucide-eye") !== null,
+      renderWithTheme(
+        <ReaderControls article={article} onReadChange={onReadChange} />,
       );
+
+      const btn = screen
+        .getAllByRole("button")
+        .find((b) => b.querySelector("svg.lucide-eye") !== null);
       fireEvent.click(btn!);
 
       await waitFor(() => {
         expect(onReadChange).toHaveBeenCalledOnce();
-        expect(onReadChange.mock.calls[0][0].read_status).toBe(ArticleReadStatus.READ);
+        expect(onReadChange.mock.calls[0][0].read_status).toBe(
+          ArticleReadStatus.READ,
+        );
       });
     });
   });
@@ -146,9 +158,9 @@ describe("ReaderControls", () => {
       const article = makeArticle();
       renderWithTheme(<ReaderControls article={article} showBrowser />);
 
-      const btn = screen.getAllByRole("button").find(
-        (b) => b.querySelector("svg.lucide-external-link") !== null,
-      );
+      const btn = screen
+        .getAllByRole("button")
+        .find((b) => b.querySelector("svg.lucide-external-link") !== null);
       expect(btn).toBeTruthy();
     });
 
@@ -156,9 +168,9 @@ describe("ReaderControls", () => {
       const article = makeArticle();
       renderWithTheme(<ReaderControls article={article} showBrowser={false} />);
 
-      const btn = screen.getAllByRole("button").find(
-        (b) => b.querySelector("svg.lucide-external-link") !== null,
-      );
+      const btn = screen
+        .getAllByRole("button")
+        .find((b) => b.querySelector("svg.lucide-external-link") !== null);
       expect(btn).toBeUndefined();
     });
 
@@ -166,9 +178,11 @@ describe("ReaderControls", () => {
       const article = makeArticle({ link: "" });
       renderWithTheme(<ReaderControls article={article} showBrowser />);
 
-      const btn = screen.getAllByRole("button").find(
-        (b) => b.querySelector("svg.lucide-external-link") !== null,
-      ) as HTMLButtonElement | undefined;
+      const btn = screen
+        .getAllByRole("button")
+        .find((b) => b.querySelector("svg.lucide-external-link") !== null) as
+        | HTMLButtonElement
+        | undefined;
       expect(btn?.disabled).toBe(true);
     });
   });
@@ -178,9 +192,9 @@ describe("ReaderControls", () => {
       const article = makeArticle();
       renderWithTheme(<ReaderControls article={article} showReadLater />);
 
-      const btn = screen.getAllByRole("button").find(
-        (b) => b.querySelector("svg.lucide-bookmark") !== null,
-      );
+      const btn = screen
+        .getAllByRole("button")
+        .find((b) => b.querySelector("svg.lucide-bookmark") !== null);
       expect(btn).toBeTruthy();
     });
 
@@ -188,9 +202,9 @@ describe("ReaderControls", () => {
       const article = makeArticle();
       renderWithTheme(<ReaderControls article={article} />);
 
-      const btn = screen.getAllByRole("button").find(
-        (b) => b.querySelector("svg.lucide-bookmark") !== null,
-      );
+      const btn = screen
+        .getAllByRole("button")
+        .find((b) => b.querySelector("svg.lucide-bookmark") !== null);
       expect(btn).toBeUndefined();
     });
   });

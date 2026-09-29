@@ -1,19 +1,27 @@
-import { useEffect, useMemo, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import { useShallow } from "zustand/react/shallow";
-import { History, Inbox, Plus, RefreshCw, SearchX, Settings, Star } from "lucide-react";
-import * as dataAgent from "@/helpers/dataAgent";
-import { useBearStore } from "@/stores";
-import { RouteConfig } from "@/config";
-import { FeedResItem } from "@/db";
-import { getCarrier, mediaBadge } from "@/helpers/mediaType";
-import { getHostLabel } from "@/helpers/feedMeta";
-import { FeedIcon } from "@/components/FeedIcon";
-import { QuietEmpty } from "@/components/QuietEmpty";
 import { CommandPalette as AstryxCommandPalette } from "@astryxdesign/core/CommandPalette";
 import type { SearchableItem } from "@astryxdesign/core/Typeahead";
+import {
+  History,
+  Inbox,
+  Plus,
+  RefreshCw,
+  SearchX,
+  Settings,
+  Star,
+} from "lucide-react";
+import { useEffect, useMemo, useRef } from "react";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+import { useShallow } from "zustand/react/shallow";
+import { FeedIcon } from "@/components/FeedIcon";
+import { QuietEmpty } from "@/components/QuietEmpty";
+import { RouteConfig } from "@/config";
+import type { FeedResItem } from "@/db";
+import * as dataAgent from "@/helpers/dataAgent";
+import { getHostLabel } from "@/helpers/feedMeta";
+import { getCarrier, mediaBadge } from "@/helpers/mediaType";
 import i18n from "@/i18n";
+import { useBearStore } from "@/stores";
 
 interface CommandPaletteProps {
   open: boolean;

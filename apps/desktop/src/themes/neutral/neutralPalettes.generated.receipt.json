@@ -16,27 +16,8 @@
       }
     },
     "stops": [
-      0,
-      5,
-      10,
-      15,
-      20,
-      25,
-      30,
-      35,
-      40,
-      45,
-      50,
-      55,
-      60,
-      65,
-      70,
-      75,
-      80,
-      85,
-      90,
-      95,
-      100
+      0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90,
+      95, 100
     ],
     "families": [
       {
@@ -169,20 +150,7 @@
           "maximumHueDrift": 3.9781468539510456,
           "hueIdentityRisk": null,
           "gamutMappedStops": [
-            5,
-            10,
-            15,
-            20,
-            25,
-            30,
-            35,
-            70,
-            75,
-            80,
-            85,
-            90,
-            95,
-            100
+            5, 10, 15, 20, 25, 30, 35, 70, 75, 80, 85, 90, 95, 100
           ],
           "anchors": []
         },
@@ -192,17 +160,7 @@
           "maximumAdjacentDeltaE": 18.248436671660606,
           "maximumHueDrift": 2.994926201900796,
           "hueIdentityRisk": null,
-          "gamutMappedStops": [
-            10,
-            15,
-            20,
-            75,
-            80,
-            85,
-            90,
-            95,
-            100
-          ],
+          "gamutMappedStops": [10, 15, 20, 75, 80, 85, 90, 95, 100],
           "anchors": []
         }
       },
@@ -214,23 +172,7 @@
           "maximumHueDrift": 17.283353703181774,
           "hueIdentityRisk": null,
           "gamutMappedStops": [
-            5,
-            10,
-            15,
-            20,
-            25,
-            30,
-            35,
-            40,
-            45,
-            50,
-            55,
-            60,
-            75,
-            80,
-            85,
-            90,
-            95,
+            5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 75, 80, 85, 90, 95,
             100
           ],
           "anchors": []
@@ -242,21 +184,7 @@
           "maximumHueDrift": 8.915953570675583,
           "hueIdentityRisk": null,
           "gamutMappedStops": [
-            5,
-            10,
-            15,
-            20,
-            25,
-            30,
-            35,
-            40,
-            45,
-            50,
-            80,
-            85,
-            90,
-            95,
-            100
+            5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 80, 85, 90, 95, 100
           ],
           "anchors": []
         }
@@ -269,21 +197,7 @@
           "maximumHueDrift": 8.277463562561081,
           "hueIdentityRisk": null,
           "gamutMappedStops": [
-            5,
-            10,
-            15,
-            20,
-            25,
-            30,
-            35,
-            40,
-            45,
-            50,
-            55,
-            60,
-            65,
-            95,
-            100
+            5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 95, 100
           ],
           "anchors": [
             {
@@ -303,20 +217,7 @@
           "maximumHueDrift": 0.9740062981470601,
           "hueIdentityRisk": null,
           "gamutMappedStops": [
-            5,
-            10,
-            15,
-            20,
-            25,
-            30,
-            35,
-            40,
-            45,
-            50,
-            55,
-            60,
-            95,
-            100
+            5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 95, 100
           ],
           "anchors": []
         }
@@ -328,12 +229,7 @@
           "maximumAdjacentDeltaE": 19.13154978272725,
           "maximumHueDrift": 1.8635734402253092,
           "hueIdentityRisk": null,
-          "gamutMappedStops": [
-            10,
-            15,
-            20,
-            100
-          ],
+          "gamutMappedStops": [10, 15, 20, 100],
           "anchors": [
             {
               "mode": "light",
@@ -351,9 +247,7 @@
           "maximumAdjacentDeltaE": 17.873994179831133,
           "maximumHueDrift": 0.6021437162152665,
           "hueIdentityRisk": null,
-          "gamutMappedStops": [
-            100
-          ],
+          "gamutMappedStops": [100],
           "anchors": []
         }
       },
@@ -364,20 +258,7 @@
           "maximumAdjacentDeltaE": 18.230966590437585,
           "maximumHueDrift": 1.6736718288519796,
           "hueIdentityRisk": null,
-          "gamutMappedStops": [
-            5,
-            10,
-            15,
-            20,
-            25,
-            30,
-            35,
-            40,
-            45,
-            50,
-            55,
-            100
-          ],
+          "gamutMappedStops": [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 100],
           "anchors": []
         },
         "dark": {
@@ -386,18 +267,7 @@
           "maximumAdjacentDeltaE": 17.887680234294926,
           "maximumHueDrift": 1.9901619693500834,
           "hueIdentityRisk": null,
-          "gamutMappedStops": [
-            5,
-            10,
-            15,
-            20,
-            25,
-            30,
-            35,
-            40,
-            45,
-            100
-          ],
+          "gamutMappedStops": [5, 10, 15, 20, 25, 30, 35, 40, 45, 100],
           "anchors": []
         }
       },
@@ -409,21 +279,7 @@
           "maximumHueDrift": 1.448564967034713,
           "hueIdentityRisk": null,
           "gamutMappedStops": [
-            5,
-            10,
-            15,
-            20,
-            25,
-            30,
-            35,
-            40,
-            45,
-            50,
-            55,
-            60,
-            90,
-            95,
-            100
+            5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 90, 95, 100
           ],
           "anchors": []
         },
@@ -433,20 +289,7 @@
           "maximumAdjacentDeltaE": 17.77833629876001,
           "maximumHueDrift": 1.9205764619874799,
           "hueIdentityRisk": null,
-          "gamutMappedStops": [
-            5,
-            10,
-            15,
-            20,
-            25,
-            30,
-            35,
-            40,
-            45,
-            50,
-            95,
-            100
-          ],
+          "gamutMappedStops": [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 95, 100],
           "anchors": []
         }
       },
@@ -458,23 +301,7 @@
           "maximumHueDrift": 4.261077952851451,
           "hueIdentityRisk": null,
           "gamutMappedStops": [
-            5,
-            10,
-            15,
-            20,
-            25,
-            30,
-            35,
-            40,
-            45,
-            65,
-            70,
-            75,
-            80,
-            85,
-            90,
-            95,
-            100
+            5, 10, 15, 20, 25, 30, 35, 40, 45, 65, 70, 75, 80, 85, 90, 95, 100
           ],
           "anchors": [
             {
@@ -494,20 +321,7 @@
           "maximumHueDrift": 1.3805191338753957,
           "hueIdentityRisk": null,
           "gamutMappedStops": [
-            5,
-            10,
-            15,
-            20,
-            25,
-            30,
-            35,
-            70,
-            75,
-            80,
-            85,
-            90,
-            95,
-            100
+            5, 10, 15, 20, 25, 30, 35, 70, 75, 80, 85, 90, 95, 100
           ],
           "anchors": []
         }
@@ -519,13 +333,7 @@
           "maximumAdjacentDeltaE": 19.96161232121409,
           "maximumHueDrift": 0.6423866859174723,
           "hueIdentityRisk": null,
-          "gamutMappedStops": [
-            80,
-            85,
-            90,
-            95,
-            100
-          ],
+          "gamutMappedStops": [80, 85, 90, 95, 100],
           "anchors": [
             {
               "mode": "light",
@@ -543,12 +351,7 @@
           "maximumAdjacentDeltaE": 18.07185708983776,
           "maximumHueDrift": 0.6976391833911748,
           "hueIdentityRisk": null,
-          "gamutMappedStops": [
-            85,
-            90,
-            95,
-            100
-          ],
+          "gamutMappedStops": [85, 90, 95, 100],
           "anchors": []
         }
       },
@@ -559,20 +362,7 @@
           "maximumAdjacentDeltaE": 19.77180068574261,
           "maximumHueDrift": 1.1308247093818409,
           "hueIdentityRisk": null,
-          "gamutMappedStops": [
-            5,
-            10,
-            15,
-            20,
-            25,
-            30,
-            75,
-            80,
-            85,
-            90,
-            95,
-            100
-          ],
+          "gamutMappedStops": [5, 10, 15, 20, 25, 30, 75, 80, 85, 90, 95, 100],
           "anchors": []
         },
         "dark": {
@@ -581,15 +371,7 @@
           "maximumAdjacentDeltaE": 18.204098619795822,
           "maximumHueDrift": 0.6531216549080909,
           "hueIdentityRisk": null,
-          "gamutMappedStops": [
-            10,
-            15,
-            80,
-            85,
-            90,
-            95,
-            100
-          ],
+          "gamutMappedStops": [10, 15, 80, 85, 90, 95, 100],
           "anchors": []
         }
       }
@@ -598,10 +380,7 @@
       {
         "mode": "light",
         "stop": 50,
-        "closestFamilies": [
-          "Teal",
-          "Cyan"
-        ],
+        "closestFamilies": ["Teal", "Cyan"],
         "minimumFamilyDeltaE": 6.359490266320177,
         "strongestFamily": "Purple",
         "weakestFamily": "Cyan",
@@ -610,10 +389,7 @@
       {
         "mode": "dark",
         "stop": 50,
-        "closestFamilies": [
-          "Teal",
-          "Cyan"
-        ],
+        "closestFamilies": ["Teal", "Cyan"],
         "minimumFamilyDeltaE": 5.722384045842401,
         "strongestFamily": "Red",
         "weakestFamily": "Cyan",

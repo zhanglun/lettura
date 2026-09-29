@@ -61,8 +61,9 @@ config over prose when something conflicts.
 - Rust tests: run `cargo test` from repo root (workspace members are
   `src-tauri` and `packages/*`); `pnpm cargo:check|cargo:test|cargo:fmt` are
   convenience wrappers.
-- Lint/format use Rome 11 config, not ESLint/Prettier:
-  `npx rome check src/` and `npx rome format src/`.
+- Lint/format use Biome (`apps/desktop/biome.json`), not ESLint/Prettier:
+  `npx biome check src/` and `npx biome format src/` (run from
+  `apps/desktop/`).
 
 ## Runtime and storage gotchas
 

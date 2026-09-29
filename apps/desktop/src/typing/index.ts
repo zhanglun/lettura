@@ -18,4 +18,3 @@ export enum SettingTabKey {
   APPEARANCE = "appearance",
   BEHAVIOR = "behavior",
 }
-

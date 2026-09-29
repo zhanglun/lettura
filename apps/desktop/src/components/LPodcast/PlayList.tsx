@@ -1,8 +1,8 @@
-import React from "react";
-import { QueueRow } from "./QueueRow";
-import { useBearStore } from "@/stores";
-import { useShallow } from "zustand/react/shallow";
+import type React from "react";
 import { useTranslation } from "react-i18next";
+import { useShallow } from "zustand/react/shallow";
+import { useBearStore } from "@/stores";
+import { QueueRow } from "./QueueRow";
 
 /**
  * 播放列表：整条队列（含当前集）——与沉浸页 UP NEXT 同一行语法，

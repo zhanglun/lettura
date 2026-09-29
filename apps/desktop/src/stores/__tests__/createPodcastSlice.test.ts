@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { create } from "zustand";
-import { createPodcastSlice, PodcastSlice } from "../createPodcastSlice";
-import { AudioTrack } from "@/components/LPodcast";
+import type { AudioTrack } from "@/components/LPodcast";
+import { createPodcastSlice, type PodcastSlice } from "../createPodcastSlice";
 
 // Dexie/IndexedDB 在 jsdom 不可用：只替掉被 slice 触碰的写入路径
 vi.mock("@/helpers/podcastDB", () => {
