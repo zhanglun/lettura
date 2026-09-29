@@ -5,7 +5,6 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { RowThumb } from "@/components/ArticleItem";
-import { formatRelative } from "@/helpers/feedMeta";
 import { ArticleDetail } from "@/components/ArticleView/Detail";
 import {
   ScrollBox,
@@ -13,6 +12,7 @@ import {
 } from "@/components/ArticleView/ScrollBox";
 import { ReaderControls } from "@/components/ReaderControls";
 import type { ArticleResItem } from "@/db";
+import { formatRelative } from "@/helpers/feedMeta";
 import { useBearStore } from "@/stores";
 
 export interface ArticleViewProps {
@@ -109,9 +109,7 @@ export function View({
         {article && (
           <span className="d-src">
             {article.feed_title} ·{" "}
-            {formatRelative(
-              new Date(article.pub_date || article.create_date),
-            )}
+            {formatRelative(new Date(article.pub_date || article.create_date))}
           </span>
         )}
         <span className="fusion-spring" />

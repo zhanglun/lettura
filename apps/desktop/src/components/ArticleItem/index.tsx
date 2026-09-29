@@ -13,8 +13,8 @@ import {
   pickThumbUrl,
 } from "@/helpers/articleContent";
 import * as dataAgent from "@/helpers/dataAgent";
-import { getCarrier } from "@/helpers/mediaType";
 import { formatRelative } from "@/helpers/feedMeta";
+import { getCarrier } from "@/helpers/mediaType";
 import { useBearStore } from "@/stores";
 import { ArticleReadStatus, ArticleStarStatus } from "@/typing";
 

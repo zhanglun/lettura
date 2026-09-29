@@ -2,8 +2,8 @@ import { cleanup, fireEvent, render } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ArticleResItem } from "@/db";
-import { ArticleListVirtual } from "..";
 import type { ListSection } from "@/hooks/useArticle";
+import { ArticleListVirtual } from "..";
 
 const article = (uuid: string): ArticleResItem =>
   ({

@@ -8,7 +8,10 @@
     "preview": "vite preview",
     "tauri": "tauri",
     "create-json": "node ./scripts/updater.mjs",
-    "test": "vitest"
+    "test": "vitest",
+    "lint": "biome check src/",
+    "lint:fix": "biome check --write src/",
+    "format": "biome format --write src/"
   },
   "dependencies": {
     "@astryxdesign/cli": "^0.6.3",

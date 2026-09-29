@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useMatch } from "react-router-dom";
 import useSWR from "swr";
 import useSWRInfinite from "swr/infinite";
-import { useMatch } from "react-router-dom";
+import { useShallow } from "zustand/react/shallow";
 import { RouteConfig } from "@/config";
+import type { ArticleResItem } from "@/db";
 import * as dataAgent from "@/helpers/dataAgent";
 import { useBearStore } from "@/stores";
-import { useShallow } from "zustand/react/shallow";
-import type { ArticleResItem } from "@/db";
 
 const PAGE_SIZE = 20;
 
@@ -120,7 +120,10 @@ function useBucketList(
   }, [bucket, registerMutate, mutate]);
 
   const rows: ArticleResItem[] = data
-    ? data.reduce((acu: ArticleResItem[], cur) => acu.concat(cur.list || []), [])
+    ? data.reduce(
+        (acu: ArticleResItem[], cur) => acu.concat(cur.list || []),
+        [],
+      )
     : [];
   const hasMore = !!data && data[data.length - 1]?.list?.length === PAGE_SIZE;
   // 首页未拉过 = 尚无数据可判；hasMore 视为真，展开/哨兵会触发首拉
@@ -301,7 +304,7 @@ export function useArticle(props: UseArticleProps) {
   const bucketSource =
     !carrier || carrier === "all"
       ? globalSummary
-      : scopedSummary ?? globalSummary;
+      : (scopedSummary ?? globalSummary);
   const dayCounts: DayBucketCounts | undefined = bucketSource
     ? {
         today: bucketSource.day_today,
@@ -322,7 +325,10 @@ export function useArticle(props: UseArticleProps) {
     : undefined;
 
   const queueRows: ArticleResItem[] = queue.data
-    ? queue.data.reduce((acu: ArticleResItem[], cur) => acu.concat(cur.list || []), [])
+    ? queue.data.reduce(
+        (acu: ArticleResItem[], cur) => acu.concat(cur.list || []),
+        [],
+      )
     : [];
   const queueTotal = queue.data?.[queue.data.length - 1]?.total ?? 0;
 
@@ -361,13 +367,16 @@ export function useArticle(props: UseArticleProps) {
     ? queue.isLoading
     : sections.some((s) => s.loading);
   const isEmpty = !isLoadingAny && articles.length === 0;
-  const total = isQueue ? queueTotal : globalSummary?.total ?? 0;
+  const total = isQueue ? queueTotal : (globalSummary?.total ?? 0);
 
   // 读态/星标 retain：应用到每一条桶通道的缓存（原扁平版本的 mutate 语义）
-  const mutate = useCallback((fn: (pages: any) => any) => {
-    for (const m of mutatorsRef.current.values()) m(fn);
-    if (isQueue) queueRef.current(fn);
-  }, [isQueue]);
+  const mutate = useCallback(
+    (fn: (pages: any) => any) => {
+      for (const m of mutatorsRef.current.values()) m(fn);
+      if (isQueue) queueRef.current(fn);
+    },
+    [isQueue],
+  );
 
   const queueRef = useRef(queue.mutate);
   queueRef.current = queue.mutate;

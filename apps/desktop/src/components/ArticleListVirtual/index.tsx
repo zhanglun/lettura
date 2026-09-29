@@ -1,12 +1,12 @@
-import React, { useEffect, useRef } from "react";
-import { ArticleItem } from "../ArticleItem";
 import { Skeleton } from "@astryxdesign/core/Skeleton";
 import type { LucideIcon } from "lucide-react";
 import { ChevronDown, SearchX } from "lucide-react";
-import type { ArticleResItem } from "@/db";
+import React, { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { QuietEmpty } from "@/components/QuietEmpty";
+import type { ArticleResItem } from "@/db";
 import type { ListSection } from "@/hooks/useArticle";
+import { ArticleItem } from "../ArticleItem";
 export type ArticleListVirtualProps = {
   /** 每桶一个 section（源队列帧 = 单个 bucket:null 的 section） */
   sections: ListSection[];
@@ -243,7 +243,14 @@ const SectionBlock = React.memo(function SectionBlock({
     ) {
       onLoadMore(section.key);
     }
-  }, [collapsed, section.loaded, section.hasMore, section.loading, section.key, onLoadMore]);
+  }, [
+    collapsed,
+    section.loaded,
+    section.hasMore,
+    section.loading,
+    section.key,
+    onLoadMore,
+  ]);
 
   const showSkeleton = !collapsed && section.loading;
 
