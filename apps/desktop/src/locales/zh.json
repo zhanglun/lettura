@@ -722,7 +722,8 @@
       "day_collapsed_count": "已收起 · {{count}} 篇",
       "day_week": "本周",
       "day_lastweek": "上周",
-      "day_month": "30 天内"
+      "day_month": "30 天内",
+      "loaded_count": "已加载 {{count}} 篇"
     },
     "read": {
       "time": "约 {{min}} 分钟"

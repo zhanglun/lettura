@@ -706,7 +706,8 @@
       "day_collapsed_count": "collapsed · {{count}}",
       "day_week": "This week",
       "day_lastweek": "Last week",
-      "day_month": "Last 30 days"
+      "day_month": "Last 30 days",
+      "loaded_count": "{{count}} loaded"
     },
     "read": {
       "time": "{{min}} min read"

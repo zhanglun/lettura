@@ -371,10 +371,17 @@ export function ArticleView() {
             : carrierFilter === "video"
               ? Clapperboard
               : Mail;
+      // 载体枚举名（text/audio）与 filter 键名（article/podcast）不同，显式映射
+      const filterKey =
+        carrierFilter === "text"
+          ? "article"
+          : carrierFilter === "audio"
+            ? "podcast"
+            : carrierFilter;
       return {
         icon: carrierIcon,
         title: t("fusion.empty.carrier_title", {
-          type: t(`fusion.filter.${carrierFilter}`),
+          type: t(`fusion.filter.${filterKey}`),
         }),
         hint: t("fusion.empty.carrier_hint"),
         action: (

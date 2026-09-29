@@ -152,7 +152,7 @@ export function FeedPrism({ selectedUuid }: { selectedUuid?: string }) {
             {folders.length > 0 && (
               <>
                 <div className="fusion-prism-h">
-                  {t("feeds.ungrouped_folder_hint") ?? t("fusion.prism.groups")}
+                  {t("fusion.prism.groups")}
                 </div>
                 {folders.map((folder) => (
                   <div key={folder.uuid}>
