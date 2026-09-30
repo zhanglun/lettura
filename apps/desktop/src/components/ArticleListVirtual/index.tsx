@@ -20,6 +20,8 @@ export type ArticleListVirtualProps = {
   dayCounts?: Record<string, number>;
   isEmpty: boolean;
   loading?: boolean;
+  /** 队列身份键：变化 = 换了一个队列，滚动归零（与键盘焦点清零同契约） */
+  resetKey?: string;
   error?: boolean;
   onRetry?: () => void;
   /** 空态分型（由父级按上下文给出）：图标 / 标题 / 提示 / 恢复动作 */
@@ -142,6 +144,7 @@ export const ArticleListVirtual = React.memo(function ArticleListVirtual(
     dayCounts,
     isEmpty,
     loading = false,
+    resetKey,
     error = false,
     onRetry,
     emptyIcon,
@@ -165,6 +168,17 @@ export const ArticleListVirtual = React.memo(function ArticleListVirtual(
     ) as HTMLElement | null;
     el?.scrollIntoView({ block: "nearest" });
   }, [focusedUuid]);
+
+  // 队列身份变化（切载体/源/未读全部/换源）= 换了一个队列：滚动归零。
+  // 分页加载不改 resetKey，不触发；esc 从详情回列表身份未变，位置保留
+  const skipResetRef = useRef(true);
+  useEffect(() => {
+    if (skipResetRef.current) {
+      skipResetRef.current = false;
+      return;
+    }
+    containerRef.current?.scrollTo({ top: 0 });
+  }, [resetKey]);
 
   const renderRow = (article: ArticleResItem, key: string) => (
     <div key={key} data-item-uuid={article.uuid}>

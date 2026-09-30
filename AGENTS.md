@@ -30,14 +30,15 @@ config over prose when something conflicts.
   reload on every load). `GET /api/generated/{key}?params` serves a rule's
   output as RSS (Lettura doubles as a local converter service);
   `GET /api/rules` lists rules. Import via `import_site_rule` command.
-- The frontend talks to the backend over Tauri IPC only
-  (`src/helpers/dataAgent.ts` wraps `invoke` from `@tauri-apps/api/core`,
-  implemented in `src-tauri/src/cmd.rs`). The embedded Actix server
-  (`src-tauri/src/server/`) no longer serves data — it only exposes
-  URL-addressable resources: `GET /api/rules` and `GET /api/generated/{key}`
-  (site-rule output rendered as RSS for external consumers). New data
-  operations = new Tauri command + dataAgent wrapper; do not reintroduce
-  localhost HTTP data calls.
+- Frontend data access is localhost HTTP only (`src/helpers/http.ts`
+  `apiGet/apiPost` against the embedded Actix server on
+  `http://127.0.0.1:{port}/api`, implemented in
+  `src-tauri/src/server/handlers/`). dataAgent was removed (2026-09-30,
+  commit 5a8278b4 reverted the earlier IPC-only collapse). Tauri `invoke`
+  survives only for non-data commands (window/port, OPML, source accounts,
+  site rules, feed add/preview). New data operations = new Actix handler;
+  `GET /api/rules` and `GET /api/generated/{key}` also serve site-rule
+  output as RSS for external consumers.
 - Main frontend entrypoints: `src/index.tsx` defines routes and waits for
   `get_server_port` inside Tauri; `src/App.tsx` is the app shell and Tauri event
   listener; routes are named in `src/config.ts`.

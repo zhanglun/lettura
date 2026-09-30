@@ -36,6 +36,8 @@ export interface FeedSlice {
   setFeed: (feed: FeedResItem | null) => void;
   updateFeed: (uuid: string, updater: any) => void;
   subscribes: FeedResItem[];
+  /** 首次 getSubscribes 落地前为 false——区分「还没加载」和「真的没有订阅」 */
+  subscribesLoaded: boolean;
   setSubscribes: (list: FeedResItem[]) => void;
   getSubscribes: () => any;
   getSubscribesFromStore: () => FeedResItem[];
@@ -206,6 +208,7 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
     }));
   },
   subscribes: [],
+  subscribesLoaded: false,
   setSubscribes: (list: FeedResItem[]) => {
     set(() => ({
       subscribes: list,
@@ -250,6 +253,7 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
       feedList = initUnreadCount(feedList, unreadTotal);
       set(() => ({
         subscribes: feedList || [],
+        subscribesLoaded: true,
       }));
     });
   },

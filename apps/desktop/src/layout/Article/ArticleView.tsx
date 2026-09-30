@@ -33,6 +33,7 @@ import { toast } from "@/helpers/toast";
 import { apiGet, apiPost } from "@/helpers/http";
 import { useQuery } from "@/helpers/parseXML";
 import { useArticle } from "@/hooks/useArticle";
+import { BUCKET_ORDER } from "@/components/ArticleListVirtual/buckets";
 import { View } from "@/layout/Article/View";
 import { HK } from "@/shortcuts";
 import { useBearStore } from "@/stores";
@@ -71,6 +72,7 @@ export function ArticleView() {
       initCollectionMetas: state.initCollectionMetas,
       markArticleListAsRead: state.markArticleListAsRead,
       subscribes: state.subscribes,
+      subscribesLoaded: state.subscribesLoaded,
       userConfig: state.userConfig,
     })),
   );
@@ -116,11 +118,14 @@ export function ArticleView() {
     sourceUuid: sourceFilter?.uuid,
   });
 
-  // 桶收起状态：父级持有（j/k 可达序列随收起过滤）；「更早」积压区默认收起，
+  // 桶收起状态：父级持有（j/k 可达序列随收起过滤）。默认只展开第一个
+  // 非空时间组、其余收起（2026-09-30 用户拍板，取代「全展开除更早」）——
   // 会话级不持久化（日期桶随时间漂移，持久化语义混乱）
   const [collapsedBuckets, setCollapsedBuckets] = useState<Set<string>>(
-    () => new Set(["earlier"]),
+    () => new Set(BUCKET_ORDER),
   );
+  // 默认展开态只应用一次：之后用户手动展开/收起不再干预
+  const defaultExpandApplied = useRef(false);
   const toggleBucket = useCallback((bucket: string) => {
     setCollapsedBuckets((prev) => {
       const next = new Set(prev);
@@ -169,6 +174,7 @@ export function ArticleView() {
   // 注意 esc 从详情回列表不走这里：同一队列，焦点跟随阅读位置是设计内行为。
   const queueIdentity = [
     feedUuid ?? "",
+    sourceFilter?.uuid ?? "",
     isStarred ? "s" : "",
     isToday ? "t" : "",
     store.currentFilter.id,
@@ -179,6 +185,18 @@ export function ArticleView() {
     setFocusIdx(null);
     setFocusStyleSuppressed(false);
   }, [queueIdentity]);
+
+  // 桶计数就绪后：第一个非空时间组默认展开（今天没数据就是昨天，依序）。
+  // 应用一次即封印——之后切载体/源不再重排用户的展开意图
+  useEffect(() => {
+    if (defaultExpandApplied.current || !dayCounts) return;
+    const order: readonly string[] = BUCKET_ORDER;
+    const counts = dayCounts as unknown as Record<string, number>;
+    const firstNonEmpty =
+      order.find((b) => (counts[b] ?? 0) > 0) ?? "today";
+    setCollapsedBuckets(new Set(order.filter((b) => b !== firstNonEmpty)));
+    defaultExpandApplied.current = true;
+  }, [dayCounts]);
 
   // Deep-link：从 URL 恢复文章（面板内详情）
   useEffect(() => {
@@ -588,8 +606,11 @@ export function ArticleView() {
       : []),
   ];
 
+  // reload 闪空修复：boot 时 subscribes 是初始空数组，getSubscribes 异步落地——
+  // 「还没加载」不能当「没有订阅」渲染首次运行引导
   const isFirstRun =
-    DEV_PREVIEW_FIRST_RUN || (store.subscribes?.length ?? 0) === 0;
+    DEV_PREVIEW_FIRST_RUN ||
+    (store.subscribesLoaded === false ? false : (store.subscribes?.length ?? 0) === 0);
   const isClearQuiet =
     !isFirstRun &&
     isAll &&
@@ -732,6 +753,7 @@ export function ArticleView() {
         onRetry={retry}
         dayCounts={dayCounts as Record<string, number> | undefined}
         isEmpty={isEmpty}
+        resetKey={queueIdentity}
         emptyIcon={listEmpty.icon}
         emptyTitle={listEmpty.title}
         emptyHint={listEmpty.hint}

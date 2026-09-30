@@ -193,12 +193,16 @@ function useArticleListChannel(
   // 「已启用但一页都没有」就是首屏在途，同步报 loading，否则列表闪一帧空态
   // （合法空结果 fetch 后会有页对象，list.length=0，不会卡在 loading）
   const pendingFirstPage = initiallyEnabled && visiblePages.length === 0;
+  // 桶通道的播种间隙：initial-sections 已落地（initialLoading 转 false）、
+  // 种子页要下一帧 effect 才进 listCache——这一帧 initial.loading=false 且
+  // 桶页为空，isEmpty 会误真闪一帧空态。种子在手 = 数据已在途中
+  const pendingSeed = !!initialPage && visiblePages.length === 0;
   return {
     rows,
     loaded: rows.length,
     realCount: lastPage?.total,
     hasMore: visiblePages.length === 0 || lastPage?.list.length === PAGE_SIZE,
-    loading: loading || initialLoading || pendingFirstPage,
+    loading: loading || initialLoading || pendingFirstPage || pendingSeed,
     loadMore,
     mutate,
   };
@@ -395,6 +399,7 @@ export function useArticle(props: UseArticleProps) {
     currentFilter.id,
     feedUuid,
     hasNotes,
+    sourceUuid,
     isAll,
     isArchived,
     isReadLater,

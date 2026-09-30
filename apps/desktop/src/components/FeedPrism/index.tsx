@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
-import { HoverCard } from "@astryxdesign/core/HoverCard";
+import { Popover } from "@astryxdesign/core/Popover";
 import { RouteConfig } from "@/config";
 import type { FeedResItem } from "@/db";
 import { getHostLabel } from "@/helpers/feedMeta";
@@ -14,9 +14,10 @@ function flattenFeeds(items: FeedResItem[]): FeedResItem[] {
   );
 }
 
-/** 源棱镜（list-prism.html 契约，2026-09-30 改版）：过滤条右端的源漏斗。
- *  悬停出源清单（Astryx HoverCard，搜索 + 分组 + 徽标）；选源 = 当前列表
- *  原地过滤（onSelect），不再跳转源详情——未读流的队列身份不因筛选改变。 */
+/** 源棱镜（list-prism.html 契约，2026-09-30 二次改版）：过滤条右端的源漏斗。
+ *  点击弹出源清单（Astryx Popover，搜索 + 分组 + 徽标；用户拍板：hover 误触
+ *  频繁，点击才是明确意图）；选源 = 当前列表原地过滤（onSelect），不再跳转
+ *  源详情——未读流的队列身份不因筛选改变。 */
 export function FeedPrism({
   selectedUuid,
   onSelect,
@@ -26,7 +27,10 @@ export function FeedPrism({
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  // Popover 非受控（click 归库管）；open 仅镜像状态用于聚焦搜索框，
+  // 选中后 bump key 重挂载即收卡。
   const [open, setOpen] = useState(false);
+  const [cardKey, setCardKey] = useState(0);
   const [query, setQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -83,12 +87,12 @@ export function FeedPrism({
     if (onSelect) {
       // 原地过滤：只改当前列表的 feed_uuid 条件，不动路由
       onSelect(f);
-      setOpen(false);
       setQuery("");
+      setCardKey((k) => k + 1); // 重挂载收卡
       return;
     }
-    setOpen(false);
     setQuery("");
+    setCardKey((k) => k + 1);
     navigate(
       `${RouteConfig.LOCAL_FEED.replace(/:uuid/, f!.uuid)}?feedUuid=${f!.uuid}&feedUrl=${encodeURIComponent(f!.feed_url)}&type=${f!.item_type}`,
     );
@@ -184,14 +188,13 @@ export function FeedPrism({
 
   return (
     <span className="fusion-prism">
-      <HoverCard
-        isOpen={open}
+      <Popover
+        key={cardKey}
         onOpenChange={setOpen}
         placement="below"
         alignment="end"
-        delay={150}
-        hideDelay={120}
         label={t("fusion.prism.open")}
+        role="none"
         content={listContent}
       >
         <button
@@ -215,7 +218,7 @@ export function FeedPrism({
           )}
           <span className="chev">▾</span>
         </button>
-      </HoverCard>
+      </Popover>
     </span>
   );
 }
