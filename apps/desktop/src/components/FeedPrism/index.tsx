@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
+import { HoverCard } from "@astryxdesign/core/HoverCard";
 import { RouteConfig } from "@/config";
 import type { FeedResItem } from "@/db";
 import { getHostLabel } from "@/helpers/feedMeta";
@@ -13,15 +14,20 @@ function flattenFeeds(items: FeedResItem[]): FeedResItem[] {
   );
 }
 
-/** 源棱镜（list-prism.html 契约）：过滤条右端的源漏斗。
- *  默认露出最近更新的源图标当引力点；点开轻量源清单（搜索 + 分组 + 徽标），
- *  选源 = 透镜态（onSelect）。不常驻导航，268 源时列表仍占满宽度。 */
-export function FeedPrism({ selectedUuid }: { selectedUuid?: string }) {
+/** 源棱镜（list-prism.html 契约，2026-09-30 改版）：过滤条右端的源漏斗。
+ *  悬停出源清单（Astryx HoverCard，搜索 + 分组 + 徽标）；选源 = 当前列表
+ *  原地过滤（onSelect），不再跳转源详情——未读流的队列身份不因筛选改变。 */
+export function FeedPrism({
+  selectedUuid,
+  onSelect,
+}: {
+  selectedUuid?: string;
+  onSelect?: (f: FeedResItem | null) => void;
+}) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const rootRef = useRef<HTMLSpanElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const store = useBearStore(
@@ -30,26 +36,6 @@ export function FeedPrism({ selectedUuid }: { selectedUuid?: string }) {
     })),
   );
 
-  // 外点关闭 + esc 收起（全局 esc 退回已在列表热键里处理，这里 stopPropagation）
-  useEffect(() => {
-    if (!open) return;
-    const onDown = (e: MouseEvent) => {
-      if (!rootRef.current?.contains(e.target as Node)) setOpen(false);
-    };
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        e.stopPropagation();
-        setOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", onDown);
-    document.addEventListener("keydown", onKey, true);
-    return () => {
-      document.removeEventListener("mousedown", onDown);
-      document.removeEventListener("keydown", onKey, true);
-    };
-  }, [open]);
-
   useEffect(() => {
     if (open) inputRef.current?.focus();
   }, [open]);
@@ -57,6 +43,11 @@ export function FeedPrism({ selectedUuid }: { selectedUuid?: string }) {
   const feeds = useMemo(
     () => flattenFeeds(store.subscribes || []),
     [store.subscribes],
+  );
+
+  const selectedFeed = useMemo(
+    () => feeds.find((f) => f.uuid === selectedUuid) ?? null,
+    [feeds, selectedUuid],
   );
 
   // 最近更新的 3 个源（按源内最新文章时间近似：用 last_sync_date 代替——
@@ -88,11 +79,18 @@ export function FeedPrism({ selectedUuid }: { selectedUuid?: string }) {
     [store.subscribes],
   );
 
-  const selectFeed = (f: FeedResItem) => {
+  const selectFeed = (f: FeedResItem | null) => {
+    if (onSelect) {
+      // 原地过滤：只改当前列表的 feed_uuid 条件，不动路由
+      onSelect(f);
+      setOpen(false);
+      setQuery("");
+      return;
+    }
     setOpen(false);
     setQuery("");
     navigate(
-      `${RouteConfig.LOCAL_FEED.replace(/:uuid/, f.uuid)}?feedUuid=${f.uuid}&feedUrl=${encodeURIComponent(f.feed_url)}&type=${f.item_type}`,
+      `${RouteConfig.LOCAL_FEED.replace(/:uuid/, f!.uuid)}?feedUuid=${f!.uuid}&feedUrl=${encodeURIComponent(f!.feed_url)}&type=${f!.item_type}`,
     );
   };
 
@@ -103,107 +101,121 @@ export function FeedPrism({ selectedUuid }: { selectedUuid?: string }) {
       (f.title?.charAt(0)?.toUpperCase() ?? "F")
     );
 
-  return (
-    <span className="fusion-prism" ref={rootRef}>
-      <button
-        type="button"
-        className={`fusion-prism-btn${open || selectedUuid ? " on" : ""}`}
-        onClick={() => setOpen((v) => !v)}
-        aria-label={t("fusion.prism.open")}
-        title={t("fusion.prism.open")}
-      >
-        <span className="ficons">
-          {recentFeeds.map((f) => (
-            <span className="fmini" key={f.uuid}>
-              {initials(f)}
-            </span>
-          ))}
-        </span>
-        {t("fusion.prism.label")} <span className="n">{feeds.length}</span>
-        <span className="chev">▾</span>
-      </button>
+  const listContent = (
+    <div className="fusion-prism-pop">
+      <div className="fusion-prism-search">
+        <input
+          ref={inputRef}
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder={t("fusion.prism.search_placeholder")}
+        />
+      </div>
+      <div className="fusion-prism-scroll">
+        <button
+          type="button"
+          className="fusion-prism-scope"
+          onClick={() => selectFeed(null)}
+        >
+          <span className="ic">
+            <i />
+          </span>
+          {t("fusion.prism.all")}
+        </button>
 
-      {open && (
-        <div className="fusion-prism-pop">
-          <div className="fusion-prism-search">
-            <input
-              ref={inputRef}
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder={t("fusion.prism.search_placeholder")}
+        {folders.length > 0 && (
+          <>
+            <div className="fusion-prism-h">
+              {t("fusion.prism.groups")}
+            </div>
+            {folders.map((folder) => (
+              <div key={folder.uuid}>
+                <div className="fusion-prism-h">{folder.title}</div>
+                {(folder.children ?? [])
+                  .filter(matchesPrism(query))
+                  .map((f) => (
+                    <PrismRow
+                      key={f.uuid}
+                      feed={f}
+                      onSelect={selectFeed}
+                      initials={initials}
+                      active={f.uuid === selectedUuid}
+                    />
+                  ))}
+              </div>
+            ))}
+            {rootFeeds(filtered, store.subscribes).length > 0 && (
+              <div className="fusion-prism-h">{t("feeds.ungrouped")}</div>
+            )}
+            {rootFeeds(filtered, store.subscribes).map((f) => (
+              <PrismRow
+                key={f.uuid}
+                feed={f}
+                onSelect={selectFeed}
+                initials={initials}
+                active={f.uuid === selectedUuid}
+              />
+            ))}
+          </>
+        )}
+
+        {folders.length === 0 &&
+          filtered.map((f) => (
+            <PrismRow
+              key={f.uuid}
+              feed={f}
+              onSelect={selectFeed}
+              initials={initials}
+              active={f.uuid === selectedUuid}
             />
-          </div>
-          <div className="fusion-prism-scroll">
-            <button
-              type="button"
-              className="fusion-prism-scope"
-              onClick={() => {
-                setOpen(false);
-                setQuery("");
-                navigate(RouteConfig.LOCAL_ALL);
-              }}
-            >
-              <span className="ic">
-                <i />
+          ))}
+
+        {filtered.length === 0 && folders.length === 0 && (
+          <div className="fusion-prism-h">{t("fusion.prism.empty")}</div>
+        )}
+      </div>
+      <div className="fusion-prism-foot">
+        <span>
+          <b>esc</b> {t("fusion.prism.esc_close")}
+        </span>
+      </div>
+    </div>
+  );
+
+  return (
+    <span className="fusion-prism">
+      <HoverCard
+        isOpen={open}
+        onOpenChange={setOpen}
+        placement="below"
+        alignment="end"
+        delay={150}
+        hideDelay={120}
+        label={t("fusion.prism.open")}
+        content={listContent}
+      >
+        <button
+          type="button"
+          className={`fusion-prism-btn${selectedUuid ? " on" : ""}`}
+          aria-label={t("fusion.prism.open")}
+        >
+          {selectedFeed ? (
+            <span className="sel">{selectedFeed.title}</span>
+          ) : (
+            <>
+              <span className="ficons">
+                {recentFeeds.map((f) => (
+                  <span className="fmini" key={f.uuid}>
+                    {initials(f)}
+                  </span>
+                ))}
               </span>
-              {t("fusion.prism.all")}
-            </button>
-
-            {folders.length > 0 && (
-              <>
-                <div className="fusion-prism-h">
-                  {t("fusion.prism.groups")}
-                </div>
-                {folders.map((folder) => (
-                  <div key={folder.uuid}>
-                    <div className="fusion-prism-h">{folder.title}</div>
-                    {(folder.children ?? [])
-                      .filter(matchesPrism(query))
-                      .map((f) => (
-                        <PrismRow
-                          key={f.uuid}
-                          feed={f}
-                          onSelect={selectFeed}
-                          initials={initials}
-                        />
-                      ))}
-                  </div>
-                ))}
-                {rootFeeds(filtered, store.subscribes).length > 0 && (
-                  <div className="fusion-prism-h">{t("feeds.ungrouped")}</div>
-                )}
-                {rootFeeds(filtered, store.subscribes).map((f) => (
-                  <PrismRow
-                    key={f.uuid}
-                    feed={f}
-                    onSelect={selectFeed}
-                    initials={initials}
-                  />
-                ))}
-              </>
-            )}
-
-            {folders.length === 0 &&
-              filtered.map((f) => (
-                <PrismRow
-                  key={f.uuid}
-                  feed={f}
-                  onSelect={selectFeed}
-                  initials={initials}
-                />
-              ))}
-
-            {filtered.length === 0 && folders.length === 0 && (
-              <div className="fusion-prism-h">{t("fusion.prism.empty")}</div>
-            )}
-          </div>
-          <div className="fusion-prism-foot">
-            <span>
-              <b>esc</b> {t("fusion.prism.esc_close")}
-            </span>
-          </div>
-        </div>
-      )}
+              {t("fusion.prism.label")} <span className="n">{feeds.length}</span>
+            </>
+          )}
+          <span className="chev">▾</span>
+        </button>
+      </HoverCard>
     </span>
   );
 }
@@ -226,16 +238,18 @@ function PrismRow({
   feed,
   onSelect,
   initials,
+  active,
 }: {
   feed: FeedResItem;
-  onSelect: (f: FeedResItem) => void;
+  onSelect: (f: FeedResItem | null) => void;
   initials: (f: FeedResItem) => React.ReactNode;
+  active?: boolean;
 }) {
   const unread = feed.unread ?? 0;
   return (
     <button
       type="button"
-      className="fusion-prism-f"
+      className={`fusion-prism-f${active ? " on" : ""}`}
       onClick={() => onSelect(feed)}
       title={getHostLabel(feed)}
     >
