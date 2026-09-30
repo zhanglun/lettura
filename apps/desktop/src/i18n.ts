@@ -1,5 +1,6 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
+import { getSavedLang } from "./helpers/lang";
 import en from "./locales/en.json";
 import zh from "./locales/zh.json";
 
@@ -15,7 +16,7 @@ const resources = {
   },
 };
 
-const currentLang = window.localStorage.getItem("lang") || navigator.language;
+const currentLang = getSavedLang();
 
 i18n
   .use(initReactI18next) // passes i18n down to react-i18next

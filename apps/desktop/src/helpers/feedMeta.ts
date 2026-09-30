@@ -1,12 +1,11 @@
 import { formatDistanceToNow } from "date-fns";
 import { zhCN } from "date-fns/locale";
+import { getSavedLang } from "./lang";
 
-/** 界面语言是否中文（与 i18n.ts 的语言源一致：lang localStorage → navigator）。
- *  不直接 import i18n 实例——避免把 i18n 初始化拖进纯工具模块的依赖树 */
+/** 界面语言是否中文。不直接 import i18n 实例——避免把 i18n 初始化
+ *  拖进纯工具模块的依赖树；语言读取统一走 helpers/lang */
 function isZhUi(): boolean {
-  const lang =
-    window.localStorage.getItem("lang") || navigator.language || "en";
-  return lang.startsWith("zh");
+  return getSavedLang().startsWith("zh");
 }
 
 /** 相对时间（跟随界面语言）：date-fns 默认英文，中文模式必须传 zhCN locale */

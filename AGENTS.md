@@ -39,6 +39,12 @@ config over prose when something conflicts.
   site rules, feed add/preview). New data operations = new Actix handler;
   `GET /api/rules` and `GET /api/generated/{key}` also serve site-rule
   output as RSS for external consumers.
+- Frontend data flow is two-lane (keep it that way): article list queries go
+  through `src/hooks/useArticle.ts` (module-level cache + in-flight dedupe,
+  single source of truth for list state); command-style POSTs may call
+  `apiPost` directly, then refresh via `store.getSubscribes()` and/or
+  `busChannel.emit("getChannels")` (AppLayout listens once). Do not add a
+  third caching layer or re-introduce list state into the Zustand slices.
 - Main frontend entrypoints: `src/index.tsx` defines routes and waits for
   `get_server_port` inside Tauri; `src/App.tsx` is the app shell and Tauri event
   listener; routes are named in `src/config.ts`.
