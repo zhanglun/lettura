@@ -71,19 +71,3 @@ export const showErrorToast = (
 
   toast.error(message);
 };
-
-export const showSuccessToast = (message: string): void => {
-  toast.success(message);
-};
-
-export const withErrorToast = async <T>(
-  promise: Promise<T>,
-  fallbackMessage?: string,
-): Promise<T | null> => {
-  try {
-    return await promise;
-  } catch (error) {
-    showErrorToast(error, fallbackMessage);
-    return null;
-  }
-};

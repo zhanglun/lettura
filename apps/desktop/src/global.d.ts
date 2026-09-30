@@ -13,8 +13,6 @@ declare interface LocalProxy {
   enable?: boolean;
 }
 
-declare type ProxyRule = string[];
-
 declare interface CustomizeStyle {
   typeface: string;
   font_size: number;

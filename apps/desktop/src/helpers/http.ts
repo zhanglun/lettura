@@ -30,10 +30,6 @@ export function apiPost<T>(path: string, body: unknown) {
   return apiFetch<T>(path, { method: "POST", body: JSON.stringify(body) });
 }
 
-export function apiPut<T>(path: string, body: unknown) {
-  return apiFetch<T>(path, { method: "PUT", body: JSON.stringify(body) });
-}
-
 export function apiDelete<T>(path: string, params?: Record<string, unknown>) {
   const query = new URLSearchParams();
   for (const [key, value] of Object.entries(params ?? {})) {

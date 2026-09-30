@@ -12,9 +12,3 @@ export enum ArticleReadLaterStatus {
   UNSAVED = 0,
   SAVED = 1,
 }
-export enum SettingTabKey {
-  SUBSCRIPTIONS = "subscriptions",
-  SOURCES = "sources",
-  APPEARANCE = "appearance",
-  BEHAVIOR = "behavior",
-}

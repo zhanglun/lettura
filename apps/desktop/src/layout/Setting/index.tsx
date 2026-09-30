@@ -29,7 +29,7 @@ import {
   Trash2,
   Upload,
 } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -166,7 +166,7 @@ export function SettingPage() {
 
   // 左锚点导航滚动：固定 320ms easeOutCubic；scrollIntoView smooth 交给浏览器
   // 的时长不可控（WebKit 主线程驱动、随距离变长），页面变高后点击明显发顿
-  const scrollTo = (id: string) => {
+  const scrollTo = useCallback((id: string) => {
     const el = bodyRef.current;
     if (!el) return;
     const node = el.querySelector(`#${id}`);
@@ -194,13 +194,12 @@ export function SettingPage() {
       if (p < 1) scrollAnim.current = requestAnimationFrame(step);
     };
     scrollAnim.current = requestAnimationFrame(step);
-  };
+  }, []);
 
   // 深链 ?tab=xxx（源队列 / 右键菜单的「管理订阅」入口）：进入后滚到对应区块
   useEffect(() => {
     if (tabParam) scrollTo(tabParam);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tabParam]);
+  }, [tabParam, scrollTo]);
 
   // 滚动侦测反向点亮锚点导航；末段在触底时兜底选中（settings.html 契约）。
   // 区块节点挂载时缓存一次——每帧 6 次 querySelector 在内联订阅区块后已能感知

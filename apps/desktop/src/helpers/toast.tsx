@@ -42,6 +42,3 @@ export const toast: {
   error: (b) => show(b, "error"),
   message: (b) => show(b),
 };
-
-/** 组件内 hook（直接复用 Astryx useToast） */
-export { useToast } from "@astryxdesign/core/Toast";

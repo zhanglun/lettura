@@ -95,7 +95,6 @@ export const useAudioPlayer = () => {
       }
       audioRef.current = null;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [store.currentTrack?.uuid]);
 
   // Handle track changes and set up audio event listeners
@@ -261,7 +260,6 @@ export const useAudioPlayer = () => {
     handle("seekforward", () => nudge(30));
     handle("previoustrack", () => state().playPrev());
     handle("nexttrack", () => state().playNext());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [store.currentTrack?.uuid]);
 
   return {

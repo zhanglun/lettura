@@ -93,14 +93,16 @@ config over prose when something conflicts.
   `src/helpers/__tests__/`. Rust tests exist in files such as
   `src-tauri/src/cmd.rs` and `src-tauri/src/core/scheduler.rs`.
 
-## Styling, PWA, and i18n
+## Styling and i18n
 
 - Tailwind v3 + Radix UI theme tokens are configured in `tailwind.config.js`;
   dark mode is class/data-attribute based and the app toggles `body.dark-theme`.
 - shadcn-style components live in `src/components/ui/`; prefer the existing
   `cn` helper in `src/helpers/cn.tsx` when composing classes there.
-- PWA is enabled with `vite-plugin-pwa` `injectManifest`; service worker source
-  is `src/worker/sw.ts`.
+- The 0.2.0 UI is carried by `src/styles/fusion.css` (global `fusion-*`
+  classes), layered via `src/index.css` → `styles/index.css`; Astryx themes
+  come from the npm `@astryxdesign/theme-*` packages. No PWA/service worker
+  (vite-plugin-pwa was removed; ignore older notes mentioning it).
 - i18n is initialized in `src/i18n.ts`; locale files are
   `src/locales/en.json` and `src/locales/zh.json`.
 

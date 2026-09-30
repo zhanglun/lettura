@@ -232,7 +232,6 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
           });
       },
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [store, t, navigate, onOpenChange]);
 
   return (

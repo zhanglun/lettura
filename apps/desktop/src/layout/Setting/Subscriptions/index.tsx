@@ -302,7 +302,6 @@ export const SubscriptionsSection = memo(function SubscriptionsSection() {
       list.push({ uuid: folder.uuid, title: folder.title, feeds, folder });
     }
     return list;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sourceItems, searchQuery, t]);
 
   const totalFeeds = groups.reduce((sum, g) => sum + g.feeds.length, 0);
