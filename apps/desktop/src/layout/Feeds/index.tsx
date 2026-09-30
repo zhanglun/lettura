@@ -60,10 +60,8 @@ function SourceRow({
         <span className="fusion-b-name" title={feed.title}>
           {feed.title}
         </span>
-        <span
-          className={clsx("fusion-b-host", broken && "is-fail")}
-          title={feed.link || getHostLabel(feed)}
-        >
+        {/* 域名不给原生 tooltip：截断即省略号，悬停弹系统灰块压在行清单上是噪音 */}
+        <span className={clsx("fusion-b-host", broken && "is-fail")}>
           {getHostLabel(feed)}
           {broken ? ` · ${t("fusion.browse.sync_failed")}` : ""}
         </span>
@@ -104,16 +102,19 @@ export function FeedsBrowse() {
     store.getSubscribes();
   }, []);
 
-  // 恢复滚动位置；卸载时记住焦点与滚动
+  // 恢复滚动位置；卸载时记住焦点与滚动。只在挂载/卸载各跑一次——
+  // 之前挂在 [focusUuid, collapsed] 上，每次变化 save+restore 互抵白跑
+  const collapsedRef = useRef(collapsed);
+  collapsedRef.current = collapsed;
   useEffect(() => {
     const el = scrollRef.current;
     if (el) el.scrollTop = browseMemory.scrollTop;
     return () => {
       browseMemory.focusUuid = null;
       browseMemory.scrollTop = scrollRef.current?.scrollTop ?? 0;
-      browseMemory.collapsed = new Set(collapsed);
+      browseMemory.collapsed = new Set(collapsedRef.current);
     };
-  }, [focusUuid, collapsed]);
+  }, []);
 
   const groups = useMemo(() => {
     const rootFeeds = store.subscribes.filter((i) => i.item_type !== "folder");

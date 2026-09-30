@@ -2,8 +2,8 @@ import { IconButton } from "@astryxdesign/core/IconButton";
 import { X } from "lucide-react";
 import type React from "react";
 import { useTranslation } from "react-i18next";
+import { formatDuration } from "@/helpers/articleContent";
 import type { AudioTrack } from "./index";
-import { formatTime } from "./utils";
 
 interface QueueRowProps {
   track: AudioTrack;
@@ -66,7 +66,7 @@ export const QueueRow: React.FC<QueueRowProps> = ({
         )}
       </span>
       <span className="q-d">
-        {track.duration ? formatTime(track.duration) : ""}
+        {track.duration ? formatDuration(track.duration) : ""}
       </span>
       <IconButton
         size="sm"

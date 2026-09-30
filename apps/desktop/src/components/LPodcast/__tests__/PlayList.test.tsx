@@ -57,7 +57,8 @@ describe("PlayList", () => {
     expect(rows[0].className).toContain("now");
     expect(rows[0].textContent).toContain("podcast.playing");
     expect(rows[1].className).not.toContain("now");
-    expect(rows[1].querySelector(".q-d")?.textContent).toBe("60:00");
+    // 时长格式化统一走 formatDuration：≥1h 显示 h:mm:ss（与文章角标同口径）
+    expect(rows[1].querySelector(".q-d")?.textContent).toBe("1:00:00");
   });
 
   it("空队列走引导态", () => {

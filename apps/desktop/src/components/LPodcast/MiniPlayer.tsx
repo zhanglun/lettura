@@ -11,10 +11,11 @@ import {
 } from "lucide-react";
 import type React from "react";
 import { useTranslation } from "react-i18next";
+import { formatDuration } from "@/helpers/articleContent";
 import type { AudioTrack } from "./index";
 import { PlayListPopover } from "./PlayListPopover";
 import { SleepControl } from "./SleepControl";
-import { formatTime, PLAYER_MOTION } from "./utils";
+import { PLAYER_MOTION } from "./utils";
 
 const RATES = [1, 1.25, 1.5, 2];
 
@@ -101,12 +102,12 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({
         </button>
 
         <div className="fusion-ptrack">
-          <span className="pt">{formatTime(progress)}</span>
+          <span className="pt">{formatDuration(progress)}</span>
           <div className="fusion-pbar" onClick={handleBarClick}>
             <b style={{ width: `${pct}%` }} />
             <i style={{ left: `${pct}%` }} />
           </div>
-          <span className="pt">{formatTime(duration)}</span>
+          <span className="pt">{formatDuration(duration)}</span>
         </div>
 
         {/* 右簇：倍速 + 睡眠定时 + 播放列表 + 放大 + 收起 */}

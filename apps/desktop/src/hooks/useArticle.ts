@@ -71,12 +71,8 @@ export interface UseArticleProps {
   /** 原地源过滤（未读页源棱镜）：只往查询里加 feed_uuid，不切队列帧身份 */
   sourceUuid?: string;
   type?: string;
-  collectionUuid?: string | null;
-  tagUuid?: string | null;
+  /** 外部覆盖星标过滤；null = 不加星标条件，undefined 跟随当前路由 */
   isStarred?: number | boolean | null;
-  isArchived?: number | boolean;
-  isReadLater?: number | boolean;
-  hasNotes?: boolean;
   carrier?: string;
   /** undefined follows the global filter; null means all read states. */
   readStatus?: number | null;
@@ -140,7 +136,10 @@ function useArticleListChannel(
     const requestKey = stableKey(filter);
     let request = listInflight.get(requestKey);
     if (!request) {
-      request = apiGet<{ list: ArticleResItem[]; total: number }>("/articles", filter);
+      request = apiGet<{ list: ArticleResItem[]; total: number }>(
+        "/articles",
+        filter,
+      );
       listInflight.set(requestKey, request);
     }
 
@@ -185,8 +184,7 @@ function useArticleListChannel(
     registerMutate?.(bucket ?? "queue", mutate);
   }, [bucket, mutate, registerMutate]);
 
-  const visiblePages =
-    pagesKey === key ? pages : (listCache.get(key) ?? []);
+  const visiblePages = pagesKey === key ? pages : (listCache.get(key) ?? []);
   const rows = visiblePages.flatMap((page) => page.list);
   const lastPage = visiblePages.at(-1);
   // 键切换（切筛选）瞬间 effect 还没跑 loadMore，state 的 loading 仍是 false——
@@ -266,9 +264,10 @@ function useArticleInitialSections(
       });
   }, [enabled, key, query, retryToken]);
 
-  const currentSections = sectionsKey === key
-    ? sections
-    : initialSectionsCache.get(key) ?? new Map();
+  const currentSections =
+    sectionsKey === key
+      ? sections
+      : (initialSectionsCache.get(key) ?? new Map());
   const currentError = initialSectionsErrors.get(key) ?? error;
   const currentLoading =
     enabled && !initialSectionsCache.has(key) && !currentError;
@@ -296,8 +295,8 @@ function useArticleSummary(
   enabled: boolean,
 ) {
   const key = params ? stableKey(params) : "";
-  const [data, setData] = useState<ArticleSummary | undefined>(
-    () => (key ? summaryCache.get(key) : undefined),
+  const [data, setData] = useState<ArticleSummary | undefined>(() =>
+    key ? summaryCache.get(key) : undefined,
   );
   const [dataKey, setDataKey] = useState(key);
 
@@ -345,12 +344,7 @@ export function useArticle(props: UseArticleProps) {
     feedUuid,
     sourceUuid,
     type,
-    collectionUuid,
-    tagUuid,
     isStarred: isStarredOverride,
-    isArchived,
-    isReadLater,
-    hasNotes,
     carrier,
     readStatus,
   } = props;
@@ -385,37 +379,29 @@ export function useArticle(props: UseArticleProps) {
       is_today: isToday ? 1 : undefined,
       is_all: isAll ? 1 : undefined,
       is_starred: isStarredVal,
-      collection_uuid: collectionUuid || undefined,
-      tag_uuid: tagUuid || undefined,
-      is_archived: isArchived === undefined ? undefined : isArchived ? 1 : 0,
-      is_read_later:
-        isReadLater === undefined ? undefined : isReadLater ? 1 : 0,
-      has_notes: hasNotes ? 1 : undefined,
       carrier: carrier && carrier !== "all" ? carrier : undefined,
     });
   }, [
     carrier,
-    collectionUuid,
     currentFilter.id,
     feedUuid,
-    hasNotes,
     sourceUuid,
     isAll,
-    isArchived,
-    isReadLater,
     isStarred,
     isStarredOverride,
     isToday,
     readStatus,
-    tagUuid,
     type,
   ]);
 
   const isQueue = !!feedUuid;
   const mutatorsRef = useRef(new Map<string, ArticleMutator>());
-  const registerMutate = useCallback((bucket: string, mutate: ArticleMutator) => {
-    mutatorsRef.current.set(bucket, mutate);
-  }, []);
+  const registerMutate = useCallback(
+    (bucket: string, mutate: ArticleMutator) => {
+      mutatorsRef.current.set(bucket, mutate);
+    },
+    [],
+  );
 
   const initial = useArticleInitialSections(query, !isQueue);
   // During a filter switch, the hook state still contains the previous query's
@@ -547,26 +533,27 @@ export function useArticle(props: UseArticleProps) {
       }));
 
   const articles = sections.flatMap((section) => section.rows);
-  const isLoading = isQueue ? queue.loading : initial.loading || sections.some((s) => s.loading);
+  const isLoading = isQueue
+    ? queue.loading
+    : initial.loading || sections.some((s) => s.loading);
   const error = isQueue ? null : initial.error;
-  const isEmpty = !isLoading && !error && initial.ready && articles.length === 0;
+  const isEmpty =
+    !isLoading && !error && initial.ready && articles.length === 0;
   const mutate = useCallback(
     (fn: ArticleUpdater) => {
       if (isQueue) queue.mutate(fn);
-      else for (const mutateBucket of mutatorsRef.current.values()) mutateBucket(fn);
+      else
+        for (const mutateBucket of mutatorsRef.current.values())
+          mutateBucket(fn);
     },
     [isQueue, queue.mutate],
   );
-  const mutateBucket = useCallback(
-    (bucket: string, fn: ArticleUpdater) => {
-      mutatorsRef.current.get(bucket)?.(fn);
-    },
-    [],
-  );
+  const mutateBucket = useCallback((bucket: string, fn: ArticleUpdater) => {
+    mutatorsRef.current.get(bucket)?.(fn);
+  }, []);
 
   return {
     sections,
-    articles,
     total: isQueue ? (queue.realCount ?? 0) : (globalSummary?.total ?? 0),
     carrierCounts,
     dayCounts,

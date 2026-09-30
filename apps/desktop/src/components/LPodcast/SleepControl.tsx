@@ -4,9 +4,9 @@ import type React from "react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useShallow } from "zustand/react/shallow";
+import { formatDuration } from "@/helpers/articleContent";
 import { useBearStore } from "@/stores";
 import { SLEEP_STEPS, type SleepTimer } from "@/stores/createPodcastSlice";
-import { formatTime } from "./utils";
 
 const OFF = "off";
 
@@ -51,7 +51,7 @@ export const SleepControl: React.FC = () => {
   const remaining = useRemainingSeconds(sleepTimer);
   const title =
     remaining !== null
-      ? t("podcast.sleep.remaining", { time: formatTime(remaining) })
+      ? t("podcast.sleep.remaining", { time: formatDuration(remaining) })
       : t("podcast.sleep.title");
 
   const current = sleepTimer ? String(sleepTimer.minutes) : OFF;
@@ -83,7 +83,9 @@ export const SleepControl: React.FC = () => {
           <>
             <MoonIcon />
             {remaining !== null && (
-              <span className="fusion-chip-txt">{formatTime(remaining)}</span>
+              <span className="fusion-chip-txt">
+                {formatDuration(remaining)}
+              </span>
             )}
           </>
         ),

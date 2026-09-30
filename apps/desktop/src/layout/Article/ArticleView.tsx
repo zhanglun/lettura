@@ -12,7 +12,6 @@ import {
   Mail,
   Podcast,
   RefreshCw,
-  SearchX,
   Star,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -21,6 +20,7 @@ import { useTranslation } from "react-i18next";
 import { useMatch, useNavigate, useParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 import { ArticleListVirtual } from "@/components/ArticleListVirtual";
+import { BUCKET_ORDER } from "@/components/ArticleListVirtual/buckets";
 import { ArticleDialogView } from "@/components/ArticleView/DialogView";
 import type { ScrollBoxRefObject } from "@/components/ArticleView/ScrollBox";
 import { FeedPrism } from "@/components/FeedPrism";
@@ -29,11 +29,10 @@ import { RouteConfig } from "@/config";
 import type { ArticleResItem, FeedResItem } from "@/db";
 import { retainArticleAfterRead } from "@/helpers/articleHelpers";
 import { showErrorToast } from "@/helpers/errorHandler";
-import { toast } from "@/helpers/toast";
 import { apiGet, apiPost } from "@/helpers/http";
 import { useQuery } from "@/helpers/parseXML";
+import { toast } from "@/helpers/toast";
 import { useArticle } from "@/hooks/useArticle";
-import { BUCKET_ORDER } from "@/components/ArticleListVirtual/buckets";
 import { View } from "@/layout/Article/View";
 import { HK } from "@/shortcuts";
 import { useBearStore } from "@/stores";
@@ -55,8 +54,6 @@ export function ArticleView() {
     useShallow((state) => ({
       article: state.article,
       setArticle: state.setArticle,
-      articleDialogViewStatus: state.articleDialogViewStatus,
-      setArticleDialogViewStatus: state.setArticleDialogViewStatus,
       viewMeta: state.viewMeta,
       collectionMeta: state.collectionMeta,
       expandedArticleUuid: state.expandedArticleUuid,
@@ -89,10 +86,12 @@ export function ArticleView() {
   const detailScrollRef = useRef<ScrollBoxRefObject>(null);
   // 聚焦仅在交互（j/k）后建立：首行不再默认带选中洗色
   const [focusIdx, setFocusIdx] = useState<number | null>(null);
+  // 光标位建立但样式压住：首行接收焦点时不亮（见 moveFocus 的 establishing 分支），
+  // 任何后续移动/换向都恢复正常焦点样式
+  const [focusStyleSuppressed, setFocusStyleSuppressed] = useState(false);
 
   const {
     sections,
-    articles,
     total,
     carrierCounts,
     refreshCarrierCounts,
@@ -187,13 +186,22 @@ export function ArticleView() {
   }, [queueIdentity]);
 
   // 桶计数就绪后：第一个非空时间组默认展开（今天没数据就是昨天，依序）。
-  // 应用一次即封印——之后切载体/源不再重排用户的展开意图
+  // 封印作用域 = 队列帧（未读/星标/历史/源队列互不继承——星标没有「今天」桶，
+  // 继承未读的展开态会让它整页全收起，2026-09-30 用户实测）；
+  // 同一帧内切载体/源棱镜不重排用户的展开意图
+  const viewIdentity = [
+    feedUuid ?? "",
+    isStarred ? "s" : "",
+    isToday ? "t" : "",
+  ].join("|");
+  useEffect(() => {
+    defaultExpandApplied.current = false;
+  }, [viewIdentity]);
   useEffect(() => {
     if (defaultExpandApplied.current || !dayCounts) return;
     const order: readonly string[] = BUCKET_ORDER;
     const counts = dayCounts as unknown as Record<string, number>;
-    const firstNonEmpty =
-      order.find((b) => (counts[b] ?? 0) > 0) ?? "today";
+    const firstNonEmpty = order.find((b) => (counts[b] ?? 0) > 0) ?? "today";
     setCollapsedBuckets(new Set(order.filter((b) => b !== firstNonEmpty)));
     defaultExpandApplied.current = true;
   }, [dayCounts]);
@@ -223,15 +231,9 @@ export function ArticleView() {
     }
   }, [feedUuid, isArticleRoute]);
 
-  const handleArticleRead = useCallback(
-    (nextArticle: ArticleResItem) => {
-      mutate((pages: any) => retainArticleAfterRead(pages, nextArticle));
-      scheduleCountsRefresh();
-    },
-    [mutate, scheduleCountsRefresh],
-  );
-
-  const handleArticleUpdate = useCallback(
+  // 单篇状态变化（已读/星标等）统一走这里：写回列表缓存 + 防抖刷新载体计数。
+  // 列表行 onArticleRead 与各处 onArticleUpdate 的处理本就一字不差，共用一份
+  const applyArticleUpdate = useCallback(
     (updated: ArticleResItem) => {
       mutate((pages: any) => retainArticleAfterRead(pages, updated));
       scheduleCountsRefresh();
@@ -254,11 +256,11 @@ export function ArticleView() {
     (a: ArticleResItem) => {
       if (a.read_status === ArticleReadStatus.UNREAD) {
         store.updateArticleStatus(a, ArticleReadStatus.READ);
-        handleArticleRead({ ...a, read_status: ArticleReadStatus.READ });
+        applyArticleUpdate({ ...a, read_status: ArticleReadStatus.READ });
       }
       store.setExpandedArticleUuid(a.uuid);
     },
-    [store, handleArticleRead],
+    [store, applyArticleUpdate],
   );
 
   // 完读区「下一篇」卡：直接打开卡里那篇。旧实现走 moveFocus(1)，
@@ -269,11 +271,11 @@ export function ArticleView() {
     if (!next) return;
     if (next.read_status === ArticleReadStatus.UNREAD) {
       store.updateArticleStatus(next, ArticleReadStatus.READ);
-      handleArticleRead({ ...next, read_status: ArticleReadStatus.READ });
+      applyArticleUpdate({ ...next, read_status: ArticleReadStatus.READ });
     }
     store.setExpandedArticleUuid(next.uuid);
     setFocusIdx(expandedIdx + 1);
-  }, [displayArticles, expandedIdx, store, handleArticleRead]);
+  }, [displayArticles, expandedIdx, store, applyArticleUpdate]);
 
   const closeDetail = useCallback(() => {
     store.setExpandedArticleUuid(null);
@@ -313,17 +315,13 @@ export function ArticleView() {
     [focusIdx, expandedIdx, displayArticles, store],
   );
 
-  // 光标位建立但样式压住：首行接收焦点时不亮（见 moveFocus 的 establishing 分支），
-  // 任何后续移动/换向都恢复正常焦点样式
-  const [focusStyleSuppressed, setFocusStyleSuppressed] = useState(false);
-
   const focused = focusIdx === null ? undefined : displayArticles[focusIdx];
 
   const markFocusedRead = useCallback(() => {
     if (!focused || focused.read_status !== ArticleReadStatus.UNREAD) return;
     store.updateArticleStatus(focused, ArticleReadStatus.READ);
-    handleArticleRead({ ...focused, read_status: ArticleReadStatus.READ });
-  }, [focused, store, handleArticleRead]);
+    applyArticleUpdate({ ...focused, read_status: ArticleReadStatus.READ });
+  }, [focused, store, applyArticleUpdate]);
 
   const toggleStar = useCallback(
     (a: ArticleResItem | null) => {
@@ -333,10 +331,10 @@ export function ArticleView() {
           ? ArticleStarStatus.UNSTAR
           : ArticleStarStatus.STARRED;
       apiPost(`/articles/${a.uuid}/star`, { starred: next }).then(() => {
-        handleArticleUpdate({ ...a, starred: next });
+        applyArticleUpdate({ ...a, starred: next });
       });
     },
-    [handleArticleUpdate],
+    [applyArticleUpdate],
   );
 
   // 键盘流：j/k 列表移动焦点、详情内滚动文章（到边即停）· ↑/↓ 切换上/下一篇 ·
@@ -572,15 +570,9 @@ export function ArticleView() {
             markFocusedRead();
             closeDetail();
           }}
-          onArticleUpdate={handleArticleUpdate}
+          onArticleUpdate={applyArticleUpdate}
         />
-        <ArticleDialogView
-          article={store.article}
-          dialogStatus={store.articleDialogViewStatus}
-          setDialogStatus={store.setArticleDialogViewStatus}
-          afterConfirm={() => {}}
-          afterCancel={() => store.setArticle(null)}
-        />
+        <ArticleDialogView />
       </div>
     );
   }
@@ -610,7 +602,9 @@ export function ArticleView() {
   // 「还没加载」不能当「没有订阅」渲染首次运行引导
   const isFirstRun =
     DEV_PREVIEW_FIRST_RUN ||
-    (store.subscribesLoaded === false ? false : (store.subscribes?.length ?? 0) === 0);
+    (store.subscribesLoaded === false
+      ? false
+      : (store.subscribes?.length ?? 0) === 0);
   const isClearQuiet =
     !isFirstRun &&
     isAll &&
@@ -677,8 +671,8 @@ export function ArticleView() {
       ) : (
         <>
           {/* 载体过滤条：全部 = 服务端真实总数；各档计数同为服务端（不随分页截断）。
-              源棱镜挂在计数 tab 之后：悬停出源清单（HoverCard），选源 = 未读流原地过滤
-              （2026-09-30 改版，不再跳源详情） */}
+              源棱镜挂在计数 tab 之后：点击弹出源清单（Popover），选源 = 未读流原地过滤
+              （2026-09-30 二次改版，不再跳源详情） */}
           <div className="fusion-strip">
             {carrierTabs.map((tab) => (
               <button
@@ -758,19 +752,13 @@ export function ArticleView() {
         emptyTitle={listEmpty.title}
         emptyHint={listEmpty.hint}
         emptyAction={listEmpty.action}
-        onArticleRead={handleArticleRead}
-        onArticleUpdate={handleArticleUpdate}
+        onArticleRead={applyArticleUpdate}
+        onArticleUpdate={applyArticleUpdate}
         focusedUuid={focused?.uuid}
         focusStyleSuppressed={focusStyleSuppressed}
         onExpandArticle={openArticle}
       />
-      <ArticleDialogView
-        article={store.article}
-        dialogStatus={store.articleDialogViewStatus}
-        setDialogStatus={store.setArticleDialogViewStatus}
-        afterConfirm={() => {}}
-        afterCancel={() => store.setArticle(null)}
-      />
+      <ArticleDialogView />
     </div>
   );
 }

@@ -3,7 +3,7 @@ import { Kbd } from "@astryxdesign/core/Kbd";
 import { ToggleButton } from "@astryxdesign/core/ToggleButton";
 import { open } from "@tauri-apps/plugin-shell";
 import { Bookmark, ExternalLink, Eye, EyeOff, Star } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { ArticleResItem } from "@/db";
 import { apiPost } from "@/helpers/http";
@@ -21,6 +21,19 @@ export interface ReaderControlsProps {
   onReadChange?: (updated: ArticleResItem) => void;
 }
 
+/** 操作后的本地乐观态（服务端确认前的按钮即显） */
+type LocalState = {
+  readStatus: ArticleReadStatus;
+  starred: ArticleStarStatus;
+  readLater: ArticleReadLaterStatus;
+};
+
+const localStateOf = (article: ArticleResItem): LocalState => ({
+  readStatus: article.read_status,
+  starred: article.starred,
+  readLater: article.is_read_later ?? ArticleReadLaterStatus.UNSAVED,
+});
+
 export function ReaderControls({
   article,
   showBrowser = true,
@@ -29,60 +42,61 @@ export function ReaderControls({
   onReadChange,
 }: ReaderControlsProps) {
   const { t } = useTranslation();
-  const [readStatus, setReadStatus] = useState(article.read_status);
-  const [starred, setStarred] = useState(article.starred);
-  const [readLater, setReadLater] = useState(
-    article.is_read_later ?? ArticleReadLaterStatus.UNSAVED,
-  );
+  const [state, setState] = useState<LocalState>(() => localStateOf(article));
+  const [lastArticle, setLastArticle] = useState(article);
 
-  useEffect(() => {
-    setReadStatus(article.read_status);
-  }, [article.read_status]);
-  useEffect(() => {
-    setStarred(article.starred);
-  }, [article.starred]);
-  useEffect(() => {
-    setReadLater(article.is_read_later ?? ArticleReadLaterStatus.UNSAVED);
-  }, [article.is_read_later]);
+  // 外部文章变化（切换文章或同对象字段被父级更新）时同步乐观态——
+  // 渲染期调整（React 推荐写法），取代之前三个镜像 useEffect
+  if (
+    lastArticle !== article ||
+    lastArticle.read_status !== article.read_status ||
+    lastArticle.starred !== article.starred ||
+    lastArticle.is_read_later !== article.is_read_later
+  ) {
+    setLastArticle(article);
+    setState(localStateOf(article));
+  }
 
-  const toggleStar = useCallback(() => {
+  const { readStatus, starred, readLater } = state;
+
+  const toggleStar = () => {
     const next =
       starred === ArticleStarStatus.STARRED
         ? ArticleStarStatus.UNSTAR
         : ArticleStarStatus.STARRED;
+    setState((prev) => ({ ...prev, starred: next }));
     apiPost(`/articles/${article.uuid}/star`, { starred: next }).then(() => {
-      article.starred = next;
-      setStarred(next);
-      onStarChange?.({ ...article });
+      onStarChange?.({ ...article, starred: next });
     });
-  }, [starred, article, onStarChange]);
+  };
 
-  const toggleRead = useCallback(() => {
+  const toggleRead = () => {
     const next =
       readStatus === ArticleReadStatus.UNREAD
         ? ArticleReadStatus.READ
         : ArticleReadStatus.UNREAD;
-    apiPost(`/articles/${article.uuid}/read`, { read_status: next }).then(() => {
-      article.read_status = next;
-      setReadStatus(next);
-      onReadChange?.({ ...article });
-    });
-  }, [readStatus, article, onReadChange]);
+    setState((prev) => ({ ...prev, readStatus: next }));
+    apiPost(`/articles/${article.uuid}/read`, { read_status: next }).then(
+      () => {
+        onReadChange?.({ ...article, read_status: next });
+      },
+    );
+  };
 
-  const toggleReadLater = useCallback(() => {
+  const toggleReadLater = () => {
     const next =
       readLater === ArticleReadLaterStatus.SAVED
         ? ArticleReadLaterStatus.UNSAVED
         : ArticleReadLaterStatus.SAVED;
-    apiPost(`/articles/${article.uuid}/read-later`, { is_read_later: next }).then(() => {
-      article.is_read_later = next;
-      setReadLater(next);
+    setState((prev) => ({ ...prev, readLater: next }));
+    apiPost(`/articles/${article.uuid}/read-later`, {
+      is_read_later: next,
     });
-  }, [readLater, article]);
+  };
 
-  const handleOpenBrowser = useCallback(() => {
+  const handleOpenBrowser = () => {
     if (article.link) open(article.link);
-  }, [article.link]);
+  };
 
   return (
     <>

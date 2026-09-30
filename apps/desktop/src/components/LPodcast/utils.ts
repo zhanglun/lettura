@@ -1,10 +1,7 @@
 import type { MotionProps } from "framer-motion";
 
-export const formatTime = (seconds: number): string => {
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = Math.floor(seconds % 60);
-  return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
-};
+// 时长格式化统一用 helpers/articleContent 的 formatDuration（h:mm:ss / mm:ss），
+// 本文件不再保留一份不支持小时的旧实现
 
 /**
  * 三态切换动效（podcast.html 契约）：150–200ms 缓出，位移 ≤10px，无回弹。

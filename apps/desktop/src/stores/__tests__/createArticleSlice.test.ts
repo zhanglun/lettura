@@ -10,7 +10,9 @@ const createTestStore = () =>
     ...createArticleSlice(set, get as any, ...args),
   }));
 
-const makeArticle = (overrides: Partial<ArticleResItem> = {}): ArticleResItem => ({
+const makeArticle = (
+  overrides: Partial<ArticleResItem> = {},
+): ArticleResItem => ({
   uuid: "test-uuid",
   feed_uuid: "feed-uuid",
   feed_title: "Test Feed",

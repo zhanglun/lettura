@@ -67,10 +67,9 @@ describe("ReaderControls", () => {
       fireEvent.click(btn!);
 
       await waitFor(() => {
-        expect(apiPost).toHaveBeenCalledWith(
-          "/articles/test-uuid/star",
-          { starred: ArticleStarStatus.STARRED },
-        );
+        expect(apiPost).toHaveBeenCalledWith("/articles/test-uuid/star", {
+          starred: ArticleStarStatus.STARRED,
+        });
       });
     });
 
@@ -84,10 +83,9 @@ describe("ReaderControls", () => {
       fireEvent.click(btn!);
 
       await waitFor(() => {
-        expect(apiPost).toHaveBeenCalledWith(
-          "/articles/test-uuid/star",
-          { starred: ArticleStarStatus.UNSTAR },
-        );
+        expect(apiPost).toHaveBeenCalledWith("/articles/test-uuid/star", {
+          starred: ArticleStarStatus.UNSTAR,
+        });
       });
     });
 
@@ -123,10 +121,9 @@ describe("ReaderControls", () => {
       fireEvent.click(btn!);
 
       await waitFor(() => {
-        expect(apiPost).toHaveBeenCalledWith(
-          "/articles/test-uuid/read",
-          { read_status: ArticleReadStatus.READ },
-        );
+        expect(apiPost).toHaveBeenCalledWith("/articles/test-uuid/read", {
+          read_status: ArticleReadStatus.READ,
+        });
       });
     });
 

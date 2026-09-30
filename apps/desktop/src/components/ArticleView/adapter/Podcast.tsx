@@ -5,8 +5,8 @@ import { useTranslation } from "react-i18next";
 import { useShallow } from "zustand/react/shallow";
 import { RATES } from "@/components/LPodcast/MiniPlayer";
 import { useAudioPlayer } from "@/components/LPodcast/useAudioPlayer";
-import { formatTime } from "@/components/LPodcast/utils";
 import type { ArticleResItem } from "@/db";
+import { formatDuration } from "@/helpers/articleContent";
 import type { Podcast } from "@/helpers/podcastDB";
 import { useBearStore } from "@/stores";
 import { renderArticleContent } from "../ContentRender";
@@ -118,7 +118,7 @@ export function PodcastAdapter(props: PodcastAdapter) {
             <span className="sep">·</span>
             <span>
               {isCurrent && duration > 0
-                ? formatTime(duration)
+                ? formatDuration(duration)
                 : t("podcast.episode")}
             </span>
             {isCurrent && duration > 0 && (

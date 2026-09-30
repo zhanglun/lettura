@@ -7,6 +7,7 @@ import {
 import { Selector } from "@astryxdesign/core/Selector";
 import { TextInput } from "@astryxdesign/core/TextInput";
 import { ToggleButton } from "@astryxdesign/core/ToggleButton";
+import { invoke } from "@tauri-apps/api/core";
 import { ChevronRight, Plus, Search } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
@@ -15,15 +16,15 @@ import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 import { EMAIL_SUBSCRIPTION_ENABLED, RouteConfig } from "@/config";
 import type { FeedResItem, SourceAccount } from "@/db";
-import { invoke } from "@tauri-apps/api/core";
+import { formatDuration } from "@/helpers/articleContent";
 import { showErrorToast } from "@/helpers/errorHandler";
-import { apiPost } from "@/helpers/http";
 import {
   BUILTIN_GENERATORS,
   type FeedGenerator,
   matchGenerator,
   parseUserGenerators,
 } from "@/helpers/feedGenerators";
+import { apiPost } from "@/helpers/http";
 import {
   CARRIER_BADGE_CLS,
   type Carrier,
@@ -673,12 +674,3 @@ export const AddFeedChannel = (props: any) => {
     </>
   );
 };
-
-function formatDuration(seconds: number): string {
-  const h = Math.floor(seconds / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  const s = Math.floor(seconds % 60);
-  return h > 0
-    ? `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`
-    : `${m}:${String(s).padStart(2, "0")}`;
-}

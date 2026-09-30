@@ -13,11 +13,12 @@ import {
 import type React from "react";
 import { useTranslation } from "react-i18next";
 import { useShallow } from "zustand/react/shallow";
+import { formatDuration } from "@/helpers/articleContent";
 import { useBearStore } from "@/stores";
 import type { AudioTrack } from "./index";
 import { QueueRow } from "./QueueRow";
 import { SleepControl } from "./SleepControl";
-import { formatTime, PLAYER_MOTION } from "./utils";
+import { PLAYER_MOTION } from "./utils";
 
 interface FullPlayerProps {
   currentTrack: AudioTrack | null;
@@ -122,7 +123,7 @@ export const FullPlayer: React.FC<FullPlayerProps> = ({
             {duration > 0 && (
               <>
                 <span>·</span>
-                <span>{formatTime(duration)}</span>
+                <span>{formatDuration(duration)}</span>
                 <span>·</span>
                 <span>{t("podcast.played_pct", { pct: Math.round(pct) })}</span>
               </>
@@ -130,12 +131,12 @@ export const FullPlayer: React.FC<FullPlayerProps> = ({
           </div>
 
           <div className="f-track">
-            <span className="pt">{formatTime(progress)}</span>
+            <span className="pt">{formatDuration(progress)}</span>
             <div className="fusion-fbar" onClick={handleBarClick}>
               <b style={{ width: `${pct}%` }} />
               <i style={{ left: `${pct}%` }} />
             </div>
-            <span className="pt">{formatTime(duration)}</span>
+            <span className="pt">{formatDuration(duration)}</span>
           </div>
 
           <div className="f-ctrl">
