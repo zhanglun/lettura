@@ -704,10 +704,17 @@
       "day_earlier": "Earlier",
       "day_count": "{{count}}",
       "day_collapsed_count": "collapsed · {{count}}",
+      "mark_bucket_read": "Mark all {{bucket}} as read",
+      "mark_bucket_done": "Marked all {{bucket}} as read",
+      "mark_bucket_failed": "Failed to mark {{bucket}} as read",
       "day_week": "This week",
       "day_lastweek": "Last week",
       "day_month": "Last 30 days",
-      "loaded_count": "{{count}} loaded"
+      "loaded_count": "{{count}} loaded",
+      "loading": "Loading articles",
+      "load_failed": "Couldn't load articles",
+      "load_failed_hint": "Articles are temporarily unavailable. Try again.",
+      "retry": "Retry"
     },
     "read": {
       "time": "{{min}} min read"

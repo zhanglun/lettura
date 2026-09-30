@@ -7,7 +7,7 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { FeedResItem } from "@/db";
 import { busChannel } from "@/helpers/busChannel";
-import * as dataAgent from "@/helpers/dataAgent";
+import { apiDelete } from "@/helpers/http";
 import { toast } from "@/helpers/toast";
 
 export interface DialogProps {
@@ -34,8 +34,9 @@ export const DialogUnsubscribeFeed = React.memo((props: DialogProps) => {
   const confirmUnsubscribe = () => {
     if (feed?.uuid) {
       setLoading(true);
-      dataAgent
-        .deleteChannel(feed.uuid, deleteMode === "delete")
+      apiDelete(`/feeds/${feed.uuid}`, {
+        delete_articles: deleteMode === "delete",
+      })
         .then(() => {
           busChannel.emit("getChannels");
           afterConfirm();

@@ -9,7 +9,7 @@ import {
   pickArticleContent,
   processArticleHtml,
 } from "@/helpers/articleContent";
-import * as dataAgent from "@/helpers/dataAgent";
+import { apiGet } from "@/helpers/http";
 import { canPlayInApp, getCarrier, opensExternally } from "@/helpers/mediaType";
 import { CommonAdapter } from "./adapter/Common";
 import { PlatformAdapter } from "./adapter/Platform";
@@ -122,13 +122,12 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
 
   useEffect(() => {
     if (!articleUuid) return;
-    // invoke 无法中断：切文章时靠 cleanup 的标志位丢弃过期结果
+    // fetch cannot be allowed to update the next article; cleanup drops stale results.
     let cancelled = false;
     setPageContent("");
     setLoadError(false);
 
-    dataAgent
-      .getArticleDetail(articleUuid)
+    apiGet<any>(`/articles/${articleUuid}`)
       .then((data) => {
         if (cancelled || !data) return;
         const raw = pickArticleContent(data.content, data.description);

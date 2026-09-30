@@ -149,6 +149,34 @@
    分组头保留规则线（DESIGN 契约）；动作钮与行尾动作同语：常显 .62，悬停全显 */
 /* ── 日期分隔条（list-prism.html 契约）：时间流唯一导航锚点，
      段头/折叠/索引条退役（2026-09-29 决策）。吸顶 + 规则线 + 桶内计数 ── */
+.fusion-list-skeleton {
+  padding: 14px 20px;
+}
+.fusion-list-skeleton-row {
+  display: grid;
+  grid-template-columns: 20px 76px minmax(0, 1fr) 72px;
+  align-items: center;
+  gap: 10px;
+  height: 52px;
+  margin-bottom: 2px;
+}
+.fusion-list-skeleton-copy {
+  display: grid;
+  gap: 8px;
+}
+.fusion-list-retry {
+  padding: 6px 12px;
+  border: 1px solid var(--fusion-hair2);
+  border-radius: 7px;
+  color: var(--fusion-ink);
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+.fusion-list-retry:hover {
+  background: color-mix(in srgb, var(--color-text-primary) 5%, transparent);
+}
+
 .fusion-dayhead {
   position: sticky;
   top: 0;
@@ -175,6 +203,33 @@
   font-variant-numeric: tabular-nums;
   letter-spacing: 0;
   text-transform: none;
+}
+.fusion-dayhead-read {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  flex: none;
+  padding: 0;
+  color: var(--fusion-ter);
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  opacity: 0;
+  transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+.fusion-dayhead:hover .fusion-dayhead-read,
+.fusion-dayhead-read:focus-visible {
+  opacity: 1;
+}
+.fusion-dayhead-read:hover:not(:disabled) {
+  color: var(--color-accent);
+  background: var(--color-accent-muted);
+}
+.fusion-dayhead-read:disabled {
+  cursor: wait;
+  opacity: 0.45;
 }
 /* 可收起桶（今天除外）：整行点击收起/展开，行同款 4% 墨洗；收起态规则线变实提示「下面还有」 */
 .fusion-dayhead.is-toggle {
@@ -985,9 +1040,21 @@
 
 .fusion-acts {
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   align-items: center;
-  gap: 6px;
+  gap: 2px;
+  min-width: 0;
+}
+
+/* Article row actions use IconButton correctly, but the shared Button styles
+   leave the flex item free to grow. Keep the hit targets compact and square
+   inside the fixed action column. */
+.fusion-acts > button {
+  width: 28px;
+  min-width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  padding: 0;
 }
 
 /* 键盘焦点：洗色 + 圆点光环两种安静信号，无彩色侧线（竖侧线＝side-tab slop，禁用） */
@@ -1467,8 +1534,27 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* Astryx Popover supplies a 12px content inset and fallback close control.
+   The playlist is already its complete surface, so remove that wrapper layer. */
+.fusion-playlist-popover {
+  box-sizing: border-box;
+  width: min(380px, calc(100vw - 32px)) !important;
+  min-width: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  overflow: hidden !important;
+}
+
+.fusion-playlist-popover > div {
+  min-width: 0;
+  overflow: hidden;
+}
+
 .fusion-playlist {
-  width: 380px;
+  box-sizing: border-box;
+  width: 100%;
   max-height: 52vh;
   display: flex;
   flex-direction: column;
@@ -1520,11 +1606,13 @@
 
 /* 面板内队列行：题/源叠两行（源列不再挤）+ 时长/删除跨行，行高仍是发丝 52px */
 .fusion-playlist .q-row {
-  grid-template-columns: 28px minmax(0, 1fr) 48px 26px;
+  grid-template-columns: 28px minmax(0, 1fr) 48px 28px;
   grid-template-rows: auto auto;
   align-items: center;
+  min-width: 0;
   padding: 0 4px;
   border-radius: 9px;
+  overflow: hidden;
 }
 
 .fusion-playlist .q-row .q-t {
@@ -1546,6 +1634,14 @@
 
 .fusion-playlist .q-s .live {
   color: var(--color-accent);
+}
+
+.fusion-playlist .q-row > button {
+  width: 24px;
+  min-width: 24px;
+  height: 24px;
+  padding: 0;
+  justify-self: end;
 }
 
 .fusion-playlist .pl-empty {

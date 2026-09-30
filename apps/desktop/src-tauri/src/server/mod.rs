@@ -1,7 +1,7 @@
 mod handlers;
 
 use actix_cors::Cors;
-use actix_web::{http, middleware, web, App, HttpServer};
+use actix_web::{http, middleware, App, HttpServer};
 use std::sync::Mutex;
 
 use crate::{core::config, AppState};
@@ -39,7 +39,7 @@ pub async fn start_server(port: u16, state: tauri::State<'_, AppState>) -> std::
       .wrap(cors)
       // .app_data(tauri_app.clone())
       .wrap(middleware::Logger::default())
-      .configure(handlers::site::config)
+      .configure(handlers::config)
       })
   .bind(("127.0.0.1", port))?
   .run();

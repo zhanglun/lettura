@@ -1,23 +1,51 @@
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useMatch } from "react-router-dom";
-import useSWR from "swr";
-import useSWRInfinite from "swr/infinite";
 import { useShallow } from "zustand/react/shallow";
 import { RouteConfig } from "@/config";
 import type { ArticleResItem } from "@/db";
-import * as dataAgent from "@/helpers/dataAgent";
+import { apiGet } from "@/helpers/http";
 import { useBearStore } from "@/stores";
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 100;
+
+type BucketPage = {
+  list: ArticleResItem[];
+  total: number;
+};
+type ArticleUpdater = (pages: BucketPage[]) => BucketPage[] | undefined;
+type ArticleMutator = (fn: ArticleUpdater) => void;
+type ArticleSummary = CarrierCounts & {
+  total: number;
+  day_today: number;
+  day_yesterday: number;
+  day_week: number;
+  day_lastweek: number;
+  day_month: number;
+};
+
+// Keep only the cache, request de-duplication, and pagination state needed by
+// the local HTTP API; there is no network revalidation layer.
+const listCache = new Map<string, BucketPage[]>();
+const listInflight = new Map<string, Promise<BucketPage>>();
+const summaryCache = new Map<string, ArticleSummary>();
+const summaryInflight = new Map<string, Promise<ArticleSummary>>();
+const initialSectionsCache = new Map<string, Map<string, BucketPage>>();
+const initialSectionsErrors = new Map<string, unknown>();
+const initialSectionsInflight = new Map<
+  string,
+  Promise<{ bucket: string; list: ArticleResItem[]; total: number }[]>
+>();
+
+function stableKey(value: unknown) {
+  return JSON.stringify(value);
+}
 
 function omitUndefined<T extends Record<string, unknown>>(
   obj: T,
 ): Record<string, unknown> {
   const result: Record<string, unknown> = {};
   for (const key of Object.keys(obj)) {
-    if (obj[key] !== undefined) {
-      result[key] = obj[key];
-    }
+    if (obj[key] !== undefined) result[key] = obj[key];
   }
   return result;
 }
@@ -29,7 +57,6 @@ export interface CarrierCounts {
   email: number;
 }
 
-/** 日期桶真实分布（服务端同条件全量口径，与 buckets.ts 同一定义） */
 export interface DayBucketCounts {
   today: number;
   yesterday: number;
@@ -48,91 +75,259 @@ export interface UseArticleProps {
   isArchived?: number | boolean;
   isReadLater?: number | boolean;
   hasNotes?: boolean;
-  /** 载体过滤（text/audio/video/email）：服务端过滤，不随分页截断 */
   carrier?: string;
-  /**
-   * read_status 覆盖：undefined = 跟随全局 currentFilter；
-   * null = 不过滤（全部）；1/2 = 未读/已读。源队列帧的过滤条用它。
-   */
+  /** undefined follows the global filter; null means all read states. */
   readStatus?: number | null;
 }
 
-/** 一个时间桶的独立懒加载列表（每桶一条 SWRInfinite 通道，互不阻塞）。
- *  bucket = 日期桶键（today…earlier）；源队列帧为 null（无日期头） */
 export interface ListSection {
   bucket: string | null;
-  /** 桶键（bucket ?? "queue"），父级 onLoadMore 回传用 */
   key: string;
   rows: ArticleResItem[];
-  /** 已加载行数 */
   loaded: number;
-  /** 服务端同条件真实总量；缺省 = 未知，回落 loaded */
   realCount?: number;
   hasMore: boolean;
   loading: boolean;
   loadMore: () => void;
 }
 
-interface BucketPage {
-  list: ArticleResItem[];
-  total: number;
+function useArticleListChannel(
+  query: Record<string, unknown>,
+  bucket: string | null,
+  initiallyEnabled: boolean,
+  registerMutate?: (key: string, mutate: ArticleMutator) => void,
+  initialPage?: BucketPage,
+  initialLoading = false,
+) {
+  const key = stableKey({ query, bucket });
+  const activeKey = useRef(key);
+  activeKey.current = key;
+  const [pages, setPages] = useState<BucketPage[]>(
+    () => listCache.get(key) ?? [],
+  );
+  const [pagesKey, setPagesKey] = useState(key);
+  const [loading, setLoading] = useState(false);
+  const pagesRef = useRef(pages);
+  const loadingRef = useRef(false);
+  pagesRef.current = pages;
+
+  useEffect(() => {
+    if (initialPage && !(listCache.get(key)?.length ?? 0)) {
+      listCache.set(key, [initialPage]);
+    }
+    setPagesKey(key);
+    setPages(listCache.get(key) ?? []);
+    setLoading(false);
+    loadingRef.current = false;
+  }, [initialPage, key]);
+
+  const loadMore = useCallback(async () => {
+    if (loadingRef.current) return;
+    const cached = listCache.get(key) ?? [];
+    const pageIndex = cached.length;
+    if (cached[pageIndex]) {
+      setPages(cached);
+      return;
+    }
+
+    const filter = {
+      ...query,
+      ...(bucket ? { day_bucket: bucket } : {}),
+      cursor: pageIndex + 1,
+    };
+    const requestKey = stableKey(filter);
+    let request = listInflight.get(requestKey);
+    if (!request) {
+      request = apiGet<{ list: ArticleResItem[]; total: number }>("/articles", filter);
+      listInflight.set(requestKey, request);
+    }
+
+    loadingRef.current = true;
+    setLoading(true);
+    try {
+      const page = await request;
+      const next = [...(listCache.get(key) ?? [])];
+      next[pageIndex] = page;
+      listCache.set(key, next);
+      if (activeKey.current === key) {
+        pagesRef.current = next;
+        setPages(next);
+      }
+    } finally {
+      listInflight.delete(requestKey);
+      if (activeKey.current === key) {
+        loadingRef.current = false;
+        setLoading(false);
+      }
+    }
+  }, [bucket, key, query]);
+
+  useEffect(() => {
+    if (initiallyEnabled && pagesKey === key && pages.length === 0) {
+      void loadMore();
+    }
+  }, [initiallyEnabled, key, loadMore, pages.length, pagesKey]);
+
+  const mutate = useCallback(
+    (fn: ArticleUpdater) => {
+      const current = listCache.get(key) ?? pagesRef.current;
+      const next = fn(current) ?? current;
+      listCache.set(key, next);
+      pagesRef.current = next;
+      setPages(next);
+    },
+    [key],
+  );
+
+  useEffect(() => {
+    registerMutate?.(bucket ?? "queue", mutate);
+  }, [bucket, mutate, registerMutate]);
+
+  const visiblePages =
+    pagesKey === key ? pages : (listCache.get(key) ?? []);
+  const rows = visiblePages.flatMap((page) => page.list);
+  const lastPage = visiblePages.at(-1);
+  return {
+    rows,
+    loaded: rows.length,
+    realCount: lastPage?.total,
+    hasMore: visiblePages.length === 0 || lastPage?.list.length === PAGE_SIZE,
+    loading: loading || initialLoading,
+    loadMore,
+    mutate,
+  };
 }
 
-/** 单桶懒加载：day_bucket 走服务端过滤，翻页只翻本桶 */
-function useBucketList(
-  query: Record<string, any>,
-  bucket: string,
+function useArticleInitialSections(
+  query: Record<string, unknown>,
   enabled: boolean,
-  registerMutate: (bucket: string, m: (fn: any) => void) => void,
 ) {
-  const getKey = useCallback(
-    (pageIndex: number, previousPageData: BucketPage | null) => {
-      if (!enabled) return null;
-      if (previousPageData && !previousPageData.list?.length) return null;
-      return { ...query, day_bucket: bucket, cursor: pageIndex + 1 };
-    },
-    [query, bucket, enabled],
+  const key = stableKey(query);
+  const activeKey = useRef(key);
+  activeKey.current = key;
+  const [sections, setSections] = useState<Map<string, BucketPage>>(
+    () => initialSectionsCache.get(key) ?? new Map(),
   );
-  const { data, size, setSize, isLoading, mutate } = useSWRInfinite(
-    getKey,
-    (q) => dataAgent.getArticleList({ ...q }),
-    {
-      revalidateIfStale: false,
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-      revalidateFirstPage: false,
-      dedupingInterval: 1000,
+  const [sectionsKey, setSectionsKey] = useState(key);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<unknown>(() =>
+    initialSectionsErrors.get(key),
+  );
+  const [retryToken, setRetryToken] = useState(0);
+
+  useEffect(() => {
+    setSectionsKey(key);
+    setSections(initialSectionsCache.get(key) ?? new Map());
+    setError(initialSectionsErrors.get(key));
+    if (!enabled || initialSectionsCache.has(key)) {
+      setLoading(false);
+      return;
+    }
+    let request = initialSectionsInflight.get(key);
+    if (!request) {
+      request = apiGet<
+        { bucket: string; list: ArticleResItem[]; total: number }[]
+      >("/articles/initial-sections", { ...query, limit: 100 });
+      initialSectionsInflight.set(key, request);
+    }
+    setLoading(true);
+    request
+      .then((items) => {
+        const next = new Map(
+          items.map((item) => [
+            item.bucket,
+            { list: item.list, total: item.total },
+          ]),
+        );
+        initialSectionsCache.set(key, next);
+        initialSectionsErrors.delete(key);
+        if (activeKey.current === key) {
+          setSections(next);
+          setError(undefined);
+        }
+      })
+      .catch((requestError) => {
+        initialSectionsErrors.set(key, requestError);
+        if (activeKey.current === key) setError(requestError);
+      })
+      .finally(() => {
+        initialSectionsInflight.delete(key);
+        if (activeKey.current === key) setLoading(false);
+      });
+  }, [enabled, key, query, retryToken]);
+
+  const currentSections = sectionsKey === key
+    ? sections
+    : initialSectionsCache.get(key) ?? new Map();
+  const currentError = initialSectionsErrors.get(key) ?? error;
+  const currentLoading =
+    enabled && !initialSectionsCache.has(key) && !currentError;
+  const retry = useCallback(() => {
+    initialSectionsCache.delete(key);
+    initialSectionsErrors.delete(key);
+    setSections(new Map());
+    setSectionsKey(key);
+    setError(undefined);
+    setLoading(true);
+    setRetryToken((value) => value + 1);
+  }, [key]);
+
+  return {
+    sections: currentSections,
+    loading: currentLoading || loading,
+    error: currentError,
+    ready: !enabled || initialSectionsCache.has(key) || !!currentError,
+    retry,
+  };
+}
+
+function useArticleSummary(
+  params: Record<string, unknown> | null,
+  enabled: boolean,
+) {
+  const key = params ? stableKey(params) : "";
+  const [data, setData] = useState<ArticleSummary | undefined>(
+    () => (key ? summaryCache.get(key) : undefined),
+  );
+  const [dataKey, setDataKey] = useState(key);
+
+  const load = useCallback(
+    async (force = false) => {
+      if (!key || !params) return;
+      if (!force) {
+        const cached = summaryCache.get(key);
+        if (cached) {
+          setData(cached);
+          return cached;
+        }
+      }
+      let request = summaryInflight.get(key);
+      if (!request) {
+        request = apiGet<ArticleSummary>("/articles/summary", params);
+        summaryInflight.set(key, request);
+      }
+      try {
+        const summary = await request;
+        summaryCache.set(key, summary);
+        setData(summary);
+        return summary;
+      } finally {
+        summaryInflight.delete(key);
+      }
     },
+    [key, params],
   );
 
-  // 过滤条件变化（载体 tab/视图切换）时分页深度归零：SWR Infinite 的 size 跨 key
-  // 保留，不重置会让新视图把旧深度页全部并发拉一遍（请求风暴），桶与桶的加载
-  // 状态也会互相纠缠。旧扁平实现有同款 effect，重写时恢复（2026-09-29）
   useEffect(() => {
-    setSize(1);
-  }, [query, setSize]);
+    setDataKey(key);
+    setData(key ? summaryCache.get(key) : undefined);
+    if (enabled) void load();
+  }, [enabled, key, load]);
 
-  // 读态/星标等操作经父级 retain 后写回本桶缓存（每桶注册自己的 mutator）
-  const mutateRef = useRef(mutate);
-  mutateRef.current = mutate;
-  useEffect(() => {
-    registerMutate(bucket, (fn: any) => mutateRef.current(fn, false));
-  }, [bucket, registerMutate, mutate]);
-
-  const rows: ArticleResItem[] = data
-    ? data.reduce(
-        (acu: ArticleResItem[], cur) => acu.concat(cur.list || []),
-        [],
-      )
-    : [];
-  const hasMore = !!data && data[data.length - 1]?.list?.length === PAGE_SIZE;
-  // 首页未拉过 = 尚无数据可判；hasMore 视为真，展开/哨兵会触发首拉
-  const loadMore = useCallback(() => {
-    if (isLoading) return;
-    setSize(size + 1);
-  }, [isLoading, size, setSize]);
-
-  return { rows, loaded: rows.length, hasMore, loading: isLoading, loadMore };
+  return {
+    data: dataKey === key ? data : undefined,
+    refresh: () => load(true),
+  };
 }
 
 export function useArticle(props: UseArticleProps) {
@@ -151,17 +346,11 @@ export function useArticle(props: UseArticleProps) {
   const isToday = useMatch(RouteConfig.LOCAL_TODAY);
   const isAll = useMatch(RouteConfig.LOCAL_ALL);
   const isStarred = useMatch(RouteConfig.LOCAL_STARRED);
-
-  const store = useBearStore(
-    useShallow((state) => ({
-      currentFilter: state.currentFilter,
-      updateArticleStatus: state.updateArticleStatus,
-    })),
+  const currentFilter = useBearStore(
+    useShallow((state) => state.currentFilter),
   );
 
   const query = useMemo(() => {
-    const isTodayVal = isToday ? 1 : undefined;
-    const isAllVal = isAll ? 1 : undefined;
     const isStarredVal =
       isStarredOverride !== undefined
         ? isStarredOverride === null
@@ -178,120 +367,120 @@ export function useArticle(props: UseArticleProps) {
           ? (readStatus ?? undefined)
           : isStarred
             ? undefined
-            : store.currentFilter.id,
+            : currentFilter.id,
       limit: PAGE_SIZE,
       feed_uuid: feedUuid,
       item_type: type,
-      is_today: isTodayVal,
-      is_all: isAllVal,
+      is_today: isToday ? 1 : undefined,
+      is_all: isAll ? 1 : undefined,
       is_starred: isStarredVal,
       collection_uuid: collectionUuid || undefined,
       tag_uuid: tagUuid || undefined,
-      is_archived: isArchived !== undefined ? (isArchived ? 1 : 0) : undefined,
+      is_archived: isArchived === undefined ? undefined : isArchived ? 1 : 0,
       is_read_later:
-        isReadLater !== undefined ? (isReadLater ? 1 : 0) : undefined,
+        isReadLater === undefined ? undefined : isReadLater ? 1 : 0,
       has_notes: hasNotes ? 1 : undefined,
-      carrier,
+      carrier: carrier && carrier !== "all" ? carrier : undefined,
     });
   }, [
-    feedUuid,
-    type,
-    isToday,
-    isAll,
-    isStarred,
-    store.currentFilter.id,
+    carrier,
     collectionUuid,
-    tagUuid,
-    isStarredOverride,
+    currentFilter.id,
+    feedUuid,
+    hasNotes,
+    isAll,
     isArchived,
     isReadLater,
-    hasNotes,
-    carrier,
+    isStarred,
+    isStarredOverride,
+    isToday,
     readStatus,
+    tagUuid,
+    type,
   ]);
 
   const isQueue = !!feedUuid;
-
-  // ── 源队列帧：单通道扁平分页（单源行数有限，无桶的必要）──
-  const getKey = useCallback(
-    (pageIndex: number, previousPageData: BucketPage | null) => {
-      if (!isQueue) return null;
-      if (previousPageData && !previousPageData.list?.length) return null;
-      return { ...query, cursor: pageIndex + 1 };
-    },
-    [isQueue, query],
-  );
-  const queue = useSWRInfinite(
-    getKey,
-    (q) => dataAgent.getArticleList({ ...q }),
-    {
-      revalidateIfStale: false,
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-      revalidateFirstPage: false,
-      dedupingInterval: 1000,
-    },
-  );
-  // 同桶列表：过滤变化时分页深度归零
-  useEffect(() => {
-    if (isQueue) queue.setSize(1);
-  }, [query, isQueue, queue]);
-
-  // ── 全局视图：六个时间桶各自独立懒加载（时间流契约）。
-  // hooks 固定六路无条件调用，enabled 门控是否发请求──
-  const mutatorsRef = useRef(new Map<string, (fn: any) => void>());
-  const registerMutate = useCallback((bucket: string, m: (fn: any) => void) => {
-    mutatorsRef.current.set(bucket, m);
+  const mutatorsRef = useRef(new Map<string, ArticleMutator>());
+  const registerMutate = useCallback((bucket: string, mutate: ArticleMutator) => {
+    mutatorsRef.current.set(bucket, mutate);
   }, []);
 
-  const today = useBucketList(query, "today", !isQueue, registerMutate);
-  const yesterday = useBucketList(query, "yesterday", !isQueue, registerMutate);
-  const week = useBucketList(query, "week", !isQueue, registerMutate);
-  const lastweek = useBucketList(query, "lastweek", !isQueue, registerMutate);
-  const month = useBucketList(query, "month", !isQueue, registerMutate);
-  const earlier = useBucketList(query, "earlier", !isQueue, registerMutate);
+  const initial = useArticleInitialSections(query, !isQueue);
+  // During a filter switch, the hook state still contains the previous query's
+  // sections for one render. Read only the cache for the current query; never
+  // seed the new filter with the old filter's first page.
+  const initialKey = stableKey(query);
+  const initialPage = (bucket: string) =>
+    initialSectionsCache.get(initialKey)?.get(bucket);
 
-  // 载体过滤条计数 + 日期桶分布：服务端同条件单趟扫描（不随分页衰减）。
-  // 全局 summary：顶栏载体 tab 的计数（tab 计数本身就是全局分布，不随激活 tab 变）。
-  const countsParams = useMemo(() => {
-    const {
-      carrier: _carrier,
-      limit: _limit,
-      ...rest
-    } = query as Record<string, unknown>;
-    return rest;
-  }, [query]);
-  const { data: globalSummary, mutate: mutateSummary } = useSWR(
-    feedUuid ? null : ["article-summary", countsParams],
-    ([, params]: [string, Record<string, unknown>]) =>
-      dataAgent.getArticleSummary({ ...params }),
-    {
-      revalidateIfStale: false,
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-      dedupingInterval: 1000,
-    },
+  const queue = useArticleListChannel(query, null, isQueue);
+  // One HTTP request loads all six initial buckets. Each bucket keeps its own
+  // cursor for later pagination, but does not issue another first-page request.
+  const today = useArticleListChannel(
+    query,
+    "today",
+    false,
+    registerMutate,
+    initialPage("today"),
+    initial.loading,
+  );
+  const yesterday = useArticleListChannel(
+    query,
+    "yesterday",
+    false,
+    registerMutate,
+    initialPage("yesterday"),
+    initial.loading,
+  );
+  const week = useArticleListChannel(
+    query,
+    "week",
+    false,
+    registerMutate,
+    initialPage("week"),
+    initial.loading,
+  );
+  const lastweek = useArticleListChannel(
+    query,
+    "lastweek",
+    false,
+    registerMutate,
+    initialPage("lastweek"),
+    initial.loading,
+  );
+  const month = useArticleListChannel(
+    query,
+    "month",
+    false,
+    registerMutate,
+    initialPage("month"),
+    initial.loading,
+  );
+  const earlier = useArticleListChannel(
+    query,
+    "earlier",
+    false,
+    registerMutate,
+    initialPage("earlier"),
+    initial.loading,
   );
 
-  // 作用域 summary：含当前载体 tab——日期头的桶计数必须随 tab 重新统计
-  // （用户实测：切到播客后日期头还挂着全局数字、空桶照样渲染）。
-  // carrier = "all" 时与全局同参，直接复用，不多发一趟。
-  const scopedParams = useMemo(() => {
-    const { limit: _limit, ...rest } = query as Record<string, unknown>;
+  const countsParams = useMemo(() => {
+    const { carrier: _carrier, limit: _limit, ...rest } = query;
     return rest;
   }, [query]);
-  const { data: scopedSummary } = useSWR(
-    feedUuid || !carrier || carrier === "all"
-      ? null
-      : ["article-summary-scoped", scopedParams],
-    ([, params]: [string, Record<string, unknown>]) =>
-      dataAgent.getArticleSummary({ ...params }),
-    {
-      revalidateIfStale: false,
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-      dedupingInterval: 1000,
-    },
+  const { data: globalSummary, refresh: refreshSummary } = useArticleSummary(
+    feedUuid ? null : countsParams,
+    !feedUuid,
+  );
+
+  const scopedParams = useMemo(() => {
+    const { limit: _limit, ...rest } = query;
+    return rest;
+  }, [query]);
+  const { data: scopedSummary } = useArticleSummary(
+    feedUuid || !carrier || carrier === "all" ? null : scopedParams,
+    !!(!feedUuid && carrier && carrier !== "all"),
   );
 
   const carrierCounts: CarrierCounts = {
@@ -300,7 +489,6 @@ export function useArticle(props: UseArticleProps) {
     video: globalSummary?.video ?? 0,
     email: globalSummary?.email ?? 0,
   };
-  // 日期头口径：有作用域结果用作用域；"全部" tab（无作用域请求）回落全局
   const bucketSource =
     !carrier || carrier === "all"
       ? globalSummary
@@ -324,28 +512,12 @@ export function useArticle(props: UseArticleProps) {
       }
     : undefined;
 
-  const queueRows: ArticleResItem[] = queue.data
-    ? queue.data.reduce(
-        (acu: ArticleResItem[], cur) => acu.concat(cur.list || []),
-        [],
-      )
-    : [];
-  const queueTotal = queue.data?.[queue.data.length - 1]?.total ?? 0;
-
-  // sections：全局 = 六桶固定顺序（头永远在，真实计数先行）；队列 = 单段
   const sections: ListSection[] = isQueue
     ? [
         {
           bucket: null,
           key: "queue",
-          rows: queueRows,
-          loaded: queueRows.length,
-          realCount: queueTotal,
-          hasMore:
-            !!queue.data &&
-            queue.data[queue.data.length - 1]?.list?.length === PAGE_SIZE,
-          loading: queue.isLoading,
-          loadMore: () => queue.setSize(queue.size + 1),
+          ...queue,
         },
       ]
     : [
@@ -355,45 +527,47 @@ export function useArticle(props: UseArticleProps) {
         { bucket: "lastweek", key: "lastweek", ...lastweek },
         { bucket: "month", key: "month", ...month },
         { bucket: "earlier", key: "earlier", ...earlier },
-      ].map((s) => ({
-        ...s,
+      ].map((section) => ({
+        ...section,
         realCount: dayCounts
-          ? dayCounts[s.bucket as keyof DayBucketCounts]
+          ? dayCounts[section.bucket as keyof DayBucketCounts]
           : undefined,
       }));
 
-  const articles: ArticleResItem[] = sections.flatMap((s) => s.rows);
-  const isLoadingAny = isQueue
-    ? queue.isLoading
-    : sections.some((s) => s.loading);
-  const isEmpty = !isLoadingAny && articles.length === 0;
-  const total = isQueue ? queueTotal : (globalSummary?.total ?? 0);
-
-  // 读态/星标 retain：应用到每一条桶通道的缓存（原扁平版本的 mutate 语义）
+  const articles = sections.flatMap((section) => section.rows);
+  const isLoading = isQueue ? queue.loading : initial.loading || sections.some((s) => s.loading);
+  const error = isQueue ? null : initial.error;
+  const isEmpty = !isLoading && !error && initial.ready && articles.length === 0;
   const mutate = useCallback(
-    (fn: (pages: any) => any) => {
-      for (const m of mutatorsRef.current.values()) m(fn);
-      if (isQueue) queueRef.current(fn);
+    (fn: ArticleUpdater) => {
+      if (isQueue) queue.mutate(fn);
+      else for (const mutateBucket of mutatorsRef.current.values()) mutateBucket(fn);
     },
-    [isQueue],
+    [isQueue, queue.mutate],
   );
-
-  const queueRef = useRef(queue.mutate);
-  queueRef.current = queue.mutate;
+  const mutateBucket = useCallback(
+    (bucket: string, fn: ArticleUpdater) => {
+      mutatorsRef.current.get(bucket)?.(fn);
+    },
+    [],
+  );
 
   return {
     sections,
     articles,
-    total,
+    total: isQueue ? (queue.realCount ?? 0) : (globalSummary?.total ?? 0),
     carrierCounts,
     dayCounts,
-    refreshCarrierCounts: () => mutateSummary(),
-    isLoading: isLoadingAny,
+    refreshCarrierCounts: refreshSummary,
+    isLoading,
     mutate,
+    mutateBucket,
     isEmpty,
+    initialReady: isQueue || initial.ready,
+    retry: initial.retry,
     isToday: !!isToday,
     isAll: !!isAll,
     isStarred: !!isStarred,
-    error: null,
+    error,
   };
 }

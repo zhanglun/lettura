@@ -138,9 +138,9 @@ describe("ArticleListVirtual 时间流 sections", () => {
     expect(onToggleBucket).toHaveBeenCalledWith("today");
   });
 
-  it("展开一个还没有数据的空桶：自动首拉", () => {
+  it("展开一个还没有数据的空桶：点击后首拉", () => {
     const onLoadMore = vi.fn();
-    renderList({
+    const { container } = renderList({
       sections: [
         section({
           key: "yesterday",
@@ -151,9 +151,11 @@ describe("ArticleListVirtual 时间流 sections", () => {
           loading: false,
         }),
       ],
+      collapsedBuckets: new Set(["yesterday"]),
       onLoadMore,
     });
 
+    fireEvent.click(container.querySelector(".fusion-dayhead")!);
     expect(onLoadMore).toHaveBeenCalledWith("yesterday");
   });
 });

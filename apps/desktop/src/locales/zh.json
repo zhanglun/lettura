@@ -720,10 +720,17 @@
       "day_earlier": "更早",
       "day_count": "{{count}} 篇",
       "day_collapsed_count": "已收起 · {{count}} 篇",
+      "mark_bucket_read": "将{{bucket}}全部标为已读",
+      "mark_bucket_done": "已将{{bucket}}标为已读",
+      "mark_bucket_failed": "标记{{bucket}}已读失败",
       "day_week": "本周",
       "day_lastweek": "上周",
       "day_month": "30 天内",
-      "loaded_count": "已加载 {{count}} 篇"
+      "loaded_count": "已加载 {{count}} 篇",
+      "loading": "正在加载文章",
+      "load_failed": "加载失败",
+      "load_failed_hint": "文章暂时无法加载，请重试",
+      "retry": "重试"
     },
     "read": {
       "time": "约 {{min}} 分钟"

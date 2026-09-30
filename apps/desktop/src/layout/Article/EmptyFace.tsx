@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 import { RouteConfig } from "@/config";
 import { busChannel } from "@/helpers/busChannel";
-import * as dataAgent from "@/helpers/dataAgent";
+import { invoke } from "@tauri-apps/api/core";
 import { showErrorToast } from "@/helpers/errorHandler";
 import { toast } from "@/helpers/toast";
 import { useBearStore } from "@/stores";
@@ -36,7 +36,9 @@ export function EmptyFace({ mode }: { mode: "first" | "clear" }) {
     if (selected && typeof selected === "string") {
       try {
         const content = await readTextFile(selected);
-        const result = await dataAgent.importOpml(content);
+        const result = await invoke<{
+          feed_count: number;
+        }>("import_opml", { opmlContent: content });
         busChannel.emit("getChannels");
         store.getSubscribes();
         store.initCollectionMetas();

@@ -17,7 +17,7 @@ pub enum ArticleReadStatus {
   READ = 2,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ArticleFilter {
   pub feed_uuid: Option<String>,
   pub folder_uuid: Option<String>,
@@ -220,6 +220,13 @@ pub struct MarkAllUnreadParam {
   pub uuid: Option<String>,
   pub is_today: Option<bool>,
   pub is_all: Option<bool>,
+  pub day_bucket: Option<String>,
+}
+
+#[derive(Debug, QueryableByName)]
+struct FeedUuidRow {
+  #[diesel(sql_type = Text)]
+  feed_uuid: String,
 }
 
 #[derive(Debug, Queryable, Serialize, QueryableByName)]
@@ -331,6 +338,14 @@ pub struct ArticleQueryResult {
   total: i64,
 }
 
+/// 全局时间流首屏：一次 IPC 顺序取完六个桶，避免前端启动六条独立通道。
+#[derive(Debug, Serialize)]
+pub struct ArticleInitialSection {
+  pub bucket: String,
+  pub list: Vec<ArticleQueryItem>,
+  pub total: i64,
+}
+
 /// 类型过滤条计数：文章 / 播客 / 平台（服务端全量）
 #[derive(Debug, Serialize, QueryableByName)]
 pub struct CarrierCounts {
@@ -390,6 +405,13 @@ impl Article {
   /// get articles
   pub fn get_article(filter: ArticleFilter) -> ArticleQueryResult {
     let mut connection = establish_connection();
+    Self::get_article_with_connection(filter, &mut connection)
+  }
+
+  fn get_article_with_connection(
+    filter: ArticleFilter,
+    connection: &mut SqliteConnection,
+  ) -> ArticleQueryResult {
     let mut query = diesel::sql_query(
       "
     SELECT
@@ -427,7 +449,7 @@ impl Article {
     )
     .into_boxed();
     let mut limit = 12;
-    let parts = article_filter_parts(&filter, &mut connection);
+    let parts = article_filter_parts(&filter, connection);
 
     if parts.conditions.len() > 0 {
       query = query.sql(parts.where_clause.clone());
@@ -454,12 +476,19 @@ impl Article {
     for param in &parts.params {
       count_query = count_query.bind::<Text, _>(param.clone());
     }
-    let total = count_query
-      .load::<TotalCountRow>(&mut connection)
-      .expect("Expect counting articles")
-      .first()
-      .map(|r| r.total)
-      .unwrap_or(0);
+    // Bucket pages get their authoritative count from get_article_summary;
+    // avoid a second full scan for every date group. Queue/detail filters still
+    // retain the count used by their pagination header.
+    let total = if filter.day_bucket.is_some() {
+      0
+    } else {
+      count_query
+        .load::<TotalCountRow>(connection)
+        .expect("Expect counting articles")
+        .first()
+        .map(|r| r.total)
+        .unwrap_or(0)
+    };
 
     if let Some(l) = filter.limit {
       query = query.sql(" limit ?").bind::<Integer, _>(l);
@@ -471,13 +500,36 @@ impl Article {
     }
 
     let result = query
-      .load::<ArticleQueryItem>(&mut connection)
+      .load::<ArticleQueryItem>(connection)
       .expect("Expect loading articles");
 
     ArticleQueryResult {
       list: result,
       total,
     }
+  }
+
+  /// 全局时间流首屏：一次命令返回每个时间桶的首批文章。
+  /// 桶仍然保持独立分页，后续滚动继续走 get_article；这里只合并 IPC
+  /// 和调度，避免前端同时启动六个请求。
+  pub fn get_article_initial_sections(
+    mut filter: ArticleFilter,
+  ) -> Vec<ArticleInitialSection> {
+    let mut connection = establish_connection();
+    filter.limit = Some(filter.limit.unwrap_or(100));
+    ["today", "yesterday", "week", "lastweek", "month", "earlier"]
+      .into_iter()
+      .map(|bucket| {
+        filter.day_bucket = Some(bucket.to_string());
+        filter.cursor = Some(1);
+        let result = Self::get_article_with_connection(filter.clone(), &mut connection);
+        ArticleInitialSection {
+          bucket: bucket.to_string(),
+          list: result.list,
+          total: result.total,
+        }
+      })
+      .collect()
   }
 
   /// 同条件单趟扫描：total 与四档载体计数一次聚合产出。
@@ -620,6 +672,10 @@ impl Article {
   }
 
   pub fn mark_as_read(params: MarkAllUnreadParam) -> usize {
+    if let Some(bucket) = params.day_bucket {
+      return Self::mark_bucket_as_read(bucket);
+    }
+
     if let Some(uuid) = params.uuid {
       return Self::update_articles_read_status_channel(uuid);
     }
@@ -633,6 +689,37 @@ impl Article {
     }
 
     0
+  }
+
+  pub fn mark_bucket_as_read(bucket: String) -> usize {
+    let condition = match bucket.as_str() {
+      "today" => "DATE(COALESCE(NULLIF(pub_date, ''), create_date)) = DATE('now', 'localtime')",
+      "yesterday" => "DATE(COALESCE(NULLIF(pub_date, ''), create_date)) = DATE('now', 'localtime', '-1 day')",
+      "week" => "DATE(COALESCE(NULLIF(pub_date, ''), create_date)) BETWEEN DATE('now', 'localtime', '-6 day') AND DATE('now', 'localtime', '-2 day')",
+      "lastweek" => "DATE(COALESCE(NULLIF(pub_date, ''), create_date)) BETWEEN DATE('now', 'localtime', '-13 day') AND DATE('now', 'localtime', '-7 day')",
+      "month" => "DATE(COALESCE(NULLIF(pub_date, ''), create_date)) BETWEEN DATE('now', 'localtime', '-29 day') AND DATE('now', 'localtime', '-14 day')",
+      "earlier" => "DATE(COALESCE(NULLIF(pub_date, ''), create_date)) < DATE('now', 'localtime', '-29 day')",
+      _ => return 0,
+    };
+    let mut connection = establish_connection();
+    let affected: Vec<FeedUuidRow> = diesel::sql_query(format!(
+      "SELECT DISTINCT feed_uuid FROM articles WHERE read_status = 1 AND {condition}"
+    ))
+    .load(&mut connection)
+    .unwrap_or_default();
+    let result = diesel::sql_query(format!(
+      "UPDATE articles SET read_status = 2 WHERE read_status = 1 AND {condition}"
+    ))
+    .execute(&mut connection);
+
+    match result {
+      Ok(changed) => {
+        let feeds: Vec<String> = affected.into_iter().map(|row| row.feed_uuid).collect();
+        crate::feed::channel::recalc_unread_count(&feeds);
+        changed
+      }
+      Err(_) => 0,
+    }
   }
 
   pub fn mark_today_as_read() -> usize {

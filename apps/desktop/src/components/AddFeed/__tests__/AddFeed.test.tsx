@@ -1,3 +1,4 @@
+import { invoke } from "@tauri-apps/api/core";
 import {
   act,
   cleanup,
@@ -28,14 +29,17 @@ const navigate = vi.fn();
 const toastSuccess = vi.fn();
 const toastError = vi.fn();
 
-vi.mock("@/helpers/dataAgent", () => ({
-  fetchFeed: (url: string, origin?: string, carrier?: string) =>
-    fetchFeed(url, origin, carrier),
-  subscribeFeed: (url: string, origin?: string, carrier?: string) =>
-    subscribeFeed(url, origin, carrier),
-  moveChannelIntoFolder: (uuid: string, folder: string, sort: number) =>
-    moveChannelIntoFolder(uuid, folder, sort),
-  createFolder: (name: string) => createFolder(name),
+vi.mock("@tauri-apps/api/core", () => ({
+  invoke: vi.fn((command: string, args: any) => {
+    if (command === "fetch_feed") {
+      return fetchFeed(args.url, args.origin, args.carrier);
+    }
+    if (command === "add_feed") {
+      return subscribeFeed(args.url, args.origin, args.carrier);
+    }
+    if (command === "create_folder") return createFolder(args.name);
+    return Promise.resolve([]);
+  }),
 }));
 
 vi.mock("react-router-dom", () => ({

@@ -8,10 +8,8 @@ import {
 } from "@/typing";
 import { ReaderControls } from "../index";
 
-vi.mock("@/helpers/dataAgent", () => ({
-  updateArticleStarStatus: vi.fn().mockResolvedValue({}),
-  updateArticleReadStatus: vi.fn().mockResolvedValue({}),
-  updateArticleReadLaterStatus: vi.fn().mockResolvedValue({}),
+vi.mock("@/helpers/http", () => ({
+  apiPost: vi.fn().mockResolvedValue({}),
 }));
 
 vi.mock("@tauri-apps/plugin-shell", () => ({
@@ -25,7 +23,7 @@ vi.mock("react-i18next", () => ({
   }),
 }));
 
-import * as dataAgent from "@/helpers/dataAgent";
+import { apiPost } from "@/helpers/http";
 
 function makeArticle(overrides: Partial<ArticleResItem> = {}): ArticleResItem {
   return {
@@ -69,9 +67,9 @@ describe("ReaderControls", () => {
       fireEvent.click(btn!);
 
       await waitFor(() => {
-        expect(dataAgent.updateArticleStarStatus).toHaveBeenCalledWith(
-          "test-uuid",
-          ArticleStarStatus.STARRED,
+        expect(apiPost).toHaveBeenCalledWith(
+          "/articles/test-uuid/star",
+          { starred: ArticleStarStatus.STARRED },
         );
       });
     });
@@ -86,9 +84,9 @@ describe("ReaderControls", () => {
       fireEvent.click(btn!);
 
       await waitFor(() => {
-        expect(dataAgent.updateArticleStarStatus).toHaveBeenCalledWith(
-          "test-uuid",
-          ArticleStarStatus.UNSTAR,
+        expect(apiPost).toHaveBeenCalledWith(
+          "/articles/test-uuid/star",
+          { starred: ArticleStarStatus.UNSTAR },
         );
       });
     });
@@ -125,9 +123,9 @@ describe("ReaderControls", () => {
       fireEvent.click(btn!);
 
       await waitFor(() => {
-        expect(dataAgent.updateArticleReadStatus).toHaveBeenCalledWith(
-          "test-uuid",
-          ArticleReadStatus.READ,
+        expect(apiPost).toHaveBeenCalledWith(
+          "/articles/test-uuid/read",
+          { read_status: ArticleReadStatus.READ },
         );
       });
     });

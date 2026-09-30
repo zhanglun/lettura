@@ -89,7 +89,7 @@ body {
   max-width: 100%;
   height: 100%;
   max-height: 100%;
-  /* 透明窗口：圆角由 fusion-root 裁切，四个角外露出透明 */
+  /* Keep the native transparent window visible at the shell's rounded corners. */
   background: transparent;
 }
 
@@ -102,6 +102,10 @@ body {
 #root {
   width: 100%;
   height: 100%;
+  overflow: hidden;
+  border-radius: 16px;
+  /* Boot fallback: keep the rounded window visible before React mounts. */
+  background: var(--color-background-body, #f4f1ec);
 }
 
 code {

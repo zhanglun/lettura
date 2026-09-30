@@ -1,7 +1,7 @@
 import pLimit from "p-limit";
 import type { StateCreator } from "zustand";
 import type { Channel, FeedResItem } from "@/db";
-import * as dataAgent from "@/helpers/dataAgent";
+import { apiGet } from "@/helpers/http";
 
 export type CollectionMeta = {
   total: { unread: number };
@@ -139,7 +139,7 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
   },
 
   initCollectionMetas() {
-    dataAgent.getCollectionMetas().then((meta) => {
+    apiGet<any>("/collection-metas").then((meta) => {
       const today =
         typeof meta?.today === "number"
           ? meta.today
@@ -225,8 +225,8 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
       });
     };
     return Promise.all([
-      dataAgent.getSubscribes(),
-      dataAgent.getUnreadTotal(),
+      apiGet<any[]>("/subscribes"),
+      apiGet<Record<string, number>>("/unread-total"),
     ]).then(([feedList, unreadTotal]) => {
       feedList = initUnreadCount(feedList, unreadTotal);
       set(() => ({
@@ -289,7 +289,7 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
     const limit = pLimit(5);
     const fns = (children?.length > 0 ? children : [{ ...feed }]).map((_) => {
       return limit(() => {
-        return dataAgent.syncFeed("feed", _.uuid);
+        return apiGet<any>(`/feeds/${_.uuid}/sync`, { feed_type: "feed" });
       });
     });
 

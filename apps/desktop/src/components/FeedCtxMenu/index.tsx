@@ -21,7 +21,7 @@ import { RouteConfig } from "@/config";
 import type { FeedResItem } from "@/db";
 import { busChannel } from "@/helpers/busChannel";
 import { copyText } from "@/helpers/copyText";
-import * as dataAgent from "@/helpers/dataAgent";
+import { apiPost } from "@/helpers/http";
 import { showErrorToast } from "@/helpers/errorHandler";
 import { toast } from "@/helpers/toast";
 import { useBearStore } from "@/stores";
@@ -137,15 +137,21 @@ export function FeedCtxMenu({
   };
 
   const markAllRead = (f: FeedResItem) => {
-    dataAgent.markAllRead({ uuid: f.uuid }).then(() => {
+    apiPost("/mark-all-as-read", { uuid: f.uuid }).then(() => {
       busChannel.emit("getChannels");
       refresh();
     });
   };
 
   const move = (f: FeedResItem, folderUuid: string) => {
-    dataAgent
-      .moveChannelIntoFolder(f.uuid, folderUuid, f.sort ?? 0)
+    apiPost("/update-feed-sort", [
+      {
+        item_type: f.item_type,
+        uuid: f.uuid,
+        folder_uuid: folderUuid,
+        sort: f.sort ?? 0,
+      },
+    ])
       .then(() => {
         toast.success(t("settings.subscriptions.moved"));
         busChannel.emit("getChannels");

@@ -9,7 +9,7 @@ import { useShallow } from "zustand/react/shallow";
 import type { FolderResItem } from "@/db";
 import { toast } from "@/helpers/toast";
 import { useBearStore } from "@/stores";
-import * as dataAgent from "../../helpers/dataAgent";
+import { apiPost } from "../../helpers/http";
 
 export interface AddFolderProps {
   action: "add" | "edit";
@@ -56,9 +56,9 @@ export const AddFolder = React.memo((props: AddFolderProps) => {
     let p: Promise<any> = Promise.resolve();
 
     if (action === "add") {
-      p = dataAgent.createFolder(name);
+      p = apiPost<[number, string]>("/folders", { name });
     } else if (folder) {
-      p = dataAgent.updateFolder(folder.uuid, name);
+      p = apiPost<[number, string]>(`/folders/${folder.uuid}`, { name });
     }
 
     p.then((res) => {

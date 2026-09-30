@@ -6,7 +6,7 @@ import { Bookmark, ExternalLink, Eye, EyeOff, Star } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { ArticleResItem } from "@/db";
-import * as dataAgent from "@/helpers/dataAgent";
+import { apiPost } from "@/helpers/http";
 import {
   ArticleReadLaterStatus,
   ArticleReadStatus,
@@ -50,7 +50,7 @@ export function ReaderControls({
       starred === ArticleStarStatus.STARRED
         ? ArticleStarStatus.UNSTAR
         : ArticleStarStatus.STARRED;
-    dataAgent.updateArticleStarStatus(article.uuid, next).then(() => {
+    apiPost(`/articles/${article.uuid}/star`, { starred: next }).then(() => {
       article.starred = next;
       setStarred(next);
       onStarChange?.({ ...article });
@@ -62,7 +62,7 @@ export function ReaderControls({
       readStatus === ArticleReadStatus.UNREAD
         ? ArticleReadStatus.READ
         : ArticleReadStatus.UNREAD;
-    dataAgent.updateArticleReadStatus(article.uuid, next).then(() => {
+    apiPost(`/articles/${article.uuid}/read`, { read_status: next }).then(() => {
       article.read_status = next;
       setReadStatus(next);
       onReadChange?.({ ...article });
@@ -74,7 +74,7 @@ export function ReaderControls({
       readLater === ArticleReadLaterStatus.SAVED
         ? ArticleReadLaterStatus.UNSAVED
         : ArticleReadLaterStatus.SAVED;
-    dataAgent.updateArticleReadLaterStatus(article.uuid, next).then(() => {
+    apiPost(`/articles/${article.uuid}/read-later`, { is_read_later: next }).then(() => {
       article.is_read_later = next;
       setReadLater(next);
     });

@@ -1,5 +1,5 @@
 import type { StateCreator } from "zustand";
-import * as dataAgent from "../helpers/dataAgent";
+import { apiGet, apiPost } from "../helpers/http";
 
 export interface UserConfigSlice {
   userConfig: UserConfig;
@@ -29,7 +29,7 @@ export const createUserConfigSlice: StateCreator<UserConfigSlice> = (
   userConfig: {} as UserConfig,
 
   getUserConfig: () => {
-    return dataAgent.getUserConfig().then((cfg) => {
+    return apiGet<UserConfig>("/user-config").then((cfg) => {
       set(() => ({
         userConfig: cfg,
       }));
@@ -47,7 +47,7 @@ export const createUserConfigSlice: StateCreator<UserConfigSlice> = (
     set(() => ({
       userConfig: cfg,
     }));
-    return dataAgent.updateUserConfig(cfg);
+    return apiPost<number>("/user-config", cfg);
   },
 
   setLastSyncTime(t) {

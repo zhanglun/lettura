@@ -15,8 +15,9 @@ import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 import { EMAIL_SUBSCRIPTION_ENABLED, RouteConfig } from "@/config";
 import type { FeedResItem, SourceAccount } from "@/db";
-import * as dataAgent from "@/helpers/dataAgent";
+import { invoke } from "@tauri-apps/api/core";
 import { showErrorToast } from "@/helpers/errorHandler";
+import { apiPost } from "@/helpers/http";
 import {
   BUILTIN_GENERATORS,
   type FeedGenerator,
@@ -154,8 +155,7 @@ export const AddFeedChannel = (props: any) => {
   useEffect(() => {
     if (!open || mode !== "email") return;
     let cancelled = false;
-    dataAgent
-      .listSourceAccounts()
+    invoke<SourceAccount[]>("list_source_accounts")
       .then((list) => {
         if (cancelled) return;
         const mails = (list || []).filter((a) => a.provider === "mail");
@@ -211,14 +211,13 @@ export const AddFeedChannel = (props: any) => {
   ) => {
     const token = ++probeRef.current;
     setPhase({ s: "trying" });
-    dataAgent
-      .fetchFeed(
-        feedUrl,
-        meta.origin,
-        meta.carrierHint,
-        meta.providerHint,
-        meta.accountUuid,
-      )
+    invoke("fetch_feed", {
+      url: feedUrl,
+      origin: meta.origin,
+      carrier: meta.carrierHint,
+      providerHint: meta.providerHint,
+      accountUuid: meta.accountUuid,
+    })
       .then((res: any) => {
         if (!openRef.current || token !== probeRef.current) return;
         if (!res?.feed) {
@@ -278,14 +277,11 @@ export const AddFeedChannel = (props: any) => {
     timerRef.current = setTimeout(() => {
       const token = ++probeRef.current;
       const emailMode = mode === "email";
-      dataAgent
-        .fetchFeed(
-          text,
-          undefined,
-          undefined,
-          emailMode ? "mail" : undefined,
-          emailMode ? accountUuid : undefined,
-        )
+      invoke("fetch_feed", {
+        url: text,
+        providerHint: emailMode ? "mail" : undefined,
+        accountUuid: emailMode ? accountUuid : undefined,
+      })
         .then((res: any) => {
           if (!openRef.current || token !== probeRef.current) return;
           if (res?.feed) {
@@ -339,7 +335,7 @@ export const AddFeedChannel = (props: any) => {
   const createFolderAndSelect = async () => {
     const name = folderName.trim();
     if (!name) return;
-    await dataAgent.createFolder(name);
+    await invoke("create_folder", { name });
     await store.getSubscribes();
     const created = flattenFolders(useBearStore.getState().subscribes).find(
       (f) => f.title === name,
@@ -354,14 +350,13 @@ export const AddFeedChannel = (props: any) => {
     const { preview } = phase;
     setPhase({ s: "subscribing" });
 
-    dataAgent
-      .subscribeFeed(
-        preview.resolvedUrl,
-        preview.origin,
-        preview.carrierHint,
-        preview.providerHint,
-        preview.accountUuid,
-      )
+    invoke("add_feed", {
+      url: preview.resolvedUrl,
+      origin: preview.origin,
+      carrier: preview.carrierHint,
+      providerHint: preview.providerHint,
+      accountUuid: preview.accountUuid,
+    })
       .then(async (res: any) => {
         if (res[2] !== "" && !res[0]) {
           toast.error(`${t("Unable to subscribe")}：${res[2]}`);
@@ -375,9 +370,11 @@ export const AddFeedChannel = (props: any) => {
         let folderTitle = "";
         if (folderUuid) {
           folderTitle = folders.find((f) => f.uuid === folderUuid)?.title ?? "";
-          await dataAgent
-            .moveChannelIntoFolder(feed.uuid, folderUuid, 0)
-            .catch(() => {});
+          await invoke("move_channel_into_folder", {
+            channelUuid: feed.uuid,
+            folderUuid,
+            sort: 0,
+          }).catch(() => {});
         }
 
         feed.children = [];

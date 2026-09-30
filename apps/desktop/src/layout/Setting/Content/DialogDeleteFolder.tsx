@@ -3,7 +3,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import type { FolderResItem } from "@/db";
 import { busChannel } from "@/helpers/busChannel";
-import * as dataAgent from "@/helpers/dataAgent";
+import { apiDelete } from "@/helpers/http";
 import { toast } from "@/helpers/toast";
 
 export interface DialogProps {
@@ -22,8 +22,7 @@ export const DialogDeleteFolder = React.memo((props: DialogProps) => {
 
   const confirmDelete = () => {
     if (folder?.uuid) {
-      dataAgent
-        .deleteFolder(folder.uuid)
+      apiDelete(`/folders/${folder.uuid}`)
         .then(() => {
           busChannel.emit("getChannels");
           afterConfirm();

@@ -28,7 +28,9 @@ import { FeedProfile } from "@/components/FeedProfile";
 import { RouteConfig } from "@/config";
 import type { ArticleResItem } from "@/db";
 import { retainArticleAfterRead } from "@/helpers/articleHelpers";
-import * as dataAgent from "@/helpers/dataAgent";
+import { showErrorToast } from "@/helpers/errorHandler";
+import { toast } from "@/helpers/toast";
+import { apiGet, apiPost } from "@/helpers/http";
 import { useQuery } from "@/helpers/parseXML";
 import { useArticle } from "@/hooks/useArticle";
 import { View } from "@/layout/Article/View";
@@ -66,6 +68,7 @@ export function ArticleView() {
       syncArticles: state.syncArticles,
       getSubscribes: state.getSubscribes,
       updateCollectionMeta: state.updateCollectionMeta,
+      initCollectionMetas: state.initCollectionMetas,
       markArticleListAsRead: state.markArticleListAsRead,
       subscribes: state.subscribes,
       userConfig: state.userConfig,
@@ -91,8 +94,12 @@ export function ArticleView() {
     refreshCarrierCounts,
     isLoading,
     isEmpty,
+    initialReady,
+    error,
+    retry,
     dayCounts,
     mutate,
+    mutateBucket,
     isToday,
     isAll,
     isStarred,
@@ -174,8 +181,7 @@ export function ArticleView() {
     if (!(isArticleRoute && params.id)) return;
     if (store.expandedArticleUuid === params.id) return;
     let cancelled = false;
-    dataAgent
-      .getArticleDetail(params.id!)
+    apiGet<any>(`/articles/${params.id!}`)
       .then((article) => {
         if (!cancelled && article) {
           store.setArticle(article);
@@ -304,7 +310,7 @@ export function ArticleView() {
         a.starred === ArticleStarStatus.STARRED
           ? ArticleStarStatus.UNSTAR
           : ArticleStarStatus.STARRED;
-      dataAgent.updateArticleStarStatus(a.uuid, next).then(() => {
+      apiPost(`/articles/${a.uuid}/star`, { starred: next }).then(() => {
         handleArticleUpdate({ ...a, starred: next });
       });
     },
@@ -442,7 +448,7 @@ export function ArticleView() {
   const markQueueAllRead = useCallback(async () => {
     if (!feedUuid) return;
     const before = store.viewMeta?.unread ?? queueFeed?.unread ?? 0;
-    await dataAgent.markAllRead({ uuid: feedUuid });
+    await apiPost("/mark-all-as-read", { uuid: feedUuid });
     if (before > 0) store.updateCollectionMeta(0, -before);
     store.setViewMeta({ ...store.viewMeta, unread: 0 });
     await Promise.all([store.getSubscribes?.(), mutate(identity)]);
@@ -458,6 +464,52 @@ export function ArticleView() {
       setQueueSyncing(false);
     }
   }, [queueFeed, queueSyncing, store, mutate]);
+
+  const [markingBucket, setMarkingBucket] = useState<string | null>(null);
+  const markBucketRead = useCallback(
+    async (dayBucket: string) => {
+      if (markingBucket) return;
+      setMarkingBucket(dayBucket);
+      try {
+        await apiPost("/mark-all-as-read", { day_bucket: dayBucket });
+        const removeFromUnread =
+          !isStarred && store.currentFilter.id === ArticleReadStatus.UNREAD;
+        mutateBucket(dayBucket, (pages) =>
+          pages.map((page) => ({
+            ...page,
+            list: removeFromUnread
+              ? page.list.filter(
+                  (article) => article.read_status !== ArticleReadStatus.UNREAD,
+                )
+              : page.list.map((article) => ({
+                  ...article,
+                  read_status: ArticleReadStatus.READ,
+                })),
+          })),
+        );
+        await Promise.all([
+          store.getSubscribes?.(),
+          store.initCollectionMetas?.(),
+          refreshCarrierCounts(),
+        ]);
+        toast.success(
+          t("fusion.list.mark_bucket_done", {
+            bucket: t(`fusion.list.day_${dayBucket}`),
+          }),
+        );
+      } catch (error) {
+        showErrorToast(
+          error,
+          t("fusion.list.mark_bucket_failed", {
+            bucket: t(`fusion.list.day_${dayBucket}`),
+          }),
+        );
+      } finally {
+        setMarkingBucket(null);
+      }
+    },
+    [markingBucket, mutateBucket, refreshCarrierCounts, store, t],
+  );
 
   const markAllRead = async () => {
     await store.markArticleListAsRead(isToday, isAll);
@@ -656,6 +708,11 @@ export function ArticleView() {
         collapsedBuckets={collapsedBuckets}
         onToggleBucket={toggleBucket}
         onLoadMore={loadMoreBucket}
+        onMarkBucketRead={markBucketRead}
+        markingBucket={markingBucket}
+        loading={!isQueueMode && !initialReady}
+        error={!!error}
+        onRetry={retry}
         dayCounts={dayCounts as Record<string, number> | undefined}
         isEmpty={isEmpty}
         emptyIcon={listEmpty.icon}

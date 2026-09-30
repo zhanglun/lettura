@@ -56,9 +56,8 @@ vi.mock("@/helpers/toast", () => ({
   },
 }));
 
-vi.mock("@/helpers/dataAgent", () => ({
-  markAllRead: mocks.markAllRead,
-  moveChannelIntoFolder: mocks.moveChannelIntoFolder,
+vi.mock("@/helpers/http", () => ({
+  apiPost: mocks.markAllRead,
 }));
 
 vi.mock("@/helpers/copyText", () => ({

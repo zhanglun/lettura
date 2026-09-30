@@ -136,9 +136,6 @@ importers:
       react-router-dom:
         specifier: ^6.18.0
         version: 6.30.3(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      swr:
-        specifier: ^2.2.4
-        version: 2.4.1(react@19.3.0)
       tauri-plugin-log-api:
         specifier: github:tauri-apps/tauri-plugin-log
         version: https://codeload.github.com/tauri-apps/tauri-plugin-log/tar.gz/f76f6c56a5f63e9192c5e05fafbd114b9c455ee6
@@ -4867,11 +4864,6 @@ packages:
     engines: {node: '>=10.13.0'}
     hasBin: true
 
-  swr@2.4.1:
-    resolution: {integrity: sha512-2CC6CiKQtEwaEeNiqWTAw9PGykW8SR5zZX8MZk6TeAvEAnVS7Visz8WzphqgtQ8v2xz/4Q5K+j+SeMaKXeeQIA==}
-    peerDependencies:
-      react: ^16.11.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-
   symbol-tree@3.2.4:
     resolution: {integrity: sha512-9QNk5KwDF+Bvz+PyObkmSYjI5ksVUYtjW7AU22r2NKcfLJcXp96hkDWU3+XndOsUb+AQ9QhfzfCT2O+CNWT5Tw==}
 
@@ -6564,7 +6556,7 @@ snapshots:
       '@babel/plugin-transform-object-rest-spread': 7.28.6(@babel/core@7.29.0(supports-color@7.2.0))(supports-color@7.2.0)
       '@babel/plugin-transform-object-super': 7.29.7(@babel/core@7.29.0(supports-color@7.2.0))(supports-color@7.2.0)
       '@babel/plugin-transform-optional-catch-binding': 7.28.6(@babel/core@7.29.0(supports-color@7.2.0))
-      '@babel/plugin-transform-optional-chaining': 7.28.6(@babel/core@7.29.0(supports-color@7.2.0))(supports-color@7.2.0)
+      '@babel/plugin-transform-optional-chaining': 7.29.7(@babel/core@7.29.0(supports-color@7.2.0))(supports-color@7.2.0)
       '@babel/plugin-transform-parameters': 7.27.7(@babel/core@7.29.0(supports-color@7.2.0))
       '@babel/plugin-transform-private-methods': 7.28.6(@babel/core@7.29.0(supports-color@7.2.0))(supports-color@7.2.0)
       '@babel/plugin-transform-private-property-in-object': 7.28.6(@babel/core@7.29.0(supports-color@7.2.0))(supports-color@7.2.0)
@@ -10578,12 +10570,6 @@ snapshots:
       picocolors: 1.1.1
       sax: 1.6.0
       stable: 0.1.8
-
-  swr@2.4.1(react@19.3.0):
-    dependencies:
-      dequal: 2.0.3
-      react: 19.3.0
-      use-sync-external-store: 1.6.0(react@19.3.0)
 
   symbol-tree@3.2.4: {}
 

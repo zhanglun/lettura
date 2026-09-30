@@ -17,7 +17,7 @@ import { FeedIcon } from "@/components/FeedIcon";
 import { QuietEmpty } from "@/components/QuietEmpty";
 import { RouteConfig } from "@/config";
 import type { FeedResItem } from "@/db";
-import * as dataAgent from "@/helpers/dataAgent";
+import { apiGet } from "@/helpers/http";
 import { getHostLabel } from "@/helpers/feedMeta";
 import { getCarrier, mediaBadge } from "@/helpers/mediaType";
 import i18n from "@/i18n";
@@ -206,8 +206,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
           .slice(0, 6);
 
         // 文章走后端异步搜索，与本地命令/来源过滤并发，合并返回
-        return dataAgent
-          .globalSearch(text, 6)
+        return apiGet<any[]>("/search", { query: text, limit: 6 })
           .then((rows) => {
             const articles: PaletteItem[] = (rows || []).map((a: any) => ({
               id: `article:${a.uuid}`,

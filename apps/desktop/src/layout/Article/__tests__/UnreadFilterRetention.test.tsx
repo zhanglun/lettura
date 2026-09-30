@@ -20,8 +20,8 @@ vi.mock("@/stores", () => ({
   }),
 }));
 
-vi.mock("@/helpers/dataAgent", () => ({
-  updateArticleReadStatus: vi.fn().mockResolvedValue({}),
+vi.mock("@/helpers/http", () => ({
+  apiPost: vi.fn().mockResolvedValue({}),
 }));
 
 vi.mock("react-i18next", () => ({

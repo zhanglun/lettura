@@ -12,7 +12,7 @@ import {
   pickDuration,
   pickThumbUrl,
 } from "@/helpers/articleContent";
-import * as dataAgent from "@/helpers/dataAgent";
+import { apiPost } from "@/helpers/http";
 import { formatRelative } from "@/helpers/feedMeta";
 import { getCarrier } from "@/helpers/mediaType";
 import { useBearStore } from "@/stores";
@@ -200,22 +200,24 @@ export const ArticleItem = React.forwardRef(
                 starred === ArticleStarStatus.STARRED
                   ? ArticleStarStatus.UNSTAR
                   : ArticleStarStatus.STARRED;
-              dataAgent.updateArticleStarStatus(article.uuid, next).then(() => {
+              apiPost(`/articles/${article.uuid}/star`, { starred: next }).then(() => {
                 setStarred(next);
                 onUpdate?.({ starred: next });
               });
             }}
           />
-          <IconButton
-            size="sm"
-            variant="ghost"
-            icon={<CheckCheck size={12} />}
-            label={t("Mark as read")}
-            onClick={(e) => {
-              e.stopPropagation();
-              markAsRead(article);
-            }}
-          />
+          {readStatus === ArticleReadStatus.UNREAD && (
+            <IconButton
+              size="sm"
+              variant="ghost"
+              icon={<CheckCheck size={12} />}
+              label={t("Mark as read")}
+              onClick={(e) => {
+                e.stopPropagation();
+                markAsRead(article);
+              }}
+            />
+          )}
         </span>
       </div>
     );

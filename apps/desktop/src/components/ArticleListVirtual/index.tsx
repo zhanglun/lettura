@@ -1,6 +1,6 @@
 import { Skeleton } from "@astryxdesign/core/Skeleton";
 import type { LucideIcon } from "lucide-react";
-import { ChevronDown, SearchX } from "lucide-react";
+import { CheckCheck, ChevronDown, Loader2, SearchX } from "lucide-react";
 import React, { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { QuietEmpty } from "@/components/QuietEmpty";
@@ -14,9 +14,14 @@ export type ArticleListVirtualProps = {
   collapsedBuckets: Set<string>;
   onToggleBucket: (bucket: string) => void;
   onLoadMore: (key: string) => void;
+  onMarkBucketRead?: (bucket: string) => void;
+  markingBucket?: string | null;
   /** 桶真实分布（get_article_summary）；缺省回落 section.realCount/loaded */
   dayCounts?: Record<string, number>;
   isEmpty: boolean;
+  loading?: boolean;
+  error?: boolean;
+  onRetry?: () => void;
   /** 空态分型（由父级按上下文给出）：图标 / 标题 / 提示 / 恢复动作 */
   emptyIcon?: LucideIcon;
   emptyTitle?: React.ReactNode;
@@ -37,11 +42,17 @@ function DayHead({
   count,
   collapsed,
   onToggle,
+  onMarkAllRead,
+  canMarkAllRead,
+  markingAllRead,
 }: {
   bucket: string;
   count: number;
   collapsed: boolean;
   onToggle: () => void;
+  onMarkAllRead?: () => void;
+  canMarkAllRead?: boolean;
+  markingAllRead?: boolean;
 }) {
   const { t } = useTranslation();
   return (
@@ -62,6 +73,29 @@ function DayHead({
           ? t("fusion.list.day_collapsed_count", { count })
           : t("fusion.list.day_count", { count })}
       </span>
+      {onMarkAllRead && canMarkAllRead && (
+        <button
+          type="button"
+          className="fusion-dayhead-read"
+          aria-label={t("fusion.list.mark_bucket_read", {
+            bucket: t(`fusion.list.day_${bucket}`),
+          })}
+          title={t("fusion.list.mark_bucket_read", {
+            bucket: t(`fusion.list.day_${bucket}`),
+          })}
+          disabled={markingAllRead}
+          onClick={(event) => {
+            event.stopPropagation();
+            onMarkAllRead();
+          }}
+        >
+          {markingAllRead ? (
+            <Loader2 size={13} className="animate-spin" />
+          ) : (
+            <CheckCheck size={13} />
+          )}
+        </button>
+      )}
     </div>
   );
 }
@@ -103,8 +137,13 @@ export const ArticleListVirtual = React.memo(function ArticleListVirtual(
     collapsedBuckets,
     onToggleBucket,
     onLoadMore,
+    onMarkBucketRead,
+    markingBucket,
     dayCounts,
     isEmpty,
+    loading = false,
+    error = false,
+    onRetry,
     emptyIcon,
     emptyTitle,
     emptyHint,
@@ -146,7 +185,34 @@ export const ArticleListVirtual = React.memo(function ArticleListVirtual(
         isEmpty ? "" : " fusion-inset-tail"
       }`}
     >
-      {isEmpty ? (
+      {loading ? (
+        <div className="fusion-list-skeleton" aria-busy="true" aria-label={t("fusion.list.loading")}>
+          {Array.from({ length: 5 }, (_, index) => (
+            <div className="fusion-list-skeleton-row" key={index}>
+              <Skeleton height={6} width={6} />
+              <Skeleton height={43} width={76} />
+              <div className="fusion-list-skeleton-copy">
+                <Skeleton height={13} />
+                <Skeleton height={10} width={180} />
+              </div>
+              <Skeleton height={10} width={72} />
+            </div>
+          ))}
+        </div>
+      ) : error ? (
+        <div className="flex flex-col justify-center min-h-full">
+          <QuietEmpty
+            icon={SearchX}
+            title={t("fusion.list.load_failed")}
+            hint={t("fusion.list.load_failed_hint")}
+            action={onRetry ? (
+              <button type="button" className="fusion-list-retry" onClick={onRetry}>
+                {t("fusion.list.retry")}
+              </button>
+            ) : undefined}
+          />
+        </div>
+      ) : isEmpty ? (
         <div className="flex flex-col justify-center min-h-full">
           <QuietEmpty
             icon={emptyIcon ?? SearchX}
@@ -178,6 +244,8 @@ export const ArticleListVirtual = React.memo(function ArticleListVirtual(
               visibleRows={visibleRows}
               onToggleBucket={onToggleBucket}
               onLoadMore={onLoadMore}
+              onMarkBucketRead={onMarkBucketRead}
+              markingBucket={markingBucket}
               renderRow={renderRow}
             />
           );
@@ -196,8 +264,12 @@ const SectionBlock = React.memo(function SectionBlock({
   visibleRows,
   onToggleBucket,
   onLoadMore,
+  onMarkBucketRead,
+  markingBucket,
   renderRow,
 }: {
+  onMarkBucketRead?: (bucket: string) => void;
+  markingBucket?: string | null;
   section: ListSection;
   collapsed: boolean;
   realCount?: number;
@@ -215,7 +287,9 @@ const SectionBlock = React.memo(function SectionBlock({
     const sentinel = sentinelRef.current;
     if (!sentinel) return;
     const check = () => {
-      if (collapsed || !section.hasMore || section.loading) return;
+      // Empty bucket sentinels all start in the viewport; do not let them
+      // trigger six requests. An unloaded bucket is opened explicitly below.
+      if (collapsed || section.loaded === 0 || !section.hasMore || section.loading) return;
       if (requestedRef.current) return;
       const rect = sentinel.getBoundingClientRect();
       if (rect.top < window.innerHeight + 400) {
@@ -233,25 +307,6 @@ const SectionBlock = React.memo(function SectionBlock({
     if (!section.loading) requestedRef.current = false;
   }, [section.loading, section.rows.length]);
 
-  // 展开一个还没有任何数据的桶：自动首拉
-  useEffect(() => {
-    if (
-      !collapsed &&
-      section.loaded === 0 &&
-      section.hasMore &&
-      !section.loading
-    ) {
-      onLoadMore(section.key);
-    }
-  }, [
-    collapsed,
-    section.loaded,
-    section.hasMore,
-    section.loading,
-    section.key,
-    onLoadMore,
-  ]);
-
   const showSkeleton = !collapsed && section.loading;
 
   return (
@@ -261,7 +316,18 @@ const SectionBlock = React.memo(function SectionBlock({
           bucket={section.bucket}
           count={realCount ?? section.loaded}
           collapsed={collapsed}
-          onToggle={() => onToggleBucket(section.bucket!)}
+          onToggle={() => {
+            const opening = collapsed;
+            onToggleBucket(section.bucket!);
+            if (opening && section.loaded === 0) onLoadMore(section.key);
+          }}
+          onMarkAllRead={
+            onMarkBucketRead
+              ? () => onMarkBucketRead(section.bucket!)
+              : undefined
+          }
+          canMarkAllRead={section.rows.some((a) => a.read_status === 1)}
+          markingAllRead={markingBucket === section.bucket}
         />
       )}
       {visibleRows.map((a, i) => renderRow(a, `${section.key}-${i}-${a.uuid}`))}

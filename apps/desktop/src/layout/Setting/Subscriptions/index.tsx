@@ -24,7 +24,7 @@ import { FeedIcon } from "@/components/FeedIcon";
 import { QuietEmpty } from "@/components/QuietEmpty";
 import { RouteConfig } from "@/config";
 import type { FeedResItem, FolderResItem } from "@/db";
-import * as dataAgent from "@/helpers/dataAgent";
+import { apiPost } from "@/helpers/http";
 import { formatFeedTime, getHostLabel } from "@/helpers/feedMeta";
 import { DialogDeleteFolder } from "@/layout/Setting/Content/DialogDeleteFolder";
 import { DialogUnsubscribeFeed } from "@/layout/Setting/Content/DialogUnsubscribeFeed";
@@ -330,7 +330,7 @@ export const SubscriptionsSection = memo(function SubscriptionsSection() {
     store.syncArticles(f).then(() => store.getSubscribes());
 
   const handleMarkAllRead = (f: FeedResItem) =>
-    dataAgent.markAllRead({ uuid: f.uuid }).then(() => store.getSubscribes());
+    apiPost("/mark-all-as-read", { uuid: f.uuid }).then(() => store.getSubscribes());
 
   return (
     <>

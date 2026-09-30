@@ -37,7 +37,7 @@ import { useShallow } from "zustand/react/shallow";
 import { EMAIL_SUBSCRIPTION_ENABLED, RouteConfig } from "@/config";
 import type { SiteRuleSummary, SourceAccount } from "@/db";
 import { busChannel } from "@/helpers/busChannel";
-import * as dataAgent from "@/helpers/dataAgent";
+import { invoke } from "@tauri-apps/api/core";
 import { showErrorToast } from "@/helpers/errorHandler";
 import { lastNavFrom } from "@/helpers/navHistory";
 import { toast } from "@/helpers/toast";
@@ -124,15 +124,13 @@ export function SettingPage() {
   const [deleting, setDeleting] = useState(false);
 
   const loadAccounts = () => {
-    dataAgent
-      .listSourceAccounts()
+    invoke<SourceAccount[]>("list_source_accounts")
       .then((list) => setAccounts(list || []))
       .catch(() => setAccounts([]));
   };
 
   const loadRules = () => {
-    dataAgent
-      .listSiteRules()
+    invoke<SiteRuleSummary[]>("list_site_rules")
       .then((list) => setRules(list || []))
       .catch(() => setRules([]));
   };
@@ -286,7 +284,7 @@ export function SettingPage() {
 
   const handleExport = async () => {
     try {
-      const opml = await dataAgent.exportOpml();
+      const opml = await invoke<string>("export_opml");
       const filePath = await saveDialog({
         defaultPath: "lettura.opml",
         filters: [{ name: "OPML", extensions: ["opml"] }],
@@ -308,7 +306,9 @@ export function SettingPage() {
     if (selected && typeof selected === "string") {
       try {
         const content = await readTextFile(selected);
-        const result = await dataAgent.importOpml(content);
+        const result = await invoke<{ feed_count: number }>("import_opml", {
+          opmlContent: content,
+        });
         busChannel.emit("getChannels");
         if (result.feed_count > 0) {
           toast.success(
@@ -334,10 +334,10 @@ export function SettingPage() {
   const testRowAccount = async (account: SourceAccount) => {
     setTestingUuid(account.uuid);
     try {
-      const message = await dataAgent.testSourceAccount(
-        account.provider,
-        account.settings,
-      );
+      const message = await invoke<string>("test_source_account", {
+        provider: account.provider,
+        settings: account.settings,
+      });
       toast.success(message || t("settings.source_accounts.test_ok"));
     } catch (error) {
       showErrorToast(error, t("settings.source_accounts.test_fail"));
@@ -350,7 +350,7 @@ export function SettingPage() {
     if (!deleteTarget) return;
     setDeleting(true);
     try {
-      await dataAgent.deleteSourceAccount(deleteTarget.uuid);
+      await invoke("delete_source_account", { uuid: deleteTarget.uuid });
       toast.success(t("settings.source_accounts.deleted"));
       setDeleteTarget(null);
       loadAccounts();
@@ -398,10 +398,10 @@ export function SettingPage() {
   const testNewAccount = async () => {
     setAccTesting(true);
     try {
-      const message = await dataAgent.testSourceAccount(
-        accProvider,
-        accountSettingsJson(),
-      );
+      const message = await invoke<string>("test_source_account", {
+        provider: accProvider,
+        settings: accountSettingsJson(),
+      });
       toast.success(message || t("settings.source_accounts.test_ok"));
     } catch (error) {
       showErrorToast(error, t("settings.source_accounts.test_fail"));
@@ -415,14 +415,15 @@ export function SettingPage() {
     setAccSaving(true);
     try {
       // 名称默认取 host（邮箱）或固定名（B站），用户没填时
-      await dataAgent.saveSourceAccount(
-        accProvider,
-        accForm.label.trim() ||
+      await invoke("save_source_account", {
+        provider: accProvider,
+        label:
+          accForm.label.trim() ||
           (accProvider === "mail"
             ? accForm.host.trim()
             : t("settings.source_accounts.provider_bilibili")),
-        accountSettingsJson(),
-      );
+        settings: accountSettingsJson(),
+      });
       toast.success(t("settings.source_accounts.saved"));
       setAccDialogOpen(false);
       loadAccounts();
@@ -442,7 +443,7 @@ export function SettingPage() {
     if (selected && typeof selected === "string") {
       try {
         const content = await readTextFile(selected);
-        const key = await dataAgent.importSiteRule(content);
+        const key = await invoke<string>("import_site_rule", { content });
         toast.success(t("settings.site_rules.imported", { key }));
         loadRules();
       } catch (error) {

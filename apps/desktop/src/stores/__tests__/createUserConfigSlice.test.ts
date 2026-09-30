@@ -5,11 +5,11 @@ import {
   type UserConfigSlice,
 } from "../createUserConfigSlice";
 
-vi.mock("@/helpers/dataAgent", () => ({
-  getUserConfig: vi.fn(() =>
+vi.mock("@/helpers/http", () => ({
+  apiGet: vi.fn(() =>
     Promise.resolve({ purge_on_days: 7, purge_unread_articles: false }),
   ),
-  updateUserConfig: vi.fn(() => Promise.resolve()),
+  apiPost: vi.fn(() => Promise.resolve()),
 }));
 
 const createTestStore = () =>

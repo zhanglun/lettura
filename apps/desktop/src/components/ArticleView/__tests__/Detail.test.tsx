@@ -23,11 +23,11 @@ vi.mock("@/helpers/articleContent", () => ({
   estimateReadMinutes: () => 0,
 }));
 
-vi.mock("@/helpers/dataAgent", () => ({
-  getArticleDetail: vi.fn(),
+vi.mock("@/helpers/http", () => ({
+  apiGet: vi.fn(),
 }));
 
-import * as dataAgent from "@/helpers/dataAgent";
+import { apiGet } from "@/helpers/http";
 
 function makeArticle(overrides: Partial<ArticleResItem> = {}): ArticleResItem {
   return {
@@ -62,7 +62,7 @@ describe("ArticleDetail", () => {
   });
 
   it("成功加载时渲染文章内容", async () => {
-    (dataAgent.getArticleDetail as ReturnType<typeof vi.fn>).mockResolvedValue({
+    (apiGet as ReturnType<typeof vi.fn>).mockResolvedValue({
       content: "<p>Hello world</p>",
       description: "",
       media_object: "[]",
@@ -77,7 +77,7 @@ describe("ArticleDetail", () => {
   });
 
   it("加载失败时显示错误提示", async () => {
-    (dataAgent.getArticleDetail as ReturnType<typeof vi.fn>).mockRejectedValue(
+    (apiGet as ReturnType<typeof vi.fn>).mockRejectedValue(
       new Error("Network error"),
     );
 
@@ -92,7 +92,7 @@ describe("ArticleDetail", () => {
   });
 
   it("加载失败时渲染「在浏览器中打开」链接（有 link 时）", async () => {
-    (dataAgent.getArticleDetail as ReturnType<typeof vi.fn>).mockRejectedValue(
+    (apiGet as ReturnType<typeof vi.fn>).mockRejectedValue(
       new Error("Network error"),
     );
 
@@ -106,7 +106,7 @@ describe("ArticleDetail", () => {
 
   it("切文章后过期的失败不再置错误态（invoke 无法中断，靠 cancelled 标志位）", async () => {
     let rejectFirst!: (e: Error) => void;
-    (dataAgent.getArticleDetail as ReturnType<typeof vi.fn>)
+    (apiGet as ReturnType<typeof vi.fn>)
       .mockImplementationOnce(
         () =>
           new Promise((_resolve, reject) => {
@@ -136,6 +136,6 @@ describe("ArticleDetail", () => {
 
   it("article 为 null 时不崩溃且不发请求", () => {
     renderWithTheme(<ArticleDetail article={null} />);
-    expect(dataAgent.getArticleDetail).not.toHaveBeenCalled();
+    expect(apiGet).not.toHaveBeenCalled();
   });
 });

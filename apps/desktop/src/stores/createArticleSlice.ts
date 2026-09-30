@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import type { StateCreator } from "zustand";
 import type { ArticleResItem } from "@/db";
-import * as dataAgent from "@/helpers/dataAgent";
+import { apiGet, apiPost } from "@/helpers/http";
 import { ArticleReadStatus } from "@/typing";
 import type { FeedSlice } from "./createFeedSlice";
 
@@ -66,9 +66,10 @@ export const createArticleSlice: StateCreator<
 
   getArticleList: async (query: any) => {
     const currentList = get().articleList;
-    const res = (await dataAgent.getArticleList(query)) as {
-      list: ArticleResItem[];
-    };
+    const res = await apiGet<{ list: ArticleResItem[] }>(
+      "/articles",
+      query,
+    );
     const { list } = res;
 
     get().setArticleList([...currentList, ...list]);
@@ -84,7 +85,9 @@ export const createArticleSlice: StateCreator<
       return;
     }
 
-    const res = await dataAgent.updateArticleReadStatus(article.uuid, status);
+    const res = await apiPost<number>(`/articles/${article.uuid}/read`, {
+      read_status: status,
+    });
 
     if (res) {
       const isToday = dayjs(
@@ -130,7 +133,7 @@ export const createArticleSlice: StateCreator<
     if (isAll) params.is_all = isAll;
     if (feed) params.uuid = feed.uuid;
 
-    await dataAgent.markAllRead(params);
+    await apiPost("/mark-all-as-read", params);
 
     set(() => ({
       articleList: get().articleList.map((_) => {

@@ -493,6 +493,7 @@ pub fn mark_all_read(param: feed::article::MarkAllUnreadParam) -> usize {
     uuid: param.uuid,
     is_today: param.is_today,
     is_all: param.is_all,
+    day_bucket: param.day_bucket,
   })
 }
 
