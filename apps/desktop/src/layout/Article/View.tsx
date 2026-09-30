@@ -13,7 +13,7 @@ import {
 import { ReaderControls } from "@/components/ReaderControls";
 import type { ArticleResItem } from "@/db";
 import { formatRelative } from "@/helpers/feedMeta";
-import { useBearStore } from "@/stores";
+import { useAppStore } from "@/stores";
 
 export interface ArticleViewProps {
   article: ArticleResItem | null;
@@ -43,7 +43,7 @@ export function View({
   const { t } = useTranslation();
   const navigate = useNavigate();
   const params = useParams<{ uuid?: string }>();
-  const setArticle = useBearStore((state) => state.setArticle);
+  const setArticle = useAppStore((state) => state.setArticle);
   const [progress, setProgress] = useState(0);
   const internalRef = useRef<ScrollBoxRefObject>(null);
   const scrollBoxRef = scrollRef ?? internalRef;

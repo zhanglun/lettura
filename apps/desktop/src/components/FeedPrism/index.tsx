@@ -6,7 +6,7 @@ import { useShallow } from "zustand/react/shallow";
 import { RouteConfig } from "@/config";
 import type { FeedResItem } from "@/db";
 import { getHostLabel } from "@/helpers/feedMeta";
-import { useBearStore } from "@/stores";
+import { useAppStore } from "@/stores";
 
 function flattenFeeds(items: FeedResItem[]): FeedResItem[] {
   return items.flatMap((item) =>
@@ -34,7 +34,7 @@ export function FeedPrism({
   const [query, setQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const store = useBearStore(
+  const store = useAppStore(
     useShallow((state) => ({
       subscribes: state.subscribes,
     })),

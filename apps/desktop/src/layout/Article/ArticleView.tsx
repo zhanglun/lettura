@@ -35,7 +35,7 @@ import { toast } from "@/helpers/toast";
 import { useArticle } from "@/hooks/useArticle";
 import { View } from "@/layout/Article/View";
 import { HK } from "@/shortcuts";
-import { useBearStore } from "@/stores";
+import { useAppStore } from "@/stores";
 import { ArticleReadStatus, ArticleStarStatus } from "@/typing";
 import { DEV_PREVIEW_FIRST_RUN, EmptyFace } from "./EmptyFace";
 
@@ -50,7 +50,7 @@ export function ArticleView() {
 
   const feedUuid = params.uuid ?? queryFeedUuid;
 
-  const store = useBearStore(
+  const store = useAppStore(
     useShallow((state) => ({
       article: state.article,
       setArticle: state.setArticle,
@@ -370,7 +370,7 @@ export function ArticleView() {
     if (article?.link) open(article.link);
   }, [detailArticle, focused]);
   useHotkeys(HK.escape, () => {
-    if (useBearStore.getState().playerMode === "full") return; // 沉浸页优先收回条
+    if (useAppStore.getState().playerMode === "full") return; // 沉浸页优先收回条
     if (store.expandedArticleUuid) {
       closeDetail();
     } else if (feedUuid) {

@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 import { busChannel } from "@/helpers/busChannel";
 import { showErrorToast } from "@/helpers/errorHandler";
-import { useBearStore } from "@/stores";
+import { useAppStore } from "@/stores";
 import { getAstryxTheme } from "@/themes";
 import { DialogAboutApp } from "./components/About";
 import { ErrorBoundary } from "./components/ErrorBoundary";
@@ -17,7 +17,7 @@ function App() {
   const [systemDark, setSystemDark] = useState(
     () => window.matchMedia("(prefers-color-scheme: dark)").matches,
   );
-  const store = useBearStore(
+  const store = useAppStore(
     useShallow((state) => ({
       userConfig: state.userConfig,
       getUserConfig: state.getUserConfig,

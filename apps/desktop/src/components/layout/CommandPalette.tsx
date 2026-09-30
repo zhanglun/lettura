@@ -21,7 +21,7 @@ import { getHostLabel } from "@/helpers/feedMeta";
 import { apiGet } from "@/helpers/http";
 import { getCarrier, mediaBadge } from "@/helpers/mediaType";
 import i18n from "@/i18n";
-import { useBearStore } from "@/stores";
+import { useAppStore } from "@/stores";
 
 interface CommandPaletteProps {
   open: boolean;
@@ -70,7 +70,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   // 当前可见项 id→run 注册表：search/bootstrap 写入，onValueChange 读取
   const registry = useRef(new Map<string, () => void>());
 
-  const store = useBearStore(
+  const store = useAppStore(
     useShallow((state) => ({
       subscribes: state.subscribes,
       setAddFeedModalOpen: state.setAddFeedModalOpen,

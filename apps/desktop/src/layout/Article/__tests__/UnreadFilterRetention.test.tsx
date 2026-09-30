@@ -13,7 +13,7 @@ const mockSetArticle = vi.fn();
 const mockOnRead = vi.fn();
 
 vi.mock("@/stores", () => ({
-  useBearStore: () => ({
+  useAppStore: () => ({
     article: null,
     setArticle: mockSetArticle,
     updateArticleStatus: mockUpdateArticleStatus,

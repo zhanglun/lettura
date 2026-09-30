@@ -31,7 +31,7 @@ import {
 } from "@/helpers/mediaType";
 import { toast } from "@/helpers/toast";
 import { HK } from "@/shortcuts";
-import { useBearStore } from "@/stores";
+import { useAppStore } from "@/stores";
 
 interface PreviewEntry {
   title: string;
@@ -94,7 +94,7 @@ function entryMeta(
 export const AddFeedChannel = (props: any) => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const store = useBearStore(
+  const store = useAppStore(
     useShallow((state) => ({
       subscribes: state.subscribes,
       userConfig: state.userConfig,
@@ -321,7 +321,7 @@ export const AddFeedChannel = (props: any) => {
     if (!name) return;
     await invoke("create_folder", { name });
     await store.getSubscribes();
-    const created = flattenFolders(useBearStore.getState().subscribes).find(
+    const created = flattenFolders(useAppStore.getState().subscribes).find(
       (f) => f.title === name,
     );
     if (created) setFolderUuid(created.uuid);

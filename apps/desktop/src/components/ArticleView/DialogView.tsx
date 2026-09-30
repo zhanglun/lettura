@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 import { ArticleDetail } from "@/components/ArticleView/Detail";
 import { ReaderControls } from "@/components/ReaderControls";
 import { ReadingOptions } from "@/layout/Article/ReadingOptions";
-import { useBearStore } from "@/stores";
+import { useAppStore } from "@/stores";
 import { ScrollBox, type ScrollBoxRefObject } from "./ScrollBox";
 
 /**
@@ -18,12 +18,12 @@ import { ScrollBox, type ScrollBoxRefObject } from "./ScrollBox";
  */
 export const ArticleDialogView = (): React.ReactElement => {
   const { t } = useTranslation();
-  const article = useBearStore((state) => state.article);
-  const dialogStatus = useBearStore((state) => state.articleDialogViewStatus);
-  const setArticleDialogViewStatus = useBearStore(
+  const article = useAppStore((state) => state.article);
+  const dialogStatus = useAppStore((state) => state.articleDialogViewStatus);
+  const setArticleDialogViewStatus = useAppStore(
     (state) => state.setArticleDialogViewStatus,
   );
-  const setArticle = useBearStore((state) => state.setArticle);
+  const setArticle = useAppStore((state) => state.setArticle);
 
   const scrollBoxRef = useRef<ScrollBoxRefObject>(null);
   const handleDialogChange = useCallback(

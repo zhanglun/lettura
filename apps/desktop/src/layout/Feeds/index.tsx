@@ -14,7 +14,7 @@ import { ArticleView } from "@/layout/Article/ArticleView";
 import { DEV_PREVIEW_FIRST_RUN, EmptyFace } from "@/layout/Article/EmptyFace";
 import { DialogUnsubscribeFeed } from "@/layout/Setting/Content/DialogUnsubscribeFeed";
 import { HK } from "@/shortcuts";
-import { useBearStore } from "@/stores";
+import { useAppStore } from "@/stores";
 
 const FILTER_UNREAD = { id: 1, title: "Unread" };
 
@@ -89,7 +89,7 @@ export function FeedsBrowse() {
   // 焦点只由 j/k 或方向键建立；进入页面不预选第一条源。
   const [focusUuid, setFocusUuid] = useState<string | null>(null);
 
-  const store = useBearStore(
+  const store = useAppStore(
     useShallow((state) => ({
       subscribes: state.subscribes,
       getSubscribes: state.getSubscribes,
@@ -205,7 +205,7 @@ export function FeedsBrowse() {
   }, [keyboardQueue, focusUuid, openFeed]);
   useHotkeys(HK.escape, () => {
     if (document.body.classList.contains("fusion-context-menu-open")) return;
-    if (useBearStore.getState().playerMode === "full") return; // 沉浸页优先收回条
+    if (useAppStore.getState().playerMode === "full") return; // 沉浸页优先收回条
     navigate(RouteConfig.LOCAL_ALL);
     store.setFilter(FILTER_UNREAD);
   }, [navigate, store]);

@@ -1,7 +1,7 @@
 import type React from "react";
 import { useTranslation } from "react-i18next";
 import { useShallow } from "zustand/react/shallow";
-import { useBearStore } from "@/stores";
+import { useAppStore } from "@/stores";
 import { QueueRow } from "./QueueRow";
 
 /**
@@ -10,7 +10,7 @@ import { QueueRow } from "./QueueRow";
  */
 export const PlayList: React.FC = () => {
   const { t } = useTranslation();
-  const { tracks, currentTrack, playTrack, removeTrack } = useBearStore(
+  const { tracks, currentTrack, playTrack, removeTrack } = useAppStore(
     useShallow((state) => ({
       tracks: state.tracks,
       currentTrack: state.currentTrack,

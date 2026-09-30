@@ -4,7 +4,7 @@ import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useShallow } from "zustand/react/shallow";
 import { useArticle } from "@/hooks/useArticle";
-import { useBearStore } from "@/stores";
+import { useAppStore } from "@/stores";
 
 // 队列骨架复现：切筛选（查询键变化）的同步渲染帧必须报 loading，
 // 不允许 isEmpty 误真闪空态。apiGet 用可控 promise 模拟网络在途。
@@ -34,7 +34,7 @@ vi.mock("@/helpers/http", () => ({
 }));
 
 vi.mock("@/stores", () => ({
-  useBearStore: (selector: any) =>
+  useAppStore: (selector: any) =>
     selector(
       useShallow(() => ({
         currentFilter: { id: 1, title: "Unread" },

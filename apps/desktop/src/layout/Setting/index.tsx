@@ -42,7 +42,7 @@ import { showErrorToast } from "@/helpers/errorHandler";
 import { lastNavFrom } from "@/helpers/navHistory";
 import { toast } from "@/helpers/toast";
 import { HK } from "@/shortcuts";
-import { useBearStore } from "@/stores";
+import { useAppStore } from "@/stores";
 import { ASTRYX_THEMES } from "@/themes";
 import { SubscriptionsSection } from "./Subscriptions";
 
@@ -84,7 +84,7 @@ export function SettingPage() {
   const locationKey = location.pathname + location.search;
   const tabParam = new URLSearchParams(location.search).get("tab");
 
-  const store = useBearStore(
+  const store = useAppStore(
     useShallow((state) => ({
       userConfig: state.userConfig,
       updateUserConfig: state.updateUserConfig,
@@ -160,7 +160,7 @@ export function SettingPage() {
   const backTo = lastNavFrom(locationKey) ?? RouteConfig.LOCAL_ALL;
   useHotkeys(HK.escape, () => {
     if (document.body.classList.contains("fusion-context-menu-open")) return;
-    if (useBearStore.getState().playerMode === "full") return; // 沉浸页优先收回条
+    if (useAppStore.getState().playerMode === "full") return; // 沉浸页优先收回条
     navigate(backTo);
   }, [backTo]);
 

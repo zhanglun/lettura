@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 import { useShallow } from "zustand/react/shallow";
 import type { FolderResItem } from "@/db";
 import { toast } from "@/helpers/toast";
-import { useBearStore } from "@/stores";
+import { useAppStore } from "@/stores";
 import { apiPost } from "../../helpers/http";
 
 export interface AddFolderProps {
@@ -24,7 +24,7 @@ export interface AddFolderProps {
 export const AddFolder = React.memo((props: AddFolderProps) => {
   const { t } = useTranslation();
   const { action, folder } = props;
-  const store = useBearStore(
+  const store = useAppStore(
     useShallow((state) => ({
       getSubscribes: state.getSubscribes,
     })),

@@ -4,7 +4,7 @@ import type React from "react";
 import { useEffect, useMemo, useRef } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { db } from "@/helpers/podcastDB";
-import { useBearStore } from "@/stores";
+import { useAppStore } from "@/stores";
 import { FullPlayer } from "./FullPlayer";
 import { MiniPill } from "./MiniPill";
 import { MiniPlayer, RATES } from "./MiniPlayer";
@@ -38,7 +38,7 @@ export const LPodcast: React.FC<LPodcastProps> = ({ visible = true }) => {
     tracks: storeTracks,
     playerMode,
     setPlayerMode,
-  } = useBearStore(
+  } = useAppStore(
     useShallow((state) => ({
       currentTrack: state.currentTrack,
       setCurrentTrack: state.setCurrentTrack,
@@ -85,7 +85,7 @@ export const LPodcast: React.FC<LPodcastProps> = ({ visible = true }) => {
       currentTrack: now,
       setCurrentTrack: setNow,
       updatePodcastPlayingStatus,
-    } = useBearStore.getState();
+    } = useAppStore.getState();
     setTracks(tracks);
     if (!tracks.some((t) => t.uuid === now?.uuid)) {
       setNow(tracks[0] ?? null);
@@ -111,8 +111,8 @@ export const LPodcast: React.FC<LPodcastProps> = ({ visible = true }) => {
   useEffect(() => {
     if (!(visible && hasTracks)) {
       stopSharedAudio();
-      if (useBearStore.getState().podcastPlayingStatus) {
-        useBearStore.getState().updatePodcastPlayingStatus(false);
+      if (useAppStore.getState().podcastPlayingStatus) {
+        useAppStore.getState().updatePodcastPlayingStatus(false);
       }
     }
   }, [visible, hasTracks]);

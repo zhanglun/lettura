@@ -28,7 +28,7 @@ import { formatFeedTime, getHostLabel } from "@/helpers/feedMeta";
 import { apiPost } from "@/helpers/http";
 import { DialogDeleteFolder } from "@/layout/Setting/Content/DialogDeleteFolder";
 import { DialogUnsubscribeFeed } from "@/layout/Setting/Content/DialogUnsubscribeFeed";
-import { useBearStore } from "@/stores";
+import { useAppStore } from "@/stores";
 
 function toFolderResItem(folder: FeedResItem | null): FolderResItem | null {
   if (!folder) return null;
@@ -242,7 +242,7 @@ export const SubscriptionsSection = memo(function SubscriptionsSection() {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const store = useBearStore(
+  const store = useAppStore(
     useShallow((state) => ({
       subscribes: state.subscribes,
       syncArticles: state.syncArticles,

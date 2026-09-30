@@ -13,7 +13,7 @@ import { RouteConfig } from "@/config";
 import { busChannel } from "@/helpers/busChannel";
 import { recordNav } from "@/helpers/navHistory";
 import { HK } from "@/shortcuts";
-import { useBearStore } from "@/stores";
+import { useAppStore } from "@/stores";
 import { CommandPalette } from "./CommandPalette";
 import { HelpOverlay } from "./HelpOverlay";
 
@@ -30,7 +30,7 @@ export const AppLayout = React.memo(() => {
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
 
-  const store = useBearStore(
+  const store = useAppStore(
     useShallow((state) => ({
       collectionMeta: state.collectionMeta,
       currentFilter: state.currentFilter,

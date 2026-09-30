@@ -6,7 +6,7 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { useBearStore } from "@/stores";
+import { useAppStore } from "@/stores";
 import type { AudioTrack } from "../index";
 import { PlayList } from "../PlayList";
 
@@ -32,7 +32,7 @@ const track = (uuid: string, title = uuid): AudioTrack => ({
 describe("PlayList", () => {
   afterEach(() => {
     cleanup();
-    useBearStore.setState({
+    useAppStore.setState({
       tracks: [],
       currentTrack: null,
       podcastPlayingStatus: false,
@@ -41,7 +41,7 @@ describe("PlayList", () => {
   });
 
   it("列出整条队列，当前集带「播放中」洗色行", () => {
-    useBearStore.setState({
+    useAppStore.setState({
       tracks: [track("a"), track("b")],
       currentTrack: track("a"),
     });
@@ -62,7 +62,7 @@ describe("PlayList", () => {
   });
 
   it("空队列走引导态", () => {
-    useBearStore.setState({ tracks: [], currentTrack: null });
+    useAppStore.setState({ tracks: [], currentTrack: null });
 
     render(
       <>
@@ -75,7 +75,7 @@ describe("PlayList", () => {
   });
 
   it("点行切换当前集并开始播放", () => {
-    useBearStore.setState({
+    useAppStore.setState({
       tracks: [track("a"), track("b")],
       currentTrack: track("a"),
       podcastPlayingStatus: false,
@@ -89,12 +89,12 @@ describe("PlayList", () => {
 
     fireEvent.click(document.querySelectorAll(".q-row")[1]);
 
-    expect(useBearStore.getState().currentTrack?.uuid).toBe("b");
-    expect(useBearStore.getState().podcastPlayingStatus).toBe(true);
+    expect(useAppStore.getState().currentTrack?.uuid).toBe("b");
+    expect(useAppStore.getState().podcastPlayingStatus).toBe(true);
   });
 
   it("点当前集 = 播放/暂停", () => {
-    useBearStore.setState({
+    useAppStore.setState({
       tracks: [track("a")],
       currentTrack: track("a"),
       podcastPlayingStatus: true,
@@ -108,11 +108,11 @@ describe("PlayList", () => {
 
     fireEvent.click(document.querySelectorAll(".q-row")[0]);
 
-    expect(useBearStore.getState().podcastPlayingStatus).toBe(false);
+    expect(useAppStore.getState().podcastPlayingStatus).toBe(false);
   });
 
   it("悬停删除钮把该集移出队列", async () => {
-    useBearStore.setState({
+    useAppStore.setState({
       tracks: [track("a"), track("b")],
       currentTrack: track("a"),
     });
@@ -126,7 +126,7 @@ describe("PlayList", () => {
     fireEvent.click(screen.getAllByRole("button", { name: "Delete" })[1]);
 
     await waitFor(() =>
-      expect(useBearStore.getState().tracks.map((t) => t.uuid)).toEqual(["a"]),
+      expect(useAppStore.getState().tracks.map((t) => t.uuid)).toEqual(["a"]),
     );
     expect(deleteMock).toHaveBeenCalledTimes(1);
   });

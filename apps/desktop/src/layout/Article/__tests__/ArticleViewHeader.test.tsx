@@ -66,7 +66,7 @@ vi.mock("@/hooks/useArticle", () => ({
 }));
 
 vi.mock("@/stores", () => ({
-  useBearStore: (selector: (state: Record<string, unknown>) => unknown) =>
+  useAppStore: (selector: (state: Record<string, unknown>) => unknown) =>
     selector({
       article: null,
       setArticle: mocks.setArticle,

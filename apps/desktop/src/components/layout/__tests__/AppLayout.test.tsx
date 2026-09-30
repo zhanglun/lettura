@@ -29,7 +29,7 @@ const shellState = vi.hoisted(() => ({
 }));
 
 vi.mock("@/stores", () => ({
-  useBearStore: (selector: (state: Record<string, unknown>) => unknown) =>
+  useAppStore: (selector: (state: Record<string, unknown>) => unknown) =>
     selector(shellState.value),
 }));
 

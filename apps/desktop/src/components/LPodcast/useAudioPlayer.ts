@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { showErrorToast } from "@/helpers/errorHandler";
 import { db } from "@/helpers/podcastDB";
-import { useBearStore } from "@/stores";
+import { useAppStore } from "@/stores";
 
 /**
  * 音频元素是模块级单例：LPodcast（壳层）与 PodcastAdapter（详情页）
@@ -55,7 +55,7 @@ export const useAudioPlayer = () => {
     return saved ? parseFloat(saved) : 1;
   });
 
-  const store = useBearStore(
+  const store = useAppStore(
     useShallow((state) => ({
       currentTrack: state.currentTrack,
       podcastPlayingStatus: state.podcastPlayingStatus,
@@ -226,7 +226,7 @@ export const useAudioPlayer = () => {
   useEffect(() => {
     if (!("mediaSession" in navigator)) return;
     const ms = navigator.mediaSession;
-    const state = () => useBearStore.getState();
+    const state = () => useAppStore.getState();
 
     if (store.currentTrack) {
       ms.metadata = new MediaMetadata({

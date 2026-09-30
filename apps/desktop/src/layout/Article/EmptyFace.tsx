@@ -11,7 +11,7 @@ import { RouteConfig } from "@/config";
 import { busChannel } from "@/helpers/busChannel";
 import { showErrorToast } from "@/helpers/errorHandler";
 import { toast } from "@/helpers/toast";
-import { useBearStore } from "@/stores";
+import { useAppStore } from "@/stores";
 
 /** 预览开关：置 true 强制走「零订阅」首启分支（查看新用户首屏），平时保持 false */
 export const DEV_PREVIEW_FIRST_RUN = false;
@@ -20,7 +20,7 @@ export const DEV_PREVIEW_FIRST_RUN = false;
 export function EmptyFace({ mode }: { mode: "first" | "clear" }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const store = useBearStore(
+  const store = useAppStore(
     useShallow((state) => ({
       setAddFeedModalOpen: state.setAddFeedModalOpen,
       getSubscribes: state.getSubscribes,

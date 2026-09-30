@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useShallow } from "zustand/react/shallow";
 import { formatDuration } from "@/helpers/articleContent";
-import { useBearStore } from "@/stores";
+import { useAppStore } from "@/stores";
 import { SLEEP_STEPS, type SleepTimer } from "@/stores/createPodcastSlice";
 
 const OFF = "off";
@@ -42,7 +42,7 @@ const MoonIcon = () => (
 /** 睡眠定时：条与沉浸页共用的尾部控件——激活时 chip 显示剩余时间（podcast.html 契约） */
 export const SleepControl: React.FC = () => {
   const { t } = useTranslation();
-  const { sleepTimer, setSleepTimer } = useBearStore(
+  const { sleepTimer, setSleepTimer } = useAppStore(
     useShallow((state) => ({
       sleepTimer: state.sleepTimer,
       setSleepTimer: state.setSleepTimer,

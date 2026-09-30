@@ -4,7 +4,7 @@ import { useShallow } from "zustand/react/shallow";
 import { RouteConfig } from "@/config";
 import type { ArticleResItem } from "@/db";
 import { apiGet } from "@/helpers/http";
-import { useBearStore } from "@/stores";
+import { useAppStore } from "@/stores";
 
 const PAGE_SIZE = 100;
 
@@ -351,9 +351,7 @@ export function useArticle(props: UseArticleProps) {
   const isToday = useMatch(RouteConfig.LOCAL_TODAY);
   const isAll = useMatch(RouteConfig.LOCAL_ALL);
   const isStarred = useMatch(RouteConfig.LOCAL_STARRED);
-  const currentFilter = useBearStore(
-    useShallow((state) => state.currentFilter),
-  );
+  const currentFilter = useAppStore(useShallow((state) => state.currentFilter));
 
   const query = useMemo(() => {
     const isStarredVal =

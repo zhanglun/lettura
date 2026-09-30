@@ -58,7 +58,7 @@ const storeState = vi.hoisted(() => ({
 }));
 
 vi.mock("@/stores", () => ({
-  useBearStore: Object.assign(
+  useAppStore: Object.assign(
     (selector: (s: Record<string, unknown>) => unknown) =>
       selector(storeState.value),
     { getState: () => storeState.value },

@@ -52,7 +52,7 @@ config over prose when something conflicts.
   defined in `src-tauri/src/lib.rs`, which loads config, opens SQLite, runs
   embedded Diesel migrations, starts the Actix server, registers Tauri
   commands, tray/menu handlers, and the scheduler.
-- State is one Zustand store (`useBearStore`) in `src/stores/index.ts`, composed
+- State is one Zustand store (`useAppStore`) in `src/stores/index.ts`, composed
   from feed, article, user config, and podcast slices.
 
 ## Commands

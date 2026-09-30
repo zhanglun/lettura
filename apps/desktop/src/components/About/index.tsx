@@ -4,10 +4,10 @@ import { open } from "@tauri-apps/plugin-shell";
 import { Link2, Shell } from "lucide-react";
 import React from "react";
 import logo from "@/logo.svg";
-import { useBearStore } from "@/stores";
+import { useAppStore } from "@/stores";
 
 export const DialogAboutApp = React.memo(() => {
-  const store = useBearStore((state) => ({
+  const store = useAppStore((state) => ({
     aboutDialogStatus: state.aboutDialogStatus,
     updateAboutDialogStatus: state.updateAboutDialogStatus,
     appMetadata: state.appMetadata,

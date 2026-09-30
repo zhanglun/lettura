@@ -14,7 +14,7 @@ import type React from "react";
 import { useTranslation } from "react-i18next";
 import { useShallow } from "zustand/react/shallow";
 import { formatDuration } from "@/helpers/articleContent";
-import { useBearStore } from "@/stores";
+import { useAppStore } from "@/stores";
 import type { AudioTrack } from "./index";
 import { QueueRow } from "./QueueRow";
 import { SleepControl } from "./SleepControl";
@@ -49,7 +49,7 @@ export const FullPlayer: React.FC<FullPlayerProps> = ({
   onCollapse,
 }) => {
   const { t } = useTranslation();
-  const { playTrack, removeTrack, playNext, playPrev } = useBearStore(
+  const { playTrack, removeTrack, playNext, playPrev } = useAppStore(
     useShallow((state) => ({
       playTrack: state.playTrack,
       removeTrack: state.removeTrack,

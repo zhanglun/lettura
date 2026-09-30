@@ -6,7 +6,7 @@ import {
   screen,
 } from "@testing-library/react";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
-import { useBearStore } from "@/stores";
+import { useAppStore } from "@/stores";
 import { SleepControl } from "../SleepControl";
 
 // Astryx 菜单内容需要 ResizeObserver，jsdom 未实现
@@ -28,7 +28,7 @@ const renderControl = () =>
 describe("SleepControl", () => {
   afterEach(() => {
     cleanup();
-    useBearStore.getState().setSleepTimer(null);
+    useAppStore.getState().setSleepTimer(null);
     vi.useRealTimers();
   });
 
@@ -45,7 +45,7 @@ describe("SleepControl", () => {
   it("定时激活：chip 显示剩余 mm:ss", () => {
     renderControl();
 
-    act(() => useBearStore.getState().setSleepTimer(30));
+    act(() => useAppStore.getState().setSleepTimer(30));
 
     const trigger = screen.getByRole("button", {
       name: /podcast\.sleep\.remaining/,
@@ -67,6 +67,6 @@ describe("SleepControl", () => {
     expect(items[0].textContent).toBe("podcast.sleep.off");
 
     fireEvent.click(items[2]);
-    expect(useBearStore.getState().sleepTimer?.minutes).toBe(30);
+    expect(useAppStore.getState().sleepTimer?.minutes).toBe(30);
   });
 });

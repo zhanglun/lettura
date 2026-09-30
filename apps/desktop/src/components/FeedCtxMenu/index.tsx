@@ -24,7 +24,7 @@ import { copyText } from "@/helpers/copyText";
 import { showErrorToast } from "@/helpers/errorHandler";
 import { apiPost } from "@/helpers/http";
 import { toast } from "@/helpers/toast";
-import { useBearStore } from "@/stores";
+import { useAppStore } from "@/stores";
 
 export interface FeedCtxMenuProps {
   /** 右键目标（源或分组） */
@@ -105,7 +105,7 @@ export function FeedCtxMenu({
     };
   }, [menuOpen]);
 
-  const store = useBearStore(
+  const store = useAppStore(
     useShallow((state) => ({
       subscribes: state.subscribes,
       getSubscribes: state.getSubscribes,

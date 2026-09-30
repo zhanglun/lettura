@@ -8,7 +8,7 @@ import { createPodcastSlice } from "@/stores/createPodcastSlice";
 import type { UserConfigSlice } from "@/stores/createUserConfigSlice";
 import { createUserConfigSlice } from "@/stores/createUserConfigSlice";
 
-export const useBearStore = create<
+export const useAppStore = create<
   FeedSlice & ArticleSlice & UserConfigSlice & PodcastSlice
 >()((...a) => {
   return {

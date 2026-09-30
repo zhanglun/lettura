@@ -15,7 +15,7 @@ import {
 import { formatRelative } from "@/helpers/feedMeta";
 import { apiPost } from "@/helpers/http";
 import { getCarrier } from "@/helpers/mediaType";
-import { useBearStore } from "@/stores";
+import { useAppStore } from "@/stores";
 import { ArticleReadStatus, ArticleStarStatus } from "@/typing";
 
 /** 行首缩略图：内容首图（feed 自带）> feed 图标 > 安静类型色块 + 源题首字符。
@@ -82,7 +82,7 @@ export const ArticleItem = React.forwardRef(
     },
     ref: ForwardedRef<HTMLDivElement>,
   ) => {
-    const store = useBearStore(
+    const store = useAppStore(
       useShallow((state) => ({
         updateArticleStatus: state.updateArticleStatus,
         article: state.article,

@@ -8,7 +8,7 @@ import { useAudioPlayer } from "@/components/LPodcast/useAudioPlayer";
 import type { ArticleResItem } from "@/db";
 import { formatDuration } from "@/helpers/articleContent";
 import type { Podcast } from "@/helpers/podcastDB";
-import { useBearStore } from "@/stores";
+import { useAppStore } from "@/stores";
 import { renderArticleContent } from "../ContentRender";
 
 export interface PodcastAdapter {
@@ -21,7 +21,7 @@ export interface PodcastAdapter {
 export function PodcastAdapter(props: PodcastAdapter) {
   const { article, content, medias } = props;
   const { t } = useTranslation();
-  const { addToPlayListAndPlay } = useBearStore(
+  const { addToPlayListAndPlay } = useAppStore(
     useShallow((state) => ({
       addToPlayListAndPlay: state.addToPlayListAndPlay,
     })),

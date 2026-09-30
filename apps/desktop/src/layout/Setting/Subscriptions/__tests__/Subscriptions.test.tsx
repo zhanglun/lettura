@@ -73,7 +73,7 @@ vi.mock("@/helpers/busChannel", () => ({
 }));
 
 vi.mock("@/stores", () => ({
-  useBearStore: (selector: (state: Record<string, unknown>) => unknown) =>
+  useAppStore: (selector: (state: Record<string, unknown>) => unknown) =>
     selector({
       subscribes: [
         {

@@ -1,6 +1,6 @@
 import { act, cleanup, render } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { useBearStore } from "@/stores";
+import { useAppStore } from "@/stores";
 import { LPodcast } from "../index";
 
 const ROW = {
@@ -53,7 +53,7 @@ describe("LPodcast 三态", () => {
   afterEach(() => {
     cleanup();
     liveQuery.rows = [];
-    useBearStore.setState({
+    useAppStore.setState({
       tracks: [],
       currentTrack: null,
       playerMode: "bar",
@@ -74,8 +74,8 @@ describe("LPodcast 三态", () => {
         (b) => b.textContent === "1×",
       ),
     ).toBe(true);
-    expect(useBearStore.getState().tracks).toHaveLength(1);
-    expect(useBearStore.getState().currentTrack?.uuid).toBe("ep-1");
+    expect(useAppStore.getState().tracks).toHaveLength(1);
+    expect(useAppStore.getState().currentTrack?.uuid).toBe("ep-1");
   });
 
   it("放大 → 沉浸页，收起 → 圆钮，回条 → 底条", () => {
@@ -83,13 +83,13 @@ describe("LPodcast 三态", () => {
 
     renderPlayer();
 
-    act(() => useBearStore.getState().setPlayerMode("full"));
+    act(() => useAppStore.getState().setPlayerMode("full"));
     expect(document.querySelector(".fusion-fullplayer")).toBeTruthy();
 
-    act(() => useBearStore.getState().setPlayerMode("min"));
+    act(() => useAppStore.getState().setPlayerMode("min"));
     expect(document.querySelector(".fusion-minipill")).toBeTruthy();
 
-    act(() => useBearStore.getState().setPlayerMode("bar"));
+    act(() => useAppStore.getState().setPlayerMode("bar"));
     expect(document.querySelector(".fusion-player")).toBeTruthy();
   });
 
@@ -101,7 +101,7 @@ describe("LPodcast 三态", () => {
 
     act(() => {
       liveQuery.rows = [];
-      useBearStore.setState({ podcastPlayingStatus: true });
+      useAppStore.setState({ podcastPlayingStatus: true });
     });
     rerender(
       <>
@@ -111,6 +111,6 @@ describe("LPodcast 三态", () => {
 
     expect(document.querySelector(".fusion-player")).toBeNull();
     expect(document.querySelector(".fusion-fullplayer")).toBeNull();
-    expect(useBearStore.getState().podcastPlayingStatus).toBe(false);
+    expect(useAppStore.getState().podcastPlayingStatus).toBe(false);
   });
 });
