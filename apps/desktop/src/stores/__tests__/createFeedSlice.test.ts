@@ -20,6 +20,7 @@ describe("createFeedSlice", () => {
       const state = store.getState();
 
       expect(state.viewMeta).toEqual({
+        uuid: null,
         title: "",
         unread: 0,
         isToday: false,
@@ -147,6 +148,7 @@ describe("createFeedSlice", () => {
       store.getState().setFeed(feed);
 
       expect(store.getState().viewMeta).toEqual({
+        uuid: "feed-uuid",
         title: "Test Feed",
         unread: 5,
         isToday: false,
@@ -618,5 +620,41 @@ describe("createFeedSlice", () => {
 
       expect(feed).toEqual(original);
     });
+  });
+});
+
+describe("updateViewUnread", () => {
+  let store: ReturnType<typeof createTestStore>;
+
+  beforeEach(() => {
+    store = createTestStore();
+  });
+
+  it("uuid 匹配时递减/递增当前视图未读数（单篇已读链路）", () => {
+    store.getState().setFeed({
+      uuid: "feed-uuid",
+      title: "Test Feed",
+      link: "",
+      feed_url: "",
+      description: "",
+      item_type: "feed",
+      children: [],
+      health_status: 0,
+      failure_reason: "",
+      unread: 3,
+    } as FeedResItem);
+
+    store.getState().updateViewUnread("feed-uuid", -1);
+    expect(store.getState().viewMeta.unread).toBe(2);
+    expect(store.getState().viewMeta.unread).toBeGreaterThanOrEqual(0);
+
+    store.getState().updateViewUnread("feed-uuid", 1);
+    expect(store.getState().viewMeta.unread).toBe(3);
+  });
+
+  it("uuid 不匹配（today/all 视图）时不动", () => {
+    const before = store.getState().viewMeta;
+    store.getState().updateViewUnread("other-feed", -1);
+    expect(store.getState().viewMeta).toBe(before);
   });
 });

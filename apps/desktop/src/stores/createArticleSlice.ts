@@ -97,11 +97,13 @@ export const createArticleSlice: StateCreator<
       if (status === ArticleReadStatus.READ) {
         get().updateCollectionMeta(isToday ? -1 : 0, -1);
         get().updateUnreadCount(article.feed_uuid, "decrease", 1);
+        get().updateViewUnread(article.feed_uuid, -1);
       }
 
       if (status === ArticleReadStatus.UNREAD) {
         get().updateCollectionMeta(isToday ? 1 : 0, 1);
         get().updateUnreadCount(article.feed_uuid, "increase", 1);
+        get().updateViewUnread(article.feed_uuid, 1);
       }
     }
   },

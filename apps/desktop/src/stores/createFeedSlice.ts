@@ -10,6 +10,8 @@ export type CollectionMeta = {
 
 export interface FeedSlice {
   viewMeta: {
+    /** 当前视图对应的源（today/all 无）；单篇已读时按它判定要不要递减 */
+    uuid: string | null;
     title: string;
     unread: number;
     isToday: boolean;
@@ -27,6 +29,8 @@ export interface FeedSlice {
   updateCollectionMeta: (c: number, n: number) => void;
 
   setViewMeta: (meta: any) => void;
+  /** 单篇已读/标记未读时同步当前视图的未读数（uuid 匹配才生效） */
+  updateViewUnread: (uuid: string, delta: number) => void;
 
   feed: FeedResItem | null;
   setFeed: (feed: FeedResItem | null) => void;
@@ -73,6 +77,7 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
   ...args
 ) => ({
   viewMeta: {
+    uuid: null,
     title: "",
     unread: 0,
     isToday: false,
@@ -172,12 +177,26 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
     }));
   },
 
+  updateViewUnread(uuid, delta) {
+    set((state) => {
+      const { viewMeta } = state;
+      if (!viewMeta.uuid || viewMeta.uuid !== uuid) return {};
+      return {
+        viewMeta: {
+          ...viewMeta,
+          unread: Math.max(0, viewMeta.unread + delta),
+        },
+      };
+    });
+  },
+
   feed: null,
   setFeed: (feed: FeedResItem | null) => {
     set(() => ({
       feed: feed,
       viewMeta: feed
         ? {
+            uuid: feed.uuid,
             title: feed.title,
             unread: feed.unread,
             isToday: false,
