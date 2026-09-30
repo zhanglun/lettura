@@ -15,16 +15,19 @@ import { CommonAdapter } from "./adapter/Common";
 import { PlatformAdapter } from "./adapter/Platform";
 import { PodcastAdapter } from "./adapter/Podcast";
 
-function validateFeed(article: ArticleResItem, medias: any) {
+/** 详情面的三种载体形态（三选一，用枚举而非三个互斥布尔） */
+type DetailSurface = "common" | "platform" | "podcast";
+
+function validateFeed(article: ArticleResItem, medias: any): DetailSurface {
   // 载体定消费方式：audio → 站内播放器；video → 外跳；text/email → 阅读面
   const carrier = getCarrier(article);
   if (opensExternally(carrier)) {
-    return { isCommon: false, isPlatform: true, isPodcast: false };
+    return "platform";
   }
   if (canPlayInApp(carrier) && medias?.length > 0) {
-    return { isCommon: false, isPlatform: false, isPodcast: true };
+    return "podcast";
   }
-  return { isCommon: true, isPlatform: false, isPodcast: false };
+  return "common";
 }
 
 export interface ArticleDetailProps {
@@ -91,14 +94,11 @@ export const ArticleDetail = (props: ArticleDetailProps) => {
       );
     }
 
-    const { isCommon, isPlatform, isPodcast } = validateFeed(
-      article,
-      medias || [],
-    );
+    const surface = validateFeed(article, medias || []);
 
-    if (isPlatform) {
+    if (surface === "platform") {
       return <PlatformAdapter article={article} content={pageContent} />;
-    } else if (isPodcast) {
+    } else if (surface === "podcast") {
       return (
         <PodcastAdapter
           article={article}
