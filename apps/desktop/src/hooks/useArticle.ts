@@ -68,6 +68,8 @@ export interface DayBucketCounts {
 
 export interface UseArticleProps {
   feedUuid?: string;
+  /** 原地源过滤（未读页源棱镜）：只往查询里加 feed_uuid，不切队列帧身份 */
+  sourceUuid?: string;
   type?: string;
   collectionUuid?: string | null;
   tagUuid?: string | null;
@@ -187,12 +189,16 @@ function useArticleListChannel(
     pagesKey === key ? pages : (listCache.get(key) ?? []);
   const rows = visiblePages.flatMap((page) => page.list);
   const lastPage = visiblePages.at(-1);
+  // 键切换（切筛选）瞬间 effect 还没跑 loadMore，state 的 loading 仍是 false——
+  // 「已启用但一页都没有」就是首屏在途，同步报 loading，否则列表闪一帧空态
+  // （合法空结果 fetch 后会有页对象，list.length=0，不会卡在 loading）
+  const pendingFirstPage = initiallyEnabled && visiblePages.length === 0;
   return {
     rows,
     loaded: rows.length,
     realCount: lastPage?.total,
     hasMore: visiblePages.length === 0 || lastPage?.list.length === PAGE_SIZE,
-    loading: loading || initialLoading,
+    loading: loading || initialLoading || pendingFirstPage,
     loadMore,
     mutate,
   };
@@ -333,6 +339,7 @@ function useArticleSummary(
 export function useArticle(props: UseArticleProps) {
   const {
     feedUuid,
+    sourceUuid,
     type,
     collectionUuid,
     tagUuid,
@@ -369,7 +376,7 @@ export function useArticle(props: UseArticleProps) {
             ? undefined
             : currentFilter.id,
       limit: PAGE_SIZE,
-      feed_uuid: feedUuid,
+      feed_uuid: feedUuid ?? sourceUuid,
       item_type: type,
       is_today: isToday ? 1 : undefined,
       is_all: isAll ? 1 : undefined,

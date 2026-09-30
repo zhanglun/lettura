@@ -26,7 +26,7 @@ import type { ScrollBoxRefObject } from "@/components/ArticleView/ScrollBox";
 import { FeedPrism } from "@/components/FeedPrism";
 import { FeedProfile } from "@/components/FeedProfile";
 import { RouteConfig } from "@/config";
-import type { ArticleResItem } from "@/db";
+import type { ArticleResItem, FeedResItem } from "@/db";
 import { retainArticleAfterRead } from "@/helpers/articleHelpers";
 import { showErrorToast } from "@/helpers/errorHandler";
 import { toast } from "@/helpers/toast";
@@ -81,6 +81,8 @@ export function ArticleView() {
 
   // 类型过滤（服务端过滤与计数，不与 read_status/currentFilter 混用）
   const [carrierFilter, setCarrierFilter] = useState<CarrierFilter>("all");
+  /** 源棱镜的原地过滤：选中源后当前列表只看该源（不跳源详情路由） */
+  const [sourceFilter, setSourceFilter] = useState<FeedResItem | null>(null);
   /** 详情滚动容器句柄：详情打开时 j/k 在这里滚动文章 */
   const detailScrollRef = useRef<ScrollBoxRefObject>(null);
   // 聚焦仅在交互（j/k）后建立：首行不再默认带选中洗色
@@ -110,6 +112,8 @@ export function ArticleView() {
     carrier: feedUuid ? undefined : carrierFilter,
     // 源队列帧：过滤条未读/全部，脱离全局 currentFilter（feeds.html 契约）
     readStatus: feedUuid ? (queueFilter === "unread" ? 1 : null) : undefined,
+    // 源棱镜的原地过滤：只加 feed_uuid 条件，不切队列帧
+    sourceUuid: sourceFilter?.uuid,
   });
 
   // 桶收起状态：父级持有（j/k 可达序列随收起过滤）；「更早」积压区默认收起，
@@ -526,6 +530,15 @@ export function ArticleView() {
           ? store.collectionMeta.total.unread
           : store.viewMeta?.unread) ?? 0;
 
+  // 源队列未读过滤态：服务端 total 就是该源的真实未读数（read_status=1 查询，
+  // 打开文章即重验证），比入场时的 viewMeta 快照准——快照只做加载期兜底
+  const headerUnread =
+    feedUuid && queueFilter === "unread"
+      ? isLoading
+        ? unreadCount
+        : (total ?? unreadCount)
+      : unreadCount;
+
   // 面板内替换：详情视图
   if (detailArticle) {
     return (
@@ -603,7 +616,7 @@ export function ArticleView() {
               onClick={() => navigate(RouteConfig.LOCAL_FEEDS)}
             />
             <span className="fusion-fv-backcount">
-              {unreadCount} {t("fusion.nav.unread")}
+              {headerUnread} {t("fusion.nav.unread")}
             </span>
           </div>
           {/* 源头卡：源信息 / 统计健康 / 动作，可收起 */}
@@ -628,7 +641,7 @@ export function ArticleView() {
               onClick={() => setQueueFilter("unread")}
             >
               {t("fusion.nav.unread")}
-              <span className="c">{unreadCount}</span>
+              <span className="c">{headerUnread}</span>
             </button>
             <button
               type="button"
@@ -643,7 +656,8 @@ export function ArticleView() {
       ) : (
         <>
           {/* 载体过滤条：全部 = 服务端真实总数；各档计数同为服务端（不随分页截断）。
-              源棱镜（list-prism.html 契约）挂在计数 tab 之后：按源筛选的按需入口 */}
+              源棱镜挂在计数 tab 之后：悬停出源清单（HoverCard），选源 = 未读流原地过滤
+              （2026-09-30 改版，不再跳源详情） */}
           <div className="fusion-strip">
             {carrierTabs.map((tab) => (
               <button
@@ -664,7 +678,10 @@ export function ArticleView() {
               </button>
             ))}
             {!(isQueueMode || isStarred) && (
-              <FeedPrism selectedUuid={feedUuid} />
+              <FeedPrism
+                selectedUuid={sourceFilter?.uuid}
+                onSelect={setSourceFilter}
+              />
             )}
             <span className="fusion-strip-meta">
               {t("fusion.strip.meta", { sources: sourceCount, time: lastSync })}
@@ -710,7 +727,7 @@ export function ArticleView() {
         onLoadMore={loadMoreBucket}
         onMarkBucketRead={markBucketRead}
         markingBucket={markingBucket}
-        loading={!isQueueMode && !initialReady}
+        loading={isQueueMode ? isLoading : !initialReady}
         error={!!error}
         onRetry={retry}
         dayCounts={dayCounts as Record<string, number> | undefined}
