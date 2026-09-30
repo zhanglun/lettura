@@ -12,13 +12,13 @@ import {
   pickDuration,
   pickThumbUrl,
 } from "@/helpers/articleContent";
-import { apiPost } from "@/helpers/http";
 import { formatRelative } from "@/helpers/feedMeta";
+import { apiPost } from "@/helpers/http";
 import { getCarrier } from "@/helpers/mediaType";
 import { useBearStore } from "@/stores";
 import { ArticleReadStatus, ArticleStarStatus } from "@/typing";
 
-/** 行首缩略图：内容首图（feed 自带）> feed 图标 > 安静类型色块（无字符）。
+/** 行首缩略图：内容首图（feed 自带）> feed 图标 > 安静类型色块 + 源题首字符。
  *  视频行走加宽 16:9 变体并叠时长角标（.fusion-thumb.vid）。 */
 export function RowThumb({ article }: { article: ArticleResItem }) {
   const [imgError, setImgError] = useState(false);
@@ -58,7 +58,15 @@ export function RowThumb({ article }: { article: ArticleResItem }) {
     );
   }
 
-  return <span className={clsx("fusion-thumb", tint)} />;
+  // 无图无图标的安静占位：类型色块 + 源题首字符（空灰块读作坏图）。
+  // 首字符取字母/汉字等可见字形，跳过 emoji/零宽字符一类的不可见开头
+  const pool = article.feed_title || article.title || "";
+  const initial = pool.match(/[0-9A-Za-z\u4e00-\u9fff\u3040-\u30ff\uac00-\ud7af]/);
+  return (
+    <span className={clsx("fusion-thumb", tint)}>
+      <span className="tch">{initial ? initial[0].toUpperCase() : "·"}</span>
+    </span>
+  );
 }
 
 export const ArticleItem = React.forwardRef(
@@ -200,10 +208,12 @@ export const ArticleItem = React.forwardRef(
                 starred === ArticleStarStatus.STARRED
                   ? ArticleStarStatus.UNSTAR
                   : ArticleStarStatus.STARRED;
-              apiPost(`/articles/${article.uuid}/star`, { starred: next }).then(() => {
-                setStarred(next);
-                onUpdate?.({ starred: next });
-              });
+              apiPost(`/articles/${article.uuid}/star`, { starred: next }).then(
+                () => {
+                  setStarred(next);
+                  onUpdate?.({ starred: next });
+                },
+              );
             }}
           />
           {readStatus === ArticleReadStatus.UNREAD && (

@@ -200,7 +200,11 @@ export const ArticleListVirtual = React.memo(function ArticleListVirtual(
       }`}
     >
       {loading ? (
-        <div className="fusion-list-skeleton" aria-busy="true" aria-label={t("fusion.list.loading")}>
+        <div
+          className="fusion-list-skeleton"
+          aria-busy="true"
+          aria-label={t("fusion.list.loading")}
+        >
           {Array.from({ length: 5 }, (_, index) => (
             <div className="fusion-list-skeleton-row" key={index}>
               <Skeleton height={6} width={6} />
@@ -219,11 +223,17 @@ export const ArticleListVirtual = React.memo(function ArticleListVirtual(
             icon={SearchX}
             title={t("fusion.list.load_failed")}
             hint={t("fusion.list.load_failed_hint")}
-            action={onRetry ? (
-              <button type="button" className="fusion-list-retry" onClick={onRetry}>
-                {t("fusion.list.retry")}
-              </button>
-            ) : undefined}
+            action={
+              onRetry ? (
+                <button
+                  type="button"
+                  className="fusion-list-retry"
+                  onClick={onRetry}
+                >
+                  {t("fusion.list.retry")}
+                </button>
+              ) : undefined
+            }
           />
         </div>
       ) : isEmpty ? (
@@ -236,7 +246,7 @@ export const ArticleListVirtual = React.memo(function ArticleListVirtual(
           />
         </div>
       ) : (
-        sections.map((section) => {
+        sections.map((section, index) => {
           const collapsed =
             section.bucket != null && collapsedBuckets.has(section.bucket);
           const realCount =
@@ -256,6 +266,7 @@ export const ArticleListVirtual = React.memo(function ArticleListVirtual(
               collapsed={collapsed}
               realCount={realCount}
               visibleRows={visibleRows}
+              isTerminal={index === sections.length - 1}
               onToggleBucket={onToggleBucket}
               onLoadMore={onLoadMore}
               onMarkBucketRead={onMarkBucketRead}
@@ -276,6 +287,7 @@ const SectionBlock = React.memo(function SectionBlock({
   collapsed,
   realCount,
   visibleRows,
+  isTerminal,
   onToggleBucket,
   onLoadMore,
   onMarkBucketRead,
@@ -288,6 +300,8 @@ const SectionBlock = React.memo(function SectionBlock({
   collapsed: boolean;
   realCount?: number;
   visibleRows: ArticleResItem[];
+  /** 队列最后一个 section：满载时保留一句收尾对账，其余满载桶静默 */
+  isTerminal?: boolean;
   onToggleBucket: (bucket: string) => void;
   onLoadMore: (key: string) => void;
   renderRow: (a: ArticleResItem, key: string) => React.ReactNode;
@@ -295,6 +309,12 @@ const SectionBlock = React.memo(function SectionBlock({
   const sentinelRef = useRef<HTMLDivElement>(null);
   // 防抖门闩：同一次 hasMore 生命周期内只发起一次续载（新页到位后解除）
   const requestedRef = useRef(false);
+  const footRealCount = section.bucket != null ? realCount : section.realCount;
+  const footShow = Boolean(
+    section.loading ||
+      isTerminal ||
+      (footRealCount != null && footRealCount > section.loaded),
+  );
 
   // 哨兵：滚动接近桶尾（400px 预读）→ 续载本桶
   useEffect(() => {
@@ -303,7 +323,13 @@ const SectionBlock = React.memo(function SectionBlock({
     const check = () => {
       // Empty bucket sentinels all start in the viewport; do not let them
       // trigger six requests. An unloaded bucket is opened explicitly below.
-      if (collapsed || section.loaded === 0 || !section.hasMore || section.loading) return;
+      if (
+        collapsed ||
+        section.loaded === 0 ||
+        !section.hasMore ||
+        section.loading
+      )
+        return;
       if (requestedRef.current) return;
       const rect = sentinel.getBoundingClientRect();
       if (rect.top < window.innerHeight + 400) {
@@ -361,10 +387,12 @@ const SectionBlock = React.memo(function SectionBlock({
         </div>
       )}
       <div ref={sentinelRef} style={{ height: 1 }} aria-hidden />
-      {!collapsed && section.loaded > 0 && (
+      {/* 足注只讲有用的话：加载中（spinner）/ 已截断（对账）/ 队列末尾（收尾）。
+          满载的中间桶不再重复「已全部显示」——组头计数已经是同一句话（2026-09-30） */}
+      {!collapsed && section.loaded > 0 && footShow && (
         <SectionFoot
           loaded={section.loaded}
-          realCount={section.bucket != null ? realCount : section.realCount}
+          realCount={footRealCount}
           loading={section.loading}
         />
       )}

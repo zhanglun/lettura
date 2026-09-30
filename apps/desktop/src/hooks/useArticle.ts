@@ -487,10 +487,10 @@ export function useArticle(props: UseArticleProps) {
     video: globalSummary?.video ?? 0,
     email: globalSummary?.email ?? 0,
   };
+  // scoped 口径未返回时保持 undefined（不退回全局口径）：退回会让日期头短暂挂
+  // 全局数字（切视频 tab 先显示文章的分布，误导），列表默认展开也会按错误口径先跳一次
   const bucketSource =
-    !carrier || carrier === "all"
-      ? globalSummary
-      : (scopedSummary ?? globalSummary);
+    !carrier || carrier === "all" ? globalSummary : scopedSummary;
   const dayCounts: DayBucketCounts | undefined = bucketSource
     ? {
         today: bucketSource.day_today,

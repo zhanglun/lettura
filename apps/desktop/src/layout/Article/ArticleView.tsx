@@ -185,18 +185,15 @@ export function ArticleView() {
     setFocusStyleSuppressed(false);
   }, [queueIdentity]);
 
-  // 桶计数就绪后：第一个非空时间组默认展开（今天没数据就是昨天，依序）。
-  // 封印作用域 = 队列帧（未读/星标/历史/源队列互不继承——星标没有「今天」桶，
-  // 继承未读的展开态会让它整页全收起，2026-09-30 用户实测）；
-  // 同一帧内切载体/源棱镜不重排用户的展开意图
-  const viewIdentity = [
-    feedUuid ?? "",
-    isStarred ? "s" : "",
-    isToday ? "t" : "",
-  ].join("|");
+  // 换一个过滤口径（载体 tab / 源棱镜 / 队列帧）= 重新应用默认展开姿态：
+  // 第一个非空时间组展开、其余收起（2026-09-30 用户拍板——切到视频/播客同样
+  // 默认展开，不继承上一个口径的展开态）。同一口径内的计数刷新（单篇已读、
+  // 防抖 refresh）不重排用户手动展开/收起，封印按口径记。
+  // dayCounts 在 scoped 摘要未返回时为 undefined（useArticle 不退回全局口径），
+  // 到位即应用；回到已访问过的口径时 SWR 缓存同步命中，随 identity 变化立即应用
   useEffect(() => {
     defaultExpandApplied.current = false;
-  }, [viewIdentity]);
+  }, [queueIdentity]);
   useEffect(() => {
     if (defaultExpandApplied.current || !dayCounts) return;
     const order: readonly string[] = BUCKET_ORDER;
@@ -204,7 +201,7 @@ export function ArticleView() {
     const firstNonEmpty = order.find((b) => (counts[b] ?? 0) > 0) ?? "today";
     setCollapsedBuckets(new Set(order.filter((b) => b !== firstNonEmpty)));
     defaultExpandApplied.current = true;
-  }, [dayCounts]);
+  }, [queueIdentity, dayCounts]);
 
   // Deep-link：从 URL 恢复文章（面板内详情）
   useEffect(() => {

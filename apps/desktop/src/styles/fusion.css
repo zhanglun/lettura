@@ -21,6 +21,21 @@
     var(--color-text-primary) 13%,
     transparent
   );
+  /* 行词汇三态（文章行/浏览行/分组头共用，2026-09-30 统一）：
+     悬停 4% 墨洗；键盘焦点 = 8% accent 洗 + 1px accent 内描边（⌘K 首项同语法）。
+     全窗口宽的列表上洗色必须离窗缘一个可感知的内距（12px）才读得出「行卡片」，
+     贴边洗色在窗口尺度退化成整条灰带（用户实测反馈） */
+  --fusion-row-hover: color-mix(
+    in srgb,
+    var(--color-text-primary) 4%,
+    transparent
+  );
+  --fusion-row-focus: color-mix(in srgb, var(--color-accent) 8%, transparent);
+  --fusion-row-focus-line: color-mix(
+    in srgb,
+    var(--color-accent) 30%,
+    transparent
+  );
   --fusion-warn: var(--color-error);
   --fusion-pink: #e86a92;
   --fusion-pink-soft: rgba(232, 106, 146, 0.1);
@@ -150,7 +165,7 @@
 /* ── 日期分隔条（list-prism.html 契约）：时间流唯一导航锚点，
      段头/折叠/索引条退役（2026-09-29 决策）。吸顶 + 规则线 + 桶内计数 ── */
 .fusion-list-skeleton {
-  padding: 14px 20px;
+  padding: 14px 32px 14px 10px;
 }
 .fusion-list-skeleton-row {
   display: grid;
@@ -217,7 +232,10 @@
   border-radius: 6px;
   background: transparent;
   opacity: 0;
-  transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease;
+  transition:
+    opacity 0.15s ease,
+    background 0.15s ease,
+    color 0.15s ease;
 }
 .fusion-dayhead:hover .fusion-dayhead-read,
 .fusion-dayhead-read:focus-visible {
@@ -236,7 +254,10 @@
   cursor: pointer;
 }
 .fusion-dayhead.is-toggle:hover {
-  background: color-mix(in srgb, var(--color-text-primary) 4%, transparent);
+  /* 悬停洗色叠在滚动遮罩之上（保留 86% ground 底，行从头部下穿过时不透底） */
+  background:
+    linear-gradient(var(--fusion-row-hover), var(--fusion-row-hover)),
+    color-mix(in srgb, var(--fusion-ground) 86%, transparent);
 }
 .fusion-dayhead .chev {
   display: flex;
@@ -740,9 +761,11 @@
   white-space: nowrap;
 }
 
-/* 列表足注：已加载/全量对账 + 加载中状态行（spinner 固定占位，避免行高跳动） */
+/* 列表足注：已加载/全量对账 + 加载中状态行（spinner 固定占位，避免行高跳动）。
+   只在「加载中 / 有更多 / 队列末尾」出现——满载的中间桶不再重复
+   「共 N 篇 · 已全部显示」（组头已有计数，重复足注是分组节奏里的噪音，2026-09-30） */
 .fusion-list-foot {
-  padding: 16px 20px 6px;
+  padding: 10px 20px 8px;
   text-align: center;
   font-size: 11px;
   color: var(--fusion-ter);
@@ -751,7 +774,7 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-height: 33px;
+  min-height: 29px;
 }
 
 .fusion-list-foot.is-loading {
@@ -837,10 +860,11 @@
      文章首图同尺寸，混排队列左列对齐 */
   grid-template-columns: 20px 76px minmax(0, 1fr) 170px 132px 64px;
   align-items: center;
-  /* Astryx 呼吸缝：步距 54 = 内容 52 + 行间 2px（ground 透出成缝） */
+  /* Astryx 呼吸缝：步距 54 = 内容 52 + 行间 2px（ground 透出成缝）。
+     左内距 10px 让状态点/缩略图离洗色外缘一个可感知的空隙（右 20px 对齐条栏） */
   height: 52px;
   margin-bottom: 2px;
-  padding-right: 20px;
+  padding: 0 20px 0 10px;
   border: 0;
   cursor: pointer;
   user-select: none;
@@ -849,11 +873,13 @@
 }
 
 /* 列表行词汇对齐 Astryx（2026-10）：圆角内衬洗色（同菜单项 8px）、无发丝分隔线、
-   行间留 2px ground 呼吸缝（行高＝内容高＋缝）、选中 = 半透明 accent 调 */
+   行间留 2px ground 呼吸缝（行高＝内容高＋缝）。
+   洗色内缩 12px：全窗宽列表上贴边洗色读作整条灰带（2026-09-30 用户反馈），
+   12px 外缘让圆角与行卡片成立；内容左缘（点 17px/缩略图 30px）与之保持空隙 */
 .fusion-row::after {
   content: "";
   position: absolute;
-  inset: 3px 6px 3px 4px;
+  inset: 3px 12px;
   border-radius: 8px;
   background: transparent;
   pointer-events: none;
@@ -861,7 +887,7 @@
 }
 
 .fusion-row:hover::after {
-  background: color-mix(in srgb, var(--color-text-primary) 4%, transparent);
+  background: var(--fusion-row-hover);
 }
 
 .fusion-st {
@@ -895,7 +921,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.15s ease, border-color 0.15s ease;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
 }
 
 /* 行悬停/聚焦时中性缩略图融入洗色：整行一个表面，不再灰块套灰块；
@@ -918,6 +946,15 @@
   height: 16px;
   border-radius: 4px;
   object-fit: cover;
+}
+
+/* 无图无图标的安静占位：类型色块 + 源题首字符（detail.html 契约「文章灰底 + 字符」，
+   空灰块看起来像坏图，2026-09-30 补字符） */
+.fusion-thumb .tch {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--fusion-sub);
+  line-height: 1;
 }
 
 .fusion-thumb.pod {
@@ -1061,17 +1098,12 @@
   padding: 0;
 }
 
-/* 键盘焦点：洗色 + 圆点光环两种安静信号，无彩色侧线（竖侧线＝side-tab slop，禁用） */
+/* 键盘焦点：8% accent 洗 + 1px accent 内描边（⌘K 首项「accent-muted 底 + 1px 内线」
+   同一词汇，2026-09-30 收敛）。旧的 0.5px 左线在任何 DPR 下都发虚、圆点 3px 光环
+   糊成一团（用户反馈「focused 样式很丑」），一并撤除 */
 .fusion-row.is-focused::after {
-  background: color-mix(in srgb, var(--color-accent) 9%, transparent);
-  /* 发丝级位置提示：0.5px accent 左线（非被禁的彩色粗侧线），让 j/k 当前位可定位 */
-  border-left: 0.5px solid
-    color-mix(in srgb, var(--color-accent) 45%, transparent);
-}
-
-.fusion-row.is-focused .fusion-dot {
-  outline: 3px solid color-mix(in srgb, var(--color-accent) 35%, transparent);
-  outline-offset: 1.5px;
+  background: var(--fusion-row-focus);
+  box-shadow: inset 0 0 0 1px var(--fusion-row-focus-line);
 }
 
 /* ── 底部悬浮播放条（bar 态）的让位 ──
@@ -2126,7 +2158,12 @@
 
 .fusion-nextcard .fusion-row {
   margin-bottom: 0;
-  padding-right: 16px;
+  /* 卡内行：洗色几何跟随卡尺度收拢，不沿用全窗宽的 12px 外缘 */
+  padding: 0 16px 0 4px;
+}
+
+.fusion-nextcard .fusion-row::after {
+  inset: 3px 8px;
 }
 
 .fusion-next-h {
@@ -2143,12 +2180,13 @@
   margin: 20px 0 8px;
 }
 
-/* ── 订阅浏览帧（feeds.html 契约）：分组源列表，未读数是主角 ── */
+/* ── 订阅浏览帧（feeds.html 契约）：分组源列表，未读数是主角 ──
+   容器内缩与文章列表同框（12px 洗色外缘），行内容再留 10px 离洗色边缘 */
 .fusion-browse {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 6px 20px 30px;
+  padding: 6px 12px 30px;
 }
 
 .fusion-b-folder {
@@ -2165,7 +2203,7 @@
   border: 0;
   background: none;
   width: 100%;
-  padding: 0;
+  padding: 0 10px;
   font: inherit;
   text-align: left;
   position: relative;
@@ -2178,6 +2216,11 @@
   border-radius: 8px;
   background: transparent;
   pointer-events: none;
+  transition: background 0.12s ease;
+}
+
+.fusion-b-head:hover::after {
+  background: var(--fusion-row-hover);
 }
 
 .fusion-b-head:hover .fusion-b-title {
@@ -2270,7 +2313,8 @@ body.fusion-context-menu-open .fusion-set-body {
   border-top: 1px solid var(--fusion-hair);
 }
 
-/* 源行：阅读语境的订阅行——46px，未读数右对齐靓蓝 */
+/* 源行：阅读语境的订阅行——46px，未读数右对齐靓蓝。
+   内容离洗色边缘 10px：旧版 padding 0 让图标/时间贴着洗色边（用户反馈「粗糙」） */
 .fusion-b-row {
   display: grid;
   grid-template-columns: 22px minmax(0, 1fr) minmax(150px, 210px) 56px 108px;
@@ -2281,7 +2325,7 @@ body.fusion-context-menu-open .fusion-set-body {
   border: 0;
   background: none;
   width: 100%;
-  padding: 0;
+  padding: 0 10px;
   font: inherit;
   text-align: left;
   cursor: pointer;
@@ -2300,13 +2344,12 @@ body.fusion-context-menu-open .fusion-set-body {
 }
 
 .fusion-b-row:hover::after {
-  background: color-mix(in srgb, var(--color-text-primary) 3.5%, transparent);
+  background: var(--fusion-row-hover);
 }
 
 .fusion-b-row.is-focused::after {
-  background: color-mix(in srgb, var(--color-accent) 9%, transparent);
-  border-left: 0.5px solid
-    color-mix(in srgb, var(--color-accent) 45%, transparent);
+  background: var(--fusion-row-focus);
+  box-shadow: inset 0 0 0 1px var(--fusion-row-focus-line);
 }
 
 .fusion-b-row.is-focused .fusion-b-name {
@@ -3549,6 +3592,12 @@ body.dark-theme {
   --fusion-pink-soft: rgba(238, 139, 171, 0.12);
   --fusion-amber: #edb433;
   --fusion-serif-ink: #d3d4d8;
+  /* 暗玻璃上墨洗要更重才可达（浅色 4% 在深底上不可见） */
+  --fusion-row-hover: color-mix(
+    in srgb,
+    var(--color-text-primary) 6%,
+    transparent
+  );
 }
 
 body.dark-theme .fusion-root::before {
@@ -3585,13 +3634,7 @@ body.dark-theme .fusion-card .gen code {
   color: var(--fusion-sub);
 }
 
-body.dark-theme .fusion-row:hover::after {
-  background: color-mix(in srgb, var(--color-text-primary) 7%, transparent);
-}
-
-body.dark-theme .fusion-srow:hover::after {
-  background: color-mix(in srgb, var(--color-text-primary) 4.5%, transparent);
-}
+/* 行悬停洗色已由 --fusion-row-hover 统一承担（dark 覆写在上方变量块） */
 
 body.dark-theme .fusion-snav.on {
   background: color-mix(in srgb, var(--color-text-primary) 7%, transparent);
@@ -3656,10 +3699,6 @@ body.dark-theme .fusion-article-body pre code {
 }
 
 /* 浏览帧/源头栏：灰阶投影转浅 */
-body.dark-theme .fusion-b-row:hover::after {
-  background: color-mix(in srgb, var(--color-text-primary) 5%, transparent);
-}
-
 body.dark-theme .fusion-b-ic {
   background: color-mix(in srgb, var(--color-text-primary) 7%, transparent);
 }

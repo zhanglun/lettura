@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { act, render, screen } from "@testing-library/react";
 import type { ReactElement } from "react";
-import { render, screen, act } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useShallow } from "zustand/react/shallow";
 import { useArticle } from "@/hooks/useArticle";
 import { useBearStore } from "@/stores";
@@ -9,7 +9,11 @@ import { useBearStore } from "@/stores";
 // 队列骨架复现：切筛选（查询键变化）的同步渲染帧必须报 loading，
 // 不允许 isEmpty 误真闪空态。apiGet 用可控 promise 模拟网络在途。
 
-type Resolver = { path: string; params: Record<string, unknown>; resolve: (v: any) => void };
+type Resolver = {
+  path: string;
+  params: Record<string, unknown>;
+  resolve: (v: any) => void;
+};
 const pending: Resolver[] = [];
 
 function makeApiGet() {
@@ -60,7 +64,9 @@ function Harness({
   queue?: boolean;
 }) {
   const { isLoading, isEmpty } = useArticle({
-    feedUuid: queue ? `feed-${expect.getState().currentTestName?.length ?? 0}` : undefined,
+    feedUuid: queue
+      ? `feed-${expect.getState().currentTestName?.length ?? 0}`
+      : undefined,
     readStatus,
     sourceUuid,
   });
@@ -83,7 +89,10 @@ function renderHarness(readStatus: number | null) {
 }
 
 /** 等到指定路径的请求出现并放行（精确匹配，防止串味） */
-async function flush(path: string, respond: (params: Record<string, unknown>) => any) {
+async function flush(
+  path: string,
+  respond: (params: Record<string, unknown>) => any,
+) {
   await act(async () => {
     for (let i = pending.length - 1; i >= 0; i--) {
       if (pending[i].path === path) {
@@ -147,7 +156,9 @@ describe("useArticle 队列通道（订阅详情）", () => {
 
     // 选源 → sourceUuid 进查询 → 新键 initial-sections 在途；
     // 同步切换帧必须 LOADING（currentLoading 派生），绝不 EMPTY
-    view.rerender(wrap(<Harness queue={false} readStatus={1} sourceUuid="src-1" />));
+    view.rerender(
+      wrap(<Harness queue={false} readStatus={1} sourceUuid="src-1" />),
+    );
     expect(screen.getByTestId("state").textContent).toBe("LOADING");
 
     await flush("/articles/initial-sections", () => [

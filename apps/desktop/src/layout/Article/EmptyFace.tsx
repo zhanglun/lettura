@@ -1,4 +1,5 @@
 import { Button } from "@astryxdesign/core/Button";
+import { invoke } from "@tauri-apps/api/core";
 import { open as openDialog } from "@tauri-apps/plugin-dialog";
 import { readTextFile } from "@tauri-apps/plugin-fs";
 import { Plus, Upload } from "lucide-react";
@@ -8,7 +9,6 @@ import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 import { RouteConfig } from "@/config";
 import { busChannel } from "@/helpers/busChannel";
-import { invoke } from "@tauri-apps/api/core";
 import { showErrorToast } from "@/helpers/errorHandler";
 import { toast } from "@/helpers/toast";
 import { useBearStore } from "@/stores";

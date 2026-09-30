@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { FeedResItem } from "@/db";
 import { getFeedCarrier, mediaBadge } from "@/helpers/mediaType";
@@ -19,9 +20,10 @@ function colorForFeed(feed: FeedResItem) {
   return ICON_COLORS[hash % ICON_COLORS.length];
 }
 
-/** 源图标：平台/播客用类型徽章语法，其余用标题首字（logo 优先） */
+/** 源图标：平台/播客用类型徽章语法，其余用标题首字（logo 优先，挂了退回首字） */
 export function FeedIcon({ feed }: { feed: FeedResItem }) {
   const { t } = useTranslation();
+  const [logoBroken, setLogoBroken] = useState(false);
   const carrier = getFeedCarrier(feed);
   let char = feed.title?.charAt(0)?.toUpperCase() ?? "F";
   let cls = "";
@@ -37,15 +39,23 @@ export function FeedIcon({ feed }: { feed: FeedResItem }) {
     cls = badge.cls;
   }
 
+  const showLogo = !!feed.logo && !logoBroken;
+
   return (
     <span
-      className={clsx("fusion-b-ic", !feed.logo && "is-initial", cls)}
+      className={clsx("fusion-b-ic", !showLogo && "is-initial", cls)}
       style={
-        feed.logo || cls ? undefined : { backgroundColor: colorForFeed(feed) }
+        showLogo || cls ? undefined : { backgroundColor: colorForFeed(feed) }
       }
     >
-      {feed.logo ? (
-        <img src={feed.logo} alt="" loading="lazy" decoding="async" />
+      {showLogo ? (
+        <img
+          src={feed.logo}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          onError={() => setLogoBroken(true)}
+        />
       ) : (
         char
       )}

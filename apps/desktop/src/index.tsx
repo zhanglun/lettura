@@ -1,5 +1,5 @@
-import { createRoot } from "react-dom/client";
 import { invoke } from "@tauri-apps/api/core";
+import { createRoot } from "react-dom/client";
 import {
   createBrowserRouter,
   Navigate,

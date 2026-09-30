@@ -12,6 +12,7 @@ import { Slider } from "@astryxdesign/core/Slider";
 import { Switch } from "@astryxdesign/core/Switch";
 import { TextArea } from "@astryxdesign/core/TextArea";
 import { TextInput } from "@astryxdesign/core/TextInput";
+import { invoke } from "@tauri-apps/api/core";
 import {
   disable as disableAutostart,
   enable as enableAutostart,
@@ -37,7 +38,6 @@ import { useShallow } from "zustand/react/shallow";
 import { EMAIL_SUBSCRIPTION_ENABLED, RouteConfig } from "@/config";
 import type { SiteRuleSummary, SourceAccount } from "@/db";
 import { busChannel } from "@/helpers/busChannel";
-import { invoke } from "@tauri-apps/api/core";
 import { showErrorToast } from "@/helpers/errorHandler";
 import { lastNavFrom } from "@/helpers/navHistory";
 import { toast } from "@/helpers/toast";

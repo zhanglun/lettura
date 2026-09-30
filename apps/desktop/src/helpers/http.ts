@@ -5,7 +5,10 @@ function baseUrl() {
   return `http://127.0.0.1:${port}/api`;
 }
 
-export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
+export async function apiFetch<T>(
+  path: string,
+  init?: RequestInit,
+): Promise<T> {
   const response = await fetch(`${baseUrl()}${path}`, {
     ...init,
     headers: {

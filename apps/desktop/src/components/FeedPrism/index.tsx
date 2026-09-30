@@ -1,8 +1,8 @@
+import { Popover } from "@astryxdesign/core/Popover";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
-import { Popover } from "@astryxdesign/core/Popover";
 import { RouteConfig } from "@/config";
 import type { FeedResItem } from "@/db";
 import { getHostLabel } from "@/helpers/feedMeta";
@@ -129,9 +129,7 @@ export function FeedPrism({
 
         {folders.length > 0 && (
           <>
-            <div className="fusion-prism-h">
-              {t("fusion.prism.groups")}
-            </div>
+            <div className="fusion-prism-h">{t("fusion.prism.groups")}</div>
             {folders.map((folder) => (
               <div key={folder.uuid}>
                 <div className="fusion-prism-h">{folder.title}</div>
@@ -213,7 +211,8 @@ export function FeedPrism({
                   </span>
                 ))}
               </span>
-              {t("fusion.prism.label")} <span className="n">{feeds.length}</span>
+              {t("fusion.prism.label")}{" "}
+              <span className="n">{feeds.length}</span>
             </>
           )}
           <span className="chev">▾</span>
