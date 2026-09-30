@@ -1,4 +1,3 @@
-import { invoke } from "@tauri-apps/api/core";
 import {
   act,
   cleanup,
@@ -9,7 +8,7 @@ import {
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AddFeedChannel } from "..";
 
-/** 面板只经 dataAgent 与后端说话；Tauri IPC 在 jsdom 里不存在，所以这里全替掉 */
+/** 面板经 Tauri invoke 与后端说话；IPC 在 jsdom 里不存在，所以这里全替掉 */
 const fetchFeed = vi.fn<
   [url: string, origin?: string, carrier?: string],
   Promise<unknown>
@@ -18,10 +17,6 @@ const subscribeFeed = vi.fn<
   [url: string, origin?: string, carrier?: string],
   Promise<unknown>
 >();
-const moveChannelIntoFolder = vi.fn<
-  [uuid: string, folder: string, sort: number],
-  Promise<number>
->(() => Promise.resolve(1));
 const createFolder = vi.fn<[name: string], Promise<number>>(() =>
   Promise.resolve(1),
 );

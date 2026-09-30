@@ -202,10 +202,12 @@ export const ArticleListVirtual = React.memo(function ArticleListVirtual(
       {loading ? (
         <div
           className="fusion-list-skeleton"
+          role="status"
           aria-busy="true"
           aria-label={t("fusion.list.loading")}
         >
           {Array.from({ length: 5 }, (_, index) => (
+            // biome-ignore lint/suspicious/noArrayIndexKey: 固定 5 行、永不重排的静态骨架，索引 key 即正确语义
             <div className="fusion-list-skeleton-row" key={index}>
               <Skeleton height={6} width={6} />
               <Skeleton height={43} width={76} />

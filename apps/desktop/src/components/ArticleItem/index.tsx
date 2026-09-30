@@ -61,7 +61,9 @@ export function RowThumb({ article }: { article: ArticleResItem }) {
   // 无图无图标的安静占位：类型色块 + 源题首字符（空灰块读作坏图）。
   // 首字符取字母/汉字等可见字形，跳过 emoji/零宽字符一类的不可见开头
   const pool = article.feed_title || article.title || "";
-  const initial = pool.match(/[0-9A-Za-z\u4e00-\u9fff\u3040-\u30ff\uac00-\ud7af]/);
+  const initial = pool.match(
+    /[0-9A-Za-z\u4e00-\u9fff\u3040-\u30ff\uac00-\ud7af]/,
+  );
   return (
     <span className={clsx("fusion-thumb", tint)}>
       <span className="tch">{initial ? initial[0].toUpperCase() : "·"}</span>

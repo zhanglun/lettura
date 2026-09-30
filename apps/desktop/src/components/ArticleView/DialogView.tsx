@@ -37,6 +37,8 @@ export const ArticleDialogView = (): React.ReactElement => {
     [setArticleDialogViewStatus, setArticle],
   );
 
+  // article 变化即回滚顶：依赖本身不进 effect 体，属「重置型」effect，非误用
+  // biome-ignore lint/correctness/useExhaustiveDependencies: reset-style effect, dep is the trigger not the data
   useEffect(() => {
     scrollBoxRef.current?.scrollToTop();
   }, [article]);

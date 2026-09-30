@@ -24,7 +24,6 @@ import {
   matchGenerator,
   parseUserGenerators,
 } from "@/helpers/feedGenerators";
-import { apiPost } from "@/helpers/http";
 import {
   CARRIER_BADGE_CLS,
   type Carrier,
@@ -186,22 +185,6 @@ export const AddFeedChannel = (props: any) => {
     if (!creatingFolder) return;
     setTimeout(() => folderInputRef.current?.focus(), 20);
   }, [creatingFolder]);
-
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        e.preventDefault();
-        setOpen(false);
-      }
-      if (e.key === "Enter" && phase.s === "preview") {
-        e.preventDefault();
-        doSubscribe();
-      }
-    };
-    window.addEventListener("keydown", onKey, true);
-    return () => window.removeEventListener("keydown", onKey, true);
-  }, [open, phase]);
 
   /** 真正去探测并进入预览（target 可以是用户输入、生成器地址、桥接地址或候选地址） */
   const previewUrl = (
@@ -405,6 +388,25 @@ export const AddFeedChannel = (props: any) => {
         setPhase({ s: "error", message: t("Failed to subscribe to feed") });
       });
   };
+
+  // Esc 关闭、Enter 订阅。放在 doSubscribe 之后声明并把 doSubscribe 列入依赖：
+  // 闭包里的 folderUuid/folders 若被旧渲染捕获，预览后再选分组按 Enter 会
+  // 把源挂到旧分组（补依赖 = 每次渲染重挂监听，代价可忽略）
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        setOpen(false);
+      }
+      if (e.key === "Enter" && phase.s === "preview") {
+        e.preventDefault();
+        doSubscribe();
+      }
+    };
+    window.addEventListener("keydown", onKey, true);
+    return () => window.removeEventListener("keydown", onKey, true);
+  }, [open, phase, doSubscribe, setOpen]);
 
   if (!open) return <>{props.children}</>;
 
