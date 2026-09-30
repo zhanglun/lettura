@@ -29,59 +29,8 @@ describe("createUserConfigSlice", () => {
       const state = store.getState();
 
       expect(state.userConfig).toEqual({} as UserConfig);
-      expect(state.viewOrigin).toBe(false);
-      expect(state.viewOriginLoading).toBe(false);
-      expect(state.settingDialogStatus).toBe(false);
       expect(state.aboutDialogStatus).toBe(false);
       expect(state.appMetadata).toEqual({});
-    });
-  });
-
-  describe("updateViewOrigin", () => {
-    it("should set viewOrigin to true", () => {
-      store.getState().updateViewOrigin(true);
-
-      expect(store.getState().viewOrigin).toBe(true);
-    });
-
-    it("should set viewOrigin to false", () => {
-      store.getState().updateViewOrigin(true);
-      expect(store.getState().viewOrigin).toBe(true);
-
-      store.getState().updateViewOrigin(false);
-      expect(store.getState().viewOrigin).toBe(false);
-    });
-  });
-
-  describe("updateViewOriginLoading", () => {
-    it("should set viewOriginLoading to true", () => {
-      store.getState().updateViewOriginLoading(true);
-
-      expect(store.getState().viewOriginLoading).toBe(true);
-    });
-
-    it("should set viewOriginLoading to false", () => {
-      store.getState().updateViewOriginLoading(true);
-      expect(store.getState().viewOriginLoading).toBe(true);
-
-      store.getState().updateViewOriginLoading(false);
-      expect(store.getState().viewOriginLoading).toBe(false);
-    });
-  });
-
-  describe("updateSettingDialogStatus", () => {
-    it("should set settingDialogStatus to true", () => {
-      store.getState().updateSettingDialogStatus(true);
-
-      expect(store.getState().settingDialogStatus).toBe(true);
-    });
-
-    it("should set settingDialogStatus to false", () => {
-      store.getState().updateSettingDialogStatus(true);
-      expect(store.getState().settingDialogStatus).toBe(true);
-
-      store.getState().updateSettingDialogStatus(false);
-      expect(store.getState().settingDialogStatus).toBe(false);
     });
   });
 
@@ -138,34 +87,11 @@ describe("createUserConfigSlice", () => {
     });
   });
 
-  describe("setLastSyncTime", () => {
-    it("should set last sync time in userConfig", async () => {
-      const date = new Date("2024-01-01T00:00:00Z");
+  describe("getUserConfig", () => {
+    it("should load user config from backend", async () => {
+      await store.getState().getUserConfig();
 
-      store.getState().setLastSyncTime(date);
-
-      await new Promise((resolve) => setTimeout(resolve, 0));
-
-      expect(store.getState().userConfig.last_sync_time).toEqual(date);
-    });
-
-    it("should update existing userConfig", async () => {
-      const existingConfig: UserConfig = {
-        purge_on_days: 7,
-        purge_unread_articles: false,
-        update_interval: 30,
-        last_sync_time: new Date("2024-01-01T00:00:00Z"),
-      };
-
-      store.setState({ userConfig: existingConfig });
-
-      const newDate = new Date("2024-01-02T00:00:00Z");
-      store.getState().setLastSyncTime(newDate);
-
-      await new Promise((resolve) => setTimeout(resolve, 0));
-
-      expect(store.getState().userConfig.last_sync_time).toEqual(newDate);
-      expect(store.getState().userConfig.update_interval).toBe(30);
+      expect(store.getState().userConfig.purge_on_days).toBe(7);
     });
   });
 
@@ -279,29 +205,16 @@ describe("createUserConfigSlice", () => {
       }).not.toThrow();
     });
 
-    it("should handle toggling boolean states multiple times", () => {
-      expect(store.getState().viewOrigin).toBe(false);
+    it("should handle toggling about dialog multiple times", () => {
+      expect(store.getState().aboutDialogStatus).toBe(false);
 
-      store.getState().updateViewOrigin(true);
-      expect(store.getState().viewOrigin).toBe(true);
-
-      store.getState().updateViewOrigin(false);
-      expect(store.getState().viewOrigin).toBe(false);
-
-      store.getState().updateViewOrigin(true);
-      expect(store.getState().viewOrigin).toBe(true);
-    });
-
-    it("should handle multiple dialog states simultaneously", () => {
-      store.getState().updateSettingDialogStatus(true);
       store.getState().updateAboutDialogStatus(true);
-
-      expect(store.getState().settingDialogStatus).toBe(true);
       expect(store.getState().aboutDialogStatus).toBe(true);
 
-      store.getState().updateSettingDialogStatus(false);
+      store.getState().updateAboutDialogStatus(false);
+      expect(store.getState().aboutDialogStatus).toBe(false);
 
-      expect(store.getState().settingDialogStatus).toBe(false);
+      store.getState().updateAboutDialogStatus(true);
       expect(store.getState().aboutDialogStatus).toBe(true);
     });
 

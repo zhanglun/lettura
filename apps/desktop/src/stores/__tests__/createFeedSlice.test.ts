@@ -8,6 +8,20 @@ const createTestStore = () =>
     createFeedSlice(set, get as any, ...args),
   );
 
+const makeFeed = (overrides: Partial<FeedResItem> = {}): FeedResItem => ({
+  uuid: "feed-1",
+  title: "Feed 1",
+  link: "https://example.com",
+  feed_url: "https://example.com/feed1",
+  description: "Description 1",
+  item_type: "feed",
+  children: [],
+  health_status: 1,
+  failure_reason: "",
+  unread: 5,
+  ...overrides,
+});
+
 describe("createFeedSlice", () => {
   let store: ReturnType<typeof createTestStore>;
 
@@ -26,16 +40,15 @@ describe("createFeedSlice", () => {
         isToday: false,
         isAll: false,
       });
-      expect(state.unreadCount).toEqual({});
       expect(state.collectionMeta).toEqual({
         total: { unread: 0 },
         today: { unread: 0 },
       });
       expect(state.feed).toBeNull();
       expect(state.subscribes).toEqual([]);
-      expect(state.feedContextMenuTarget).toBeNull();
-      expect(state.feedContextMenuStatus).toBe(false);
+      expect(state.subscribesLoaded).toBe(false);
       expect(state.globalSyncStatus).toBe(false);
+      expect(state.addFeedModalOpen).toBe(false);
     });
   });
 
@@ -107,18 +120,7 @@ describe("createFeedSlice", () => {
 
   describe("setFeed", () => {
     it("should set current feed", () => {
-      const feed: FeedResItem = {
-        uuid: "feed-uuid",
-        title: "Test Feed",
-        link: "https://example.com",
-        feed_url: "https://example.com/feed",
-        description: "Test description",
-        item_type: "feed",
-        children: [],
-        health_status: 1,
-        failure_reason: "",
-        unread: 5,
-      };
+      const feed = makeFeed({ uuid: "feed-uuid", title: "Test Feed" });
 
       store.getState().setFeed(feed);
 
@@ -132,24 +134,11 @@ describe("createFeedSlice", () => {
     });
 
     it("should update viewMeta when feed is set", () => {
-      const feed: FeedResItem = {
-        uuid: "feed-uuid",
-        title: "Test Feed",
-        link: "https://example.com",
-        feed_url: "https://example.com/feed",
-        description: "Test description",
-        item_type: "feed",
-        children: [],
-        health_status: 1,
-        failure_reason: "",
-        unread: 5,
-      };
-
-      store.getState().setFeed(feed);
+      store.getState().setFeed(makeFeed({ uuid: "feed-uuid", unread: 5 }));
 
       expect(store.getState().viewMeta).toEqual({
         uuid: "feed-uuid",
-        title: "Test Feed",
+        title: "Feed 1",
         unread: 5,
         isToday: false,
         isAll: false,
@@ -165,325 +154,53 @@ describe("createFeedSlice", () => {
     });
   });
 
-  describe("setSubscribes", () => {
-    it("should set subscribes list", () => {
-      const subscribes: FeedResItem[] = [
-        {
-          uuid: "feed-1",
-          title: "Feed 1",
-          link: "https://example.com",
-          feed_url: "https://example.com/feed1",
-          description: "Description 1",
-          item_type: "feed",
-          children: [],
-          health_status: 1,
-          failure_reason: "",
-          unread: 5,
-        },
-        {
-          uuid: "feed-2",
-          title: "Feed 2",
-          link: "https://example.com",
-          feed_url: "https://example.com/feed2",
-          description: "Description 2",
-          item_type: "feed",
-          children: [],
-          health_status: 1,
-          failure_reason: "",
-          unread: 10,
-        },
-      ];
+  describe("updateUnreadCount", () => {
+    it("should increase unread count for feed", () => {
+      store.setState({ subscribes: [makeFeed({ unread: 5 })] });
 
-      store.getState().setSubscribes(subscribes);
+      store.getState().updateUnreadCount("feed-1", "increase", 3);
 
-      expect(store.getState().subscribes).toEqual(subscribes);
-      expect(store.getState().subscribes).toHaveLength(2);
+      expect(store.getState().subscribes[0].unread).toBe(8);
     });
 
-    it("should handle empty array", () => {
-      store.getState().setSubscribes([]);
+    it("should decrease unread count for feed", () => {
+      store.setState({ subscribes: [makeFeed({ unread: 10 })] });
 
-      expect(store.getState().subscribes).toEqual([]);
-      expect(store.getState().subscribes).toHaveLength(0);
+      store.getState().updateUnreadCount("feed-1", "decrease", 3);
+
+      expect(store.getState().subscribes[0].unread).toBe(7);
     });
 
-    it("should replace entire subscribes list", () => {
-      const subscribes1: FeedResItem[] = [
-        {
-          uuid: "feed-1",
-          title: "Feed 1",
-          link: "https://example.com",
-          feed_url: "https://example.com/feed1",
-          description: "Description 1",
-          item_type: "feed",
-          children: [],
-          health_status: 1,
-          failure_reason: "",
-          unread: 5,
-        },
-      ];
+    it("should not allow negative unread count", () => {
+      store.setState({ subscribes: [makeFeed({ unread: 5 })] });
 
-      const subscribes2: FeedResItem[] = [
-        {
-          uuid: "feed-2",
-          title: "Feed 2",
-          link: "https://example.com",
-          feed_url: "https://example.com/feed2",
-          description: "Description 2",
-          item_type: "feed",
-          children: [],
-          health_status: 1,
-          failure_reason: "",
-          unread: 10,
-        },
-      ];
+      store.getState().updateUnreadCount("feed-1", "decrease", 10);
 
-      store.getState().setSubscribes(subscribes1);
-      expect(store.getState().subscribes).toHaveLength(1);
-
-      store.getState().setSubscribes(subscribes2);
-      expect(store.getState().subscribes).toHaveLength(1);
-      expect(store.getState().subscribes[0].uuid).toBe("feed-2");
+      expect(store.getState().subscribes[0].unread).toBe(0);
     });
-  });
 
-  describe("updateFeed", () => {
-    it("should update feed by uuid", () => {
-      const subscribes: FeedResItem[] = [
-        {
-          uuid: "feed-1",
-          title: "Feed 1",
-          link: "https://example.com",
-          feed_url: "https://example.com/feed1",
-          description: "Description 1",
-          item_type: "feed",
-          children: [],
-          health_status: 1,
-          failure_reason: "",
-          unread: 5,
-        },
-        {
-          uuid: "feed-2",
-          title: "Feed 2",
-          link: "https://example.com",
-          feed_url: "https://example.com/feed2",
-          description: "Description 2",
-          item_type: "feed",
-          children: [],
-          health_status: 1,
-          failure_reason: "",
-          unread: 10,
-        },
-      ];
-
-      store.getState().setSubscribes(subscribes);
-
-      store.getState().updateFeed("feed-1", {
-        title: "Updated Feed 1",
-        unread: 15,
+    it("should bump parent folder unread when a child matches", () => {
+      const child = makeFeed({ uuid: "child-1", unread: 2 });
+      const folder = makeFeed({
+        uuid: "folder-1",
+        item_type: "folder",
+        unread: 2,
+        children: [child],
       });
+      store.setState({ subscribes: [folder] });
 
-      expect(store.getState().subscribes[0].title).toBe("Updated Feed 1");
-      expect(store.getState().subscribes[0].unread).toBe(15);
-      expect(store.getState().subscribes[1].title).toBe("Feed 2");
-    });
+      store.getState().updateUnreadCount("child-1", "increase", 4);
 
-    it("should not update other feeds", () => {
-      const subscribes: FeedResItem[] = [
-        {
-          uuid: "feed-1",
-          title: "Feed 1",
-          link: "https://example.com",
-          feed_url: "https://example.com/feed1",
-          description: "Description 1",
-          item_type: "feed",
-          children: [],
-          health_status: 1,
-          failure_reason: "",
-          unread: 5,
-        },
-      ];
-
-      store.getState().setSubscribes(subscribes);
-
-      store.getState().updateFeed("non-existent", {
-        title: "Updated",
-      });
-
-      expect(store.getState().subscribes[0].title).toBe("Feed 1");
-    });
-  });
-
-  describe("getSubscribesFromStore", () => {
-    it("should return subscribes from store", () => {
-      const subscribes: FeedResItem[] = [
-        {
-          uuid: "feed-1",
-          title: "Feed 1",
-          link: "https://example.com",
-          feed_url: "https://example.com/feed1",
-          description: "Description 1",
-          item_type: "feed",
-          children: [],
-          health_status: 1,
-          failure_reason: "",
-          unread: 5,
-        },
-      ];
-
-      store.getState().setSubscribes(subscribes);
-
-      const result = store.getState().getSubscribesFromStore();
-
-      expect(result).toEqual(subscribes);
-    });
-
-    it("should return empty array when no subscribes", () => {
-      const result = store.getState().getSubscribesFromStore();
-
-      expect(result).toEqual([]);
-    });
-  });
-
-  describe("setFeedContextMenuTarget", () => {
-    it("should set context menu target", () => {
-      const feed: FeedResItem = {
-        uuid: "feed-1",
-        title: "Feed 1",
-        link: "https://example.com",
-        feed_url: "https://example.com/feed1",
-        description: "Description 1",
-        item_type: "feed",
-        children: [],
-        health_status: 1,
-        failure_reason: "",
-        unread: 5,
-      };
-
-      store.getState().setFeedContextMenuTarget(feed);
-
-      expect(store.getState().feedContextMenuTarget).toEqual(feed);
-    });
-
-    it("should set target to null", () => {
-      store.getState().setFeedContextMenuTarget(null);
-
-      expect(store.getState().feedContextMenuTarget).toBeNull();
-    });
-  });
-
-  describe("setFeedContextMenuStatus", () => {
-    it("should set context menu status to true", () => {
-      store.getState().setFeedContextMenuStatus(true);
-
-      expect(store.getState().feedContextMenuStatus).toBe(true);
-    });
-
-    it("should set context menu status to false", () => {
-      store.getState().setFeedContextMenuStatus(true);
-      expect(store.getState().feedContextMenuStatus).toBe(true);
-
-      store.getState().setFeedContextMenuStatus(false);
-      expect(store.getState().feedContextMenuStatus).toBe(false);
-    });
-  });
-
-  describe("openFolder", () => {
-    it("should open folder by uuid", () => {
-      const subscribes: FeedResItem[] = [
-        {
-          uuid: "folder-1",
-          title: "Folder 1",
-          link: "",
-          feed_url: "",
-          description: "",
-          item_type: "folder",
-          children: [],
-          health_status: 0,
-          failure_reason: "",
-          unread: 0,
-        },
-        {
-          uuid: "feed-1",
-          title: "Feed 1",
-          link: "https://example.com",
-          feed_url: "https://example.com/feed1",
-          description: "Description 1",
-          item_type: "feed",
-          children: [],
-          health_status: 1,
-          failure_reason: "",
-          unread: 5,
-        },
-      ];
-
-      store.getState().setSubscribes(subscribes);
-      store.getState().openFolder("folder-1");
-
-      expect(store.getState().subscribes[0].is_expanded).toBe(true);
-      expect(store.getState().subscribes[1].is_expanded).toBe(undefined);
-    });
-  });
-
-  describe("closeFolder", () => {
-    it("should close folder by uuid", () => {
-      const subscribes: FeedResItem[] = [
-        {
-          uuid: "folder-1",
-          title: "Folder 1",
-          link: "",
-          feed_url: "",
-          description: "",
-          item_type: "folder",
-          children: [],
-          health_status: 0,
-          failure_reason: "",
-          unread: 0,
-        },
-      ];
-
-      store.getState().setSubscribes(subscribes);
-      store.getState().openFolder("folder-1");
-      expect(store.getState().subscribes[0].is_expanded).toBe(true);
-
-      store.getState().closeFolder("folder-1");
-      expect(store.getState().subscribes[0].is_expanded).toBe(false);
+      expect(store.getState().subscribes[0].unread).toBe(6);
+      expect(store.getState().subscribes[0].children?.[0].unread).toBe(6);
     });
   });
 
   describe("addNewFeed", () => {
     it("should add new feed to the beginning of subscribes", () => {
-      const existingSubscribes: FeedResItem[] = [
-        {
-          uuid: "feed-1",
-          title: "Feed 1",
-          link: "https://example.com",
-          feed_url: "https://example.com/feed1",
-          description: "Description 1",
-          item_type: "feed",
-          children: [],
-          health_status: 1,
-          failure_reason: "",
-          unread: 5,
-        },
-      ];
+      store.setState({ subscribes: [makeFeed()] });
 
-      store.getState().setSubscribes(existingSubscribes);
-
-      const newFeed: FeedResItem = {
-        uuid: "feed-2",
-        title: "Feed 2",
-        link: "https://example.com",
-        feed_url: "https://example.com/feed2",
-        description: "Description 2",
-        item_type: "feed",
-        children: [],
-        health_status: 1,
-        failure_reason: "",
-        unread: 10,
-      };
-
-      store.getState().addNewFeed(newFeed);
+      store.getState().addNewFeed(makeFeed({ uuid: "feed-2", unread: 10 }));
 
       expect(store.getState().subscribes).toHaveLength(2);
       expect(store.getState().subscribes[0].uuid).toBe("feed-2");
@@ -507,113 +224,9 @@ describe("createFeedSlice", () => {
     });
   });
 
-  describe("updateUnreadCount", () => {
-    it("should increase unread count for feed", () => {
-      const subscribes: FeedResItem[] = [
-        {
-          uuid: "feed-1",
-          title: "Feed 1",
-          link: "https://example.com",
-          feed_url: "https://example.com/feed1",
-          description: "Description 1",
-          item_type: "feed",
-          children: [],
-          health_status: 1,
-          failure_reason: "",
-          unread: 5,
-        },
-      ];
-
-      store.getState().setSubscribes(subscribes);
-
-      store.getState().updateUnreadCount("feed-1", "increase", 3);
-
-      expect(store.getState().subscribes[0].unread).toBe(8);
-    });
-
-    it("should decrease unread count for feed", () => {
-      const subscribes: FeedResItem[] = [
-        {
-          uuid: "feed-1",
-          title: "Feed 1",
-          link: "https://example.com",
-          feed_url: "https://example.com/feed1",
-          description: "Description 1",
-          item_type: "feed",
-          children: [],
-          health_status: 1,
-          failure_reason: "",
-          unread: 10,
-        },
-      ];
-
-      store.getState().setSubscribes(subscribes);
-
-      store.getState().updateUnreadCount("feed-1", "decrease", 3);
-
-      expect(store.getState().subscribes[0].unread).toBe(7);
-    });
-
-    it("should not allow negative unread count", () => {
-      const subscribes: FeedResItem[] = [
-        {
-          uuid: "feed-1",
-          title: "Feed 1",
-          link: "https://example.com",
-          feed_url: "https://example.com/feed1",
-          description: "Description 1",
-          item_type: "feed",
-          children: [],
-          health_status: 1,
-          failure_reason: "",
-          unread: 5,
-        },
-      ];
-
-      store.getState().setSubscribes(subscribes);
-
-      store.getState().updateUnreadCount("feed-1", "decrease", 10);
-
-      expect(store.getState().subscribes[0].unread).toBe(0);
-    });
-  });
-
   describe("state immutability", () => {
-    it("should not mutate original subscribes array", () => {
-      const subscribes: FeedResItem[] = [
-        {
-          uuid: "feed-1",
-          title: "Feed 1",
-          link: "https://example.com",
-          feed_url: "https://example.com/feed1",
-          description: "Description 1",
-          item_type: "feed",
-          children: [],
-          health_status: 1,
-          failure_reason: "",
-          unread: 5,
-        },
-      ];
-
-      const original = [...subscribes];
-      store.getState().setSubscribes(subscribes);
-
-      expect(subscribes).toEqual(original);
-    });
-
     it("should not mutate original feed object", () => {
-      const feed: FeedResItem = {
-        uuid: "feed-1",
-        title: "Feed 1",
-        link: "https://example.com",
-        feed_url: "https://example.com/feed1",
-        description: "Description 1",
-        item_type: "feed",
-        children: [],
-        health_status: 1,
-        failure_reason: "",
-        unread: 5,
-      };
+      const feed = makeFeed();
 
       const original = { ...feed };
       store.getState().setFeed(feed);
@@ -631,18 +244,7 @@ describe("updateViewUnread", () => {
   });
 
   it("uuid 匹配时递减/递增当前视图未读数（单篇已读链路）", () => {
-    store.getState().setFeed({
-      uuid: "feed-uuid",
-      title: "Test Feed",
-      link: "",
-      feed_url: "",
-      description: "",
-      item_type: "feed",
-      children: [],
-      health_status: 0,
-      failure_reason: "",
-      unread: 3,
-    } as FeedResItem);
+    store.getState().setFeed(makeFeed({ uuid: "feed-uuid", unread: 3 }));
 
     store.getState().updateViewUnread("feed-uuid", -1);
     expect(store.getState().viewMeta.unread).toBe(2);

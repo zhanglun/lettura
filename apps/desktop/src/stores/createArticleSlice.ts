@@ -1,34 +1,25 @@
 import dayjs from "dayjs";
 import type { StateCreator } from "zustand";
 import type { ArticleResItem } from "@/db";
-import { apiGet, apiPost } from "@/helpers/http";
+import { apiPost } from "@/helpers/http";
 import { ArticleReadStatus } from "@/typing";
 import type { FeedSlice } from "./createFeedSlice";
 
 export interface ArticleSlice {
   article: ArticleResItem | null;
-  setArticle: (ArticleResItem: ArticleResItem | null) => void;
-  articleList: ArticleResItem[];
-  setArticleList: (list: ArticleResItem[]) => void;
-  getArticleList: (query: any) => Promise<ArticleResItem[]>;
-  cursor: number;
-  setCursor: (c: number) => number;
+  setArticle: (nextArticle: ArticleResItem | null) => void;
   markArticleListAsRead: (isToday: boolean, isAll: boolean) => Promise<any>;
 
   updateArticleStatus: (
     article: ArticleResItem,
     status: ArticleReadStatus,
   ) => Promise<void>;
-  updateArticleAndIdx: (article: ArticleResItem, idx?: number) => void;
 
   articleDialogViewStatus: boolean;
   setArticleDialogViewStatus: (status: boolean) => void;
 
   currentFilter: { id: number; title: string };
   setFilter: any;
-
-  rightPanelExpanded: boolean;
-  setRightPanelExpanded: (expanded: boolean) => void;
 
   expandedArticleUuid: string | null;
   setExpandedArticleUuid: (uuid: string | null) => void;
@@ -41,40 +32,15 @@ export const createArticleSlice: StateCreator<
   ArticleSlice
 > = (set, get) => ({
   article: null,
-  rightPanelExpanded: false,
-  setArticle: (ArticleResItem: ArticleResItem | null) => {
+  setArticle: (nextArticle: ArticleResItem | null) => {
     set(() => ({
-      article: ArticleResItem,
-      rightPanelExpanded: ArticleResItem !== null,
+      article: nextArticle,
     }));
-  },
-  setRightPanelExpanded: (expanded: boolean) => {
-    set(() => ({ rightPanelExpanded: expanded }));
   },
 
   expandedArticleUuid: null,
   setExpandedArticleUuid: (uuid: string | null) => {
     set(() => ({ expandedArticleUuid: uuid }));
-  },
-
-  articleList: [],
-  setArticleList: (list: ArticleResItem[]) => {
-    set(() => ({
-      articleList: list,
-    }));
-  },
-
-  getArticleList: async (query: any) => {
-    const currentList = get().articleList;
-    const res = await apiGet<{ list: ArticleResItem[] }>(
-      "/articles",
-      query,
-    );
-    const { list } = res;
-
-    get().setArticleList([...currentList, ...list]);
-
-    return list;
   },
 
   updateArticleStatus: async (
@@ -108,21 +74,6 @@ export const createArticleSlice: StateCreator<
     }
   },
 
-  updateArticleAndIdx: (article: ArticleResItem, _idx?: number) => {
-    set(() => ({
-      article,
-    }));
-  },
-
-  cursor: 1,
-  setCursor: (c: number) => {
-    set(() => ({
-      cursor: c,
-    }));
-
-    return c;
-  },
-
   markArticleListAsRead: async (isToday: boolean, isAll: boolean) => {
     const feed = get().feed;
     const params: {
@@ -136,13 +87,6 @@ export const createArticleSlice: StateCreator<
     if (feed) params.uuid = feed.uuid;
 
     await apiPost("/mark-all-as-read", params);
-
-    set(() => ({
-      articleList: get().articleList.map((_) => {
-        _.read_status = 2;
-        return _;
-      }),
-    }));
 
     get().getSubscribes();
     get().initCollectionMetas();

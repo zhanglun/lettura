@@ -6,16 +6,6 @@ export interface UserConfigSlice {
   getUserConfig: any;
   updateUserConfig: (cfg: UserConfig) => Promise<unknown>;
 
-  setLastSyncTime: (t: Date) => void;
-
-  viewOrigin: boolean;
-  updateViewOrigin: (status: boolean) => void;
-  viewOriginLoading: boolean;
-  updateViewOriginLoading: (status: boolean) => void;
-
-  settingDialogStatus: boolean;
-  updateSettingDialogStatus: (status: boolean) => void;
-
   aboutDialogStatus: boolean;
   updateAboutDialogStatus: (status: boolean) => void;
   appMetadata: any;
@@ -48,36 +38,6 @@ export const createUserConfigSlice: StateCreator<UserConfigSlice> = (
       userConfig: cfg,
     }));
     return apiPost<number>("/user-config", cfg);
-  },
-
-  setLastSyncTime(t) {
-    get().updateUserConfig({
-      ...get().userConfig,
-      last_sync_time: t,
-    });
-  },
-
-  viewOrigin: false,
-
-  updateViewOrigin: (status: boolean) => {
-    set(() => ({
-      viewOrigin: status,
-    }));
-  },
-
-  viewOriginLoading: false,
-
-  updateViewOriginLoading: (status: boolean) => {
-    set(() => ({
-      viewOriginLoading: status,
-    }));
-  },
-
-  settingDialogStatus: false,
-  updateSettingDialogStatus: (status: boolean) => {
-    set(() => ({
-      settingDialogStatus: status,
-    }));
   },
 
   aboutDialogStatus: false,

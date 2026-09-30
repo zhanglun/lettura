@@ -1,6 +1,6 @@
 import pLimit from "p-limit";
 import type { StateCreator } from "zustand";
-import type { Channel, FeedResItem } from "@/db";
+import type { FeedResItem } from "@/db";
 import { apiGet } from "@/helpers/http";
 
 export type CollectionMeta = {
@@ -18,10 +18,6 @@ export interface FeedSlice {
     isAll: boolean;
   };
 
-  unreadCount: {
-    [key: string]: number;
-  };
-
   updateUnreadCount: (uuid: string, action: string, count: number) => void;
 
   initCollectionMetas: () => void;
@@ -34,21 +30,10 @@ export interface FeedSlice {
 
   feed: FeedResItem | null;
   setFeed: (feed: FeedResItem | null) => void;
-  updateFeed: (uuid: string, updater: any) => void;
   subscribes: FeedResItem[];
   /** 首次 getSubscribes 落地前为 false——区分「还没加载」和「真的没有订阅」 */
   subscribesLoaded: boolean;
-  setSubscribes: (list: FeedResItem[]) => void;
   getSubscribes: () => any;
-  getSubscribesFromStore: () => FeedResItem[];
-
-  feedContextMenuTarget: FeedResItem | null;
-  setFeedContextMenuTarget: (target: FeedResItem | null) => void;
-  feedContextMenuStatus: boolean;
-  setFeedContextMenuStatus: (status: boolean) => void;
-
-  openFolder: (uuid: string) => void;
-  closeFolder: (uuid: string) => void;
 
   syncArticles: (feed: FeedResItem) => Promise<any>;
   addNewFeed: (feed: FeedResItem) => void;
@@ -59,15 +44,6 @@ export interface FeedSlice {
   globalSyncStatus: boolean;
   setGlobalSyncStatus: (status: boolean) => void;
   syncAllArticles: () => Promise<void>;
-
-  feedsView: "manage" | "articles";
-  setFeedsView: (view: "manage" | "articles") => void;
-  feedsSearchQuery: string;
-  setFeedsSearchQuery: (query: string) => void;
-  folderFilter: string | null;
-  setFolderFilter: (uuid: string | null) => void;
-  contextMenuPosition: { x: number; y: number } | null;
-  setContextMenuPosition: (pos: { x: number; y: number } | null) => void;
 
   addFeedModalOpen: boolean;
   setAddFeedModalOpen: (open: boolean) => void;
@@ -85,8 +61,6 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
     isToday: false,
     isAll: false,
   },
-
-  unreadCount: {},
 
   updateUnreadCount: (uuid: string, action: string, count: number) => {
     const strategy = (action: string, target: any) => {
@@ -209,23 +183,6 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
   },
   subscribes: [],
   subscribesLoaded: false,
-  setSubscribes: (list: FeedResItem[]) => {
-    set(() => ({
-      subscribes: list,
-    }));
-  },
-  updateFeed: (uuid: string, updater: any) => {
-    set((state) => ({
-      subscribes: state.subscribes.map((feed) => {
-        return feed.uuid === uuid
-          ? {
-              ...feed,
-              ...updater,
-            }
-          : feed;
-      }),
-    }));
-  },
   getSubscribes: () => {
     const initUnreadCount = (
       list: any[],
@@ -256,55 +213,6 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
         subscribesLoaded: true,
       }));
     });
-  },
-
-  /**
-   * Return the subscribes data from the store
-   * @returns {FeedResItem[]}
-   */
-  getSubscribesFromStore: () => {
-    return get().subscribes;
-  },
-
-  feedContextMenuTarget: null,
-  setFeedContextMenuTarget: (target: Channel | null) => {
-    set(() => ({
-      feedContextMenuTarget: target,
-    }));
-  },
-  feedContextMenuStatus: false,
-  setFeedContextMenuStatus(status) {
-    set(() => ({
-      feedContextMenuStatus: status,
-    }));
-  },
-
-  closeFolder: (uuid: string) => {
-    const list = get().subscribes;
-
-    list.forEach((_) => {
-      if (_.uuid === uuid) {
-        _.is_expanded = false;
-      }
-    });
-
-    set(() => ({
-      subscribes: [...list],
-    }));
-  },
-
-  openFolder: (uuid: string) => {
-    const list = get().subscribes;
-
-    list.forEach((_) => {
-      if (_.uuid === uuid) {
-        _.is_expanded = true;
-      }
-    });
-
-    set(() => ({
-      subscribes: [...list],
-    }));
   },
 
   syncArticles(feed: FeedResItem): Promise<any> {
@@ -408,26 +316,6 @@ export const createFeedSlice: StateCreator<FeedSlice> = (
       setGlobalSyncStatus(false);
       getSubscribes();
     }
-  },
-
-  feedsView: "manage",
-  setFeedsView: (view) => {
-    set(() => ({ feedsView: view }));
-  },
-
-  feedsSearchQuery: "",
-  setFeedsSearchQuery: (query) => {
-    set(() => ({ feedsSearchQuery: query }));
-  },
-
-  folderFilter: null,
-  setFolderFilter: (uuid) => {
-    set(() => ({ folderFilter: uuid }));
-  },
-
-  contextMenuPosition: null,
-  setContextMenuPosition: (pos) => {
-    set(() => ({ contextMenuPosition: pos }));
   },
 
   addFeedModalOpen: false,
