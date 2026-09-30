@@ -1,4 +1,3 @@
-import { AxiosError } from "axios";
 import { t } from "i18next";
 import { toast } from "./toast";
 
@@ -16,12 +15,26 @@ const errorMessages: Record<ErrorType, string> = {
   [ErrorType.UNKNOWN]: t("An unexpected error occurred"),
 };
 
+/** 结构化探测 HTTP 类错误（fetch 封装或带 response 的任何错误对象） */
+type HttpLikeError = {
+  code?: string;
+  response?: {
+    status?: number;
+    statusText?: string;
+    data?: { message?: string };
+  };
+};
+
+const asHttpError = (error: unknown): HttpLikeError | null =>
+  error && typeof error === "object" ? (error as HttpLikeError) : null;
+
 export const getErrorType = (error: unknown): ErrorType => {
-  if (error instanceof AxiosError) {
-    if (error.code === "ERR_NETWORK" || error.code === "ECONNABORTED") {
+  const http = asHttpError(error);
+  if (http) {
+    if (http.code === "ERR_NETWORK" || http.code === "ECONNABORTED") {
       return ErrorType.NETWORK;
     }
-    if (error.response?.status === 400 || error.response?.status === 422) {
+    if (http.response?.status === 400 || http.response?.status === 422) {
       return ErrorType.VALIDATION;
     }
   }
@@ -45,12 +58,13 @@ export const getErrorType = (error: unknown): ErrorType => {
 export const getUserFriendlyMessage = (error: unknown): string => {
   const errorType = getErrorType(error);
 
-  if (error instanceof AxiosError) {
-    if (error.response?.data?.message) {
-      return error.response.data.message;
+  const http = asHttpError(error);
+  if (http?.response) {
+    if (http.response.data?.message) {
+      return http.response.data.message;
     }
-    if (error.response?.statusText) {
-      return error.response.statusText;
+    if (http.response.statusText) {
+      return http.response.statusText;
     }
   }
 
