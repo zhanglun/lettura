@@ -15,6 +15,8 @@ export const PlayListPopover: React.FC = () => {
       alignment="end"
       width="auto"
       label={t("podcast.playlist")}
+      className="fusion-playlist-popover"
+      hasCloseButton={false}
       content={<PlayList />}
     >
       <IconButton
