@@ -333,9 +333,13 @@ function useArticleSummary(
     if (enabled) void load();
   }, [enabled, key, load]);
 
+  // refresh 必须引用稳定：它经 ArticleView 的防抖链进入列表行回调，
+  // 每渲染重建会把 React.memo(ArticleListVirtual) 的 props 全部击穿
+  const refresh = useCallback(() => load(true), [load]);
+
   return {
     data: dataKey === key ? data : undefined,
-    refresh: () => load(true),
+    refresh,
   };
 }
 

@@ -41,6 +41,9 @@ import { DEV_PREVIEW_FIRST_RUN, EmptyFace } from "./EmptyFace";
 
 type CarrierFilter = "all" | "text" | "audio" | "video" | "email";
 
+/** mutate 的恒等更新器：触发缓存重读（同步/全部已读后强制重验证） */
+const identity = (pages: any) => pages;
+
 export function ArticleView() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -133,7 +136,6 @@ export function ArticleView() {
       return next;
     });
   }, []);
-  const identity = useCallback((pages: any) => pages, []);
   const loadMoreBucket = useCallback(
     (key: string) => {
       sections.find((s) => s.key === key)?.loadMore();
@@ -251,13 +253,17 @@ export function ArticleView() {
 
   const openArticle = useCallback(
     (a: ArticleResItem) => {
+      // store 的动作引用稳定，经 getState() 取用可让回调不随 store 对象变化——
+      // 否则 ArticleListVirtual 的 React.memo 每次任意字段更新都被击穿
+      const { updateArticleStatus, setExpandedArticleUuid } =
+        useAppStore.getState();
       if (a.read_status === ArticleReadStatus.UNREAD) {
-        store.updateArticleStatus(a, ArticleReadStatus.READ);
+        updateArticleStatus(a, ArticleReadStatus.READ);
         applyArticleUpdate({ ...a, read_status: ArticleReadStatus.READ });
       }
-      store.setExpandedArticleUuid(a.uuid);
+      setExpandedArticleUuid(a.uuid);
     },
-    [store, applyArticleUpdate],
+    [applyArticleUpdate],
   );
 
   // 完读区「下一篇」卡：直接打开卡里那篇。旧实现走 moveFocus(1)，
@@ -267,19 +273,23 @@ export function ArticleView() {
     const next = displayArticles[expandedIdx + 1] ?? null;
     if (!next) return;
     if (next.read_status === ArticleReadStatus.UNREAD) {
-      store.updateArticleStatus(next, ArticleReadStatus.READ);
+      const { updateArticleStatus, setExpandedArticleUuid } =
+        useAppStore.getState();
+      updateArticleStatus(next, ArticleReadStatus.READ);
       applyArticleUpdate({ ...next, read_status: ArticleReadStatus.READ });
+      setExpandedArticleUuid(next.uuid);
+    } else {
+      useAppStore.getState().setExpandedArticleUuid(next.uuid);
     }
-    store.setExpandedArticleUuid(next.uuid);
     setFocusIdx(expandedIdx + 1);
-  }, [displayArticles, expandedIdx, store, applyArticleUpdate]);
+  }, [displayArticles, expandedIdx, applyArticleUpdate]);
 
   const closeDetail = useCallback(() => {
-    store.setExpandedArticleUuid(null);
+    useAppStore.getState().setExpandedArticleUuid(null);
     if (isArticleRoute) {
       navigate(feedUuid ? `/local/feeds/${feedUuid}` : "/local/all");
     }
-  }, [isArticleRoute, feedUuid, navigate, store]);
+  }, [isArticleRoute, feedUuid, navigate]);
 
   const moveFocus = useCallback(
     (delta: number) => {
@@ -289,8 +299,10 @@ export function ArticleView() {
       // 用户反馈（2026-09-29）：首行刚出现就带高亮读起来像「默认选中」。
       // 因此首行只画焦点环（j/k 光标位），不画行洗色；第二次 j 起才是真正的移动。
       const establishing = focusIdx === null && delta > 0;
+      const { expandedArticleUuid, setExpandedArticleUuid } =
+        useAppStore.getState();
       const from =
-        store.expandedArticleUuid && expandedIdx >= 0
+        expandedArticleUuid && expandedIdx >= 0
           ? expandedIdx
           : (focusIdx ?? (delta > 0 ? -1 : displayArticles.length));
       const next = Math.max(
@@ -305,20 +317,19 @@ export function ArticleView() {
       }
       if (next !== from) {
         const a = displayArticles[next];
-        if (a && store.expandedArticleUuid)
-          store.setExpandedArticleUuid(a.uuid);
+        if (a && expandedArticleUuid) setExpandedArticleUuid(a.uuid);
       }
     },
-    [focusIdx, expandedIdx, displayArticles, store],
+    [focusIdx, expandedIdx, displayArticles],
   );
 
   const focused = focusIdx === null ? undefined : displayArticles[focusIdx];
 
   const markFocusedRead = useCallback(() => {
     if (!focused || focused.read_status !== ArticleReadStatus.UNREAD) return;
-    store.updateArticleStatus(focused, ArticleReadStatus.READ);
+    useAppStore.getState().updateArticleStatus(focused, ArticleReadStatus.READ);
     applyArticleUpdate({ ...focused, read_status: ArticleReadStatus.READ });
-  }, [focused, store, applyArticleUpdate]);
+  }, [focused, applyArticleUpdate]);
 
   const toggleStar = useCallback(
     (a: ArticleResItem | null) => {
@@ -464,23 +475,26 @@ export function ArticleView() {
 
   const markQueueAllRead = useCallback(async () => {
     if (!feedUuid) return;
-    const before = store.viewMeta?.unread ?? queueFeed?.unread ?? 0;
+    const { viewMeta, updateCollectionMeta, setViewMeta, getSubscribes } =
+      useAppStore.getState();
+    const before = viewMeta?.unread ?? queueFeed?.unread ?? 0;
     await apiPost("/mark-all-as-read", { uuid: feedUuid });
-    if (before > 0) store.updateCollectionMeta(0, -before);
-    store.setViewMeta({ ...store.viewMeta, unread: 0 });
-    await Promise.all([store.getSubscribes?.(), mutate(identity)]);
-  }, [feedUuid, store, queueFeed, mutate]);
+    if (before > 0) updateCollectionMeta(0, -before);
+    setViewMeta({ ...useAppStore.getState().viewMeta, unread: 0 });
+    await Promise.all([getSubscribes?.(), mutate(identity)]);
+  }, [feedUuid, queueFeed, mutate]);
 
   const syncQueueFeed = useCallback(async () => {
     if (!queueFeed || queueSyncing) return;
     setQueueSyncing(true);
     try {
-      await store.syncArticles(queueFeed);
-      await Promise.all([store.getSubscribes?.(), mutate(identity)]);
+      const { syncArticles, getSubscribes } = useAppStore.getState();
+      await syncArticles(queueFeed);
+      await Promise.all([getSubscribes?.(), mutate(identity)]);
     } finally {
       setQueueSyncing(false);
     }
-  }, [queueFeed, queueSyncing, store, mutate]);
+  }, [queueFeed, queueSyncing, mutate]);
 
   const [markingBucket, setMarkingBucket] = useState<string | null>(null);
   const markBucketRead = useCallback(
@@ -490,7 +504,8 @@ export function ArticleView() {
       try {
         await apiPost("/mark-all-as-read", { day_bucket: dayBucket });
         const removeFromUnread =
-          !isStarred && store.currentFilter.id === ArticleReadStatus.UNREAD;
+          !isStarred &&
+          useAppStore.getState().currentFilter.id === ArticleReadStatus.UNREAD;
         mutateBucket(dayBucket, (pages) =>
           pages.map((page) => ({
             ...page,
@@ -504,9 +519,10 @@ export function ArticleView() {
                 })),
           })),
         );
+        const { getSubscribes, initCollectionMetas } = useAppStore.getState();
         await Promise.all([
-          store.getSubscribes?.(),
-          store.initCollectionMetas?.(),
+          getSubscribes?.(),
+          initCollectionMetas?.(),
           refreshCarrierCounts(),
         ]);
         toast.success(
@@ -525,7 +541,7 @@ export function ArticleView() {
         setMarkingBucket(null);
       }
     },
-    [markingBucket, mutateBucket, refreshCarrierCounts, store, t],
+    [markingBucket, mutateBucket, refreshCarrierCounts, t],
   );
 
   const markAllRead = async () => {

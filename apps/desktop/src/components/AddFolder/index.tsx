@@ -3,7 +3,7 @@ import { Dialog, DialogHeader } from "@astryxdesign/core/Dialog";
 import { Layout, LayoutContent } from "@astryxdesign/core/Layout";
 import { TextInput } from "@astryxdesign/core/TextInput";
 import { Tooltip } from "@astryxdesign/core/Tooltip";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useShallow } from "zustand/react/shallow";
 import type { FolderResItem } from "@/db";
@@ -77,15 +77,10 @@ export const AddFolder = React.memo((props: AddFolderProps) => {
       });
   };
 
-  const title = useMemo(() => {
-    return action === "edit" ? t("Edit folder") : t("Add folder");
-  }, [action, t]);
+  const title = action === "edit" ? t("Edit folder") : t("Add folder");
 
-  const content = useMemo(() => {
-    return action === "edit"
-      ? t("Update your folder")
-      : t("Organize your subscribes");
-  }, [action, t]);
+  const content =
+    action === "edit" ? t("Update your folder") : t("Organize your subscribes");
 
   useEffect(() => {
     if (dialogStatus && inputRef && inputRef.current) {
