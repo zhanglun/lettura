@@ -46,13 +46,18 @@ config over prose when something conflicts.
   `busChannel.emit("getChannels")` (AppLayout listens once). Do not add a
   third caching layer or re-introduce list state into the Zustand slices.
 - React Compiler 1.0 is wired into vite.config.ts and vitest.config.ts
-  (babel-plugin-react-compiler), so components auto-memoize. Do NOT add new
-  hand-written useCallback/useMemo — they can even block compilation
-  ("Existing memoization could not be preserved" bails the whole function
-  out). Remaining manual hooks live in functions the compiler 1.0 still
-  bails on: ref writes during render (useArticle, AddFeed, Feeds, App),
-  try/finally statements (Setting), dynamic import() (adapter/Common).
-  Avoid try/finally in components — use promise .catch()/.finally().
+  (babel-plugin-react-compiler); every component/hook in src compiles (zero
+  bail-outs) and auto-memoizes. Do NOT write useCallback/useMemo/React.memo
+  anywhere — the compiler handles memoization, and hand-written hooks used
+  to block compilation ("Existing memoization could not be preserved").
+  Compiler constraints that shaped the codebase (keep following them):
+  no ref writes during render (sync refs inside useEffect); no try/finally
+  statements in components/hooks (use promise .catch()/.finally()); no
+  import() expressions inside component bodies (hoist to module level); no
+  reads of mutable module-level state (caches, singletons) during render —
+  the compiler treats them as pure computations and caches stale values.
+  Route cross-cutting data through state and sync caches in effects
+  (useLayoutEffect when the switch must not paint a stale frame).
 - Main frontend entrypoints: `src/index.tsx` defines routes and waits for
   `get_server_port` inside Tauri; `src/App.tsx` is the app shell and Tauri event
   listener; routes are named in `src/config.ts`.
