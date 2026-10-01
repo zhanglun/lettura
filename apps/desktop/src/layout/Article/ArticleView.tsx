@@ -14,7 +14,7 @@ import {
   RefreshCw,
   Star,
 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useTranslation } from "react-i18next";
 import { useMatch, useNavigate, useParams } from "react-router-dom";
@@ -128,28 +128,27 @@ export function ArticleView() {
   );
   // 默认展开态只应用一次：之后用户手动展开/收起不再干预
   const defaultExpandApplied = useRef(false);
-  const toggleBucket = useCallback((bucket: string) => {
+  // 以下回调/派生值由 React Compiler 自动记忆化（原 16 处手写
+  // useCallback/useMemo 已移除——它们正是组件 bail-out 的原因）
+  const toggleBucket = (bucket: string) => {
     setCollapsedBuckets((prev) => {
       const next = new Set(prev);
       if (next.has(bucket)) next.delete(bucket);
       else next.add(bucket);
       return next;
     });
-  }, []);
-  const loadMoreBucket = useCallback(
-    (key: string) => {
-      sections.find((s) => s.key === key)?.loadMore();
-    },
-    [sections],
-  );
+  };
+  const loadMoreBucket = (key: string) => {
+    sections.find((s) => s.key === key)?.loadMore();
+  };
 
   // 载体计数保持鲜活：单篇标记已读/切换读状态后防抖刷新
   // （段头「全部已读」连发多篇也只触发一次请求；同步/全部已读路径原本就刷新）
   const countsRefreshTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const scheduleCountsRefresh = useCallback(() => {
+  const scheduleCountsRefresh = () => {
     if (countsRefreshTimer.current) clearTimeout(countsRefreshTimer.current);
     countsRefreshTimer.current = setTimeout(() => refreshCarrierCounts(), 600);
-  }, [refreshCarrierCounts]);
+  };
   useEffect(
     () => () => {
       if (countsRefreshTimer.current) clearTimeout(countsRefreshTimer.current);
@@ -158,10 +157,7 @@ export function ArticleView() {
   );
   // 键盘可达序列 = 各 section 可见行的串联（收起桶的行已不在 section.rows 里——
   // 父级统一过滤，与渲染严格一致）
-  const displayArticles = useMemo(
-    () => sections.flatMap((s) => s.rows),
-    [sections],
-  );
+  const displayArticles = sections.flatMap((s) => s.rows);
 
   useEffect(() => {
     setFocusIdx((i) =>
@@ -232,13 +228,10 @@ export function ArticleView() {
 
   // 单篇状态变化（已读/星标等）统一走这里：写回列表缓存 + 防抖刷新载体计数。
   // 列表行 onArticleRead 与各处 onArticleUpdate 的处理本就一字不差，共用一份
-  const applyArticleUpdate = useCallback(
-    (updated: ArticleResItem) => {
-      mutate((pages: any) => retainArticleAfterRead(pages, updated));
-      scheduleCountsRefresh();
-    },
-    [mutate, scheduleCountsRefresh],
-  );
+  const applyArticleUpdate = (updated: ArticleResItem) => {
+    mutate((pages: any) => retainArticleAfterRead(pages, updated));
+    scheduleCountsRefresh();
+  };
 
   const expandedIdx = store.expandedArticleUuid
     ? displayArticles.findIndex((a) => a.uuid === store.expandedArticleUuid)
@@ -251,25 +244,21 @@ export function ArticleView() {
         ? store.article
         : null;
 
-  const openArticle = useCallback(
-    (a: ArticleResItem) => {
-      // store 的动作引用稳定，经 getState() 取用可让回调不随 store 对象变化——
-      // 否则 ArticleListVirtual 的 React.memo 每次任意字段更新都被击穿
-      const { updateArticleStatus, setExpandedArticleUuid } =
-        useAppStore.getState();
-      if (a.read_status === ArticleReadStatus.UNREAD) {
-        updateArticleStatus(a, ArticleReadStatus.READ);
-        applyArticleUpdate({ ...a, read_status: ArticleReadStatus.READ });
-      }
-      setExpandedArticleUuid(a.uuid);
-    },
-    [applyArticleUpdate],
-  );
+  const openArticle = (a: ArticleResItem) => {
+    // store 的动作引用稳定，经 getState() 取用即事件时点的最新值
+    const { updateArticleStatus, setExpandedArticleUuid } =
+      useAppStore.getState();
+    if (a.read_status === ArticleReadStatus.UNREAD) {
+      updateArticleStatus(a, ArticleReadStatus.READ);
+      applyArticleUpdate({ ...a, read_status: ArticleReadStatus.READ });
+    }
+    setExpandedArticleUuid(a.uuid);
+  };
 
   // 完读区「下一篇」卡：直接打开卡里那篇。旧实现走 moveFocus(1)，
   // 鼠标打开详情时 focusIdx 未建立 → 从 -1 起步落回列表顶部，
   // 看起来就是「点了下一篇却重开当前篇」的数据错乱
-  const openNextArticle = useCallback(() => {
+  const openNextArticle = () => {
     const next = displayArticles[expandedIdx + 1] ?? null;
     if (!next) return;
     if (next.read_status === ArticleReadStatus.UNREAD) {
@@ -282,68 +271,62 @@ export function ArticleView() {
       useAppStore.getState().setExpandedArticleUuid(next.uuid);
     }
     setFocusIdx(expandedIdx + 1);
-  }, [displayArticles, expandedIdx, applyArticleUpdate]);
+  };
 
-  const closeDetail = useCallback(() => {
+  const closeDetail = () => {
     useAppStore.getState().setExpandedArticleUuid(null);
     if (isArticleRoute) {
       navigate(feedUuid ? `/local/feeds/${feedUuid}` : "/local/all");
     }
-  }, [isArticleRoute, feedUuid, navigate]);
+  };
 
-  const moveFocus = useCallback(
-    (delta: number) => {
-      // 详情打开时从「正在阅读的文章」起走（点击打开不建立 focusIdx）；
-      // 纯列表态维持原语义：未聚焦时 j 从头 / k 从尾开始。
-      // 「未聚焦 + j」落在第 0 行 = 光标 establishment，不是移动——
-      // 用户反馈（2026-09-29）：首行刚出现就带高亮读起来像「默认选中」。
-      // 因此首行只画焦点环（j/k 光标位），不画行洗色；第二次 j 起才是真正的移动。
-      const establishing = focusIdx === null && delta > 0;
-      const { expandedArticleUuid, setExpandedArticleUuid } =
-        useAppStore.getState();
-      const from =
-        expandedArticleUuid && expandedIdx >= 0
-          ? expandedIdx
-          : (focusIdx ?? (delta > 0 ? -1 : displayArticles.length));
-      const next = Math.max(
-        0,
-        Math.min(from + delta, displayArticles.length - 1),
-      );
-      setFocusIdx(next);
-      if (establishing && next === 0) {
-        setFocusStyleSuppressed(true);
-      } else {
-        setFocusStyleSuppressed(false);
-      }
-      if (next !== from) {
-        const a = displayArticles[next];
-        if (a && expandedArticleUuid) setExpandedArticleUuid(a.uuid);
-      }
-    },
-    [focusIdx, expandedIdx, displayArticles],
-  );
+  const moveFocus = (delta: number) => {
+    // 详情打开时从「正在阅读的文章」起走（点击打开不建立 focusIdx）；
+    // 纯列表态维持原语义：未聚焦时 j 从头 / k 从尾开始。
+    // 「未聚焦 + j」落在第 0 行 = 光标 establishment，不是移动——
+    // 用户反馈（2026-09-29）：首行刚出现就带高亮读起来像「默认选中」。
+    // 因此首行只画焦点环（j/k 光标位），不画行洗色；第二次 j 起才是真正的移动。
+    const establishing = focusIdx === null && delta > 0;
+    const { expandedArticleUuid, setExpandedArticleUuid } =
+      useAppStore.getState();
+    const from =
+      expandedArticleUuid && expandedIdx >= 0
+        ? expandedIdx
+        : (focusIdx ?? (delta > 0 ? -1 : displayArticles.length));
+    const next = Math.max(
+      0,
+      Math.min(from + delta, displayArticles.length - 1),
+    );
+    setFocusIdx(next);
+    if (establishing && next === 0) {
+      setFocusStyleSuppressed(true);
+    } else {
+      setFocusStyleSuppressed(false);
+    }
+    if (next !== from) {
+      const a = displayArticles[next];
+      if (a && expandedArticleUuid) setExpandedArticleUuid(a.uuid);
+    }
+  };
 
   const focused = focusIdx === null ? undefined : displayArticles[focusIdx];
 
-  const markFocusedRead = useCallback(() => {
+  const markFocusedRead = () => {
     if (!focused || focused.read_status !== ArticleReadStatus.UNREAD) return;
     useAppStore.getState().updateArticleStatus(focused, ArticleReadStatus.READ);
     applyArticleUpdate({ ...focused, read_status: ArticleReadStatus.READ });
-  }, [focused, applyArticleUpdate]);
+  };
 
-  const toggleStar = useCallback(
-    (a: ArticleResItem | null) => {
-      if (!a) return;
-      const next =
-        a.starred === ArticleStarStatus.STARRED
-          ? ArticleStarStatus.UNSTAR
-          : ArticleStarStatus.STARRED;
-      apiPost(`/articles/${a.uuid}/star`, { starred: next }).then(() => {
-        applyArticleUpdate({ ...a, starred: next });
-      });
-    },
-    [applyArticleUpdate],
-  );
+  const toggleStar = (a: ArticleResItem | null) => {
+    if (!a) return;
+    const next =
+      a.starred === ArticleStarStatus.STARRED
+        ? ArticleStarStatus.UNSTAR
+        : ArticleStarStatus.STARRED;
+    apiPost(`/articles/${a.uuid}/star`, { starred: next }).then(() => {
+      applyArticleUpdate({ ...a, starred: next });
+    });
+  };
 
   // 键盘流：j/k 列表移动焦点、详情内滚动文章（到边即停）· ↑/↓ 切换上/下一篇 ·
   // ⏎/o 打开 · m 已读并下移 · ⇧M 上移 · f 星标 · v 浏览器 · esc 返回
@@ -395,7 +378,7 @@ export function ArticleView() {
 
   // 空态分型（quiet empty 语言）：载体过滤空 → 类型图标 + 切回全部；
   // 源队列无未读 → 收尾语气 + 查看全部；星标空 → 键盘提示；其余 → 同步等待
-  const listEmpty = useMemo(() => {
+  const listEmpty = (() => {
     if (!isQueueMode && carrierFilter !== "all") {
       const carrierIcon =
         carrierFilter === "text"
@@ -461,9 +444,9 @@ export function ArticleView() {
       title: t("fusion.empty.default_title"),
       hint: t("fusion.empty.default_hint"),
     };
-  }, [isQueueMode, carrierFilter, queueFilter, isStarred, t]);
+  })();
 
-  const queueFeed = useMemo(() => {
+  const queueFeed = (() => {
     if (!feedUuid) return null;
     for (const item of store.subscribes || []) {
       if (item.uuid === feedUuid) return item;
@@ -471,9 +454,9 @@ export function ArticleView() {
       if (child) return child;
     }
     return null;
-  }, [store.subscribes, feedUuid]);
+  })();
 
-  const markQueueAllRead = useCallback(async () => {
+  const markQueueAllRead = async () => {
     if (!feedUuid) return;
     const { viewMeta, updateCollectionMeta, setViewMeta, getSubscribes } =
       useAppStore.getState();
@@ -482,67 +465,67 @@ export function ArticleView() {
     if (before > 0) updateCollectionMeta(0, -before);
     setViewMeta({ ...useAppStore.getState().viewMeta, unread: 0 });
     await Promise.all([getSubscribes?.(), mutate(identity)]);
-  }, [feedUuid, queueFeed, mutate]);
+  };
 
-  const syncQueueFeed = useCallback(async () => {
+  // try/finally 会令编译器 bail-out（1.0 不支持 TryStatement），改用
+  // promise.finally 表达同样的「无论成败都复位」语义
+  const syncQueueFeed = async () => {
     if (!queueFeed || queueSyncing) return;
     setQueueSyncing(true);
-    try {
-      const { syncArticles, getSubscribes } = useAppStore.getState();
+    const { syncArticles, getSubscribes } = useAppStore.getState();
+    await (async () => {
       await syncArticles(queueFeed);
       await Promise.all([getSubscribes?.(), mutate(identity)]);
-    } finally {
+    })().finally(() => {
       setQueueSyncing(false);
-    }
-  }, [queueFeed, queueSyncing, mutate]);
+    });
+  };
 
   const [markingBucket, setMarkingBucket] = useState<string | null>(null);
-  const markBucketRead = useCallback(
-    async (dayBucket: string) => {
-      if (markingBucket) return;
-      setMarkingBucket(dayBucket);
-      try {
-        await apiPost("/mark-all-as-read", { day_bucket: dayBucket });
-        const removeFromUnread =
-          !isStarred &&
-          useAppStore.getState().currentFilter.id === ArticleReadStatus.UNREAD;
-        mutateBucket(dayBucket, (pages) =>
-          pages.map((page) => ({
-            ...page,
-            list: removeFromUnread
-              ? page.list.filter(
-                  (article) => article.read_status !== ArticleReadStatus.UNREAD,
-                )
-              : page.list.map((article) => ({
-                  ...article,
-                  read_status: ArticleReadStatus.READ,
-                })),
-          })),
-        );
-        const { getSubscribes, initCollectionMetas } = useAppStore.getState();
-        await Promise.all([
-          getSubscribes?.(),
-          initCollectionMetas?.(),
-          refreshCarrierCounts(),
-        ]);
-        toast.success(
-          t("fusion.list.mark_bucket_done", {
-            bucket: t(`fusion.list.day_${dayBucket}`),
-          }),
-        );
-      } catch (error) {
-        showErrorToast(
-          error,
-          t("fusion.list.mark_bucket_failed", {
-            bucket: t(`fusion.list.day_${dayBucket}`),
-          }),
-        );
-      } finally {
-        setMarkingBucket(null);
-      }
-    },
-    [markingBucket, mutateBucket, refreshCarrierCounts, t],
-  );
+  const markBucketRead = async (dayBucket: string) => {
+    if (markingBucket) return;
+    setMarkingBucket(dayBucket);
+    // 编译器 1.0 不支持 try/catch 语句（条件/可选链都会 bail-out），
+    // 用 promise.catch 表达同样的「成败分支 + 复位」语义
+    const removeFromUnread =
+      !isStarred &&
+      useAppStore.getState().currentFilter.id === ArticleReadStatus.UNREAD;
+    await (async () => {
+      await apiPost("/mark-all-as-read", { day_bucket: dayBucket });
+      mutateBucket(dayBucket, (pages) =>
+        pages.map((page) => ({
+          ...page,
+          list: removeFromUnread
+            ? page.list.filter(
+                (article) => article.read_status !== ArticleReadStatus.UNREAD,
+              )
+            : page.list.map((article) => ({
+                ...article,
+                read_status: ArticleReadStatus.READ,
+              })),
+        })),
+      );
+      const { getSubscribes, initCollectionMetas } = useAppStore.getState();
+      await Promise.all([
+        getSubscribes?.(),
+        initCollectionMetas?.(),
+        refreshCarrierCounts(),
+      ]);
+      toast.success(
+        t("fusion.list.mark_bucket_done", {
+          bucket: t(`fusion.list.day_${dayBucket}`),
+        }),
+      );
+    })().catch((error) => {
+      showErrorToast(
+        error,
+        t("fusion.list.mark_bucket_failed", {
+          bucket: t(`fusion.list.day_${dayBucket}`),
+        }),
+      );
+    });
+    setMarkingBucket(null);
+  };
 
   const markAllRead = async () => {
     await store.markArticleListAsRead(isToday, isAll);
