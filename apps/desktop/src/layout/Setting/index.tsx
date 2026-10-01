@@ -35,6 +35,7 @@ import { useHotkeys } from "react-hotkeys-hook";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
+import { thumbMonogram } from "@/components/ArticleItem";
 import { EMAIL_SUBSCRIPTION_ENABLED, RouteConfig } from "@/config";
 import type { SiteRuleSummary, SourceAccount } from "@/db";
 import { busChannel } from "@/helpers/busChannel";
@@ -471,7 +472,9 @@ export function SettingPage() {
       <span className="fusion-st">
         <span className="fusion-dot" />
       </span>
-      <span className={`fusion-thumb ${badge.link ? "pod" : ""}`} />
+      <span className={`fusion-thumb ${badge.link ? "pod" : ""}`}>
+        {!badge.link && <span className="tch">{thumbMonogram(src)}</span>}
+      </span>
       <span className="fusion-title">{title}</span>
       <span className="fusion-src">
         <span className="fn">{src}</span>

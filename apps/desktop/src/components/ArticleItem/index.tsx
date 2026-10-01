@@ -18,7 +18,30 @@ import { getCarrier } from "@/helpers/mediaType";
 import { useAppStore } from "@/stores";
 import { ArticleReadStatus, ArticleStarStatus } from "@/typing";
 
-/** 行首缩略图：内容首图（feed 自带）> feed 图标 > 安静类型色块 + 源题首字符。
+/** 占位 monogram：拉丁题取前两个词首字母（RP / TV），单词取前两个字母（Ph / iD）；
+ *  CJK 题取首个可见字；第一词拉丁后词 CJK 时不混排（iDaily → iD）。
+ *  跳过 emoji/零宽字符一类的不可见开头（导出：设置页校准台预览行同语言） */
+export function thumbMonogram(title: string): string {
+  const words = (title || "")
+    .trim()
+    .split(/\s+/)
+    .map((w) => w.replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu, ""))
+    .filter(Boolean);
+  if (words.length === 0) return "·";
+  const cjk = /[\u4e00-\u9fff\u3040-\u30ff\uac00-\ud7af]/;
+  const [first, second] = words;
+  if (cjk.test(first[0])) return first[0];
+  if (second && !cjk.test(second[0])) {
+    return (first[0] + second[0]).toUpperCase();
+  }
+  const digraph = first.slice(0, 2);
+  return /[0-9A-Za-z]/.test(digraph[1] ?? "")
+    ? digraph
+    : first[0].toUpperCase();
+}
+
+/** 行首缩略图：内容首图（feed 自带）> feed 图标 > 安静类型色块 + 源题 monogram。
+ *  占位与照片同走行悬停融合（整行一个表面），monogram 保证融掉后仍有识别度。
  *  视频行走加宽 16:9 变体并叠时长角标（.fusion-thumb.vid）。 */
 export function RowThumb({ article }: { article: ArticleResItem }) {
   const [imgError, setImgError] = useState(false);
@@ -58,15 +81,11 @@ export function RowThumb({ article }: { article: ArticleResItem }) {
     );
   }
 
-  // 无图无图标的安静占位：类型色块 + 源题首字符（空灰块读作坏图）。
-  // 首字符取字母/汉字等可见字形，跳过 emoji/零宽字符一类的不可见开头
-  const pool = article.feed_title || article.title || "";
-  const initial = pool.match(
-    /[0-9A-Za-z\u4e00-\u9fff\u3040-\u30ff\uac00-\ud7af]/,
-  );
   return (
     <span className={clsx("fusion-thumb", tint)}>
-      <span className="tch">{initial ? initial[0].toUpperCase() : "·"}</span>
+      <span className="tch">
+        {thumbMonogram(article.feed_title || article.title)}
+      </span>
     </span>
   );
 }

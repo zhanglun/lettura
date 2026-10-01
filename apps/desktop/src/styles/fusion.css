@@ -926,7 +926,8 @@
     border-color 0.15s ease;
 }
 
-/* 行悬停/聚焦时中性缩略图融入洗色：整行一个表面，不再灰块套灰块；
+/* 行悬停/聚焦：全部中性缩略图（照片与字符占位）融入洗色，整行一个表面；
+   占位块融掉后由 monogram 独自承担识别（12px 双字母，不再是孤零零的单字）；
    播客/视频的预设色块保留（载体身份色，不参与融合） */
 .fusion-row:hover .fusion-thumb:not(.pod):not(.vid),
 .fusion-row.is-focused .fusion-thumb:not(.pod):not(.vid) {
@@ -948,11 +949,12 @@
   object-fit: cover;
 }
 
-/* 无图无图标的安静占位：类型色块 + 源题首字符（detail.html 契约「文章灰底 + 字符」，
-   空灰块看起来像坏图，2026-09-30 补字符） */
+/* 无图无图标的安静占位：类型色块 + 源题 monogram（detail.html 契约「文章灰底 + 字符」，
+   空灰块读作坏图；10px 单字分量太轻读不出字母标，2026-09-30 升 12px 双字母） */
 .fusion-thumb .tch {
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
+  letter-spacing: 0.01em;
   color: var(--fusion-sub);
   line-height: 1;
 }
