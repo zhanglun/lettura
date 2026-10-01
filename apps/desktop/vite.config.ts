@@ -3,10 +3,15 @@ import {defineConfig} from "vite";
 import react from "@vitejs/plugin-react";
 import checker from 'vite-plugin-checker';
 
-// https://vitejs.dev/config/
+// React Compiler 1.0：组件/钩子自动记忆化（React 19.3 + Babel 7）。
+// 与手写 useCallback/useMemo 共存无害；手写逐步移除由清理批次负责。
 export default defineConfig({
   plugins: [
-    react(),
+    react({
+      babel: {
+        plugins: [["babel-plugin-react-compiler", {}]],
+      },
+    }),
     checker({
       typescript: true
     })

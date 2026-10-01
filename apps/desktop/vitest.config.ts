@@ -1,6 +1,15 @@
+import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 
+// 测试也走 React Compiler 编译路径：让单测直接验证编译产物的行为
 export default defineConfig({
+  plugins: [
+    react({
+      babel: {
+        plugins: [["babel-plugin-react-compiler", {}]],
+      },
+    }),
+  ],
   esbuild: {
     jsx: 'automatic',
     jsxImportSource: 'react',

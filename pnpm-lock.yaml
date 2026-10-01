@@ -110,6 +110,9 @@ importers:
       '@actions/github':
         specifier: ^5.1.1
         version: 5.1.1
+      '@babel/core':
+        specifier: ^7.29.7
+        version: 7.29.7(supports-color@7.2.0)
       '@biomejs/biome':
         specifier: ^2.5.14
         version: 2.5.14
@@ -140,6 +143,9 @@ importers:
       autoprefixer:
         specifier: ^10.4.16
         version: 10.5.0(postcss@8.5.10)
+      babel-plugin-react-compiler:
+        specifier: ^1.0.0
+        version: 1.0.0
       jsdom:
         specifier: ^27.4.0
         version: 27.4.0(supports-color@7.2.0)
@@ -1689,6 +1695,9 @@ packages:
     peerDependenciesMeta:
       react-native-b4a:
         optional: true
+
+  babel-plugin-react-compiler@1.0.0:
+    resolution: {integrity: sha512-Ixm8tFfoKKIPYdCCKYTsqv+Fd4IJ0DQqMyEimo+pxUOMUR9cVPlwTrFt9Avu+3cb6Zp3mAzl+t1MrG2fxxKsxw==}
 
   bail@2.0.2:
     resolution: {integrity: sha512-0xO6mYd7JB2YesxDKplafRpsiOzPt9V02ddPCLbY1xYGPOX24NTyN50qnUxgCPcSoYMhKpAuBTjQoRZCAkUDRw==}
@@ -5443,6 +5452,10 @@ snapshots:
       postcss-value-parser: 4.2.0
 
   b4a@1.8.0: {}
+
+  babel-plugin-react-compiler@1.0.0:
+    dependencies:
+      '@babel/types': 7.29.8
 
   bail@2.0.2: {}
 
