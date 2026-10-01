@@ -3,7 +3,9 @@
 
 /* 键盘焦点环（产品签名，mock 契约）：键盘导航时 2px accent 外描边；
    鼠标点击不触发（:focus-visible 只落在键盘聚焦）。
-   文本输入豁免：自带光标与容器态，叠方环反而破相（⌘K 面板/顶栏搜索，2026-10-01 用户反馈） */
+   两类豁免：文本输入（自带光标与容器态，⌘K 面板/顶栏搜索）；
+   tabindex="-1" 焦点锚点（Astryx 弹窗标题等可访问性锚点，非可视焦点目标——
+   键盘开弹窗时环画在标题文字上，2026-10-01 用户反馈） */
 :focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 1px;
@@ -11,7 +13,8 @@
 
 input:focus-visible,
 textarea:focus-visible,
-select:focus-visible {
+select:focus-visible,
+[tabindex="-1"]:focus-visible {
   outline: none;
 }
 
