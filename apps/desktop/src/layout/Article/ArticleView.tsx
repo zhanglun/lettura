@@ -128,8 +128,6 @@ export function ArticleView() {
   );
   // 默认展开态只应用一次：之后用户手动展开/收起不再干预
   const defaultExpandApplied = useRef(false);
-  // 以下回调/派生值由 React Compiler 自动记忆化（原 16 处手写
-  // useCallback/useMemo 已移除——它们正是组件 bail-out 的原因）
   const toggleBucket = (bucket: string) => {
     setCollapsedBuckets((prev) => {
       const next = new Set(prev);

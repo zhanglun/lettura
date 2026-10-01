@@ -141,8 +141,7 @@ export function SettingPage() {
     loadRules();
   }, []);
 
-  // 账户按 provider 分组展示：已知类型排前，未知类型兜底在后（新 provider 即插即用）。
-  // 由 React Compiler 自动记忆化（原手写 useMemo 已删）
+  // 账户按 provider 分组展示：已知类型排前，未知类型兜底在后（新 provider 即插即用）
   const accountGroups = (() => {
     const groups = new Map<string, SourceAccount[]>();
     for (const account of accounts) {
@@ -167,8 +166,7 @@ export function SettingPage() {
   }, [backTo]);
 
   // 左锚点导航滚动：固定 320ms easeOutCubic；scrollIntoView smooth 交给浏览器
-  // 的时长不可控（WebKit 主线程驱动、随距离变长），页面变高后点击明显发顿。
-  // 由 React Compiler 自动记忆化（原手写 useCallback 已删）
+  // 的时长不可控（WebKit 主线程驱动、随距离变长），页面变高后点击明显发顿
   const scrollTo = (id: string) => {
     const el = bodyRef.current;
     if (!el) return;

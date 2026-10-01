@@ -54,7 +54,7 @@ export const LPodcast: React.FC<LPodcastProps> = ({ visible = true }) => {
     db.podcasts.orderBy("add_date").reverse().toArray(),
   );
 
-  // 转换播客数据为音频轨道（Compiler 自动记忆化；下游 stringify 指纹防抖）
+  // 转换播客数据为音频轨道
   const tracks = podcasts
     ? podcasts.map((podcast) => ({
         uuid: podcast.uuid,

@@ -378,8 +378,7 @@ export function useArticle(props: UseArticleProps) {
   const isStarred = useMatch(RouteConfig.LOCAL_STARRED);
   const currentFilter = useAppStore(useShallow((state) => state.currentFilter));
 
-  // 查询键由 React Compiler 自动记忆化（原手写 useMemo 已删）——
-  // 它是所有模块级缓存 Map 的 key 源头，引用稳定是缓存命中的前提
+  // 查询键是所有模块级缓存 Map 的 key 源头，引用稳定是缓存命中的前提
   const isStarredVal =
     isStarredOverride !== undefined
       ? isStarredOverride === null

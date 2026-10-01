@@ -126,7 +126,7 @@ export function FeedsBrowse() {
     };
   }, []);
 
-  // 分组/键盘队列派生由 React Compiler 自动记忆化（原 2 个 useMemo 已删）
+  // 分组视图：未分组的立一组头，其余按文件夹
   const groups = (() => {
     const rootFeeds = store.subscribes.filter((i) => i.item_type !== "folder");
     const folders = store.subscribes.filter((i) => i.item_type === "folder");

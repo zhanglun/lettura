@@ -314,8 +314,6 @@ export const SubscriptionsSection = memo(function SubscriptionsSection() {
   const folderItems = sourceItems.filter((i) => i.item_type === "folder");
   const rootFeeds = sourceItems.filter((i) => i.item_type !== "folder");
 
-  // groups 由 React Compiler 自动记忆化（原手写 useMemo 反而是编译器
-  // bail-out 的原因："Existing memoization could not be preserved"）
   const groups = buildGroups(rootFeeds, folderItems, searchQuery, t);
 
   const totalFeeds = groups.reduce((sum, g) => sum + g.feeds.length, 0);

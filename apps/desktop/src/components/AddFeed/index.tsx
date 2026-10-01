@@ -133,7 +133,6 @@ export const AddFeedChannel = (props: any) => {
   }, [open]);
 
   const folders = flattenFolders(store.subscribes);
-  // generators 由 React Compiler 自动记忆化（原手写 useMemo 已删）
   const generators: FeedGenerator[] = parseUserGenerators(
     store.userConfig?.generator_routes,
   );

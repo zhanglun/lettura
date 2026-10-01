@@ -24,8 +24,7 @@ export const CommonAdapter = ({
   const { t } = useTranslation();
   const { pub_date } = article;
   const [imgError, setImgError] = useState(false);
-  // 阅读时长：正文就绪后估算（detail.html d-meta「约 N 分钟」契约），<1 分钟不显示。
-  // 由 React Compiler 自动记忆化（原手写 useMemo 已删）
+  // 阅读时长：正文就绪后估算（detail.html d-meta「约 N 分钟」契约），<1 分钟不显示
   const readMinutes = estimateReadMinutes(content || article.description || "");
 
   return (

@@ -100,8 +100,6 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
     return () => clearTimeout(timer);
   }, [open]);
 
-  // searchSource 由 React Compiler 自动记忆化（原手写 useMemo 已删；
-  // 注册表读写在回调时机，直接引用模块级 paletteRegistry）
   const searchSource = (() => {
     const close = () => onOpenChange(false);
     const register = (list: PaletteItem[]) => {

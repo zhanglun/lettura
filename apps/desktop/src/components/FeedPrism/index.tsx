@@ -44,7 +44,6 @@ export function FeedPrism({
     if (open) inputRef.current?.focus();
   }, [open]);
 
-  // 派生序列由 React Compiler 自动记忆化（等价于原 5 个 useMemo，依赖不变不重算）
   const feeds = flattenFeeds(store.subscribes || []);
 
   const selectedFeed = feeds.find((f) => f.uuid === selectedUuid) ?? null;
