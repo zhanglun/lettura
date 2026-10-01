@@ -306,6 +306,9 @@ export function SettingPage() {
               count: result.feed_count,
             }),
           );
+        } else {
+          // 零结果也要出声：不然成功-但-空与失败分不开（2026-10-01 评审）
+          toast.message(t("settings.opml_import_empty"));
         }
       } catch (error) {
         showErrorToast(error, t("Failed to import OPML file"));

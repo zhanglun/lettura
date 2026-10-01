@@ -318,6 +318,7 @@
     "subs_manage_btn": "管理订阅",
     "lang_help": "界面语言，即时切换",
     "opml_help": "订阅列表完全进出，数据属于用户",
+    "opml_import_empty": "导入完成，但没有解析出任何订阅源（检查文件格式或内容）",
     "Off": "关闭",
     "Keep forever": "永久保留",
     "days": "天"

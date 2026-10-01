@@ -3599,6 +3599,10 @@ body.fusion-context-menu-open .fusion-set-body {
   line-height: var(--read-lh);
   color: var(--fusion-serif-ink);
   margin-top: 10px;
+  /* 阅读面同宽（View.tsx 阅读列 max-w-[640px]）：校准台所见即所读，
+     否则 720px 版心下拉出 ~91 字/行的假象（2026-10-01 评审） */
+  max-width: 640px;
+  margin-inline: auto;
 }
 
 /* ── 夜读本（dark.html 契约）：暖黑画布 + 深色玻璃，非反色 ── */

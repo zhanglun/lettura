@@ -302,6 +302,7 @@
     "subs_manage_btn": "Manage",
     "lang_help": "Interface language, switches instantly",
     "opml_help": "Full import/export of your list; data belongs to you",
+    "opml_import_empty": "Import finished, but no feeds were found — check the file format or content",
     "Off": "Off",
     "Keep forever": "Keep forever",
     "days": "days"

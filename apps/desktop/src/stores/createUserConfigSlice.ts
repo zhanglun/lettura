@@ -1,6 +1,12 @@
 import type { StateCreator } from "zustand";
 import { apiGet, apiPost } from "../helpers/http";
 
+// 持久化合并：滑杆逐 tick 调用 updateUserConfig 只落一次盘（600ms 尾随窗口，
+// 窗口关闭时读最新状态）。乐观更新不受影响；窗口内所有调用共享同一笔
+// 落盘 promise，await 语义不变（等的是同一笔写）。
+let writeTimer: ReturnType<typeof setTimeout> | null = null;
+let pendingWrite: Promise<unknown> = Promise.resolve();
+
 export interface UserConfigSlice {
   userConfig: UserConfig;
   getUserConfig: any;
@@ -31,13 +37,19 @@ export const createUserConfigSlice: StateCreator<UserConfigSlice> = (
   updateUserConfig: (config: UserConfig) => {
     const cfg = { ...get().userConfig, ...config };
 
-    // 乐观更新：UI 即时生效（切主题/密度等视觉反馈不等落盘），TOML 经
-    // HTTP 到 Rust 同步写盘在后台完成。返回的 promise 仍等持久化结束，
-    // 需要 await 的调用方语义不变。
+    // 乐观更新：UI 即时生效（切主题/密度等视觉反馈不等落盘）。
     set(() => ({
       userConfig: cfg,
     }));
-    return apiPost<number>("/user-config", cfg);
+    if (!writeTimer) {
+      pendingWrite = new Promise<number>((resolve, reject) => {
+        writeTimer = setTimeout(() => {
+          writeTimer = null;
+          apiPost<number>("/user-config", get().userConfig).then(resolve, reject);
+        }, 600);
+      });
+    }
+    return pendingWrite;
   },
 
   aboutDialogStatus: false,
