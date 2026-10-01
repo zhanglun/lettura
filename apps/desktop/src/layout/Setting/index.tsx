@@ -37,7 +37,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 import { thumbMonogram } from "@/components/ArticleItem";
 import { EMAIL_SUBSCRIPTION_ENABLED, RouteConfig } from "@/config";
-import type { SiteRuleSummary, SourceAccount } from "@/db";
+import type { SourceAccount } from "@/db";
 import { busChannel } from "@/helpers/busChannel";
 import { showErrorToast } from "@/helpers/errorHandler";
 import { lastNavFrom } from "@/helpers/navHistory";
@@ -101,9 +101,8 @@ export function SettingPage() {
   // 时长随距离增长，长页面上一卡一卡；固定时长 + easeOutCubic 手感稳定）
   const scrollAnim = useRef(0);
 
-  // ── 来源账户 / 站点规则（后端命令直连；失败静默为空列表）──
+  // ── 来源账户（后端命令直连；失败静默为空列表）──
   const [accounts, setAccounts] = useState<SourceAccount[]>([]);
-  const [rules, setRules] = useState<SiteRuleSummary[]>([]);
   // 添加邮箱账户对话框
   const [accDialogOpen, setAccDialogOpen] = useState(false);
   const [accProvider, setAccProvider] = useState<"mail" | "bilibili">("mail");
@@ -128,15 +127,8 @@ export function SettingPage() {
       .catch(() => setAccounts([]));
   };
 
-  const loadRules = () => {
-    invoke<SiteRuleSummary[]>("list_site_rules")
-      .then((list) => setRules(list || []))
-      .catch(() => setRules([]));
-  };
-
   useEffect(() => {
     loadAccounts();
-    loadRules();
   }, []);
 
   // 账户按 provider 分组展示：已知类型排前，未知类型兜底在后（新 provider 即插即用）
@@ -209,7 +201,6 @@ export function SettingPage() {
       "appearance",
       "sync",
       "sources",
-      "rules",
       "system",
       "subscriptions",
     ];
@@ -430,29 +421,10 @@ export function SettingPage() {
     setAccSaving(false);
   };
 
-  // ── 站点规则 ─────────────────────────────────────────────
-  const handleImportRule = async () => {
-    const selected = await openDialog({
-      multiple: false,
-      filters: [{ name: "TOML", extensions: ["toml"] }],
-    });
-    if (selected && typeof selected === "string") {
-      try {
-        const content = await readTextFile(selected);
-        const key = await invoke<string>("import_site_rule", { content });
-        toast.success(t("settings.site_rules.imported", { key }));
-        loadRules();
-      } catch (error) {
-        showErrorToast(error, t("settings.site_rules.import_fail"));
-      }
-    }
-  };
-
   const navItems = [
     { id: "appearance", label: t("settings.sec.appearance") },
     { id: "sync", label: t("settings.sec.sync") },
     { id: "sources", label: t("settings.sec.sources") },
-    { id: "rules", label: t("settings.sec.rules") },
     { id: "system", label: t("settings.sec.system") },
     // 内容长度随订阅数变化，放末尾让固定区块的锚点位置稳定
     { id: "subscriptions", label: t("settings.tab.subscriptions_title") },
@@ -779,43 +751,6 @@ export function SettingPage() {
                 ))}
               </div>
             ))}
-
-            {/* 订阅规则 */}
-            <div className="fusion-set-h" id="rules">
-              {t("settings.sec.rules")}
-            </div>
-            <SRow
-              label={t("settings.site_rules.title")}
-              help={t("settings.site_rules.help")}
-            >
-              <Button
-                variant="ghost"
-                size="sm"
-                icon={<Upload size={12} />}
-                label={t("settings.site_rules.import")}
-                onClick={handleImportRule}
-              />
-            </SRow>
-            {rules.length === 0 ? (
-              <div className="fusion-srow">
-                <div className="min-w-0">
-                  <div className="hp">{t("settings.site_rules.empty")}</div>
-                </div>
-                <div className="ctl" />
-              </div>
-            ) : (
-              rules.map((rule) => (
-                <div className="fusion-srow" key={rule.key}>
-                  <div className="min-w-0">
-                    <div className="lb">{rule.title || rule.key}</div>
-                    <div className="hp">{rule.pattern}</div>
-                  </div>
-                  <div className="ctl">
-                    <span className="fusion-chip">{rule.kind}</span>
-                  </div>
-                </div>
-              ))
-            )}
 
             {/* 行为与数据 */}
             <div className="fusion-set-h" id="system">

@@ -118,12 +118,3 @@ export interface SourceAccount {
   create_date: string;
   update_date: string;
 }
-
-/** 站点规则摘要（本地转换引擎的配置面） */
-export interface SiteRuleSummary {
-  key: string;
-  title: string;
-  pattern: string;
-  kind: string;
-  source: string;
-}

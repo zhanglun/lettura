@@ -233,49 +233,6 @@ pub async fn test_source_account(provider: String, settings: String) -> Result<S
   sources::account_service::test_account(&provider, &settings).await
 }
 
-// ── 站点规则（site-rules：本地转换引擎的配置面）──────────────────
-
-/// 规则摘要（设置页展示 + /api/rules）
-#[derive(Debug, Serialize)]
-pub struct RuleSummary {
-  pub key: String,
-  pub title: String,
-  pub pattern: String,
-  pub kind: String,
-  pub source: String,
-}
-
-#[command]
-pub fn list_site_rules() -> Vec<RuleSummary> {
-  fetcher_site::load_rules()
-    .into_iter()
-    .map(|rule| RuleSummary {
-      source: String::from("builtin"),
-      key: rule.key,
-      title: rule.title,
-      pattern: rule.pattern,
-      kind: rule.fetch.kind,
-    })
-    .collect()
-}
-
-/// 导入规则到 ~/.lettura/rules/{key}.toml（校验通过才落盘；同 key 覆盖）
-#[command]
-pub fn import_site_rule(content: String) -> Result<String, String> {
-  let rule = site_rules::parse_rule(&content)?;
-  let dir = std::env::var("HOME")
-    .map(|home| {
-      std::path::PathBuf::from(home)
-        .join(".lettura")
-        .join("rules")
-    })
-    .map_err(|_| "无法定位用户目录".to_string())?;
-  std::fs::create_dir_all(&dir).map_err(|e| format!("创建规则目录失败: {e}"))?;
-  let path = dir.join(format!("{}.toml", rule.key));
-  std::fs::write(&path, &content).map_err(|e| format!("写入规则失败: {e}"))?;
-  Ok(rule.key)
-}
-
 // the payload type must implement `Serialize` and `Clone`.
 #[derive(Clone, serde::Serialize)]
 struct Payload {
@@ -397,9 +354,8 @@ mod tests {
   }
 }
 
-// ── 数据面命令（原 Actix HTTP 路由的 1:1 搬运）────────────────────
-// 双通道收敛：前端数据操作全部走 invoke；Actix 只保留必须以 URL 存在的
-// 资源（/api/rules、/api/generated 本地 RSS 供应）。
+// ── 命令面（Tauri invoke）：OPML、来源账户、订阅添加/预览等非数据面命令。
+// 前端常规数据面走 localhost HTTP（src/helpers/http.ts → Actix /api/*）。
 
 #[command]
 pub fn get_user_config() -> config::UserConfig {

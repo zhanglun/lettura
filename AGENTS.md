@@ -13,28 +13,23 @@
 - 订阅抓取器是 `packages/fetcher-*` 下的独立 crate（`fetcher-core` =
   `Fetcher` trait + `FetchedArticle`；`fetcher-rss` = 解析/发现层；
   `fetcher-mail` = IMAP（async-imap 0.10 + mail-parser 0.11，两者均已锁
-  feature）；`fetcher-bilibili` = wbi 签名 Web API；`fetcher-site` +
-  `site-rules` = TOML 驱动的站点抓取引擎）。抓取器必须无状态，禁止依赖
-  diesel/tauri/actix；注册表、探测分发（`claims` 顺序、rss 兜底）与
-  `FetchedArticle → NewArticle` 转换器在 `src-tauri/src/fetchers/mod.rs`；
+  feature）；`fetcher-bilibili` = wbi 签名 Web API）。抓取器必须无状态，
+  禁止依赖 diesel/tauri/actix；注册表、探测分发（`claims` 顺序、rss 兜底）
+  与 `FetchedArticle → NewArticle` 转换器在 `src-tauri/src/fetchers/mod.rs`；
   按 `feeds.provider` 的同步分发在 `feed/channel.rs::sync_articles`。
   新增源类型 = 新 crate + 注册表加一行。每源配置存在
   `feeds.provider/account_uuid/source_config`；凭据在 `source_accounts`
   表（`sources/account_service.rs`，命令
   `list/save/delete/test_source_account`）。邮件同步会把 `last_uid`
-  水位写回 `source_config`。
-- 站点规则：内置 TOML 包编译进 `packages/site-rules/rules/`；用户规则在
-  `~/.lettura/rules/*.toml`（同键覆盖，每次加载热重载）。
-  `GET /api/generated/{key}?params` 把规则输出以 RSS 形式提供（Lettura
-  兼任本地转换服务）；`GET /api/rules` 列出规则。经 `import_site_rule`
-  命令导入。
+  水位写回 `source_config`。站点规则引擎（fetcher-site/site-rules，
+  TOML 驱动的站点抓取 + /api/generated RSS 输出）已于 2026-10-01 整体
+  移除——无生态、无规则集、入口隐藏，git 历史（64daf370 起）可找回。
 - 前端数据访问只走 localhost HTTP（`src/helpers/http.ts` 的
   `apiGet/apiPost`，对准内嵌 Actix 服务 `http://127.0.0.1:{port}/api`，
   实现在 `src-tauri/src/server/handlers/`）。dataAgent 已移除（2026-09-30，
   提交 5a8278b4 回滚了此前的 IPC-only 收拢）。Tauri `invoke` 仅保留非数据
-  命令（窗口/端口、OPML、来源账户、站点规则、订阅添加/预览）。新数据操作 =
-  新增 Actix handler；`GET /api/rules` 与 `GET /api/generated/{key}` 同时
-  对外提供站点规则的 RSS 输出。
+  命令（窗口/端口、OPML、来源账户、订阅添加/预览）。新数据操作 =
+  新增 Actix handler。
 - 前端数据流是两条车道（保持现状）：文章列表查询走 `src/hooks/useArticle.ts`
   （模块级缓存 + 在途去重，列表状态的唯一真相源）；命令类 POST 可直接
   `apiPost`，然后经 `store.getSubscribes()` 和/或

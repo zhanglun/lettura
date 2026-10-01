@@ -3,7 +3,6 @@ pub mod collection;
 pub mod common;
 pub mod feed;
 pub mod folder;
-pub mod site;
 pub mod tag;
 
 pub fn config(cfg: &mut actix_web::web::ServiceConfig) {
@@ -12,6 +11,5 @@ pub fn config(cfg: &mut actix_web::web::ServiceConfig) {
   common::config(cfg);
   feed::config(cfg);
   folder::config(cfg);
-  site::config(cfg);
   tag::config(cfg);
 }

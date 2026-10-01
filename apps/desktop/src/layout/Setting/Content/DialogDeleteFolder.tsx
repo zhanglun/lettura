@@ -19,8 +19,14 @@ export interface DialogProps {
 
 export const DialogDeleteFolder = React.memo((props: DialogProps) => {
   const { t } = useTranslation();
-  const { folder, feedCount, dialogStatus, setDialogStatus, afterConfirm, trigger } =
-    props;
+  const {
+    folder,
+    feedCount,
+    dialogStatus,
+    setDialogStatus,
+    afterConfirm,
+    trigger,
+  } = props;
 
   const confirmDelete = () => {
     if (folder?.uuid) {

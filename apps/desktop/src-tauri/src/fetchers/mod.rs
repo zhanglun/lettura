@@ -19,7 +19,6 @@ static FETCHERS: Lazy<Vec<Arc<dyn Fetcher>>> = Lazy::new(|| {
   vec![
     Arc::new(fetcher_mail::MailFetcher),
     Arc::new(fetcher_bilibili::BilibiliFetcher),
-    Arc::new(fetcher_site::SiteFetcher),
     Arc::new(fetcher_rss::RssFetcher),
   ]
 });

@@ -248,7 +248,6 @@
       "appearance": "Appearance & Reading",
       "sync": "Sync & Sources",
       "sources": "Source accounts",
-      "rules": "Site rules",
       "system": "Behavior & Data"
     },
     "folder_delete": {
@@ -285,14 +284,6 @@
       "fld_sessdata_help": "Sign in to bilibili.com in your browser, then copy the SESSDATA value from the cookie",
       "fld_label": "Label",
       "fld_label_help": "Defaults to the host"
-    },
-    "site_rules": {
-      "title": "Site rules",
-      "help": "Site adaptation rules (TOML) for the local conversion engine; an imported rule with the same key overwrites",
-      "import": "Import rule",
-      "imported": "Rule imported: {{key}}",
-      "import_fail": "Failed to import rule",
-      "empty": "No custom rules yet — builtin rules ship with the app"
     },
     "dsrc": "Lettura · Preferences",
     "instant": "Changes apply instantly and persist locally",

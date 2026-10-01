@@ -105,8 +105,7 @@ pub fn run() {
       let port = user_config.port.clone();
       let scheduler_handle = app_handle.clone();
 
-      // 启动 Actix 服务器（仅承载 /api/rules 与 /api/generated 本地 RSS 供应；
-      // 前端数据面全部走 invoke，不再感知端口）
+      // 启动 Actix 服务器：前端数据面（/api/*）与站点对外 RSS 都由它承载
       std::thread::spawn(move || {
         let state = app_handle.state::<AppState>();
         server::start_server(port, state).unwrap();
@@ -157,8 +156,6 @@ pub fn run() {
       cmd::save_source_account,
       cmd::delete_source_account,
       cmd::test_source_account,
-      cmd::list_site_rules,
-      cmd::import_site_rule,
       cmd::get_user_config,
       cmd::get_subscribes,
       cmd::get_folders,

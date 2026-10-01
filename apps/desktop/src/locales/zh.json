@@ -264,7 +264,6 @@
       "appearance": "外观与阅读",
       "sync": "同步与来源",
       "sources": "来源账户",
-      "rules": "站点规则",
       "system": "行为与数据"
     },
     "folder_delete": {
@@ -301,14 +300,6 @@
       "fld_sessdata_help": "浏览器登录 B站后，从 Cookie 中复制 SESSDATA 的值",
       "fld_label": "名称",
       "fld_label_help": "默认取服务器地址"
-    },
-    "site_rules": {
-      "title": "站点规则",
-      "help": "本地转换引擎的站点适配规则（TOML），同 key 覆盖",
-      "import": "导入规则",
-      "imported": "规则已导入：{{key}}",
-      "import_fail": "导入规则失败",
-      "empty": "暂无自定义规则——内置规则已随应用提供"
     },
     "dsrc": "Lettura · 偏好",
     "instant": "更改即时生效并写入本地配置",
