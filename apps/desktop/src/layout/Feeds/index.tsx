@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { ChevronDown } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
@@ -28,6 +28,11 @@ const browseMemory: {
   scrollTop: 0,
   collapsed: new Set(),
 };
+
+/** 写入统一走模块级函数：编译器禁止在组件 HIR 内修改模块级常量对象 */
+function updateBrowseMemory(patch: Partial<typeof browseMemory>): void {
+  Object.assign(browseMemory, patch);
+}
 
 function SourceRow({
   feed,
@@ -104,19 +109,25 @@ export function FeedsBrowse() {
 
   // 恢复滚动位置；卸载时记住焦点与滚动。只在挂载/卸载各跑一次——
   // 之前挂在 [focusUuid, collapsed] 上，每次变化 save+restore 互抵白跑
+  // ref 经 effect 同步（渲染期写 ref 会让编译器 bail-out）
   const collapsedRef = useRef(collapsed);
-  collapsedRef.current = collapsed;
+  useEffect(() => {
+    collapsedRef.current = collapsed;
+  }, [collapsed]);
   useEffect(() => {
     const el = scrollRef.current;
     if (el) el.scrollTop = browseMemory.scrollTop;
     return () => {
-      browseMemory.focusUuid = null;
-      browseMemory.scrollTop = scrollRef.current?.scrollTop ?? 0;
-      browseMemory.collapsed = new Set(collapsedRef.current);
+      updateBrowseMemory({
+        focusUuid: null,
+        scrollTop: scrollRef.current?.scrollTop ?? 0,
+        collapsed: new Set(collapsedRef.current),
+      });
     };
   }, []);
 
-  const groups = useMemo(() => {
+  // 分组/键盘队列派生由 React Compiler 自动记忆化（原 2 个 useMemo 已删）
+  const groups = (() => {
     const rootFeeds = store.subscribes.filter((i) => i.item_type !== "folder");
     const folders = store.subscribes.filter((i) => i.item_type === "folder");
     return [
@@ -135,17 +146,13 @@ export function FeedsBrowse() {
         feeds: f.children ?? [],
       })),
     ];
-  }, [store.subscribes, t]);
+  })();
 
   // 键盘队列：可见（未折叠分组）且有未读的源
-  const keyboardQueue = useMemo(
-    () =>
-      groups
-        .filter((g) => !collapsed.has(g.uuid))
-        .flatMap((g) => g.feeds)
-        .filter((f) => (f.unread ?? 0) > 0),
-    [groups, collapsed],
-  );
+  const keyboardQueue = groups
+    .filter((g) => !collapsed.has(g.uuid))
+    .flatMap((g) => g.feeds)
+    .filter((f) => (f.unread ?? 0) > 0);
 
   useEffect(() => {
     if (keyboardQueue.length === 0) {
@@ -176,8 +183,10 @@ export function FeedsBrowse() {
   };
 
   const openFeed = (f: FeedResItem) => {
-    browseMemory.focusUuid = null;
-    browseMemory.scrollTop = scrollRef.current?.scrollTop ?? 0;
+    updateBrowseMemory({
+      focusUuid: null,
+      scrollTop: scrollRef.current?.scrollTop ?? 0,
+    });
     store.setFeed(f);
     navigate(
       `${RouteConfig.LOCAL_FEED.replace(/:uuid/, f.uuid)}?feedUuid=${f.uuid}&feedUrl=${encodeURIComponent(f.feed_url)}&type=${f.item_type}`,

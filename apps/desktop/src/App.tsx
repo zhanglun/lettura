@@ -66,7 +66,10 @@ function App() {
   const hasFetchedConfig = useRef(false);
   const getUserConfigRef = useRef(store.getUserConfig);
 
-  getUserConfigRef.current = store.getUserConfig;
+  // ref 经 effect 同步（渲染期写 ref 会让编译器 bail-out）
+  useEffect(() => {
+    getUserConfigRef.current = store.getUserConfig;
+  });
 
   // 夜读本：单一真源 = userConfig.color_scheme，body class 与 Astryx mode 均由它派生；
   // gothic 为永久深色主题（其 accent 假定深底），选中即强制深色

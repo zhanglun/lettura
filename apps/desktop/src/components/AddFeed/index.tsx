@@ -9,7 +9,7 @@ import { TextInput } from "@astryxdesign/core/TextInput";
 import { ToggleButton } from "@astryxdesign/core/ToggleButton";
 import { invoke } from "@tauri-apps/api/core";
 import { ChevronRight, Plus, Search } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -127,12 +127,15 @@ export const AddFeedChannel = (props: any) => {
   const probeRef = useRef(0);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const openRef = useRef(open);
-  openRef.current = open;
+  // ref 经 effect 同步（渲染期写 ref 会让编译器 bail-out）
+  useEffect(() => {
+    openRef.current = open;
+  }, [open]);
 
   const folders = flattenFolders(store.subscribes);
-  const generators: FeedGenerator[] = useMemo(
-    () => parseUserGenerators(store.userConfig?.generator_routes),
-    [store.userConfig?.generator_routes],
+  // generators 由 React Compiler 自动记忆化（原手写 useMemo 已删）
+  const generators: FeedGenerator[] = parseUserGenerators(
+    store.userConfig?.generator_routes,
   );
 
   useHotkeys(HK.addFeed, () => {
