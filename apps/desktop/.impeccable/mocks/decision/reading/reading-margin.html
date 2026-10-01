@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>结构 C · 信封双轴 · 阅读面重设计</title>
+<style>
+  :root{
+    --ground:#F4F4F1; --ink:#1D1E20; --sub:#6A6C6E; --ter:#9EA0A2;
+    --hair:rgba(29,30,32,.08); --hair2:rgba(29,30,32,.13);
+    --accent:#5E6AD2; --accent-soft:rgba(94,109,210,.1);
+    --glass:rgba(255,255,255,.78);
+    --read-size:15.5px; --read-lh:2.0;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{width:100%;height:100%;overflow:hidden;}
+  body{background:var(--ground);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC",sans-serif;-webkit-font-smoothing:antialiased;}
+  ::selection{background:var(--accent-soft);}
+  button{font:inherit;border:0;background:none;cursor:pointer;color:inherit;}
+  kbd{font-family:inherit;font-size:10.5px;color:var(--sub);border:1px solid var(--hair2);border-radius:4px;padding:0 4.5px;line-height:15px;background:rgba(255,255,255,.7);}
+
+  .panel{position:absolute;inset:22px;background:var(--glass);backdrop-filter:blur(22px) saturate(1.5);
+    border:1px solid var(--hair2);border-radius:16px;
+    box-shadow:0 1px 0 rgba(255,255,255,.7) inset,0 32px 64px -20px rgba(29,30,32,.28);
+    overflow:hidden;}
+  .panel::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
+    background:radial-gradient(560px 380px at 10% -8%,rgba(232,80,96,.05),transparent 70%),
+               radial-gradient(640px 420px at 90% -12%,rgba(94,109,210,.055),transparent 70%);}
+
+  /* 双轴布局：正文轴（偏左） + margin 轨（右） */
+  .layout{position:absolute;inset:0;display:grid;grid-template-columns:minmax(0,1fr) 300px;}
+
+  .d-body{overflow-y:auto;padding:40px 40px 70px 64px;scrollbar-width:thin;scrollbar-color:rgba(29,30,32,.18) transparent;}
+  .d-top{position:absolute;top:0;left:0;right:300px;height:50px;z-index:20;display:flex;align-items:center;gap:8px;
+    padding:0 24px;border-bottom:1px solid var(--hair);background:rgba(244,244,241,.8);backdrop-filter:blur(8px);}
+  .back{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--sub);padding:5px 10px;border-radius:7px;}
+  .back:hover{background:rgba(29,30,32,.05);color:var(--ink);}
+  .d-src{font-size:11.5px;color:var(--ter);margin-left:6px;}
+  .d-actions{margin-left:auto;display:flex;gap:2px;}
+  .qa{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--sub);font-size:12px;}
+  .qa:hover{background:rgba(29,30,32,.06);color:var(--ink);}
+  .d-body{top:50px;}
+
+  .d-inner{max-width:600px;}
+  .d-kind{font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--accent);margin-bottom:12px;}
+  h1{font-size:25px;font-weight:700;line-height:1.4;letter-spacing:.005em;margin-bottom:14px;}
+  .d-meta{font-size:12px;color:var(--ter);margin-bottom:40px;display:flex;gap:10px;align-items:center;font-variant-numeric:tabular-nums;}
+  .d-meta .sep{color:var(--hair2);}
+
+  .d-inner p{font-family:"Songti SC","STSong","Noto Serif SC",serif;font-size:var(--read-size);line-height:var(--read-lh);color:#33363B;margin-bottom:24px;}
+  .d-inner h2{font-size:19px;font-weight:700;margin:44px 0 18px;letter-spacing:.01em;}
+  blockquote{margin:28px 0;padding:2px 0 2px 20px;border-left:1px solid var(--hair2);
+    font-family:"Songti SC","STSong","Noto Serif SC",serif;font-size:calc(var(--read-size) - 1px);line-height:var(--read-lh);color:var(--sub);}
+  .d-inner a{color:var(--accent);text-decoration:underline;text-underline-offset:3px;}
+  code.inline{font-family:"SF Mono",Menlo,monospace;font-size:.82em;background:rgba(29,30,32,.05);border:1px solid var(--hair);border-radius:5px;padding:1.5px 5px;}
+  pre.code{margin:26px 0;border:1px solid var(--hair);border-radius:12px;background:rgba(255,255,255,.55);padding:16px 18px;overflow-x:auto;position:relative;}
+  pre.code .lang{position:absolute;top:10px;right:12px;font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--ter);}
+  pre.code code{font-family:"SF Mono",Menlo,monospace;font-size:12.5px;line-height:1.75;color:#33363B;}
+
+  /* 编号锚位：媒体不中断正文，原位只留一枚可点的「图版票根」 */
+  .anchor{display:flex;align-items:center;gap:10px;margin:20px 0;padding:10px 14px;
+    border:1px dashed var(--hair2);border-radius:10px;background:rgba(255,255,255,.45);
+    cursor:pointer;font-size:12px;color:var(--sub);transition:all .15s ease;}
+  .anchor:hover{border-color:var(--accent);color:var(--ink);background:var(--accent-soft);}
+  .anchor .no{font-family:"SF Mono",Menlo,monospace;font-size:10.5px;font-weight:700;color:var(--accent);letter-spacing:.08em;}
+  .anchor .hint{margin-left:auto;font-size:10.5px;color:var(--ter);}
+  .anchor.flash{border-color:var(--accent);background:var(--accent-soft);}
+
+  .fin{display:flex;align-items:center;gap:12px;margin:44px 0 0;color:var(--ter);font-size:11px;letter-spacing:.2em;}
+  .fin::before,.fin::after{content:"";flex:1;height:1px;background:var(--hair);}
+  .next{margin-top:26px;border:1px solid var(--hair);border-radius:12px;background:rgba(255,255,255,.5);padding:16px 18px;font-size:13.5px;}
+  .next small{display:block;font-size:10.5px;font-weight:700;letter-spacing:.1em;color:var(--ter);margin-bottom:8px;}
+  .synthetic{margin:36px 0 0;font-size:11px;color:var(--ter);text-align:center;letter-spacing:.04em;}
+
+  /* ── margin 轨：大纲 + 图版集 ── */
+  .rail{border-left:1px solid var(--hair);background:rgba(255,255,255,.4);overflow-y:auto;
+    padding:66px 18px 30px;position:relative;z-index:10;scrollbar-width:thin;}
+  .rail h4{font-size:10px;font-weight:700;letter-spacing:.14em;color:var(--ter);margin:14px 0 10px;}
+  .rail h4:first-child{margin-top:0;}
+  .toc a{display:block;font-size:12px;color:var(--sub);text-decoration:none;padding:5px 8px;border-radius:7px;line-height:1.5;}
+  .toc a:hover{color:var(--ink);background:rgba(29,30,32,.045);}
+  .toc a.on{color:var(--accent);font-weight:600;background:var(--accent-soft);}
+  .plate{border:1px solid var(--hair);border-radius:10px;overflow:hidden;margin-bottom:10px;cursor:pointer;transition:all .15s ease;background:rgba(255,255,255,.5);}
+  .plate:hover{border-color:var(--accent);}
+  .plate .thumb{height:74px;background:rgba(29,30,32,.04);display:flex;align-items:center;justify-content:center;
+    color:var(--ter);font-size:10.5px;letter-spacing:.06em;}
+  .plate .cap{font-size:11px;color:var(--sub);padding:7px 10px;display:flex;gap:6px;align-items:center;}
+  .plate .cap .no{font-family:"SF Mono",Menlo,monospace;font-size:10px;font-weight:700;color:var(--accent);}
+  .plate.on{border-color:var(--accent);}
+  .rail .note{font-size:10.5px;color:var(--ter);line-height:1.7;margin-top:12px;}
+
+  .howcard{margin-top:36px;border:1px solid var(--hair);border-radius:12px;padding:16px 18px;background:rgba(255,255,255,.5);}
+  .howcard h3{font-size:10.5px;font-weight:700;letter-spacing:.12em;color:var(--accent);margin-bottom:10px;}
+  .howcard p{font-family:inherit;font-size:12px;line-height:1.9;color:var(--sub);margin:0;}
+
+  @media (max-width: 1120px){ .rail{display:none;} .d-top{right:0;} .anchor .hint{display:none;} }
+</style>
+</head>
+<body>
+<div class="panel">
+  <div class="layout">
+    <div class="d-top">
+      <button class="back">‹ 返回 <kbd>esc</kbd></button>
+      <span class="d-src">合成样文 · 示意用</span>
+      <div class="d-actions"><button class="qa">星</button><button class="qa">外跳</button><button class="qa">已读</button></div>
+    </div>
+
+    <div class="d-body" id="body">
+      <div class="d-inner">
+        <div class="d-kind">文章 · 合成样文</div>
+        <h1>慢下来：一个阅读器的「读完就走」野心</h1>
+        <div class="d-meta"><span>合成样文</span><span class="sep">·</span><span>2026-10-01</span><span class="sep">·</span><span>约 6 分钟</span><span class="sep">·</span><span>2 图 · 1 码</span></div>
+
+        <p>订阅阅读这个品类已经十年没有新故事了：文件夹、未读数、星标，再加上一个不断膨胀的收件箱。我们把「读」做成了「清」——打开应用的第一件事不再是阅读，而是还债。</p>
+        <p>这篇文章想为另一种可能辩护：阅读器的唯一队列是未读，打开的唯一理由是处理它，处理完就关闭。不制造停留义务，不替你判断什么值得读，也不试图把你留在里面。</p>
+
+        <h2 id="s1">一、注意力是预算</h2>
+        <p>每天睁眼，你的注意力就已经是一张有限的预算表。工具的每一个红点、每一条徽标、每一处「为你推荐」，都在这张表上刷卡。多数阅读器的商业模式决定了它们必须刷卡——停留时长是它们的收入。</p>
+        <p>本地优先的阅读器没有这个动机。它不靠你的停留赚钱，所以它可以诚实地把「读完」设计成唯一的目标状态。</p>
+        <blockquote>工具的克制不是功能的缺席，而是把「你该做什么」的判断权，完整地留在你手里。</blockquote>
+        <p>这就是为什么队列的隐喻比收藏夹更诚实：<a href="#">队列有尽头</a>，收藏夹没有。尽头给人完成的资格，收藏夹只给人拖欠的理由。</p>
+
+        <h2 id="s2">二、队列的意义</h2>
+        <p>把未读当作唯一队列意味着：没有稍后读的二层仓库，没有「稍微重要」的第三层分类。一篇内容要么值得现在读，要么不值得订阅——中间地带是自欺。</p>
+        <div class="anchor" data-plate="p1"><span class="no">图 01</span>队列与预算：未读随一天推进被清空<span class="hint">在边轨查看 →</span></div>
+        <p>队列每天清空一次。清空的瞬间不是空虚，而是一种罕见的、可完成的满足。</p>
+
+        <h2 id="s3">三、工具的克制</h2>
+        <p>克制在实现上是反直觉的：你要抵抗每一个「加个功能」的提议，替每一次改版辩护「为什么什么都不做」。AI 摘要、社交分享、主题商店——每一个都合理，每一个都在把你往收件箱拉回去。</p>
+        <p>配置文件的哲学同理：<a href="#">订阅列表完全进出</a>，数据属于用户。导出不是功能，是所有权的凭证。</p>
+        <pre class="code"><span class="lang">TOML</span><code># ~/.lettura/lettura.toml
+[reading]
+font_size = 15.5
+line_height = 2.0
+# 队列即未读；读完即走
+[net]
+timeout_secs = 10</code></pre>
+        <p>代码和配置说明了一个更普遍的道理：可迁移的默认值比丰富的可定制性更尊重用户——你只在 <code class="inline">line_height</code> 上给一个恰到好处的默认，然后允许离开。</p>
+
+        <h2 id="s4">四、读完就走</h2>
+        <p>最后一个偏向是名字：Lettura，意大利语的「阅读」。它不叫 Feed、不叫 Reader Pro，因为它的野心不在「管理订阅」，而在那两小时里的沉浸，和关掉之后的心安。</p>
+        <p>今天队列清空了。关掉它，去过晚上。</p>
+        <div class="anchor" data-plate="p2"><span class="no">图 02</span>关闭窗口：托盘图标与清零的计数<span class="hint">在边轨查看 →</span></div>
+
+        <div class="fin">· 完 ·</div>
+        <div class="next"><small>下一篇</small>队列的尽头：一次 OPML 迁移实录 · 合成样文</div>
+        <div class="synthetic">— 本文为结构评审用合成样文（synthetic），非真实内容 —</div>
+
+        <div class="howcard">
+          <h3>三形态套用 · 信封双轴</h3>
+          <p>播客单集：margin 轨上沿改为「封面 + 大播放钮 + 章节时间轴」，show notes 走同一正文流（零中断）；章节项即轨内锚点。<br>平台视频：margin 轨 = 封面图版 + 外跳钮 + feed 简介；正文轴只留题与简介。<br>窄窗（&lt;1120px）：轨收起，锚位原位展开为内联图版——退而回 detail.html 语法，不是第二套设计。<br>大纲 = 服务端抽取的 H2/H3；无小节的文章只显示图版集。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="rail">
+      <h4>大纲</h4>
+      <div class="toc" id="toc">
+        <a href="#s1" data-sec="s1">一、注意力是预算</a>
+        <a href="#s2" data-sec="s2">二、队列的意义</a>
+        <a href="#s3" data-sec="s3">三、工具的克制</a>
+        <a href="#s4" data-sec="s4">四、读完就走</a>
+      </div>
+      <h4>图版集</h4>
+      <div class="plate" id="p1"><div class="thumb">图 01 · 队列与预算</div><div class="cap"><span class="no">图 01</span>未读随一天推进被清空 · 合成数据</div></div>
+      <div class="plate" id="p2"><div class="thumb">图 02 · 关闭窗口</div><div class="cap"><span class="no">图 02</span>托盘图标与清零的计数 · 合成场景</div></div>
+      <div class="note">点击正文票根 ↔ 高亮边轨图版；反向点击同理。合成样文（synthetic），示意图为占位。</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const body = document.getElementById('body');
+  // 大纲 scroll spy
+  const links = [...document.querySelectorAll('.toc a')];
+  const io = new IntersectionObserver(es => {
+    es.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(a => a.classList.toggle('on', a.dataset.sec === e.target.id));
+      }
+    });
+  }, { root: body, rootMargin: '-20% 0px -70% 0px' });
+  document.querySelectorAll('h2[id]').forEach(h => io.observe(h));
+
+  // 票根 ↔ 图版互跳
+  function flash(el) {
+    el.classList.add('flash');
+    setTimeout(() => el.classList.remove('flash'), 900);
+  }
+  document.querySelectorAll('.anchor').forEach(a => {
+    a.onclick = () => {
+      const plate = document.getElementById(a.dataset.plate);
+      plate.classList.add('on');
+      flash(plate);
+      plate.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    };
+  });
+  document.querySelectorAll('.plate').forEach(p => {
+    p.onclick = () => {
+      const anchor = document.querySelector('.anchor[data-plate="' + p.id + '"]');
+      flash(anchor);
+      anchor.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    };
+  });
+</script>
+</body>
+</html>

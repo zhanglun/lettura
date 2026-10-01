@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>结构 B · 节拍分节 · 阅读面重设计</title>
+<style>
+  :root{
+    --ground:#F4F4F1; --ink:#1D1E20; --sub:#6A6C6E; --ter:#9EA0A2;
+    --hair:rgba(29,30,32,.08); --hair2:rgba(29,30,32,.13);
+    --accent:#5E6AD2; --accent-soft:rgba(94,109,210,.1);
+    --glass:rgba(255,255,255,.78);
+    --read-size:15.5px; --read-lh:2.0;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{width:100%;height:100%;overflow:hidden;}
+  body{background:var(--ground);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC",sans-serif;-webkit-font-smoothing:antialiased;}
+  ::selection{background:var(--accent-soft);}
+  button{font:inherit;border:0;background:none;cursor:pointer;color:inherit;}
+  kbd{font-family:inherit;font-size:10.5px;color:var(--sub);border:1px solid var(--hair2);border-radius:4px;padding:0 4.5px;line-height:15px;background:rgba(255,255,255,.7);}
+
+  .panel{position:absolute;inset:22px;background:var(--glass);backdrop-filter:blur(22px) saturate(1.5);
+    border:1px solid var(--hair2);border-radius:16px;
+    box-shadow:0 1px 0 rgba(255,255,255,.7) inset,0 32px 64px -20px rgba(29,30,32,.28);
+    overflow:hidden;}
+  .panel::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
+    background:radial-gradient(560px 380px at 10% -8%,rgba(232,80,96,.05),transparent 70%),
+               radial-gradient(640px 420px at 90% -12%,rgba(94,109,210,.055),transparent 70%);}
+
+  /* 节拍流：容器整屏 snap */
+  .stream{position:absolute;inset:0;overflow-y:auto;scroll-snap-type:y mandatory;scrollbar-width:none;}
+  .stream::-webkit-scrollbar{display:none;}
+  .sec{min-height:100%;scroll-snap-align:start;display:flex;flex-direction:column;justify-content:center;
+    max-width:720px;margin:0 auto;padding:60px 56px;}
+
+  /* 封面节（第 0 节） */
+  .cover{justify-content:center;text-align:left;}
+  .d-kind{font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--accent);margin-bottom:16px;}
+  .cover h1{font-size:32px;font-weight:700;line-height:1.35;letter-spacing:.005em;margin-bottom:18px;}
+  .cover .d-meta{font-size:12px;color:var(--ter);display:flex;gap:10px;font-variant-numeric:tabular-nums;margin-bottom:30px;}
+  .cover .d-meta .sep{color:var(--hair2);}
+  .cover .lead{font-family:"Songti SC","STSong","Noto Serif SC",serif;font-size:var(--read-size);line-height:var(--read-lh);color:#33363B;margin-bottom:26px;}
+  .begin{align-self:flex-start;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--sub);
+    border:1px solid var(--hair2);border-radius:9px;padding:7px 14px;background:rgba(255,255,255,.55);}
+
+  /* 内容节 */
+  .sec-no{font-size:12px;font-weight:700;letter-spacing:.14em;color:var(--accent);margin-bottom:10px;}
+  .sec h2{font-size:24px;font-weight:700;margin-bottom:26px;letter-spacing:.01em;}
+  .sec p{font-family:"Songti SC","STSong","Noto Serif SC",serif;font-size:var(--read-size);line-height:var(--read-lh);color:#33363B;margin-bottom:24px;}
+  blockquote{margin:28px 0;padding:2px 0 2px 20px;border-left:1px solid var(--hair2);
+    font-family:"Songti SC","STSong","Noto Serif SC",serif;font-size:calc(var(--read-size) - 1px);line-height:var(--read-lh);color:var(--sub);}
+  .d-inner a{color:var(--accent);text-decoration:underline;text-underline-offset:3px;}
+  code.inline{font-family:"SF Mono",Menlo,monospace;font-size:.82em;background:rgba(29,30,32,.05);border:1px solid var(--hair);border-radius:5px;padding:1.5px 5px;}
+  pre.code{margin:26px 0;border:1px solid var(--hair);border-radius:12px;background:rgba(255,255,255,.55);padding:16px 18px;overflow-x:auto;position:relative;}
+  pre.code .lang{position:absolute;top:10px;right:12px;font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--ter);}
+  pre.code code{font-family:"SF Mono",Menlo,monospace;font-size:12.5px;line-height:1.75;color:#33363B;}
+  figure{margin:26px 0;}
+  figure .ph{height:240px;border:1px dashed var(--hair2);border-radius:12px;background:rgba(29,30,32,.03);
+    display:flex;align-items:center;justify-content:center;color:var(--ter);font-size:12px;letter-spacing:.06em;}
+  figcaption{font-size:11.5px;color:var(--ter);margin-top:10px;text-align:center;}
+
+  /* 完读节 */
+  .fin-sec{justify-content:center;text-align:center;align-items:center;}
+  .fin{display:flex;align-items:center;gap:12px;margin:0 0 26px;color:var(--ter);font-size:11px;letter-spacing:.2em;width:70%;}
+  .fin::before,.fin::after{content:"";flex:1;height:1px;background:var(--hair);}
+  .next{width:80%;border:1px solid var(--hair);border-radius:12px;background:rgba(255,255,255,.5);padding:16px 18px;font-size:13.5px;text-align:left;}
+  .next small{display:block;font-size:10.5px;font-weight:700;letter-spacing:.1em;color:var(--ter);margin-bottom:8px;}
+  .synthetic{margin-top:26px;font-size:11px;color:var(--ter);letter-spacing:.04em;}
+
+  /* 右缘节索引点标 */
+  .dots{position:absolute;right:16px;top:50%;transform:translateY(-50%);z-index:20;display:flex;flex-direction:column;gap:10px;}
+  .dots b{width:7px;height:7px;border-radius:50%;background:rgba(29,30,32,.16);cursor:pointer;transition:all .15s ease;display:block;}
+  .dots b.on{background:var(--accent);transform:scale(1.35);}
+  .dots b:hover{background:var(--ink);}
+
+  /* 节脚注：节号+进度字样 */
+  .sec-foot{position:absolute;bottom:22px;left:0;right:0;text-align:center;font-size:10.5px;color:var(--ter);letter-spacing:.1em;z-index:5;font-variant-numeric:tabular-nums;}
+
+  .howcard{border:1px solid var(--hair);border-radius:12px;padding:14px 16px;background:rgba(255,255,255,.5);margin-top:22px;}
+  .howcard h3{font-size:10.5px;font-weight:700;letter-spacing:.12em;color:var(--accent);margin-bottom:8px;}
+  .howcard p{font-family:inherit;font-size:12px;line-height:1.9;color:var(--sub);}
+  .backhint{position:absolute;top:18px;left:20px;z-index:20;}
+  .backhint .back{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--sub);padding:5px 10px;border-radius:7px;background:rgba(244,244,241,.7);}
+</style>
+</head>
+<body>
+<div class="panel">
+  <div class="backhint"><button class="back">‹ 返回 <kbd>esc</kbd></button></div>
+  <div class="dots" id="dots"></div>
+
+  <div class="stream" id="stream">
+    <section class="sec cover" data-title="封面">
+      <div class="d-kind">文章 · 合成样文</div>
+      <h1>慢下来：一个阅读器的「读完就走」野心</h1>
+      <div class="d-meta"><span>合成样文</span><span class="sep">·</span><span>2026-10-01</span><span class="sep">·</span><span>4 节 · 约 6 分钟</span></div>
+      <p class="lead">订阅阅读这个品类已经十年没有新故事了：文件夹、未读数、星标，再加上一个不断膨胀的收件箱。我们把「读」做成了「清」——打开应用的第一件事不再是阅读，而是还债。这篇文章想为另一种可能辩护。</p>
+      <button class="begin" id="begin">开始阅读 <kbd>j</kbd></button>
+    </section>
+
+    <section class="sec" data-title="注意力是预算">
+      <div class="sec-no">01 / 04</div>
+      <h2>注意力是预算</h2>
+      <p>每天睁眼，你的注意力就已经是一张有限的预算表。工具的每一个红点、每一条徽标、每一处「为你推荐」，都在这张表上刷卡。多数阅读器的商业模式决定了它们必须刷卡——停留时长是它们的收入。</p>
+      <p>本地优先的阅读器没有这个动机。它不靠你的停留赚钱，所以它可以诚实地把「读完」设计成唯一的目标状态。</p>
+      <blockquote>工具的克制不是功能的缺席，而是把「你该做什么」的判断权，完整地留在你手里。</blockquote>
+      <p>这就是为什么队列的隐喻比收藏夹更诚实：<a href="#">队列有尽头</a>，收藏夹没有。尽头给人完成的资格，收藏夹只给人拖欠的理由。</p>
+    </section>
+
+    <section class="sec" data-title="队列的意义">
+      <div class="sec-no">02 / 04</div>
+      <h2>队列的意义</h2>
+      <p>把未读当作唯一队列意味着：没有稍后读的二层仓库，没有「稍微重要」的第三层分类。一篇内容要么值得现在读，要么不值得订阅——中间地带是自欺。</p>
+      <p>队列每天清空一次。清空的瞬间不是空虚，而是一种罕见的、可完成的满足。</p>
+      <figure>
+        <div class="ph">图 01 · 队列与预算 · 示意占位（synthetic）</div>
+        <figcaption>示意图：未读队列随一天推进被清空 · 合成数据</figcaption>
+      </figure>
+    </section>
+
+    <section class="sec" data-title="工具的克制">
+      <div class="sec-no">03 / 04</div>
+      <h2>工具的克制</h2>
+      <p>克制在实现上是反直觉的：你要抵抗每一个「加个功能」的提议，替每一次改版辩护「为什么什么都不做」。AI 摘要、社交分享、主题商店——每一个都合理，每一个都在把你往收件箱拉回去。</p>
+      <p>配置文件的哲学同理：<a href="#">订阅列表完全进出</a>，数据属于用户。导出不是功能，是所有权的凭证。</p>
+      <pre class="code"><span class="lang">TOML</span><code># ~/.lettura/lettura.toml
+[reading]
+font_size = 15.5
+line_height = 2.0
+# 队列即未读；读完即走
+[net]
+timeout_secs = 10</code></pre>
+      <p>代码和配置说明了一个更普遍的道理：可迁移的默认值比丰富的可定制性更尊重用户——你只在 <code class="inline">line_height</code> 上给一个恰到好处的默认，然后允许离开。</p>
+    </section>
+
+    <section class="sec" data-title="读完就走">
+      <div class="sec-no">04 / 04</div>
+      <h2>读完就走</h2>
+      <p>最后一个偏向是名字：Lettura，意大利语的「阅读」。它不叫 Feed、不叫 Reader Pro，因为它的野心不在「管理订阅」，而在那两小时里的沉浸，和关掉之后的心安。</p>
+      <p>今天队列清空了。关掉它，去过晚上。</p>
+      <figure>
+        <div class="ph">图 02 · 关闭窗口 · 示意占位（synthetic）</div>
+        <figcaption>示意图：托盘图标与清零的计数 · 合成场景</figcaption>
+      </figure>
+    </section>
+
+    <section class="sec fin-sec" data-title="完">
+      <div class="fin">· 完 ·</div>
+      <div class="next"><small>下一篇</small>队列的尽头：一次 OPML 迁移实录 · 合成样文</div>
+      <div class="synthetic">— 本文为结构评审用合成样文（synthetic），非真实内容 —</div>
+      <div class="howcard" style="text-align:left;">
+        <h3>三形态套用 · 节拍分节</h3>
+        <p>播客单集：封面节=大封面+大播放钮；章节即节（章节时间轴=节索引，天然对齐）；show notes 按原有小节切节。<br>平台视频：封面节=大封面+外跳钮，单一节即全部（无分节）。<br>回退策略：正文无 H2 时整篇退回连续流（本 mock 的封面节+节翻即失效，退回 detail.html 语法）——回退态是刻意的简单，不是第二套设计。<br>键盘：j/k · PgDn/PgUp 节间翻；长节内二次 j 逐屏滚。</p>
+      </div>
+    </section>
+  </div>
+  <div class="sec-foot" id="foot">1 / 6</div>
+</div>
+
+<script>
+  const stream = document.getElementById('stream');
+  const secs = [...document.querySelectorAll('.sec')];
+  const dots = document.getElementById('dots');
+  const foot = document.getElementById('foot');
+  let cur = 0;
+
+  secs.forEach((s, i) => {
+    const b = document.createElement('b');
+    b.title = s.dataset.title;
+    b.onclick = () => secs[i].scrollIntoView({ behavior: 'smooth' });
+    dots.appendChild(b);
+  });
+  const dotEls = [...dots.children];
+
+  function setCur(i) {
+    cur = Math.max(0, Math.min(secs.length - 1, i));
+    dotEls.forEach((d, k) => d.classList.toggle('on', k === cur));
+    foot.textContent = (cur + 1) + ' / ' + secs.length;
+  }
+  const io = new IntersectionObserver(es => {
+    es.forEach(e => { if (e.isIntersecting) setCur(secs.indexOf(e.target)); });
+  }, { root: stream, threshold: 0.55 });
+  secs.forEach(s => io.observe(s));
+
+  function go(i) { setCur(i); secs[cur].scrollIntoView({ behavior: 'smooth' }); }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'j' || e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); go(cur + 1); }
+    if (e.key === 'k' || e.key === 'ArrowUp' || e.key === 'PageUp') { e.preventDefault(); go(cur - 1); }
+  });
+  document.getElementById('begin').onclick = () => go(1);
+  setCur(0);
+</script>
+</body>
+</html>

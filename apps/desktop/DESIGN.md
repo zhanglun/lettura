@@ -86,11 +86,11 @@
 
 **媒体徽章**（20px，radius 6，10px 粗字）＝**载体定字形 ＋ 品牌字优先**：文＝中性灰 · 播＝靛（audio）· 邮＝靛（email）· 视＝粉（video，未知路由）· **B**＝粉（`generator:bilibili`）· **抖**＝深灰（`generator:douyin`）。品牌字只在视频载体上生效（文本载体的 B站源不会借用品牌字）。
 
-**详情视图**（类型感知，同一外壳；阅读面定稿 `.impeccable/mocks/decision/detail.html`）：
+**详情视图**（类型感知，同一外壳；阅读面 2026-10-01 重设计为「打字机隧道」，对照稿 `.impeccable/mocks/decision/reading/`）：
 
 | 类型 | 内容 |
 |---|---|
-| 文章 | ≤640px 单栏，宋体正文（排版要素见下） |
+| 文章 | 680px 宋体单栏（打字机隧道壳，见下方排版要素） |
 | 播客单集 | 112px 封面 + 大播放控件 + 章节（时间码）+ show notes |
 | 平台（B站/抖音） | 封面块 + feed 简介 + 黑色「在平台打开」外跳钮（0.2.0 不做站内视频） |
 
@@ -98,12 +98,13 @@
 
 | 要素 | 语法 |
 |---|---|
-| 阅读进度 | 顶栏下缘 1.5px 靓蓝发丝线，随滚动无声走完，唯一的仪表读数 |
+| **打字机隧道（2026-10-01 阅读面重设计 · seed 360afa8e）** | 阅读面结构推翻重推导（世界令牌不变）：①chrome 退场——下滚过 160px 后顶栏（返回/meta/动作）上滑退场，上滚或回顶唤回；幽灵题名 12px 浮于上缘渐隐幕；②焦带——视口中央带全亮、向上下缘线性降灰（0.3 地板，`prefers-reduced-motion` 豁免），上下 16vh 渐隐幕盖住进出内容；③进度＝右缘覆盖细轨（3px，hover scaleX(2)），替代旧顶缘进度发丝线；④margin 大纲（#5 信封双轴捐赠）——正文 ≥3 个标题且窗口 ≥1280px 时常驻右侧，scroll-spy 反色、点击平滑跳转，否则静默缺席；⑤阅读列 640→680px、顶距 76px。三形态同壳：播客 show notes/平台简介进同一焦带流，播客章节后续可替代右缘轨刻度（未落）。mock：`.impeccable/mocks/decision/reading/reading-tunnel.html`（对照稿 sections/margin 同目录） |
+| 阅读进度 | 右缘覆盖细轨（见上）随滚动无声走完，唯一的仪表读数 |
 | 引文 | 1px 发丝左线 + 宋体 + `--sub`，字号减 1px |
 | 行内码 / 代码块 | 行内：mono + `.05` 底 + hair 边；块：白玻璃 + hair 边 + SF Mono 12.5 + 右上语言标 |
 | 链接 | `--color-accent` 下划线，offset 3px，装饰线同源 35% mix |
 | 完读 | 「· 完 ·」两侧发丝线 → 下一篇卡（hair 边框 + radius 12 + 50% card 玻璃容器，列表行语法在卡内，j/k 直达）+ 「已读并返回 m」幽灵钮 |
-| 详情外壳 | 题/meta/完读区继承 UI sans（宋体只落 `.fusion-article-body` 正文）；meta 分隔点用 `--hair2`，阅读时长（中文 400 字/分 + 西文 220 词/分，≥1 分钟才显示）；顶栏动作＝28px 安静图标钮（Astryx `ToggleButton isIconOnly`，星标按压换琥珀实心）；阅读区滚动条细轨主题派生；`::selection`＝accent 22% 洗 |
+| 详情外壳 | 题/meta/完读区继承 UI sans（宋体只落 `.fusion-article-body` 正文）；meta 分隔点用 `--hair2`，阅读时长（中文 400 字/分 + 西文 220 词/分，≥1 分钟才显示）；动作钮＝28px 安静图标钮（Astryx `ToggleButton isIconOnly`，星标按压换琥珀实心），居住于退场 chrome（见打字机隧道行）；阅读区滚动条细轨主题派生；`::selection`＝accent 22% 洗 |
 | 正文插图 | 与代码块同一容器语法：hair 边 + radius 10 + 居中 |
 
 **命令面板**：输入即时过滤（文章 / 来源 / 命令混合），首项选中（`--color-accent-muted` 底 + 1px 内线），kbd 提示，底部快捷键栏；「打开设置」命令进设置视图。

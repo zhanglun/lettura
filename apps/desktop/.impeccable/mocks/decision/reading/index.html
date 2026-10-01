@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>结构对照 · 阅读面重设计 · Lettura 0.2.0</title>
+<style>
+  :root{
+    --ground:#F4F4F1; --ink:#1D1E20; --sub:#6A6C6E; --ter:#9EA0A2;
+    --hair:rgba(29,30,32,.08); --hair2:rgba(29,30,32,.13);
+    --accent:#5E6AD2; --accent-soft:rgba(94,109,210,.1);
+    --glass:rgba(255,255,255,.78);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--ground);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC",sans-serif;-webkit-font-smoothing:antialiased;
+    min-height:100vh;display:flex;align-items:center;justify-content:center;padding:48px;}
+  .board{width:960px;}
+  h1{font-size:26px;letter-spacing:.005em;margin-bottom:8px;}
+  .sub{font-size:13px;color:var(--sub);margin-bottom:34px;}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+  a.card{display:block;text-decoration:none;color:inherit;border:1px solid var(--hair2);border-radius:14px;background:var(--glass);padding:20px 18px 16px;transition:transform .15s ease, box-shadow .15s ease;}
+  a.card:hover{transform:translateY(-2px);box-shadow:0 18px 40px -18px rgba(29,30,32,.25);}
+  .kick{font-size:10px;font-weight:700;letter-spacing:.14em;color:var(--accent);margin-bottom:10px;}
+  .card h2{font-size:16px;margin-bottom:8px;}
+  .card p{font-size:12.5px;line-height:1.8;color:var(--sub);}
+  .hit{margin-top:12px;font-size:11.5px;color:var(--ink);}
+  .hit b{color:var(--accent);}
+  .risk{font-size:11.5px;color:var(--ter);margin-top:4px;}
+  .note{margin-top:26px;font-size:11.5px;color:var(--ter);line-height:1.9;}
+</style>
+</head>
+<body>
+<div class="board">
+  <h1>阅读面重设计 · 三个结构对照</h1>
+  <div class="sub">同一篇合成样文 · 世界令牌一致（玻璃 / 墨色 / 发丝线 / accent / 宋体正文）· 每个文件可交互（滚动、j/k、点击）</div>
+  <div class="grid">
+    <a class="card" href="reading-tunnel.html">
+      <div class="kick">THE ROLL · 掷中主打</div>
+      <h2>打字机隧道</h2>
+      <p>连续单栏 + 滚动焦带：视口中央带全亮，上下缘渐隐降灰；顶栏与动作全时退场；进度 = 右缘覆盖细轨。</p>
+      <div class="hit">命中：<b>沉浸去噪</b> · 排版节奏</div>
+      <div class="risk">风险：滚回才能扫读全文</div>
+    </a>
+    <a class="card" href="reading-sections.html">
+      <div class="kick">掷中</div>
+      <h2>节拍分节</h2>
+      <p>长文按 H2 切节，每节一屏整翻；右缘节索引点标即进度；播客章节天然对齐；无 H2 自动退回连续流。</p>
+      <div class="hit">命中：<b>长文导航</b> · 沉浸</div>
+      <div class="risk">风险：RSS 内容结构参差，回退态是另一套设计</div>
+    </a>
+    <a class="card" href="reading-margin.html">
+      <div class="kick">掷中</div>
+      <h2>信封双轴</h2>
+      <p>正文零中断纯文字流，图/代码在原位留编号锚位；右侧 margin 轨常驻：当前节大纲 + 图版集，点击互跳。</p>
+      <div class="hit">命中：<b>排版可读性</b> · 富内容</div>
+      <div class="risk">风险：窄窗退化为底部堆叠</div>
+    </a>
+  </div>
+  <div class="note">
+    三者共用同一篇合成样文（文末已标注 synthetic）；播客/平台形态的适配说明写在各 mock 文末的「三形态套用」卡里。<br>
+    世界令牌与 detail.html 完全一致；列宽、chrome 行为、导航结构为本次重推导对象。
+  </div>
+</div>
+</body>
+</html>

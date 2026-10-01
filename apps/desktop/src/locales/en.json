@@ -494,7 +494,8 @@
       "next": "Next",
       "next_up": "Next up",
       "no_next": "End of queue",
-      "mark_back": "Mark read and back to list"
+      "mark_back": "Mark read and back to list",
+      "toc": "Outline"
     }
   },
   "Play": "Play",

@@ -3,6 +3,8 @@ import React, { useImperativeHandle, useRef } from "react";
 
 export interface ScrollBoxRefObject {
   scrollToTop: () => void;
+  /** 原始滚动容器：阅读面退场 chrome / 焦带 / 大纲 spy 挂自己的 scroll 监听用 */
+  getElement: () => HTMLDivElement | null;
   /**
    * 键盘滚动（详情内 j/k）：dir 1 向下 / -1 向上，按视口高度步进。
    * 已到对应边缘返回 false（调用方决定是否切换上/下一篇）。
@@ -35,6 +37,7 @@ export const ScrollBox = React.forwardRef((props: ScrollBoxProps, ref: any) => {
 
     return {
       scrollToTop,
+      getElement: () => scrollRef.current,
       scrollByViewport: (dir: 1 | -1) => {
         const el = scrollRef.current;
         if (!el) return false;

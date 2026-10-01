@@ -2083,6 +2083,140 @@ select:focus-visible,
   flex: none;
 }
 
+/* ── 打字机隧道（2026-10-01 阅读面重设计 · seed 360afa8e，#4 掷中 + #5 TOC 捐赠） ──
+   chrome 退场：overlay + 渐隐幕底，下滚藏、上滚唤回；焦带渐隐幕；右缘覆盖进度轨；margin 大纲 */
+.fusion-rtop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 20px;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--fusion-ground) 92%, transparent),
+    transparent
+  );
+  transition:
+    transform 0.22s ease,
+    opacity 0.22s ease;
+}
+.fusion-rtop.hide {
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
+}
+.fusion-ghost {
+  position: absolute;
+  top: 16px;
+  left: 0;
+  right: 0;
+  z-index: 25;
+  text-align: center;
+  pointer-events: none;
+  font-size: 12px;
+  color: var(--fusion-sub);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 140px;
+}
+.fusion-ghost.on {
+  opacity: 0.75;
+}
+.fusion-fade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 16vh;
+  z-index: 20;
+  pointer-events: none;
+}
+.fusion-fade.top {
+  top: 0;
+  background: linear-gradient(to bottom, var(--fusion-ground) 10%, transparent);
+}
+.fusion-fade.bot {
+  bottom: 0;
+  background: linear-gradient(to top, var(--fusion-ground) 10%, transparent);
+}
+.fusion-rail {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  transform-origin: right center;
+  height: 34vh;
+  width: 3px;
+  background: color-mix(in srgb, var(--fusion-ink) 8%, transparent);
+  border-radius: 999px;
+  z-index: 35;
+  transition: transform 0.15s ease;
+}
+.fusion-rail:hover {
+  transform: translateY(-50%) scaleX(2);
+}
+.fusion-rail .fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: var(--color-accent);
+  border-radius: 999px;
+}
+.fusion-toc {
+  position: absolute;
+  right: 28px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 35;
+  max-height: 62vh;
+  overflow-y: auto;
+  width: 190px;
+  padding: 6px 0;
+  scrollbar-width: none;
+}
+.fusion-toc::-webkit-scrollbar {
+  display: none;
+}
+.fusion-toc a {
+  display: block;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--fusion-sub);
+  text-decoration: none;
+  padding: 4px 10px;
+  border-radius: 7px;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.fusion-toc a:hover {
+  color: var(--fusion-ink);
+  background: color-mix(in srgb, var(--fusion-ink) 4%, transparent);
+}
+.fusion-toc a.on {
+  color: var(--color-accent);
+  font-weight: 600;
+  background: color-mix(in srgb, var(--color-accent) 8%, transparent);
+}
+.fusion-toc a.lv3 {
+  padding-left: 20px;
+  font-size: 11px;
+  color: var(--fusion-ter);
+}
+.fusion-article-body h2,
+.fusion-article-body h3 {
+  scroll-margin-top: 76px;
+}
+
 /* 阅读面滚动条：细轨 + 主题派生色（浏览器面也是设计的一部分） */
 .fusion-dscroll {
   scrollbar-width: thin;

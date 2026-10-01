@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>结构 A · 打字机隧道 · 阅读面重设计</title>
+<style>
+  :root{
+    --ground:#F4F4F1; --ink:#1D1E20; --sub:#6A6C6E; --ter:#9EA0A2;
+    --hair:rgba(29,30,32,.08); --hair2:rgba(29,30,32,.13);
+    --accent:#5E6AD2; --accent-soft:rgba(94,109,210,.1);
+    --glass:rgba(255,255,255,.78);
+    --read-size:15.5px; --read-lh:2.0;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{width:100%;height:100%;overflow:hidden;}
+  body{background:var(--ground);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC",sans-serif;-webkit-font-smoothing:antialiased;}
+  ::selection{background:var(--accent-soft);}
+  button{font:inherit;border:0;background:none;cursor:pointer;color:inherit;}
+
+  .panel{position:absolute;inset:22px;background:var(--glass);backdrop-filter:blur(22px) saturate(1.5);
+    border:1px solid var(--hair2);border-radius:16px;
+    box-shadow:0 1px 0 rgba(255,255,255,.7) inset,0 32px 64px -20px rgba(29,30,32,.28);
+    overflow:hidden;}
+  .panel::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
+    background:radial-gradient(560px 380px at 10% -8%,rgba(232,80,96,.05),transparent 70%),
+               radial-gradient(640px 420px at 90% -12%,rgba(94,109,210,.055),transparent 70%);}
+
+  /* ── 退场的 chrome：下滚隐藏，上滚/鼠标近顶唤回 ── */
+  .dtop{position:absolute;top:0;left:0;right:0;height:50px;z-index:20;
+    display:flex;align-items:center;gap:8px;padding:0 20px;
+    background:linear-gradient(to bottom,rgba(244,244,241,.92),rgba(244,244,241,0));
+    transition:transform .22s ease, opacity .22s ease;}
+  .dtop.hide{transform:translateY(-100%);opacity:0;pointer-events:none;}
+  .back{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--sub);padding:5px 10px;border-radius:7px;}
+  .back:hover{background:rgba(29,30,32,.05);color:var(--ink);}
+  kbd{font-family:inherit;font-size:10.5px;color:var(--sub);border:1px solid var(--hair2);border-radius:4px;padding:0 4.5px;line-height:15px;background:rgba(255,255,255,.7);}
+  .d-actions{margin-left:auto;display:flex;gap:2px;}
+  .qa{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--sub);font-size:12px;}
+  .qa:hover{background:rgba(29,30,32,.06);color:var(--ink);}
+
+  /* 幽灵题名：chrome 退场后浮在上缘渐隐区 */
+  .ghost{position:absolute;top:16px;left:0;right:0;text-align:center;z-index:15;pointer-events:none;
+    font-size:12px;color:var(--sub);opacity:0;transition:opacity .25s ease;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 120px;}
+  .ghost.on{opacity:.75;}
+
+  /* ── 焦带渐隐幕（上下缘） ── */
+  .fade{position:absolute;left:0;right:0;height:17vh;z-index:10;pointer-events:none;}
+  .fade.top{top:0;background:linear-gradient(to bottom,var(--ground) 12%,rgba(244,244,241,0));}
+  .fade.bot{bottom:0;background:linear-gradient(to top,var(--ground) 12%,rgba(244,244,241,0));}
+
+  /* ── 右缘覆盖进度轨 ── */
+  .rail{position:absolute;right:12px;top:50%;transform:translateY(-50%);height:34vh;width:3px;z-index:20;
+    background:rgba(29,30,32,.08);border-radius:999px;transition:width .15s ease;cursor:pointer;}
+  .rail:hover{width:6px;}
+  .rail .fill{position:absolute;top:0;left:0;right:0;height:0;background:var(--accent);border-radius:999px;}
+
+  /* ── 滚动正文 ── */
+  .d-body{position:absolute;inset:0;overflow-y:auto;padding:16vh 0 22vh;scrollbar-width:none;}
+  .d-body::-webkit-scrollbar{display:none;}
+  .d-inner{max-width:680px;margin:0 auto;padding:0 40px;}
+
+  .d-kind{font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--accent);margin-bottom:12px;}
+  h1{font-size:26px;font-weight:700;line-height:1.4;letter-spacing:.005em;margin-bottom:14px;}
+  .d-meta{font-size:12px;color:var(--ter);margin-bottom:44px;display:flex;gap:10px;align-items:center;font-variant-numeric:tabular-nums;}
+  .d-meta .sep{color:var(--hair2);}
+
+  .fx{transition:opacity .18s linear;}
+  .d-inner p{font-family:"Songti SC","STSong","Noto Serif SC",serif;font-size:var(--read-size);line-height:var(--read-lh);color:#33363B;margin-bottom:24px;}
+  .d-inner h2{font-size:19px;font-weight:700;margin:46px 0 18px;letter-spacing:.01em;}
+  .d-inner h2 .no{color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.1em;display:block;margin-bottom:6px;}
+  blockquote{margin:28px 0;padding:2px 0 2px 20px;border-left:1px solid var(--hair2);
+    font-family:"Songti SC","STSong","Noto Serif SC",serif;
+    font-size:calc(var(--read-size) - 1px);line-height:var(--read-lh);color:var(--sub);}
+  .d-inner a{color:var(--accent);text-decoration:underline;text-underline-offset:3px;}
+  code.inline{font-family:"SF Mono",Menlo,monospace;font-size:.82em;background:rgba(29,30,32,.05);border:1px solid var(--hair);border-radius:5px;padding:1.5px 5px;}
+  pre.code{margin:28px 0;border:1px solid var(--hair);border-radius:12px;background:rgba(255,255,255,.55);padding:16px 18px;overflow-x:auto;position:relative;}
+  pre.code .lang{position:absolute;top:10px;right:12px;font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--ter);font-family:inherit;}
+  pre.code code{font-family:"SF Mono",Menlo,monospace;font-size:12.5px;line-height:1.75;color:#33363B;}
+  figure{margin:30px 0;}
+  figure .ph{height:280px;border:1px dashed var(--hair2);border-radius:12px;background:rgba(29,30,32,.03);
+    display:flex;align-items:center;justify-content:center;color:var(--ter);font-size:12px;letter-spacing:.06em;}
+  figcaption{font-size:11.5px;color:var(--ter);margin-top:10px;text-align:center;}
+
+  .fin{display:flex;align-items:center;gap:12px;margin:44px 0 0;color:var(--ter);font-size:11px;letter-spacing:.2em;}
+  .fin::before,.fin::after{content:"";flex:1;height:1px;background:var(--hair);}
+  .next{margin-top:26px;border:1px solid var(--hair);border-radius:12px;background:rgba(255,255,255,.5);padding:16px 18px;font-size:13.5px;}
+  .next small{display:block;font-size:10.5px;font-weight:700;letter-spacing:.1em;color:var(--ter);margin-bottom:8px;}
+  .synthetic{margin:36px 0 0;font-size:11px;color:var(--ter);text-align:center;letter-spacing:.04em;}
+
+  .howcard{margin-top:40px;border:1px solid var(--hair);border-radius:12px;padding:16px 18px;background:rgba(255,255,255,.5);}
+  .howcard h3{font-size:10.5px;font-weight:700;letter-spacing:.12em;color:var(--accent);margin-bottom:10px;}
+  .howcard p{font-family:inherit;font-size:12px;line-height:1.9;color:var(--sub);margin:0;}
+</style>
+</head>
+<body>
+<div class="panel">
+  <div class="dtop" id="dtop">
+    <button class="back">‹ 返回 <kbd>esc</kbd></button>
+    <span class="d-src" style="font-size:11.5px;color:var(--ter);">合成样文 · 示意用</span>
+    <div class="d-actions">
+      <button class="qa">星</button><button class="qa">外跳</button><button class="qa">已读</button>
+    </div>
+  </div>
+  <div class="ghost" id="ghost">慢下来：一个阅读器的「读完就走」野心</div>
+  <div class="fade top"></div>
+  <div class="fade bot"></div>
+  <div class="rail" id="rail"><div class="fill" id="fill"></div></div>
+
+  <div class="d-body" id="body">
+    <div class="d-inner">
+      <div class="d-kind">文章 · 合成样文</div>
+      <h1>慢下来：一个阅读器的「读完就走」野心</h1>
+      <div class="d-meta"><span>合成样文</span><span class="sep">·</span><span>2026-10-01</span><span class="sep">·</span><span>约 6 分钟</span></div>
+
+      <p class="fx">订阅阅读这个品类已经十年没有新故事了：文件夹、未读数、星标，再加上一个不断膨胀的收件箱。我们把「读」做成了「清」——打开应用的第一件事不再是阅读，而是还债。</p>
+      <p class="fx">这篇文章想为另一种可能辩护：阅读器的唯一队列是未读，打开的唯一理由是处理它，处理完就关闭。不制造停留义务，不替你判断什么值得读，也不试图把你留在里面。</p>
+
+      <h2 class="fx"><span class="no">一</span>注意力是预算</h2>
+      <p class="fx">每天睁眼，你的注意力就已经是一张有限的预算表。工具的每一个红点、每一条徽标、每一处「为你推荐」，都在这张表上刷卡。多数阅读器的商业模式决定了它们必须刷卡——停留时长是它们的收入。</p>
+      <p class="fx">本地优先的阅读器没有这个动机。它不靠你的停留赚钱，所以它可以诚实地把「读完」设计成唯一的目标状态。</p>
+      <blockquote class="fx">工具的克制不是功能的缺席，而是把「你该做什么」的判断权，完整地留在你手里。</blockquote>
+      <p class="fx">这就是为什么队列的隐喻比收藏夹更诚实：队列有尽头，收藏夹没有。尽头给人完成的资格，收藏夹只给人拖欠的理由。</p>
+
+      <h2 class="fx"><span class="no">二</span>队列的意义</h2>
+      <p class="fx">把未读当作唯一队列意味着：没有稍后读的二层仓库，没有「稍微重要」的第三层分类。一篇内容要么值得现在读，要么不值得订阅——中间地带是自欺。</p>
+      <p class="fx">队列每天清空一次。清空的瞬间不是空虚，而是一种罕见的、可完成的满足。</p>
+      <figure class="fx">
+        <div class="ph">图 01 · 队列与预算 · 示意占位（synthetic）</div>
+        <figcaption>示意图：未读队列随一天推进被清空 · 合成数据</figcaption>
+      </figure>
+
+      <h2 class="fx"><span class="no">三</span>工具的克制</h2>
+      <p class="fx">克制在实现上是反直觉的：你要抵抗每一个「加个功能」的提议，替每一次改版辩护「为什么什么都不做」。AI 摘要、社交分享、主题商店——每一个都合理，每一个都在把你往收件箱拉回去。</p>
+      <p class="fx">配置文件的哲学同理：订阅列表完全进出，数据属于用户。导出不是功能，是所有权的凭证。</p>
+      <pre class="code fx"><span class="lang">TOML</span><code># ~/.lettura/lettura.toml
+[reading]
+font_size = 15.5
+line_height = 2.0
+# 队列即未读；读完即走
+[net]
+timeout_secs = 10</code></pre>
+      <p class="fx">代码和配置说明了一个更普遍的道理：<a href="#">可迁移的默认值</a>比丰富的可定制性更尊重用户——你只在 <code class="inline">line_height</code> 上给一个恰到好处的默认，然后允许离开。</p>
+
+      <h2 class="fx"><span class="no">四</span>读完就走</h2>
+      <p class="fx">最后一个偏向是名字：Lettura，意大利语的「阅读」。它不叫 Feed、不叫 Reader Pro，因为它的野心不在「管理订阅」，而在那两小时里的沉浸，和关掉之后的心安。</p>
+      <p class="fx">今天队列清空了。关掉它，去过晚上。</p>
+      <figure class="fx">
+        <div class="ph">图 02 · 关闭窗口 · 示意占位（synthetic）</div>
+        <figcaption>示意图：托盘图标与清零的计数 · 合成场景</figcaption>
+      </figure>
+
+      <div class="fin">· 完 ·</div>
+      <div class="next"><small>下一篇</small>队列的尽头：一次 OPML 迁移实录 · 合成样文</div>
+      <div class="synthetic">— 本文为结构评审用合成样文（synthetic），非真实内容 —</div>
+
+      <div class="howcard">
+        <h3>三形态套用 · 打字机隧道</h3>
+        <p>播客单集：焦带语法不变，封面+大播放钮作为开屏头幕，章节时间轴替代右缘进度轨（章节=刻度）；show notes 进同一焦带流。<br>平台视频：封面幕+外跳钮构成单屏「封底」，无焦带（无长文），退场逻辑只作用于头部 meta。<br>键盘模型不变：j/k 滚动、esc 返回、f 星标、space 播放。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const body = document.getElementById('body');
+  const dtop = document.getElementById('dtop');
+  const ghost = document.getElementById('ghost');
+  const fill = document.getElementById('fill');
+  let lastY = 0, ticking = false;
+
+  function update() {
+    ticking = false;
+    const y = body.scrollTop, max = body.scrollHeight - body.clientHeight;
+    // 进度轨
+    fill.style.height = (max > 0 ? (y / max) * 100 : 0) + '%';
+    // chrome 退场：下滚且过标题区 → 藏；上滚 → 唤回
+    const dy = y - lastY;
+    if (y > 160 && dy > 2) { dtop.classList.add('hide'); ghost.classList.add('on'); }
+    else if (dy < -2 || y <= 160) { dtop.classList.remove('hide'); ghost.classList.toggle('on', false); }
+    lastY = y;
+    // 焦带：视口中央带全亮，向上下缘衰减
+    const mid = window.innerHeight * 0.5, half = window.innerHeight * 0.34;
+    document.querySelectorAll('.fx').forEach(el => {
+      const r = el.getBoundingClientRect();
+      const d = Math.abs(r.top + r.height / 2 - mid) / half;
+      el.style.opacity = Math.max(0.26, Math.min(1, 1.15 - (d - 0.25) * 0.9)).toFixed(2);
+    });
+  }
+  body.addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } });
+  window.addEventListener('resize', update);
+  update();
+</script>
+</body>
+</html>

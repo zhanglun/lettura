@@ -29,7 +29,33 @@ export interface ArticleViewProps {
   onArticleUpdate?: (updated: ArticleResItem) => void;
 }
 
-/** 阅读面：640px 宋体单栏，顶栏下缘进度发丝线是唯一的仪表读数（detail.html 契约） */
+/* ── 方向契约（2026-10-01 阅读面重设计 · seed 360afa8e） ──
+ * THESIS: 正文是唯一的主角——chrome 随滚动退场，视口中央的文字全亮、上下缘渐隐
+ *   降灰；拒绝的旧排布：常驻顶栏 + 顶缘进度发丝线的「仪表盘阅读」。
+ * OWN-WORLD: 静密×聚光令牌不变（玻璃面板/墨三级/发丝线/accent/宋体正文/环境光）；
+ *   新词汇 = 退场 chrome、幽灵题名、右缘覆盖进度轨、margin 大纲（具名捐赠）。
+ * STORY: 读者打开即读，滚得越深界面越少；位置感由右缘轨与大纲供给；
+ *   esc 永远回家，j/k 永远滚动，f/space/⌘K 不变。
+ * FIRST VIEWPORT: 打开时标题幕完整（题 + meta + 正文首屏全亮）、顶栏在场；
+ *   下滚过 160px 后顶栏上滑退场、幽灵题名浮现；右缘轨常驻；
+ *   大纲在正文 ≥3 个标题且窗口 ≥1280px 时常驻，否则静默缺席。
+ * FORM: 掷中候选 #4「打字机隧道」（三选一锁定），TOC 为 #5「信封双轴」的捐赠（raise）。
+ * FINISH: unreviewed and undocumented is unfinished; this build ends with the
+ *   finish review, the verdict, DESIGN.md, and every shipping raster carrying
+ *   its provenance.
+ */
+interface TocItem {
+  id: number;
+  text: string;
+  level: 2 | 3;
+}
+
+// 焦带只落正文块：头部三件套（kind/题/meta）不参与压暗——契约 FIRST VIEWPORT
+// 「打开时题 + meta + 正文首屏全亮」，滚离后由 16vh 渐隐幕自然收走（mock 同语义）
+const FOCUS_SELECTOR =
+  ".fusion-article-body > *, .fusion-article-body > * > *";
+
+/** 阅读面：打字机隧道——chrome 退场 + 焦带 + 右缘轨 + margin 大纲（detail.html 的替代） */
 export function View({
   article,
   nextArticle,
@@ -45,6 +71,12 @@ export function View({
   const params = useParams<{ uuid?: string }>();
   const setArticle = useAppStore((state) => state.setArticle);
   const [progress, setProgress] = useState(0);
+  const [chromeHidden, setChromeHidden] = useState(false);
+  const [toc, setToc] = useState<TocItem[]>([]);
+  const [activeToc, setActiveToc] = useState<number | null>(null);
+  const [wideEnough, setWideEnough] = useState(
+    () => window.matchMedia("(min-width: 1280px)").matches,
+  );
   const internalRef = useRef<ScrollBoxRefObject>(null);
   const scrollBoxRef = scrollRef ?? internalRef;
 
@@ -53,6 +85,117 @@ export function View({
     scrollBoxRef.current?.scrollToTop();
     setProgress(0);
   }, [article?.uuid, scrollBoxRef]);
+
+  // 窗口宽度门槛：大纲只在 1280px+ 的右缘留白里生存
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1280px)");
+    const onChange = () => setWideEnough(mq.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+
+  useEffect(() => {
+    const el = scrollBoxRef.current?.getElement();
+    if (!el || !article) return;
+
+    // 焦带 + 大纲的数据源：正文块与标题（内容异步渲染后由 MutationObserver 重建）
+    let blocks: HTMLElement[] = [];
+    let headings: HTMLElement[] = [];
+    const rebuild = () => {
+      blocks = [...el.querySelectorAll<HTMLElement>(FOCUS_SELECTOR)];
+      headings = [
+        ...el.querySelectorAll<HTMLElement>(
+          ".fusion-article-body h2, .fusion-article-body h3",
+        ),
+      ];
+      headings.forEach((h, i) => h.setAttribute("data-toc", String(i)));
+      setToc(
+        headings
+          .map((h, i) => ({
+            id: i,
+            text: (h.textContent || "").trim(),
+            level: (h.tagName === "H3" ? 3 : 2) as 2 | 3,
+          }))
+          .filter((item) => item.text.length > 0),
+      );
+    };
+    rebuild();
+
+    let moRaf = 0;
+    const mo = new MutationObserver(() => {
+      if (moRaf) return;
+      moRaf = requestAnimationFrame(() => {
+        moRaf = 0;
+        rebuild();
+      });
+    });
+    mo.observe(el, { childList: true, subtree: true });
+
+    let lastY = el.scrollTop;
+    let raf = 0;
+
+    const update = () => {
+      raf = 0;
+      const y = el.scrollTop;
+      const dy = y - lastY;
+      lastY = y;
+      // reduced-motion 实时读：阅读中途切系统设置即刻生效（与 wideEnough 对齐）
+      const reduced = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      ).matches;
+      // chrome 退场：下滚且离开标题幕 → 藏；上滚 → 唤回
+      if (y > 160 && dy > 2) setChromeHidden(true);
+      else if (dy < -2 || y <= 160) setChromeHidden(false);
+      // 焦带：视口中央带全亮，向上下缘线性降灰（reduced-motion 用户保持全亮）
+      const vhHalf = el.clientHeight * 0.5;
+      if (!reduced) {
+        for (const node of blocks) {
+          const r = node.getBoundingClientRect();
+          if (r.bottom < -80 || r.top > el.clientHeight + 80) continue;
+          const d =
+            Math.abs(r.top + r.height / 2 - vhHalf) / (el.clientHeight * 0.34);
+          node.style.opacity = Math.max(
+            0.3,
+            Math.min(1, 1.15 - Math.max(0, d - 0.3) * 0.85),
+          ).toFixed(2);
+        }
+      }
+      // 大纲 spy：最后一个滚过视口上 42% 线的标题
+      let active: number | null = null;
+      for (const h of headings) {
+        if (h.getBoundingClientRect().top < el.clientHeight * 0.42) {
+          active = Number(h.getAttribute("data-toc"));
+        }
+      }
+      setActiveToc(active);
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    el.addEventListener("scroll", onScroll, { passive: true });
+    update();
+
+    return () => {
+      el.removeEventListener("scroll", onScroll);
+      mo.disconnect();
+      if (raf) cancelAnimationFrame(raf);
+      if (moRaf) cancelAnimationFrame(moRaf);
+    };
+  }, [article?.uuid, scrollBoxRef, article]);
+
+  const jumpToToc = (id: number) => {
+    const el = scrollBoxRef.current?.getElement();
+    const target = el?.querySelector<HTMLElement>(
+      `.fusion-article-body [data-toc="${id}"]`,
+    );
+    const reduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    target?.scrollIntoView({
+      behavior: reduced ? "auto" : "smooth",
+      block: "start",
+    });
+  };
 
   const handleBack = () => {
     if (closable) {
@@ -94,10 +237,14 @@ export function View({
     );
   };
 
+  const showToc = article !== null && wideEnough && toc.length >= 3;
+
   return (
     <div className="relative flex h-full min-h-0 flex-1 min-w-0 flex-col">
-      {/* 固定顶栏 */}
-      <div className="fusion-dtop">
+      {/* 退场 chrome：overlay + 渐隐幕底，下滚藏、上滚唤回 */}
+      <div
+        className={`fusion-rtop ${chromeHidden ? "hide" : ""}`}
+      >
         <Button
           variant="ghost"
           size="sm"
@@ -133,11 +280,45 @@ export function View({
         )}
       </div>
 
-      {/* 阅读进度发丝线（scaleX，避免 width 布局动画） */}
+      {/* 幽灵题名：chrome 退场后浮在上缘渐隐幕里 */}
       <div
-        className="fusion-prog"
-        style={{ transform: `scaleX(${progress / 100})` }}
-      />
+        className={`fusion-ghost ${chromeHidden ? "on" : ""}`}
+        aria-hidden="true"
+      >
+        {article?.title}
+      </div>
+
+      {/* 焦带渐隐幕（上/下缘） */}
+      <div className="fusion-fade top" aria-hidden="true" />
+      <div className="fusion-fade bot" aria-hidden="true" />
+
+      {/* 右缘覆盖进度轨：唯一的仪表读数 */}
+      <div className="fusion-rail" aria-hidden="true">
+        <div className="fill" style={{ height: `${progress}%` }} />
+      </div>
+
+      {/* margin 大纲（信封双轴捐赠）：≥3 个标题且宽窗时常驻 */}
+      {showToc && (
+        <nav className="fusion-toc" aria-label={t("article.view.toc")}>
+          {toc.map((item) => (
+            <a
+              key={item.id}
+              role="button"
+              tabIndex={0}
+              className={`${item.level === 3 ? "lv3" : ""} ${activeToc === item.id ? "on" : ""}`}
+              onClick={() => jumpToToc(item.id)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  jumpToToc(item.id);
+                }
+              }}
+            >
+              {item.text}
+            </a>
+          ))}
+        </nav>
+      )}
 
       {/* 正文 */}
       <ScrollBox
@@ -146,7 +327,7 @@ export function View({
         onProgress={setProgress}
       >
         {/* 外壳（题/meta/完读区）继承 UI sans；宋体只落在 .fusion-article-body 正文上 */}
-        <div className="mx-auto w-full max-w-[640px] px-10 py-11">
+        <div className="mx-auto w-full max-w-[680px] px-10 pt-[76px] pb-11">
           {article ? (
             <>
               <ArticleDetail article={article} />
