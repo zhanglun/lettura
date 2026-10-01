@@ -1,9 +1,14 @@
 import Dayjs from "dayjs";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { ArticleResItem } from "@/db";
 import { estimateReadMinutes } from "@/helpers/articleContent";
 import { renderArticleContent } from "../ContentRender";
+
+/** 动态 import 提升到模块级：import 表达式出现在组件 HIR 内会让编译器
+ *  bail-out（Handle Import expressions） */
+const openExternal = (url: string) =>
+  import("@tauri-apps/plugin-shell").then(({ open }) => open(url));
 
 export interface CommonAdapterProps {
   content: string;
@@ -19,11 +24,9 @@ export const CommonAdapter = ({
   const { t } = useTranslation();
   const { pub_date } = article;
   const [imgError, setImgError] = useState(false);
-  // 阅读时长：正文就绪后估算（detail.html d-meta「约 N 分钟」契约），<1 分钟不显示
-  const readMinutes = useMemo(
-    () => estimateReadMinutes(content || article.description || ""),
-    [content, article.description],
-  );
+  // 阅读时长：正文就绪后估算（detail.html d-meta「约 N 分钟」契约），<1 分钟不显示。
+  // 由 React Compiler 自动记忆化（原手写 useMemo 已删）
+  const readMinutes = estimateReadMinutes(content || article.description || "");
 
   return (
     // 完读区（fin/下一篇卡）紧随其后：底部留白交给 fin 的 38px，不再叠 adapter 的 pb
@@ -79,9 +82,7 @@ export const CommonAdapter = ({
                 className="text-[11px] text-[var(--color-accent)] hover:underline"
                 onClick={(e) => {
                   e.preventDefault();
-                  import("@tauri-apps/plugin-shell").then(({ open }) =>
-                    open(article.link),
-                  );
+                  openExternal(article.link);
                 }}
               >
                 {t("Open in browser")}

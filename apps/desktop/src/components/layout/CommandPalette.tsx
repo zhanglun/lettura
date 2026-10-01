@@ -9,7 +9,7 @@ import {
   Settings,
   Star,
 } from "lucide-react";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
@@ -64,11 +64,15 @@ function bilingualTerms(key: string): string[] {
 }
 
 /** ⌘K 命令面板：命令 / 来源 / 文章（Astryx CommandPalette + 自定义异步 SearchSource） */
+
+/** 当前可见项 id→run 注册表：search/bootstrap 写入，onValueChange 读取。
+ *  模块级而非 ref——它不是渲染数据（读写在回调时机），且全库仅此一个面板实例；
+ *  放在 ref 里会让组件在渲染期读 ref.current 而 bail-out */
+const paletteRegistry = new Map<string, () => void>();
+
 export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  // 当前可见项 id→run 注册表：search/bootstrap 写入，onValueChange 读取
-  const registry = useRef(new Map<string, () => void>());
 
   const store = useAppStore(
     useShallow((state) => ({
@@ -96,11 +100,12 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
     return () => clearTimeout(timer);
   }, [open]);
 
-  const searchSource = useMemo(() => {
+  // searchSource 由 React Compiler 自动记忆化（原手写 useMemo 已删；
+  // 注册表读写在回调时机，直接引用模块级 paletteRegistry）
+  const searchSource = (() => {
     const close = () => onOpenChange(false);
-    const reg = registry.current;
     const register = (list: PaletteItem[]) => {
-      for (const it of list) reg.set(it.id, it.auxiliaryData!.run);
+      for (const it of list) paletteRegistry.set(it.id, it.auxiliaryData!.run);
     };
 
     const goArticle = (a: any) =>
@@ -232,7 +237,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
           });
       },
     };
-  }, [store, t, navigate, onOpenChange]);
+  })();
 
   return (
     <AstryxCommandPalette
@@ -241,7 +246,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
       onOpenChange={onOpenChange}
       searchSource={searchSource}
       label={t("fusion.search.placeholder")}
-      onValueChange={(id) => registry.current.get(id)?.()}
+      onValueChange={(id) => paletteRegistry.get(id)?.()}
       renderItem={(item) => (
         <>
           <span className="ic">{item.auxiliaryData?.icon}</span>
