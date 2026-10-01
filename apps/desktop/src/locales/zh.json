@@ -160,8 +160,6 @@
   "settings": {
     "generator_routes": "自定义生成路由",
     "generator_routes_help": "一行一条：`匹配 => 路由`。左侧按正则用（域名也行），右侧以 http 开头则直接当 feed 地址",
-    "bridge_instance": "外部桥接实例",
-    "bridge_instance_help": "留空不启用；填自建 RSSHub/Nitter 地址后，订阅探测失败时会对无协议的路径自动重试 `实例/路径`",
     "subtitle": "同步、外观、OPML 与数据，都在这一页。",
     "status_secure": "本地配置安全",
     "status_sources": "42 个源活跃",
@@ -266,8 +264,11 @@
       "appearance": "外观与阅读",
       "sync": "同步与来源",
       "sources": "来源账户",
-      "rules": "订阅规则",
+      "rules": "站点规则",
       "system": "行为与数据"
+    },
+    "folder_delete": {
+      "with_sources": "此操作不可撤销。将永久删除分组「{{title}}」及其下的 {{count}} 个订阅源与它们的全部文章"
     },
     "source_accounts": {
       "title": "来源账户",
@@ -291,6 +292,7 @@
       "delete_fail": "删除账户失败",
       "delete_confirm_title": "删除这个账户？",
       "delete_confirm": "将删除账户「{{label}}」。使用它的订阅会保留，但会置回无账户状态。",
+      "status_abnormal": "账户异常（{{status}}）",
       "fld_host": "服务器（IMAP host）",
       "fld_port": "端口",
       "fld_user": "账号",
@@ -310,7 +312,7 @@
     },
     "dsrc": "Lettura · 偏好",
     "instant": "更改即时生效并写入本地配置",
-    "theme_help": "深色为命名候「夜读本」，非简单反色",
+    "theme_help": "深色为定稿的「夜读本」，非简单反色",
     "astryx_theme": "组件主题",
     "astryx_theme_help": "按钮、菜单、弹层等界面控件的主题（Astryx）",
     "font_help": "文章阅读的宋体字号",
@@ -795,7 +797,7 @@
   "90 days": "90 天",
   "Clean": "清理",
   "Data Retention": "数据保留",
-  "Read articles and analysis metadata": "已读文章和分析元数据",
+  "Read articles and analysis metadata": "已读文章",
   "Keep forever": "永久保留",
   "Interface language": "界面语言",
   "Local Storage": "本地存储",

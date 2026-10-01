@@ -8,6 +8,8 @@ import { toast } from "@/helpers/toast";
 
 export interface DialogProps {
   folder?: FolderResItem | null;
+  /** 成员订阅源数：>0 时描述里枚举爆炸半径（组删 = 级联删全部成员源与它们的文章） */
+  feedCount?: number;
   dialogStatus: boolean;
   trigger?: React.ReactNode;
   setDialogStatus: (status: boolean) => void;
@@ -17,7 +19,7 @@ export interface DialogProps {
 
 export const DialogDeleteFolder = React.memo((props: DialogProps) => {
   const { t } = useTranslation();
-  const { folder, dialogStatus, setDialogStatus, afterConfirm, trigger } =
+  const { folder, feedCount, dialogStatus, setDialogStatus, afterConfirm, trigger } =
     props;
 
   const confirmDelete = () => {
@@ -41,10 +43,17 @@ export const DialogDeleteFolder = React.memo((props: DialogProps) => {
         isOpen={dialogStatus}
         onOpenChange={setDialogStatus}
         title={t("Are you absolutely sure?")}
-        description={t(
-          "This action cannot be undone. This will permanently delete the data related to {{title}}",
-          { title: folder?.title },
-        )}
+        description={
+          (feedCount ?? 0) > 0
+            ? t("settings.folder_delete.with_sources", {
+                title: folder?.title,
+                count: feedCount,
+              })
+            : t(
+                "This action cannot be undone. This will permanently delete the data related to {{title}}",
+                { title: folder?.title },
+              )
+        }
         actionLabel={t("Delete folder")}
         onAction={confirmDelete}
       />

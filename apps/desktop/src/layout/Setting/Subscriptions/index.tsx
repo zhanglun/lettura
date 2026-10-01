@@ -123,7 +123,18 @@ function SubsRow({
       onEditFolder={onEditFolder}
       onDeleteFolder={onDeleteFolder}
     >
-      <div className="fusion-subs-row" onClick={() => onOpen(feed)}>
+      <div
+        className="fusion-subs-row"
+        role="button"
+        tabIndex={0}
+        onClick={() => onOpen(feed)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onOpen(feed);
+          }
+        }}
+      >
         <FeedIcon feed={feed} />
         <span className="fusion-subs-ft">
           <span className="nm">{feed.title}</span>
@@ -456,6 +467,7 @@ export const SubscriptionsSection = memo(function SubscriptionsSection() {
       />
       <DialogDeleteFolder
         folder={toFolderResItem(folderTarget)}
+        feedCount={folderTarget?.children?.length ?? 0}
         dialogStatus={deleteFolderDialog}
         setDialogStatus={setDeleteFolderDialog}
         afterConfirm={() => {

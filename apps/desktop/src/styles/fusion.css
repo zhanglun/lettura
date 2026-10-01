@@ -1,6 +1,13 @@
 /* fusion 壳 · Lettura 0.2.0 第二刀
    Ground truth: apps/desktop/.impeccable/mocks/decision/fusion.html（静密 × 聚光） */
 
+/* 键盘焦点环（产品签名，mock 契约）：键盘导航时 2px accent 外描边；
+   鼠标点击不触发（:focus-visible 只落在键盘聚焦） */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+}
+
 :root {
   --fusion-ground: var(--color-background-body);
   --fusion-ink: var(--color-text-primary);
@@ -860,9 +867,10 @@
      文章首图同尺寸，混排队列左列对齐 */
   grid-template-columns: 20px 76px minmax(0, 1fr) 170px 132px 64px;
   align-items: center;
-  /* Astryx 呼吸缝：步距 54 = 内容 52 + 行间 2px（ground 透出成缝）。
+  /* Astryx 呼吸缝：步距 = 内容高（--row-h：舒适 52 / 紧凑 44）+ 行间 2px（ground 透出成缝）。
+     密度控件真实生效（2026-10-01 评审 P1：此前硬编码 52 导致控件失灵）。
      左内距 10px 让状态点/缩略图离洗色外缘一个可感知的空隙（右 20px 对齐条栏） */
-  height: 52px;
+  height: var(--row-h, 52px);
   margin-bottom: 2px;
   padding: 0 20px 0 10px;
   border: 0;
@@ -3462,11 +3470,6 @@ body.fusion-context-menu-open .fusion-set-body {
   margin: 0 auto;
 }
 
-/* 订阅管理是列表型视图：比设置页的表单列宽一档 */
-.fusion-set-inner.wide {
-  max-width: 780px;
-}
-
 .fusion-set-h {
   font-size: 10px;
   font-weight: 700;
@@ -3571,8 +3574,8 @@ body.fusion-context-menu-open .fusion-set-body {
   /* 预览行 4 子元素：状态点 / 缩略图 / 标题 / 来源（列宽随真实列表 76px 封面同步） */
   grid-template-columns: 16px 76px minmax(0, 1fr) 140px;
   align-items: center;
-  /* 跟随密度令牌：校准台预览即真实行高；76×43 封面要求行高不低于 52px */
-  height: max(var(--row-h, 54px), 52px);
+  /* 跟随密度令牌：校准台预览即真实行高（同吃 --row-h，不再单独设 52px 下限） */
+  height: var(--row-h, 52px);
   border-bottom: 1px solid var(--fusion-hair);
 }
 

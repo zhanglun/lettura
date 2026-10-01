@@ -231,20 +231,7 @@ export const AddFeedChannel = (props: any) => {
       });
   };
 
-  /**
-   * 外部桥接重试（只一次）：链接模式探测失败、配置了 bridge_instance、
-   * 且输入是不带协议的路径时，用 `实例/路径` 再探测（自建 RSSHub/Nitter）。
-   */
-  const maybeBridgeRetry = (text: string) => {
-    const bridge = (store.userConfig?.bridge_instance ?? "")
-      .trim()
-      .replace(/\/+$/, "");
-    if (mode !== "link" || !bridge || text.includes("://")) return false;
-    previewUrl(`${bridge}/${text}`);
-    return true;
-  };
-
-  /** 输入 → 防抖 → 发现（发现失败再退回生成器表/外部桥接，命中就自动生成并预览） */
+  /** 输入 → 防抖 → 发现（发现失败再退回生成器表，命中就自动生成并预览） */
   const detect = (raw: string) => {
     if (timerRef.current) clearTimeout(timerRef.current);
     const text = raw.trim();
@@ -303,7 +290,6 @@ export const AddFeedChannel = (props: any) => {
             return;
           }
 
-          if (maybeBridgeRetry(text)) return;
           setPhase({
             s: "error",
             message: res?.message || t("fusion.add.err_no_feed"),
@@ -311,7 +297,6 @@ export const AddFeedChannel = (props: any) => {
         })
         .catch((error) => {
           if (!openRef.current || token !== probeRef.current) return;
-          if (maybeBridgeRetry(text)) return;
           showErrorToast(error, t("fusion.add.err_no_feed"));
           setPhase({ s: "error", message: t("fusion.add.err_no_feed") });
         });

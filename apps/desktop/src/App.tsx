@@ -90,9 +90,10 @@ function App() {
         const { customize_style } = cfg;
 
         // 强调色（userConfig 单源；令牌层 color-mix 派生）/ 列表密度
+        // 内容高对表 DESIGN 步距表（文章行 52+2，紧凑 44+2）
         document.documentElement.style.setProperty(
           "--row-h",
-          cfg.card_density === "compact" ? "44px" : "54px",
+          cfg.card_density === "compact" ? "44px" : "52px",
         );
 
         if (customize_style && Object.keys(customize_style).length) {

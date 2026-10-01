@@ -104,8 +104,6 @@ export function SettingPage() {
   // ── 来源账户 / 站点规则（后端命令直连；失败静默为空列表）──
   const [accounts, setAccounts] = useState<SourceAccount[]>([]);
   const [rules, setRules] = useState<SiteRuleSummary[]>([]);
-  // 外部桥接实例：文本类设置用草稿 + 失焦提交（同 generator_routes）
-  const [bridgeDraft, setBridgeDraft] = useState<string | null>(null);
   // 添加邮箱账户对话框
   const [accDialogOpen, setAccDialogOpen] = useState(false);
   const [accProvider, setAccProvider] = useState<"mail" | "bilibili">("mail");
@@ -255,11 +253,12 @@ export function SettingPage() {
     document.documentElement.style.setProperty("--read-lh", String(lh));
   }, [cfg?.customize_style?.font_size, cfg?.customize_style?.line_height]);
 
-  // 列表密度令牌跟随配置（配置是唯一事实源；校准台预览行同吃这个令牌）
+  // 列表密度令牌跟随配置（配置是唯一事实源；校准台预览行同吃这个令牌）。
+  // App.tsx 只在首次拉取配置时写一次，这里的响应式写入是唯一随切换更新的通道
   useEffect(() => {
     document.documentElement.style.setProperty(
       "--row-h",
-      (cfg?.card_density ?? "comfortable") === "compact" ? "44px" : "54px",
+      (cfg?.card_density ?? "comfortable") === "compact" ? "44px" : "52px",
     );
   }, [cfg?.card_density]);
 
@@ -504,6 +503,7 @@ export function SettingPage() {
               key={n.id}
               type="button"
               className={`fusion-snav ${activeSec === n.id ? "on" : ""}`}
+              aria-current={activeSec === n.id ? "true" : undefined}
               onClick={() => scrollTo(n.id)}
             >
               {n.label}
@@ -703,27 +703,6 @@ export function SettingPage() {
                 onClick={() => scrollTo("subscriptions")}
               />
             </SRow>
-            <SRow
-              label={t("settings.bridge_instance")}
-              help={t("settings.bridge_instance_help")}
-            >
-              <TextInput
-                label={t("settings.bridge_instance")}
-                isLabelHidden
-                width={260}
-                placeholder="https://hub.example.com"
-                value={bridgeDraft ?? cfg?.bridge_instance ?? ""}
-                onChange={(v) => setBridgeDraft(v)}
-                onBlur={() => {
-                  if (bridgeDraft === null) return;
-                  store.updateUserConfig({
-                    ...cfg,
-                    bridge_instance: bridgeDraft.trim(),
-                  });
-                  setBridgeDraft(null);
-                }}
-              />
-            </SRow>
 
             {/* 来源账户 */}
             <div className="fusion-set-h" id="sources">
@@ -773,7 +752,11 @@ export function SettingPage() {
                         {account.label}
                       </div>
                       {account.status !== "ok" && (
-                        <div className="hp">{account.status}</div>
+                        <div className="hp">
+                          {t("settings.source_accounts.status_abnormal", {
+                            status: account.status,
+                          })}
+                        </div>
                       )}
                     </div>
                     <div className="ctl">

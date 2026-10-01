@@ -144,8 +144,6 @@
   "settings": {
     "generator_routes": "Custom generator routes",
     "generator_routes_help": "One per line: `match => route`. The left side is treated as a regex (a bare domain works), and a route starting with http is used as the feed URL directly",
-    "bridge_instance": "Bridge instance",
-    "bridge_instance_help": "Leave empty to disable. With a self-hosted RSSHub/Nitter address set, a failed probe of a protocol-less path is retried once as `instance/path`",
     "subtitle": "Sync, appearance, OPML and data — all on one page.",
     "status_secure": "Local config secure",
     "status_sources": "42 sources active",
@@ -253,6 +251,9 @@
       "rules": "Site rules",
       "system": "Behavior & Data"
     },
+    "folder_delete": {
+      "with_sources": "This action cannot be undone. This will permanently delete the “{{title}}” folder, its {{count}} sources, and all their articles"
+    },
     "source_accounts": {
       "title": "Source accounts",
       "help": "Credentials such as IMAP mailboxes and Bilibili SESSDATA live in the local database and power their subscriptions",
@@ -275,6 +276,7 @@
       "delete_fail": "Failed to delete account",
       "delete_confirm_title": "Delete this account?",
       "delete_confirm": "Account “{{label}}” will be removed. Feeds using it are kept, but unlinked from the account.",
+      "status_abnormal": "Account problem ({{status}})",
       "fld_host": "Server (IMAP host)",
       "fld_port": "Port",
       "fld_user": "Account",
@@ -294,7 +296,7 @@
     },
     "dsrc": "Lettura · Preferences",
     "instant": "Changes apply instantly and persist locally",
-    "theme_help": "Dark is the named variant “Night Reader”, not a simple invert",
+    "theme_help": "Dark is the finalized “Night Reader” variant, not a simple invert",
     "astryx_theme": "Component theme",
     "astryx_theme_help": "Theme for buttons, menus, dialogs and other UI controls (Astryx)",
     "font_help": "Serif size for article reading",
@@ -779,7 +781,9 @@
   "90 days": "90 days",
   "Clean": "Clean",
   "Data Retention": "Data Retention",
-  "Read articles and analysis metadata": "Read articles and analysis metadata",
+  "Read articles and analysis metadata": "Read articles",
+  "Light": "Light",
+  "Dark": "Dark",
   "Keep forever": "Keep forever",
   "Interface language": "Interface language",
   "Local Storage": "Local Storage",

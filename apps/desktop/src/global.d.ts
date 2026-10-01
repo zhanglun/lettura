@@ -78,7 +78,4 @@ declare interface UserConfig {
 
   /** 自定义生成路由，一行一条：`匹配 => 路由`（详见 settings 帮助文字） */
   generator_routes?: string[];
-
-  /** 外部桥接实例（自建 RSSHub/Nitter）；订阅探测失败时对无协议路径重试 `实例/路径` */
-  bridge_instance?: string;
 }
