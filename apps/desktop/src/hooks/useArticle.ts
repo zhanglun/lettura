@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useMatch } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 import { RouteConfig } from "@/config";
@@ -39,6 +39,9 @@ const initialSectionsInflight = new Map<
 function stableKey(value: unknown) {
   return JSON.stringify(value);
 }
+
+/** 键切换帧的占位空页（useLayoutEffect 会在 paint 前以真值纠正） */
+const EMPTY_PAGES: BucketPage[] = [];
 
 function omitUndefined<T extends Record<string, unknown>>(
   obj: T,
@@ -99,7 +102,6 @@ function useArticleListChannel(
 ) {
   const key = stableKey({ query, bucket });
   const activeKey = useRef(key);
-  activeKey.current = key;
   const [pages, setPages] = useState<BucketPage[]>(
     () => listCache.get(key) ?? [],
   );
@@ -107,9 +109,19 @@ function useArticleListChannel(
   const [loading, setLoading] = useState(false);
   const pagesRef = useRef(pages);
   const loadingRef = useRef(false);
-  pagesRef.current = pages;
-
+  // ref 经 effect 同步（渲染期写 ref 会让编译器 bail-out）。useRef 已用
+  // 首渲染值初始化，事件回调只能在 commit 后触发，读到的一定是当前值；
+  // mutate 的主数据源是模块级 listCache（始终同步最新），ref 仅兜底
   useEffect(() => {
+    activeKey.current = key;
+  }, [key]);
+  useEffect(() => {
+    pagesRef.current = pages;
+  }, [pages]);
+
+  // 键切换（含种子到达）的缓存→state 同步必须在 paint 前完成（useLayoutEffect）：
+  // 渲染期读全局缓存会被编译器按纯计算缓存住陈旧值（实测过）
+  useLayoutEffect(() => {
     if (initialPage && !(listCache.get(key)?.length ?? 0)) {
       listCache.set(key, [initialPage]);
     }
@@ -119,7 +131,9 @@ function useArticleListChannel(
     loadingRef.current = false;
   }, [initialPage, key]);
 
-  const loadMore = useCallback(async () => {
+  // promise.finally 表达复位语义（编译器 1.0 不支持 try/finally 语句；
+  // 拒绝时异常照常向上传播，与原 try/finally 无 catch 的行为一致）
+  const loadMore = async () => {
     if (loadingRef.current) return;
     const cached = listCache.get(key) ?? [];
     const pageIndex = cached.length;
@@ -145,23 +159,24 @@ function useArticleListChannel(
 
     loadingRef.current = true;
     setLoading(true);
-    try {
-      const page = await request;
-      const next = [...(listCache.get(key) ?? [])];
-      next[pageIndex] = page;
-      listCache.set(key, next);
-      if (activeKey.current === key) {
-        pagesRef.current = next;
-        setPages(next);
-      }
-    } finally {
-      listInflight.delete(requestKey);
-      if (activeKey.current === key) {
-        loadingRef.current = false;
-        setLoading(false);
-      }
-    }
-  }, [bucket, key, query]);
+    await request
+      .then((page) => {
+        const next = [...(listCache.get(key) ?? [])];
+        next[pageIndex] = page;
+        listCache.set(key, next);
+        if (activeKey.current === key) {
+          pagesRef.current = next;
+          setPages(next);
+        }
+      })
+      .finally(() => {
+        listInflight.delete(requestKey);
+        if (activeKey.current === key) {
+          loadingRef.current = false;
+          setLoading(false);
+        }
+      });
+  };
 
   useEffect(() => {
     if (initiallyEnabled && pagesKey === key && pages.length === 0) {
@@ -169,22 +184,21 @@ function useArticleListChannel(
     }
   }, [initiallyEnabled, key, loadMore, pages.length, pagesKey]);
 
-  const mutate = useCallback(
-    (fn: ArticleUpdater) => {
-      const current = listCache.get(key) ?? pagesRef.current;
-      const next = fn(current) ?? current;
-      listCache.set(key, next);
-      pagesRef.current = next;
-      setPages(next);
-    },
-    [key],
-  );
+  const mutate = (fn: ArticleUpdater) => {
+    const current = listCache.get(key) ?? pagesRef.current;
+    const next = fn(current) ?? current;
+    listCache.set(key, next);
+    pagesRef.current = next;
+    setPages(next);
+  };
 
   useEffect(() => {
     registerMutate?.(bucket ?? "queue", mutate);
   }, [bucket, mutate, registerMutate]);
 
-  const visiblePages = pagesKey === key ? pages : (listCache.get(key) ?? []);
+  // 键切换帧由 useLayoutEffect 在 paint 前纠正，此兜底分支不参与绘制；
+  // 只走 state（EMPTY_PAGES 常量保持引用稳定）
+  const visiblePages = pagesKey === key ? pages : EMPTY_PAGES;
   const rows = visiblePages.flatMap((page) => page.list);
   const lastPage = visiblePages.at(-1);
   // 键切换（切筛选）瞬间 effect 还没跑 loadMore，state 的 loading 仍是 false——
@@ -212,25 +226,38 @@ function useArticleInitialSections(
 ) {
   const key = stableKey(query);
   const activeKey = useRef(key);
-  activeKey.current = key;
+  // ref 经 effect 同步（渲染期写 ref 会让编译器 bail-out）
+  useEffect(() => {
+    activeKey.current = key;
+  }, [key]);
   const [sections, setSections] = useState<Map<string, BucketPage>>(
     () => initialSectionsCache.get(key) ?? new Map(),
   );
   const [sectionsKey, setSectionsKey] = useState(key);
-  const [loading, setLoading] = useState(false);
+  // 首帧即正确：未命中缓存 = 首屏在途（惰性初始化只跑一次，编译器安全）；
+  // 后续键切换由 layout effect 纠正
+  const [loading, setLoading] = useState(
+    () => enabled && !initialSectionsCache.has(key),
+  );
   const [error, setError] = useState<unknown>(() =>
     initialSectionsErrors.get(key),
   );
   const [retryToken, setRetryToken] = useState(0);
 
-  useEffect(() => {
+  // 键切换的缓存→state 同步必须在 paint 前完成（useLayoutEffect）：
+  // 派生值只走 state（见下），若用 useEffect 会画出一帧旧键内容。
+  // effect 体内读缓存是 commit 时点，永远新鲜——渲染期读全局会被
+  // 编译器按纯计算缓存（实测 setSections 落地后 has(key) 仍为 true）
+  useLayoutEffect(() => {
     setSectionsKey(key);
     setSections(initialSectionsCache.get(key) ?? new Map());
     setError(initialSectionsErrors.get(key));
-    if (!enabled || initialSectionsCache.has(key)) {
-      setLoading(false);
-      return;
-    }
+    setLoading(initialSectionsCache.has(key) ? false : enabled);
+  }, [enabled, key]);
+
+  // 首屏请求在 commit 后发起（去重由 inflight 表保证，重复触发无害）
+  useEffect(() => {
+    if (!enabled || initialSectionsCache.has(key)) return;
     let request = initialSectionsInflight.get(key);
     if (!request) {
       request = apiGet<
@@ -264,14 +291,12 @@ function useArticleInitialSections(
       });
   }, [enabled, key, query, retryToken]);
 
+  // 派生只走 state，绝不读模块级缓存（编译器会按纯计算缓存住陈旧值）。
+  // 键切换帧由 useLayoutEffect 在 paint 前纠正，不会露出旧键内容
   const currentSections =
-    sectionsKey === key
-      ? sections
-      : (initialSectionsCache.get(key) ?? new Map());
-  const currentError = initialSectionsErrors.get(key) ?? error;
-  const currentLoading =
-    enabled && !initialSectionsCache.has(key) && !currentError;
-  const retry = useCallback(() => {
+    sectionsKey === key ? sections : new Map<string, BucketPage>();
+  const currentLoading = enabled && (loading || sectionsKey !== key);
+  const retry = () => {
     initialSectionsCache.delete(key);
     initialSectionsErrors.delete(key);
     setSections(new Map());
@@ -279,13 +304,13 @@ function useArticleInitialSections(
     setError(undefined);
     setLoading(true);
     setRetryToken((value) => value + 1);
-  }, [key]);
+  };
 
   return {
     sections: currentSections,
-    loading: currentLoading || loading,
-    error: currentError,
-    ready: !enabled || initialSectionsCache.has(key) || !!currentError,
+    loading: currentLoading,
+    error,
+    ready: !enabled || !!error || (sectionsKey === key && !loading),
     retry,
   };
 }
@@ -300,32 +325,32 @@ function useArticleSummary(
   );
   const [dataKey, setDataKey] = useState(key);
 
-  const load = useCallback(
-    async (force = false) => {
-      if (!key || !params) return;
-      if (!force) {
-        const cached = summaryCache.get(key);
-        if (cached) {
-          setData(cached);
-          return cached;
-        }
+  // promise.finally 表达复位语义（编译器 1.0 不支持 try/finally）；
+  // 拒绝时异常照常向上传播，与原实现一致
+  const load = async (force = false) => {
+    if (!key || !params) return;
+    if (!force) {
+      const cached = summaryCache.get(key);
+      if (cached) {
+        setData(cached);
+        return cached;
       }
-      let request = summaryInflight.get(key);
-      if (!request) {
-        request = apiGet<ArticleSummary>("/articles/summary", params);
-        summaryInflight.set(key, request);
-      }
-      try {
-        const summary = await request;
+    }
+    let request = summaryInflight.get(key);
+    if (!request) {
+      request = apiGet<ArticleSummary>("/articles/summary", params);
+      summaryInflight.set(key, request);
+    }
+    return request
+      .then((summary) => {
         summaryCache.set(key, summary);
         setData(summary);
         return summary;
-      } finally {
+      })
+      .finally(() => {
         summaryInflight.delete(key);
-      }
-    },
-    [key, params],
-  );
+      });
+  };
 
   useEffect(() => {
     setDataKey(key);
@@ -333,13 +358,9 @@ function useArticleSummary(
     if (enabled) void load();
   }, [enabled, key, load]);
 
-  // refresh 必须引用稳定：它经 ArticleView 的防抖链进入列表行回调，
-  // 每渲染重建会把 React.memo(ArticleListVirtual) 的 props 全部击穿
-  const refresh = useCallback(() => load(true), [load]);
-
   return {
     data: dataKey === key ? data : undefined,
-    refresh,
+    refresh: () => load(true),
   };
 }
 
@@ -357,61 +378,50 @@ export function useArticle(props: UseArticleProps) {
   const isStarred = useMatch(RouteConfig.LOCAL_STARRED);
   const currentFilter = useAppStore(useShallow((state) => state.currentFilter));
 
-  const query = useMemo(() => {
-    const isStarredVal =
-      isStarredOverride !== undefined
-        ? isStarredOverride === null
-          ? undefined
-          : isStarredOverride
-            ? 1
-            : 0
-        : isStarred
+  // 查询键由 React Compiler 自动记忆化（原手写 useMemo 已删）——
+  // 它是所有模块级缓存 Map 的 key 源头，引用稳定是缓存命中的前提
+  const isStarredVal =
+    isStarredOverride !== undefined
+      ? isStarredOverride === null
+        ? undefined
+        : isStarredOverride
           ? 1
-          : undefined;
-    return omitUndefined({
-      read_status:
-        readStatus !== undefined
-          ? (readStatus ?? undefined)
-          : isStarred
-            ? undefined
-            : currentFilter.id,
-      limit: PAGE_SIZE,
-      feed_uuid: feedUuid ?? sourceUuid,
-      item_type: type,
-      is_today: isToday ? 1 : undefined,
-      is_all: isAll ? 1 : undefined,
-      is_starred: isStarredVal,
-      carrier: carrier && carrier !== "all" ? carrier : undefined,
-    });
-  }, [
-    carrier,
-    currentFilter.id,
-    feedUuid,
-    sourceUuid,
-    isAll,
-    isStarred,
-    isStarredOverride,
-    isToday,
-    readStatus,
-    type,
-  ]);
+          : 0
+      : isStarred
+        ? 1
+        : undefined;
+  const query = omitUndefined({
+    read_status:
+      readStatus !== undefined
+        ? (readStatus ?? undefined)
+        : isStarred
+          ? undefined
+          : currentFilter.id,
+    limit: PAGE_SIZE,
+    feed_uuid: feedUuid ?? sourceUuid,
+    item_type: type,
+    is_today: isToday ? 1 : undefined,
+    is_all: isAll ? 1 : undefined,
+    is_starred: isStarredVal,
+    carrier: carrier && carrier !== "all" ? carrier : undefined,
+  });
 
   const isQueue = !!feedUuid;
   const mutatorsRef = useRef(new Map<string, ArticleMutator>());
-  const registerMutate = useCallback(
-    (bucket: string, mutate: ArticleMutator) => {
-      mutatorsRef.current.set(bucket, mutate);
-    },
-    [],
-  );
+  const registerMutate = (bucket: string, mutate: ArticleMutator) => {
+    mutatorsRef.current.set(bucket, mutate);
+  };
 
   const initial = useArticleInitialSections(query, !isQueue);
+  // 种子必须走响应式 state（initial.sections）而非模块级缓存：
+  // 编译器把「读可变全局」当纯计算缓存，setSections 落地后调用结果不会
+  // 重算（实测种子恒 undefined、桶通道永远播种不上）。state 变化才会
+  // 让编译器重算派生值、播种 effect 才会带着新种子重跑。
   // During a filter switch, the hook state still contains the previous query's
   // sections for one render. Read only the cache for the current query; never
   // seed the new filter with the old filter's first page.
-  const initialKey = stableKey(query);
-  const initialPage = (bucket: string) =>
-    initialSectionsCache.get(initialKey)?.get(bucket);
+  const initialSections = initial.sections;
+  const initialPage = (bucket: string) => initialSections.get(bucket);
 
   const queue = useArticleListChannel(query, null, isQueue);
   // One HTTP request loads all six initial buckets. Each bucket keeps its own
@@ -465,19 +475,13 @@ export function useArticle(props: UseArticleProps) {
     initial.loading,
   );
 
-  const countsParams = useMemo(() => {
-    const { carrier: _carrier, limit: _limit, ...rest } = query;
-    return rest;
-  }, [query]);
+  const { carrier: _carrier, limit: _limit, ...countsParams } = query;
   const { data: globalSummary, refresh: refreshSummary } = useArticleSummary(
     feedUuid ? null : countsParams,
     !feedUuid,
   );
 
-  const scopedParams = useMemo(() => {
-    const { limit: _limit, ...rest } = query;
-    return rest;
-  }, [query]);
+  const { limit: _summaryLimit, ...scopedParams } = query;
   const { data: scopedSummary } = useArticleSummary(
     feedUuid || !carrier || carrier === "all" ? null : scopedParams,
     !!(!feedUuid && carrier && carrier !== "all"),
@@ -541,18 +545,14 @@ export function useArticle(props: UseArticleProps) {
   const error = isQueue ? null : initial.error;
   const isEmpty =
     !isLoading && !error && initial.ready && articles.length === 0;
-  const mutate = useCallback(
-    (fn: ArticleUpdater) => {
-      if (isQueue) queue.mutate(fn);
-      else
-        for (const mutateBucket of mutatorsRef.current.values())
-          mutateBucket(fn);
-    },
-    [isQueue, queue.mutate],
-  );
-  const mutateBucket = useCallback((bucket: string, fn: ArticleUpdater) => {
+  const mutate = (fn: ArticleUpdater) => {
+    if (isQueue) queue.mutate(fn);
+    else
+      for (const mutateBucket of mutatorsRef.current.values()) mutateBucket(fn);
+  };
+  const mutateBucket = (bucket: string, fn: ArticleUpdater) => {
     mutatorsRef.current.get(bucket)?.(fn);
-  }, []);
+  };
 
   return {
     sections,
