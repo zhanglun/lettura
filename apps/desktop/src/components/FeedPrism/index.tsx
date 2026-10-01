@@ -1,5 +1,5 @@
 import { Popover } from "@astryxdesign/core/Popover";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
@@ -44,43 +44,32 @@ export function FeedPrism({
     if (open) inputRef.current?.focus();
   }, [open]);
 
-  const feeds = useMemo(
-    () => flattenFeeds(store.subscribes || []),
-    [store.subscribes],
-  );
+  // 派生序列由 React Compiler 自动记忆化（等价于原 5 个 useMemo，依赖不变不重算）
+  const feeds = flattenFeeds(store.subscribes || []);
 
-  const selectedFeed = useMemo(
-    () => feeds.find((f) => f.uuid === selectedUuid) ?? null,
-    [feeds, selectedUuid],
-  );
+  const selectedFeed = feeds.find((f) => f.uuid === selectedUuid) ?? null;
 
   // 最近更新的 3 个源（按源内最新文章时间近似：用 last_sync_date 代替——
   // 同步越近越可能有新内容，且零额外查询）
-  const recentFeeds = useMemo(
-    () =>
-      [...feeds]
-        .sort((a, b) =>
-          String(b.last_sync_date ?? "").localeCompare(
-            String(a.last_sync_date ?? ""),
-          ),
-        )
-        .slice(0, 3),
-    [feeds],
-  );
+  const recentFeeds = [...feeds]
+    .sort((a, b) =>
+      String(b.last_sync_date ?? "").localeCompare(
+        String(a.last_sync_date ?? ""),
+      ),
+    )
+    .slice(0, 3);
 
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return feeds;
-    return feeds.filter(
-      (f) =>
-        f.title.toLowerCase().includes(q) ||
-        (f.feed_url ?? "").toLowerCase().includes(q),
-    );
-  }, [feeds, query]);
+  const q = query.trim().toLowerCase();
+  const filtered = q
+    ? feeds.filter(
+        (f) =>
+          f.title.toLowerCase().includes(q) ||
+          (f.feed_url ?? "").toLowerCase().includes(q),
+      )
+    : feeds;
 
-  const folders = useMemo(
-    () => (store.subscribes || []).filter((i) => i.item_type === "folder"),
-    [store.subscribes],
+  const folders = (store.subscribes || []).filter(
+    (i) => i.item_type === "folder",
   );
 
   const selectFeed = (f: FeedResItem | null) => {

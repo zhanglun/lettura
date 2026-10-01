@@ -1,7 +1,7 @@
 import { useLiveQuery } from "dexie-react-hooks";
 import { AnimatePresence } from "framer-motion";
 import type React from "react";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { db } from "@/helpers/podcastDB";
 import { useAppStore } from "@/stores";
@@ -54,24 +54,20 @@ export const LPodcast: React.FC<LPodcastProps> = ({ visible = true }) => {
     db.podcasts.orderBy("add_date").reverse().toArray(),
   );
 
-  // 转换播客数据为音频轨道
-  const tracks = useMemo(
-    () =>
-      podcasts
-        ? podcasts.map((podcast) => ({
-            uuid: podcast.uuid,
-            title: podcast.title,
-            url: podcast.mediaURL,
-            thumbnail: podcast.thumbnail,
-            author: podcast.author,
-            duration: podcast.duration,
-            feed_title: podcast.feed_title,
-            feed_logo: podcast.feed_logo,
-            feed_uuid: podcast.feed_uuid,
-          }))
-        : [],
-    [podcasts],
-  );
+  // 转换播客数据为音频轨道（Compiler 自动记忆化；下游 stringify 指纹防抖）
+  const tracks = podcasts
+    ? podcasts.map((podcast) => ({
+        uuid: podcast.uuid,
+        title: podcast.title,
+        url: podcast.mediaURL,
+        thumbnail: podcast.thumbnail,
+        author: podcast.author,
+        duration: podcast.duration,
+        feed_title: podcast.feed_title,
+        feed_logo: podcast.feed_logo,
+        feed_uuid: podcast.feed_uuid,
+      }))
+    : [];
 
   // 库→store 投影镜像：库是队列的唯一真相（currentTrack 必须是队列成员），
   // 且只在投影真变了时写入——数组身份抖动不该引起 store 写入 → 重渲染 → 再写入

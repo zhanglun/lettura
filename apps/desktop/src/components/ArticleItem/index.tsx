@@ -1,7 +1,7 @@
 import { IconButton } from "@astryxdesign/core/IconButton";
 import clsx from "clsx";
 import { CheckCheck, Star } from "lucide-react";
-import React, { type ForwardedRef, useEffect, useMemo, useState } from "react";
+import React, { type ForwardedRef, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
@@ -45,9 +45,9 @@ export function thumbMonogram(title: string): string {
  *  视频行走加宽 16:9 变体并叠时长角标（.fusion-thumb.vid）。 */
 export function RowThumb({ article }: { article: ArticleResItem }) {
   const [imgError, setImgError] = useState(false);
-  const thumbUrl = useMemo(() => pickThumbUrl(article), [article]);
+  const thumbUrl = pickThumbUrl(article);
   const carrier = getCarrier(article);
-  const duration = useMemo(() => pickDuration(article), [article]);
+  const duration = pickDuration(article);
   const tint = carrier === "audio" ? "pod" : carrier === "video" ? "vid" : "";
   const isVideoRow = carrier === "video" && !!thumbUrl && !imgError;
 

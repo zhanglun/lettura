@@ -3,7 +3,7 @@ import { Divider } from "@astryxdesign/core/Divider";
 import { IconButton } from "@astryxdesign/core/IconButton";
 import { X } from "lucide-react";
 import type React from "react";
-import { useCallback, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { ArticleDetail } from "@/components/ArticleView/Detail";
 import { ReaderControls } from "@/components/ReaderControls";
@@ -26,16 +26,13 @@ export const ArticleDialogView = (): React.ReactElement => {
   const setArticle = useAppStore((state) => state.setArticle);
 
   const scrollBoxRef = useRef<ScrollBoxRefObject>(null);
-  const handleDialogChange = useCallback(
-    (status: boolean) => {
-      setArticleDialogViewStatus(status);
+  const handleDialogChange = (status: boolean) => {
+    setArticleDialogViewStatus(status);
 
-      if (!status) {
-        setArticle(null);
-      }
-    },
-    [setArticleDialogViewStatus, setArticle],
-  );
+    if (!status) {
+      setArticle(null);
+    }
+  };
 
   // article 变化即回滚顶：依赖本身不进 effect 体，属「重置型」effect，非误用
   // biome-ignore lint/correctness/useExhaustiveDependencies: reset-style effect, dep is the trigger not the data

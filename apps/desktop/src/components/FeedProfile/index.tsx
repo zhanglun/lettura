@@ -12,7 +12,7 @@ import {
   Rss,
   Settings as SettingsIcon,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FeedIcon } from "@/components/FeedIcon";
 import type { FeedResItem } from "@/db";
@@ -60,10 +60,7 @@ export function FeedProfile({
     setCollapsed(next);
   };
 
-  const description = useMemo(
-    () => plainText(feed.description),
-    [feed.description],
-  );
+  const description = plainText(feed.description);
   const host = getHostLabel(feed);
   const unread = feed.unread ?? 0;
   const broken = (feed.health_status ?? 0) > 0;
