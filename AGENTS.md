@@ -21,9 +21,7 @@
   `feeds.provider/account_uuid/source_config`；凭据在 `source_accounts`
   表（`sources/account_service.rs`，命令
   `list/save/delete/test_source_account`）。邮件同步会把 `last_uid`
-  水位写回 `source_config`。站点规则引擎（fetcher-site/site-rules，
-  TOML 驱动的站点抓取 + /api/generated RSS 输出）已于 2026-10-01 整体
-  移除——无生态、无规则集、入口隐藏，git 历史（64daf370 起）可找回。
+  水位写回 `source_config`。
 - 前端数据访问只走 localhost HTTP（`src/helpers/http.ts` 的
   `apiGet/apiPost`，对准内嵌 Actix 服务 `http://127.0.0.1:{port}/api`，
   实现在 `src-tauri/src/server/handlers/`）。dataAgent 已移除（2026-09-30，
