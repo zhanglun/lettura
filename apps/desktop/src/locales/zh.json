@@ -165,8 +165,6 @@
     "status_sources": "42 个源活跃",
     "status_analysis": "上次分析 2 小时前",
     "tab": {
-      "ai_title": "AI 配置",
-      "ai_desc": "模型、密钥、连接状态",
       "subscriptions_title": "订阅管理",
       "subscriptions_desc": "管理你的订阅源",
       "sources_title": "来源设置",

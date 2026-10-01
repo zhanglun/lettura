@@ -149,8 +149,6 @@
     "status_sources": "42 sources active",
     "status_analysis": "Last analysis 2h ago",
     "tab": {
-      "ai_title": "AI Configuration",
-      "ai_desc": "Model, key, connection status",
       "subscriptions_title": "Subscriptions",
       "subscriptions_desc": "Manage your feed subscriptions",
       "sources_title": "Sources",
