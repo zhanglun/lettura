@@ -30,7 +30,7 @@ import {
   Trash2,
   Upload,
 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -141,8 +141,9 @@ export function SettingPage() {
     loadRules();
   }, []);
 
-  // 账户按 provider 分组展示：已知类型排前，未知类型兜底在后（新 provider 即插即用）
-  const accountGroups = useMemo(() => {
+  // 账户按 provider 分组展示：已知类型排前，未知类型兜底在后（新 provider 即插即用）。
+  // 由 React Compiler 自动记忆化（原手写 useMemo 已删）
+  const accountGroups = (() => {
     const groups = new Map<string, SourceAccount[]>();
     for (const account of accounts) {
       const list = groups.get(account.provider) ?? [];
@@ -155,7 +156,7 @@ export function SettingPage() {
       return index === -1 ? known.length : index;
     };
     return [...groups.entries()].sort((a, b) => rank(a[0]) - rank(b[0]));
-  }, [accounts]);
+  })();
 
   // esc / 左上返回：回到进入设置前的页面（无足迹如启动直达时落回未读列表）
   const backTo = lastNavFrom(locationKey) ?? RouteConfig.LOCAL_ALL;
@@ -166,8 +167,9 @@ export function SettingPage() {
   }, [backTo]);
 
   // 左锚点导航滚动：固定 320ms easeOutCubic；scrollIntoView smooth 交给浏览器
-  // 的时长不可控（WebKit 主线程驱动、随距离变长），页面变高后点击明显发顿
-  const scrollTo = useCallback((id: string) => {
+  // 的时长不可控（WebKit 主线程驱动、随距离变长），页面变高后点击明显发顿。
+  // 由 React Compiler 自动记忆化（原手写 useCallback 已删）
+  const scrollTo = (id: string) => {
     const el = bodyRef.current;
     if (!el) return;
     const node = el.querySelector(`#${id}`);
@@ -195,7 +197,7 @@ export function SettingPage() {
       if (p < 1) scrollAnim.current = requestAnimationFrame(step);
     };
     scrollAnim.current = requestAnimationFrame(step);
-  }, []);
+  };
 
   // 深链 ?tab=xxx（源队列 / 右键菜单的「管理订阅」入口）：进入后滚到对应区块
   useEffect(() => {
@@ -333,32 +335,31 @@ export function SettingPage() {
 
   const testRowAccount = async (account: SourceAccount) => {
     setTestingUuid(account.uuid);
-    try {
+    // promise.catch 表达成败分支（编译器 1.0 不支持 try/catch 语句）
+    await (async () => {
       const message = await invoke<string>("test_source_account", {
         provider: account.provider,
         settings: account.settings,
       });
       toast.success(message || t("settings.source_accounts.test_ok"));
-    } catch (error) {
+    })().catch((error) => {
       showErrorToast(error, t("settings.source_accounts.test_fail"));
-    } finally {
-      setTestingUuid(null);
-    }
+    });
+    setTestingUuid(null);
   };
 
   const confirmDeleteAccount = async () => {
     if (!deleteTarget) return;
     setDeleting(true);
-    try {
+    await (async () => {
       await invoke("delete_source_account", { uuid: deleteTarget.uuid });
       toast.success(t("settings.source_accounts.deleted"));
       setDeleteTarget(null);
       loadAccounts();
-    } catch (error) {
+    })().catch((error) => {
       showErrorToast(error, t("settings.source_accounts.delete_fail"));
-    } finally {
-      setDeleting(false);
-    }
+    });
+    setDeleting(false);
   };
 
   const openAddAccount = (
@@ -397,23 +398,22 @@ export function SettingPage() {
 
   const testNewAccount = async () => {
     setAccTesting(true);
-    try {
+    await (async () => {
       const message = await invoke<string>("test_source_account", {
         provider: accProvider,
         settings: accountSettingsJson(),
       });
       toast.success(message || t("settings.source_accounts.test_ok"));
-    } catch (error) {
+    })().catch((error) => {
       showErrorToast(error, t("settings.source_accounts.test_fail"));
-    } finally {
-      setAccTesting(false);
-    }
+    });
+    setAccTesting(false);
   };
 
   const saveNewAccount = async () => {
     if (!accFormReady) return;
     setAccSaving(true);
-    try {
+    await (async () => {
       // 名称默认取 host（邮箱）或固定名（B站），用户没填时
       await invoke("save_source_account", {
         provider: accProvider,
@@ -427,11 +427,10 @@ export function SettingPage() {
       toast.success(t("settings.source_accounts.saved"));
       setAccDialogOpen(false);
       loadAccounts();
-    } catch (error) {
+    })().catch((error) => {
       showErrorToast(error, t("settings.source_accounts.save_fail"));
-    } finally {
-      setAccSaving(false);
-    }
+    });
+    setAccSaving(false);
   };
 
   // ── 站点规则 ─────────────────────────────────────────────
