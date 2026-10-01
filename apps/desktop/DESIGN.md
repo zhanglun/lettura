@@ -125,12 +125,13 @@
 
 **设置视图**（面板内第三态，参考实现 `.impeccable/mocks/decision/settings.html`）：
 
-顶栏保持产品名「Lettura」（不放视图名）；设置视图头部与详情同构（返回钮 + esc + 右侧「N 个来源 · M 个分组」类元信息）；队列计数药丸持续在场。入口：⌘K「打开设置」；导航点「未读」或 esc 一路退回（设置 → 未读 / 订阅 → 设置），列表位置保留。段题单语（中文），不带英文大写后缀。
+顶栏保持产品名「Lettura」（不放视图名）；设置视图头部与详情同构（返回钮 + esc + 右侧「N 个来源 · M 个分组」类元信息）；队列计数药丸持续在场。入口：⌘K「打开设置」；导航点「未读」或 esc 一路退回（设置 → 未读，位置保留）。段题单语（中文），不带英文大写后缀。**订阅管理是内联锚点段**（2026-10-01 评审拍板改文档就实现：非独立子视图——第 6 段置尾同层滚动，导航项无尾部箭头；入口 = 同步段「管理订阅」行钮滚动到段 + `?tab=subscriptions` 深链；esc 从设置直达进入前页面；旧「子视图 + 780px 宽档 `.wide`」已废弃，死 CSS 已删）
 
-布局：左锄点导航 196px（玻璃底 + 发丝线右分）+ 内容区（版心 720px 居中）。导航项 38px，当前段＝Astryx accent 选中语法（10% accent 底 + accent 字重 + 细边框，无侧线）；点击平滑滚动到段题，滚动侦测反向点亮（末段在触底时兜底选中）；「订阅管理」为导航出口项（尾部箭头，进订阅子视图）。
+布局：左锄点导航 196px（玻璃底 + 发丝线右分）+ 内容区（版心 720px 居中）。导航项 38px，当前段＝Astryx accent 选中语法（10% accent 底 + accent 字重 + 细边框，无侧线）+ `aria-current="true"`（2026-10-01）；点击平滑滚动到段题，滚动侦测反向点亮（末段在触底时兜底选中）；「订阅管理」为第 6 个锚点段（内联区块，非出口项）。
 
 | 语法 | 规则 |
 |---|---|
+| 键盘焦点环（2026-10-01 评审落地） | fusion.css 全局 `:focus-visible`＝2px accent 外描边 offset 1px（mock 契约的产品签名；鼠标点击不触发）；订阅管理行补 button 语义（`role=button + tabIndex + Enter/Space` 打开源队列） |
 | 版心 | 居中 720px；段题＝10px/700/.13em 大写 accent 标题，下接 accent 18% 发丝规则线，scroll-margin 顶留白 |
 | 设置行 | 独立仪器卡：标签左（13.5px/500 + 帮助文字 11.5px/`--sub`）、控件右、细边框 + 42% card 玻璃底，min-h 58，无行 hover；控件自身遵循 Astryx hover/focus |
 | 控件词汇 | 分段＝过滤条 tab 语法（胶囊容器，自研 Seg）；下拉＝Astryx `Selector`(sm)；开关＝Astryx `Switch`(sm)；滑杆＝Astryx `Slider`（固定 140 宽）+ 数值 chip；文本＝Astryx `TextInput`/`TextArea`(sm)；主钮＝Astryx `Button` primary(sm)、幽灵钮＝`ghost`(sm)；键帽＝Astryx `Kbd`（esc/m/⌘K，平台感知）；组件主题＝Astryx 主题选择器（neutral 默认，7 选 1，`userConfig.astryx_theme` 持久化，CSS 由 `@scope([data-astryx-theme])` 隔离） |
@@ -175,7 +176,7 @@
 j / k        列表：移动焦点 · 详情：滚动文章（到边即停）
 ↑ / ↓        焦点移动（详情内 = 上一篇/下一篇；订阅浏览帧同 j/k）
 Enter / o    打开焦点行
-Esc          返回列表 / 关闭面板（设置内逐级返回：订阅→设置→列表，位置保留）
+Esc          返回列表 / 关闭面板（设置：esc 直达进入前页面，位置保留）
 m            已读并下移        M   已读并上移
 f            星标              v   浏览器打开原文
 space        全局播放/暂停     ← →   播客 ±30s

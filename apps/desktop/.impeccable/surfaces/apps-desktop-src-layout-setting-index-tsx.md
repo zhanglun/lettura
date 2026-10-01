@@ -14,7 +14,7 @@ related_targets: [".impeccable/mocks/decision/settings.html"]
 ## Audience / Job / Action
 - 用户即作者本人：中文技术读者，每天开一次
 - 任务：调外观（即时可见）、调同步、备份 OPML、增删分组订阅源
-- 动作：⌘K「打开设置」进入；esc 逐级退回（订阅→设置→未读），位置保留；更改即时生效无保存钮
+- 动作：⌘K「打开设置」进入；esc 直达退回到进入前页面（2026-10-01 起：订阅管理是内联锚点段非子视图，无逐级链），位置保留；更改即时生效无保存钮
 
 ## Chosen Direction & Memorable Moment
 - 定稿：面板内第三视图，非浮层非独立窗口（用户 2026-02 轮选定）
