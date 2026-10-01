@@ -14,7 +14,7 @@ import {
   Trash2,
 } from "lucide-react";
 import type React from "react";
-import { memo, useEffect, useMemo, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
@@ -29,6 +29,52 @@ import { apiPost } from "@/helpers/http";
 import { DialogDeleteFolder } from "@/layout/Setting/Content/DialogDeleteFolder";
 import { DialogUnsubscribeFeed } from "@/layout/Setting/Content/DialogUnsubscribeFeed";
 import { useAppStore } from "@/stores";
+
+/** 订阅管理页的分组视图：未分组的立一组头，搜索时空分组不立头 */
+function buildGroups(
+  rootFeeds: FeedResItem[],
+  folderItems: FeedResItem[],
+  searchQuery: string,
+  t: (key: string) => string,
+): {
+  uuid: string;
+  title: string;
+  feeds: FeedResItem[];
+  folder: FeedResItem | null;
+}[] {
+  const matches = (feed: FeedResItem) => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return true;
+    return (
+      feed.title.toLowerCase().includes(q) ||
+      (feed.link ?? "").toLowerCase().includes(q) ||
+      (feed.feed_url ?? "").toLowerCase().includes(q)
+    );
+  };
+  const list: {
+    uuid: string;
+    title: string;
+    feeds: FeedResItem[];
+    folder: FeedResItem | null;
+  }[] = [];
+  const q = searchQuery.trim();
+  const ungrouped = rootFeeds.filter(matches);
+  if (ungrouped.length > 0) {
+    list.push({
+      uuid: "__ungrouped__",
+      title: t("feeds.ungrouped"),
+      feeds: ungrouped,
+      folder: null,
+    });
+  }
+  for (const folder of folderItems) {
+    const feeds = (folder.children ?? []).filter(matches);
+    // 搜索时空分组不立头（0 sources 的组头是噪音），空态交给 QuietEmpty
+    if (q && feeds.length === 0) continue;
+    list.push({ uuid: folder.uuid, title: folder.title, feeds, folder });
+  }
+  return list;
+}
 
 function toFolderResItem(folder: FeedResItem | null): FolderResItem | null {
   if (!folder) return null;
@@ -268,41 +314,9 @@ export const SubscriptionsSection = memo(function SubscriptionsSection() {
   const folderItems = sourceItems.filter((i) => i.item_type === "folder");
   const rootFeeds = sourceItems.filter((i) => i.item_type !== "folder");
 
-  const matches = (feed: FeedResItem) => {
-    const q = searchQuery.trim().toLowerCase();
-    if (!q) return true;
-    return (
-      feed.title.toLowerCase().includes(q) ||
-      (feed.link ?? "").toLowerCase().includes(q) ||
-      (feed.feed_url ?? "").toLowerCase().includes(q)
-    );
-  };
-
-  const groups = useMemo(() => {
-    const list: {
-      uuid: string;
-      title: string;
-      feeds: FeedResItem[];
-      folder: FeedResItem | null;
-    }[] = [];
-    const q = searchQuery.trim();
-    const ungrouped = rootFeeds.filter(matches);
-    if (ungrouped.length > 0) {
-      list.push({
-        uuid: "__ungrouped__",
-        title: t("feeds.ungrouped"),
-        feeds: ungrouped,
-        folder: null,
-      });
-    }
-    for (const folder of folderItems) {
-      const feeds = (folder.children ?? []).filter(matches);
-      // 搜索时空分组不立头（0 sources 的组头是噪音），空态交给 QuietEmpty
-      if (q && feeds.length === 0) continue;
-      list.push({ uuid: folder.uuid, title: folder.title, feeds, folder });
-    }
-    return list;
-  }, [sourceItems, searchQuery, t]);
+  // groups 由 React Compiler 自动记忆化（原手写 useMemo 反而是编译器
+  // bail-out 的原因："Existing memoization could not be preserved"）
+  const groups = buildGroups(rootFeeds, folderItems, searchQuery, t);
 
   const totalFeeds = groups.reduce((sum, g) => sum + g.feeds.length, 0);
 
