@@ -30,6 +30,13 @@ export interface PodcastSlice {
   playTrack: (track: AudioTrack) => void;
   addToPlayListAndPlay: (record: Podcast) => Promise<void>;
   removeTrack: (track: AudioTrack) => void;
+
+  /** 播放进度的落盘读写：全库只有本 slice 碰 db.podcasts 的数据字段，
+   *  播放器等消费方一律走这几个 action（渲染端队列走 useLiveQuery） */
+  getSavedProgress: (uuid: string) => Promise<number | undefined>;
+  persistProgress: (uuid: string, progress: number) => void;
+  persistDuration: (uuid: string, duration: number) => void;
+  clearProgress: (uuid: string) => void;
   /** 睡眠定时（到点暂停）；null = 关闭 */
   sleepTimer: SleepTimer | null;
   setSleepTimer: (minutes: number | null) => void;
@@ -167,6 +174,19 @@ export const createPodcastSlice: StateCreator<
   },
 
   sleepTimer: null,
+  getSavedProgress: async (uuid: string) => {
+    const podcast = await db.podcasts.where("uuid").equals(uuid).first();
+    return podcast?.progress;
+  },
+  persistProgress: (uuid: string, progress: number) => {
+    void db.podcasts.where("uuid").equals(uuid).modify({ progress });
+  },
+  persistDuration: (uuid: string, duration: number) => {
+    void db.podcasts.where("uuid").equals(uuid).modify({ duration });
+  },
+  clearProgress: (uuid: string) => {
+    void db.podcasts.where("uuid").equals(uuid).modify({ progress: 0 });
+  },
   setSleepTimer: (minutes: number | null) => {
     if (sleepTimerHandle) {
       clearTimeout(sleepTimerHandle);

@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { showErrorToast } from "@/helpers/errorHandler";
-import { db } from "@/helpers/podcastDB";
 import { useAppStore } from "@/stores";
 
 /**
@@ -61,6 +60,10 @@ export const useAudioPlayer = () => {
       podcastPlayingStatus: state.podcastPlayingStatus,
       updatePodcastPlayingStatus: state.updatePodcastPlayingStatus,
       playNext: state.playNext,
+      getSavedProgress: state.getSavedProgress,
+      persistProgress: state.persistProgress,
+      persistDuration: state.persistDuration,
+      clearProgress: state.clearProgress,
     })),
   );
 
@@ -71,16 +74,12 @@ export const useAudioPlayer = () => {
     audio.playbackRate = playbackRate;
 
     if (store.currentTrack?.uuid) {
-      db.podcasts
-        .where("uuid")
-        .equals(store.currentTrack.uuid)
-        .first()
-        .then((podcast) => {
-          if (podcast?.progress && audioRef.current) {
-            audioRef.current.currentTime = podcast.progress;
-            setProgress(podcast.progress);
-          }
-        });
+      store.getSavedProgress(store.currentTrack.uuid).then((progress) => {
+        if (progress && audioRef.current) {
+          audioRef.current.currentTime = progress;
+          setProgress(progress);
+        }
+      });
     }
 
     return () => {
@@ -89,9 +88,10 @@ export const useAudioPlayer = () => {
         store.currentTrack?.uuid &&
         audioRef.current.currentTime > 0
       ) {
-        db.podcasts.where("uuid").equals(store.currentTrack.uuid).modify({
-          progress: audioRef.current.currentTime,
-        });
+        store.persistProgress(
+          store.currentTrack.uuid,
+          audioRef.current.currentTime,
+        );
       }
       audioRef.current = null;
     };
@@ -106,16 +106,12 @@ export const useAudioPlayer = () => {
     if (audio.src !== store.currentTrack.url) {
       audio.src = store.currentTrack.url;
       // 加载保存的进度
-      db.podcasts
-        .where("uuid")
-        .equals(store.currentTrack.uuid)
-        .first()
-        .then((podcast) => {
-          if (podcast?.progress) {
-            audio.currentTime = podcast.progress;
-            setProgress(podcast.progress);
-          }
-        });
+      store.getSavedProgress(store.currentTrack.uuid).then((progress) => {
+        if (progress) {
+          audio.currentTime = progress;
+          setProgress(progress);
+        }
+      });
     }
 
     // 根据播放状态来控制播放
@@ -144,9 +140,7 @@ export const useAudioPlayer = () => {
         now - lastFlushRef.current > PROGRESS_FLUSH_MS
       ) {
         lastFlushRef.current = now;
-        db.podcasts.where("uuid").equals(store.currentTrack.uuid).modify({
-          progress: currentTime,
-        });
+        store.persistProgress(store.currentTrack.uuid, currentTime);
       }
     };
 
@@ -154,9 +148,7 @@ export const useAudioPlayer = () => {
       setDuration(audio.duration);
       // 回填单集时长：队列行的时长靠它（首播后永久可用）
       if (store.currentTrack?.uuid && Number.isFinite(audio.duration)) {
-        db.podcasts.where("uuid").equals(store.currentTrack.uuid).modify({
-          duration: audio.duration,
-        });
+        store.persistDuration(store.currentTrack.uuid, audio.duration);
       }
     };
 
@@ -168,9 +160,7 @@ export const useAudioPlayer = () => {
 
       // 播放结束时清除进度
       if (store.currentTrack?.uuid) {
-        db.podcasts.where("uuid").equals(store.currentTrack.uuid).modify({
-          progress: 0,
-        });
+        store.clearProgress(store.currentTrack.uuid);
       }
       store.playNext();
     };
@@ -205,9 +195,7 @@ export const useAudioPlayer = () => {
 
       // 保存新的播放进度
       if (store.currentTrack?.uuid) {
-        db.podcasts.where("uuid").equals(store.currentTrack.uuid).modify({
-          progress: time,
-        });
+        store.persistProgress(store.currentTrack.uuid, time);
       }
     }
   };

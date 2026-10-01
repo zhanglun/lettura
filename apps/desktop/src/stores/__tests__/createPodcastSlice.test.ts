@@ -3,11 +3,12 @@ import { create } from "zustand";
 import type { AudioTrack } from "@/components/LPodcast";
 import { createPodcastSlice, type PodcastSlice } from "../createPodcastSlice";
 
-// Dexie/IndexedDB 在 jsdom 不可用：只替掉被 slice 触碰的写入路径
+// Dexie/IndexedDB 在 jsdom 不可用：只替掉被 slice 触碰的读写路径
 vi.mock("@/helpers/podcastDB", () => {
   const chain = {
     delete: vi.fn(() => Promise.resolve()),
     modify: vi.fn(() => Promise.resolve()),
+    first: vi.fn(() => Promise.resolve(undefined)),
   };
   return {
     db: {
@@ -191,6 +192,48 @@ describe("createPodcastSlice", () => {
       store.getState().setSleepTimer(null);
 
       expect(store.getState().sleepTimer).toBeNull();
+    });
+  });
+
+  describe("播放进度落盘（Dexie 读写收口）", () => {
+    it("persistProgress 按 uuid 写 progress 字段", async () => {
+      const { db } = await import("@/helpers/podcastDB");
+      const modify = (db.podcasts.where("uuid").equals("t1") as any).modify;
+
+      store.getState().persistProgress("t1", 42.5);
+
+      expect(modify).toHaveBeenCalledWith({ progress: 42.5 });
+    });
+
+    it("persistDuration 按 uuid 写 duration 字段", async () => {
+      const { db } = await import("@/helpers/podcastDB");
+      const modify = (db.podcasts.where("uuid").equals("t1") as any).modify;
+
+      store.getState().persistDuration("t1", 3600);
+
+      expect(modify).toHaveBeenCalledWith({ duration: 3600 });
+    });
+
+    it("clearProgress 将 progress 归零（不删记录）", async () => {
+      const { db } = await import("@/helpers/podcastDB");
+      const modify = (db.podcasts.where("uuid").equals("t1") as any).modify;
+
+      store.getState().clearProgress("t1");
+
+      expect(modify).toHaveBeenCalledWith({ progress: 0 });
+    });
+
+    it("getSavedProgress 返回库内进度；无记录时返回 undefined", async () => {
+      const { db } = await import("@/helpers/podcastDB");
+      const first = (db.podcasts.where("uuid").equals("t1") as any).first;
+
+      first.mockResolvedValueOnce({ uuid: "t1", progress: 128 });
+      await expect(store.getState().getSavedProgress("t1")).resolves.toBe(128);
+
+      first.mockResolvedValueOnce(undefined);
+      await expect(store.getState().getSavedProgress("t1")).resolves.toBe(
+        undefined,
+      );
     });
   });
 });
