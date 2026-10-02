@@ -29,17 +29,18 @@ export interface ArticleViewProps {
   onArticleUpdate?: (updated: ArticleResItem) => void;
 }
 
-/* ── 方向契约（2026-10-01 阅读面重设计 · seed 360afa8e） ──
- * THESIS: 正文是唯一的主角——chrome 随滚动退场，视口中央的文字全亮、上下缘渐隐
- *   降灰；拒绝的旧排布：常驻顶栏 + 顶缘进度发丝线的「仪表盘阅读」。
+/* ── 方向契约（2026-10-01 阅读面重设计 · seed 360afa8e；二次修订同日用户拍板） ──
+ * THESIS: 正文是唯一的主角——滚过标题幕后切换到实心顶栏（题名居中、操作保留、不透明），
+ *   焦带让视口中央的文字全亮；拒绝的旧排布：常驻顶栏 + 顶缘进度发丝线的「仪表盘阅读」。
  * OWN-WORLD: 静密×聚光令牌不变（玻璃面板/墨三级/发丝线/accent/宋体正文/环境光）；
- *   新词汇 = 退场 chrome、幽灵题名、右缘覆盖进度轨、margin 大纲（具名捐赠）。
- * STORY: 读者打开即读，滚得越深界面越少；位置感由右缘轨与大纲供给；
+ *   新词汇 = 实心滚动顶栏、右缘覆盖进度轨、margin 大纲（具名捐赠）。
+ * STORY: 读者打开即读，滚深后题名与操作跟着走（实心不透明）；位置感由右缘轨与大纲供给；
  *   esc 永远回家，j/k 永远滚动，f/space/⌘K 不变。
- * FIRST VIEWPORT: 打开时标题幕完整（题 + meta + 正文首屏全亮）、顶栏在场；
- *   下滚过 160px 后顶栏上滑退场、幽灵题名浮现；右缘轨常驻；
- *   大纲在正文 ≥3 个标题且窗口 ≥1280px 时常驻，否则静默缺席。
- * FORM: 掷中候选 #4「打字机隧道」（三选一锁定），TOC 为 #5「信封双轴」的捐赠（raise）。
+ * FIRST VIEWPORT: 打开时标题幕完整（题 + meta + 正文首屏全亮）、原栏在场；
+ *   下滚过 160px 后原栏上滑、实心顶栏顶入（题名居中）；右缘轨常驻；
+ *   大纲在正文 ≥2 个标题且窗口 ≥1280px 时常驻，否则静默缺席。
+ * FORM: 掷中候选 #4「打字机隧道」（三选一锁定），TOC 为 #5「信封双轴」的捐赠（raise）；
+ *   二次修订：去幽灵题名/渐隐幕，改实心顶栏（用户实测后拍板）。
  * FINISH: unreviewed and undocumented is unfinished; this build ends with the
  *   finish review, the verdict, DESIGN.md, and every shipping raster carrying
  *   its provenance.
@@ -71,8 +72,9 @@ export function View({
   const params = useParams<{ uuid?: string }>();
   const setArticle = useAppStore((state) => state.setArticle);
   const [progress, setProgress] = useState(0);
-  const [chromeHidden, setChromeHidden] = useState(false);
-  const [chromeAtTop, setChromeAtTop] = useState(true);
+  // 二次修订（用户拍板）：滚过 160px 即切换到实心顶栏（题名居中 + 操作保留，不透明），
+  // 回到顶部换回开屏原栏；无透明浮层、无渐隐幕
+  const [scrolled, setScrolled] = useState(false);
   const [toc, setToc] = useState<TocItem[]>([]);
   const [activeToc, setActiveToc] = useState<number | null>(null);
   const [wideEnough, setWideEnough] = useState(
@@ -132,23 +134,16 @@ export function View({
     });
     mo.observe(el, { childList: true, subtree: true });
 
-    let lastY = el.scrollTop;
     let raf = 0;
 
     const update = () => {
       raf = 0;
-      const y = el.scrollTop;
-      const dy = y - lastY;
-      lastY = y;
+      // 二次修订：滚过 160px 切实心顶栏，回顶换回原栏（无透明浮层、无渐隐幕）
+      setScrolled(el.scrollTop > 160);
       // reduced-motion 实时读：阅读中途切系统设置即刻生效（与 wideEnough 对齐）
       const reduced = window.matchMedia(
         "(prefers-reduced-motion: reduce)",
       ).matches;
-      // chrome 退场：下滚且离开标题幕 → 藏；上滚 → 唤回。
-      // 顶部静止态＝旧观感（透明底 + 发丝线），中滚唤回态＝浮层渐隐底（用户拍板 2026-10-01）
-      if (y > 160 && dy > 2) setChromeHidden(true);
-      else if (dy < -2 || y <= 160) setChromeHidden(false);
-      setChromeAtTop(y <= 160);
       // 焦带：视口中央带全亮，向上下缘线性降灰（reduced-motion 用户保持全亮）
       const vhHalf = el.clientHeight * 0.5;
       if (!reduced) {
@@ -240,14 +235,12 @@ export function View({
     );
   };
 
-  const showToc = article !== null && wideEnough && toc.length >= 3;
+  const showToc = article !== null && wideEnough && toc.length >= 2;
 
   return (
     <div className="relative flex h-full min-h-0 flex-1 min-w-0 flex-col">
-      {/* 退场 chrome：overlay + 渐隐幕底，下滚藏、上滚唤回 */}
-      <div
-        className={`fusion-rtop ${chromeHidden ? "hide" : ""} ${chromeAtTop ? "at-top" : ""}`}
-      >
+      {/* 开屏原栏：透明底 + 发丝线（滚过 160px 让位给实心顶栏） */}
+      <div className={`fusion-rtop ${scrolled ? "hide" : ""}`}>
         <Button
           variant="ghost"
           size="sm"
@@ -283,17 +276,40 @@ export function View({
         )}
       </div>
 
-      {/* 幽灵题名：chrome 退场后浮在上缘渐隐幕里 */}
-      <div
-        className={`fusion-ghost ${chromeHidden ? "on" : ""}`}
-        aria-hidden="true"
-      >
-        {article?.title}
+      {/* 滚动实心顶栏（二次修订）：不透明，题名居中，操作保留 */}
+      <div className={`fusion-rbar ${scrolled ? "" : "hide"}`} aria-hidden={!scrolled}>
+        <Button
+          variant="ghost"
+          size="sm"
+          icon={<ChevronLeft size={12} />}
+          label={t("article.view.back")}
+          endContent={<Kbd keys="esc" />}
+          onClick={handleBack}
+          tabIndex={scrolled ? 0 : -1}
+        />
+        <span className="fusion-spring" />
+        <span className="t">{article?.title}</span>
+        <span className="fusion-spring" />
+        {article && (
+          <ReaderControls
+            article={article}
+            showBrowser
+            onStarChange={onArticleUpdate}
+            onReadChange={onArticleUpdate}
+          />
+        )}
+        {closable && (
+          <Button
+            variant="ghost"
+            size="sm"
+            icon={<X size={14} />}
+            label={t("Close")}
+            endContent={<Kbd keys="esc" />}
+            onClick={onClose}
+            tabIndex={scrolled ? 0 : -1}
+          />
+        )}
       </div>
-
-      {/* 焦带渐隐幕（上/下缘） */}
-      <div className="fusion-fade top" aria-hidden="true" />
-      <div className="fusion-fade bot" aria-hidden="true" />
 
       {/* 右缘覆盖进度轨：唯一的仪表读数 */}
       <div className="fusion-rail" aria-hidden="true">

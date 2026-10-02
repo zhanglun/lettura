@@ -2083,8 +2083,9 @@ select:focus-visible,
   flex: none;
 }
 
-/* ── 打字机隧道（2026-10-01 阅读面重设计 · seed 360afa8e，#4 掷中 + #5 TOC 捐赠） ──
-   chrome 退场：overlay + 渐隐幕底，下滚藏、上滚唤回；焦带渐隐幕；右缘覆盖进度轨；margin 大纲 */
+/* ── 打字机隧道（2026-10-01 阅读面重设计 · seed 360afa8e，#4 掷中 + #5 TOC 捐赠；二次修订） ──
+   开屏原栏（透明底+发丝线）与滚动实心顶栏（不透明，题名居中+操作保留）互斥切换；
+   焦带降灰保留，头尾渐隐幕已按用户拍板移除；右缘覆盖进度轨；margin 大纲 */
 .fusion-rtop {
   position: absolute;
   top: 0;
@@ -2096,11 +2097,7 @@ select:focus-visible,
   align-items: center;
   gap: 8px;
   padding: 0 20px;
-  background: linear-gradient(
-    to bottom,
-    color-mix(in srgb, var(--fusion-ground) 92%, transparent),
-    transparent
-  );
+  border-bottom: 1px solid var(--fusion-hair);
   transition:
     transform 0.22s ease,
     opacity 0.22s ease;
@@ -2110,47 +2107,40 @@ select:focus-visible,
   opacity: 0;
   pointer-events: none;
 }
-/* 顶部静止态＝旧观感：透明底 + 发丝线（用户拍板 2026-10-01）；
-   中滚唤回态才用浮层渐隐底 */
-.fusion-rtop.at-top {
-  background: transparent;
-  border-bottom: 1px solid var(--fusion-hair);
-}
-.fusion-ghost {
+.fusion-rbar {
   position: absolute;
-  top: 16px;
+  top: 0;
   left: 0;
   right: 0;
-  z-index: 25;
-  text-align: center;
-  pointer-events: none;
-  font-size: 12px;
-  color: var(--fusion-sub);
+  z-index: 30;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 20px;
+  background: var(--fusion-ground);
+  border-bottom: 1px solid var(--fusion-hair);
+  transition:
+    transform 0.22s ease,
+    opacity 0.22s ease;
+}
+.fusion-rbar.hide {
+  transform: translateY(-100%);
   opacity: 0;
-  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+.fusion-rbar .t {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: min(52%, 560px);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fusion-ink);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  padding: 0 140px;
-}
-.fusion-ghost.on {
-  opacity: 0.75;
-}
-.fusion-fade {
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 16vh;
-  z-index: 20;
   pointer-events: none;
-}
-.fusion-fade.top {
-  top: 0;
-  background: linear-gradient(to bottom, var(--fusion-ground) 10%, transparent);
-}
-.fusion-fade.bot {
-  bottom: 0;
-  background: linear-gradient(to top, var(--fusion-ground) 10%, transparent);
 }
 .fusion-rail {
   position: absolute;
