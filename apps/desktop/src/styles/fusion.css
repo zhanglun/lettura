@@ -2237,7 +2237,8 @@ select:focus-visible,
   background-clip: content-box;
 }
 
-.fusion-dtop .d-src {
+.fusion-dtop .d-src,
+.fusion-rtop .d-src {
   font-size: 11.5px;
   color: var(--fusion-ter);
   margin-left: 6px;
