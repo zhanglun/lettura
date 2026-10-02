@@ -17,6 +17,8 @@ export interface ReaderControlsProps {
   article: ArticleResItem;
   showBrowser?: boolean;
   showReadLater?: boolean;
+  /** 紧凑模式（滚动实心顶栏）：动作只留 icon + 快捷键，去掉文字（用户拍板 2026-10-01） */
+  compact?: boolean;
   onStarChange?: (updated: ArticleResItem) => void;
   onReadChange?: (updated: ArticleResItem) => void;
 }
@@ -38,6 +40,7 @@ export function ReaderControls({
   article,
   showBrowser = true,
   showReadLater = false,
+  compact = false,
   onStarChange,
   onReadChange,
 }: ReaderControlsProps) {
@@ -118,8 +121,14 @@ export function ReaderControls({
         onPressedChange={toggleStar}
       >
         <span className="fusion-act">
-          {t(starred === ArticleStarStatus.STARRED ? "Unstar it" : "Star it")}
-          <Kbd keys="f" />
+          {compact ? (
+            <Kbd keys="f" />
+          ) : (
+            <>
+              {t(starred === ArticleStarStatus.STARRED ? "Unstar it" : "Star it")}
+              <Kbd keys="f" />
+            </>
+          )}
         </span>
       </ToggleButton>
       <ToggleButton
@@ -140,12 +149,18 @@ export function ReaderControls({
         onPressedChange={toggleRead}
       >
         <span className="fusion-act">
-          {t(
-            readStatus === ArticleReadStatus.READ
-              ? "Mark as unread"
-              : "Mark as read",
+          {compact ? (
+            <Kbd keys="m" />
+          ) : (
+            <>
+              {t(
+                readStatus === ArticleReadStatus.READ
+                  ? "Mark as unread"
+                  : "Mark as read",
+              )}
+              <Kbd keys="m" />
+            </>
           )}
-          <Kbd keys="m" />
         </span>
       </ToggleButton>
       {showReadLater && (

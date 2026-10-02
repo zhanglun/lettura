@@ -294,6 +294,7 @@ export function View({
           <ReaderControls
             article={article}
             showBrowser
+            compact
             onStarChange={onArticleUpdate}
             onReadChange={onArticleUpdate}
           />

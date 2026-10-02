@@ -2097,6 +2097,8 @@ select:focus-visible,
   align-items: center;
   gap: 8px;
   padding: 0 20px;
+  /* 不透明（二次修订）：滚动内容不得从顶栏底下透出，两态背景一致 */
+  background: var(--fusion-ground);
   border-bottom: 1px solid var(--fusion-hair);
   transition:
     transform 0.22s ease,
