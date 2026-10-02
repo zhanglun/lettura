@@ -2110,6 +2110,12 @@ select:focus-visible,
   opacity: 0;
   pointer-events: none;
 }
+/* 顶部静止态＝旧观感：透明底 + 发丝线（用户拍板 2026-10-01）；
+   中滚唤回态才用浮层渐隐底 */
+.fusion-rtop.at-top {
+  background: transparent;
+  border-bottom: 1px solid var(--fusion-hair);
+}
 .fusion-ghost {
   position: absolute;
   top: 16px;

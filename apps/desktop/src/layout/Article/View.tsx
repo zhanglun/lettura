@@ -72,6 +72,7 @@ export function View({
   const setArticle = useAppStore((state) => state.setArticle);
   const [progress, setProgress] = useState(0);
   const [chromeHidden, setChromeHidden] = useState(false);
+  const [chromeAtTop, setChromeAtTop] = useState(true);
   const [toc, setToc] = useState<TocItem[]>([]);
   const [activeToc, setActiveToc] = useState<number | null>(null);
   const [wideEnough, setWideEnough] = useState(
@@ -143,9 +144,11 @@ export function View({
       const reduced = window.matchMedia(
         "(prefers-reduced-motion: reduce)",
       ).matches;
-      // chrome 退场：下滚且离开标题幕 → 藏；上滚 → 唤回
+      // chrome 退场：下滚且离开标题幕 → 藏；上滚 → 唤回。
+      // 顶部静止态＝旧观感（透明底 + 发丝线），中滚唤回态＝浮层渐隐底（用户拍板 2026-10-01）
       if (y > 160 && dy > 2) setChromeHidden(true);
       else if (dy < -2 || y <= 160) setChromeHidden(false);
+      setChromeAtTop(y <= 160);
       // 焦带：视口中央带全亮，向上下缘线性降灰（reduced-motion 用户保持全亮）
       const vhHalf = el.clientHeight * 0.5;
       if (!reduced) {
@@ -243,7 +246,7 @@ export function View({
     <div className="relative flex h-full min-h-0 flex-1 min-w-0 flex-col">
       {/* 退场 chrome：overlay + 渐隐幕底，下滚藏、上滚唤回 */}
       <div
-        className={`fusion-rtop ${chromeHidden ? "hide" : ""}`}
+        className={`fusion-rtop ${chromeHidden ? "hide" : ""} ${chromeAtTop ? "at-top" : ""}`}
       >
         <Button
           variant="ghost"
@@ -327,7 +330,7 @@ export function View({
         onProgress={setProgress}
       >
         {/* 外壳（题/meta/完读区）继承 UI sans；宋体只落在 .fusion-article-body 正文上 */}
-        <div className="mx-auto w-full max-w-[680px] px-10 pt-[76px] pb-11">
+        <div className="mx-auto w-full max-w-[680px] px-10 pt-[94px] pb-11">
           {article ? (
             <>
               <ArticleDetail article={article} />
