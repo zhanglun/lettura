@@ -226,6 +226,14 @@ pub fn update_feed_meta(uuid: String, update: FeedMetaUpdateRequest) -> usize {
     .expect("insert feed meta")
 }
 
+pub fn rename_feed(uuid: String, title: String) -> usize {
+  let mut connection = db::establish_connection();
+  diesel::update(schema::feeds::dsl::feeds.filter(schema::feeds::uuid.eq(&uuid)))
+    .set(schema::feeds::title.eq(title))
+    .execute(&mut connection)
+    .expect("rename feed")
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct ChildItem {
   pub item_type: String,

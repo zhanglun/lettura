@@ -694,7 +694,7 @@
       "copy_url": "复制 Feed 地址",
       "sync_now": "立即同步",
       "mark_read": "全部已读",
-      "manage": "管理"
+      "rename": "重命名"
     },
     "list": {
       "run_count": "{{count}} 篇",

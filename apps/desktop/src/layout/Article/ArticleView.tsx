@@ -636,9 +636,7 @@ export function ArticleView() {
               syncing={queueSyncing}
               onSync={syncQueueFeed}
               onMarkAllRead={markQueueAllRead}
-              onManage={() =>
-                navigate(`${RouteConfig.SETTINGS}?tab=subscriptions`)
-              }
+              onUnsubscribed={() => navigate(RouteConfig.LOCAL_FEEDS)}
             />
           )}
 

@@ -2912,6 +2912,11 @@ body.fusion-context-menu-open .fusion-set-body {
   margin-top: 13px;
 }
 
+/* 危险动作（取消订阅）：压过 Astryx 原子类的红色幽灵钮 */
+.fusion-fp-actions .is-danger {
+  color: var(--fusion-warn);
+}
+
 /* ── 订阅管理子视图（settings.html ?view=subs 契约） ── */
 .fusion-subs-bar {
   display: flex;

@@ -49,10 +49,26 @@ pub async fn handle_update_feed_sort(
   Ok(web::Json(result))
 }
 
+#[derive(serde::Deserialize)]
+pub struct RenameFeedRequest {
+  uuid: String,
+  title: String,
+}
+
+#[post("/api/rename-feed")]
+pub async fn handle_rename_feed(
+  body: web::Json<RenameFeedRequest>,
+) -> Result<impl Responder> {
+  let result = feed::channel::rename_feed(body.uuid.clone(), body.title.clone());
+
+  Ok(web::Json(result))
+}
+
 pub fn config(cfg: &mut web::ServiceConfig) {
   cfg
     .service(handle_get_unread_total)
     .service(handle_update_feed_sort)
+    .service(handle_rename_feed)
     .service(handle_get_subscribes)
     .service(handle_get_feeds)
     .service(handle_delete_feed);

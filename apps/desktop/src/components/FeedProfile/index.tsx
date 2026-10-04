@@ -1,5 +1,8 @@
 import { Button } from "@astryxdesign/core/Button";
+import { Dialog, DialogHeader } from "@astryxdesign/core/Dialog";
+import { DropdownMenu } from "@astryxdesign/core/DropdownMenu";
 import { IconButton } from "@astryxdesign/core/IconButton";
+import { TextInput } from "@astryxdesign/core/TextInput";
 import { open as openExternal } from "@tauri-apps/plugin-shell";
 import clsx from "clsx";
 import {
@@ -8,18 +11,26 @@ import {
   Clipboard,
   ExternalLink,
   Folder as FolderIcon,
+  FolderInput,
+  Pencil,
   RefreshCw,
   Rss,
-  Settings as SettingsIcon,
+  Trash2,
 } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useShallow } from "zustand/react/shallow";
 import { FeedIcon } from "@/components/FeedIcon";
 import type { FeedResItem } from "@/db";
+import { busChannel } from "@/helpers/busChannel";
 import { copyText } from "@/helpers/copyText";
+import { showErrorToast } from "@/helpers/errorHandler";
 import { formatFeedTime, getHostLabel } from "@/helpers/feedMeta";
+import { apiPost } from "@/helpers/http";
 import { getFeedCarrier, originRoute } from "@/helpers/mediaType";
 import { toast } from "@/helpers/toast";
+import { DialogUnsubscribeFeed } from "@/layout/Setting/Content/DialogUnsubscribeFeed";
+import { useAppStore } from "@/stores";
 
 /** 收起态会话级记住：浏览多个源时不用反复收起 */
 let profileCollapsed = false;
@@ -41,18 +52,45 @@ export function FeedProfile({
   syncing,
   onSync,
   onMarkAllRead,
-  onManage,
+  onUnsubscribed,
 }: {
   feed: FeedResItem;
   total: number;
   syncing: boolean;
   onSync: () => void;
   onMarkAllRead: () => void;
-  onManage: () => void;
+  /** 取消订阅成功后的善后（详情页跳回订阅列表） */
+  onUnsubscribed: () => void;
 }) {
   const { t } = useTranslation();
   const [collapsed, setCollapsed] = useState(profileCollapsed);
   const [descOpen, setDescOpen] = useState(false);
+  const [unsubDialog, setUnsubDialog] = useState(false);
+  const [renameOpen, setRenameOpen] = useState(false);
+  const [renameValue, setRenameValue] = useState("");
+  const folders = useAppStore(
+    useShallow((s) =>
+      (s.subscribes || []).filter((i) => i.item_type === "folder"),
+    ),
+  );
+
+  const move = (folderUuid: string) => {
+    apiPost("/update-feed-sort", [
+      {
+        item_type: feed.item_type,
+        uuid: feed.uuid,
+        folder_uuid: folderUuid,
+        sort: feed.sort ?? 0,
+      },
+    ])
+      .then(() => {
+        toast.success(t("settings.subscriptions.moved"));
+        busChannel.emit("getChannels");
+      })
+      .catch((error) =>
+        showErrorToast(error, t("settings.subscriptions.move_failed")),
+      );
+  };
 
   const toggle = () => {
     const next = !collapsed;
@@ -68,6 +106,20 @@ export function FeedProfile({
   const carrier = getFeedCarrier(feed);
   const lastSync = formatFeedTime(feed.last_sync_date);
   const subscribed = formatFeedTime(feed.create_date as unknown as string);
+
+  const rename = () => {
+    const title = renameValue.trim();
+    if (!title || title === feed.title) {
+      setRenameOpen(false);
+      return;
+    }
+    apiPost("/api/rename-feed", { uuid: feed.uuid, title })
+      .then(() => {
+        busChannel.emit("getChannels");
+        setRenameOpen(false);
+      })
+      .catch((error) => showErrorToast(error, t("Ops! Something wrong~")));
+  };
 
   const actionBtn = (
     key: string,
@@ -235,15 +287,79 @@ export function FeedProfile({
               t("fusion.profile.mark_read"),
               onMarkAllRead,
             )}
+            <DropdownMenu
+              items={[
+                {
+                  id: "ungrouped",
+                  label: t("settings.subscriptions.ungrouped"),
+                  onClick: () => move(""),
+                },
+                ...folders.map((folder) => ({
+                  id: folder.uuid,
+                  label: folder.title,
+                  onClick: () => move(folder.uuid),
+                })),
+              ]}
+              button={{
+                variant: "ghost",
+                size: "sm",
+                icon: <FolderInput size={12.5} />,
+                label: t("feeds.ctx.move_to_folder"),
+              }}
+            />
             {actionBtn(
-              "manage",
-              <SettingsIcon size={12.5} />,
-              t("fusion.profile.manage"),
-              onManage,
+              "rename",
+              <Pencil size={12.5} />,
+              t("fusion.profile.rename"),
+              () => {
+                setRenameValue(feed.title);
+                setRenameOpen(true);
+              },
+            )}
+            {actionBtn(
+              "unsubscribe",
+              <Trash2 size={12.5} />,
+              t("Unsubscribe"),
+              () => setUnsubDialog(true),
+              true,
             )}
           </div>
         </div>
       )}
+
+      <DialogUnsubscribeFeed
+        feed={feed}
+        dialogStatus={unsubDialog}
+        setDialogStatus={setUnsubDialog}
+        afterConfirm={onUnsubscribed}
+        afterCancel={() => setUnsubDialog(false)}
+      />
+
+      <Dialog isOpen={renameOpen} onOpenChange={setRenameOpen} width={420}>
+        <DialogHeader title={t("fusion.profile.rename")} />
+        <div className="flex flex-col gap-4 pt-2">
+          <TextInput
+            label={t("fusion.profile.rename")}
+            isLabelHidden
+            size="sm"
+            value={renameValue}
+            onChange={setRenameValue}
+          />
+          <div className="flex justify-end gap-3">
+            <Button
+              variant="secondary"
+              label={t("Cancel")}
+              onClick={() => setRenameOpen(false)}
+            />
+            <Button
+              variant="primary"
+              label={t("Save")}
+              onClick={rename}
+              isDisabled={!renameValue.trim()}
+            />
+          </div>
+        </div>
+      </Dialog>
     </section>
   );
 }

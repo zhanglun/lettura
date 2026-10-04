@@ -678,7 +678,7 @@
       "copy_url": "Copy feed URL",
       "sync_now": "Sync now",
       "mark_read": "Mark all read",
-      "manage": "Manage"
+      "rename": "Rename"
     },
     "list": {
       "run_count": "{{count}} articles",
