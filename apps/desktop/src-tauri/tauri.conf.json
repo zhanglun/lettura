@@ -18,6 +18,7 @@
         "height": 760,
         "decorations": false,
         "transparent": true,
+        "visible": false,
         "resizable": true,
         "title": "Lettura, Your RSS reader",
         "width": 1440,

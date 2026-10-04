@@ -1,4 +1,5 @@
 import { invoke } from "@tauri-apps/api/core";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import { createRoot } from "react-dom/client";
 import {
   createBrowserRouter,
@@ -54,13 +55,31 @@ const router = createBrowserRouter([
 ]);
 const domNode = document.getElementById("root") as HTMLElement;
 const root = createRoot(domNode);
+const inTauri = Boolean((window as any).__TAURI_INTERNALS__);
 
-if ((window as any).__TAURI_INTERNALS__) {
-  invoke("get_server_port").then((port) => {
-    window.localStorage.setItem("port", String(port));
-    root.render(<RouterProvider router={router} />);
-  });
+function boot() {
+  root.render(<RouterProvider router={router} />);
+  // 首帧提交后再亮窗，避免 transparent 窗口在页面加载前裸露。
+  if (inTauri) {
+    requestAnimationFrame(() => {
+      getCurrentWindow().show();
+    });
+  }
+}
+
+if (inTauri) {
+  invoke("get_server_port")
+    .then((port) => {
+      window.localStorage.setItem("port", String(port));
+    })
+    .catch(() => {
+      // 端口获取失败也要渲染页面；沿用上次端口，没有则回落默认值。
+      if (!window.localStorage.getItem("port")) {
+        window.localStorage.setItem("port", "3456");
+      }
+    })
+    .finally(boot);
 } else {
   window.localStorage.setItem("port", "3456");
-  root.render(<RouterProvider router={router} />);
+  boot();
 }
