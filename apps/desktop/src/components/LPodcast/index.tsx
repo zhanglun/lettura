@@ -93,6 +93,7 @@ export const LPodcast: React.FC<LPodcastProps> = ({ visible = true }) => {
 
   const {
     isPlaying,
+    isLoading,
     progress,
     duration,
     playbackRate,
@@ -131,6 +132,7 @@ export const LPodcast: React.FC<LPodcastProps> = ({ visible = true }) => {
           key="min"
           currentTrack={currentTrack}
           isPlaying={isPlaying}
+          isLoading={isLoading}
           progress={progress}
           duration={duration}
           togglePlay={togglePlay}
@@ -143,6 +145,7 @@ export const LPodcast: React.FC<LPodcastProps> = ({ visible = true }) => {
           currentTrack={currentTrack}
           tracks={storeTracks}
           isPlaying={isPlaying}
+          isLoading={isLoading}
           progress={progress}
           duration={duration}
           playbackRate={playbackRate}
@@ -158,6 +161,7 @@ export const LPodcast: React.FC<LPodcastProps> = ({ visible = true }) => {
           key="bar"
           currentTrack={currentTrack}
           isPlaying={isPlaying}
+          isLoading={isLoading}
           progress={progress}
           duration={duration}
           playbackRate={playbackRate}

@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import type { ArticleResItem } from "@/db";
 import { platformName } from "@/helpers/mediaType";
 import { renderArticleContent } from "../ContentRender";
+import { FeedMetaLink } from "../FeedMetaLink";
 
 export interface PlatformAdapterProps {
   article: ArticleResItem;
@@ -55,7 +56,7 @@ export function PlatformAdapter({ article, content }: PlatformAdapterProps) {
         {article.title}
       </h1>
       <div className="fusion-dmeta">
-        <span>{article.feed_title}</span>
+        <FeedMetaLink article={article} />
         <span className="sep">·</span>
         <span>
           {dayjs(article.pub_date || article.create_date).format(

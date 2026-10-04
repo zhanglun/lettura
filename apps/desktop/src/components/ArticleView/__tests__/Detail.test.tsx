@@ -1,4 +1,5 @@
 import { render, screen, waitFor } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ArticleResItem } from "@/db";
 import {
@@ -53,7 +54,8 @@ function makeArticle(overrides: Partial<ArticleResItem> = {}): ArticleResItem {
 }
 
 function renderWithTheme(ui: React.ReactElement) {
-  return render(<>{ui}</>);
+  // 详情 meta 行的源名是 Router Link（跳订阅详情），测试里补内存路由
+  return render(<MemoryRouter>{ui}</MemoryRouter>);
 }
 
 describe("ArticleDetail", () => {
@@ -125,7 +127,11 @@ describe("ArticleDetail", () => {
       <ArticleDetail article={makeArticle({ uuid: "art-1" })} />,
     );
     // 换 uuid → 旧请求 cleanup（cancelled = true），随后它的失败不应污染新视图
-    rerender(<ArticleDetail article={makeArticle({ uuid: "art-2" })} />);
+    rerender(
+      <MemoryRouter>
+        <ArticleDetail article={makeArticle({ uuid: "art-2" })} />
+      </MemoryRouter>,
+    );
     rejectFirst(new Error("late failure"));
     await new Promise((r) => setTimeout(r, 50));
 

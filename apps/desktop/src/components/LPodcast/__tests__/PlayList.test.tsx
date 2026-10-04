@@ -36,6 +36,7 @@ describe("PlayList", () => {
       tracks: [],
       currentTrack: null,
       podcastPlayingStatus: false,
+      podcastLoading: false,
     });
     deleteMock.mockClear();
   });
@@ -44,6 +45,7 @@ describe("PlayList", () => {
     useAppStore.setState({
       tracks: [track("a"), track("b")],
       currentTrack: track("a"),
+      podcastPlayingStatus: true,
     });
 
     render(
@@ -56,9 +58,34 @@ describe("PlayList", () => {
     expect(rows).toHaveLength(2);
     expect(rows[0].className).toContain("now");
     expect(rows[0].textContent).toContain("podcast.playing");
+    expect(rows[0].querySelectorAll(".q-eq i")).toHaveLength(3);
     expect(rows[1].className).not.toContain("now");
     // 时长格式化统一走 formatDuration：≥1h 显示 h:mm:ss（与文章角标同口径）
     expect(rows[1].querySelector(".q-d")?.textContent).toBe("1:00:00");
+  });
+
+  it("当前集缓冲中显示加载徽标，暂停时显示已暂停", () => {
+    useAppStore.setState({
+      tracks: [track("a")],
+      currentTrack: track("a"),
+      podcastPlayingStatus: true,
+      podcastLoading: true,
+    });
+
+    render(<PlayList />);
+    const row = document.querySelectorAll(".q-row")[0];
+    expect(row?.textContent).toContain("podcast.loading");
+    expect(row?.querySelector(".fusion-spin")).toBeTruthy();
+
+    cleanup();
+    useAppStore.setState({
+      podcastLoading: false,
+      podcastPlayingStatus: false,
+    });
+    render(<PlayList />);
+    expect(document.querySelectorAll(".q-row")[0]?.textContent).toContain(
+      "podcast.paused",
+    );
   });
 
   it("空队列走引导态", () => {

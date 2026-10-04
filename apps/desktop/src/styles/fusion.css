@@ -1356,6 +1356,14 @@ select:focus-visible,
   cursor: pointer;
 }
 
+/* 收起圆钮缓冲中：accent 芯上转白圈 */
+.fusion-minipill .core .fusion-spin {
+  width: 10px;
+  height: 10px;
+  border-color: color-mix(in srgb, var(--color-on-accent) 35%, transparent);
+  border-top-color: var(--color-on-accent);
+}
+
 /* full 沉浸页：盖满面板的玻璃浮层 */
 .fusion-fullplayer {
   position: absolute;
@@ -1590,6 +1598,81 @@ select:focus-visible,
   font-variant-numeric: tabular-nums;
 }
 
+/* 队列行删除钮：安静的小 X，悬停行才浮现（悬停钮染警示色）；键盘聚焦同样显影 */
+.fusion-queue .q-row > button {
+  width: 20px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0;
+  justify-self: end;
+  color: var(--fusion-ter);
+  opacity: 0;
+  transition:
+    opacity 0.12s ease,
+    color 0.12s ease;
+}
+
+.fusion-queue .q-row:hover > button,
+.fusion-queue .q-row > button:focus-visible {
+  opacity: 1;
+}
+
+.fusion-queue .q-row > button:hover {
+  color: var(--color-error);
+}
+
+/* 行尾播放状态徽标（当前集）：缓冲 = 迷你 spinner，播放 = EQ 跳动，暂停 = 灰字 */
+.fusion-queue .q-s .live {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--color-accent);
+}
+
+.fusion-queue .q-s .live.paused {
+  color: var(--fusion-ter);
+}
+
+.fusion-queue .q-s .live .fusion-spin {
+  width: 10px;
+  height: 10px;
+  border-width: 1.5px;
+}
+
+.fusion-queue .q-eq {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 1.5px;
+  height: 10px;
+}
+
+.fusion-queue .q-eq i {
+  width: 2px;
+  height: 100%;
+  border-radius: 1px;
+  background: currentColor;
+  transform-origin: bottom;
+  animation: fusion-eq 0.9s ease-in-out infinite;
+}
+
+.fusion-queue .q-eq i:nth-child(2) {
+  animation-delay: -0.45s;
+}
+
+.fusion-queue .q-eq i:nth-child(3) {
+  animation-delay: -0.7s;
+}
+
+@keyframes fusion-eq {
+  0%,
+  100% {
+    transform: scaleY(0.35);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
 /* Astryx Popover supplies a 12px content inset and fallback close control.
    The playlist is already its complete surface, so remove that wrapper layer. */
 .fusion-playlist-popover {
@@ -1656,25 +1739,39 @@ select:focus-visible,
   flex: 1;
   margin-top: 0;
   overflow-y: auto;
-  padding: 0 6px 6px;
+  padding: 6px 6px 8px;
   scrollbar-width: thin;
 }
 
-/* 面板内队列行：题/源叠两行（源列不再挤）+ 时长/删除跨行，行高仍是发丝 52px */
+/* 面板内队列行：缩略图跨两行随文本块垂直居中，题/源左缘对齐，行高随内容
+   （题/源叠两行 + 时长/删除跨行） */
 .fusion-playlist .q-row {
-  grid-template-columns: 28px minmax(0, 1fr) 48px 28px;
+  grid-template-columns: 34px minmax(0, 1fr) 48px 20px;
   grid-template-rows: auto auto;
-  align-items: center;
+  column-gap: 10px;
+  row-gap: 2px;
+  align-content: center;
+  height: auto;
+  min-height: 54px;
   min-width: 0;
-  padding: 0 4px;
+  padding: 8px 6px;
   border-radius: 9px;
   overflow: hidden;
+}
+
+.fusion-playlist .q-row .q-thumb {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  width: 34px;
+  height: 34px;
+  justify-self: start;
 }
 
 .fusion-playlist .q-row .q-t {
   grid-column: 2;
   grid-row: 1;
   align-self: end;
+  padding: 0;
 }
 
 .fusion-playlist .q-row .q-s {
@@ -1688,16 +1785,9 @@ select:focus-visible,
   grid-row: 1 / span 2;
 }
 
-.fusion-playlist .q-s .live {
-  color: var(--color-accent);
-}
-
 .fusion-playlist .q-row > button {
-  width: 24px;
-  min-width: 24px;
-  height: 24px;
-  padding: 0;
-  justify-self: end;
+  grid-column: 4;
+  grid-row: 1 / span 2;
 }
 
 .fusion-playlist .pl-empty {
@@ -1759,6 +1849,29 @@ select:focus-visible,
 
 .fusion-dmeta .sep {
   color: var(--fusion-hair2);
+}
+
+/* 详情 meta 行的源名可点：跳订阅详情（悬停 accent 下划线，键盘焦点同框） */
+.fusion-dmeta .fusion-dmeta-feed {
+  cursor: pointer;
+  border-radius: 4px;
+  transition: color 0.15s ease;
+}
+
+.fusion-dmeta .fusion-dmeta-feed:hover {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-decoration-color: color-mix(
+    in srgb,
+    var(--color-accent) 45%,
+    transparent
+  );
+  text-underline-offset: 3px;
+}
+
+.fusion-dmeta .fusion-dmeta-feed:focus-visible {
+  outline: 1px solid var(--color-accent);
+  outline-offset: 2px;
 }
 
 /* 详情题是外壳：UI sans + 中文微字距（正文才落宋体） */

@@ -59,6 +59,8 @@ export const useAudioPlayer = () => {
       currentTrack: state.currentTrack,
       podcastPlayingStatus: state.podcastPlayingStatus,
       updatePodcastPlayingStatus: state.updatePodcastPlayingStatus,
+      podcastLoading: state.podcastLoading,
+      updatePodcastLoading: state.updatePodcastLoading,
       playNext: state.playNext,
       getSavedProgress: state.getSavedProgress,
       persistProgress: state.persistProgress,
@@ -116,17 +118,23 @@ export const useAudioPlayer = () => {
 
     // 根据播放状态来控制播放
     if (store.podcastPlayingStatus) {
+      // 流还没缓冲到可连贯播放：亮加载态，playing 事件熄灭（缓存命中时本就 ready，不闪）
+      if (audio.readyState < HTMLMediaElement.HAVE_FUTURE_DATA) {
+        store.updatePodcastLoading(true);
+      }
       const playPromise = audio.play();
       if (playPromise !== undefined) {
         playPromise.catch((error) => {
           // AbortError = 播放请求被后续操作打断（切曲/暂停竞态），是正常现象
           if (error?.name === "AbortError") return;
+          store.updatePodcastLoading(false);
           showErrorToast(error, "Failed to play audio");
           store.updatePodcastPlayingStatus(false);
         });
       }
     } else {
       audio.pause();
+      store.updatePodcastLoading(false);
     }
 
     // 设置音频事件监听器
@@ -165,14 +173,29 @@ export const useAudioPlayer = () => {
       store.playNext();
     };
 
+    // 加载态以音频元素的真实事件为准：开始出声/缓冲见底/加载失败
+    const handlePlaying = () => store.updatePodcastLoading(false);
+    const handleWaiting = () => {
+      if (store.podcastPlayingStatus) {
+        store.updatePodcastLoading(true);
+      }
+    };
+    const handleError = () => store.updatePodcastLoading(false);
+
     audio.addEventListener("timeupdate", handleTimeUpdate);
     audio.addEventListener("loadedmetadata", handleLoadedMetadata);
     audio.addEventListener("ended", handleEnded);
+    audio.addEventListener("playing", handlePlaying);
+    audio.addEventListener("waiting", handleWaiting);
+    audio.addEventListener("error", handleError);
 
     return () => {
       audio.removeEventListener("timeupdate", handleTimeUpdate);
       audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
       audio.removeEventListener("ended", handleEnded);
+      audio.removeEventListener("playing", handlePlaying);
+      audio.removeEventListener("waiting", handleWaiting);
+      audio.removeEventListener("error", handleError);
     };
   }, [store.currentTrack, store.podcastPlayingStatus]);
 
@@ -253,6 +276,7 @@ export const useAudioPlayer = () => {
   return {
     currentTrack: store.currentTrack,
     isPlaying: store.podcastPlayingStatus,
+    isLoading: store.podcastLoading,
     progress,
     duration,
     playbackRate,

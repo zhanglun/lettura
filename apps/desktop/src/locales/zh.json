@@ -540,6 +540,8 @@
     "expand_bar": "展开播放条",
     "now_playing": "正在播放",
     "playing": "播放中",
+    "loading": "加载中",
+    "paused": "已暂停",
     "playlist": "播放列表",
     "playlist_count": "{{count}} 集",
     "empty": "队列为空",

@@ -19,6 +19,9 @@ export interface PodcastSlice {
   setPlayerMode: (mode: PlayerMode) => void;
   podcastPlayingStatus: boolean;
   updatePodcastPlayingStatus: (status: boolean) => void;
+  /** 音频缓冲中（切集/起播到 playing 事件之间）：行徽标与播放钮的加载态 */
+  podcastLoading: boolean;
+  updatePodcastLoading: (status: boolean) => void;
   currentTrack: AudioTrack | null;
   setCurrentTrack: (track: AudioTrack | null) => void;
   tracks: AudioTrack[];
@@ -65,6 +68,13 @@ export const createPodcastSlice: StateCreator<
     }));
   },
 
+  podcastLoading: false,
+  updatePodcastLoading: (status: boolean) => {
+    set(() => ({
+      podcastLoading: status,
+    }));
+  },
+
   currentTrack: null,
   setCurrentTrack: (track: AudioTrack | null) => {
     set(() => ({
@@ -80,20 +90,24 @@ export const createPodcastSlice: StateCreator<
   },
 
   playNext: () => {
-    const { tracks, currentTrack, setCurrentTrack } = get();
+    const { tracks, currentTrack, setCurrentTrack, updatePodcastLoading } =
+      get();
     if (tracks.length === 0) return;
     const idx = tracks.findIndex((t) => t.uuid === currentTrack?.uuid);
     const next = tracks[(idx + 1) % tracks.length];
     setCurrentTrack(next);
+    updatePodcastLoading(true);
     get().updatePodcastPlayingStatus(true);
   },
 
   playPrev: () => {
-    const { tracks, currentTrack, setCurrentTrack } = get();
+    const { tracks, currentTrack, setCurrentTrack, updatePodcastLoading } =
+      get();
     if (tracks.length === 0) return;
     const idx = tracks.findIndex((t) => t.uuid === currentTrack?.uuid);
     const prev = tracks[(idx - 1 + tracks.length) % tracks.length];
     setCurrentTrack(prev);
+    updatePodcastLoading(true);
     get().updatePodcastPlayingStatus(true);
   },
 
@@ -103,6 +117,8 @@ export const createPodcastSlice: StateCreator<
       get().updatePodcastPlayingStatus(!podcastPlayingStatus);
       return;
     }
+    // 切集即亮加载态（点行 → 出声之间必有一次缓冲），playing 事件熄灭
+    get().updatePodcastLoading(true);
     setCurrentTrack(track);
     get().updatePodcastPlayingStatus(true);
   },
@@ -129,13 +145,19 @@ export const createPodcastSlice: StateCreator<
       feed_logo: record.feed_logo,
     };
 
-    const { tracks, setTracks, setCurrentTrack, updatePodcastPlayingStatus } =
-      get();
+    const {
+      tracks,
+      setTracks,
+      setCurrentTrack,
+      updatePodcastPlayingStatus,
+      updatePodcastLoading,
+    } = get();
 
     if (!tracks.some((track) => track.uuid === newTrack.uuid)) {
       setTracks([...tracks, newTrack]);
     }
     setCurrentTrack(newTrack);
+    updatePodcastLoading(true);
     updatePodcastPlayingStatus(true);
   },
 

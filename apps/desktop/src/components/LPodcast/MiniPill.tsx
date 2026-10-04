@@ -7,6 +7,7 @@ import { PLAYER_MOTION } from "./utils";
 interface MiniPillProps {
   currentTrack: AudioTrack | null;
   isPlaying: boolean;
+  isLoading: boolean;
   progress: number;
   duration: number;
   togglePlay: () => void;
@@ -20,6 +21,7 @@ const CIRC = 2 * Math.PI * R;
 export const MiniPill: React.FC<MiniPillProps> = ({
   currentTrack,
   isPlaying,
+  isLoading,
   progress,
   duration,
   togglePlay,
@@ -80,7 +82,9 @@ export const MiniPill: React.FC<MiniPillProps> = ({
           }}
           aria-label={isPlaying ? t("Pause") : t("Play")}
         >
-          {isPlaying ? (
+          {isLoading ? (
+            <i className="fusion-spin" />
+          ) : isPlaying ? (
             <svg width="9" height="9" viewBox="0 0 12 12" fill="#fff">
               <rect x="1.5" y="1" width="3" height="10" rx="1" />
               <rect x="7.5" y="1" width="3" height="10" rx="1" />

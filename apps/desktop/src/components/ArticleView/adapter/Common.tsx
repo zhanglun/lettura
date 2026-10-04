@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import type { ArticleResItem } from "@/db";
 import { estimateReadMinutes } from "@/helpers/articleContent";
 import { renderArticleContent } from "../ContentRender";
+import { FeedMetaLink } from "../FeedMetaLink";
 
 /** 动态 import 提升到模块级：import 表达式出现在组件 HIR 内会让编译器
  *  bail-out（Handle Import expressions） */
@@ -36,7 +37,7 @@ export const CommonAdapter = ({
         {article.title}
       </h1>
       <div className="fusion-dmeta">
-        <span>{article.feed_title}</span>
+        <FeedMetaLink article={article} />
         {article.author && (
           <>
             <span className="sep">·</span>

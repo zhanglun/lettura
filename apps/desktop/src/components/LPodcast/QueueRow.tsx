@@ -2,7 +2,9 @@ import { IconButton } from "@astryxdesign/core/IconButton";
 import { X } from "lucide-react";
 import type React from "react";
 import { useTranslation } from "react-i18next";
+import { useShallow } from "zustand/react/shallow";
 import { formatDuration } from "@/helpers/articleContent";
+import { useAppStore } from "@/stores";
 import type { AudioTrack } from "./index";
 
 interface QueueRowProps {
@@ -13,8 +15,9 @@ interface QueueRowProps {
 }
 
 /**
- * 队列行（沉浸页 UP NEXT 与播放列表共用）：缩略图 · 题 · 源（当前行 = accent-soft 洗色 +
- * 「播放中」）· 时长 · 悬停删除。行本身可键盘选中（⏎/space）。
+ * 队列行（沉浸页 UP NEXT 与播放列表共用）：缩略图 · 题 · 源（当前行 = accent-soft 洗色，
+ * 行尾状态徽标：缓冲 = spinner「加载中」/ 播放 = EQ「播放中」/ 暂停 =「已暂停」）·
+ * 时长 · 悬停删除。行本身可键盘选中（⏎/space）。
  */
 export const QueueRow: React.FC<QueueRowProps> = ({
   track,
@@ -23,6 +26,12 @@ export const QueueRow: React.FC<QueueRowProps> = ({
   onRemove,
 }) => {
   const { t } = useTranslation();
+  const { isLoading, isPlaying } = useAppStore(
+    useShallow((state) => ({
+      isLoading: state.podcastLoading,
+      isPlaying: state.podcastPlayingStatus,
+    })),
+  );
 
   return (
     <div
@@ -61,7 +70,23 @@ export const QueueRow: React.FC<QueueRowProps> = ({
         {active && (
           <>
             {" · "}
-            <span className="live">{t("podcast.playing")}</span>
+            {isLoading ? (
+              <span className="live">
+                <i className="fusion-spin" />
+                {t("podcast.loading")}
+              </span>
+            ) : isPlaying ? (
+              <span className="live">
+                <span className="q-eq" aria-hidden="true">
+                  <i />
+                  <i />
+                  <i />
+                </span>
+                {t("podcast.playing")}
+              </span>
+            ) : (
+              <span className="live paused">{t("podcast.paused")}</span>
+            )}
           </>
         )}
       </span>
@@ -70,7 +95,7 @@ export const QueueRow: React.FC<QueueRowProps> = ({
       </span>
       <IconButton
         size="sm"
-        variant="destructive"
+        variant="ghost"
         icon={<X size={11} />}
         label={t("Delete")}
         onClick={(e) => {

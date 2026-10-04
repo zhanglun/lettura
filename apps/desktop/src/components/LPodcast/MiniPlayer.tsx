@@ -22,6 +22,7 @@ const RATES = [1, 1.25, 1.5, 2];
 interface MiniPlayerProps {
   currentTrack: AudioTrack | null;
   isPlaying: boolean;
+  isLoading: boolean;
   progress: number;
   duration: number;
   playbackRate: number;
@@ -40,6 +41,7 @@ interface MiniPlayerProps {
 export const MiniPlayer: React.FC<MiniPlayerProps> = ({
   currentTrack,
   isPlaying,
+  isLoading,
   progress,
   duration,
   playbackRate,
@@ -66,6 +68,7 @@ export const MiniPlayer: React.FC<MiniPlayerProps> = ({
         <div className="fusion-pcluster">
           <IconButton
             size="sm"
+            isLoading={isLoading}
             icon={isPlaying ? <Pause size={11} /> : <Play size={11} />}
             label={isPlaying ? t("Pause") : t("Play")}
             onClick={togglePlay}

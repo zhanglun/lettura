@@ -10,6 +10,7 @@ import { formatDuration } from "@/helpers/articleContent";
 import type { Podcast } from "@/helpers/podcastDB";
 import { useAppStore } from "@/stores";
 import { renderArticleContent } from "../ContentRender";
+import { FeedMetaLink } from "../FeedMetaLink";
 
 export interface PodcastAdapter {
   article: ArticleResItem;
@@ -30,6 +31,7 @@ export function PodcastAdapter(props: PodcastAdapter) {
   const {
     currentTrack,
     isPlaying,
+    isLoading,
     progress,
     duration,
     playbackRate,
@@ -114,7 +116,7 @@ export function PodcastAdapter(props: PodcastAdapter) {
             {article.title}
           </h1>
           <div className="fusion-dmeta">
-            <span>{article.feed_title}</span>
+            <FeedMetaLink article={article} />
             <span className="sep">·</span>
             <span>
               {isCurrent && duration > 0
@@ -131,6 +133,7 @@ export function PodcastAdapter(props: PodcastAdapter) {
           <div className="fusion-epctrl">
             <IconButton
               size="sm"
+              isLoading={isCurrent && isLoading}
               icon={playing ? <Pause size={13} /> : <Play size={13} />}
               label={playing ? t("Pause") : t("Play")}
               onClick={handlePlay}

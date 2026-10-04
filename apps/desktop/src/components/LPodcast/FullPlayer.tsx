@@ -24,12 +24,13 @@ interface FullPlayerProps {
   currentTrack: AudioTrack | null;
   tracks: AudioTrack[];
   isPlaying: boolean;
+  isLoading: boolean;
   progress: number;
   duration: number;
   playbackRate: number;
   togglePlay: () => void;
   seek: (time: number) => void;
-  skip: (delta: number) => void;
+  skip: (time: number) => void;
   cycleRate: () => void;
   onCollapse: () => void;
 }
@@ -39,6 +40,7 @@ export const FullPlayer: React.FC<FullPlayerProps> = ({
   currentTrack,
   tracks,
   isPlaying,
+  isLoading,
   progress,
   duration,
   playbackRate,
@@ -155,6 +157,7 @@ export const FullPlayer: React.FC<FullPlayerProps> = ({
               onClick={playPrev}
             />
             <IconButton
+              isLoading={isLoading}
               icon={isPlaying ? <Pause size={15} /> : <Play size={15} />}
               label={isPlaying ? t("Pause") : t("Play")}
               onClick={togglePlay}
