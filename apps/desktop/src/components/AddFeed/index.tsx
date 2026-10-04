@@ -20,9 +20,7 @@ import { formatDuration } from "@/helpers/articleContent";
 import { showErrorToast } from "@/helpers/errorHandler";
 import {
   BUILTIN_GENERATORS,
-  type FeedGenerator,
   matchGenerator,
-  parseUserGenerators,
 } from "@/helpers/feedGenerators";
 import {
   CARRIER_BADGE_CLS,
@@ -89,7 +87,7 @@ function entryMeta(
  * 渐进式订阅面板（add.html 契约，2026-09-25 重梳理）：
  * 一个输入框 → **后端发现优先**（网页里声明的 `<link rel=alternate>`、常见路径）→ 预览卡（源信息 +
  * 最近条目 + 生成地址 + 分组）→ 订阅 → 跳到该订阅的源队列。
- * 平台生成器是**可扩展的数据表**（内置便利匹配 + 设置里的自定义路由 + 面板内手填），不写死清单。
+ * 平台生成器是**可扩展的数据表**（内置便利匹配 + 面板内手填），不写死清单。
  */
 export const AddFeedChannel = (props: any) => {
   const { t, i18n } = useTranslation();
@@ -133,9 +131,6 @@ export const AddFeedChannel = (props: any) => {
   }, [open]);
 
   const folders = flattenFolders(store.subscribes);
-  const generators: FeedGenerator[] = parseUserGenerators(
-    store.userConfig?.generator_routes,
-  );
 
   useHotkeys(HK.addFeed, () => {
     setOpen(true);
@@ -281,7 +276,7 @@ export const AddFeedChannel = (props: any) => {
           // 兜底：站点自带 feed 的生成器（Newsletter…）在发现层失败时，用生成的地址直接抓
           const fallback = emailMode
             ? null
-            : matchGenerator(text, [...generators, ...BUILTIN_GENERATORS]);
+            : matchGenerator(text, BUILTIN_GENERATORS);
           if (fallback) {
             previewUrl(fallback.route, {
               origin: `generator:${fallback.generator.key}`,

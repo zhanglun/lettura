@@ -5,7 +5,6 @@
  * 这里的职责是把「站点主页地址」翻译成它**自己提供**的 feed 地址
  * （如 Newsletter 的 `/feed`），不依赖任何第三方转换服务：
  *   - 内置表：常见形态的正则 → feed 地址（命中即自动预填，用户可改）
- *   - 配置表：用户在设置里按 `匹配 => feed 地址` 自行扩展（与内置表合并）
  *
  * 没有原生 feed 的平台（B站/微博/知乎…）不在此表——它们交给 0.2.0 之外的
  * 转换生态，或未来以插件形式回归。
@@ -61,7 +60,7 @@ export interface GeneratorHit {
   route: string;
 }
 
-/** 命中哪条生成器（内置表在前，用户表可覆盖同名 key） */
+/** 命中哪条内置生成器（不命中返回 null，交给发现层） */
 export function matchGenerator(
   input: string,
   generators: FeedGenerator[] = BUILTIN_GENERATORS,
@@ -73,47 +72,3 @@ export function matchGenerator(
   return null;
 }
 
-/**
- * 解析设置里的自定义生成规则：一行一条
- *   `example.com/blog => https://example.com/blog/feed`
- * 分隔符接受 `=>` `->` `→`；左侧按正则用（纯域名也是合法正则），右侧是完整的 feed 地址。
- */
-export function parseUserGenerators(
-  lines: string[] | undefined,
-): FeedGenerator[] {
-  const result: FeedGenerator[] = [];
-
-  for (const raw of lines || []) {
-    const line = raw.trim();
-    if (!line || line.startsWith("#")) continue;
-
-    // `匹配 => 地址` 或 `匹配 => 地址 => 载体`（载体可选：video/audio/email，缺省 text）
-    const parts = line.split(/=>|->|→/);
-    if (parts.length < 2) continue;
-
-    const source = parts[0].trim();
-    const route = parts[1].trim();
-    const declared = (parts[2] || "").trim().toLowerCase();
-    if (!(source && route)) continue;
-
-    let pattern: RegExp;
-    try {
-      pattern = new RegExp(source, "i");
-    } catch {
-      continue; // 用户写坏的正则跳过，不影响其他行
-    }
-
-    result.push({
-      key: route.split("/")[2] || "custom",
-      label: source,
-      pattern,
-      route,
-      carrier:
-        declared === "video" || declared === "audio" || declared === "email"
-          ? declared
-          : "text",
-    });
-  }
-
-  return result;
-}

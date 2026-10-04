@@ -10,7 +10,6 @@ import {
 import { Selector } from "@astryxdesign/core/Selector";
 import { Slider } from "@astryxdesign/core/Slider";
 import { Switch } from "@astryxdesign/core/Switch";
-import { TextArea } from "@astryxdesign/core/TextArea";
 import { TextInput } from "@astryxdesign/core/TextInput";
 import { invoke } from "@tauri-apps/api/core";
 import {
@@ -78,8 +77,6 @@ function SRow({
 /** 设置第三视图：面板内校准台，左锚点导航 + 三段一页（settings.html 契约） */
 export function SettingPage() {
   const { t, i18n } = useTranslation();
-  // 文本类设置用草稿 + 失焦提交（其余控件即改即写；逐字符写 TOML 太重）
-  const [routesDraft, setRoutesDraft] = useState<string | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
   const locationKey = location.pathname + location.search;
@@ -643,28 +640,6 @@ export function SettingPage() {
                 />
                 <span className="fusion-chip">{cfg?.threads ?? 3} / 5</span>
               </div>
-            </SRow>
-            <SRow
-              label={t("settings.generator_routes")}
-              help={t("settings.generator_routes_help")}
-            >
-              <TextArea
-                label={t("settings.generator_routes")}
-                isLabelHidden
-                value={routesDraft ?? (cfg?.generator_routes ?? []).join("\n")}
-                onChange={(v) => setRoutesDraft(v)}
-                onBlur={() => {
-                  if (routesDraft === null) return;
-                  store.updateUserConfig({
-                    ...cfg,
-                    generator_routes: routesDraft
-                      .split("\n")
-                      .map((line) => line.trim())
-                      .filter(Boolean),
-                  });
-                  setRoutesDraft(null);
-                }}
-              />
             </SRow>
             <SRow
               label={t("settings.subs_manage")}

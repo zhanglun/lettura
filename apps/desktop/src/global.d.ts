@@ -75,7 +75,4 @@ declare interface UserConfig {
   /** 强调色（indigo/moss/ochre/brick/vine），令牌层 color-mix 派生 */
   /** Astryx 组件主题 slug（默认 neutral） */
   astryx_theme?: string;
-
-  /** 自定义生成路由，一行一条：`匹配 => 路由`（详见 settings 帮助文字） */
-  generator_routes?: string[];
 }

@@ -91,10 +91,6 @@ pub struct UserConfig {
   /// Astryx 组件主题（neutral/matcha/stone/gothic/chocolate/butter/y2k）
   #[serde(default = "default_astryx_theme")]
   pub astryx_theme: String,
-
-  /// 自定义生成路由，一行一条：`匹配 => 路由`
-  #[serde(default)]
-  pub generator_routes: Vec<String>,
 }
 
 fn default_true() -> bool {
@@ -144,7 +140,6 @@ impl Default for UserConfig {
       reader_preset: default_reader_preset(),
       card_density: default_card_density(),
       astryx_theme: default_astryx_theme(),
-      generator_routes: vec![],
     }
   }
 }

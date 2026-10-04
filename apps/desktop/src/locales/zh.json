@@ -158,8 +158,6 @@
     }
   },
   "settings": {
-    "generator_routes": "自定义生成路由",
-    "generator_routes_help": "一行一条：`匹配 => 路由`。左侧按正则用（域名也行），右侧以 http 开头则直接当 feed 地址",
     "subtitle": "同步、外观、OPML 与数据，都在这一页。",
     "status_secure": "本地配置安全",
     "status_sources": "42 个源活跃",

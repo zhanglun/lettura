@@ -142,8 +142,6 @@
     }
   },
   "settings": {
-    "generator_routes": "Custom generator routes",
-    "generator_routes_help": "One per line: `match => route`. The left side is treated as a regex (a bare domain works), and a route starting with http is used as the feed URL directly",
     "subtitle": "Sync, appearance, OPML and data — all on one page.",
     "status_secure": "Local config secure",
     "status_sources": "42 sources active",

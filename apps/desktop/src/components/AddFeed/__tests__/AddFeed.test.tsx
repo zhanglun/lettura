@@ -107,7 +107,7 @@ describe("AddFeedChannel（2026-09-25 重梳理后的流程）", () => {
     vi.useFakeTimers();
     storeState.value = {
       subscribes: [],
-      userConfig: { generator_routes: [] },
+      userConfig: {},
       addNewFeed: vi.fn(),
       getSubscribes: vi.fn(() => Promise.resolve()),
       initCollectionMetas: vi.fn(),
