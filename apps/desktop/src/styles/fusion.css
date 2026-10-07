@@ -57,11 +57,8 @@ select:focus-visible,
   --fusion-pink: #e86a92;
   --fusion-pink-soft: rgba(232, 106, 146, 0.1);
   --fusion-amber: #e5a50a;
-  /* 阅读正文墨色（Songti serif 阅读契约的一部分，刻意不随主题墨色）：
-     单一真源，夜读暖墨在 dark 块覆写 */
-  --fusion-serif-ink: #33363b;
   /* 中性色全部接 Astryx 主题令牌（2026-10 契约）：明暗由 light-dark() 驱动，
-     切主题即整面变色；pink/amber 为固定状态色，夜读暖墨 serif-ink 见 dark 块 */
+     切主题即整面变色；pink/amber 为固定状态色 */
 }
 
 .fusion-root {
@@ -1921,14 +1918,6 @@ select:focus-visible,
   margin-bottom: 24px;
 }
 
-/* ── 文章正文（外壳精密，内容读书） ── */
-.fusion-article-body {
-  font-family: "Songti SC", "STSong", "Noto Serif SC", serif;
-  font-size: 15.5px;
-  line-height: 2;
-  color: var(--fusion-serif-ink);
-}
-
 /* ── 浮层通用语法（⌘K / 帮助 / 添加订阅共用） ── */
 .fusion-veil {
   position: absolute;
@@ -2052,16 +2041,12 @@ select:focus-visible,
 }
 
 /* ── 详情阅读面（detail.html 契约） ── */
-:root {
-  --read-size: 15.5px;
-  --read-lh: 2;
-}
-
+/* 正文与外壳同族 sans、固定 15.5/1.85：宋体与字号/行高定制已按用户拍板移除
+   （2026-10-05，定制系统未让阅读更好，回归常规排版），颜色走主题墨色随明暗自适应 */
 .fusion-article-body {
-  font-family: "Songti SC", "STSong", "Noto Serif SC", serif;
-  font-size: var(--read-size);
-  line-height: var(--read-lh);
-  color: var(--fusion-serif-ink);
+  font-size: 15.5px;
+  line-height: 1.85;
+  color: var(--fusion-ink);
 }
 
 /* Tailwind preflight 的 * {font-family} 会截断继承，强制后代回归正文设定 */
@@ -2097,8 +2082,7 @@ select:focus-visible,
   margin: 26px 0;
   padding: 2px 0 2px 20px;
   border-left: 1px solid var(--fusion-hair2);
-  font-size: calc(var(--read-size) - 1px);
-  line-height: var(--read-lh);
+  font-size: 0.94em;
   color: var(--fusion-sub);
 }
 
@@ -2112,17 +2096,17 @@ select:focus-visible,
 }
 
 .fusion-article-body h1 {
-  font-size: calc(var(--read-size) * 1.45);
+  font-size: 1.45em;
   margin-block: 34px 22px;
 }
 
 .fusion-article-body h2 {
-  font-size: calc(var(--read-size) * 1.25);
+  font-size: 1.25em;
   margin-block: 30px 18px;
 }
 
 .fusion-article-body h3 {
-  font-size: calc(var(--read-size) * 1.12);
+  font-size: 1.12em;
   margin-block: 26px 14px;
 }
 
@@ -2140,7 +2124,7 @@ select:focus-visible,
 .fusion-article-body code,
 .fusion-article-body pre code {
   font-family: "SF Mono", Menlo, Consolas, monospace;
-  font-size: calc(var(--read-size) - 2px);
+  font-size: 0.87em;
   line-height: 1.7;
 }
 
@@ -2169,7 +2153,7 @@ select:focus-visible,
 .fusion-article-body pre code {
   font-size: 12.5px;
   line-height: 1.75;
-  color: var(--fusion-serif-ink);
+  color: var(--fusion-ink);
   background: none;
   border: 0;
   padding: 0;
@@ -3844,24 +3828,11 @@ body.fusion-context-menu-open .fusion-set-body {
   border-bottom: 0;
 }
 
-.fusion-prev .serif {
-  font-family: "Songti SC", "STSong", "Noto Serif SC", serif;
-  font-size: var(--read-size);
-  line-height: var(--read-lh);
-  color: var(--fusion-serif-ink);
-  margin-top: 10px;
-  /* 阅读面同宽（View.tsx 阅读列 max-w-[640px]）：校准台所见即所读，
-     否则 720px 版心下拉出 ~91 字/行的假象（2026-10-01 评审） */
-  max-width: 640px;
-  margin-inline: auto;
-}
-
 /* ── 夜读本（dark.html 契约）：暖黑画布 + 深色玻璃，非反色 ── */
 body.dark-theme {
   --fusion-pink: #ee8bab;
   --fusion-pink-soft: rgba(238, 139, 171, 0.12);
   --fusion-amber: #edb433;
-  --fusion-serif-ink: #d3d4d8;
   /* 暗玻璃上墨洗要更重才可达（浅色 4% 在深底上不可见） */
   --fusion-row-hover: color-mix(
     in srgb,
@@ -3882,10 +3853,6 @@ body.dark-theme .fusion-root::before {
       color-mix(in srgb, var(--color-accent) 4.5%, transparent),
       transparent 70%
     );
-}
-
-body.dark-theme .fusion-article-body {
-  color: var(--fusion-serif-ink);
 }
 
 /* 灰阶由墨色投影改浅色投影 */
@@ -3962,10 +3929,6 @@ body.dark-theme .fusion-help-in .tt {
 body.dark-theme .fusion-article-body pre {
   background: color-mix(in srgb, var(--color-text-primary) 5%, transparent);
   border-color: var(--fusion-hair2);
-}
-
-body.dark-theme .fusion-article-body pre code {
-  color: var(--fusion-serif-ink);
 }
 
 /* 浏览帧/源头栏：灰阶投影转浅 */

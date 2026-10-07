@@ -27,25 +27,6 @@ pub struct Proxy {
   pub enable: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct CustomizeStyle {
-  typeface: String,
-  font_size: i32,
-  line_height: f32,
-  line_width: i32,
-}
-
-impl Default for CustomizeStyle {
-  fn default() -> Self {
-    Self {
-      typeface: String::from("var(--sans-font)"),
-      font_size: 14,
-      line_height: 1.4,
-      line_width: 648,
-    }
-  }
-}
-
 macro_rules! generate_set_property {
     ($config:ident, $method:ident, $field:ident, $field_type:ty) => {
         pub fn $method(mut $config, value: $field_type) -> Self {
@@ -72,7 +53,6 @@ pub struct UserConfig {
   pub proxy: Option<Vec<Proxy>>,
   pub proxy_rules: Vec<String>,
 
-  pub customize_style: CustomizeStyle,
   pub purge_on_days: u64,
   pub purge_unread_articles: bool,
   pub port: u16,
@@ -129,7 +109,6 @@ impl Default for UserConfig {
         .to_rfc3339_opts(chrono::SecondsFormat::Secs, true),
       proxy: None,
       proxy_rules: vec![],
-      customize_style: CustomizeStyle::default(),
       purge_on_days: 0,
       purge_unread_articles: true,
       port: 3456,

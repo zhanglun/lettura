@@ -17,8 +17,8 @@
 | 环境光 | **随主题呼吸（2026-11）**：左上＝`color-mix(background-orange 14%)` 主题暖调（neutral 桃/matcha 焦糖/y2k 杏/chocolate 焦糖），右上＝`accent 5.5%`；两光极淡，切主题即变调 | 画布氛围 |
 | `--ink` / `--sub` / `--ter` | `#1D1E20` / `#6A6C6E` / `#9EA0A2` | 文字三级 |
 | `--hair` / `--hair2` | `rgba(29,30,32,.08)` / `.13` | 发丝线 / 边框 |
-| fusion 中性阶 | **全部接 Astryx 主题令牌**（2026-10 契约）：ground=`background-body`、glass=`card 80% 混`、ink/sub=`text-primary/secondary`、ter=48% 混、hair=`border`、warn=`error`；行/悬停/浮层的中性 rgba 一律 `color-mix` 令牌派生——切主题即整面变色；pink/amber/serif-ink 为固定状态色（夜读暖墨除外） |
-| **fusion×Astryx 分工（2026-11 演进原则）** | Astryx 供「组件词汇」（控件、行节奏、洗色、材质令牌），fusion 供「产品个性」（环境光氛围、宋体正文、精密密度、键盘焦点环、未读圆点）。**融合不是抹平**：凡 Astryx 已定义的控件/行语言一律退让用 Astryx；凡产品级签名（氛围光、宋体、信息密度、键盘模型）保留并加强。行间隔＝Astryx 呼吸缝 2px（ground 透出），非 fusion 发丝线 |
+| fusion 中性阶 | **全部接 Astryx 主题令牌**（2026-10 契约）：ground=`background-body`、glass=`card 80% 混`、ink/sub=`text-primary/secondary`、ter=48% 混、hair=`border`、warn=`error`；行/悬停/浮层的中性 rgba 一律 `color-mix` 令牌派生——切主题即整面变色；pink/amber 为固定状态色 |
+| **fusion×Astryx 分工（2026-11 演进原则）** | Astryx 供「组件词汇」（控件、行节奏、洗色、材质令牌），fusion 供「产品个性」（环境光氛围、精密密度、键盘焦点环、未读圆点）。**融合不是抹平**：凡 Astryx 已定义的控件/行语言一律退让用 Astryx；凡产品级签名（氛围光、信息密度、键盘模型）保留并加强。行间隔＝Astryx 呼吸缝 2px（ground 透出），非 fusion 发丝线 |
 | **WebKit 右键菜单规避（2026-11）** | WebKit 对「`position-anchor` 指向 `overflow` 滚动容器内锚点」的 top-layer popover 会算出正确几何却不绘制（Astryx context 菜单在此情形下不可见）。FeedCtxMenu 包一层 `.fusion-ctx-host` 捕获右键视口坐标，CSS 将 popover 从 anchor 切换为 `position:fixed`（坐标按实际内容高度与视口边缘 8px 收敛；内层不设内部滚动条）。菜单打开＝目标行整行 10% accent 高亮、背景滚动锁定；Esc 不穿透为返回导航。点击/SVG/键盘不受影响 |
 | 列表行词汇 | **对齐 Astryx（2026-10；2026-09-30 窗口尺度修正）**：三个列表面（文章行/订阅浏览行/订阅管理行）＝圆角 8px 内衬洗色、**行间 2px ground 呼吸缝**（步距＝内容高＋缝：52+2 / 44+2 / 42+2）、无发丝线（分组头保留规则线）；洗色三态统一走 `--fusion-row-hover/focus/focus-line` 令牌（悬停 4% 墨洗，夜读 6%，暗玻璃上更重才可达）。**洗色内缩 12px**（inset 3px 12px，浏览行容器同框）：全窗宽列表上 4-6px 内距不可感知，贴边洗色退化成整条灰带（用户实测「粗糙」）；行内容离洗色边缘 ≥8px（文章行左内距 10、浏览行 10px）。**分组头不跟行洗色走**：`.fusion-dayhead` 占满全宽（规则线全窗宽铺满，2026-09-30 用户拍板回退内缩试验——分组头是结构锚点不是行）；`.fusion-b-head` 内距随浏览行容器（10px，与行内容对齐）；选中/聚焦＝半透明 accent 调；**悬停/聚焦时中性缩略图融入洗色**（单表面，消灭灰块套灰块；播客/视频预设色块保留载体身份色不参与融合，2026-09-30） |
 | 缩略图列（2026-09-29；字符占位 2026-09-30） | 文章行首列缩略图**全载体统一 76×43（精确 16:9）**：视频封面、文章首图、无图占位同尺寸同位置，混排队列左列严格对齐（曾试验视频行加宽到 76 而文字行 56，左缘参差即废弃）；无图无 logo 落**类型色块 + 源题 monogram**（detail.html「灰底＋字符」契约；拉丁题取词首两字母 RP/TV、单词取前两字母 Ph/iD，CJK 取首字，第一词拉丁后词 CJK 不混排，12px）——**占位与照片同走行悬停融合**（融掉后由 monogram 独自承担识别，不留孤字；曾试验占位保留边框悬停抬升，等于退回融合前的灰块套灰块，2026-09-30 用户否决）；视频行额外带右下时长角标（黑底白字 tabular-nums）与来源行时长 chip（`· mm:ss`），时长来自媒体附件 `duration`（B站 fetcher 已解析）；校准台预览行（`.fusion-prev .prow`）列宽行高同步，且行高 `max(var(--row-h), 52px)` 防紧凑档裁切 |
@@ -40,9 +40,9 @@
 ## 字体
 
 - UI：`-apple-system, "SF Pro Text", "PingFang SC"`，中文 `letter-spacing: .005–.01em`
-- 文章正文：`"Songti SC", "STSong", "Noto Serif SC"`，15.5px / 行高 2.0（外壳精密，内容读书）
+- 文章正文：与外壳同族 sans，固定 15.5px / 行高 1.85（2026-10-05 用户拍板移除宋体与字号/行高定制——定制系统未让阅读更好；`--read-size`/`--read-lh`/`--fusion-serif-ink` 令牌已删）
 - 数字一律 `font-variant-numeric: tabular-nums`；时间码用 `SF Mono`
-- 字阶：26（页题）/ 24（详情题）/ 21 / 14.5 / 13.5（行题）/ 13 / 12.5 / 12 / 11.5 / 11 / 10.5（kbd、足注）
+- 字阶：26（页题）/ 24（详情题）/ 21 / 15.5（正文）/ 14.5 / 13.5（行题）/ 13 / 12.5 / 12 / 11.5 / 11 / 10.5（kbd、足注）
 
 ## 布局骨架
 
@@ -90,21 +90,21 @@
 
 | 类型 | 内容 |
 |---|---|
-| 文章 | 680px 宋体单栏（打字机隧道壳，见下方排版要素） |
+| 文章 | 680px sans 单栏（打字机隧道壳，见下方排版要素） |
 | 播客单集 | 112px 封面 + 大播放控件 + 章节（时间码）+ show notes |
 | 平台（B站/抖音） | 封面块 + feed 简介 + 黑色「在平台打开」外跳钮（0.2.0 不做站内视频） |
 
-**阅读面排版要素**（文章详情，`--read-size`/`--read-lh` 由设置校准台写入）：
+**阅读面排版要素**（文章详情；正文排版为固定值，无用户定制）：
 
 | 要素 | 语法 |
 |---|---|
 | **打字机隧道（2026-10-01 阅读面重设计 · seed 360afa8e；同日二次修订）** | 阅读面结构推翻重推导（世界令牌不变）：①顶部双栏互斥——开屏原栏滚过 160px 上滑让位，**滚动实心顶栏顶入（题名居中，动作 compact：只留 icon + 快捷键，无文字）**——两栏均不透明 ground 底（用户二次拍板：内容不得从顶栏底下透出、两态背景一致）；②焦带——视口中央带全亮、向上下缘线性降灰（0.3 地板，`prefers-reduced-motion` 豁免）；原头尾 16vh 渐隐幕已按二次拍板移除；③进度＝右缘覆盖细轨（3px，hover scaleX(2)）；④margin 大纲（#5 信封双轴捐赠）——正文 ≥2 个标题且窗口 ≥1280px 时常驻右侧，scroll-spy 反色、点击平滑跳转；⑤阅读列 640→680px、顶距 94px。三形态同壳：播客 show notes/平台简介进同一焦带流，播客章节后续可替代右缘轨刻度（未落）。mock：`.impeccable/mocks/decision/reading/reading-tunnel.html`（对照稿 sections/margin 同目录） |
 | 阅读进度 | 右缘覆盖细轨（见上）随滚动无声走完，唯一的仪表读数 |
-| 引文 | 1px 发丝左线 + 宋体 + `--sub`，字号减 1px |
+| 引文 | 1px 发丝左线 + `--sub`，字号 0.94em |
 | 行内码 / 代码块 | 行内：mono + `.05` 底 + hair 边；块：白玻璃 + hair 边 + SF Mono 12.5 + 右上语言标 |
 | 链接 | `--color-accent` 下划线，offset 3px，装饰线同源 35% mix |
 | 完读 | 「· 完 ·」两侧发丝线 → 下一篇卡（hair 边框 + radius 12 + 50% card 玻璃容器，列表行语法在卡内，j/k 直达）+ 「已读并返回 m」幽灵钮 |
-| 详情外壳 | 题/meta/完读区继承 UI sans（宋体只落 `.fusion-article-body` 正文）；meta 分隔点用 `--hair2`，阅读时长（中文 400 字/分 + 西文 220 词/分，≥1 分钟才显示）；动作钮＝28px 安静图标钮（Astryx `ToggleButton isIconOnly`，星标按压换琥珀实心），居住于退场 chrome（见打字机隧道行）；阅读区滚动条细轨主题派生；`::selection`＝accent 22% 洗 |
+| 详情外壳 | 全文（题/meta/正文/完读区）同一 UI sans；meta 分隔点用 `--hair2`，阅读时长（中文 400 字/分 + 西文 220 词/分，≥1 分钟才显示）；动作钮＝28px 安静图标钮（Astryx `ToggleButton isIconOnly`，星标按压换琥珀实心），居住于退场 chrome（见打字机隧道行）；阅读区滚动条细轨主题派生；`::selection`＝accent 22% 洗 |
 | 正文插图 | 与代码块同一容器语法：hair 边 + radius 10 + 居中 |
 
 **命令面板**：输入即时过滤（文章 / 来源 / 命令混合），首项选中（`--color-accent-muted` 底 + 1px 内线），kbd 提示，底部快捷键栏；「打开设置」命令进设置视图。
@@ -136,7 +136,7 @@
 | 版心 | 居中 720px；段题＝10px/700/.13em 大写 accent 标题，下接 accent 18% 发丝规则线，scroll-margin 顶留白 |
 | 设置行 | 独立仪器卡：标签左（13.5px/500 + 帮助文字 11.5px/`--sub`）、控件右、细边框 + 42% card 玻璃底，min-h 58，无行 hover；控件自身遵循 Astryx hover/focus |
 | 控件词汇 | 分段＝过滤条 tab 语法（胶囊容器，自研 Seg）；下拉＝Astryx `Selector`(sm)；开关＝Astryx `Switch`(sm)；滑杆＝Astryx `Slider`（固定 140 宽）+ 数值 chip；文本＝Astryx `TextInput`/`TextArea`(sm)；主钮＝Astryx `Button` primary(sm)、幽灵钮＝`ghost`(sm)；键帽＝Astryx `Kbd`（esc/m/⌘K，平台感知）；组件主题＝Astryx 主题选择器（neutral 默认，7 选 1，`userConfig.astryx_theme` 持久化，CSS 由 `@scope([data-astryx-theme])` 隔离） |
-| 校准台 | 外观段尾预览块：列表行样本 + 宋体段落，实时反映字号/行高/密度/强调色；拖动即显影，无过渡 |
+| 校准台 | 外观段尾预览块：列表行样本，实时反映密度；拖动即显影，无过渡 |
 | 订阅行 | 列表行 42px：类型徽章/题/未读药丸/域名/时间；分组头部 32px 可折叠。管理页不做整行 hover，只在悬停时显隐操作钮；右键菜单＝Astryx `ContextMenu`（sm、声明式包裹行，移动分组为悬停子菜单），退订钮常态 ghost、destructive 只出现在菜单/确认语义中 |
 | 生成规则行 | 「自定义生成规则」＝Astryx `TextArea`(sm)，mono 内容（一行一条 `匹配 => feed 地址`）。文本类设置**失焦提交**（其余控件即改即写，逐字符写 TOML 太重） |
 
@@ -213,10 +213,9 @@ R            刷新全部来源      c   添加订阅
 | `--hair` / `--hair2` | `rgba(233,233,230,.08/.13)` | `rgba(29,30,32,.08/.13)` |
 | `--accent` | `#848CE8`（提亮保对比） | `#5E6AD2` |
 | `--paper` | `#26262B`（阅读面抬高的暗纸，仅详情正文区） | ——（昼读正文直落在玻璃上） |
-| `--serif-ink` | `#D3D4D8`（宋体暗墨） | `#33363B` |
 | `--warn` / `--amber` / `--pink` | `#D97B6F` / `#EDB433` / `#EE8BAB`（均提亮） | `#C4564A` / `#E5A50A` / `#E86A92` |
 | veil 压暗 | `rgba(0,0,0,.32)` | `rgba(29,30,32,.14)` |
 | 阴影系 | 全部转黑基（`rgba(0,0,0,…)`） | 黑基不变 |
 | 环境光 | 双色残照（约昼间 60% 弱） | 双色极淡 radial |
 
-实测对比度（暗玻璃上）：ink 14.8 / sub 7.2 / accent 5.9 / warn 6.0；暗纸上宋体 10.2——全面优于昼读值。徽章与药丸的灰阶改用浅色投影（`rgba(233,233,230,…)`)。
+实测对比度（暗玻璃上）：ink 14.8 / sub 7.2 / accent 5.9 / warn 6.0——全面优于昼读值。徽章与药丸的灰阶改用浅色投影（`rgba(233,233,230,…)`)。`--serif-ink`（宋体暗墨）随宋体正文一起移除（2026-10-05）。

@@ -13,13 +13,6 @@ declare interface LocalProxy {
   enable?: boolean;
 }
 
-declare interface CustomizeStyle {
-  typeface: string;
-  font_size: number;
-  line_height: number;
-  line_width: number;
-}
-
 declare type ThemeAccentColor =
   | "default"
   | "custom"
@@ -60,7 +53,6 @@ declare interface UserConfig {
   update_interval?: number;
   last_sync_time?: Date;
   proxy?: LocalProxy;
-  customize_style?: CustomizeStyle;
   app?: AppConfig;
 
   purge_on_days: number;

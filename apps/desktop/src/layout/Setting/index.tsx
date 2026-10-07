@@ -233,14 +233,6 @@ export function SettingPage() {
     };
   }, []);
 
-  // 校准台参数写入令牌
-  useEffect(() => {
-    const size = cfg?.customize_style?.font_size ?? 15.5;
-    const lh = cfg?.customize_style?.line_height ?? 2;
-    document.documentElement.style.setProperty("--read-size", `${size}px`);
-    document.documentElement.style.setProperty("--read-lh", String(lh));
-  }, [cfg?.customize_style?.font_size, cfg?.customize_style?.line_height]);
-
   // 列表密度令牌跟随配置（配置是唯一事实源；校准台预览行同吃这个令牌）。
   // App.tsx 只在首次拉取配置时写一次，这里的响应式写入是唯一随切换更新的通道
   useEffect(() => {
@@ -253,20 +245,6 @@ export function SettingPage() {
   const applyScheme = (v: string) => {
     // body.dark-theme 与 Astryx mode 均由 App 从 userConfig.color_scheme 派生
     store.updateUserConfig({ ...cfg, color_scheme: v });
-  };
-
-  const updateStyle = (patch: Partial<CustomizeStyle>) => {
-    store.updateUserConfig({
-      ...cfg,
-      customize_style: {
-        typeface: "serif",
-        font_size: 15.5,
-        line_height: 2,
-        line_width: 640,
-        ...cfg?.customize_style,
-        ...patch,
-      },
-    });
   };
 
   const handleExport = async () => {
@@ -525,42 +503,6 @@ export function SettingPage() {
                 }
               />
             </SRow>
-            <SRow label={t("Font size")} help={t("settings.font_help")}>
-              <div className="fusion-sld">
-                <Slider
-                  label={t("Font size")}
-                  isLabelHidden
-                  min={14}
-                  max={19}
-                  step={0.5}
-                  value={cfg?.customize_style?.font_size ?? 15.5}
-                  valueDisplay="none"
-                  width={140}
-                  onChange={(v: number) => updateStyle({ font_size: v })}
-                />
-                <span className="fusion-chip">
-                  {(cfg?.customize_style?.font_size ?? 15.5).toFixed(1)}px
-                </span>
-              </div>
-            </SRow>
-            <SRow label={t("Line height")} help={t("settings.lh_help")}>
-              <div className="fusion-sld">
-                <Slider
-                  label={t("Line height")}
-                  isLabelHidden
-                  min={1.6}
-                  max={2.4}
-                  step={0.1}
-                  value={cfg?.customize_style?.line_height ?? 2}
-                  valueDisplay="none"
-                  width={140}
-                  onChange={(v: number) => updateStyle({ line_height: v })}
-                />
-                <span className="fusion-chip">
-                  {(cfg?.customize_style?.line_height ?? 2).toFixed(1)}
-                </span>
-              </div>
-            </SRow>
             <SRow label={t("Card density")} help={t("settings.density_help")}>
               <SegmentedControl
                 size="sm"
@@ -592,7 +534,6 @@ export function SettingPage() {
                 link: "https://www.example.com/ep.mp3?x=1",
                 feed_url: "https://example.com/feed.xml",
               })}
-              <p className="serif">{t("settings.prev_serif")}</p>
             </div>
 
             {/* 同步与来源 */}

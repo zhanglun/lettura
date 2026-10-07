@@ -16,8 +16,8 @@
 /*
  * Astryx themes provide Latin display fonts, but their generic fallbacks put
  * Chinese after `serif`/`sans-serif`. Keep the theme's Latin face and choose a
- * consistent UI CJK face before the generic fallback; reading content keeps
- * its deliberate Songti rule in fusion.css.
+ * consistent UI CJK face before the generic fallback; article body inherits
+ * the same body face (no special reading typeface since 2026-10-05).
  */
 [data-astryx-theme="neutral"] {
   --font-family-body:
