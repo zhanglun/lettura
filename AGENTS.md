@@ -31,8 +31,11 @@
 - 前端数据流是两条车道（保持现状）：文章列表查询走 `src/hooks/useArticle.ts`
   （模块级缓存 + 在途去重，列表状态的唯一真相源）；命令类 POST 可直接
   `apiPost`，然后经 `store.getSubscribes()` 和/或
-  `busChannel.emit("getChannels")` 刷新（AppLayout 监听一次）。不要引入
-  第三层缓存，不要把列表状态塞回 Zustand slice。
+  `busChannel.emit("getChannels")` 刷新（AppLayout 监听一次）。改变文章
+  全集的命令（退订/删除源等）成功后必须调
+  `invalidateArticleCache()`（useArticle.ts 导出，含在途世代守卫），否则
+  返回列表页会命中陈旧缓存。不要引入第三层缓存，不要把列表状态塞回
+  Zustand slice。
 - React Compiler 1.0 已接入 vite.config.ts 与 vitest.config.ts
   （babel-plugin-react-compiler）：src 下所有组件/钩子都被编译（零
   bail-out）并自动记忆化。禁止再写 useCallback/useMemo/React.memo——

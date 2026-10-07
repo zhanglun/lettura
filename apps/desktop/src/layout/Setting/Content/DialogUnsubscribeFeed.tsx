@@ -9,6 +9,7 @@ import type { FeedResItem } from "@/db";
 import { busChannel } from "@/helpers/busChannel";
 import { apiDelete } from "@/helpers/http";
 import { toast } from "@/helpers/toast";
+import { invalidateArticleCache } from "@/hooks/useArticle";
 
 export interface DialogProps {
   feed: FeedResItem | null;
@@ -38,6 +39,9 @@ export const DialogUnsubscribeFeed = React.memo((props: DialogProps) => {
         delete_articles: deleteMode === "delete",
       })
         .then(() => {
+          // 退订改变了文章全集：清列表/汇总缓存（含在途守卫），
+          // 返回未读等列表页时按真实数据重拉，不残留被删源的文章
+          invalidateArticleCache();
           busChannel.emit("getChannels");
           afterConfirm();
           setDialogStatus(false);

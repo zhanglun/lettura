@@ -3,7 +3,7 @@ import type { ReactElement } from "react";
 import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useShallow } from "zustand/react/shallow";
-import { useArticle } from "@/hooks/useArticle";
+import { invalidateArticleCache, useArticle } from "@/hooks/useArticle";
 import { useAppStore } from "@/stores";
 
 // 队列骨架复现：切筛选（查询键变化）的同步渲染帧必须报 loading，
@@ -58,14 +58,16 @@ function Harness({
   readStatus,
   sourceUuid,
   queue = true,
+  feedId,
 }: {
   readStatus: number | null;
   sourceUuid?: string;
   queue?: boolean;
+  feedId?: string;
 }) {
   const { isLoading, isEmpty } = useArticle({
     feedUuid: queue
-      ? `feed-${expect.getState().currentTestName?.length ?? 0}`
+      ? (feedId ?? `feed-${expect.getState().currentTestName?.length ?? 0}`)
       : undefined,
     readStatus,
     sourceUuid,
@@ -169,5 +171,47 @@ describe("useArticle 队列通道（订阅详情）", () => {
     // initial.loading=false 且桶页为空——修复前该帧 isEmpty 误真闪 EMPTY
     expect(frameLog).not.toContain("EMPTY");
     expect(frameLog[0]).toBe("LOADING");
+  });
+
+  it("invalidateArticleCache（取消订阅失效入口）：同键重挂载不再命中旧缓存", async () => {
+    const one = render(wrap(<Harness queue readStatus={1} feedId="feed-w" />));
+    await flush("/articles", () => page("old", 2));
+    expect(screen.getByTestId("state").textContent).toBe("READY");
+    one.unmount();
+
+    // 基线：未失效时重挂载直接命中缓存（不发请求，旧页原样显示）
+    const two = render(wrap(<Harness queue readStatus={1} feedId="feed-w" />));
+    await act(async () => {});
+    expect(pending.some((p) => p.path === "/articles")).toBe(false);
+    expect(screen.getByTestId("state").textContent).toBe("READY");
+    two.unmount();
+
+    // 退订成功后的失效：清缓存 → 同键重挂载必须重新拉取
+    act(() => {
+      invalidateArticleCache();
+    });
+    pending.length = 0;
+    render(wrap(<Harness queue readStatus={1} feedId="feed-w" />));
+    expect(pending.some((p) => p.path === "/articles")).toBe(true);
+    await flush("/articles", () => page("fresh", 1));
+    expect(screen.getByTestId("state").textContent).toBe("READY");
+  });
+
+  it("整体失效时在途的旧响应按世代丢弃：不写回缓存", async () => {
+    const view = render(wrap(<Harness queue readStatus={1} feedId="feed-z" />));
+    const stale = pending.find((p) => p.path === "/articles");
+    // 退订失效发生在请求在途期间，随后旧响应才迟到落地
+    await act(async () => {
+      invalidateArticleCache();
+      stale?.resolve(page("stale", 2));
+    });
+    view.unmount();
+
+    // 若旧响应写回了缓存，重挂载会直接命中且不发请求（复现退订残留）
+    pending.length = 0;
+    render(wrap(<Harness queue readStatus={1} feedId="feed-z" />));
+    expect(pending.some((p) => p.path === "/articles")).toBe(true);
+    await flush("/articles", () => page("fresh", 1));
+    expect(screen.getByTestId("state").textContent).toBe("READY");
   });
 });

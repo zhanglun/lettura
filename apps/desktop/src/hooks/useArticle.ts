@@ -26,15 +26,42 @@ type ArticleSummary = CarrierCounts & {
 // Keep only the cache, request de-duplication, and pagination state needed by
 // the local HTTP API; there is no network revalidation layer.
 const listCache = new Map<string, BucketPage[]>();
-const listInflight = new Map<string, Promise<BucketPage>>();
 const summaryCache = new Map<string, ArticleSummary>();
-const summaryInflight = new Map<string, Promise<ArticleSummary>>();
 const initialSectionsCache = new Map<string, Map<string, BucketPage>>();
 const initialSectionsErrors = new Map<string, unknown>();
+
+// 缓存世代：文章全集被外部命令改变（取消订阅删除源）时整体失效。
+// 失效 = 清缓存 + 世代 +1；各请求落地前校验世代，丢弃「失效前发起、
+// 失效后落地」的响应——否则它会把自己携带的删除前旧数据写回刚清空的缓存。
+// 世代随在途请求存为不可变对象属性：React Compiler 会把「局部 const = 模块
+// let 读」折叠成活读（快照失效、守卫恒假，实测过），属性读不受影响
+let cacheEpoch = 0;
+
+interface Inflight<T> {
+  request: Promise<T>;
+  epoch: number;
+}
+const listInflight = new Map<string, Inflight<BucketPage>>();
+const summaryInflight = new Map<string, Inflight<ArticleSummary>>();
 const initialSectionsInflight = new Map<
   string,
-  Promise<{ bucket: string; list: ArticleResItem[]; total: number }[]>
+  Inflight<{ bucket: string; list: ArticleResItem[]; total: number }[]>
 >();
+
+/**
+ * 文章缓存整体失效入口：退订/删除源等改变文章全集的命令成功后调用。
+ * 之后挂载的列表（返回未读等）按真实数据重新拉取，不残留被删源的文章。
+ */
+export function invalidateArticleCache() {
+  cacheEpoch += 1;
+  listCache.clear();
+  listInflight.clear();
+  summaryCache.clear();
+  summaryInflight.clear();
+  initialSectionsCache.clear();
+  initialSectionsErrors.clear();
+  initialSectionsInflight.clear();
+}
 
 function stableKey(value: unknown) {
   return JSON.stringify(value);
@@ -148,19 +175,24 @@ function useArticleListChannel(
       cursor: pageIndex + 1,
     };
     const requestKey = stableKey(filter);
-    let request = listInflight.get(requestKey);
-    if (!request) {
-      request = apiGet<{ list: ArticleResItem[]; total: number }>(
-        "/articles",
-        filter,
-      );
-      listInflight.set(requestKey, request);
+    let entry = listInflight.get(requestKey);
+    if (!entry) {
+      entry = {
+        request: apiGet<{ list: ArticleResItem[]; total: number }>(
+          "/articles",
+          filter,
+        ),
+        epoch: cacheEpoch,
+      };
+      listInflight.set(requestKey, entry);
     }
+    const inflight = entry;
 
     loadingRef.current = true;
     setLoading(true);
-    await request
+    await inflight.request
       .then((page) => {
+        if (inflight.epoch !== cacheEpoch) return;
         const next = [...(listCache.get(key) ?? [])];
         next[pageIndex] = page;
         listCache.set(key, next);
@@ -170,7 +202,9 @@ function useArticleListChannel(
         }
       })
       .finally(() => {
-        listInflight.delete(requestKey);
+        if (listInflight.get(requestKey) === inflight) {
+          listInflight.delete(requestKey);
+        }
         if (activeKey.current === key) {
           loadingRef.current = false;
           setLoading(false);
@@ -258,16 +292,21 @@ function useArticleInitialSections(
   // 首屏请求在 commit 后发起（去重由 inflight 表保证，重复触发无害）
   useEffect(() => {
     if (!enabled || initialSectionsCache.has(key)) return;
-    let request = initialSectionsInflight.get(key);
-    if (!request) {
-      request = apiGet<
-        { bucket: string; list: ArticleResItem[]; total: number }[]
-      >("/articles/initial-sections", { ...query, limit: 100 });
-      initialSectionsInflight.set(key, request);
+    let entry = initialSectionsInflight.get(key);
+    if (!entry) {
+      entry = {
+        request: apiGet<
+          { bucket: string; list: ArticleResItem[]; total: number }[]
+        >("/articles/initial-sections", { ...query, limit: 100 }),
+        epoch: cacheEpoch,
+      };
+      initialSectionsInflight.set(key, entry);
     }
+    const inflight = entry;
     setLoading(true);
-    request
+    inflight.request
       .then((items) => {
+        if (inflight.epoch !== cacheEpoch) return;
         const next = new Map(
           items.map((item) => [
             item.bucket,
@@ -282,11 +321,14 @@ function useArticleInitialSections(
         }
       })
       .catch((requestError) => {
+        if (inflight.epoch !== cacheEpoch) return;
         initialSectionsErrors.set(key, requestError);
         if (activeKey.current === key) setError(requestError);
       })
       .finally(() => {
-        initialSectionsInflight.delete(key);
+        if (initialSectionsInflight.get(key) === inflight) {
+          initialSectionsInflight.delete(key);
+        }
         if (activeKey.current === key) setLoading(false);
       });
   }, [enabled, key, query, retryToken]);
@@ -336,19 +378,26 @@ function useArticleSummary(
         return cached;
       }
     }
-    let request = summaryInflight.get(key);
-    if (!request) {
-      request = apiGet<ArticleSummary>("/articles/summary", params);
-      summaryInflight.set(key, request);
+    let entry = summaryInflight.get(key);
+    if (!entry) {
+      entry = {
+        request: apiGet<ArticleSummary>("/articles/summary", params),
+        epoch: cacheEpoch,
+      };
+      summaryInflight.set(key, entry);
     }
-    return request
+    const inflight = entry;
+    return inflight.request
       .then((summary) => {
+        if (inflight.epoch !== cacheEpoch) return summary;
         summaryCache.set(key, summary);
         setData(summary);
         return summary;
       })
       .finally(() => {
-        summaryInflight.delete(key);
+        if (summaryInflight.get(key) === inflight) {
+          summaryInflight.delete(key);
+        }
       });
   };
 
