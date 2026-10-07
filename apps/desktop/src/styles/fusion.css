@@ -116,6 +116,24 @@ select:focus-visible,
   flex: none;
 }
 
+/* macOS 红绿灯浮在顶栏左上（titleBarStyle Overlay）：顶栏让出左侧空间，
+   避免与产品名/导航重叠（红绿灯簇约占 70px） */
+body.platform-mac .fusion-top {
+  padding-left: 84px;
+}
+
+/* Windows/Linux 自绘窗口控制：安静 ghost 钮，关闭悬停染警示色 */
+.fusion-winctl {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: 6px;
+}
+
+.fusion-winctl .win-close:hover {
+  color: var(--color-error);
+}
+
 .fusion-logo {
   width: 20px;
   height: 20px;

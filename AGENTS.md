@@ -84,7 +84,11 @@
 - 播客数据是独立的浏览器端 Dexie/IndexedDB（`src/helpers/podcastDB.ts`），
   读写统一收口在 `stores/createPodcastSlice.ts` 的 action 与渲染端
   useLiveQuery。
-- 关闭主窗口是隐藏到系统托盘，不是退出。
+- 关闭主窗口是隐藏到系统托盘，不是退出（release；dev 直接退出）。窗口控制
+  跨平台：macOS 靠 `titleBarStyle: Overlay` 的原生红绿灯（`fusion-top` 经
+  `body.platform-mac` 让位左侧 84px）；Windows/Linux 用自绘
+  `components/layout/WindowControls`（顶栏右端三钮），拖拽区仍由
+  `data-tauri-drag-region` 承担（双击 = 最大化切换）。
 
 ## 测试要点
 

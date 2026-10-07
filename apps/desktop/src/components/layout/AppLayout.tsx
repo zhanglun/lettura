@@ -9,6 +9,7 @@ import { useShallow } from "zustand/react/shallow";
 import { AddFeedChannel } from "@/components/AddFeed";
 import { LPodcast } from "@/components/LPodcast";
 import { seekSharedAudioBy } from "@/components/LPodcast/useAudioPlayer";
+import { WindowControls } from "@/components/layout/WindowControls";
 import { RouteConfig } from "@/config";
 import { busChannel } from "@/helpers/busChannel";
 import { recordNav } from "@/helpers/navHistory";
@@ -63,6 +64,13 @@ export const AppLayout = React.memo(() => {
   useEffect(() => {
     recordNav(location.pathname + location.search);
   }, [location.pathname, location.search]);
+
+  // macOS：titleBarStyle Overlay 的原生红绿灯浮在顶栏左上，CSS 让位
+  useEffect(() => {
+    if (/Mac/i.test(navigator.platform || navigator.userAgent || "")) {
+      document.body.classList.add("platform-mac");
+    }
+  }, []);
 
   const isAll = location.pathname === RouteConfig.LOCAL_ALL;
   const isStarred = location.pathname.startsWith("/local/starred");
@@ -201,6 +209,8 @@ export const AppLayout = React.memo(() => {
             icon={<CircleHelp size={13} />}
             onClick={() => setHelpOpen(true)}
           />
+          {/* Windows/Linux 自绘窗口控制（macOS 由原生红绿灯接管，组件自隐） */}
+          <WindowControls />
         </header>
         {/* 播放卡浮在内容上：内容区不占位，只把「让位空白」的高度交给内层滚动容器（--fusion-player-inset） */}
         <div

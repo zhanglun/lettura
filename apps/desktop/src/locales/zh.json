@@ -511,6 +511,10 @@
   },
   "Play": "播放",
   "Pause": "暂停",
+  "Minimize": "最小化",
+  "Maximize": "最大化",
+  "Restore": "还原",
+  "Close": "关闭",
   "podcast": {
     "kind": "播客 · 单集",
     "episode": "单集",
