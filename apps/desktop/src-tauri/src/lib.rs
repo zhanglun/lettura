@@ -40,6 +40,68 @@ impl AppState {
   }
 }
 
+/// macOS 红绿灯与自绘顶栏（fusion-top，54px）对齐：
+/// 按钮簇左缘 x=20，垂直中心 27（顶栏视觉中心），标题栏容器同高拉伸
+/// （拖拽热区与顶栏融合）。tauri.macos.conf.json 的 trafficLightPosition
+/// 只有横向语义（wry 的 inset 只拉容器不动按钮纵向），故此处直接摆 frame。
+/// AppKit 在窗口 resize 后可能重排标题栏，Resized 事件里重摆一次。
+#[cfg(target_os = "macos")]
+fn layout_traffic_lights(window: &tauri::WebviewWindow) {
+  use objc2_app_kit::{NSView, NSWindowButton};
+
+  const BAR_HEIGHT: f64 = 54.0;
+  const CLUSTER_X: f64 = 20.0;
+  const BUTTON_TOP: f64 = 21.0; // 12px 按钮 → 中心 27
+
+  let Ok(ns_window_ptr) = window.ns_window() else {
+    return;
+  };
+  // tauri 返回裸指针；转回 objc2-app-kit 类型（窗口本体就是 NSWindow）
+  let ns_window = unsafe { &*(ns_window_ptr as *const objc2_app_kit::NSWindow) };
+  unsafe {
+    let Some(close) = ns_window.standardWindowButton(NSWindowButton::CloseButton)
+    else {
+      return;
+    };
+    let Some(mini) = ns_window.standardWindowButton(NSWindowButton::MiniaturizeButton)
+    else {
+      return;
+    };
+    let zoom = ns_window.standardWindowButton(NSWindowButton::ZoomButton);
+
+    // 标题栏容器（按钮 superview 的 superview）：拉高到顶栏同高
+    let Some(container) = close.superview().and_then(|v| v.superview()) else {
+      return;
+    };
+    let outer_height = container
+      .superview()
+      .map(|outer| NSView::frame(&outer).size.height)
+      .unwrap_or(BAR_HEIGHT);
+    let mut container_frame = NSView::frame(&container);
+    container_frame.size.height = BAR_HEIGHT;
+    container_frame.origin.y = outer_height - BAR_HEIGHT;
+    container.setFrame(container_frame);
+
+    // 三钮：横向从 CLUSTER_X 起（保持默认间距），纵向顶部 BUTTON_TOP。
+    // 坐标系为按钮 superview（y 向上），origin.y = 顶部留白 21 即中心 27
+    let space = NSView::frame(&mini).origin.x - NSView::frame(&close).origin.x;
+    for (i, button) in [
+      Some(close.as_ref()),
+      Some(mini.as_ref()),
+      zoom.as_deref(),
+    ]
+    .into_iter()
+    .flatten()
+    .enumerate()
+    {
+      let mut frame = NSView::frame(button);
+      frame.origin.x = CLUSTER_X + i as f64 * space;
+      frame.origin.y = BUTTON_TOP;
+      button.setFrameOrigin(frame.origin);
+    }
+  }
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
   let user_config = core::config::UserConfig::init_config();
@@ -81,6 +143,11 @@ pub fn run() {
     .setup(move |app| {
       let app_handle = app.handle().clone();
       let main_window = app.get_webview_window("main").unwrap();
+
+      // macOS：红绿灯对齐自绘顶栏（窗口显示前首摆；resize 后由
+      // on_window_event 的 Resized 分支重摆）
+      #[cfg(target_os = "macos")]
+      layout_traffic_lights(&main_window);
 
       // `tauri dev` 的 CLI/Vite 会响应终端 Ctrl+C，但 macOS GUI 进程不会因此
       // 自动退出，最终被重新托管给 PID 1。开发模式下让应用本体接住 SIGINT，
@@ -134,6 +201,17 @@ pub fn run() {
         } else {
           window.hide().unwrap();
           api.prevent_close();
+        }
+      }
+      // macOS：AppKit 可能在 resize 后重排标题栏按钮，重摆对齐顶栏
+      #[cfg(target_os = "macos")]
+      if let tauri::WindowEvent::Resized(..) = event {
+        if let Some(main) = window
+          .app_handle()
+          .get_webview_window("main")
+          .filter(|w| !w.is_fullscreen().unwrap_or(false))
+        {
+          layout_traffic_lights(&main);
         }
       }
     })

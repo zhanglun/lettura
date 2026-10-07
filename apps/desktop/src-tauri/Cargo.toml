@@ -27,6 +27,13 @@ fetcher-bilibili = { path = "../../../packages/fetcher-bilibili" }
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 tauri = { version = "2", features = ["devtools", "tray-icon", "image-png", "image-ico", "macos-private-api"] }
+
+# macOS 红绿灯定位（wry 的 trafficLightPosition 只拉高标题栏容器、不动按钮纵向，
+# 配置字段无法对齐自绘顶栏）：直接操作 NSWindow 标准按钮 frame。
+# 版本对齐 tauri 2.10 依赖树（objc2 0.6 / objc2-app-kit 0.3），不引入新编译单元
+[target.'cfg(target_os = "macos")'.dependencies]
+objc2 = "0.6"
+objc2-app-kit = { version = "0.3", features = ["NSButton", "NSResponder", "NSView", "NSWindow"] }
 reqwest = { version = "0.11", features = ["json", "socks"] }
 tokio = { version = "1", features = ["full"] }
 chrono = { version="^0.4", features = ["serde"] }
