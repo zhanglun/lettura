@@ -18,11 +18,11 @@ related_targets: [".impeccable/mocks/decision/reading/reading-tunnel.html"]
 
 ## Chosen Direction & Memorable Moment
 - 定稿（2026-10-01 三选一锁定）：**打字机隧道**（seed 360afa8e，掷中 #4）+ **信封双轴 TOC 捐赠**
-- 结构：chrome 退场（下滚藏/上滚唤）· 焦带（中央全亮、上下渐隐降灰）· 右缘覆盖进度轨 · margin 大纲（≥3 标题且 ≥1280px）
+- 结构：chrome 退场（下滚藏/上滚唤）· 右缘覆盖进度轨 · margin 大纲（≥2 标题且 ≥1280px）
+- 三次修订（2026-10-07，用户拍板）：**焦带降灰整体移除，正文始终全亮**（头尾 16vh 渐隐幕此前已移除）——分层透明感未让阅读更好
 - 难忘时刻：滚过标题幕后界面消失，只剩文字与一条右缘细线
-- 对照稿：`.impeccable/mocks/decision/reading/`（tunnel/sections/margin 同内容三 mock + index）
+- 对照稿：`.impeccable/mocks/decision/reading/`（tunnel/sections/margin 同内容三 mock + index；焦带为历史稿状态，实现已不含）
 
 ## Unresolved
 - 播客章节时间轴替代右缘轨刻度（mock 三形态卡已描述，未实现）
 - 大纲在 h3 层级的缩进密度待真实长文检验
-- 焦带降灰地板值 0.3 与衰减斜率未做用户实测校准

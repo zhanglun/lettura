@@ -18,8 +18,8 @@ related_targets: [".impeccable/mocks/decision/settings.html"]
 
 ## Chosen Direction & Memorable Moment
 - 定稿：面板内第三视图，非浮层非独立窗口（用户 2026-02 轮选定）
-- 难忘时刻：校准台——外观段尾预览块实时反映字号/行高/密度/强调色，拖动即显影
-- 参考：`.impeccable/mocks/decision/settings.html`（含 ?view=/?focus= 直链）；语法表在 DESIGN.md「设置视图」
+- 难忘时刻：校准台——外观段尾预览块实时反映列表密度，拖动即显影（字号/行高滑杆与宋体预览已随 2026-10-05 排版精简移除，阅读排版为固定值）
+- 参考：`.impeccable/mocks/decision/settings.html`（含 ?view=/?focus= 直链；校准台宋体段为历史稿状态）；语法表在 DESIGN.md「设置视图」
 
 ## Unresolved
 - 通知 = 开关+级别捏合为单一分段，实现时需对齐 userConfig 两个字段
