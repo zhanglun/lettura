@@ -116,10 +116,10 @@ select:focus-visible,
   flex: none;
 }
 
-/* macOS 红绿灯浮在顶栏左上（titleBarStyle Overlay）：顶栏让出左侧空间，
-   避免与产品名/导航重叠（红绿灯簇约占 70px） */
+/* macOS 红绿灯浮在顶栏左上（titleBarStyle Overlay，簇右缘 ~72px）：顶栏让出
+   左侧空间，避免与产品名/导航重叠（约 28px 呼吸，Windows/Linux 不加此类） */
 body.platform-mac .fusion-top {
-  padding-left: 84px;
+  padding-left: 100px;
 }
 
 /* Windows/Linux 自绘窗口控制：安静 ghost 钮，关闭悬停染警示色 */

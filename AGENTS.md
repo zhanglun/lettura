@@ -86,10 +86,11 @@
   useLiveQuery。
 - 关闭主窗口是隐藏到系统托盘，不是退出（release；dev 直接退出）。窗口控制
   跨平台：macOS 走 `tauri.macos.conf.json`（平台配置合并，windows 数组
-  整体替换，须带全量字段）在创建期即 `decorations: true` + Overlay +
-  红绿灯位置——decorations:false 的 borderless 窗口没有标准按钮，且运行
-  时补 set_decorations 会与 Overlay 异步竞态（实测内容不延伸）；顶栏经
-  `body.platform-mac` 让位左侧 84px。Windows/Linux 用自绘
+  整体替换，须带全量字段）在创建期即 `decorations: true` + Overlay——
+  decorations:false 的 borderless 窗口没有标准按钮，且运行时补
+  set_decorations 会与 Overlay 异步竞态（实测内容不延伸）；红绿灯由 lib.rs
+  `layout_traffic_lights` 摆位（wry 的 trafficLightPosition 纵向无效），
+  顶栏经 `body.platform-mac` 让位左侧 100px。Windows/Linux 用自绘
   `components/layout/WindowControls`（顶栏右端三钮）。拖拽区仍由
   `data-tauri-drag-region` 承担（双击 = 最大化切换）。
 
