@@ -8,6 +8,7 @@ import clsx from "clsx";
 import {
   CheckCheck,
   ChevronDown,
+  ChevronLeft,
   Clipboard,
   ExternalLink,
   Folder as FolderIcon,
@@ -53,6 +54,7 @@ export function FeedProfile({
   onSync,
   onMarkAllRead,
   onUnsubscribed,
+  onBack,
 }: {
   feed: FeedResItem;
   total: number;
@@ -61,6 +63,8 @@ export function FeedProfile({
   onMarkAllRead: () => void;
   /** 取消订阅成功后的善后（详情页跳回订阅列表） */
   onUnsubscribed: () => void;
+  /** 返回订阅浏览：层级出口住在页面第一个元素（源头卡）头部最左 */
+  onBack: () => void;
 }) {
   const { t } = useTranslation();
   const [collapsed, setCollapsed] = useState(profileCollapsed);
@@ -145,6 +149,14 @@ export function FeedProfile({
       {collapsed ? (
         /* 收起态：单行，只留核心标识 + 展开钮 */
         <div className="fusion-fp-bar">
+          <IconButton
+            size="sm"
+            variant="ghost"
+            className="back"
+            icon={<ChevronLeft size={13} />}
+            label={t("fusion.nav.subscriptions")}
+            onClick={onBack}
+          />
           <FeedIcon feed={feed} />
           <span className="fusion-fp-name">{feed.title}</span>
           <span className="fusion-fp-host">{host}</span>
@@ -167,6 +179,14 @@ export function FeedProfile({
       ) : (
         <div className="fusion-fp-body">
           <div className="fusion-fp-head">
+            <IconButton
+              size="sm"
+              variant="ghost"
+              className="back"
+              icon={<ChevronLeft size={13} />}
+              label={t("fusion.nav.subscriptions")}
+              onClick={onBack}
+            />
             <span className="fusion-fp-logo">
               <FeedIcon feed={feed} />
             </span>

@@ -613,7 +613,7 @@ export function ArticleView() {
     <div className="flex h-full w-full flex-col overflow-hidden">
       {isQueueMode ? (
         <>
-          {/* 源头卡：源信息 / 统计健康 / 动作，可收起 */}
+          {/* 源头卡：源信息 / 统计健康 / 动作，可收起；返回订阅浏览住在卡头最左 */}
           {queueFeed && (
             <FeedProfile
               feed={queueFeed}
@@ -622,22 +622,12 @@ export function ArticleView() {
               onSync={syncQueueFeed}
               onMarkAllRead={markQueueAllRead}
               onUnsubscribed={() => navigate(RouteConfig.LOCAL_FEEDS)}
+              onBack={() => navigate(RouteConfig.LOCAL_FEEDS)}
             />
           )}
 
-          {/* 工具行：返回订阅浏览 + 未读/全部过滤（全部 = 服务端同条件总数）。
-              独立返回行已并入本行——那是一整条只放返回钮的横带，未读数与
-              此处 tab、源头卡统计格三处重复 */}
+          {/* 过滤条：未读/全部（全部 = 服务端同条件总数） */}
           <div className="fusion-strip">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="back"
-              icon={<ChevronLeft size={12} />}
-              label={t("fusion.nav.subscriptions")}
-              onClick={() => navigate(RouteConfig.LOCAL_FEEDS)}
-            />
-            <span className="fusion-strip-sep" aria-hidden="true" />
             <button
               type="button"
               className={`fusion-tab ${queueFilter === "unread" ? "on" : ""}`}

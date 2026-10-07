@@ -124,13 +124,20 @@ vi.mock("@/components/FeedProfile", () => ({
   FeedProfile: ({
     onSync,
     onMarkAllRead,
-    onManage,
+    onBack,
   }: {
     onSync: () => void;
     onMarkAllRead: () => void;
-    onManage: () => void;
+    onBack: () => void;
   }) => (
     <div data-testid="feed-profile">
+      <button
+        type="button"
+        aria-label="fusion.nav.subscriptions"
+        onClick={onBack}
+      >
+        back
+      </button>
       <button type="button" aria-label="feeds.ctx.sync" onClick={onSync}>
         sync
       </button>
@@ -140,9 +147,6 @@ vi.mock("@/components/FeedProfile", () => ({
         onClick={onMarkAllRead}
       >
         read
-      </button>
-      <button type="button" aria-label="fusion.queue.manage" onClick={onManage}>
-        manage
       </button>
     </div>
   ),
@@ -169,9 +173,11 @@ describe("ArticleView header", () => {
       </MemoryRouter>,
     );
 
-    // 返回行 + 源头卡；未读 tab 带 viewMeta 未读数
+    // 源头卡（返回订阅浏览的层级出口住在卡头）+ 未读 tab 带 viewMeta 未读数
     expect(screen.getByTestId("feed-profile")).toBeInTheDocument();
-    expect(screen.getByText("fusion.nav.subscriptions")).toBeInTheDocument();
+    expect(
+      screen.getByLabelText("fusion.nav.subscriptions"),
+    ).toBeInTheDocument();
     expect(screen.getByText("fusion.nav.unread")).toBeInTheDocument();
     expect(screen.getByText("42")).toBeInTheDocument();
   });
@@ -193,6 +199,5 @@ describe("ArticleView header", () => {
       screen.getByLabelText("feeds.ctx.mark_all_read"),
     ).toBeInTheDocument();
     expect(screen.getByLabelText("feeds.ctx.sync")).toBeInTheDocument();
-    expect(screen.getByLabelText("fusion.queue.manage")).toBeInTheDocument();
   });
 });
