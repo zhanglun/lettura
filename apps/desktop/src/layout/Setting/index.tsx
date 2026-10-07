@@ -45,6 +45,7 @@ import { HK } from "@/shortcuts";
 import { useAppStore } from "@/stores";
 import { ASTRYX_THEMES } from "@/themes";
 import { SubscriptionsSection } from "./Subscriptions";
+import { UpdaterRow } from "./UpdaterRow";
 
 const INTERVALS = [
   { value: 0, labelKey: "Manual" },
@@ -54,7 +55,7 @@ const INTERVALS = [
   { value: 24, labelKey: "24 hours" },
 ];
 
-function SRow({
+export function SRow({
   label,
   help,
   children,
@@ -728,6 +729,7 @@ export function SettingPage() {
                 }}
               />
             </SRow>
+            <UpdaterRow />
             <SRow
               label={t("Data Retention")}
               help={t("Read articles and analysis metadata")}

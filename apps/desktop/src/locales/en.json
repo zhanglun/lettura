@@ -296,6 +296,17 @@
     "subs_manage_help": "Add, group, move and unsubscribe feeds",
     "subs_manage_btn": "Manage",
     "lang_help": "Interface language, switches instantly",
+    "updater": {
+      "title": "Check for updates",
+      "help": "Update packages are signature-verified; restart to apply",
+      "check": "Check for updates",
+      "checking": "Checking…",
+      "latest": "You're on the latest version",
+      "download": "Download & install v{{version}}",
+      "downloading": "Updating…",
+      "restart": "Restart to finish update",
+      "failed": "Failed to check for updates"
+    },
     "opml_help": "Full import/export of your list; data belongs to you",
     "opml_import_empty": "Import finished, but no feeds were found — check the file format or content",
     "Off": "Off",

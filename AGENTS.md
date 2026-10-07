@@ -141,7 +141,11 @@
 ## CI 与发布
 
 - `.github/workflows/release.yml` 在 push 到 `release` 时运行：创建 draft
-  release，再用 Tauri 构建 macOS、Ubuntu、Windows 产物。
+  release，再用 Tauri 构建 macOS（arm/x64/universal）、Ubuntu、Windows 产物。
+  自动更新链路：conf 开了 `bundle.createUpdaterArtifacts`（安装包 + 签名的
+  updater 产物），多平台 latest.json 由 tauri-action 合并上传——publish 前
+  人工核对 draft 里 latest.json 应含全部平台条目；客户端入口在设置页
+  「行为与数据 → 检查更新」（`UpdaterRow`，手动检查，无启动静默检查）。
 - `.github/workflows/deploy-doc.yml` 在 `master` 上运行，把 `docs/` 的
   Astro 文档站部署到 GitHub Pages。
 - `package.json`、`src-tauri/tauri.conf.json`、`src-tauri/Cargo.toml` 三处

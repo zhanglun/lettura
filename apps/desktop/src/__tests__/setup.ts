@@ -40,6 +40,14 @@ vi.mock("@tauri-apps/plugin-shell", () => ({
   open: vi.fn(),
 }));
 
+// Mock @tauri-apps/plugin-updater / plugin-process（设置页检查更新）
+vi.mock("@tauri-apps/plugin-updater", () => ({
+  check: vi.fn(() => Promise.resolve(null)),
+}));
+vi.mock("@tauri-apps/plugin-process", () => ({
+  relaunch: vi.fn(),
+}));
+
 // Mock @tauri-apps/plugin-fs
 vi.mock("@tauri-apps/plugin-fs", () => ({
   writeTextFile: vi.fn(),

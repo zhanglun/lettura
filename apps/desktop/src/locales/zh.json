@@ -312,6 +312,17 @@
     "subs_manage_help": "添加、分组、移动与退订来源",
     "subs_manage_btn": "管理订阅",
     "lang_help": "界面语言，即时切换",
+    "updater": {
+      "title": "检查更新",
+      "help": "更新包经签名校验后安装，完成后重启生效",
+      "check": "检查更新",
+      "checking": "检查中…",
+      "latest": "已是最新版本",
+      "download": "下载并安装 v{{version}}",
+      "downloading": "更新中…",
+      "restart": "重启完成更新",
+      "failed": "检查更新失败"
+    },
     "opml_help": "订阅列表完全进出，数据属于用户",
     "opml_import_empty": "导入完成，但没有解析出任何订阅源（检查文件格式或内容）",
     "Off": "关闭",
