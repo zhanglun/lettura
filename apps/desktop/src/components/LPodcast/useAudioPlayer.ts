@@ -1,6 +1,7 @@
+import { t } from "i18next";
 import { useEffect, useRef, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
-import { showErrorToast } from "@/helpers/errorHandler";
+import { toast } from "@/helpers/toast";
 import { useAppStore } from "@/stores";
 
 /**
@@ -40,6 +41,61 @@ const PROGRESS_FLUSH_MS = 5000;
 
 /** ended 每个消费者各收一次（壳层 + 详情页各挂一份监听），只放行一次 */
 let lastEndedAt = 0;
+
+/** 播放失败上报去重：加载失败通常同时触发元素 error 事件与 play() 拒绝，只报一次 */
+let lastPlaybackErrorAt = 0;
+
+/**
+ * 把播放失败的底层错误翻译成用户能懂的原因（事件时间调用，非渲染期）：
+ * 元素 MediaError（加载/解码）与 play() 的 DOMException 双路径，附原始细节供排查。
+ */
+function describePlayFailure(error: unknown, audio: HTMLAudioElement): string {
+  const media = audio.error;
+  if (media) {
+    const detail = media.message ? `(${media.message})` : "";
+    switch (media.code) {
+      case MediaError.MEDIA_ERR_NETWORK:
+        return `${t("podcast.err_network")}${detail}`;
+      case MediaError.MEDIA_ERR_DECODE:
+        return `${t("podcast.err_decode")}${detail}`;
+      case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
+        return `${t("podcast.err_not_supported")}${detail}`;
+      case MediaError.MEDIA_ERR_ABORTED:
+        return `${t("podcast.err_aborted")}${detail}`;
+    }
+  }
+  const name = (error as DOMException | undefined)?.name ?? "";
+  switch (name) {
+    case "NotAllowedError":
+      return t("podcast.err_not_allowed");
+    case "NotSupportedError":
+      return t("podcast.err_not_supported");
+    case "NetworkError":
+      return t("podcast.err_network");
+  }
+  const message = (error as DOMException | undefined)?.message ?? "";
+  const tech = [name, message].filter(Boolean).join(": ");
+  return tech
+    ? `${t("podcast.err_generic")} (${tech})`
+    : t("podcast.err_generic");
+}
+
+/** 失败 toast：带单集标题（自动连播时用户没点它，必须知道是哪集挂了） */
+function reportPlaybackFailure(
+  raw: unknown,
+  reason: string,
+  title?: string,
+): void {
+  console.error("[podcast] playback failed:", raw);
+  const now = Date.now();
+  if (now - lastPlaybackErrorAt < 1000) return;
+  lastPlaybackErrorAt = now;
+  toast.error(
+    title
+      ? t("podcast.play_failed_with_reason", { title, reason })
+      : t("podcast.play_failed_generic", { reason }),
+  );
+}
 
 /** 倍速持久化（音量交给系统，不设应用内控件） */
 const PLAYBACK_RATE_KEY = "lpodcast_playback_rate";
@@ -128,7 +184,11 @@ export const useAudioPlayer = () => {
           // AbortError = 播放请求被后续操作打断（切曲/暂停竞态），是正常现象
           if (error?.name === "AbortError") return;
           store.updatePodcastLoading(false);
-          showErrorToast(error, "Failed to play audio");
+          reportPlaybackFailure(
+            error,
+            describePlayFailure(error, audio),
+            store.currentTrack?.title,
+          );
           store.updatePodcastPlayingStatus(false);
         });
       }
@@ -180,7 +240,19 @@ export const useAudioPlayer = () => {
         store.updatePodcastLoading(true);
       }
     };
-    const handleError = () => store.updatePodcastLoading(false);
+    // 播放中途断流/解码失败只有元素 error 事件知道（play() 早已成功返回）：
+    // 之前这里静默，用户只见播放停了不知道为什么
+    const handleError = () => {
+      store.updatePodcastLoading(false);
+      if (store.podcastPlayingStatus) {
+        store.updatePodcastPlayingStatus(false);
+        reportPlaybackFailure(
+          audio.error,
+          describePlayFailure(null, audio),
+          store.currentTrack?.title,
+        );
+      }
+    };
 
     audio.addEventListener("timeupdate", handleTimeUpdate);
     audio.addEventListener("loadedmetadata", handleLoadedMetadata);
