@@ -18,10 +18,7 @@ import { EMAIL_SUBSCRIPTION_ENABLED, RouteConfig } from "@/config";
 import type { FeedResItem, SourceAccount } from "@/db";
 import { formatDuration } from "@/helpers/articleContent";
 import { showErrorToast } from "@/helpers/errorHandler";
-import {
-  BUILTIN_GENERATORS,
-  matchGenerator,
-} from "@/helpers/feedGenerators";
+import { BUILTIN_GENERATORS, matchGenerator } from "@/helpers/feedGenerators";
 import {
   CARRIER_BADGE_CLS,
   type Carrier,

@@ -11,7 +11,7 @@ jobs:
   create-release:
     permissions:
       contents: write
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     outputs:
       release_id: ${{ steps.create-release.outputs.result }}
 
@@ -118,7 +118,7 @@ jobs:
   publish-release:
     permissions:
       contents: write
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     needs: [create-release, build]
 
     steps:

@@ -125,7 +125,9 @@ export function ReaderControls({
             <Kbd keys="f" />
           ) : (
             <>
-              {t(starred === ArticleStarStatus.STARRED ? "Unstar it" : "Star it")}
+              {t(
+                starred === ArticleStarStatus.STARRED ? "Unstar it" : "Star it",
+              )}
               <Kbd keys="f" />
             </>
           )}

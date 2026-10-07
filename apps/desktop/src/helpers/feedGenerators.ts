@@ -71,4 +71,3 @@ export function matchGenerator(
   }
   return null;
 }
-

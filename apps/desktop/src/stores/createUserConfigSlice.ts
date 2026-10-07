@@ -45,7 +45,10 @@ export const createUserConfigSlice: StateCreator<UserConfigSlice> = (
       pendingWrite = new Promise<number>((resolve, reject) => {
         writeTimer = setTimeout(() => {
           writeTimer = null;
-          apiPost<number>("/user-config", get().userConfig).then(resolve, reject);
+          apiPost<number>("/user-config", get().userConfig).then(
+            resolve,
+            reject,
+          );
         }, 600);
       });
     }
