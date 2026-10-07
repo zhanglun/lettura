@@ -119,26 +119,34 @@ export function ArticleView() {
     sourceUuid: sourceFilter?.uuid,
   });
 
-  // 源头卡「文章总数」的稳定口径：useArticle 的 total 是当前过滤口径的服务端
-  // 总数（未读 tab 返回未读数），切 tab 会让卡片数字跳变——这里独立取一次
-  // 不带 read_status 的 summary（恒为全部口径），仅随源切换刷新
-  const [feedTotal, setFeedTotal] = useState<number | null>(null);
-  useEffect(() => {
-    if (!feedUuid) {
-      setFeedTotal(null);
-      return;
-    }
-    let cancelled = false;
-    apiGet<{ total: number }>("/articles/summary", { feed_uuid: feedUuid })
+  // 源级稳定计数（源头卡「文章总数」+ 过滤条「未读/全部」两 tab）：useArticle 的
+  // total 是当前过滤口径的服务端总数（未读 tab 即未读数），直接吃会让卡片与
+  // tab 在切换口径时跳变——这里并行取两个口径的 summary，各自恒定；
+  // 已读/同步后由 scheduleCountsRefresh 防抖重取保持鲜活
+  const [feedTotals, setFeedTotals] = useState<{
+    all: number | null;
+    unread: number | null;
+  }>({ all: null, unread: null });
+  const loadFeedTotals = (uuid: string) => {
+    const pick = (summary?: { total: number }) =>
+      summary && Number.isFinite(summary.total) ? summary.total : null;
+    apiGet<{ total: number }>("/articles/summary", { feed_uuid: uuid })
       .then((summary) => {
-        if (!cancelled && Number.isFinite(summary?.total)) {
-          setFeedTotal(summary.total);
-        }
+        setFeedTotals((prev) => ({ ...prev, all: pick(summary) }));
       })
       .catch(() => {});
-    return () => {
-      cancelled = true;
-    };
+    apiGet<{ total: number }>("/articles/summary", {
+      feed_uuid: uuid,
+      read_status: 1,
+    })
+      .then((summary) => {
+        setFeedTotals((prev) => ({ ...prev, unread: pick(summary) }));
+      })
+      .catch(() => {});
+  };
+  useEffect(() => {
+    setFeedTotals({ all: null, unread: null });
+    if (feedUuid) loadFeedTotals(feedUuid);
   }, [feedUuid]);
 
   // 桶收起状态：父级持有（j/k 可达序列随收起过滤）。默认只展开第一个  // 非空时间组、其余收起（2026-09-30 用户拍板，取代「全展开除更早」）——
@@ -160,12 +168,18 @@ export function ArticleView() {
     sections.find((s) => s.key === key)?.loadMore();
   };
 
+  // 计数刷新收口：全局载体计数 + 源级稳定计数（未读 tab / 源头卡总数）同拍重取
+  const refreshSourceCounts = () => {
+    refreshCarrierCounts();
+    if (feedUuid) loadFeedTotals(feedUuid);
+  };
+
   // 载体计数保持鲜活：单篇标记已读/切换读状态后防抖刷新
   // （段头「全部已读」连发多篇也只触发一次请求；同步/全部已读路径原本就刷新）
   const countsRefreshTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const scheduleCountsRefresh = () => {
     if (countsRefreshTimer.current) clearTimeout(countsRefreshTimer.current);
-    countsRefreshTimer.current = setTimeout(() => refreshCarrierCounts(), 600);
+    countsRefreshTimer.current = setTimeout(refreshSourceCounts, 600);
   };
   useEffect(
     () => () => {
@@ -483,6 +497,7 @@ export function ArticleView() {
     if (before > 0) updateCollectionMeta(0, -before);
     setViewMeta({ ...useAppStore.getState().viewMeta, unread: 0 });
     await Promise.all([getSubscribes?.(), mutate(identity)]);
+    refreshSourceCounts();
   };
 
   // try/finally 会令编译器 bail-out（1.0 不支持 TryStatement），改用
@@ -527,7 +542,7 @@ export function ArticleView() {
       await Promise.all([
         getSubscribes?.(),
         initCollectionMetas?.(),
-        refreshCarrierCounts(),
+        refreshSourceCounts(),
       ]);
       toast.success(
         t("fusion.list.mark_bucket_done", {
@@ -547,7 +562,7 @@ export function ArticleView() {
 
   const markAllRead = async () => {
     await store.markArticleListAsRead(isToday, isAll);
-    await Promise.all([mutate(identity), refreshCarrierCounts()]);
+    await Promise.all([mutate(identity), refreshSourceCounts()]);
   };
 
   const title = store.viewMeta?.title ?? "";
@@ -568,6 +583,11 @@ export function ArticleView() {
         ? unreadCount
         : (total ?? unreadCount)
       : unreadCount;
+
+  // 源级稳定计数：过滤条两 tab 与源头卡共用（独立请求，切换口径不跳变）；
+  // 快照未落地时退当前口径值（渐进首帧）
+  const stableTotal = feedTotals.all ?? total;
+  const stableUnread = feedTotals.unread ?? headerUnread;
 
   // 面板内替换：详情视图
   if (detailArticle) {
@@ -638,7 +658,7 @@ export function ArticleView() {
           {queueFeed && (
             <FeedProfile
               feed={queueFeed}
-              total={feedTotal ?? total}
+              total={stableTotal}
               syncing={queueSyncing}
               onSync={syncQueueFeed}
               onMarkAllRead={markQueueAllRead}
@@ -655,7 +675,7 @@ export function ArticleView() {
               onClick={() => setQueueFilter("unread")}
             >
               {t("fusion.nav.unread")}
-              <span className="c">{headerUnread}</span>
+              <span className="c">{stableUnread}</span>
             </button>
             <button
               type="button"
@@ -663,7 +683,7 @@ export function ArticleView() {
               onClick={() => setQueueFilter("all")}
             >
               {t("fusion.filter.all")}
-              <span className="c">{total}</span>
+              <span className="c">{stableTotal}</span>
             </button>
           </div>
         </>
@@ -714,7 +734,7 @@ export function ArticleView() {
                 isDisabled={store.globalSyncStatus}
                 onClick={() => {
                   store.syncAllArticles().finally(() => {
-                    refreshCarrierCounts();
+                    refreshSourceCounts();
                     mutate((pages: any) => pages);
                   });
                 }}
