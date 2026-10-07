@@ -31,7 +31,7 @@ export interface ArticleViewProps {
 
 /* ── 方向契约（2026-10-01 阅读面重设计 · seed 360afa8e；二次修订同日用户拍板） ──
  * THESIS: 正文是唯一的主角——滚过标题幕后切换到实心顶栏（题名居中、操作保留、不透明），
- *   焦带让视口中央的文字全亮；拒绝的旧排布：常驻顶栏 + 顶缘进度发丝线的「仪表盘阅读」。
+ *   拒绝的旧排布：常驻顶栏 + 顶缘进度发丝线的「仪表盘阅读」。
  * OWN-WORLD: 静密×聚光令牌不变（玻璃面板/墨三级/发丝线/accent/宋体正文/环境光）；
  *   新词汇 = 实心滚动顶栏、右缘覆盖进度轨、margin 大纲（具名捐赠）。
  * STORY: 读者打开即读，滚深后题名与操作跟着走（实心不透明）；位置感由右缘轨与大纲供给；
@@ -40,7 +40,8 @@ export interface ArticleViewProps {
  *   下滚过 160px 后原栏上滑、实心顶栏顶入（题名居中）；右缘轨常驻；
  *   大纲在正文 ≥2 个标题且窗口 ≥1280px 时常驻，否则静默缺席。
  * FORM: 掷中候选 #4「打字机隧道」（三选一锁定），TOC 为 #5「信封双轴」的捐赠（raise）；
- *   二次修订：去幽灵题名/渐隐幕，改实心顶栏（用户实测后拍板）。
+ *   二次修订：去幽灵题名/渐隐幕，改实心顶栏（用户实测后拍板）；
+ *   三次修订：焦带降灰整体移除（用户拍板「渐变透明很垃圾」），正文始终全亮。
  * FINISH: unreviewed and undocumented is unfinished; this build ends with the
  *   finish review, the verdict, DESIGN.md, and every shipping raster carrying
  *   its provenance.
@@ -51,12 +52,7 @@ interface TocItem {
   level: 2 | 3;
 }
 
-// 焦带只落正文块：头部三件套（kind/题/meta）不参与压暗——契约 FIRST VIEWPORT
-// 「打开时题 + meta + 正文首屏全亮」，滚离后由 16vh 渐隐幕自然收走（mock 同语义）
-const FOCUS_SELECTOR =
-  ".fusion-article-body > *, .fusion-article-body > * > *";
-
-/** 阅读面：打字机隧道——chrome 退场 + 焦带 + 右缘轨 + margin 大纲（detail.html 的替代） */
+/** 阅读面：打字机隧道——chrome 退场 + 右缘轨 + margin 大纲（detail.html 的替代） */
 export function View({
   article,
   nextArticle,
@@ -101,17 +97,17 @@ export function View({
     const el = scrollBoxRef.current?.getElement();
     if (!el || !article) return;
 
-    // 焦带 + 大纲的数据源：正文块与标题（内容异步渲染后由 MutationObserver 重建）
-    let blocks: HTMLElement[] = [];
+    // 大纲的数据源：正文标题（内容异步渲染后由 MutationObserver 重建）
     let headings: HTMLElement[] = [];
     const rebuild = () => {
-      blocks = [...el.querySelectorAll<HTMLElement>(FOCUS_SELECTOR)];
       headings = [
         ...el.querySelectorAll<HTMLElement>(
           ".fusion-article-body h2, .fusion-article-body h3",
         ),
       ];
-      headings.forEach((h, i) => h.setAttribute("data-toc", String(i)));
+      headings.forEach((h, i) => {
+        h.setAttribute("data-toc", String(i));
+      });
       setToc(
         headings
           .map((h, i) => ({
@@ -140,24 +136,6 @@ export function View({
       raf = 0;
       // 二次修订：滚过 160px 切实心顶栏，回顶换回原栏（无透明浮层、无渐隐幕）
       setScrolled(el.scrollTop > 160);
-      // reduced-motion 实时读：阅读中途切系统设置即刻生效（与 wideEnough 对齐）
-      const reduced = window.matchMedia(
-        "(prefers-reduced-motion: reduce)",
-      ).matches;
-      // 焦带：视口中央带全亮，向上下缘线性降灰（reduced-motion 用户保持全亮）
-      const vhHalf = el.clientHeight * 0.5;
-      if (!reduced) {
-        for (const node of blocks) {
-          const r = node.getBoundingClientRect();
-          if (r.bottom < -80 || r.top > el.clientHeight + 80) continue;
-          const d =
-            Math.abs(r.top + r.height / 2 - vhHalf) / (el.clientHeight * 0.34);
-          node.style.opacity = Math.max(
-            0.3,
-            Math.min(1, 1.15 - Math.max(0, d - 0.3) * 0.85),
-          ).toFixed(2);
-        }
-      }
       // 大纲 spy：最后一个滚过视口上 42% 线的标题
       let active: number | null = null;
       for (const h of headings) {
@@ -277,7 +255,10 @@ export function View({
       </div>
 
       {/* 滚动实心顶栏（二次修订）：不透明，题名居中，操作保留 */}
-      <div className={`fusion-rbar ${scrolled ? "" : "hide"}`} aria-hidden={!scrolled}>
+      <div
+        className={`fusion-rbar ${scrolled ? "" : "hide"}`}
+        aria-hidden={!scrolled}
+      >
         <Button
           variant="ghost"
           size="sm"
