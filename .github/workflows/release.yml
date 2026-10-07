@@ -31,10 +31,20 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
+            // 幂等：重跑/重触发时复用已存在的 v 同号 draft，避免堆出多个重复 draft
+            const tag = `v${process.env.PACKAGE_VERSION}`
+            const { data: releases } = await github.rest.repos.listReleases({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            })
+            const existing = releases.find((r) => r.draft && r.tag_name === tag)
+            if (existing) {
+              return existing.id
+            }
             const { data } = await github.rest.repos.createRelease({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              tag_name: `v${process.env.PACKAGE_VERSION}`,
+              tag_name: tag,
               name: ` v${process.env.PACKAGE_VERSION}`,
               body: 'Take a look at the assets to download and install this app.',
               draft: true,
@@ -49,17 +59,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        settings:
-          - platform: 'macos-latest' # for Arm based macs (M1 and above).
+        include:
+          - platform: 'macos-latest' # Apple silicon (M1+)
             args: '--target aarch64-apple-darwin'
-          - platform: 'macos-latest' # for Intel based macs.
+          - platform: 'macos-latest' # Intel macs
             args: '--target x86_64-apple-darwin'
-          - platform: 'macos-latest' # for both Arm and Intelbased Macs
+          - platform: 'macos-latest' # Universal binary
             args: '--target universal-apple-darwin'
           - platform: 'ubuntu-22.04'
-            args: ''
           - platform: 'windows-latest'
-            args: ''
     runs-on: ${{ matrix.platform }}
     steps:
       - name: Checkout repository
