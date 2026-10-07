@@ -119,8 +119,29 @@ export function ArticleView() {
     sourceUuid: sourceFilter?.uuid,
   });
 
-  // 桶收起状态：父级持有（j/k 可达序列随收起过滤）。默认只展开第一个
-  // 非空时间组、其余收起（2026-09-30 用户拍板，取代「全展开除更早」）——
+  // 源头卡「文章总数」的稳定口径：useArticle 的 total 是当前过滤口径的服务端
+  // 总数（未读 tab 返回未读数），切 tab 会让卡片数字跳变——这里独立取一次
+  // 不带 read_status 的 summary（恒为全部口径），仅随源切换刷新
+  const [feedTotal, setFeedTotal] = useState<number | null>(null);
+  useEffect(() => {
+    if (!feedUuid) {
+      setFeedTotal(null);
+      return;
+    }
+    let cancelled = false;
+    apiGet<{ total: number }>("/articles/summary", { feed_uuid: feedUuid })
+      .then((summary) => {
+        if (!cancelled && Number.isFinite(summary?.total)) {
+          setFeedTotal(summary.total);
+        }
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [feedUuid]);
+
+  // 桶收起状态：父级持有（j/k 可达序列随收起过滤）。默认只展开第一个  // 非空时间组、其余收起（2026-09-30 用户拍板，取代「全展开除更早」）——
   // 会话级不持久化（日期桶随时间漂移，持久化语义混乱）
   const [collapsedBuckets, setCollapsedBuckets] = useState<Set<string>>(
     () => new Set(BUCKET_ORDER),
@@ -617,7 +638,7 @@ export function ArticleView() {
           {queueFeed && (
             <FeedProfile
               feed={queueFeed}
-              total={total}
+              total={feedTotal ?? total}
               syncing={queueSyncing}
               onSync={syncQueueFeed}
               onMarkAllRead={markQueueAllRead}
