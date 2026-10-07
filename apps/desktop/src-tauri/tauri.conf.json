@@ -22,9 +22,7 @@
         "resizable": true,
         "title": "Lettura, Your RSS reader",
         "width": 1440,
-        "dragDropEnabled": false,
-        "titleBarStyle": "Overlay",
-        "hiddenTitle": true
+        "dragDropEnabled": false
       }
     ],
     "security": {

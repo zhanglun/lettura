@@ -1,0 +1,24 @@
+{
+  "app": {
+    "windows": [
+      {
+        "fullscreen": false,
+        "maximized": false,
+        "height": 760,
+        "decorations": true,
+        "transparent": true,
+        "visible": false,
+        "resizable": true,
+        "title": "Lettura, Your RSS reader",
+        "width": 1440,
+        "dragDropEnabled": false,
+        "titleBarStyle": "Overlay",
+        "hiddenTitle": true,
+        "trafficLightPosition": {
+          "x": 20,
+          "y": 21
+        }
+      }
+    ]
+  }
+}

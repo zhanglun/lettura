@@ -85,11 +85,12 @@
   读写统一收口在 `stores/createPodcastSlice.ts` 的 action 与渲染端
   useLiveQuery。
 - 关闭主窗口是隐藏到系统托盘，不是退出（release；dev 直接退出）。窗口控制
-  跨平台：macOS 在 lib.rs setup 里运行时 `set_decorations(true)` +
-  `set_title_bar_style(Overlay)` 恢复原生红绿灯（decorations:false 创建的
-  borderless 窗口没有标准按钮，conf 里的 titleBarStyle 在创建期被忽略；
-  `fusion-top` 经 `body.platform-mac` 让位左侧 84px）；Windows/Linux 用
-  自绘 `components/layout/WindowControls`（顶栏右端三钮）。拖拽区仍由
+  跨平台：macOS 走 `tauri.macos.conf.json`（平台配置合并，windows 数组
+  整体替换，须带全量字段）在创建期即 `decorations: true` + Overlay +
+  红绿灯位置——decorations:false 的 borderless 窗口没有标准按钮，且运行
+  时补 set_decorations 会与 Overlay 异步竞态（实测内容不延伸）；顶栏经
+  `body.platform-mac` 让位左侧 84px。Windows/Linux 用自绘
+  `components/layout/WindowControls`（顶栏右端三钮）。拖拽区仍由
   `data-tauri-drag-region` 承担（双击 = 最大化切换）。
 
 ## 测试要点

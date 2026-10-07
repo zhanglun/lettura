@@ -82,20 +82,6 @@ pub fn run() {
       let app_handle = app.handle().clone();
       let main_window = app.get_webview_window("main").unwrap();
 
-      // macOS：decorations:false 创建的是 borderless 窗口，标准按钮（红绿灯）
-      // 整个不存在，创建期的 titleBarStyle 也因此被忽略（实测只见空白顶栏）。
-      // 在窗口显示前恢复标准标题栏掩码，再套 Overlay——红绿灯浮在内容上、
-      // 无标题条与标题文本。Windows/Linux 保持 decorations:false，走自绘
-      // WindowControls。
-      #[cfg(target_os = "macos")]
-      {
-        main_window.set_decorations(true).unwrap();
-        main_window
-          .set_title_bar_style(tauri::TitleBarStyle::Overlay)
-          .unwrap();
-        main_window.set_title("").unwrap();
-      }
-
       // `tauri dev` 的 CLI/Vite 会响应终端 Ctrl+C，但 macOS GUI 进程不会因此
       // 自动退出，最终被重新托管给 PID 1。开发模式下让应用本体接住 SIGINT，
       // 走 Tauri 的正常退出路径；发布版仍保持托盘常驻语义。
