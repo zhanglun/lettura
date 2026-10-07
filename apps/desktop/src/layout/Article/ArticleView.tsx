@@ -1,6 +1,5 @@
 import { Button } from "@astryxdesign/core/Button";
 import { IconButton } from "@astryxdesign/core/IconButton";
-import { Kbd } from "@astryxdesign/core/Kbd";
 import { open } from "@tauri-apps/plugin-shell";
 import dayjs from "dayjs";
 import {
@@ -614,20 +613,6 @@ export function ArticleView() {
     <div className="flex h-full w-full flex-col overflow-hidden">
       {isQueueMode ? (
         <>
-          {/* 返回行：退回订阅浏览（feeds.html 契约） */}
-          <div className="fusion-fv-backrow">
-            <Button
-              variant="ghost"
-              size="sm"
-              icon={<ChevronLeft size={12} />}
-              label={t("fusion.nav.subscriptions")}
-              endContent={<Kbd keys="esc" />}
-              onClick={() => navigate(RouteConfig.LOCAL_FEEDS)}
-            />
-            <span className="fusion-fv-backcount">
-              {headerUnread} {t("fusion.nav.unread")}
-            </span>
-          </div>
           {/* 源头卡：源信息 / 统计健康 / 动作，可收起 */}
           {queueFeed && (
             <FeedProfile
@@ -640,8 +625,19 @@ export function ArticleView() {
             />
           )}
 
-          {/* 过滤条：未读/全部（全部 = 服务端同条件总数） */}
+          {/* 工具行：返回订阅浏览 + 未读/全部过滤（全部 = 服务端同条件总数）。
+              独立返回行已并入本行——那是一整条只放返回钮的横带，未读数与
+              此处 tab、源头卡统计格三处重复 */}
           <div className="fusion-strip">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="back"
+              icon={<ChevronLeft size={12} />}
+              label={t("fusion.nav.subscriptions")}
+              onClick={() => navigate(RouteConfig.LOCAL_FEEDS)}
+            />
+            <span className="fusion-strip-sep" aria-hidden="true" />
             <button
               type="button"
               className={`fusion-tab ${queueFilter === "unread" ? "on" : ""}`}

@@ -840,6 +840,18 @@ body.platform-mac .fusion-top {
   flex: none;
 }
 
+/* 源队列工具行：返回钮与过滤 tab 之间的发丝竖分隔（导航 ≠ 过滤） */
+.fusion-strip .back {
+  margin-right: 4px;
+}
+
+.fusion-strip-sep {
+  width: 1px;
+  height: 16px;
+  margin-right: 8px;
+  background: var(--fusion-hair2);
+}
+
 .fusion-tab {
   font-size: 12px;
   color: var(--fusion-sub);
@@ -2709,17 +2721,6 @@ body.fusion-context-menu-open .fusion-set-body {
 .fusion-b-unread.is-zero {
   color: var(--fusion-ter);
   font-weight: 400;
-}
-
-/* ── 源队列帧返回行：回订阅浏览；源标识下沉到源头卡 ── */
-.fusion-fv-backrow {
-  height: 42px;
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  padding: 0 12px;
-  border-bottom: 1px solid var(--fusion-hair);
-  flex: none;
 }
 
 /* ── 源头卡（feeds.html 契约扩展）：标识/简介/统计/动作，可收起为单行 ── */
