@@ -3,6 +3,7 @@ name = "fetcher-bilibili"
 version = "0.2.0"
 edition = "2021"
 description = "B 站 UP 主动态 fetcher：wbi 签名调 web API，动态归一化成阅读器文章"
+license = "GPL-3.0-only"
 
 [dependencies]
 fetcher-core = { path = "../fetcher-core" }

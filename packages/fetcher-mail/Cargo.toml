@@ -3,6 +3,7 @@ name = "fetcher-mail"
 version = "0.2.0"
 edition = "2021"
 description = "IMAP 邮箱抓取器：把指定发件人的 newsletter 邮件归一化成 FetchedArticle"
+license = "GPL-3.0-only"
 
 [dependencies]
 fetcher-core = { path = "../fetcher-core" }

@@ -11,6 +11,8 @@ Another free and open-source feed reader designed to deliver an exceptional read
 
 <a href="https://www.buymeacoffee.com/zhanglun"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=zhanglun&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff" /></a>
 
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](./LICENSE)
+
 ### Features
 
 * **Cross-Platform Compatibility**: Seamlessly access your feeds on macOS, Windows, and soon Linux, ensuring your reading experience is uninterrupted regardless of your operating system.
@@ -68,3 +70,7 @@ You can get more details about building Tauri app in [here](https://tauri.app/v1
 
 * [Pavo: mini desktop wallpaper application. ](https://github.com/zhanglun/pavo)
 * [BookWise: book wise, read wiser](https://github.com/zhanglun/bookwise)
+
+## License
+
+Lettura is licensed under the [GNU General Public License v3.0](./LICENSE).
