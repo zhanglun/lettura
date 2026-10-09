@@ -189,6 +189,46 @@ mod tests {
     assert_eq!(feed_carrier(None, &text_items), Carrier::Text);
   }
 
+  /// Atom 1.0 直链（如 repology 的 maintainer feed）与 RSS 同一条路：
+  /// feed-rs 自动识别格式，mapping 层不区分来源（回应 #81）
+  #[test]
+  fn test_parse_atom_1_0_feed() {
+    let atom = r#"<?xml version="1.0" encoding="utf-8"?>
+      <feed xmlns="http://www.w3.org/2005/Atom">
+        <title>nix_unstable packages maintained by mah.mirr@gmail.com</title>
+        <link rel="alternate" href="https://repology.org/"/>
+        <id>tag:repology.org,2026:maintainer-feed</id>
+        <updated>2026-10-08T00:00:00Z</updated>
+        <entry>
+          <id>tag:repology.org,2026:pkg:hello</id>
+          <title>hello 2.12.2</title>
+          <link href="https://repology.org/project/hello/versions"/>
+          <updated>2026-10-07T12:00:00Z</updated>
+          <summary>new version</summary>
+        </entry>
+        <entry>
+          <id>tag:repology.org,2026:pkg:ripgrep</id>
+          <title>ripgrep 14.1.1</title>
+          <link href="https://repology.org/project/ripgrep/versions"/>
+          <updated>2026-10-06T08:30:00Z</updated>
+          <content type="text">updated to 14.1.1</content>
+        </entry>
+      </feed>"#;
+
+    let feed = parser::parse(atom.as_bytes()).expect("parse atom feed");
+    assert_eq!(
+      feed.title.as_ref().map(|t| t.content.as_str()),
+      Some("nix_unstable packages maintained by mah.mirr@gmail.com")
+    );
+    assert_eq!(feed.entries.len(), 2);
+
+    let items: Vec<FetchedArticle> = feed.entries.iter().map(|e| to_article(e, None)).collect();
+    assert_eq!(items[0].title, "hello 2.12.2");
+    assert_eq!(items[0].link, "https://repology.org/project/hello/versions");
+    assert_eq!(items[1].title, "ripgrep 14.1.1");
+    assert!(items.iter().all(|item| item.carrier == Carrier::Text));
+  }
+
   #[test]
   fn feed_carrier_hint_priority() {
     // 客户端声明 video/email 优先
