@@ -127,6 +127,23 @@ jobs:
           args: ${{ matrix.args }}
           releaseId: ${{ needs.create-release.outputs.release_id }}
 
+      # Windows 便携版：bundle 无 resources，exe 自包含，zip 后随 draft 上传（#85）
+      - name: Pack portable zip (Windows)
+        if: matrix.platform == 'windows-latest'
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $version = (Get-Content apps/desktop/src-tauri/tauri.conf.json | ConvertFrom-Json).version
+          $exe = Get-ChildItem -Path "target/release" -Filter "*.exe" -File |
+            Where-Object { $_.Name -imatch '^lettura' } | Select-Object -First 1
+          if (-not $exe) { throw "lettura.exe not found under target/release" }
+          $zip = "Lettura_${version}_x64-portable.zip"
+          Compress-Archive -Path $exe.FullName -DestinationPath $zip
+          gh api "repos/${{ github.repository }}/releases/${{ needs.create-release.outputs.release_id }}/assets?name=$zip" `
+            --method POST --input "$zip" -H "Content-Type: application/zip"
+
   publish-release:
     permissions:
       contents: write
