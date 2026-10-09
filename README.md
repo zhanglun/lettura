@@ -23,12 +23,10 @@ Another free and open-source feed reader designed to deliver an exceptional read
 * **Podcast playback support**: Enjoy your favorite audio content directly within the app without missing a single episode.
 
 <p align="center">
-  <img src="./screenshots/1.png" width="90%"/>
-  <img src="./screenshots/2.png" width="90%"/>
-  <img src="./screenshots/3.png" width="90%"/>
-  <img src="./screenshots/4.png" width="90%"/>
-  <img src="./screenshots/5.png" width="90%"/>
-  <img src="./screenshots/6.png" width="90%"/>
+  <img src="./screenshots/2.0-light-unread.png" width="90%"/>
+  <img src="./screenshots/2.0-light-reading.png" width="90%"/>
+  <img src="./screenshots/2.0-dark-unread.png" width="90%"/>
+  <img src="./screenshots/2.0-dark-reading.png" width="90%"/>
 </p>
 
 
