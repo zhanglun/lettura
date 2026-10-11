@@ -66,9 +66,6 @@ jobs:
           - platform: 'macos-latest' # Intel macs
             args: '--target x86_64-apple-darwin'
             rust-targets: 'x86_64-apple-darwin'
-          - platform: 'macos-latest' # Universal binary
-            args: '--target universal-apple-darwin'
-            rust-targets: 'aarch64-apple-darwin,x86_64-apple-darwin'
           - platform: 'ubuntu-22.04'
           - platform: 'windows-latest'
     runs-on: ${{ matrix.platform }}
