@@ -149,4 +149,10 @@
 - `.github/workflows/deploy-doc.yml` 在 `master` 上运行，把 `docs/` 的
   Astro 文档站部署到 GitHub Pages。
 - `package.json`、`src-tauri/tauri.conf.json`、`src-tauri/Cargo.toml` 三处
-  版本号保持同步。
+  版本号保持同步（bump 后本地 `pnpm cargo:check` 刷 Cargo.lock）。
+- **版本号规则（2026-10-11 用户定）**：除非用户明确指定版本号，发布一律在
+  0.2.x 线内 patch 递增（0.2.1 → 0.2.2 → …）；升 minor（如 0.3.0）必须
+  用户点名。
+- 发布顺序：三处版本号 bump 提交 → 推 `0.2.0` 分支与 `master`（ff）→
+  `git push origin 0.2.0:release` 触发构建 → 人工核对 draft 的 latest.json
+  全平台条目 → publish。
