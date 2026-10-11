@@ -192,19 +192,19 @@ body.platform-mac .fusion-top {
   flex: 1;
 }
 
-/* ── 同源连跑段头（未读队列按源显影结构）：≥3 篇同源连排时插入，队列仍按时间序 ──
-   分组头保留规则线（DESIGN 契约）；动作钮与行尾动作同语：常显 .62，悬停全显 */
 /* ── 日期分隔条（list-prism.html 契约）：时间流唯一导航锚点，
-     段头/折叠/索引条退役（2026-09-29 决策）。吸顶 + 规则线 + 桶内计数 ── */
+     段头/折叠/索引条退役（2026-09-29 决策）。吸顶 + 规则线 + 桶内计数。
+     A′ 2026-10-10：收起态与展开态同一分组头本体（chevron 转向表状态，
+     去掉「已收起」文案）；默认展开姿态见 ArticleView（估高到首屏约 55%） ── */
 .fusion-list-skeleton {
   padding: 14px 32px 14px 10px;
 }
 .fusion-list-skeleton-row {
   display: grid;
-  grid-template-columns: 20px 76px minmax(0, 1fr) 72px;
+  grid-template-columns: 20px minmax(0, 1fr) 72px;
   align-items: center;
   gap: 10px;
-  height: 52px;
+  height: 40px;
   margin-bottom: 2px;
 }
 .fusion-list-skeleton-copy {
@@ -281,7 +281,8 @@ body.platform-mac .fusion-top {
   cursor: wait;
   opacity: 0.45;
 }
-/* 可收起桶（今天除外）：整行点击收起/展开，行同款 4% 墨洗；收起态规则线变实提示「下面还有」 */
+/* 展开态整行可点 = 收起该桶，收起态 chevron 转向表达状态（A′ 2026-10-10：
+   收起态回归分组头本体，去掉「已收起」机制文案）；行同款 4% 墨洗 */
 .fusion-dayhead.is-toggle {
   cursor: pointer;
 }
@@ -529,270 +530,6 @@ body.platform-mac .fusion-top {
   background: color-mix(in srgb, var(--color-text-primary) 7%, transparent);
 }
 
-/* 段头主规则（.fusion-runhead 本体）在下方恢复 */
-
-.fusion-runhead {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  height: 26px;
-  margin: 14px 20px 4px 4px;
-  border-radius: 8px;
-  /* 索引条吸顶跳转时给段头让位 */
-  scroll-margin-top: 46px;
-}
-
-.fusion-runhead:first-child {
-  margin-top: 4px;
-}
-
-/* 可折叠的段整行可点 = 展开/收起（行同款 4% 墨洗）；静态段头无 hover */
-.fusion-runhead.is-toggle {
-  cursor: pointer;
-}
-
-.fusion-runhead.is-toggle:hover {
-  background: color-mix(in srgb, var(--color-text-primary) 4%, transparent);
-}
-
-.fusion-runhead.is-flash {
-  animation: fusion-runflash 1.1s ease-out;
-}
-
-@keyframes fusion-runflash {
-  0% {
-    background: color-mix(in srgb, var(--color-accent) 16%, transparent);
-  }
-  100% {
-    background: transparent;
-  }
-}
-
-.fusion-run-id {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  border: 0;
-  background: none;
-  padding: 2px 4px;
-  border-radius: 6px;
-  font: inherit;
-  cursor: pointer;
-  flex: none;
-  min-width: 0;
-}
-
-.fusion-run-id:hover {
-  background: color-mix(in srgb, var(--color-text-primary) 4%, transparent);
-}
-
-.fusion-run-ic {
-  width: 14px;
-  height: 14px;
-  border-radius: 4px;
-  object-fit: cover;
-  flex: none;
-}
-
-.fusion-run-name {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--fusion-sub);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.fusion-run-id:hover .fusion-run-name {
-  color: var(--fusion-ink);
-}
-
-.fusion-run-count {
-  font-size: 11px;
-  color: var(--fusion-ter);
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-}
-
-.fusion-run-rule {
-  flex: 1;
-  height: 1px;
-  background: var(--fusion-hair);
-}
-
-.fusion-run-read {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  border: 0;
-  background: none;
-  padding: 2px 7px;
-  border-radius: 6px;
-  font: inherit;
-  font-size: 11px;
-  color: var(--fusion-ter);
-  cursor: pointer;
-  flex: none;
-  opacity: 0.62;
-  transition: opacity 0.12s ease;
-}
-
-.fusion-runhead:hover .fusion-run-read {
-  opacity: 1;
-}
-
-.fusion-run-read:hover {
-  color: var(--fusion-ink);
-  background: color-mix(in srgb, var(--color-text-primary) 5%, transparent);
-}
-
-/* 段头折叠 chevron（同浏览帧分组头语汇：closed 转向） */
-.fusion-run-chev {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  border: 0;
-  background: none;
-  border-radius: 6px;
-  color: var(--fusion-ter);
-  cursor: pointer;
-  flex: none;
-  padding: 0;
-}
-
-.fusion-run-chev:hover {
-  color: var(--fusion-ink);
-  background: color-mix(in srgb, var(--color-text-primary) 5%, transparent);
-}
-
-.fusion-run-chev.is-closed svg {
-  transform: rotate(-90deg);
-}
-
-.fusion-run-chev svg {
-  transition: transform 0.15s ease;
-}
-
-/* 折叠段的展开尾行：「还有 N 篇 / 收起」 */
-.fusion-runmore {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  height: 28px;
-  margin: 0 20px 6px 24px;
-  padding: 0 9px;
-  border: 0;
-  background: none;
-  border-radius: 8px;
-  font: inherit;
-  font-size: 11.5px;
-  color: var(--fusion-ter);
-  cursor: pointer;
-}
-
-.fusion-runmore:hover {
-  color: var(--fusion-ink);
-  background: color-mix(in srgb, var(--color-text-primary) 5%, transparent);
-}
-
-.fusion-runmore svg {
-  transition: transform 0.15s ease;
-}
-
-.fusion-runmore svg.is-open {
-  transform: rotate(180deg);
-}
-
-/* ── 队列索引条：当前队列的同源段一览，吸顶；点击展开并跳到该段 ── */
-.fusion-runindex {
-  position: sticky;
-  top: 0;
-  z-index: 3;
-  display: flex;
-  align-items: center;
-  min-height: 36px;
-  background: color-mix(in srgb, var(--color-background-body) 80%, transparent);
-  backdrop-filter: blur(18px) saturate(1.4);
-  border-bottom: 1px solid var(--fusion-hair);
-}
-
-.fusion-runindex-in {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 20px;
-  overflow-x: auto;
-  scrollbar-width: none;
-  flex: 1;
-  min-width: 0;
-}
-
-.fusion-runindex-in::-webkit-scrollbar {
-  display: none;
-}
-
-.fusion-runchip {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  flex: none;
-  height: 24px;
-  padding: 0 9px;
-  border: 1px solid var(--fusion-hair);
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--color-background-card) 55%, transparent);
-  font: inherit;
-  font-size: 11.5px;
-  color: var(--fusion-sub);
-  cursor: pointer;
-  max-width: 180px;
-}
-
-.fusion-runchip:hover {
-  color: var(--fusion-ink);
-  border-color: var(--fusion-hair2);
-}
-
-.fusion-runchip img {
-  width: 12px;
-  height: 12px;
-  border-radius: 3px;
-  object-fit: cover;
-  flex: none;
-}
-
-.fusion-runchip .nm {
-  max-width: 110px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.fusion-runchip .c {
-  font-size: 10.5px;
-  color: var(--fusion-ter);
-  font-variant-numeric: tabular-nums;
-}
-
-.fusion-runchip .c.has-unread {
-  color: var(--color-accent);
-  font-weight: 600;
-}
-
-.fusion-runchip.is-muted {
-  opacity: 0.55;
-}
-
-.fusion-runindex-hint {
-  flex: none;
-  padding: 0 20px 0 8px;
-  font-size: 10.5px;
-  color: var(--fusion-ter);
-  white-space: nowrap;
-}
-
 /* 列表足注：已加载/全量对账 + 加载中状态行（spinner 固定占位，避免行高跳动）。
    只在「加载中 / 有更多 / 队列末尾」出现——满载的中间桶不再重复
    「共 N 篇 · 已全部显示」（组头已有计数，重复足注是分组节奏里的噪音，2026-09-30） */
@@ -885,19 +622,20 @@ body.platform-mac .fusion-top {
 /* ── 发丝行列表 ──（类型由缩略图预设色承载，不再设徽章列） */
 .fusion-row {
   display: grid;
-  /* 时间列固定 120px：最长相对时间（"about 13 hours ago" ≈111px）放得下且全行左缘对齐
-     （max-content 会让每行宽度随文案浮动，时间左缘/与源列的间距参差）；132px = 最长英文文案 111px + 内距 20px；
-     超长文案由 .fusion-date 省略号防御；操作列 64px 容纳双图标；
-     缩略图列全载体统一 76×43（精确 16:9，2026-09-29 放大）——视频封面与
-     文章首图同尺寸，混排队列左列对齐 */
-  grid-template-columns: 20px 76px minmax(0, 1fr) 170px 132px 64px;
+  /* A′ 2026-10-10 起去缩略图列（未读列表回归纯文本行，全载体一致）：
+     状态点 / 题 / 源(带 14px 源图标) / 时间 / 动作。
+     时间列固定 120px：最长相对时间（"about 13 hours ago" ≈111px）放得下且全行左缘对齐；
+     操作列 64px 容纳双图标 */
+  grid-template-columns: 20px minmax(0, 1fr) 170px 132px 64px;
   align-items: center;
-  /* Astryx 呼吸缝：步距 = 内容高（--row-h：舒适 52 / 紧凑 44）+ 行间 2px（ground 透出成缝）。
-     密度控件真实生效（2026-10-01 评审 P1：此前硬编码 52 导致控件失灵）。
-     左内距 10px 让状态点/缩略图离洗色外缘一个可感知的空隙（右 20px 对齐条栏） */
-  height: var(--row-h, 52px);
+  /* Astryx 呼吸缝：步距 = 内容高（--row-h：舒适 40 / 紧凑 34）+ 行间 2px（ground 透出成缝）。
+     密度控件真实生效；左内距 10px 让状态点离洗色外缘一个可感知的空隙（右 20px 对齐条栏） */
+  height: var(--row-h, 40px);
   margin-bottom: 2px;
   padding: 0 20px 0 10px;
+  /* 行作为 scrollIntoView 目标（j/k 焦点跟随等）：落点让位可能吸顶的分组头；
+     抽屉打开期间分组头转 static，由 .fusion-drawer-open 归零 */
+  scroll-margin-top: 32px;
   border: 0;
   cursor: pointer;
   user-select: none;
@@ -2198,66 +1936,112 @@ body.platform-mac .fusion-top {
   flex: none;
 }
 
-/* ── 打字机隧道（2026-10-01 阅读面重设计 · seed 360afa8e，#4 掷中 + #5 TOC 捐赠；二次修订） ──
-   开屏原栏（透明底+发丝线）与滚动实心顶栏（不透明，题名居中+操作保留）互斥切换；
-   头尾渐隐幕与焦带降灰均已按用户拍板移除，正文始终全亮；右缘覆盖进度轨；margin 大纲 */
-.fusion-rtop {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 30;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0 20px;
-  /* 不透明（二次修订）：滚动内容不得从顶栏底下透出，两态背景一致 */
-  background: var(--fusion-ground);
+/* ── 打字机隧道 · 贴顶抽屉宿主（2026-10-01 阅读面重设计 seed 360afa8e；
+   2026-10-10 抽屉化：滚动宿主从内建 ScrollBox 换成列表滚动容器，文章块
+   插在列表滚动流最顶，列表续其下）──
+   开屏原栏（透明底+发丝线，文档流首行）与滚动实心顶栏（sticky top:0，
+   不透明，题名居中+操作保留）互斥切换；右缘覆盖进度轨；margin 大纲；
+   轨与大纲住在 .fusion-dfloat 悬浮层里（absolute 包裹 + sticky 内芯，
+   随列表滚动保持可见，抽屉滚完即被推走） */
+.fusion-drawer {
+  position: relative;
+  margin-bottom: 14px;
   border-bottom: 1px solid var(--fusion-hair);
-  transition:
-    transform 0.22s ease,
-    opacity 0.22s ease;
+  /* 原位展开入场：淡入 + 轻微下滑（240ms）；推挤下方行的位移由平滑滚动承担。
+     prefers-reduced-motion 时全免。动完即无 transform，不干扰内部 sticky */
+  animation: fusion-drawer-in 0.24s ease-out;
 }
-.fusion-rtop.hide {
-  transform: translateY(-100%);
-  opacity: 0;
+
+@keyframes fusion-drawer-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fusion-drawer {
+    animation: none;
+  }
+}
+
+/* 抽屉打开期间：分组头吸顶整体让位（否则 stuck 分组头 + 抽屉工具条
+   双条同屏），唯一吸顶 = 抽屉自己的工具条；滚动落点也让位归零 */
+.fusion-drawer-open .fusion-dayhead {
+  position: static;
+}
+.fusion-drawer-open .fusion-row {
+  scroll-margin-top: 0;
+}
+.fusion-dfloat {
+  position: absolute;
+  inset: 0;
+  z-index: 35;
   pointer-events: none;
 }
-.fusion-rbar {
-  position: absolute;
+.fusion-drailhold {
+  position: sticky;
   top: 0;
-  left: 0;
-  right: 0;
+  height: 100vh;
+  /* 不占文档流：让 toc 的自然位置回到抽屉顶（sticky 无效负 margin 技巧）；
+     overflow:hidden 兜底裁剪——短文（抽屉不足一屏）时轨不会溢出抽屉下缘 */
+  margin-bottom: -100vh;
+  overflow: hidden;
+}
+/* TOC 的 sticky 壳必须是有真实高度的流内盒子：约束矩形 = 抽屉本身，
+   滚到抽屉末尾时整个 TOC 被抽屉下缘推走——绝不溢出详情区域。
+   （曾用 height:0 壳 + 绝对定位 toc：壳被推走而视觉 toc 挂在壳外漂进列表） */
+.fusion-dtochold {
+  position: sticky;
+  top: 64px;
+  width: 190px;
+  margin-left: auto;
+  margin-right: 28px;
+}
+/* 抽屉工具条：40px sticky。静止态「不存在」——无底色无发丝线，只是右上角
+   一簇动作（左半边不留空带）；滚过题区（is-scrolled）才长出 ground 底 +
+   发丝线并浮现题名，变成压住正文的阅读顶栏（用户 2026-10-11：静止态
+   底色 + 空左是多余的） */
+.fusion-dbar {
+  position: sticky;
+  top: 0;
   z-index: 30;
-  height: 50px;
+  height: 40px;
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 0 20px;
-  background: var(--fusion-ground);
-  border-bottom: 1px solid var(--fusion-hair);
+  gap: 6px;
+  padding: 0 12px;
+  background: transparent;
+  border-bottom: 1px solid transparent;
   transition:
-    transform 0.22s ease,
-    opacity 0.22s ease;
+    background 0.18s ease,
+    border-color 0.18s ease;
 }
-.fusion-rbar.hide {
-  transform: translateY(-100%);
-  opacity: 0;
-  pointer-events: none;
+.fusion-drawer.is-scrolled .fusion-dbar {
+  background: var(--fusion-ground);
+  border-bottom-color: var(--fusion-hair);
 }
-.fusion-rbar .t {
+.fusion-dbar .t {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
   max-width: min(52%, 560px);
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 600;
   color: var(--fusion-ink);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+.fusion-drawer.is-scrolled .fusion-dbar .t {
+  opacity: 1;
 }
 .fusion-rail {
   position: absolute;
@@ -2284,16 +2068,12 @@ body.platform-mac .fusion-top {
   border-radius: 999px;
 }
 .fusion-toc {
-  position: absolute;
-  right: 28px;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 35;
+  position: static;
   max-height: 62vh;
   overflow-y: auto;
-  width: 190px;
   padding: 6px 0;
   scrollbar-width: none;
+  pointer-events: auto;
 }
 .fusion-toc::-webkit-scrollbar {
   display: none;
@@ -2327,33 +2107,10 @@ body.platform-mac .fusion-top {
 }
 .fusion-article-body h2,
 .fusion-article-body h3 {
-  scroll-margin-top: 76px;
+  scroll-margin-top: 56px;
 }
 
-/* 阅读面滚动条：细轨 + 主题派生色（浏览器面也是设计的一部分） */
-.fusion-dscroll {
-  scrollbar-width: thin;
-  scrollbar-color: color-mix(
-      in srgb,
-      var(--color-text-primary) 18%,
-      transparent
-    )
-    transparent;
-}
-
-.fusion-dscroll::-webkit-scrollbar {
-  width: 8px;
-}
-
-.fusion-dscroll::-webkit-scrollbar-thumb {
-  background: color-mix(in srgb, var(--color-text-primary) 15%, transparent);
-  border-radius: 999px;
-  border: 2px solid transparent;
-  background-clip: content-box;
-}
-
-.fusion-dtop .d-src,
-.fusion-rtop .d-src {
+.fusion-dtop .d-src {
   font-size: 11.5px;
   color: var(--fusion-ter);
   margin-left: 6px;
@@ -2417,6 +2174,12 @@ body.platform-mac .fusion-top {
   border-radius: 12px;
   background: color-mix(in srgb, var(--color-background-card) 50%, transparent);
   overflow: hidden;
+}
+
+/* 下一篇卡保留缩略图（A′ 2026-10-10 列表去图，卡不是列表行）：
+   行网格在卡内回到 6 列（状态点/缩略图/题/源/时间/余量） */
+.fusion-nextcard .fusion-row {
+  grid-template-columns: 20px 76px minmax(0, 1fr) 170px 132px 24px;
 }
 
 .fusion-nextcard .fusion-next-h {
@@ -3828,11 +3591,11 @@ body.fusion-context-menu-open .fusion-set-body {
 
 .fusion-prev .prow {
   display: grid;
-  /* 预览行 4 子元素：状态点 / 缩略图 / 标题 / 来源（列宽随真实列表 76px 封面同步） */
-  grid-template-columns: 16px 76px minmax(0, 1fr) 140px;
+  /* 预览行 3 子元素：状态点 / 标题 / 来源（A′ 2026-10-10 与真实列表同步：去缩略图列） */
+  grid-template-columns: 16px minmax(0, 1fr) 140px;
   align-items: center;
-  /* 跟随密度令牌：校准台预览即真实行高（同吃 --row-h，不再单独设 52px 下限） */
-  height: var(--row-h, 52px);
+  /* 跟随密度令牌：校准台预览即真实行高（同吃 --row-h） */
+  height: var(--row-h, 40px);
   border-bottom: 1px solid var(--fusion-hair);
 }
 

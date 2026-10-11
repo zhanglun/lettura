@@ -42,7 +42,6 @@ describe("createArticleSlice", () => {
 
       expect(state.article).toBeNull();
       expect(state.expandedArticleUuid).toBeNull();
-      expect(state.articleDialogViewStatus).toBe(false);
       expect(state.currentFilter).toEqual({
         id: 1,
         title: "Unread",
@@ -70,22 +69,6 @@ describe("createArticleSlice", () => {
       store.getState().setArticle(article);
 
       expect(article).toEqual(original);
-    });
-  });
-
-  describe("setArticleDialogViewStatus", () => {
-    it("should set dialog status to true", () => {
-      store.getState().setArticleDialogViewStatus(true);
-
-      expect(store.getState().articleDialogViewStatus).toBe(true);
-    });
-
-    it("should set dialog status to false", () => {
-      store.getState().setArticleDialogViewStatus(true);
-      expect(store.getState().articleDialogViewStatus).toBe(true);
-
-      store.getState().setArticleDialogViewStatus(false);
-      expect(store.getState().articleDialogViewStatus).toBe(false);
     });
   });
 

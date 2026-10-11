@@ -87,10 +87,10 @@ function App() {
     if (!hasFetchedConfig.current) {
       hasFetchedConfig.current = true;
       getUserConfigRef.current().then((cfg: UserConfig) => {
-        // 列表密度：内容高对表 DESIGN 步距表（文章行 52+2，紧凑 44+2）
+        // 列表密度：内容高对表 DESIGN 步距表（A′ 去缩略图：文章行 40+2，紧凑 34+2）
         document.documentElement.style.setProperty(
           "--row-h",
-          cfg.card_density === "compact" ? "44px" : "52px",
+          cfg.card_density === "compact" ? "34px" : "40px",
         );
       });
     }

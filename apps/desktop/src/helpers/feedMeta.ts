@@ -1,4 +1,4 @@
-import { formatDistanceToNow } from "date-fns";
+import { format, formatDistanceToNow } from "date-fns";
 import { zhCN } from "date-fns/locale";
 import { getSavedLang } from "./lang";
 
@@ -18,6 +18,34 @@ export function formatRelative(
     includeSeconds: options.includeSeconds,
     locale: isZhUi() ? zhCN : undefined,
   });
+}
+
+/** 桶内精确时间（A′ 2026-10-10）：组头已给出粒度，行内不再用相对时间重述——
+ *  today→HH:mm、yesterday→昨天 HH:mm、week→周六 HH:mm、lastweek/month→M月d日、
+ *  earlier→yyyy/M/d。bucket 为空（源队列帧无分组）或未知时退回相对时间。
+ *  键集合与 BUCKET_ORDER 同属「改桶集合要同步的两处清单」（DESIGN 契约） */
+export function formatBucketTime(
+  date: Date,
+  bucket: string | null | undefined,
+): string {
+  if (Number.isNaN(date.getTime())) return "";
+  const zh = isZhUi();
+  const locale = zh ? zhCN : undefined;
+  switch (bucket) {
+    case "today":
+      return format(date, "HH:mm");
+    case "yesterday":
+      return `${zh ? "昨天" : "Yesterday"} ${format(date, "HH:mm")}`;
+    case "week":
+      return format(date, "EEE HH:mm", { locale });
+    case "lastweek":
+    case "month":
+      return format(date, zh ? "M月d日" : "MMM d", { locale });
+    case "earlier":
+      return format(date, "yyyy/M/d");
+    default:
+      return formatRelative(date);
+  }
 }
 
 /** 源行/源头栏的域名标签：hostname + 非根路径 */

@@ -1,7 +1,7 @@
 import { Skeleton } from "@astryxdesign/core/Skeleton";
 import type { LucideIcon } from "lucide-react";
 import { CheckCheck, ChevronDown, Loader2, SearchX } from "lucide-react";
-import React, { useEffect, useRef } from "react";
+import React, { Fragment, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { QuietEmpty } from "@/components/QuietEmpty";
 import type { ArticleResItem } from "@/db";
@@ -35,10 +35,18 @@ export type ArticleListVirtualProps = {
   focusedUuid?: string;
   /** 光标位已建立但压住焦点样式（首次 j 落首行 = 建立而非移动，见 ArticleView.moveFocus） */
   focusStyleSuppressed?: boolean;
+  /** 原位阅读抽屉（Inoreader 动线）：**取代命中行**（展开后原行不再显示），
+   *  展开后滚动到抽屉顶；未命中（深链 / 文章在收起桶内）回退渲染在容器顶 */
+  drawer?: React.ReactNode;
+  /** 抽屉身份（文章 uuid）：null = 关闭 */
+  drawerKey?: string | null;
+  /** 滚动容器句柄外借（ArticleView：抽屉打开时 j/k 滚动、阅读进度/大纲的视口源） */
+  containerRef?: React.RefObject<HTMLDivElement | null>;
 };
 
-/** 日期分隔条（list-prism.html 契约）：吸顶、规则线、桶内计数（服务端真实总量）。
- *  整行可点 = 收起/展开该桶；全部桶一致可收，「更早」积压区默认收起（父级默认态） */
+/** 日期分隔条（list-prism 契约）：吸顶、规则线、桶内计数（服务端真实总量）。
+ *  整行可点 = 收起/展开该桶；收起态 = chevron 转向 + 同一计数（A′ 2026-10-10
+ *  起去掉「已收起」机制文案——状态由 chevron 表达，不重复描述界面自己） */
 function DayHead({
   bucket,
   count,
@@ -71,9 +79,8 @@ function DayHead({
       <span className="lb">{t(`fusion.list.day_${bucket}`)}</span>
       <span className="rule" />
       <span className="n">
-        {collapsed
-          ? t("fusion.list.day_collapsed_count", { count })
-          : t("fusion.list.day_count", { count })}
+        {/* i18next 的 count 插值被类型特殊化为 number；千分位串经 n 传入 */}
+        {t("fusion.list.day_count", { n: count.toLocaleString() })}
       </span>
       {onMarkAllRead && canMarkAllRead && (
         <button
@@ -156,18 +163,27 @@ export const ArticleListVirtual = React.memo(function ArticleListVirtual(
     onExpandArticle,
     focusedUuid,
     focusStyleSuppressed,
+    drawer,
+    drawerKey = null,
+    containerRef: externalContainerRef,
   } = props;
   const { t } = useTranslation();
-  const containerRef = useRef<HTMLDivElement>(null);
+  const innerRef = useRef<HTMLDivElement>(null);
+  // 容器句柄：外部传入时同时挂到内 ref（键盘滚动/抽屉滚动定位共用一个元素）
+  const scrollRef = externalContainerRef ?? innerRef;
+  const attachScrollRef = (el: HTMLDivElement | null) => {
+    innerRef.current = el;
+    if (externalContainerRef) externalContainerRef.current = el;
+  };
 
   // 键盘焦点行滚动到可视区
   useEffect(() => {
-    if (!(focusedUuid && containerRef.current)) return;
-    const el = containerRef.current.querySelector(
+    if (!(focusedUuid && scrollRef.current)) return;
+    const el = scrollRef.current.querySelector(
       `[data-item-uuid="${focusedUuid}"]`,
     ) as HTMLElement | null;
     el?.scrollIntoView({ block: "nearest" });
-  }, [focusedUuid]);
+  }, [focusedUuid, scrollRef]);
 
   // 队列身份变化（切载体/源/未读全部/换源）= 换了一个队列：滚动归零。
   // 分页加载不改 resetKey，不触发；esc 从详情回列表身份未变，位置保留
@@ -177,13 +193,32 @@ export const ArticleListVirtual = React.memo(function ArticleListVirtual(
       skipResetRef.current = false;
       return;
     }
-    containerRef.current?.scrollTo({ top: 0 });
-  }, [resetKey]);
+    scrollRef.current?.scrollTo({ top: 0 });
+  }, [resetKey, scrollRef]);
 
-  const renderRow = (article: ArticleResItem, key: string) => (
+  // 原位抽屉：展开后平滑滚动到抽屉顶（Inoreader 同款——命中行被抽屉吞掉，
+  // 视图停在文章开头；prefers-reduced-motion 时瞬时跳转）。分组头的吸顶在
+  // 抽屉打开期间整体让位（见 .fusion-drawer-open）
+  useEffect(() => {
+    if (drawerKey == null) return;
+    const reduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    scrollRef.current?.querySelector("[data-reading-drawer]")?.scrollIntoView({
+      block: "start",
+      behavior: reduced ? "auto" : "smooth",
+    });
+  }, [drawerKey, scrollRef]);
+
+  const renderRow = (
+    article: ArticleResItem,
+    key: string,
+    bucket: string | null,
+  ) => (
     <div key={key} data-item-uuid={article.uuid}>
       <ArticleItem
         article={article}
+        bucket={bucket}
         focused={focusedUuid === article.uuid && !focusStyleSuppressed}
         onRead={onArticleRead}
         onExpand={onExpandArticle}
@@ -192,13 +227,25 @@ export const ArticleListVirtual = React.memo(function ArticleListVirtual(
     </div>
   );
 
+  // 抽屉原位放置判定：命中「未收起 section 的可见行」才内联渲染在该行下方；
+  // 否则（深链 / 文章在收起桶内 / 队列尚未载入该行）回退渲染在容器顶
+  const drawerInline =
+    drawer != null &&
+    drawerKey != null &&
+    sections.some(
+      (s) =>
+        (s.bucket == null || !collapsedBuckets.has(s.bucket)) &&
+        s.rows.some((r) => r.uuid === drawerKey),
+    );
+
   return (
     <div
-      ref={containerRef}
+      ref={attachScrollRef}
       className={`w-full flex-1 min-h-0 overflow-y-auto scrollbar-gutter${
         isEmpty ? "" : " fusion-inset-tail"
-      }`}
+      }${drawerKey != null ? " fusion-drawer-open" : ""}`}
     >
+      {drawer != null && !drawerInline ? drawer : null}
       {loading ? (
         <div
           className="fusion-list-skeleton"
@@ -210,7 +257,6 @@ export const ArticleListVirtual = React.memo(function ArticleListVirtual(
             // biome-ignore lint/suspicious/noArrayIndexKey: 固定 5 行、永不重排的静态骨架，索引 key 即正确语义
             <div className="fusion-list-skeleton-row" key={index}>
               <Skeleton height={6} width={6} />
-              <Skeleton height={43} width={76} />
               <div className="fusion-list-skeleton-copy">
                 <Skeleton height={13} />
                 <Skeleton height={10} width={180} />
@@ -269,6 +315,8 @@ export const ArticleListVirtual = React.memo(function ArticleListVirtual(
               realCount={realCount}
               visibleRows={visibleRows}
               isTerminal={index === sections.length - 1}
+              drawer={drawer}
+              drawerKey={drawerKey}
               onToggleBucket={onToggleBucket}
               onLoadMore={onLoadMore}
               onMarkBucketRead={onMarkBucketRead}
@@ -290,6 +338,8 @@ const SectionBlock = React.memo(function SectionBlock({
   realCount,
   visibleRows,
   isTerminal,
+  drawer,
+  drawerKey,
   onToggleBucket,
   onLoadMore,
   onMarkBucketRead,
@@ -304,9 +354,16 @@ const SectionBlock = React.memo(function SectionBlock({
   visibleRows: ArticleResItem[];
   /** 队列最后一个 section：满载时保留一句收尾对账，其余满载桶静默 */
   isTerminal?: boolean;
+  /** 原位阅读抽屉：**取代**命中行（uuid === drawerKey，原行不再渲染） */
+  drawer?: React.ReactNode;
+  drawerKey?: string | null;
   onToggleBucket: (bucket: string) => void;
   onLoadMore: (key: string) => void;
-  renderRow: (a: ArticleResItem, key: string) => React.ReactNode;
+  renderRow: (
+    a: ArticleResItem,
+    key: string,
+    bucket: string | null,
+  ) => React.ReactNode;
 }) {
   const sentinelRef = useRef<HTMLDivElement>(null);
   // 防抖门闩：同一次 hasMore 生命周期内只发起一次续载（新页到位后解除）
@@ -372,7 +429,14 @@ const SectionBlock = React.memo(function SectionBlock({
           markingAllRead={markingBucket === section.bucket}
         />
       )}
-      {visibleRows.map((a, i) => renderRow(a, `${section.key}-${i}-${a.uuid}`))}
+      {visibleRows.map((a, i) => {
+        const key = `${section.key}-${i}-${a.uuid}`;
+        // 命中行被抽屉吞掉（Inoreader 语义：展开后原行不再显示）
+        if (drawer != null && a.uuid === drawerKey) {
+          return <Fragment key={key}>{drawer}</Fragment>;
+        }
+        return renderRow(a, key, section.bucket);
+      })}
       {showSkeleton && (
         <div className="p-2 pl-6 grid gap-1 relative shrink-0">
           <Skeleton height={20} />

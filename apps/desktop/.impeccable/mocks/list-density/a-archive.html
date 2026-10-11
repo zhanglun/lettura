@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>方案 A′ · 时间分组修缮 — Lettura 列表时间分组</title>
+<style>
+  /* DIRECTION A′（2026-10-10 实机反馈修正版）· 「修缮」
+     THESIS: 收起/展开同一分组头本体——收起态 chevron 转向表达状态，
+     去掉「已收起 · N 篇」机制文案（状态不重复描述界面自己）；
+     撤销「收起细行」方案（旧横幅本就 ~30px，细行丢 chevron 信号与结构感）。
+     实质改进在两处：①默认展开按时间序到首屏约 55%（稀疏日自动续借下一桶，
+     首屏是内容不是成排收起头）；②桶内时间精确化（组头已给出粒度，
+     行内不再用相对时间重述）。 */
+  :root{
+    --ground:#F4F4F1; --card:#FFFFFF;
+    --ink:#1D1E20; --sub:#6A6C6E;
+    --ter:color-mix(in srgb,var(--ink) 48%,transparent);
+    --hair:color-mix(in srgb,var(--ink) 8%,transparent);
+    --hair2:color-mix(in srgb,var(--ink) 13%,transparent);
+    --accent:#5E6AD2; --accent-soft:color-mix(in srgb,var(--accent) 10%,transparent);
+    --amber:#E5A50A; --pink:#E86A92; --pink-soft:rgba(232,106,146,.1);
+    --row-hover:color-mix(in srgb,var(--ink) 4%,transparent);
+    --thumb-img1:linear-gradient(135deg,#D8DCE2,#B9C0CA);
+    --thumb-img2:linear-gradient(135deg,#E4DDD2,#C8BFB0);
+    --thumb-img3:linear-gradient(135deg,#D7E0DA,#B3C2B8);
+  }
+  [data-theme="dark"]{
+    --ground:#1E1F23; --card:#26272C;
+    --ink:#ECEDEF; --sub:#A4A6AA;
+    --hair:rgba(236,238,240,.09); --hair2:rgba(236,238,240,.15);
+    --accent:#7B86E0; --accent-soft:rgba(123,134,224,.16);
+    --pink-soft:rgba(232,106,146,.16);
+    --row-hover:rgba(236,238,240,.06);
+    --thumb-img1:linear-gradient(135deg,#3A3E46,#2B2E35);
+    --thumb-img2:linear-gradient(135deg,#453E33,#322D26);
+    --thumb-img3:linear-gradient(135deg,#33403A,#252D29);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    background:var(--ground);color:var(--ink);overflow:hidden;
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Helvetica Neue",sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  button{font:inherit;border:0;background:none;cursor:pointer;color:inherit;}
+  kbd{font-family:inherit;font-size:10.5px;color:var(--sub);border:1px solid var(--hair2);border-radius:4px;padding:0 4.5px;line-height:15px;background:color-mix(in srgb,var(--card) 70%,transparent);}
+
+  .root{height:100vh;display:flex;flex-direction:column;position:relative;}
+  .root::before{
+    content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
+    background:
+      radial-gradient(560px 380px at 10% -8%,color-mix(in srgb,var(--accent) 4%,transparent),transparent 70%),
+      radial-gradient(640px 420px at 90% -12%,color-mix(in srgb,var(--pink) 3%,transparent),transparent 70%);
+  }
+
+  /* ── 顶栏 ── */
+  .top{height:54px;display:flex;align-items:center;padding:0 20px;gap:10px;border-bottom:1px solid var(--hair);flex:none;position:relative;z-index:2;}
+  .logo{width:20px;height:20px;border-radius:7px;background:var(--ink);display:flex;align-items:center;justify-content:center;flex:none;}
+  .logo i{width:5px;height:5px;border-radius:50%;background:var(--ground);}
+  .sec{font-size:13px;font-weight:600;}
+  .cnt{font-size:11px;color:var(--sub);background:color-mix(in srgb,var(--ink) 6%,transparent);border-radius:999px;padding:1.5px 8px;font-variant-numeric:tabular-nums;}
+  .nav{display:flex;gap:4px;margin-left:14px;}
+  .nav a{font-size:12.5px;color:var(--sub);text-decoration:none;padding:4px 10px;border-radius:7px;cursor:pointer;}
+  .nav a:hover{background:color-mix(in srgb,var(--ink) 5%,transparent);}
+  .nav a.on{color:var(--ink);font-weight:600;background:color-mix(in srgb,var(--ink) 6%,transparent);}
+  .spring{flex:1;}
+  .cmdbtn{display:flex;align-items:center;gap:8px;height:30px;padding:0 10px;border:1px solid var(--hair2);border-radius:9px;font-size:12px;color:var(--sub);background:color-mix(in srgb,var(--card) 55%,transparent);}
+  .cmdbtn:hover{border-color:var(--accent);color:var(--ink);}
+  .theme{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--sub);}
+  .theme:hover{background:color-mix(in srgb,var(--ink) 6%,transparent);color:var(--ink);}
+
+  /* ── 过滤条 ── */
+  .strip{height:42px;display:flex;align-items:center;padding:0 20px;gap:4px;border-bottom:1px solid var(--hair);flex:none;position:relative;z-index:2;}
+  .tab{font-size:12px;color:var(--sub);padding:4px 10px;border-radius:999px;}
+  .tab:hover{background:color-mix(in srgb,var(--ink) 5%,transparent);}
+  .tab.on{background:color-mix(in srgb,var(--ink) 7%,transparent);color:var(--ink);font-weight:600;}
+  .tab .c{font-variant-numeric:tabular-nums;margin-left:3px;color:var(--ter);font-weight:500;}
+  .prism{display:flex;align-items:center;gap:6px;height:26px;padding:0 10px;margin-left:6px;border:1px solid var(--hair2);border-radius:999px;font-size:11.5px;color:var(--sub);background:color-mix(in srgb,var(--card) 55%,transparent);}
+  .meta{margin-left:auto;font-size:11px;color:var(--ter);font-variant-numeric:tabular-nums;white-space:nowrap;}
+  .qa{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--sub);flex:none;}
+  .qa:hover{background:color-mix(in srgb,var(--ink) 6%,transparent);color:var(--ink);}
+
+  /* ── 列表 ── */
+  .list{flex:1;min-height:0;overflow-y:auto;position:relative;z-index:1;padding-bottom:24px;}
+
+  /* 分组头：与现役 .fusion-dayhead 同一契约（吸顶 / 规则线 / 桶计数） */
+  .dayhead{
+    position:sticky;top:0;z-index:3;
+    display:flex;align-items:center;gap:8px;padding:9px 20px 7px;
+    font-size:10px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--ter);
+    background:color-mix(in srgb,var(--ground) 86%,transparent);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--hair);
+    cursor:pointer;
+  }
+  .dayhead:hover{background:linear-gradient(var(--row-hover),var(--row-hover)),color-mix(in srgb,var(--ground) 86%,transparent);}
+  .dayhead .chev{display:flex;color:var(--ter);flex:none;transition:transform .15s ease;}
+  .dayhead .chev.is-closed{transform:rotate(-90deg);}
+  .dayhead .rule{flex:1;height:1px;background:var(--hair);}
+  .dayhead .n{font-variant-numeric:tabular-nums;letter-spacing:0;text-transform:none;}
+  .dayhead .mr{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;color:var(--ter);border-radius:6px;opacity:0;transition:opacity .15s;}
+  .dayhead:hover .mr{opacity:1;}
+  .dayhead .mr:hover{color:var(--accent);background:var(--accent-soft);}
+
+  /* ── 行（现役词汇：52px + 2px 呼吸缝 + 12px 内缩洗色，无发丝线） ── */
+  .row{
+    display:grid;grid-template-columns:20px 76px minmax(0,1fr) 170px 132px 64px;
+    align-items:center;height:52px;margin-bottom:2px;padding:0 20px 0 10px;
+    cursor:pointer;user-select:none;position:relative;z-index:0;
+  }
+  .row::after{content:"";position:absolute;inset:3px 12px;border-radius:8px;background:transparent;pointer-events:none;transition:background .12s ease;}
+  .row:hover::after{background:var(--row-hover);}
+  .st{display:flex;justify-content:center;}
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);}
+  .row.is-read .dot{background:color-mix(in srgb,var(--ink) 22%,transparent);}
+  .thumb{width:76px;height:43px;border-radius:7px;border:1px solid var(--hair);background:color-mix(in srgb,var(--ink) 4%,transparent);overflow:hidden;display:flex;align-items:center;justify-content:center;flex:none;transition:background .15s ease,border-color .15s ease;}
+  .row:hover .thumb:not(.pod):not(.vid){background:transparent;border-color:transparent;}
+  .thumb.img1{background:var(--thumb-img1);border-color:transparent;}
+  .thumb.img2{background:var(--thumb-img2);border-color:transparent;}
+  .thumb.img3{background:var(--thumb-img3);border-color:transparent;}
+  .thumb.pod{background:var(--accent-soft);border-color:transparent;color:var(--accent);}
+  .thumb.vid{position:relative;background:var(--pink-soft);border-color:transparent;}
+  .thumb .tch{font-size:12px;font-weight:700;letter-spacing:.01em;color:var(--sub);line-height:1;}
+  .thumb .dur{position:absolute;right:3px;bottom:3px;padding:1px 4px;border-radius:4px;background:rgba(0,0,0,.66);color:#fff;font-size:10px;line-height:1.5;font-variant-numeric:tabular-nums;}
+  .title{font-size:13.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 10px;}
+  .row.is-read .title{color:var(--ter);font-weight:400;}
+  .src{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--ter);white-space:nowrap;overflow:hidden;}
+  .src .ficon{width:14px;height:14px;border-radius:4px;flex:none;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:var(--sub);background:color-mix(in srgb,var(--ink) 8%,transparent);}
+  .src .fn{min-width:0;overflow:hidden;text-overflow:ellipsis;}
+  .date{font-size:11.5px;color:var(--ter);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;padding:0 12px 0 8px;}
+  .acts{display:flex;justify-content:flex-end;align-items:center;gap:2px;}
+  .acts .ab{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;color:var(--sub);opacity:.62;transition:opacity .12s ease;}
+  .row:hover .acts .ab{opacity:1;}
+  .acts .ab:hover{background:color-mix(in srgb,var(--ink) 6%,transparent);}
+  .acts .ab.star.on{color:var(--amber);opacity:1;}
+
+  .hintbar{position:absolute;left:22px;bottom:14px;font-size:10.5px;color:var(--ter);z-index:5;letter-spacing:.03em;display:flex;gap:14px;align-items:center;}
+  .hintbar b{color:var(--sub);font-weight:600;}
+  .scenes{display:flex;gap:4px;}
+  .scenes button{font-size:10.5px;color:var(--ter);padding:2px 8px;border-radius:999px;border:1px solid var(--hair);}
+  .scenes button.on{color:var(--ink);border-color:var(--hair2);background:color-mix(in srgb,var(--card) 60%,transparent);}
+  .synthetic{position:absolute;right:22px;bottom:14px;font-size:10px;color:var(--ter);letter-spacing:.1em;z-index:5;}
+</style>
+</head>
+<body>
+<div class="root" id="root">
+  <header class="top">
+    <span class="logo"><i></i></span>
+    <span class="sec">Lettura</span>
+    <span class="cnt">27,355</span>
+    <nav class="nav">
+      <a class="on">未读</a><a>星标</a><a>历史</a><a>订阅</a>
+    </nav>
+    <span class="spring"></span>
+    <button class="cmdbtn">
+      <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="7" cy="7" r="4.8"/><path d="m11.2 11.2 3 3"/></svg>
+      搜索或输入命令<span class="spring"></span><kbd>⌘K</kbd>
+    </button>
+  </header>
+
+  <div class="strip">
+    <button class="tab on">全部 <span class="c">27,355</span></button>
+    <button class="tab">文章 <span class="c">26,905</span></button>
+    <button class="tab">播客 <span class="c">418</span></button>
+    <button class="tab">视频 <span class="c">32</span></button>
+    <button class="prism"><span style="display:flex"><span class="ficon" style="width:15px;height:15px;border-radius:4px;background:color-mix(in srgb,var(--ink) 8%,transparent);font-size:7.5px;font-weight:700;display:flex;align-items:center;justify-content:center;">小</span></span>源 270 <span style="font-size:8px;color:var(--ter)">▾</span></button>
+    <span class="meta">270 个来源 · 最近同步 08:00</span>
+    <button class="qa" title="刷新全部来源"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9M13.5 2.5V5h-2.5"/></svg></button>
+    <button class="qa" title="全部标记为已读"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="m3 8.5 3.2 3L13 5"/><path d="m3 3.8 3.2 3M8 4l1 1" opacity=".45"/></svg></button>
+    <button class="theme" id="themeBtn" title="夜读预览"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M13.4 9.6A5.6 5.6 0 0 1 6.4 2.6a5.6 5.6 0 1 0 7 7z"/></svg></button>
+  </div>
+
+  <main class="list" id="list"></main>
+
+  <span class="hintbar">
+    <span><b>点击分组头</b> 收起 / 展开（chevron 转向表状态，无「已收起」文案）</span>
+    <span class="scenes">
+      <button id="scSparse" class="on">场景：今天 0 篇</button>
+      <button id="scDense">场景：今天 12 篇</button>
+    </span>
+  </span>
+  <span class="synthetic">演示内容为合成数据 · 方案 A′</span>
+</div>
+
+<script>
+/* ── 合成数据（计数取自真实截图形态） ── */
+const BUCKETS=[
+  {k:"t",lb:"今天"},
+  {k:"y",lb:"昨天"},
+  {k:"w",lb:"本周"},
+  {k:"lw",lb:"上周"},
+  {k:"d30",lb:"30 天内"},
+  {k:"old",lb:"更早"},
+];
+const COUNTS_SPARSE={t:0,y:3,w:13110,lw:10876,d30:92,old:3274};
+const COUNTS_DENSE ={t:12,y:3,w:13110,lw:10876,d30:92,old:3274};
+const nf=n=>n.toLocaleString("en-US");
+
+const R={
+ y:[
+  {t:"本周赛博领鸡蛋（10.9~10.15）：《熊视眈眈》《愿景之城》《大骗局》",s:"小众软件",ic:"小",th:"mono",d:"昨天 21:14"},
+  {t:"时隔 17 年，机械迷城 2 终于来了！原班人马回归，Steam 页面已上线",s:"小众软件",ic:"小",th:"img1",d:"昨天 18:42"},
+  {t:"重大变化！微软 365 家庭版网盘大缩水：6 人各享 1TB，变成全家共享 2TB",s:"小众软件",ic:"小",th:"mono",d:"昨天 11:05",star:true},
+ ],
+ w:[
+  {t:"科技爱好者周刊（第 320 期）：慢即是快",s:"阮一峰的网络日志",ic:"阮",th:"img2",d:"周六 09:30"},
+  {t:"我的 2026 数字极简实验：砍掉 37 个订阅之后",s:"少数派",ic:"派",th:"img1",d:"周六 08:12"},
+  {t:"EP.88 聊聊电子书阅读器的一生",s:"内核恐慌",ic:"内",th:"pod",d:"周五 23:40"},
+  {t:"好的决策是怎么被组织杀死的",s:"酷壳",ic:"酷",th:"mono",d:"周五 20:15"},
+  {t:"从《赛博朋克 2077》到《边缘行者》：夜之城的五年",s:"机核",ic:"机",th:"img3",d:"周五 18:02"},
+  {t:"我们把一台相机送上了 40000 米高空",s:"影视飓风",ic:"影",th:"vid",dur:"18:42",d:"周五 12:30"},
+  {t:"关于「读完就走」产品哲学的三条笔记",s:"随笔",ic:"随",th:"mono",d:"周四 22:48"},
+  {t:"用快捷键重排工作流的六个月",s:"少数派",ic:"派",th:"img2",d:"周四 15:20"},
+  {t:"Show HN：我用 Rust 重写了我的 RSS 后端",s:"HN 精选",ic:"H",th:"mono",d:"周四 10:05"},
+  {t:"Vol.45 声音里的城市：从地铁报站到白噪音",s:"声波栈",ic:"声",th:"pod",d:"周三 21:33"},
+  {t:"TextBuddy：命令行里的文本瑞士军刀",s:"小众软件",ic:"小",th:"mono",d:"周三 14:26"},
+  {t:"2026 年了，机械键盘还有新花样吗？",s:"极客工作室",ic:"极",th:"vid",dur:"12:08",d:"周二 19:44"},
+  {t:"有人用 SQLite 搭了整家公司的数据栈",s:"阮一峰的网络日志",ic:"阮",th:"img1",d:"周二 09:12"},
+  {t:"会议纪要的三种写法与两种命运",s:"飞书精选",ic:"飞",th:"mono",d:"周一 17:38",read:true},
+ ],
+ lw:[
+  {t:"剪贴板的历史比你想的重要：六款剪贴板工具横评",s:"少数派",ic:"派",th:"img1",d:"10月3日"},
+  {t:"代码里的方言：为什么大厂都在造内部语言",s:"酷壳",ic:"酷",th:"mono",d:"10月2日"},
+  {t:"快充的尽头是什么？",s:"老师好我叫何同学",ic:"何",th:"vid",dur:"09:58",d:"10月2日"},
+  {t:"周刊（第 319 期）：工具的返祖",s:"阮一峰的网络日志",ic:"阮",th:"img2",d:"10月1日"},
+  {t:"Vol.44 无线电业余者的浪漫",s:"声波栈",ic:"声",th:"pod",d:"9月30日"},
+  {t:"用 flomo 记了两年卡片笔记之后",s:"小众软件",ic:"小",th:"mono",d:"9月30日",read:true},
+  {t:"慢新闻实践：一份只出周刊的信息食谱",s:"随笔",ic:"随",th:"mono",d:"9月29日",star:true},
+  {t:"我给 Terminal 配了一套等宽字体方案",s:"少数派",ic:"派",th:"img3",d:"9月29日"},
+  {t:"重返威诺伽：太空歌剧的财务自由",s:"机核",ic:"机",th:"img1",d:"9月28日"},
+  {t:"The Grug Brug Developer（2026 重排版）",s:"HN 精选",ic:"H",th:"mono",d:"9月28日",read:true},
+ ],
+ d30:[
+  {t:"异步协作的第一原则：写清楚再发",s:"飞书精选",ic:"飞",th:"mono",d:"9月18日"},
+  {t:"谈谈技术债的复利",s:"酷壳",ic:"酷",th:"mono",d:"9月16日"},
+  {t:"LocalFirst：五款本地同步工具实测",s:"小众软件",ic:"小",th:"img2",d:"9月15日"},
+  {t:"电子墨水屏显示器三个月使用报告",s:"少数派",ic:"派",th:"img1",d:"9月14日"},
+  {t:"Vol.41 与播客录音间的声学对话",s:"声波栈",ic:"声",th:"pod",d:"9月14日"},
+ ],
+ old:[
+  {t:"周刊（第 301 期）：耐心是一种杠杆",s:"阮一峰的网络日志",ic:"阮",th:"img2",d:"2025/12/30"},
+  {t:"Unix 50 年：工具哲学的今昔",s:"酷壳",ic:"酷",th:"mono",d:"2025/12/18"},
+  {t:"2025 年度盘点：我们最爱的十个新工具",s:"小众软件",ic:"小",th:"img3",d:"2025/12/10"},
+  {t:"论「读不完」：一个 RSS 用户的十年",s:"随笔",ic:"随",th:"mono",d:"2025/11/28",star:true},
+  {t:"从 Evernote 到本地笔记：迁移纪事",s:"少数派",ic:"派",th:"img1",d:"2025/11/20"},
+  {t:"EP.72 修电脑的艺术",s:"内核恐慌",ic:"内",th:"pod",d:"2025/11/02"},
+  {t:"为什么我们还在做游戏电台",s:"机核",ic:"机",th:"img3",d:"2025/10/21"},
+ ],
+ t:[
+  {t:"早期的 RSS 阅读器都去哪了",s:"少数派",ic:"派",th:"img1",d:"09:41"},
+  {t:"OneDash：把状态页装进菜单栏",s:"小众软件",ic:"小",th:"mono",d:"09:12"},
+  {t:"重读《人月神话》第 50 年",s:"酷壳",ic:"酷",th:"mono",d:"08:56"},
+  {t:"4K 修复的魔法是怎么发生的",s:"影视飓风",ic:"影",th:"vid",dur:"14:22",d:"08:30"},
+  {t:"周刊 extra：AI 编程的一年",s:"阮一峰的网络日志",ic:"阮",th:"img2",d:"08:02"},
+  {t:"清晨笔记：咖啡、队列与一天的开始",s:"随笔",ic:"随",th:"mono",d:"07:45",star:true},
+  {t:"我的 2026 HomeKit 自动化清单",s:"少数派",ic:"派",th:"img3",d:"07:12"},
+  {t:"晨间快讯 Vol.210",s:"声波栈",ic:"声",th:"pod",d:"06:50"},
+  {t:"SQLite is all you need",s:"HN 精选",ic:"H",th:"mono",d:"06:31"},
+  {t:"早报：10 月 10 日",s:"机核",ic:"机",th:"img1",d:"06:05"},
+  {t:"周报的另一种写法",s:"飞书精选",ic:"飞",th:"mono",d:"05:58",read:true},
+  {t:"QuickLook 插件五枚",s:"小众软件",ic:"小",th:"mono",d:"05:30"},
+ ],
+};
+
+const WAVE='<svg width="18" height="14" viewBox="0 0 20 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 5.5v3M5.5 3v8M9 5v4M12.5 1.5v11M16 4.5v5M18.5 6v2"/></svg>';
+const CHEV_D='<svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m4 6 4 4 4-4"/></svg>';
+const STAR='<svg width="12" height="12" viewBox="0 0 16 16" fill="COL" stroke="currentColor" stroke-width="1.4"><path d="M8 1.8l1.85 3.9 4.3.55-3.2 2.9.85 4.2L8 11.3l-3.8 2.05.85-4.2-3.2-2.9 4.3-.55z"/></svg>';
+const CHECK='<svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="m3 8.5 3.2 3L13 5"/></svg>';
+
+function rowHTML(r){
+  const thumb =
+    r.th==="mono" ? `<span class="thumb"><span class="tch">${r.ic}</span></span>` :
+    r.th==="pod"  ? `<span class="thumb pod">${WAVE}</span>` :
+    r.th==="vid"  ? `<span class="thumb vid"><span class="tch">${r.ic}</span><span class="dur">${r.dur}</span></span>` :
+                    `<span class="thumb ${r.th}"></span>`;
+  return `<div class="row${r.read?" is-read":""}">
+    <span class="st"><span class="dot"></span></span>
+    ${thumb}
+    <span class="title">${r.t}</span>
+    <span class="src"><span class="ficon">${r.ic}</span><span class="fn">${r.s}</span></span>
+    <span class="date">${r.d}</span>
+    <span class="acts">
+      <span class="ab star${r.star?" on":""}">${STAR.replace("COL",r.star?"currentColor":"none")}</span>
+      <span class="ab">${CHECK}</span>
+    </span>
+  </div>`;
+}
+
+let counts=COUNTS_SPARSE;
+const expanded=new Set();
+
+function firstNonEmpty(){return BUCKETS.find(b=>counts[b.k]>0)?.k;}
+
+function render(){
+  const list=document.getElementById("list");
+  let html="";
+  for(const b of BUCKETS){
+    if(counts[b.k]===0)continue;
+    const closed=!expanded.has(b.k);
+    html+=`<div class="dayhead" data-b="${b.k}">
+      <span class="chev${closed?" is-closed":""}">${CHEV_D}</span><span>${b.lb}</span><span class="rule"></span>
+      <span class="n">${nf(counts[b.k])} 篇</span>
+      ${closed?"":`<span class="mr" title="本组全部已读">${CHECK}</span>`}
+    </div>`;
+    if(!closed)html+=R[b.k].map(rowHTML).join("");
+  }
+  list.innerHTML=html;
+  list.querySelectorAll(".dayhead").forEach(el=>el.addEventListener("click",()=>{
+    const k=el.dataset.b;
+    if(expanded.has(k))expanded.delete(k);else expanded.add(k);
+    render();
+  }));
+}
+
+/* 默认展开规则：展开到内容约占首屏 55%（稀疏日自动续借下一桶，首屏是内容不是横幅）。
+   仅在初始化 / 切换场景时运行；用户手动收起不被覆盖。
+   注意：空滚动容器的 scrollHeight 恒等于 clientHeight，必须量内容盒实际高度 */
+function contentHeight(list){
+  const kids=[...list.children];
+  if(!kids.length)return 0;
+  const first=kids[0].getBoundingClientRect();
+  const last=kids[kids.length-1].getBoundingClientRect();
+  return last.bottom-first.top;
+}
+function autoFill(){
+  const list=document.getElementById("list");
+  render();
+  for(const b of BUCKETS){
+    if(counts[b.k]===0)continue;
+    if(expanded.has(b.k))continue;
+    if(contentHeight(list)>=list.clientHeight*0.55)break;
+    expanded.add(b.k);
+    render();
+  }
+}
+
+function applyScene(c){
+  counts=c;expanded.clear();
+  const f=firstNonEmpty();if(f)expanded.add(f);
+  document.getElementById("list").scrollTop=0;
+  autoFill();
+}
+document.getElementById("scSparse").addEventListener("click",e=>{
+  applyScene(COUNTS_SPARSE);
+  e.target.classList.add("on");document.getElementById("scDense").classList.remove("on");
+});
+document.getElementById("scDense").addEventListener("click",e=>{
+  applyScene(COUNTS_DENSE);
+  e.target.classList.add("on");document.getElementById("scSparse").classList.remove("on");
+});
+document.getElementById("themeBtn").addEventListener("click",()=>{
+  const el=document.documentElement;
+  el.dataset.theme=el.dataset.theme==="dark"?"":"dark";
+});
+
+applyScene(COUNTS_SPARSE);
+</script>
+</body>
+</html>

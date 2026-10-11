@@ -12,7 +12,7 @@ import {
   pickDuration,
   pickThumbUrl,
 } from "@/helpers/articleContent";
-import { formatRelative } from "@/helpers/feedMeta";
+import { formatBucketTime } from "@/helpers/feedMeta";
 import { apiPost } from "@/helpers/http";
 import { getCarrier } from "@/helpers/mediaType";
 import { useAppStore } from "@/stores";
@@ -40,9 +40,9 @@ export function thumbMonogram(title: string): string {
     : first[0].toUpperCase();
 }
 
-/** 行首缩略图：内容首图（feed 自带）> feed 图标 > 安静类型色块 + 源题 monogram。
- *  占位与照片同走行悬停融合（整行一个表面），monogram 保证融掉后仍有识别度。
- *  视频行走加宽 16:9 变体并叠时长角标（.fusion-thumb.vid）。 */
+/** 行首缩略图（A′ 2026-10-10 起**列表行不再使用**——未读列表回归纯文本行，
+ *  全载体一致；此组件仅存于阅读抽屉完读区的下一篇卡）：
+ *  内容首图（feed 自带）> feed 图标 > 安静类型色块 + 源题 monogram。 */
 export function RowThumb({ article }: { article: ArticleResItem }) {
   const [imgError, setImgError] = useState(false);
   const thumbUrl = pickThumbUrl(article);
@@ -94,6 +94,9 @@ export const ArticleItem = React.forwardRef(
   (
     props: {
       article: ArticleResItem;
+      /** 所在时间桶（A′ 桶内精确时间）：时间流的 section 透传；
+       *  空缺（源队列/下一篇卡/校准台）退回相对时间 */
+      bucket?: string | null;
       focused?: boolean;
       onRead?: (article: ArticleResItem) => void;
       onExpand?: (article: ArticleResItem) => void;
@@ -109,7 +112,7 @@ export const ArticleItem = React.forwardRef(
         expandedArticleUuid: state.expandedArticleUuid,
       })),
     );
-    const { article, focused, onRead, onExpand, onUpdate } = props;
+    const { article, focused, onRead, onExpand, onUpdate, bucket } = props;
     const { t } = useTranslation();
     const navigate = useNavigate();
     const [readStatus, setReadStatus] = useState(article.read_status);
@@ -153,9 +156,10 @@ export const ArticleItem = React.forwardRef(
       }
     };
 
-    const timeLabel = formatRelative(
+    // 桶内精确时间（组头已给出粒度，行内不再用相对时间重述，A′ 2026-10-10）
+    const timeLabel = formatBucketTime(
       new Date(article.pub_date || article.create_date),
-      { includeSeconds: true },
+      bucket,
     );
     // 视频行元信息第二行：时长（媒体附件给出时），替代纯文字行的空缺
     const duration = pickDuration(article);
@@ -185,7 +189,6 @@ export const ArticleItem = React.forwardRef(
         <span className="fusion-st">
           <span className="fusion-dot" />
         </span>
-        <RowThumb article={article} />
         <span className="fusion-title">{article.title}</span>
         <span className="fusion-src">
           {article.feed_logo && (

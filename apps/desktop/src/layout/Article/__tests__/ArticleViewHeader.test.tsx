@@ -7,7 +7,6 @@ import { ArticleView } from "../ArticleView";
 
 const mocks = vi.hoisted(() => ({
   setArticle: vi.fn(),
-  setArticleDialogViewStatus: vi.fn(),
   setExpandedArticleUuid: vi.fn(),
   setFilter: vi.fn(),
   syncAllArticles: vi.fn(),
@@ -70,8 +69,6 @@ vi.mock("@/stores", () => ({
     selector({
       article: null,
       setArticle: mocks.setArticle,
-      articleDialogViewStatus: false,
-      setArticleDialogViewStatus: mocks.setArticleDialogViewStatus,
       tracks: [],
       podcastPlayingStatus: false,
       viewMeta: {
@@ -114,10 +111,6 @@ vi.mock("@/components/ArticleListVirtual", () => ({
       />
     ),
   ),
-}));
-
-vi.mock("@/components/ArticleView/DialogView", () => ({
-  ArticleDialogView: () => null,
 }));
 
 vi.mock("@/components/FeedProfile", () => ({

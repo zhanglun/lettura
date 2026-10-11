@@ -34,7 +34,6 @@ import { useHotkeys } from "react-hotkeys-hook";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
-import { thumbMonogram } from "@/components/ArticleItem";
 import { EMAIL_SUBSCRIPTION_ENABLED, RouteConfig } from "@/config";
 import type { SourceAccount } from "@/db";
 import { busChannel } from "@/helpers/busChannel";
@@ -239,7 +238,7 @@ export function SettingPage() {
   useEffect(() => {
     document.documentElement.style.setProperty(
       "--row-h",
-      (cfg?.card_density ?? "comfortable") === "compact" ? "44px" : "52px",
+      (cfg?.card_density ?? "comfortable") === "compact" ? "34px" : "40px",
     );
   }, [cfg?.card_density]);
 
@@ -409,18 +408,10 @@ export function SettingPage() {
     { id: "subscriptions", label: t("settings.tab.subscriptions_title") },
   ];
 
-  const previewRow = (
-    title: string,
-    src: string,
-    read: boolean,
-    badge: { link: string; feed_url: string },
-  ) => (
+  const previewRow = (title: string, src: string, read: boolean) => (
     <div className={`prow ${read ? "is-read" : ""}`}>
       <span className="fusion-st">
         <span className="fusion-dot" />
-      </span>
-      <span className={`fusion-thumb ${badge.link ? "pod" : ""}`}>
-        {!badge.link && <span className="tch">{thumbMonogram(src)}</span>}
       </span>
       <span className="fusion-title">{title}</span>
       <span className="fusion-src">
@@ -527,14 +518,8 @@ export function SettingPage() {
                 <span>{t("settings.preview")}</span>
                 <span className="live">{t("settings.preview_live")}</span>
               </div>
-              {previewRow(t("settings.prev_row1"), "overreacted.io", false, {
-                link: "",
-                feed_url: "",
-              })}
-              {previewRow(t("settings.prev_row2"), "内核恐慌", true, {
-                link: "https://www.example.com/ep.mp3?x=1",
-                feed_url: "https://example.com/feed.xml",
-              })}
+              {previewRow(t("settings.prev_row1"), "overreacted.io", false)}
+              {previewRow(t("settings.prev_row2"), "内核恐慌", true)}
             </div>
 
             {/* 同步与来源 */}

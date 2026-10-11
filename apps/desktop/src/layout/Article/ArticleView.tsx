@@ -4,7 +4,6 @@ import { open } from "@tauri-apps/plugin-shell";
 import dayjs from "dayjs";
 import {
   CheckCheck,
-  ChevronLeft,
   Clapperboard,
   FileText,
   Inbox,
@@ -19,9 +18,10 @@ import { useTranslation } from "react-i18next";
 import { useMatch, useNavigate, useParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 import { ArticleListVirtual } from "@/components/ArticleListVirtual";
-import { BUCKET_ORDER } from "@/components/ArticleListVirtual/buckets";
-import { ArticleDialogView } from "@/components/ArticleView/DialogView";
-import type { ScrollBoxRefObject } from "@/components/ArticleView/ScrollBox";
+import {
+  BUCKET_ORDER,
+  defaultExpandedBuckets,
+} from "@/components/ArticleListVirtual/buckets";
 import { FeedPrism } from "@/components/FeedPrism";
 import { FeedProfile } from "@/components/FeedProfile";
 import { RouteConfig } from "@/config";
@@ -32,7 +32,7 @@ import { apiGet, apiPost } from "@/helpers/http";
 import { useQuery } from "@/helpers/parseXML";
 import { toast } from "@/helpers/toast";
 import { useArticle } from "@/hooks/useArticle";
-import { View } from "@/layout/Article/View";
+import { ReadingDrawer } from "@/layout/Article/ReadingDrawer";
 import { HK } from "@/shortcuts";
 import { useAppStore } from "@/stores";
 import { ArticleReadStatus, ArticleStarStatus } from "@/typing";
@@ -84,8 +84,8 @@ export function ArticleView() {
   const [carrierFilter, setCarrierFilter] = useState<CarrierFilter>("all");
   /** 源棱镜的原地过滤：选中源后当前列表只看该源（不跳源详情路由） */
   const [sourceFilter, setSourceFilter] = useState<FeedResItem | null>(null);
-  /** 详情滚动容器句柄：详情打开时 j/k 在这里滚动文章 */
-  const detailScrollRef = useRef<ScrollBoxRefObject>(null);
+  /** 列表滚动容器句柄：阅读抽屉的滚动宿主（打开时 j/k 滚文章、进度/大纲的视口源） */
+  const listContainerRef = useRef<HTMLDivElement | null>(null);
   // 聚焦仅在交互（j/k）后建立：首行不再默认带选中洗色
   const [focusIdx, setFocusIdx] = useState<number | null>(null);
   // 光标位建立但样式压住：首行接收焦点时不亮（见 moveFocus 的 establishing 分支），
@@ -149,8 +149,9 @@ export function ArticleView() {
     if (feedUuid) loadFeedTotals(feedUuid);
   }, [feedUuid]);
 
-  // 桶收起状态：父级持有（j/k 可达序列随收起过滤）。默认只展开第一个  // 非空时间组、其余收起（2026-09-30 用户拍板，取代「全展开除更早」）——
-  // 会话级不持久化（日期桶随时间漂移，持久化语义混乱）
+  // 桶收起状态：父级持有（j/k 可达序列随收起过滤）。默认展开姿态见下方
+  // A′ 规则（按时间序展开到首屏约 55%）；会话级不持久化（日期桶随时间漂移，
+  // 持久化语义混乱）
   const [collapsedBuckets, setCollapsedBuckets] = useState<Set<string>>(
     () => new Set(BUCKET_ORDER),
   );
@@ -215,21 +216,25 @@ export function ArticleView() {
     setFocusStyleSuppressed(false);
   }, [queueIdentity]);
 
-  // 换一个过滤口径（载体 tab / 源棱镜 / 队列帧）= 重新应用默认展开姿态：
-  // 第一个非空时间组展开、其余收起（2026-09-30 用户拍板——切到视频/播客同样
-  // 默认展开，不继承上一个口径的展开态）。同一口径内的计数刷新（单篇已读、
-  // 防抖 refresh）不重排用户手动展开/收起，封印按口径记。
+  // 换一个过滤口径（载体 tab / 源棱镜 / 队列帧）= 重新应用默认展开姿态
+  // （A′ 2026-10-10，取代 09-30「只展开第一个非空组」）：按时间序展开非空桶，
+  // 估高到列表视口约 55% 为止——稀疏日（今天没数据）自动续借下一桶，
+  // 首屏是内容而不是收起细行。同一口径内的计数刷新（单篇已读、防抖 refresh）
+  // 不重排用户手动展开/收起，封印按口径记。
   // dayCounts 在 scoped 摘要未返回时为 undefined（useArticle 不退回全局口径），
-  // 到位即应用；回到已访问过的口径时 SWR 缓存同步命中，随 identity 变化立即应用
+  // 到位即应用；回到已访问过的口径时 SWR 缓存同步命中，随 identity 变化立即应用。
+  // 视口高 = 窗口高 − 顶栏 54 − 过滤条 42（固定 chrome；自动展开只在时间流帧
+  // 生效，源队列帧无桶、dayCounts 恒 undefined 不进此分支）
   useEffect(() => {
     defaultExpandApplied.current = false;
   }, [queueIdentity]);
   useEffect(() => {
     if (defaultExpandApplied.current || !dayCounts) return;
-    const order: readonly string[] = BUCKET_ORDER;
-    const counts = dayCounts as unknown as Record<string, number>;
-    const firstNonEmpty = order.find((b) => (counts[b] ?? 0) > 0) ?? "today";
-    setCollapsedBuckets(new Set(order.filter((b) => b !== firstNonEmpty)));
+    const expanded = defaultExpandedBuckets(
+      dayCounts as unknown as Record<string, number>,
+      Math.max(240, window.innerHeight - 96),
+    );
+    setCollapsedBuckets(new Set(BUCKET_ORDER.filter((b) => !expanded.has(b))));
     defaultExpandApplied.current = true;
   }, [queueIdentity, dayCounts]);
 
@@ -360,18 +365,25 @@ export function ArticleView() {
     });
   };
 
-  // 键盘流：j/k 列表移动焦点、详情内滚动文章（到边即停）· ↑/↓ 切换上/下一篇 ·
-  // ⏎/o 打开 · m 已读并下移 · ⇧M 上移 · f 星标 · v 浏览器 · esc 返回
+  // 抽屉打开时 j/k = 滚动阅读（宿主是列表滚动容器本身，一滚到底就是队列）
+  const scrollReading = (dir: number) => {
+    const el = listContainerRef.current;
+    if (!el) return;
+    el.scrollBy({ top: dir * el.clientHeight * 0.85 });
+  };
+
+  // 键盘流：j/k 列表移动焦点、抽屉内滚动文章（到边即停）· ↑/↓ 切换上/下一篇 ·
+  // ⏎/o 打开 · m 已读并下移 · ⇧M 上移 · f 星标 · v 浏览器 · esc 收抽屉
   useHotkeys(HK.focusNext, () => {
     if (detailArticle) {
-      detailScrollRef.current?.scrollByViewport(1);
+      scrollReading(1);
       return;
     }
     moveFocus(1);
   }, [detailArticle, moveFocus]);
   useHotkeys(HK.focusPrev, () => {
     if (detailArticle) {
-      detailScrollRef.current?.scrollByViewport(-1);
+      scrollReading(-1);
       return;
     }
     moveFocus(-1);
@@ -565,7 +577,6 @@ export function ArticleView() {
     await Promise.all([mutate(identity), refreshSourceCounts()]);
   };
 
-  const title = store.viewMeta?.title ?? "";
   const unreadCount =
     (feedUuid
       ? store.viewMeta?.unread
@@ -589,27 +600,22 @@ export function ArticleView() {
   const stableTotal = feedTotals.all ?? total;
   const stableUnread = feedTotals.unread ?? headerUnread;
 
-  // 面板内替换：详情视图
-  if (detailArticle) {
-    return (
-      <div className="flex h-full w-full flex-col overflow-hidden">
-        <View
-          article={detailArticle}
-          closable
-          scrollRef={detailScrollRef}
-          onClose={closeDetail}
-          nextArticle={displayArticles[expandedIdx + 1] ?? null}
-          onOpenNext={openNextArticle}
-          onMarkBack={() => {
-            markFocusedRead();
-            closeDetail();
-          }}
-          onArticleUpdate={applyArticleUpdate}
-        />
-        <ArticleDialogView />
-      </div>
-    );
-  }
+  // 原位阅读抽屉（Inoreader / 0.1.x 内联阅读器动线）：列表常驻，文章块由
+  // ArticleListVirtual 渲染在命中行下方并滚动至行顶。完读区下面就是队列
+  const drawer = detailArticle ? (
+    <ReadingDrawer
+      article={detailArticle}
+      nextArticle={displayArticles[expandedIdx + 1] ?? null}
+      onOpenNext={openNextArticle}
+      onMarkBack={() => {
+        markFocusedRead();
+        closeDetail();
+      }}
+      onClose={closeDetail}
+      onArticleUpdate={applyArticleUpdate}
+      viewportRef={listContainerRef}
+    />
+  ) : null;
 
   // 列表视图
   const sourceCount = (store.subscribes || []).reduce<number>(
@@ -753,7 +759,8 @@ export function ArticleView() {
         </>
       )}
 
-      {/* 时间流：六桶 section（源队列帧 = 单段）；桶头计数来自 get_article_summary */}
+      {/* 时间流：六桶 section（源队列帧 = 单段）；桶头计数来自 get_article_summary。
+          阅读抽屉原位展开在命中行下方，列表续其下 */}
       <ArticleListVirtual
         sections={sections}
         collapsedBuckets={collapsedBuckets}
@@ -776,8 +783,10 @@ export function ArticleView() {
         focusedUuid={focused?.uuid}
         focusStyleSuppressed={focusStyleSuppressed}
         onExpandArticle={openArticle}
+        drawer={drawer}
+        drawerKey={detailArticle?.uuid ?? null}
+        containerRef={listContainerRef}
       />
-      <ArticleDialogView />
     </div>
   );
 }

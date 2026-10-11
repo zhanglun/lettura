@@ -15,9 +15,6 @@ export interface ArticleSlice {
     status: ArticleReadStatus,
   ) => Promise<void>;
 
-  articleDialogViewStatus: boolean;
-  setArticleDialogViewStatus: (status: boolean) => void;
-
   currentFilter: { id: number; title: string };
   setFilter: any;
 
@@ -90,13 +87,6 @@ export const createArticleSlice: StateCreator<
 
     get().getSubscribes();
     get().initCollectionMetas();
-  },
-
-  articleDialogViewStatus: false,
-  setArticleDialogViewStatus: (status: boolean) => {
-    set(() => ({
-      articleDialogViewStatus: status,
-    }));
   },
 
   currentFilter: {

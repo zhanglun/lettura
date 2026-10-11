@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>文章列表 · 时间分组重设计 — 两方案对比</title>
+<style>
+  :root{
+    --ground:#F4F4F1; --card:#FFFFFF;
+    --ink:#1D1E20; --sub:#6A6C6E;
+    --ter:color-mix(in srgb,var(--ink) 48%,transparent);
+    --hair:color-mix(in srgb,var(--ink) 8%,transparent);
+    --hair2:color-mix(in srgb,var(--ink) 13%,transparent);
+    --accent:#5E6AD2; --accent-soft:color-mix(in srgb,var(--accent) 10%,transparent);
+    --amber:#E5A50A;
+    --row-hover:color-mix(in srgb,var(--ink) 4%,transparent);
+  }
+  [data-theme="dark"]{
+    --ground:#1E1F23; --card:#26272C;
+    --ink:#ECEDEF; --sub:#A4A6AA;
+    --hair:rgba(236,238,240,.09); --hair2:rgba(236,238,240,.15);
+    --accent:#7B86E0; --accent-soft:rgba(123,134,224,.16);
+    --row-hover:rgba(236,238,240,.06);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    background:var(--ground);color:var(--ink);min-height:100vh;
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Helvetica Neue",sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding:40px 44px 64px;
+  }
+  a{color:var(--accent);text-decoration:none;font-weight:600;}
+  a:hover{text-decoration:underline;}
+  .page{max-width:1360px;margin:0 auto;}
+  .kicker{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ter);margin-bottom:10px;}
+  h1{font-size:24px;font-weight:700;letter-spacing:.005em;}
+  .lede{font-size:13.5px;color:var(--sub);line-height:1.7;margin-top:8px;max-width:820px;}
+  .theme{position:fixed;top:18px;right:20px;width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--sub);border:1px solid var(--hair);background:var(--card);cursor:pointer;z-index:9;}
+  .theme:hover{color:var(--ink);}
+
+  /* 诊断 */
+  .diag{margin-top:26px;border:1px solid var(--hair);border-radius:14px;background:var(--card);padding:20px 24px;}
+  .diag h2{font-size:13px;font-weight:700;margin-bottom:12px;}
+  .diag ol{list-style:none;display:grid;grid-template-columns:repeat(5,1fr);gap:18px;}
+  .diag li{font-size:12px;color:var(--sub);line-height:1.65;}
+  .diag li b{display:block;color:var(--ink);font-size:12.5px;margin-bottom:3px;}
+  .diag li .no{display:inline-flex;width:17px;height:17px;border-radius:6px;background:var(--accent-soft);color:var(--accent);font-size:10.5px;font-weight:700;align-items:center;justify-content:center;margin-right:6px;vertical-align:1px;}
+
+  /* 方案卡 */
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:22px;}
+  .card{border:1px solid var(--hair);border-radius:14px;background:var(--card);overflow:hidden;display:flex;flex-direction:column;}
+  .card-h{padding:18px 22px 14px;}
+  .card-h .tag{font-size:10.5px;font-weight:700;letter-spacing:.12em;color:var(--ter);text-transform:uppercase;}
+  .card-h h2{font-size:17px;font-weight:700;margin-top:4px;}
+  .card-h .thesis{font-size:12.5px;color:var(--sub);line-height:1.65;margin-top:6px;}
+  .frame-wrap{position:relative;width:100%;aspect-ratio:1440/860;overflow:hidden;border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);background:var(--ground);}
+  .frame-wrap iframe{width:1440px;height:860px;border:0;transform-origin:0 0;position:absolute;top:0;left:0;pointer-events:none;}
+  .frame-wrap .open{position:absolute;right:10px;bottom:10px;z-index:2;font-size:11px;padding:4px 10px;border-radius:999px;background:color-mix(in srgb,var(--card) 88%,transparent);border:1px solid var(--hair2);color:var(--ink);text-decoration:none;font-weight:600;backdrop-filter:blur(8px);}
+  .frame-wrap .open:hover{border-color:var(--accent);}
+  .pc{padding:14px 22px 18px;display:grid;gap:6px;}
+  .pc .row{display:flex;gap:8px;font-size:12px;line-height:1.6;color:var(--sub);}
+  .pc .row b{flex:none;font-weight:700;color:var(--ink);}
+  .pc .row .yes b{color:var(--accent);}
+  .cost b{color:var(--amber) !important;}
+  .eff{margin-top:4px;font-size:11px;color:var(--ter);font-variant-numeric:tabular-nums;}
+
+  /* 对比表 + 推荐 */
+  .verdict{margin-top:22px;border:1px solid var(--hair);border-radius:14px;background:var(--card);padding:20px 24px;}
+  .verdict h2{font-size:13px;font-weight:700;margin-bottom:14px;}
+  table{width:100%;border-collapse:collapse;font-size:12.5px;}
+  th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--hair);line-height:1.55;}
+  th{font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--ter);text-transform:uppercase;}
+  td:first-child{color:var(--sub);width:150px;}
+  tr:last-child td{border-bottom:0;}
+  .reco{margin-top:18px;padding:16px 18px;border-radius:12px;background:var(--accent-soft);font-size:13px;line-height:1.75;}
+  .reco b{color:var(--ink);}
+  .paths{margin-top:14px;font-size:12px;color:var(--sub);line-height:1.7;}
+</style>
+</head>
+<body>
+<button class="theme" id="themeBtn" title="夜读预览"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M13.4 9.6A5.6 5.6 0 0 1 6.4 2.6a5.6 5.6 0 1 0 7 7z"/></svg></button>
+<div class="page">
+  <div class="kicker">Lettura 0.2.x · 列表时间分组重设计</div>
+  <h1>稀疏的一天，不该看起来像坏掉的应用</h1>
+  <p class="lede">现状：今天没同步时，首屏 = 3 行内容 + 4 条「已收起」横幅 + 一片空白。折叠机制本是为 27k 未读的秩序而设，但它的视觉形态让「没有新东西的一天」读作「没有东西」。以下两个方案同保现役行词汇与「静密 × 聚光」世界不变，只重构「时间分组」这一层的表达。卡片内为静态缩略；点「打开完整稿」进入可交互演示（可滚动 / 可点击分组与档案线 / 标尺跳转 / 切夜读与「今天有数据」场景）。</p>
+
+  <section class="diag">
+    <h2>现状诊断（对应 10-10 截图）</h2>
+    <ol>
+      <li><b><span class="no">1</span>死横幅叠屏</b>4 条「已收起」横幅吃掉 ~180px 高度，信息量为零；下方再坠一片空白，首屏内容占比不足 1/3。</li>
+      <li><b><span class="no">2</span>机制语言外露</b>「已收起 · N 篇」在描述界面自己的折叠状态，×4 重复——违反「界面消失，内容即界面」。</li>
+      <li><b><span class="no">3</span>计数无行动力</b>「13,110」不帮你做任何决定，却各占一整行；数字与解锁它的动作隔着一整条横幅。</li>
+      <li><b><span class="no">4</span>时间双重编码</b>组头已说「昨天」，行内又用相对时间说三遍「1 天前」——组内精度本可更高（今天→时刻、本周→周几）。</li>
+      <li><b><span class="no">5</span>分组头过重</b>色带 + 通栏规则线 + chevron + 大写标签，四重信号压在一个「耳语级」的结构事实上。</li>
+    </ol>
+  </section>
+
+  <div class="grid">
+    <section class="card">
+      <div class="card-h">
+        <div class="tag">方案 A · 修缮</div>
+        <h2>修缮 — 展开照旧，收起去机制文案，时间去重</h2>
+        <p class="thesis">展开的桶照旧是时间流（默认展开到首屏约 55%，稀疏日自动续借下一桶，首屏是内容不是成排收起头）；收起/展开<b style="color:var(--ink)">同一分组头本体</b>——收起态 chevron 转向表达状态，去掉「已收起 · N 篇」机制文案。另修桶内时间格式：组内不再重复相对时间。</p>
+      </div>
+      <div class="frame-wrap">
+        <iframe data-src="a-archive.html" title="方案 A 预览"></iframe>
+        <a class="open" href="a-archive.html">打开完整稿 ↗</a>
+      </div>
+      <div class="pc">
+        <div class="row yes"><b>得</b><span>稀疏日首屏是满的内容；「已收起」×4 的机制语言清零；行内时间精确化（不再与组头重复）；状态由 chevron 转向表达，结构感与旧版一致。</span></div>
+        <div class="row cost"><b>代价</b><span>「默认只展开第一个非空桶」升级为「展开到首屏约 55%」——比既有决定更激进一档，但仍是内容优先的同方向延伸；多桶展开时 j/k 序列跨桶，沿用现有可见序列语义（已有机制）。</span></div>
+        <div class="eff">改动量：≈ 1 天 · 只动默认展开规则与时间格式 · 风险低</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-h">
+        <div class="tag">方案 B · 重构</div>
+        <h2>时间标尺 — 标尺即地图，流不再折叠</h2>
+        <p class="thesis">时间不再以横幅插进内容流。六桶概览升格为过滤条下的<b style="color:var(--ink)">一把常驻刻度尺</b>（段宽 ∝ 对数计数，队列形状一眼可读；滚动实时追踪所在桶，点击平滑跳转）。列表成为不折叠的连续流，桶界退化为 28px 耳语刻度（标签 + 细线，无色带无 chevron）。</p>
+      </div>
+      <div class="frame-wrap">
+        <iframe data-src="b-ruler.html" title="方案 B 预览"></iframe>
+        <a class="open" href="b-ruler.html">打开完整稿 ↗</a>
+      </div>
+      <div class="pc">
+        <div class="row yes"><b>得</b><span>27k 队列的体量与形状第一次有了仪表（本周 vs 更早的比例可读）；无折叠 = 无死横幅，滚动即时间轴；跳转任意桶一键直达；标尺双值随主题，夜读同构。</span></div>
+        <div class="row cost"><b>代价</b><span>+36px 常驻 chrome（与「界面消失」相逆）；废除「折叠」这一已拍板机制，重开既定决策；跨桶连续流要求重写懒加载通道合并、j/k 焦点序列、滚动恢复与「队列身份」契约；标尺在窄窗口（源棱镜激活）需要响应式降级。</span></div>
+        <div class="eff">改动量：≈ 3-5 天 · 动 DayHead / 分页 / 键盘契约 · 风险中高</div>
+      </div>
+    </section>
+  </div>
+
+  <section class="verdict">
+    <h2>对照表</h2>
+    <table>
+      <tr><th>维度</th><th>方案 A · 档案线</th><th>方案 B · 时间标尺</th></tr>
+      <tr><td>稀疏日首屏</td><td>3 行内容自动续借到约满屏 + 1 行档案</td><td>3 行内容直接续流进本周，无任何横幅</td></tr>
+      <tr><td>队列全景</td><td>分组头计数（收起/展开同款，千分位）</td><td>标尺常驻，形状（比例）可读、可点、可追踪</td></tr>
+      <tr><td>永久占用</td><td>0</td><td>+36px 常驻</td></tr>
+      <tr><td>折叠机制</td><td>保留，仅去「已收起」机制文案</td><td>废除，由「跳转 + 连续流」替代</td></tr>
+      <tr><td>与既有契约冲突</td><td>默认展开规则升级（同方向）</td><td>懒加载 / 焦点 / 滚动恢复 / 队列身份全链路重写</td></tr>
+      <tr><td>改动量与风险</td><td>1-2 天 · 低</td><td>3-5 天 · 中高</td></tr>
+    </table>
+    <div class="reco">
+      <b>推荐：A（修缮）。</b>B 的标尺确实更「仪器」，但它把概览常驻为家具——每一天都为「只有 3 行内容」的日子付 36px 的税，与「界面消失」相逆；且废除折叠重开了你 9-30 刚拍板的决策。A 走纯减法：默认展开补足首屏、文案去机制化、时间去重，改动面小一个数量级。若日后想要队列全景，分组头可平滑演进为标尺（B），不堵死。
+    </div>
+    <div class="paths">共享修正（两案都包含）：① 桶内时间精确化——今天→「09:41」、昨天→「昨天 21:14」、本周→「周六 09:30」、上周/30 天内→「9月28日」、更早→「2025/12/30」，替换相对时间的三重重复；② 稀疏日自动续借（A）/ 连续流（B）让首屏永远是内容。两稿均已实现可交互演示。</div>
+  </section>
+</div>
+<script>
+  /* 缩放 iframe 到卡宽 */
+  const FIT=1440;
+  function fit(){
+    document.querySelectorAll(".frame-wrap").forEach(w=>{
+      const f=w.querySelector("iframe");
+      f.style.transform=`scale(${w.clientWidth/FIT})`;
+    });
+  }
+  addEventListener("resize",fit);
+  /* iframe 交互预览：pointer-events none 便于整卡滚动，点击走「打开完整稿」 */
+  document.querySelectorAll("iframe[data-src]").forEach(f=>{f.src=f.dataset.src;});
+  addEventListener("load",fit);fit();
+  document.getElementById("themeBtn").addEventListener("click",()=>{
+    document.body.dataset.theme=document.body.dataset.theme==="dark"?"":"dark";
+    document.querySelectorAll("iframe").forEach(f=>{
+      try{f.contentDocument.getElementById("root").dataset.theme=document.body.dataset.theme;}catch(_){}
+    });
+  });
+</script>
+</body>
+</html>
