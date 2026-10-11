@@ -1,6 +1,6 @@
 [package]
 name = "lettura"
-version = "0.2.0"
+version = "0.2.1"
 description = "Follow your favorite content and never miss a story"
 authors = ["zhanglun1410@gmail.com"]
 license = "GPL-3.0-only"
