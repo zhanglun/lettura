@@ -127,7 +127,9 @@ jobs:
           args: ${{ matrix.args }}
           releaseId: ${{ needs.create-release.outputs.release_id }}
 
-      # Windows 便携版：bundle 无 resources，exe 自包含，zip 后随 draft 上传（#85）
+      # Windows 便携版：bundle 无 resources，exe 自包含，zip 后随 draft 上传（#85）。
+      # 上传按 tag 走 gh release upload——draft 由 tag_name 匹配、--clobber 支持重跑；
+      # gh api 直拼 release_id/assets 的方式在 #97 实测 404（Windows runner）
       - name: Pack portable zip (Windows)
         if: matrix.platform == 'windows-latest'
         shell: pwsh
@@ -141,8 +143,7 @@ jobs:
           if (-not $exe) { throw "lettura.exe not found under target/release" }
           $zip = "Lettura_${version}_x64-portable.zip"
           Compress-Archive -Path $exe.FullName -DestinationPath $zip
-          gh api "repos/${{ github.repository }}/releases/${{ needs.create-release.outputs.release_id }}/assets?name=$zip" `
-            --method POST --input "$zip" -H "Content-Type: application/zip"
+          gh release upload "v$version" "$zip" --clobber
 
   publish-release:
     permissions:
