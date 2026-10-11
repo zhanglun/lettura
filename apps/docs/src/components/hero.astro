@@ -80,9 +80,9 @@ import L from "~/components/L.astro";
       <!-- 右列：高保真列表重现（发丝行语法） -->
       <div class="relative min-h-[360px] overflow-hidden" aria-hidden="true">
         <div class="pt-1.5">
+          <div class="dayhead"><span class="dlb"><L en="Today" zh="今天" /></span><span class="drule"></span><span class="dn">6</span></div>
           <div class="approw is-focused">
             <span class="st"><span class="dot"></span></span>
-            <span class="thumb"><img src="https://picsum.photos/seed/lettura-rust/152/86" alt="" loading="lazy" /></span>
             <span class="tt"><L en="Rust 1.90 released: compiler parallelization, phase two" zh="Rust 1.90 发布：编译器并行化进入第二阶段" /></span>
             <span class="src">blog.rust-lang.org</span>
             <span class="date">09:41</span>
@@ -90,7 +90,6 @@ import L from "~/components/L.astro";
           </div>
           <div class="approw">
             <span class="st"><span class="dot"></span></span>
-            <span class="thumb th-pod"><svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 7.5v5M7.3 5v10M10.6 8v4M14 6v8M17.3 7.5v5"/></svg></span>
             <span class="tt"><L en="EP.87 Local-first software, with guevaria" zh="EP.87 与 guevaria 聊本地优先软件" /></span>
             <span class="src live">Kernel Panic<L en=" · playing" zh=" · 播放中" /></span>
             <span class="date">72:00</span>
@@ -98,7 +97,6 @@ import L from "~/components/L.astro";
           </div>
           <div class="approw">
             <span class="st"><span class="dot"></span></span>
-            <span class="thumb"><img src="https://picsum.photos/seed/lettura-code/152/86" alt="" loading="lazy" /></span>
             <span class="tt"><L en="Why I moved all my reading back to RSS" zh="为什么我把全部阅读搬回了 RSS" /></span>
             <span class="src">overreacted.io</span>
             <span class="date">08:52</span>
@@ -106,7 +104,6 @@ import L from "~/components/L.astro";
           </div>
           <div class="approw">
             <span class="st"><span class="dot"></span></span>
-            <span class="thumb"><img src="https://picsum.photos/seed/lettura-station/152/86" alt="" loading="lazy" /><span class="dur">18:42</span></span>
             <span class="tt"><L en="Local models in 2026: what they can actually do" zh="2026 年的本地模型到底能干什么" /></span>
             <span class="src">bilibili<span class="sdur">· 18:42</span></span>
             <span class="date">23:07</span>
@@ -114,15 +111,13 @@ import L from "~/components/L.astro";
           </div>
           <div class="approw is-read">
             <span class="st"><span class="dot"></span></span>
-            <span class="thumb"><img src="https://picsum.photos/seed/lettura-desk/152/86" alt="" loading="lazy" /></span>
             <span class="tt"><L en="Weekly #212: The shape of tools" zh="Weekly #212：工具的形状" /></span>
             <span class="src">newsletter</span>
-            <span class="date"><L en="yesterday" zh="昨日" /></span>
+            <span class="date"><L en="yesterday 21:14" zh="昨天 21:14" /></span>
             <span class="acts"></span>
           </div>
           <div class="approw">
             <span class="st"><span class="dot"></span></span>
-            <span class="thumb"><img src="https://picsum.photos/seed/lettura-city/152/86" alt="" loading="lazy" /></span>
             <span class="tt"><L en="SQLite in 2026: one file holds everything" zh="SQLite 在 2026：一个文件扛住一切" /></span>
             <span class="src">fly.io</span>
             <span class="date">21:33</span>
@@ -130,7 +125,6 @@ import L from "~/components/L.astro";
           </div>
           <div class="approw">
             <span class="st"><span class="dot"></span></span>
-            <span class="thumb"><img src="https://picsum.photos/seed/lettura-moss/152/86" alt="" loading="lazy" /></span>
             <span class="tt"><L en="TypeScript 7.0 native port: six months in" zh="TypeScript 7.0 原生移植：半年进展" /></span>
             <span class="src">devblogs.microsoft.com</span>
             <span class="date">17:02</span>
@@ -267,12 +261,12 @@ import L from "~/components/L.astro";
     font-weight: 500;
   }
 
-  /* app 列表行：52px 内容 + 2px ground 呼吸缝，圆角内衬洗色（fusion.css 2026-11 契约） */
+  /* app 列表行：40px 内容 + 2px ground 呼吸缝（A′ 2026-10-10 去缩略图，纯文本行契约） */
   .approw {
     display: grid;
-    grid-template-columns: 20px 76px minmax(0, 1fr) 170px 90px 40px;
+    grid-template-columns: 20px minmax(0, 1fr) 170px 90px 40px;
     align-items: center;
-    height: 52px;
+    height: 40px;
     margin-bottom: 2px;
     padding-right: 14px;
     position: relative;
@@ -300,43 +294,29 @@ import L from "~/components/L.astro";
     background: var(--color-primary);
   }
 
-  .thumb {
-    width: 76px;
-    height: 43px;
-    border-radius: 7px;
-    border: 1px solid var(--color-hair);
-    background: var(--color-card);
-    overflow: hidden;
-    position: relative;
+  /* 分组头（A′ 时间流锚点）：微标签 + 细线 + 计数 */
+  .dayhead {
     display: flex;
     align-items: center;
-    justify-content: center;
-    color: var(--color-text-offset);
-  }
-
-  .thumb img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .th-pod {
-    background: color-mix(in srgb, var(--color-primary) 10%, transparent);
-    color: var(--color-primary);
-  }
-
-  /* 视频行：右下时长角标（黑底白字，app 同款） */
-  .dur {
-    position: absolute;
-    right: 3px;
-    bottom: 3px;
-    padding: 1px 4px;
-    border-radius: 4px;
-    background: rgba(0, 0, 0, 0.66);
-    color: #fff;
+    gap: 8px;
+    padding: 8px 14px 6px 4px;
     font-size: 10px;
-    line-height: 1.5;
+    font-weight: 700;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--color-ter);
+  }
+
+  .dayhead .drule {
+    flex: 1;
+    height: 1px;
+    background: var(--color-hair);
+  }
+
+  .dayhead .dn {
     font-variant-numeric: tabular-nums;
+    letter-spacing: 0;
+    text-transform: none;
   }
 
   .tt {
@@ -391,15 +371,10 @@ import L from "~/components/L.astro";
     color: #e5a50a;
   }
 
-  /* 选中：accent 半透明内衬 + 0.5px 发丝级左线 + 圆点光环（app 同款） */
+  /* 选中：8% accent 内衬洗色 + 1px accent 内描边（app 同款，2026-09-30 收敛） */
   .approw.is-focused::after {
-    background: color-mix(in srgb, var(--color-primary) 9%, transparent);
-    border-left: 0.5px solid color-mix(in srgb, var(--color-primary) 45%, transparent);
-  }
-
-  .approw.is-focused .dot {
-    outline: 3px solid color-mix(in srgb, var(--color-primary) 35%, transparent);
-    outline-offset: 1.5px;
+    background: color-mix(in srgb, var(--color-primary) 8%, transparent);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-primary) 30%, transparent);
   }
 
   .approw.is-read .dot {
@@ -413,12 +388,7 @@ import L from "~/components/L.astro";
 
   @media (max-width: 900px) {
     .approw {
-      grid-template-columns: 16px 60px minmax(0, 1fr) 52px 20px;
-    }
-
-    .thumb {
-      width: 60px;
-      height: 34px;
+      grid-template-columns: 16px minmax(0, 1fr) 52px 20px;
     }
 
     .src {
